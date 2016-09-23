@@ -95,6 +95,7 @@
 			line-height: 44px;
 			font-weight: 300;
 			text-decoration: none;
+			font-family: 'Trainline'
 		}
 		
 		#titleBar .tag
@@ -170,7 +171,7 @@
 
 	#header
 	{
-		height: 10em;
+		height: 7em;
 		padding: 0;
 		background-position: center center;
 		background-attachment: scroll;
@@ -181,6 +182,12 @@
 /*********************************************************************************/
 
 	#logo
+	{
+		padding-top: 4.5em;
+		font-size: 0.6em;
+	}
+
+	#logo h1
 	{
 		display: none;
 	}
@@ -197,7 +204,7 @@
 
 	#main
 	{
-		padding: 4em 0em 2em 0em;
+		padding: 2em 0em 2em 0em;
 	}
 
 	.homepage #content header h2
