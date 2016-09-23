@@ -3,9 +3,9 @@
 	<nav id="nav">
 		<ul>
 			{% assign current = page.url | downcase | split: '/' %}
-			<li {% if current[1] == 'index.html' %}class='current'{% endif %}><a href="/index.html">Homepage</a></li>
-			<li {% if current[1] == 'blog' %}class='current'{% endif %}><a href="/blog">Blog</a></li>
-			<li {% if current[1] == 'left-sidebar.html' %}class='current'{% endif %}><a href="/left-sidebar.html">Docs</a></li>
+			<li {% if current[1] == 'index.html' %}class='current'{% endif %}><a href="/environment-manager/index.html">Homepage</a></li>
+			<li {% if current[1] == 'blog' %}class='current'{% endif %}><a href="/environment-manager/blog">Blog</a></li>
+			<li {% if current[1] == 'left-sidebar.html' %}class='current'{% endif %}><a href="/environment-manager/left-sidebar.html">Docs</a></li>
 		</ul>
 	</nav>
 </div>
