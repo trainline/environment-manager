@@ -13,6 +13,19 @@
   src: url('font/TLCircularTT-Titling.woff') format('woff');
 }
 
+.main-content ul {
+	list-style: initial;
+}
+
+.main-content li {
+	margin-left: 30px;
+}
+
+.main-content h3 {
+	padding: 1em 0 1em 0;
+	font-size: 2em;
+}
+
 /*********************************************************************************/
 /* Basic                                                                         */
 /*********************************************************************************/
@@ -214,7 +227,7 @@
 		{
 			margin: 0;
 			padding: 0em 0em 1.5em 0em;
-			list-style: none;
+		  list-style: none;
 		}
 		
 			ul.default li
