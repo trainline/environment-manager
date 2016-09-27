@@ -3,17 +3,20 @@
 <div id="sidebar" class="4u">
 	<section>
 		<header>
-			<h2>Contents</h2>
+			<h2>{{ page.layout | capitalize }}</h2>
 		</header>
 		<div class="row">
 			<section>
 				<ul>
-				{% for post in site.posts %}
+				{% assign sorted_pages = site.pages | sort:"weight" %}
+				{% for post in sorted_pages %}
+				{% if post.dir == page.dir %}
 					<li>
 						<p>
 							<a href="/environment-manager{{ post.url }}">{{ post.title }}</a><br />
 						</p>
 					</li>
+				{% endif %}
 				{% endfor %}
 				</ul>
 			</section>

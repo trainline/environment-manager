@@ -1,6 +1,7 @@
 ---
 title: What is Environment Manager?
-layout: overview-post
+layout: overview
+weight: 10
 ---
 
 Environment Manager is a simple self-service web portal designed to help organisations manage AWS infrastructure at scale.

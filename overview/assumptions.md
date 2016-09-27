@@ -1,6 +1,7 @@
 ---
 title: Assumptions and Limitations
-layout: overview-post
+layout: overview
+weight: 30
 ---
 
 Environment Manager is best suited to companies with between 100 and 5,000 servers running a mixture of legacy and more modern applications.

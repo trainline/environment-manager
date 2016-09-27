@@ -1,6 +1,7 @@
 ---
 title: Features and Benefits
-layout: overview-post
+layout: overview
+weight: 20
 ---
 
 Environment Manager provides a higher-level abstraction over the top of AWS that aims to more closely fit the mental model of developers e.g. ‘I want to deploy this application to that environment’. It does not attempt to duplicate the functionality of the AWS Console, but instead provides an easier way to perform environment level operations.
