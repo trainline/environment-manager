@@ -1,7 +1,7 @@
 ---
-title: API
+title: Environment Manager API
 layout: docs
-weight: 11
+weight: 20
 ---
 
 Everything that can be done through the website can also be done programmatically using Environment Manager’s APIs.

@@ -17,6 +17,10 @@
 	list-style: initial;
 }
 
+.main-content ol {
+	list-style: initial;
+}
+
 .main-content li {
 	margin-left: 30px;
 }

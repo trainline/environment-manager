@@ -33,7 +33,19 @@ Released for free under the Creative Commons Attribution 3.0 license (templated.
 	<div id="main">
 		<div  id="content" class="container">
 			<div class="row">
-				{% include sidebar.html %}
+				<!-- Sidebar -->
+				<div id="sidebar" class="4u">
+					<section>
+						<header>
+							<h2>Overview</h2>
+						</header>
+						<div class="row">
+							<section>
+								{% include navigation.html context="/overview/" %}
+							</section>
+						</div>
+					</section>
+				</div>
 
 				<!-- Content -->
 				<div id="content" class="8u skel-cell-important">
