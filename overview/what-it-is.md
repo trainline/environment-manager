@@ -1,13 +1,16 @@
 ---
 title: What is Environment Manager?
 layout: overview
+featured: images/deployment-map.png
 weight: 10
 ---
 
-Environment Manager is a simple self-service web portal designed to help organisations manage AWS infrastructure at scale.
+Environment Manager is a minimally opinionated platform that enables continuous delivery of software components into Windows and Linux AWS environments. 
 
-The portal enables development teams to perform common infrastructure tasks themselves at a natural level of abstraction. This includes creating and refreshing environments, deploying applications, and managing load balancer rules.
+It features blue/green, canary and overwrite deployments; multi-tenancy support; a comprehensive API for scripting deployments into pipelines; as well as audit capabilities suitable for a PCI Level 1 organisation.
 
-Environment Manager also provides a set of APIs for integrating these features into pipelines and other automation.
+Environment Manager provides 3 main facilities:
 
-Finally, it includes operational and governance elements that improve visibility of environment status, deployments and infrastructure configuration changes.
+-	A simple website that enables development teams to perform common infrastructure tasks themselves at a natural level of abstraction. This includes creating and refreshing environments, deploying applications, and managing load balancer rules
+-	A set of APIs for easily integrating deployment and management features into pipelines and other automation
+-	Operational and governance elements that improve visibility of environment status, deployments, security considerations and configuration changes

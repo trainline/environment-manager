@@ -41,15 +41,16 @@ Released for free under the Creative Commons Attribution 3.0 license (templated.
 						<header>
 							<h2>{{ page.title }}</h2>
 						</header>
-						{% if page.featured %}
-						<a href="/environment-manager{{ page.url }}" class="image full">
-							<img src="/environment-manager/assets/{{ page.featured }}" alt="">
-						</a>
-						{% endif %}
 						<br />
 						<span class="main-content">
 						{{ content }}
 						</span>
+						{% if page.featured %}
+						<br />
+						<a href="/environment-manager{{ page.url }}" class="image full">
+							<img src="/environment-manager/assets/{{ page.featured }}" alt="">
+						</a>
+						{% endif %}
 					</section>
 				</div>
 
