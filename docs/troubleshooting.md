@@ -15,3 +15,9 @@ The first time you deploy a service to an Auto Scaling Group, Environment Manage
 **I updated settings for my Server Role in Deployment Map, but new instances in my Auto Scaling Group are still running with old settings, why?**
 
 Server Role settings for Deployment Map are used as a template when creating new instance Launch Configuration for a new Auto Scaling Group. To modify Launch Configuration of existing Auto Scaling Group, please use "Launch Configuration" in live Auto Scaling Group details view - #/environment/servers/.
+
+**Where are the logs?**
+
+Logs are printed to standard output by default. You can adjust logging level by adjusting `EM_LOG_LEVEL` environment variable. We use Winston logger with 6 logging levels: `error`, `warn`, `info`, `verbose`, `debug`, and `silly`. It's set to `debug` on default. In production environment (that is, if environment variable IS_PRODUCTION is set to "true"), there are a few differences to logger:
+- JSON is printed to output instead of simple text - that is to allow log parsers, like Logstash to gather additional metadata that can be then used to filter / analyse with log viewers like Kibana
+- all communication with AWS and HTTP requests are logged (these are removed for local development to reduce noise)
