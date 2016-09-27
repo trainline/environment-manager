@@ -1,7 +1,7 @@
 ---
 title: Open Source Contributions
 layout: docs
-weight: 11
+weight: 30
 ---
 
 Environment Manager is open sourced under the [Link: Apache 2 License https://www.apache.org/licenses/LICENSE-2.0].
