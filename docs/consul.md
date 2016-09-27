@@ -1,7 +1,7 @@
 ---
 title: Consul Deployments
 layout: docs
-weight: 15
+weight: 25
 ---
 
 ### Overview

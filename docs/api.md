@@ -1,5 +1,5 @@
 ---
-title: API
+title: Environment Manager API
 layout: docs
 weight: 20
 ---
