@@ -6,7 +6,7 @@ weight: 25
 
 ### Overview
 
-In order to understand how deployment works, it is useful to first have a good understanding of Consul ( [https://www.consul.io/](https://www.consul.io/) ).
+In order to understand how deployment works, it is useful to first have a good understanding of Consul <https://www.consul.io/>.
 
 Consul is primarily a service discovery and health checking platform. A queryable Catalog maintains the current state of an environment including member nodes, services deployed and service health.
 
