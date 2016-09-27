@@ -1,7 +1,7 @@
 ---
 title: Concepts and Terms
 layout: docs
-weight: 5
+weight: 10
 ---
 
 This section is intended to give a quick overview of the main concepts and terminology used in this guide and how they relate to Environment Manager.
