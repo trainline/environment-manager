@@ -6,12 +6,12 @@ weight: 70
 
 ### Usage
 
-Environment Manager uses [Link: Consul] for:
+Environment Manager uses [Consul](https://www.consul.io/) for:
 
 - Service discovery
 - Service health checking
 - Deployment
-- [Link: Maintenance Mode]
+- [Maintenance Mode](https://www.consul.io/docs/commands/maint.html)
 
 For deployment, the Key Value store is used to hold the target services that should be deployed, and the Catalogue holds what is currently/actually deployed. The Environment Manager deployment agent running on each instance then simply looks for differences between these two sources and downloads and installs any missing packages to converge the state. This provides a highly scalable and concurrency safe deployment platform.
 
