@@ -6,7 +6,7 @@ weight: 20
 
 Everything that can be done through the website can also be done programmatically using Environment Manager’s APIs.
 
-Swagger documentation for the APIs can be found by visiting the /docs endpoint of your installation location – or see the swagger file directly in GIT LINK:here.
+Swagger documentation for the APIs can be found by visiting the /docs endpoint of your installation location.
 
 To call any API, it is first necessary to obtain a security token that can be used to authorise and audit the actions taken.
 

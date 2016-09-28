@@ -1,5 +1,5 @@
 ---
-title: Open Source Contributions
+title: Open Source &amp; Contributions
 layout: docs
 weight: 30
 ---

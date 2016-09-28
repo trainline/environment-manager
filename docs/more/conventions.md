@@ -28,7 +28,7 @@ For example, d01-ex-19429ab5
 
 ### AMIs
 
-Environment Manager requires images names to include SemVer (LINK: http://semver.org/) versioning so it can make intelligent recommendations and alerts when servers are out of date.
+Environment Manager requires images names to include [SemVer](http://semver.org/) versioning so it can make intelligent recommendations and alerts when servers are out of date.
 
 The naming pattern for AMIs is shown in the regular expression below:
 [a-zA-Z0-9.-]+-[0-9]+\.[0-9]+\.[0-9]
@@ -78,7 +78,7 @@ The following tags are applied to ASGs and EC2 Instances:
         <p><strong>SecurityZone</strong></p>
       </td>
       <td>
-        <p>Security Zone in which the instance will reside (See&nbsp;LINK:Concept for more information)</p>
+        <p>Security Zone in which the instance will reside (See []()LINK:Concept for more information)</p>
       </td>
       <td></td>
     </tr>

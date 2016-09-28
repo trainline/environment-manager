@@ -34,7 +34,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
     <td>
       <p>Amazon machine image – a virtual machine image with a particular configuration on it. May be basic or ‘baked’ meaning it includes everything to run an application on boot.</p>
       <p>EM assumes that all AMIs used with the tool have both the Consul Agent and EM Deployment Agent included on the image. Puppet roles can also be specified and passed in user data.</p>
-      <p>A particular naming convention is assumed for AMIs to help provide more intelligent info on out of date instances. See [LINK: conventions section]</p>
+      <p>A particular naming convention is assumed for AMIs to help provide more intelligent info on out of date instances. See [Conventions](/environment-manager/docs/more/conventions)</p>
     </td>
   </tr>
   <tr>
@@ -190,7 +190,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
     </td>
     <td>
       <p>Our term for cross-functional development teams.</p> 
-      <p>Clusters own Services and Environments and can be granted particular sets of permissions within the tool [LINK to permissions].</p>
+      <p>Clusters own Services and Environments and can be granted particular sets of permissions within the tool. See [Permissions](environment-manager/docs/user-guide/permissions).</p>
     </td>
   </tr>
   <tr>
@@ -254,10 +254,10 @@ The diagram below shows the logical relationships between AWS and Environment Ma
 
 It is useful to have an understanding of some core Consul concepts such as: nodes, data centres, services and health checks. Also the difference in Consul between the Catalogue and the Key Value store.
 
-The Consul Website [LINK: https://www.consul.io/] gives a good overview of all these concepts.
+The [Consul Website](https://www.consul.io/) gives a good overview of all these concepts.
 
 Environment Manager uses Consul for service discovery, health checking, and deployment. For deployment, the Key Value store is used to hold the target services that should be deployed, and the Catalogue holds what is currently/actually deployed. The Environment Manager deployment agent running on each instance then simply looks for differences between these two sources and downloads and installs any missing packages to converge the state. This provides a highly scalable and concurrency safe deployment platform.
 
-More information on Consul setup can be found [LINK]. 
+More information on Consul setup can be found [here](/environment-manager/docs/setup/consul). 
 
-More information about how deployment works using Consul can be found [LINK].
+More information about how deployment works using Consul can be found [here](/environment-manager/docs/more/consul).
