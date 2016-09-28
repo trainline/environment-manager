@@ -40,8 +40,8 @@ The following steps will create the resources necessary to run the Environment M
     1. Edit [EnvironmentManagerCommonResources.template][EnvironmentManagerCommonResources.template]; allow each child account to assume `roleInfraEnvironmentManagerAuditWriter` (see comments in file)
     1. Edit [EnvironmentManagerCommonResources.template][EnvironmentManagerCommonResources.template]; allow `roleInfraDynamoStreamReplica` to assume `roleInfraDynamoStreamReplicaWriter` in each child account (see comments in file)
     1. Edit [EnvironmentManagerMasterResources.template][EnvironmentManagerMasterResources.template]; allow `roleInfraEnvironmentManager` to assume `roleInfraEnvironmentManagerChild` in each child account (see comments in file)
-1. Create a new CloudFormation stack using [EnvironmentManagerCommonResources.template]
-1. Once the previous stack has been created, create a new CloudFormation stack using [EnvironmentManagerMasterResources.template]
+1. Create a new CloudFormation stack using [EnvironmentManagerCommonResources.template][EnvironmentManagerCommonResources.template]
+1. Once the previous stack has been created, create a new CloudFormation stack using [EnvironmentManagerMasterResources.template][EnvironmentManagerMasterResources.template]
 1. If the master account is also a child account i.e. it will deploy services to itself, follow the instructions below.
 
 ### Child Account
@@ -49,8 +49,8 @@ The following steps will create the resources necessary to run the Environment M
 The following steps will create the resources necessary for the Environment Manager running in your master account to administer and monitor auto scaling groups and services in this child account.
 
 1. Upload `InfraEnvironmentManagerAudit.zip` and `InfraEnvironmentManagerScheduler.zip` to the `/EnvironmentManager` folder in the S3 bucket that contains your Lambda function code for your child account.
-1. Create a new CloudFormation stack using [EnvironmentManagerCommonResources.template]
-1. Once the previous stack has been created, create a new CloudFormation stack using  [EnvironmentManagerChildResources.template]
+1. Create a new CloudFormation stack using [EnvironmentManagerCommonResources.template][EnvironmentManagerCommonResources.template]
+1. Once the previous stack has been created, create a new CloudFormation stack using  [EnvironmentManagerChildResources.template][EnvironmentManagerChildResources.template]
 
 [child]: https://github.com/trainline/environment-manager/blob/master/setup/cloudformation/EnvironmentManagerChildResources.template
 [common]: https://github.com/trainline/environment-manager/blob/master/setup/cloudformation/EnvironmentManagerChildResources.template
@@ -59,3 +59,4 @@ The following steps will create the resources necessary for the Environment Mana
 [InfraEnvironmentManagerAudit/index.js]: https://github.com/trainline/environment-manager/blob/master/lambda/InfraEnvironmentManagerAudit/index.js
 [EnvironmentManagerCommonResources.template]: https://github.com/trainline/environment-manager/blob/master/setup/cloudformation/EnvironmentManagerCommonResources.template
 [EnvironmentManagerMasterResources.template]: https://github.com/trainline/environment-manager/blob/master/setup/cloudformation/EnvironmentManagerMasterResources.template
+[EnvironmentManagerChildResources.template]: https://github.com/trainline/environment-manager/blob/master/setup/cloudformation/EnvironmentManagerChildResources.template
