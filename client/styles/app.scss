@@ -1,0 +1,662 @@
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
+/**
+ * Note: CSS file is generated! If you need to update CSS, please run either:
+ * `gulp styles` to generate this file from app.scss
+ * or
+ * `gulp serve` to start gulp development workflow with style watchers
+ */
+
+body { padding: 15px; }
+h1 { font-size: 1.9em; }
+h2 { font-size: 1.4em; margin-top: 10px; }
+h3 { font-size: 1.2em; margin-top: 10px; }
+header {
+  display: block;
+  float: left;
+  width: 100%;
+  clear: both;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid RGB(200,200,200);
+  img { float: left; margin-right: 10px; }
+  h1 { display: block; font-size: 30px; float: left; margin: 2px 50px 0 0;}
+  h1 a:link, h1 a:hover, h1 a:visited, h1 a:active { color: black; text-decoration: none; }
+  nav { display: block; float: left; margin: 0px 0px; }
+  nav ul { margin: 0; padding: 0; margin-top: 10px; }
+  nav li { list-style-type: none; display: inline; }
+  nav li a { display: block; float: left; padding: 0 1em; font-size: 1.3em; }
+  nav li:first-child a { padding-left: 0; }
+
+  #userinfo { float: right; }
+  #userinfo span#logout { display: block; text-align: right; }
+}
+
+#sidebar {
+  float: left;
+  width: 170px;
+  ul { padding-left: 15px; }
+  hr { margin-right: 10px; }
+  #SelectEnvironment { width: 150px; margin-bottom: 10px; }
+  .selector { width: 150px; margin-bottom: 10px; }
+}
+
+#content {
+  position: relative;
+  clear: both;
+  padding-bottom: 100px;   /* Allow for pop-up action button menus at bottom of screen on busy pages */
+}
+
+#content.sidebar {
+  border-left: 1px solid RGB(200,200,200);
+  margin-left: 170px;
+  padding-left: 20px;
+  overflow: hidden;
+  min-height: 300px;
+  clear: none;
+}
+
+.innerContent {
+  border-left: 1px solid RGB(200,200,200);
+  margin-left: 170px;
+  padding-left: 20px;
+  overflow: hidden;
+  min-height: 300px;
+  clear: none;
+}
+
+/* Form Styles */
+.form-horizontal .control-label { text-align: left; }
+textarea { width: 100%; resize: none; }
+a.active { font-weight: bold; }
+
+label.nonbold { font-weight: normal; }
+label.nowrap { white-space:nowrap; }
+label.info { font-weight: normal; color: #555; }
+
+button { margin-right: 10px; }
+button.left { float:left; margin-left: 0px; margin-right: 10px; }
+button.right { float:right; margin-left: 10px; margin-right: 0px; }
+button.none { margin-left: 0px; margin-right:0px; }
+
+#SearchFilter { margin-bottom: 20px; margin-top: 10px; }
+#SearchFilter label{ margin-left: 15px; margin-right: 10px; }
+#SearchFilter div:first-child label{ margin-left: 0px; }
+
+.ace_editor { height: 350px; border: 1px solid #888888; }
+
+#spinner { width: 100%; height: 100px; position: relative; }
+
+span.mandatory { color: rgb(169, 68, 66); font-size: 10px; }
+span.expanded { color: green; }
+span.notexpanded { color: green; }
+
+.formNote{ margin-top: 15px; font-size: 0.9em; }
+
+/* Page body general styles */
+
+div.page-title { margin-bottom: 15px; }
+
+a[ng-click] { cursor: pointer; }
+
+span.ok { color: green; }
+span.warning { color: darkorange; }
+span.error { color: rgb(169, 68, 66); }
+
+.command, th.command-header { text-align: center; }
+.command span { cursor: pointer; }
+.command-delete { color: rgb(169, 68, 66); }
+.command-viewHistory { }
+.command-compare { color: darkslateblue; }
+.command-add { color: green; } /* TODO: review colours */
+.command-restore { color: green; }
+.command-viewDeployments { color: darkslateblue; }
+.command-copy { color: darkslateblue; }
+.command-viewDetails {}
+.command-toggleUpstream {}
+.command-edit { color: orange; }
+.command-patchServer { color: green; }
+
+#RefreshData { color: green; font-size: 18px; position: absolute; right: 15px; top: 10px; }
+.modal-header #RefreshData { top: 20px; }
+
+/* Action Buttons */
+td.actions-button { width: 85px; }
+td.actions-button .btn-group { width: 77px; margin-left: 8px; }
+td.actions-button .dropdown.open .dropdown-menu { left: auto; right: -8px;  }
+td.actions-button a { color: inherit; }
+
+/* Tab Styles */
+.tab-content {
+  border-bottom: 2px solid #ddd;
+  border-left: 2px solid #ddd;
+  border-right: 2px solid #ddd;
+  padding: 15px;
+}
+
+.nav-tabs { border-bottom: 2px solid #ddd; }
+.nav-tabs > li { margin-bottom: -2px; }
+
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+  color: #555;
+  cursor: default;
+  background-color: #fff;
+  border: 2px solid #ddd;
+  border-bottom-color: transparent;
+  border-bottom-width: 2px;
+}
+
+/* Error Styles */
+.invalid { border: 1px solid red; }
+.ErrorList {
+    margin: 15px;
+    padding: 10px;
+    border: 1px solid red;
+}
+.help-block ul { list-style-type: none; }
+.forbidden-icon { font-size: 72px; }
+
+/* Fix for AngularJS/Bootstrap CSS conflict */
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
+
+/* CONFIG SECTION */
+
+/* Deployment status page */
+.status-success { color: green; }
+.status-in-progress { color: blue; }
+.status-failed { color: rgb(169, 68, 66); }
+.error-description { max-height: 200px; }
+
+/* Config Deployment Maps page */
+#configDeploymentMapValue { height: 500px; }
+
+/* Deployment Targets page */
+ul.nav-tabs { font-weight: bold; }
+
+#TargetServices .also-in {
+  width: 300px;
+  border: 0px;
+}
+
+.infrastructure-warning {
+  text-align: center;
+  padding: 5px 20px;
+  padding-bottom: 20px;
+  font-size: 1.1em;
+  color: #ff8335;
+}
+
+.deploymentMapTarget {
+  width: 300px;
+  float: left;
+  margin-right: 20px;
+  &:hover {
+    border-color: RGB(170,170,170); 
+    .panel-heading { background-color: #ddd; border-color: RGB(170,170,170); color: RGB(55,55,55); }
+    .menu > button { border-color: RGB(170,170,170); }
+  }
+}
+
+.deploymentMapTargetHeading {
+  position: relative;
+  h3 { font-size: 1.1em; font-weight: bold; margin-top: 5px; margin-bottom: 5px; }
+  .owningCluster {}
+  .menu { position: absolute; top: 15px; right: 5px; color: rgb(51, 51, 51); }
+}
+
+.deploymentMapTargetServices {
+  height: 200px;
+  overflow-y: scroll;
+  .badge { width: 40px; }
+}
+
+.deploymentMapTargetFooter {
+  overflow: auto;
+  width: 100%;
+  .typeAndSize { float: left; }
+  .securityZone { float: right; }
+  .AMI { float: left; clear: both; margin-top: 5px; }
+}
+
+#DeploymentExecutionSequence.compactDisplay { height: 500px; overflow-y: scroll; }
+#DeploymentExecutionSequence .angular-ui-tree-handle { font-weight: normal; }
+#ToggleExpand { float: right; margin-right: 10px; }
+
+#TargetServices td { vertical-align: middle; }
+
+.form-control.inline { width: auto; display: inline; margin-left: 10px; margin-right: 10px; }
+input[type=number].form-control.inline { width: 90px; }
+
+#InfrastructureSettingsTab label { width: 180px; }
+#InfrastructureSettingsTab label.inline { width: auto; }
+
+
+/* Config Upstreams page */
+#upstreams {
+  .hostSummary { width: 100%; }
+  .upstream-host-dns { padding-right: 10px; }
+  .upstream-host-port { width: 70px; min-width: 70px; }
+  .upstream-host-state { width: 120px; min-width: 120px; }
+  td.upstream-host-state { padding-left: 10px; }
+}
+
+#configUpstreamValue { height: 500px; }
+
+form#Upstream label { width: 175px; }
+span.status-up span { color: green; }
+span.status-down span { color: darkorange; }
+span.status-warning span { color: darkorange; }
+span.status-error span { color: red; }
+
+#UpstreamHosts {
+  td { vertical-align: middle; }
+  .form-control { width: auto; }
+  input[name="DnsName"] { width: 350px; }
+}
+
+.onoffswitch {
+  position: relative; width: 90px;
+  -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+.onoffswitch-checkbox {
+  display: none;
+}
+.onoffswitch-label {
+  display: block; overflow: hidden; cursor: pointer;
+  border: 2px solid #999999; border-radius: 20px;
+}
+.onoffswitch-inner {
+  display: block; width: 200%; margin-left: -100%;
+  transition: margin 0.3s ease-in 0s;
+}
+.onoffswitch-inner:before, .onoffswitch-inner:after {
+  display: block; float: left; width: 50%; height: 30px; padding: 0; line-height: 30px;
+  font-size: 14px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+  box-sizing: border-box;
+}
+.onoffswitch-inner:before {
+  content: "Up";
+  padding-left: 10px;
+  background-color: RGB(68,212,179); color: #FFFFFF;
+}
+.onoffswitch-inner:after {
+  content: "Down";
+  padding-right: 10px;
+  background-color: #EEEEEE; color: #999999;
+  text-align: right;
+}
+.onoffswitch-switch {
+  display: block; width: 18px; margin: 6px;
+  background: #FFFFFF;
+  position: absolute; top: 0; bottom: 0;
+  right: 56px;
+  border: 2px solid #999999; border-radius: 20px;
+  transition: all 0.3s ease-in 0s;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
+  margin-left: 0;
+}
+.onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
+  right: 0px;
+}
+
+/* Config Clusters */
+form#Cluster label { width: 180px; }
+
+/* Config Environment Types */
+#EnvironmentTypeValue { height: 500px; }
+
+.em-envType-input {
+  margin-bottom: 30px;
+}
+
+.em-envType-input span {
+  margin-top: 6px;
+  display: inline-block;
+  font-style: italic;
+}
+
+/* Config LB Settings page */
+#lbSettings ul { margin: 0px; padding: 0px; list-style-type: none; }
+#configLBSettingValue { height: 500px; }
+
+/* Import/Export page */
+#ImportValue, #ExportValue { height: 550px; }
+
+/* Audit Compare */
+json-diff-patch > pre { overflow-y: scroll; }
+.compare-overview > pre { max-height: 150px; }
+.compare-detail > pre { max-height: 550px; }
+
+
+.slice-symbol {
+  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+  margin: 3px;
+  position: relative;
+  top: 4px;
+
+  &.none, &.Unknown {
+    display: none;
+    background-color: #EEEEEE;
+    background-image: radial-gradient(#EEEEEE, #BBBBBB);
+  }
+  &.Blue, &.blue {
+    background-color: #1a5fe6;
+    background-image: radial-gradient(#00BFFF, #1a5fe6);
+  }
+  &.Green, &.green {
+    background-color: #4fa90e;
+    background-image: radial-gradient(#69e410, #4fa90e);
+  }
+}
+
+.compare-page {
+  .service-cell {
+    display: inline-block;
+  }
+
+  .service-hover-table {
+    margin: 0px;
+  }
+
+  .service-hover-table th {
+    border-top: none;
+  }
+
+  .popover {
+    max-width: 600px;
+  }
+}
+
+/* OPERATION SECTION */
+
+/* Operations\ASG Status page */
+.asgInstanceTable {
+    border: 1px solid #ddd;
+    margin: 0px;
+    td, th { background-color: #f5f3f3; }
+    th { border-bottom: 0px !important; }
+}
+
+/* Operations Upstream Status */
+#upstream-status td { cursor: pointer; }
+.upstream-slice > .command { padding: 20px 5px }
+
+div.LBStatus > div.modal-dialog { width: auto; margin-left: 20px; margin-right: 20px; }    /* Full width pop-up for instance info */
+
+/* ENVIRONMENTS SECTION */
+.em-create-new-environment .em-multiline-help {
+  margin-top: -8px;
+  margin-bottom: 0;
+}
+
+/* Summary page */
+form#EnvironmentDetails label { width: 175px; }
+
+.table .config-status { padding: 10px 0px 0px 0px; margin: 0px; width: 20px; }
+.config-status-true, .config-status-false {
+  border-radius: 50%;
+  width: 12px;
+  height: 12px;
+  cursor: pointer;
+  float: left;
+  margin-top: 2px;
+  margin-right: 5px;
+}
+
+.health-status.warning {
+  color: darkorange;
+}
+
+.health-status.healthy {
+  color: green;
+}
+
+.health-status.error {
+  color: rgb(169, 68, 66);
+}
+
+.health-status.no-data {
+  color: #bdbdbd;
+}
+
+
+.config-status-true {
+  background-color: lightgreen;
+  background-image: radial-gradient(lightgreen, green);
+}
+.config-status-false {
+  background-color: rgb(169, 68, 66);
+  background-image: radial-gradient(red, rgb(169, 68, 66));
+}
+
+/* Details page */
+#EnvironmentConfigValidation {
+  float: left;
+  .ValidationBlock { float: left; margin-right: 30px; margin-bottom: 10px; }
+  h3 { margin-top: 10px; }
+}
+
+#EnvironmentDependentServices, #EnvironmentDependentLBSettings { border: 1px solid lightgrey; height: 400px; overflow-y: scroll; }
+#EnvironmentDependentServices { width: 475px; }
+#EnvironmentDependentLBSettings { width: 550px; }
+#EnvironmentDependentServices table td.command, #EnvironmentDependentLBSettings table td.command { padding-left: 20px; }
+#EnvironmentDependentLBSettings table td.upstream { padding-left: 30px; }
+
+/* Infrastructure page */
+div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin-right: 100px; }
+
+/* Scheduling directives */
+
+.schedule-editor {
+  margin-bottom: 30px;
+}
+
+.schedule-viewer {
+  margin-bottom: 10px;
+}
+
+.schedule-viewer ul {
+  padding-left: 20px;
+}
+
+.schedule-line {
+  margin: 10px 0 10px 0;
+}
+
+.cron-editor {
+  display: inline-block;
+}
+
+.cron-editor button {
+  margin-right: 0px;
+}
+
+/* Compare UI */
+
+.ui-select-match .close {
+  line-height: .9 !important;
+}
+
+.primary {
+  padding: 3px 5px;
+}
+
+.different {    
+  margin-right: 7px;
+  color: rgb(179, 0, 0);
+}
+
+.showable {
+  padding: 3px 5px;
+}
+
+.showable:hover {    
+  border-style: solid;
+  border-width: 1px;
+  background-color: rgb(250, 218, 215);
+  border-color: rgb(248, 164, 164);
+  margin-right: 7px;
+  background-color: rgb(250, 218, 215);
+  border-color: rgb(248, 164, 164);
+  color: rgb(179, 0, 0);
+}
+
+.grid {
+  width: 500px;
+  height: 200px;
+}
+
+/* Deployment History */
+
+.loading {
+  position: absolute;
+  right: 20px;
+  top: 15px;
+}
+
+.deployment-summary {
+  ul {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .log {
+    max-height: 300px;
+    margin-bottom: 15px;
+  }
+
+  table {
+    width: 100%
+  }
+
+  .nodes {
+    max-height: 200px;
+    overflow-y: scroll;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 9.5px;
+  }
+
+  .alert {
+    margin-bottom: 15px;
+  }
+
+  #RefreshData {
+    color: blue;
+    font-size: 24px;
+    right: 20px;
+  }
+
+  .summary {
+    margin-bottom: 20px;
+  }
+
+  .glyphicon-refresh {
+    cursor: pointer;
+  }
+
+  thead tr th {
+    padding-bottom: 5px;
+  }
+
+  .spin {
+    -webkit-animation-name: rotateThis;
+    -webkit-animation-duration: .5s;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: linear;
+  }
+
+  .oddRow {
+    background-color: whitesmoke;
+  }
+}
+
+
+.status-in-progress {
+  color: blue
+}
+
+.status-success {
+  color: green
+}
+
+.status-failed {
+  color: rgb(169, 68, 66);
+}
+
+@keyframes rotateThis {
+  from { transform: scale( 1 ) rotate( 0deg );   }
+  to   { transform: scale( 1 ) rotate( 360deg ); }
+}
+
+/* Manage Servers */
+.env-servers {
+  .success {
+    color: green;
+  }
+
+  .statusGroup {
+    float: left;
+    margin-right: 20px;
+  }
+
+  .statusGroup .glyphicon {
+    margin-left: 10px;
+  }
+
+  .viewToggleGroup {
+    float: right;
+  }
+
+  #SearchFilter {
+    margin-top: 5px;
+    margin-left: 8px;
+  }
+
+  .statusBar {
+    border: 1px solid #ddd;
+    height: 38px;
+    padding: 8px;
+  }
+}
+
+#DeploymentHistory .node-list {
+  padding: 0;
+  list-style-type: none;
+}
+
+.no-bullets {
+  padding-left: 20px;
+  /*list-style-type: none;*/
+}
+
+.serverRoleName {
+  padding-right: 5px;
+}
+
+.deploy-button {
+  margin-left: 15px;
+  /*display: none;*/
+}
+
+.form-list {
+  padding: 7px 0px;
+  list-style-type: none;
+}
+
+.aws-account-form {
+  margin-top: 30px;
+}
+
+.help-link {
+  display: block;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}

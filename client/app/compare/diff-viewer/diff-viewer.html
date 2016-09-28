@@ -1,0 +1,22 @@
+<div class="modal-header">
+    <h2 ng-if="primaryValue">View Primary Item</h2>
+    <h2 ng-if="diffValue">View Differences</h2>
+</div>
+
+<div class="modal-body">
+
+    <form name="form" class="form-horizontal">
+        <pre ng-if="diffValue" ng-bind-html="diffValue"></pre>
+        <div ng-if="primaryValue"
+             ui-ace="{ mode: 'json' }"
+             ng-readonly="true"
+             ng-model="primaryValue"
+             ng-model-options="{ debounce: 100 }">
+        </div>
+    </form>
+
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-default" type="button" ng-click="Ok()">Done</button>
+</div>

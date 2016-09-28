@@ -1,0 +1,20 @@
+<div class="modal-header">
+    <h2>Copy "{{ vm.serverRole.ServerRoleName }}" to another Deployment Map</h2>
+</div>
+
+<div class="modal-body">
+    <form name="form" class="form-horizontal">
+        <div class="form-group">
+            <label class="col-md-2 control-label text-left">Copy to</label>
+            <div class="col-md-5">
+                <select class="form-control" ng-model="vm.selected.deploymentMapName" required>
+                    <option ng-repeat="mapName in vm.deploymentMapNames" value="{{mapName}}">{{mapName}}</option>
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer" ng-if="!vm.dataLoading">
+    <button class="btn btn-default" type="button" ng-click="vm.dismiss()">Cancel</button>
+    <button class="btn btn-default" type="button" ng-click="vm.checkAndCopy(vm.selected.deploymentMapName)" ng-disabled="!vm.canUserCopyTo(vm.selected.deploymentMapName)">Copy</button>
+</div>

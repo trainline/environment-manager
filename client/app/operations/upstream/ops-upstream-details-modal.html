@@ -1,0 +1,46 @@
+<div class="modal-header">
+    <h3>Upstream Instances: {{Upstream.Value.UpstreamName}}</h3>
+</div>
+
+<div class="modal-body">	
+    <div id="spinner" ng-show="DataLoading">
+        <p>Loading instance data...</p>
+    </div>
+	<div class="col-md-12" ng-show="ServerData.length == 0 && !DataLoading">
+        <p>No matching servers found.</p>
+    </div>
+    <div class="col-md-12" ng-show="ServerData.length > 0 && !DataLoading">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="text-nowrap">IP</th>
+                    <th class="text-nowrap">Instance Name</th>
+                    <th class="text-nowrap">Instance Id</th>
+                    <th class="text-nowrap">Instance Type</th>
+                    <th class="text-nowrap">AWS Status</th>
+                    <th class="text-nowrap" ng-repeat="lb in ServerData[0].LoadBalancerServerState | orderBy : 'Name'">{{lb.Name}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="server in ServerData | orderBy : ['Ip']">
+					<td>{{server.Ip}}</td>
+                    <td>{{server.Name || '-'}}</td>
+                    <td>{{server.InstanceId || '-'}}</td>
+					<td>{{server.InstanceType || '-'}}</td>
+					<td>{{server.Status || 'Not found'}}</td>
+                    <td ng-repeat="lb in server.LoadBalancerServerState | orderBy : 'Name'">
+                        <div ng-if="lb.State == 'up'"><span class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> Up</span></div>
+                        <div ng-if="lb.State == 'down'"><span class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span> Down</span></div>
+                        <div ng-if="lb.State == 'unhealthy'"><span class="status-error"><span class="glyphicon glyphicon-exclamation-sign"></span> Unhealthy</span></div>
+                        <div ng-if="lb.State == 'unknown'"><span class="status-down"><span class="glyphicon glyphicon-question-sign"></span> Unknown</span></div>
+                    </td>
+                </tr>
+			</tbody>
+		</table>
+	</div>
+    <p>&nbsp;</p>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="Ok()">OK</button>
+</div>

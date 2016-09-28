@@ -1,0 +1,65 @@
+<div class="modal-header">
+    <h2>Status: <span class="{{view.statusClass}}">{{view.status}}</span></h2>
+    <div id="RefreshData" ng-show="view.progress">
+        <span class="glyphicon glyphicon-refresh {{view.statusClass}}" ng-class="{ spin: spin }" ng-click="Refresh()" title="Refresh data"></span>
+    </div>
+</div>
+
+<div class="modal-body">
+    <div class="summary">
+        <ul>
+            <li><strong>{{view.duration.label}}:</strong> {{view.duration.value}}</li>
+            <li><strong>Service:</strong> {{view.service}}</li>
+            <li><strong>AutoScalingGroup:</strong> <a ng-href="{{view.asgLink}}">{{view.asgName}}</a></li>
+            <li><strong>User:</strong> {{view.user}}</li>
+            <li><strong>Deployment Type:</strong> {{view.deploymentType}}</li>
+            <li><strong>Deployment ID:</strong> {{view.deploymentId}}</li>
+        </ul>
+
+        <div ng-if="view.error" class="alert alert-danger">
+            <ul>
+                <li><strong>Error:</strong> {{view.error.error}}</li>
+                <li ng-if="view.error.detail"><strong>Detail:</strong> {{view.error.detail}}</li>
+            </ul>
+        </div>
+    </div>
+
+    <h4>Deployment Log</h4>
+    <pre class="log">{{view.log}}</pre>
+    
+    <div ng-if="view.nodes && view.nodes.length > 0">
+        <h4>Nodes</h4>
+        <div class="nodes">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Node</th>
+                        <th>Status</th>
+                        <th>Duration</th>
+                        <th>No. Attempts</th>
+                        <th>Full Log</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="node in view.nodes">
+                        <td>{{node.instanceId}} <span ng-show="node.instanceIP">({{ node.instanceIP }})</span></td>
+                        <td class="{{node.status.class}}">
+                            <span ng-if="node.status.status.toLowerCase()=='in progress'" class="glyphicon glyphicon-refresh"></span>
+                            <span ng-if="node.status.status.toLowerCase()=='success'" class="glyphicon glyphicon-ok"></span>
+                            <span ng-if="node.status.status.toLowerCase()=='failed'" class="glyphicon glyphicon-remove"></span>
+                            {{node.status.status}}
+                            <span ng-if="node.status.lastStage"> ({{node.status.lastStage}})</span>
+                        </td>
+                        <td>{{node.duration}}</td>
+                        <td>{{node.numberOfAttempts}}</td>
+                        <td><a target="_blank" ng-show="node.logLink" href="{{node.logLink}}">Show</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-default" type="button" ng-click="ok()">OK</button>
+</div>

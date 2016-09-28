@@ -1,0 +1,19 @@
+module.exports = {
+  'extends': 'airbnb',
+  'parserOptions': {
+    'ecmaVersion': 6,
+    'sourceType': 'script'
+  },
+  'rules': {
+    'max-len': [1, 120, 2, {ignoreComments: true}],
+    'quote-props': [1, 'consistent-as-needed'],
+    'no-cond-assign': [2, 'except-parens'],
+    'no-unused-vars': [1, {'vars': 'local', 'args': 'none'}],
+    'no-else-return': 0,
+    'quotes': [2, 'single'],
+    'import/no-unresolved': 0,
+    'strict': [2, 'global'],
+    'prefer-const': 0,
+    'global-require': 1
+  }
+};

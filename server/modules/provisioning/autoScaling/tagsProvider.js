@@ -1,0 +1,28 @@
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+'use strict';
+
+let assert = require('assert');
+let namingConventionProvider = require('modules/provisioning/namingConventionProvider');
+let ConfigurationError = require('modules/errors/ConfigurationError.class');
+
+module.exports = {
+  get: function (configuration, sliceName) {
+    assert(configuration, "Expected 'configuration' argument not to be null");
+    var roleName = namingConventionProvider.getRoleName(configuration, sliceName);
+    var tags = {
+      EnvironmentType: configuration.environmentTypeName,
+      Environment: configuration.environmentName,
+      OwningCluster: configuration.cluster.Name,
+      Role: roleName,
+      SecurityZone: configuration.serverRole.SecurityZone,
+      Schedule: configuration.serverRole.ScheduleTag || '',
+      ContactEmail: configuration.serverRole.ContactEmailTag,
+    };
+
+    if (!tags.ContactEmail) {
+      return Promise.reject(new ConfigurationError("Missing 'ContactEmail' tag in configuration."));
+    }
+
+    return Promise.resolve(tags);
+  },
+};

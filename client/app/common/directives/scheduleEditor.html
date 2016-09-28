@@ -1,0 +1,28 @@
+<div class="schedule-editor">
+    <div ng-show="showDefault">
+        <label class="control-label text-left nonbold">
+            <input type="radio" ng-model="schedule" value="" /> Environment Default
+        </label><br />
+    </div>
+    <div ng-show="showOn">
+        <label class="control-label text-left nonbold">
+            <input type="radio" ng-model="schedule" value="247"> Always On
+        </label><br />
+    </div>
+    <div ng-show="showOff">
+        <label class="control-label text-left nonbold">
+            <input type="radio" ng-model="schedule" value="OFF"> Off
+        </label><br />
+    </div>
+    <div ng-show="showSpecific">
+        <label class="control-label text-left nonbold">
+            <input type="radio" ng-click="useSpecificClicked()" ng-checked="schedule.indexOf(':') >= 0"> Use specific times
+        </label><br />
+    </div>
+    <div ng-show="schedule" class="schedule-line" ng-repeat="cron in crons">
+        <cron-editor cron="cron"></cron-editor>
+        <button class="btn btn-danger" ng-click="remove(cron)">X</button>
+    </div>
+    
+    <button ng-show="schedule.indexOf(':') >= 0 || !showSpecific" class="btn btn-default" ng-click="add()">Add time</button>
+</div>

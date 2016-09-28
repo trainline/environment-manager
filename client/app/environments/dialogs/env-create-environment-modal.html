@@ -1,0 +1,119 @@
+<div class="modal-header">
+    <h2>Create New Environment</h2>
+</div>
+<div class="modal-body">
+
+    <form name="form" class="form-horizontal em-create-new-environment">
+
+        <div class="form-group" ng-class="{'has-error': form.EnvironmentName.$invalid}">
+            <label class="col-md-3 control-label text-left">Name: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+            <div class="col-md-3">
+                <input type="text"
+                       name="EnvironmentName"
+                       class="form-control"
+                       required=""
+                       autofocus
+                       ng-model="Environment.EnvironmentName"
+                       unique-among="EnvironmentNames"
+                       ng-pattern="envNamePattern" />
+            </div>
+            <span class="help-block" ng-if="form.EnvironmentName.$dirty && form.EnvironmentName.$error.required">Environment name is mandatory.</span>
+            <span class="help-block" ng-if="form.EnvironmentName.$dirty && form.EnvironmentName.$error.duplicated">Environment already exists.</span>
+            <span class="help-block em-multiline-help" ng-if="form.EnvironmentName.$dirty && form.EnvironmentName.$error.pattern">Environment Type pattern:<br /><mark><em>{{patternText}}</em></mark></span>
+        </div>
+        <div class="form-group" ng-class="{'has-error': form.EnvironmentType.$invalid}">
+            <label class="col-md-3 control-label text-left nowrap">Environment Type: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+            <div class="col-md-4">
+                <select class="form-control"
+                        name="EnvironmentType"
+                        required=""
+                        ng-model="Environment.Value.EnvironmentType"
+                        ng-change="environmentTypeChange()">
+                    <option ng-repeat="t in EnvironmentTypesList" ng-selected="{{t == Environment.Value.EnvironmentType}}" value="{{t}}">{{t}}</option>
+                </select>
+            </div>
+            <span class="help-block" ng-if="form.EnvironmentType.$dirty && form.EnvironmentType.$error.required">Environment Type is mandatory.</span>
+        </div>
+        <div class="form-group" ng-class="{'has-error': form.OwningClusters.$invalid}">
+            <label class="col-md-3 control-label text-left nowrap">Owning Cluster: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+            <div class="col-md-4">
+                <select class="form-control"
+                        name="OwningClusters"
+                        required=""
+                        ng-model="Environment.Value.OwningCluster">
+                    <option ng-repeat="cluster in OwningClustersList" ng-selected="{{cluster == Environment.Value.OwningCluster}}" value="{{cluster}}">{{cluster}}</option>
+                </select>
+            </div>
+            <span class="help-block" ng-if="form.OwningClusters.$dirty && form.OwningClusters.$error.required">Owning cluster is mandatory.</span>
+        </div>
+        <div class="form-group" ng-class="{'has-error': form.DeploymentMap.$invalid}">
+            <label class="col-md-3 control-label text-left nowrap">Deployment Map: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+            <div class="col-md-4">
+                <select class="form-control"
+                        name="DeploymentMap"
+                        required=""
+                        ng-model="Environment.Value.DeploymentMap">
+                    <option ng-repeat="map in DeploymentMapsList" ng-selected="{{map == Environment.Value.DeploymentMap}}" value="{{map}}">{{map}}</option>
+                </select>
+            </div>
+            <span><a href="#/config/deploymentmaps/{{Environment.Value.DeploymentMap}}" target="_blank">View Map</a> <small>(Launches new window)</small></span>
+            <span class="help-block" ng-if="form.DeploymentMap.$dirty && form.DeploymentMap.$error.required">Deployment Map is mandatory.</span>
+        </div>
+        <div class="form-group" ng-class="{'has-error': form.CodeDeployBucket.$invalid}">
+            <label class="col-md-3 control-label text-left ">Code Deploy Bucket: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+            <div class="col-md-4">
+                <input type="text"
+                       name="CodeDeployBucket"
+                       class="form-control"
+                       required=""
+                       maxlength="60"
+                       ng-model="Environment.Value.CodeDeployBucket" />
+                       <!-- TODO: define bucket pattern, expect to start with tl-deployment pattern="[a-zA-Z]+[\w -]*" -->
+            </div>
+            <span class="help-block" ng-if="form.CodeDeployBucket.$dirty && form.CodeDeployBucket.$error.required">Code Deploy Bucket is mandatory.</span>
+            <span class="help-block" ng-if="form.CodeDeployBucket.$dirty && form.CodeDeployBucket.$error.pattern">Bucket path must be a valid S3 location.</span>
+        </div>
+        <div class="form-group">
+            <label class="col-md-3 control-label text-left">Description:</label>
+            <div class="col-md-6">
+                <textarea ng-model="Environment.Value.Description"></textarea>
+            </div>
+        </div>
+        <!--
+        <div class="form-group">
+            <label class="col-md-3 control-label text-left">Load Balancer Settings:</label>
+            <div class="col-md-6">
+                <label class="control-label text-left">
+                    <input type="radio" ng-model="CloneExistingLB" ng-value="false"> None / Add later
+                </label><br />
+                <label class="control-label text-left">
+                    <input type="radio" ng-model="CloneExistingLB" ng-value="true" disabled> Copy from another environment
+                </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-3 col-md-4" ng-show="CloneExistingLB==true">
+                <select class="form-control" ng-model="CloneLBEnvironmentName" required>
+                    <option ng-repeat="env in EnvironmentNames" ng-selected="{{env == CloneLBEnvironmentName}}" value="{{env}}">{{env}}</option>
+                </select>
+            </div>
+        </div>
+        <!--
+        <div class="form-group" ng-class="{'has-error': form.DefaultSchedule.$invalid}">
+            <label class="col-md-3 control-label text-left nowrap">Default Schedule:</label>
+            <div class="col-md-4">
+                <input type="text"
+                       name="DefaultSchedule"
+                       class="form-control"
+                       maxlength="50"
+                       disabled />
+            </div>
+        </div>
+        -->
+
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-default" type="button" ng-click="Cancel()">Cancel</button>
+    <button class="btn btn-default" type="button" ng-click="Ok()" ng-if="canUser('edit')" ng-disabled="form.$pristine || form.$invalid">Create </button>
+</div>

@@ -1,0 +1,21 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th class="text-nowrap">{{ vm.selected.comparable.keyName }}</th>
+      <th>{{ vm.selected.primaryEnvironment.EnvironmentName }} (Primary)</th>
+      <th ng-repeat="env in vm.selected.environments" class="text-nowrap">{{env.EnvironmentName}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="service in vm.view.items track by service.key">
+      <td width="300px">{{ service.key }}</td>
+      <td width="300px">
+        <service-cell data="service.primary" ng-if="service.primary"></service-cell>
+      </td>
+      <td width="300px" class="text-nowrap" ng-repeat="env in vm.selected.environments" ng-init='comparison = service.comparisons[env.EnvironmentName]'>
+        <service-cell data="comparison" ng-if="comparison"></service-cell>
+
+      </td>
+    </tr>
+  </tbody>
+</table>

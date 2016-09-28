@@ -1,0 +1,17 @@
+{
+  "name": "environment-manager",
+  "version": "3.5.1",
+  "description": "Build wrapper for Environment Manager server and client components",
+  "scripts": {
+    "build": "gulp build --gulpfile server/gulpfile.js -o ../build && gulp build --gulpfile client/gulpfile.js -o ../build/dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.thetrainline.com:PlatformServices/EnvironmentManager.git"
+  },
+  "author": {
+    "name": "Platform Development",
+    "email": "platform.development@thetrainline.com"
+  },
+  "license": "Apache License, Version 2.0"
+}

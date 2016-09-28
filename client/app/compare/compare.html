@@ -1,0 +1,53 @@
+<div class="compare-page">
+  <div class="row">
+    <div class="col-md-12">
+      <h2>Compare</h2>
+    </div>
+  </div>
+  <form id="SearchFilter" class="form-inline">
+    <div class="form-group">
+      <label class="control-label text-left">Compare:</label>
+    </div>
+    <div class="form-group">
+      <select class="form-control" ng-model="vm.selected.comparable" ng-options="cr as cr.name for cr in vm.comparableResources" ng-change="vm.onSelectionChanged()"></select>
+      <br />
+    </div>
+    <div class="form-group">
+      <label class="control-label text-left">Primary Environment:</label>
+    </div>
+    <div class="form-group">
+      <select class="form-control" ng-model="vm.selected.primaryEnvironment" ng-options="env as env.EnvironmentName for env in vm.environments" ng-change="vm.onSelectionChanged()"></select>
+    </div>
+    <div ng-show="vm.selected.primaryEnvironment" class="form-group">
+      <label class="control-label text-left">Compare With:</label>
+    </div>
+    <div ng-show="vm.selected.primaryEnvironment" class="form-group">
+      <ui-select style="width: 330px;" multiple limit="5" ng-model="vm.selected.environments" ng-change="vm.onSelectionChanged()" theme="bootstrap">
+        <ui-select-match placeholder="Select up to 5 environments..">
+          {{ $item.EnvironmentName }}
+        </ui-select-match>
+        <ui-select-choices repeat="env in vm.environments | filter: $select.search | filter:vm.notPrimary(env) track by env.EnvironmentName">
+          <span ng-bind="env.EnvironmentName"></span>
+        </ui-select-choices>
+      </ui-select>
+    </div>
+    <div class="form-group" ng-if="vm.selected.comparable.key === 'versions'">
+      <label class="control-label text-left">Cluster:</label>
+    </div>
+    <div class="form-group" ng-if="vm.selected.comparable.key === 'versions'">
+      <select class="form-control" ng-model="vm.selected.cluster" ng-change="vm.onSelectionChanged()">
+        <option ng-repeat="c in vm.clustersList" ng-selected="{{c == vm.selected.cluster}}" value="{{c}}">{{c}}</option>
+      </select>
+    </div>
+  </form>
+  <hr />
+  <spinner ng-show="vm.dataLoading"></spinner>
+  <div class="row" ng-show="!vm.dataLoading">
+    <div class="col-md-12" ng-show="!vm.view.items || vm.view.items.length == 0">
+      <p>No data found to compare.</p>
+    </div>
+    <div class="col-md-12" ng-show="vm.view.items && vm.view.items.length > 0">
+      <div ng-include="'/app/compare/compare-services.html'"></div>
+    </div>
+  </div>
+</div>

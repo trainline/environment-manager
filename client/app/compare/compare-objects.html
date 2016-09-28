@@ -1,0 +1,30 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th class="text-nowrap">{{ vm.selected.comparable.keyName }}</th>
+      <th>{{ vm.selected.primaryEnvironment.EnvironmentName }} (Primary)</th>
+      <th ng-repeat="env in vm.selected.environments" class="text-nowrap">{{env.EnvironmentName}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="item in vm.view.items track by item.key">
+      <td width="300px">{{ item.key }}</td>
+      <td width="300px">
+        <span class="primary" ng-class="item.primary.class" ng-click="vm.showDiff(item.primary.data)">
+                            {{ item.primary.label }}
+                        </span>
+      </td>
+      <td width="300px" ng-repeat="env in vm.selected.environments" class="text-nowrap">
+        <div ng-init="comparison = item.comparisons[env.EnvironmentName]">
+          <span ng-if="!comparison.difference.same" class="glyphicon glyphicon-warning-sign different"></span>
+          <span ng-class="comparison.difference.class" ng-if="!comparison.difference.showable">
+                                {{ comparison.difference.description }}
+                            </span>
+          <span class="btn btn-xs btn-default" ng-class="comparison.difference.class" ng-if="comparison.difference.showable" ng-click="vm.showDiff(item.primary.data, comparison.secondary)">
+                                {{ comparison.difference.description }}
+                            </span>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>

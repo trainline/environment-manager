@@ -1,0 +1,17 @@
+<div class="modal-header">
+    <h2>{{Audit.ChangeType}} {{Audit.Entity.Key}}</h2>
+    <p>{{Audit.Entity.Type}} <span ng-if="Audit.Entity.Range">- {{Audit.Entity.Range}}</span></p>
+    <p>{{Audit.ChangedBy}} <small><span am-time-ago="Audit.Timestamp"></span></small></p>
+</div>
+
+<div class="modal-body">
+    <json-diff-patch class="compare-detail"
+                     source="Audit.OldValueDisplay"
+                     target="Audit.NewValueDisplay"
+                     options="DiffOptions">
+    </json-diff-patch>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+</div>

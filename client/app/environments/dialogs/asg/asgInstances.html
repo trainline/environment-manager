@@ -1,0 +1,58 @@
+<div ng-if="!vm.dataLoading">
+  <h2>Instances</h2>
+</div>
+
+<div ng-if="vm.asgState.Instances.length == 0">
+  <p>No matching servers found.</p>
+</div>
+
+<div ng-if="vm.asgState.Instances.length > 0">
+  <div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="text-nowrap">Instance</th>
+          <th class="text-nowrap">IP</th>
+          <th class="text-nowrap">AZ</th>
+          <th class="text-nowrap">Instance Type</th>
+          <th class="text-nowrap">Status</th>
+          <th class="text-nowrap">Services</th>
+          <th class="text-nowrap">AMI</th>
+          <th class="text-nowrap">Out of Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="instance in vm.asgState.Instances | orderBy : ['Name', 'LifecycleState', 'Status', 'Ip']">
+          <td><health-status status='instance.OverallHealth.Status'></health-status> 
+            Name: {{ instance.Name || '-'}}
+            <br />&nbsp; &nbsp; &nbsp;ID: {{ instance.InstanceId || '-'}}
+          </td>
+          <td>{{ instance.PrivateIpAddress }}
+            <!-- TODO: could be array -->
+          </td>
+          <td>{{ instance.AvailabilityZone }}</td>
+          <td>{{ instance.InstanceType }}</td>
+          <td>{{ instance.LifecycleState }}
+            <br />{{ instance.State }}
+          </td>
+          <td><a ng-click="vm.showAsgSingleInstance(instance)" ng-if="instance.Services.length > 0">Show services ({{ instance.Services.length }})</a><span ng-if="instance.Services.length === 0">No services</span></td>
+          <td>
+            <span ng-if="instance.Ami.Name">
+                {{ instance.Ami.AmiType }} {{ instance.Ami.AmiVersion }}<br />
+                {{ instance.Ami.CreationDate | amDateFormat:'DD/MM/YYYY HH:mm:ss'}}<br />
+                ({{ instance.ImageId }})
+            </span>
+            <span ng-if="!instance.Ami.Name">{{ instance.ImageId }}</span>
+          </td>
+          <td>
+            <span ng-if="instance.LatestAmi">
+              <span ng-if="instance.UsingLatestAmi"><span class="glyphicon glyphicon-ok-sign ok"></span> Up to date</span>
+            <span ng-if="!instance.UsingLatestAmi"><span class="glyphicon glyphicon-exclamation-sign warning"></span> {{ instance.DaysOutOfDate }} Days</span>
+            </span>
+            <span ng-if="!instance.LatestAmi">-</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

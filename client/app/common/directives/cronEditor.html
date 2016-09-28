@@ -1,0 +1,14 @@
+<div class="cron-editor form-inline">
+	<select class="form-control" ng-model="selections.action" ng-change="updateCron()">
+		<option ng-repeat="action in options.actions" value="{{action.value}}">{{action.label}}</option>
+	</select>
+    <div class="btn-group" role="group">
+		<button type="button" class="btn btn-default" ng-repeat="day in options.days" ng-class="{ active: isDaySelected(day) }" ng-click="selectDay(day)" >{{day.label}}</button>
+	</div>
+	<select class="form-control" ng-model="selections.hour" ng-change="updateCron()">
+		<option ng-repeat="hour in options.hours" value="{{hour.value}}">{{hour.label}}</option>
+	</select> :
+	<select class="form-control" ng-model="selections.minute" ng-change="updateCron()">
+		<option ng-repeat="min in options.minutes" value="{{min.value}}">{{min.label}}</option>
+	</select>
+</div>

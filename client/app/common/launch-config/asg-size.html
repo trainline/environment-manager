@@ -1,0 +1,25 @@
+<div class="form-group" ng-if="vm.context === 'serverRole'" ng-class="{'has-error': form.MinInstances.$invalid || form.NumberOfInstances.$invalid || form.MaxInstances.$invalid }">
+  <label class="col-md-2 control-label text-left nowrap">Initial Size: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+  <div class="col-md-8">
+    <label class="control-label text-left nonbold inline">Min:</label>
+    <input class="form-control inline" type="number" name="MinInstances" min="0" max="100" step="1" required="" ng-model="vm.target.ASG.MinCapacity" ng-readonly="!vm.canUser('edit')" />
+    <label class="control-label text-left nonbold inline">Desired:</label>
+    <input class="form-control inline" name="NumberOfInstances" type="number" min="0" max="100" step="1" required="" ng-model="vm.target.ASG.DesiredCapacity" ng-readonly="!vm.canUser('edit')" />
+    <label class="control-label text-left nonbold inline">Max:</label>
+    <input class="form-control inline" name="MaxInstances" type="number" min="0" max="100" step="1" required="" ng-model="vm.target.ASG.MaxCapacity" ng-readonly="!vm.canUser('edit')" />
+  </div>
+</div>
+<div class="form-group" ng-if="form.MinInstances.$invalid || form.NumberOfInstances.$invalid || form.MaxInstances.$invalid" ng-class="{'has-error': form.MinInstances.$invalid || form.NumberOfInstances.$invalid || form.MaxInstances.$invalid }">
+  <div class="col-md-offset-2 col-md-10">
+    <span class="help-block" ng-if="form.MinInstances.$dirty && form.MinInstances.$error.required">Min instances is mandatory.</span>
+    <span class="help-block" ng-if="form.MinInstances.$dirty && (form.MinInstances.$error.number || form.MinInstances.$error.min || form.MinInstances.$error.max)">Min must be a number between 1 and 100</span>
+    <span class="help-block" ng-if="form.NumberOfInstances.$dirty && form.NumberOfInstances.$error.required">Desired instances is mandatory.</span>
+    <span class="help-block" ng-if="form.NumberOfInstances.$dirty && (form.NumberOfInstances.$error.number || form.NumberOfInstances.$error.min || form.NumberOfInstances.$error.max)">Desired must be a number between 1 and 100</span>
+    <span class="help-block" ng-if="form.MaxInstances.$dirty && form.MaxInstances.$error.required">Max instances is mandatory.</span>
+    <span class="help-block" ng-if="form.MaxInstances.$dirty && (form.MaxInstances.$error.number || form.MaxInstances.$error.min || form.MaxInstances.$error.max)">Max must be a number between 1 and 100</span>
+    <span class="help-block" ng-if="form.OSVolumeSize.$dirty && form.OSVolumeSize.$error.required">OS Volume Size is mandatory.</span>
+    <span class="help-block" ng-if="form.DataVolumeSize.$dirty && form.DataVolumeSize.$error.required">Data Volume Size is mandatory.</span>
+    <span class="help-block" ng-if="form.DataVolumeType.$dirty && form.DataVolumeType.$error.required">Data Volume Type is mandatory.</span>
+    <!-- TODO: HTML5 input type=number still support floating point entries... use of pattern not officially supported... -->
+  </div>
+</div>

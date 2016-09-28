@@ -1,0 +1,61 @@
+<div class="row page-title">
+    <div class="col-md-12">
+        <h2 ng-if="!EditMode">New User Or Group Permissions</h2>
+        <h2 ng-if="EditMode">Edit Permissions {{member.Name}}</h2>
+    </div>
+</div>
+
+<div ng-show="EditMode && !DataFound">No data found.</div>
+
+<form name="form" class="form-horizontal" ng-show="DataFound || !EditMode">
+
+    <div class="form-group" ng-class="{'has-error': form.MemberName.$invalid}">
+        <label class="col-md-2 control-label text-left">User / Group Name:</label>
+        <div class="col-md-2">
+            <input type="text"
+                   name="MemberName"
+                   class="form-control"
+                   ng-model="member.Name"
+                   ng-required="true"
+                   ng-readonly="EditMode" />
+        </div>
+        <span class="help-block" ng-if="form.MemberName.$dirty && form.MemberName.$error.required">User name is mandatory.</span>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': form.Value.$invalid}">
+        <label class="col-md-2 control-label text-left">Permissions: <span class="glyphicon glyphicon-question-sign" ng-click="ShowSchemaHelp()"></span></label>
+        <div class="col-md-6">
+            <div id="configLBSettingValue"
+                 ui-ace="{ mode: 'json' }"
+                 name="Value"
+                 required="true"
+                 valid-json="ValidateJson"
+                 ng-readonly="!canUser('edit')"
+                 ng-model="permissions"
+                 ng-model-options="{ debounce: 100 }">
+            </div>
+        </div>
+        <span class="help-block" ng-if="form.Value.$error.required">Permissions field is mandatory.</span>
+        <div class="help-block" ng-if="form.Value.$error.invalid">
+            <ul>
+                <li ng-repeat="err in form.Value.$error.invalid track by $index">{{err}}</li>
+            </ul>
+        </div>
+    </div>
+    <!-- TODO: validate blue and green ports not the same number -->
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-3">
+            <button type="button"
+                    class="btn btn-default"
+                    ng-click="Cancel()">
+                Cancel
+            </button>
+            <button type="button"
+                    class="btn btn-default"
+                    ng-if="canUser('edit')"
+                    ng-disabled="!form.$valid"
+                    ng-click="Save()">Save</button>
+        </div>
+    </div>
+
+</form>

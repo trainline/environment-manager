@@ -1,0 +1,104 @@
+<div class="row">
+    <div class="col-md-12"><h2>Upstream Status</h2></div>
+    <div id="RefreshData">
+        <span class="glyphicon glyphicon-refresh" ng-click="vm.refresh()" title="Refresh data"></span>
+    </div>
+</div>
+<form id="SearchFilter" class="form-inline">
+    <div class="form-group">
+        <label class="control-label text-left">Environment:</label>
+    </div>
+    <div class="form-group">
+        <select class="form-control" ng-model="vm.selectedEnvironment" ng-change="vm.updateFilter()">
+            <option ng-repeat="env in vm.environmentsList" ng-selected="{{env == vm.selectedEnvironment}}" value="{{env}}">{{env}}</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label class="control-label text-left">Configured State:</label>
+    </div>
+    <div class="form-group">
+        <select class="form-control" ng-model="vm.selectedState" ng-change="vm.updateFilter()">
+            <option ng-repeat="s in vm.statesList" ng-selected="{{s == vm.selectedState}}" value="{{s}}">{{s}}</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label class="control-label text-left">Owning Cluster:</label>
+    </div>
+    <div class="form-group">
+        <select class="form-control" ng-model="vm.selectedOwningCluster" ng-change="vm.updateFilter()">
+            <option ng-repeat="c in vm.owningClustersList" ng-selected="{{c == vm.selectedOwningCluster}}" value="{{c}}">{{c}}</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label class="control-label text-left">Service:</label>
+    </div>
+    <div class="form-group">
+        <input type="search" name="ServiceName" class="form-control" ng-model="vm.selectedService" ng-change="vm.updateFilter()" />
+    </div>
+    <div class="form-group">
+        <button type="button" class="btn btn-default right" ng-if="canUser('toggle')" ng-click="vm.toggleService()">Toggle Service...</button>
+    </div>
+</form>
+<hr />
+<spinner ng-show="vm.dataLoading"></spinner>
+<div class="row" ng-show="vm.dataFound && !vm.dataLoading">
+    <div class="col-md-12" ng-if="vm.data.length == 0">
+        <p>No matching upstreams found for selected environment.</p>
+    </div>
+    <div class="col-md-12" ng-if="vm.data.length > 0">
+        <table id="upstream-status" class="table">
+            <thead>
+                <tr>
+                    <th class="text-nowrap">Service Name</th>
+                    <th class="text-nowrap">Owning Cluster</th>
+                    <th class="text-nowrap">Host DNS / IP</th>
+                    <th class="text-nowrap">Slice</th>
+                    <th class="text-nowrap">Port</th>
+                    <th>Configured State</th>
+                    <th class="command-header" ng-repeat="lb in vm.data[0].Value.LoadBalancerState | orderBy : 'Name'">{{lb.Name}}<br/>Active State</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="host in vm.data | orderBy : ['Value.ServiceName', 'Value.DnsName']" class="upstream-slice">
+                    <td ng-click="vm.showInstanceDetails(host)">
+                        {{host.Value.ServiceName || "-"}}<br/>
+                        ({{host.Value.UpstreamName}})
+                    </td>
+                    <td ng-click="vm.showInstanceDetails(host)">
+                      {{host.Value.OwningCluster}}
+                    </td>
+                    <td ng-click="vm.showInstanceDetails(host)">
+                      {{host.Value.DnsName}}
+                    </td>
+                    <td>
+                      <span class="slice-symbol" ng-class="host.Value.Slice" style="display: inline-block;"></span>{{ host.Value.Slice | lowercase }}
+                    </td>
+                    <td ng-click="vm.showInstanceDetails(host)">
+                      {{host.Value.Port}}
+                    </td>
+                    <td ng-click="vm.showInstanceDetails(host)">
+                        <span ng-if="host.Value.State=='up'" class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> Up</span>
+                        <span ng-if="host.Value.State=='down'" class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span> Down</span>
+                    </td>
+                    <td ng-repeat="lb in host.Value.LoadBalancerState | orderBy : 'Name'" ng-click="vm.showInstanceDetails(host)">
+                        <div ng-if="lb.State.Overall == 'Up'"><span class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> Up ({{lb.State.UpCount}})</span></div>
+                        <div ng-if="lb.State.Overall == 'Down'"><span class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span> Down ({{lb.State.DownCount}})</span></div>
+                        <div ng-if="lb.State.Overall == 'Unhealthy'">
+                            <span class="status-error" title="All servers unhealthy"><span class="glyphicon glyphicon-exclamation-sign"></span> Unhealthy ({{lb.State.UnhealthyCount}})</span>
+                        </div>
+                        <div ng-if="lb.State.Overall == 'UpUnhealthy'">
+                            <span class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> Up ({{lb.State.UpCount}}) </span>
+                            <span class="status-down"><span class="glyphicon glyphicon-exclamation-sign"></span> Unhealthy ({{lb.State.UnhealthyCount}})</span>
+                        </div>
+                        <div ng-if="lb.State.Overall == 'Empty'"><span class="status-warning" title="No servers found"><span class="glyphicon glyphicon-exclamation-sign"></span> Empty</span></div>
+                        <div ng-if="lb.State.Overall == 'ConfigError'"><span class="status-error" title="Upstream has both Up and Down servers"><span class="glyphicon glyphicon-exclamation-sign"></span> Config Error</span></div>
+                    </td>
+                    <td class="command command-toggleUpstream"><span class="glyphicon glyphicon-random" title="Toggle upstream" ng-if="canUser('toggle')" ng-click="vm.toggleUpstream(host)"></span></td>
+                    <td class="command command-viewDetails"><span class="glyphicon glyphicon-search" title="View instances" ng-click="vm.showInstanceDetails(host)"></span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

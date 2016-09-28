@@ -1,0 +1,17 @@
+<div class="schedule-editor">
+    <div ng-if="schedule.length">
+        <div style="margin: 7px 0 10px;">
+            <span class="glyphicon glyphicon-exclamation-sign warning"></span>
+            <span>The scheduled sizes must be between the min and max size set under the Instances tab.</span>
+        </div>
+        <label class="control-label" style="width:510px">Time</label>
+        <label class="control-label">No. Servers</label><br />
+    </div>
+        
+    <div ng-show="schedule" class="schedule-line" ng-repeat="cron in crons">
+        <scaling-cron-editor min="minSize" max="maxSize" cron="cron"></scaling-cron-editor>
+        <button class="btn btn-danger" style="margin-left: 20px" ng-click="remove(cron)">X</button>
+    </div>
+    
+    <button class="btn btn-default" ng-click="add()">Add time</button>
+</div>

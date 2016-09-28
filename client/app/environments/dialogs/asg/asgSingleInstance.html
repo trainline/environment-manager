@@ -1,0 +1,28 @@
+<div class="modal-content">
+  <div class="modal-body" style="padding: 5px 15px">
+    <div>
+      <h3>Instance: {{ vm.instance.Name }} <span>({{ vm.instance.PrivateIpAddress }})</span></h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th class="text-nowrap">Service</th>
+            <th class="text-nowrap">Health Checks</th>
+            <!-- <th class="text-nowrap">Deploy Reason</th> -->
+            <th class="text-nowrap">Deploy Log</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="service in vm.instance.Services">
+            <td><health-status status='service.OverallHealth.Status'></health-status> {{ service.Name }}</td>
+            <td><health-checks list="service.HealthChecks"></health-checks></td>
+            <!-- <td>{{ service.DeploymentCause }}</td> -->
+            <td><a ng-href="{{ service.LogLink }}" target="_blank">View Log</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-default" type="button" ng-click="vm.close()">Close</button>
+  </div>
+</div>

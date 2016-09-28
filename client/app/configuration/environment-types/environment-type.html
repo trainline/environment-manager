@@ -1,0 +1,88 @@
+<div class="row page-title">
+    <div class="col-md-12">
+        <h2 ng-show="!EditMode">New Environment Type</h2>
+        <h2 ng-show="EditMode">Edit Environment Type {{EnvironmentType.EnvironmentType}}</h2>
+    </div>
+</div>
+
+<div ng-show="EditMode && !DataFound">No data found.</div>
+
+<form name="form" class="form-horizontal" ng-show="DataFound || !EditMode">
+
+    <div class="form-group" ng-if="!EditMode" ng-class="{'has-error': form.EnvironmentType.$invalid}">
+        <label class="col-md-1 control-label text-left">Environment Type Name:</label>
+        <div class="col-md-2">
+            <input type="text"
+                   name="EnvironmentType"
+                   class="form-control"
+                   required=""
+                   autofocus
+                   maxlength="20"
+                   pattern="[a-zA-Z]+[a-zA-Z0-9\-]*"
+                   ng-model="EnvironmentType.EnvironmentType"
+                   unique-among="EnvironmentTypeNames"
+                   ng-readonly="!!EditMode || !canUser('edit')" />
+        </div>
+        <span class="help-block" ng-if="form.EnvironmentType.$dirty && form.EnvironmentType.$error.required">Environment type name is mandatory.</span>
+        <span class="help-block" ng-if="form.EnvironmentType.$dirty && form.EnvironmentType.$error.duplicated">An Environment Type with this name already exists.</span>
+        <span class="help-block" ng-if="form.EnvironmentType.$dirty && form.EnvironmentType.$error.pattern">Environment Type name must contain only alphanumeric characters.</span>
+    </div>
+
+    <div class="form-group em-envType-input" data-ng-class="{'has-error': accountNotFound}">
+        <label for="awsAccount" class="col-md-1 control-label text-left">AWS Account:</label>
+        <div class="col-md-5">
+            <select id="awsAccount" class="form-control" data-ng-options="a.AccountName for a in awsAccounts" data-ng-model="awsAccount" data-ng-change="selectAccount()"></select>
+            <span data-ng-if="accountNotFound" class="error">
+                There are no registered accounts that match the current Environment Type config.<br />
+                Select an account above or <a href="/#/config/accounts/add">Add an AWS Account</a> that matches the config below.
+            </span>
+            <span data-ng-hide="accountNotFound"><small>The AWS account will be associated with all Environments assigned to this Environment Type.</small></span>
+        </div>
+    </div>
+
+    <div class="form-group em-envType-input">
+        <label for="envNamingPattern" class="col-md-1 control-label text-left">Naming pattern:</label>
+        <div class="col-md-5">
+            <input id="envNamingPattern"
+                   type="text"
+                   class="form-control"
+                   ng-model="rawNamePattern"
+                   ng-change="escapeNamingPattern()"/>
+            <span><small>The Naming Pattern is a <a href="http://regexr.com/" target="_blank">regular expression</a> for enforcing naming conventions on Environments. All Environments created with this type must have a name that matches the Naming pattern. Leave blank to allow any name to be accepted.</small></span>
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': form.Value.$invalid}">
+        <label class="col-md-1 control-label text-left">Value: <span class="glyphicon glyphicon-question-sign" ng-click="ShowSchemaHelp()"></span></label>
+        <div class="col-md-5">
+            <div id="EnvironmentTypeValue"
+                 ui-ace="{ mode: 'json' }"
+                 name="Value"
+                 required=""
+                 valid-json="ValidateJson"
+                 ng-readonly="!canUser('edit')"
+                 ng-model="EnvironmentType.Value"
+                 ng-model-options="{ debounce: 100 }">
+            </div>
+        </div>
+        <span class="help-block" ng-if="form.Value.$error.required">Value field is mandatory.</span>
+        <div class="help-block" ng-if="form.Value.$error.invalid">
+            <ul>
+                <li ng-repeat="err in form.Value.$error.invalid track by $index">{{err}}</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="form-group">
+         <div class="col-md-offset-4 col-md-2">
+            <button type="button"
+                    class="btn btn-default right"
+                    ng-if="canUser('edit')"
+                    ng-disabled="!form.$valid"
+                    ng-click="Save()">Save</button>
+            <button type="button"
+                    class="btn btn-default right"
+                    ng-click="Cancel()">Cancel</button>
+        </div>
+    </div>
+</form>

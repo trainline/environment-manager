@@ -1,0 +1,71 @@
+<div class="row page-title">
+    <div class="col-md-12">
+        <h2 ng-show="PageMode == 'New'">New Load Balancer Setting</h2>
+        <h2 ng-show="PageMode == 'Copy'">Copy Load Balancer Setting: {{CopyFromName}}</h2>
+        <h2 ng-show="PageMode == 'Edit'">Edit Load Balancer Setting: {{LBSetting.VHostName}}</h2>
+    </div>
+</div>
+
+<div ng-show="(PageMode == 'Edit' || PageMode == 'Copy') && !DataFound">No data found.</div>
+
+<form name="form" class="form-horizontal" ng-show="DataFound || PageMode == 'New'">
+    <div class="form-group" ng-if="PageMode != 'Edit'" ng-class="{'has-error': form.VHostName.$invalid}">
+        <label class="col-md-1 control-label text-left">Virtual Host Name: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+        <div class="col-md-2">
+            <input type="text"
+                   name="VHostName"
+                   class="form-control"
+                   required=""
+                   autofocus
+                   maxlength="64"
+                   pattern="[\w-.]+"
+                   ng-model="LBSetting.VHostName"
+                   ng-readonly="PageMode == 'Edit' || !canUser('edit')" />
+        </div>
+        <span class="help-block" ng-if="form.VHostName.$dirty && form.VHostName.$error.required">Virtual Host Name is mandatory.</span>
+        <span class="help-block" ng-if="form.VHostName.$dirty && form.VHostName.$error.pattern">Virtual Host Name cannot contain spaces or special characters.</span>
+        <!-- TODO: unque among needed?
+        <span class="help-block" ng-if="form.VHostName.$dirty && form.VHostName.$error.duplicated">VHostName already exists in this environment.</span>
+        -->
+    </div>
+    <div class="form-group" ng-class="{'has-error': form.EnvironmentName.$invalid}">
+        <label class="col-md-1 control-label text-left nowrap">Environment: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+        <div class="col-md-2">
+            <select class="form-control"
+                    name="EnvironmentName"
+                    required=""
+                    ng-model="LBSetting.EnvironmentName"
+                    ng-disabled="PageMode == 'Edit' || !canUser('edit')">
+                <option ng-repeat="env in EnvironmentsList" ng-selected="{{env == LBSetting.EnvironmentName}}" value="{{env}}">{{env}}</option>
+            </select>
+        </div>
+        <span class="help-block" ng-if="form.EnvironmentName.$error.required">Environment is mandatory.</span>
+    </div>
+    <div class="form-group" ng-class="{'has-error': form.Value.$invalid}">
+        <label class="col-md-1 control-label text-left">Value: <span class="glyphicon glyphicon-question-sign" ng-click="ShowSchemaHelp()"></span></label>
+        <div class="col-md-6">
+            <div id="configLBSettingValue"
+                 ui-ace="{ mode: 'json' }"
+                 name="Value"
+                 required=""
+                 valid-json="ValidateJson"
+                 ng-readonly="!canUser('edit')"
+                 ng-model="LBSetting.Value"
+                 ng-model-options="{ debounce: 100 }">
+            </div>
+        </div>
+        <span class="help-block" ng-if="form.Value.$error.required">Value field is mandatory.</span>
+        <div class="help-block" ng-if="form.Value.$error.invalid">
+            <ul>
+                <li ng-repeat="err in form.Value.$error.invalid track by $index">{{err}}</li>
+            </ul>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-5 col-md-2">
+            <button type="button" class="btn btn-default right" ng-click="Save()" ng-disabled="!form.$valid" ng-if="canUser('edit')">Save</button>
+            <button type="button" class="btn btn-default right" ng-click="Cancel()">Cancel</button>
+        </div>
+    </div>
+
+</form>

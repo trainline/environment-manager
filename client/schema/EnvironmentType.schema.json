@@ -1,0 +1,128 @@
+{
+  "id": "EnvironmentType",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Environment Type",
+  "type": "object",
+  "properties": {
+    "SchemaVersion": {
+      "type": "number",
+      "minimum": 5,
+      "maximum": 5
+    },
+    "AWSAccountName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "AWSAccountNumber": {
+      "type": "string",
+      "pattern": "^[0-9]{12}$"
+    },
+    "NamingPattern": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "Consul": {
+      "type": "object",
+      "properties": {
+        "DataCenter": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "Port": {
+          "type": "number",
+          "minimum": 1024,
+          "exclusiveMinimum": true,
+          "maximum": 65536
+        },
+        "Servers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "SecurityTokenPath": {"$ref": "#/definitions/s3Location"}
+      },
+      "required": ["DataCenter", "Port", "Servers", "SecurityTokenPath"]
+    },
+    "DeploymentBucket": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "LicenseKeys": {
+      "type": "object",
+      "properties": {
+        "NewRelicKey": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        }
+      }
+    },
+    "LoadBalancers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 127
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "Subnets": {
+      "type": "object",
+      "properties": {
+        "PrivateApp": {"$ref": "#/definitions/subnet"},
+        "PrivateLB": {"$ref": "#/definitions/subnet"},
+        "PrivateSecure": {"$ref": "#/definitions/subnet"},
+        "PrivateShared": {"$ref": "#/definitions/subnet"},
+        "Public": {"$ref": "#/definitions/subnet"},
+        "PublicLB": {"$ref": "#/definitions/subnet"},
+        "PublicSecure": {"$ref": "#/definitions/subnet"}
+      },
+      "minProperties": 1
+    },
+    "VpcId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 255
+    }
+  },
+  "required": ["SchemaVersion", "AWSAccountName", "AWSAccountNumber", "Consul", "DeploymentBucket", "LoadBalancers", "Subnets", "VpcId"],
+  "definitions": {
+    "subnet": {
+      "type": "object",
+      "patternProperties": {
+        "^AvailabilityZone[ABCDEF]$": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "Secure": {
+          "type": "boolean"
+        }
+      },
+      "required": ["AvailabilityZoneA", "AvailabilityZoneB"]
+    },
+    "s3Location": {
+      "type": "object",
+      "properties": {
+        "Bucket": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "Key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        }
+      }
+    }
+  }
+}

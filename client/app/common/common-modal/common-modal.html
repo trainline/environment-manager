@@ -1,0 +1,16 @@
+<div class="modal-header">
+    <h2 class="text-{{Severity}}">{{Title}}</h2>
+</div>
+
+<div class="modal-body">
+    <p ng-bind-html="Message"></p>
+    <small ng-if="!InfoMode" ng-repeat="detail in Details" ng-bind-html="detail"></small>
+    <ul ng-if="InfoMode">
+        <li ng-repeat="detail in Details" ng-bind-html="detail"></li>
+    </ul>
+</div>
+
+<div class="modal-footer">
+    <button ng-if="!InfoMode" class="btn btn-default" type="button" ng-click="Cancel()">Cancel</button>
+    <button class="btn btn-{{Severity}}" type="button" ng-click="Ok()">{{Action}}</button>
+</div>

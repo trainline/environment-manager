@@ -1,0 +1,34 @@
+<div ng-if="!vm.dataLoading">
+  <h2>Services</h2>
+</div>
+
+<div ng-if="vm.servicesList === undefined || vm.servicesList.length == 0">
+  <p>No matching services found.</p>
+</div>
+
+<div ng-if="vm.servicesList.length > 0">
+  <div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="text-nowrap">Service</th>
+          <th class="text-nowrap">Version</th>
+          <th class="text-nowrap">Slice</th>
+          <th class="text-nowrap">Health Checks</th>
+          <th class="text-nowrap">Instances</th>
+          <th class="text-nowrap">Deployment Log</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="service in vm.servicesList | orderBy : ['Name', 'Version']">
+          <td><health-status status='service.OverallHealth.Status'></health-status> {{ service.Name }}</td>
+          <td>{{ service.Version }}</td>
+          <td><span class="slice-symbol" ng-class="service.Slice"></span>{{ service.Slice }}</td>
+          <td><health-checks list="service.HealthChecks"></health-checks></td>
+          <td><a ng-click="vm.showAsgSingleService(service)" ng-if="service.InstancesNames.length > 0">{{ service.InstancesHealthCount }}</a><span ng-if="service.InstancesNames.length === 0">No instances</span></td>
+          <td><a ng-click="vm.showDeploymentLog(service)">Show Deployment</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

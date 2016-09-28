@@ -1,0 +1,40 @@
+<div class="row">
+    <div class="col-md-12"><h2>AWS Accounts</h2></div>
+</div>
+<form id="SearchFilter" class="form-inline" ng-if="canUser('post')">
+    <div class="form-group">
+        <button type="button" class="btn btn-default" ng-click="accounts.addNew()" ng-if="canUser('post')">Add New...</button>
+    </div>
+</form>
+<div class="row">
+    <div class="col-md-12" ng-if="dataLoading">
+        <spinner></spinner>
+    </div>
+    <div class="col-md-12" ng-show="!dataLoading && Data.length == 0">
+        <p>No Accounts types found.</p>
+    </div>
+    <div class="col-md-8">
+        <table class="table">
+            <thead>
+            <tr>
+                <th class="text-nowrap">Account Name</th>
+                <th class="text-nowrap">Account Number</th>
+                <th class="text-nowrap">Master</th>
+                <th ng-if="accounts.canDelete" class="text-nowrap command-header">Remove</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="account in accounts.data">
+                <td>
+                    <a data-ng-href="/#/config/accounts/{{::account.AccountName}}">{{::account.AccountName}}</a>
+                </td>
+                <td>{{::account.AccountNumber}}</td>
+                <td>{{::account.IsMaster}}</td>
+                <td data-ng-if="accounts.canDelete" class="command command-delete">
+                    <span class="glyphicon glyphicon-remove" ng-click="accounts.attemptRemove(account)" title="Delete"></span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

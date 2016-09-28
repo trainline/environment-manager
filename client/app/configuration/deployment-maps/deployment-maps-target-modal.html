@@ -1,0 +1,99 @@
+<div class="modal-header">
+  <h2 ng-if="vm.pageMode=='New' || vm.pageMode=='Clone'">Create New Server Role</h2>
+  <h2 ng-if="vm.pageMode=='Edit'">Edit Server Role: {{vm.target.ServerRoleName}}</h2>
+</div>
+<div class="modal-body">
+  <form name="form" id="DeploymentTarget" class="form-horizontal">
+    <uib-tabset>
+      <uib-tab heading="Server Role" active="true">
+        <div class="form-group" ng-class="{'has-error': vm.pageMode != 'Edit' && form.ServerRoleName.$invalid}">
+          <label class="col-md-2 control-label text-left nowrap">Role Name: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+          <div class="col-md-4">
+            <input type="text" name="ServerRoleName" class="form-control" required="" maxlength="30" autofocus="" ng-model="vm.target.ServerRoleName" unique-among="vm.serverRoleNames" pattern="[a-zA-Z]+[a-zA-Z0-9]*" ng-readonly="vm.pageMode == 'Edit' || !vm.canUser('edit')" />
+          </div>
+          <span class="help-block" ng-if="form.ServerRoleName.$dirty && form.ServerRoleName.$error.required">Server Role name is mandatory.</span>
+          <span class="help-block" ng-if="form.ServerRoleName.$dirty && form.ServerRoleName.$error.duplicated">A Server Role already exists with this name.</span>
+          <span class="help-block" ng-if="form.ServerRoleName.$dirty && form.ServerRoleName.$error.pattern">Server Role name must start with a character and may only contain alphanumeric characters.</span>
+        </div>
+        <div class="form-group" ng-class="{'has-error': form.OwningClusters.$invalid}">
+          <label class="col-md-2 control-label text-left">Owning Cluster:</label>
+          <div class="col-md-3">
+            <select class="form-control" name="OwningClusters" required="" ng-model="vm.target.OwningCluster" ng-change="vm.owningClusterUpdated()" ng-disabled="vm.pageMode == 'Edit' || !vm.canUser('edit')">
+              <option ng-repeat="cluster in vm.owningClustersList" ng-selected="{{cluster.ClusterName == vm.target.OwningCluster}}" value="{{cluster.ClusterName}}">{{cluster.ClusterName}}</option>
+            </select>
+          </div>
+          <span class="help-block" ng-if="form.OwningClusters.$dirty && form.OwningClusters.$error.required">Owning cluster is mandatory.</span>
+        </div>
+        <div class="form-group" ng-class="{'has-error': form.SecurityZone.$invalid}">
+          <label class="col-md-2 control-label text-left">Security Zone:</label>
+          <div class="col-md-3">
+            <select class="form-control" name="SecurityZone" required="" ng-model="vm.target.SecurityZone" ng-disabled="!vm.canUser('edit')">
+              <option ng-repeat="zone in vm.securityZonesList" ng-selected="{{zone == vm.target.SecurityZone}}" value="{{zone}}">{{zone}}</option>
+            </select>
+          </div>
+          <div class="inline" style="padding-top:6px"><a href="{{ vm.linkTo('SecurityZoneHelp')}}" target="_blank" title="Help on Security Zones"><span class="glyphicon glyphicon-info-sign"></span></a></div>
+          <span class="help-block" ng-if="form.SecurityZone.$dirty && form.SecurityZone.$error.required">Security Zone is mandatory.</span>
+        </div>
+        <div class="form-group" ng-class="{'has-error': form.ContactEmail.$invalid}">
+          <label class="col-md-2 control-label text-left nowrap">Contact Email: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+          <div class="col-md-4">
+            <input type="email" name="ContactEmail" class="form-control" required="" maxlength="100" ng-model="vm.target.ASG.Tags.ContactEmail" ng-readonly="!vm.canUser('edit')" />
+          </div>
+          <span class="help-block" ng-if="form.ContactEmail.$dirty && form.ContactEmail.$error.required">Contact email is mandatory.</span>
+          <span class="help-block" ng-if="form.ContactEmail.$dirty && form.ContactEmail.$error.email">Email address is not valid.</span>
+        </div>
+      </uib-tab>
+      <uib-tab heading="Infrastructure Settings">
+        <div class="infrastructure-warning">
+          Note: These settings only apply to the first deployment in each environment.<br/>To update existing ASGs, please
+          use the <a href="#/" ng-click="vm.cancel()">Environments</a> section.
+        </div>
+        <div ng-include="'/app/common/launch-config/launch-config.html'"></div>
+      </uib-tab>
+      <uib-tab heading="Services">
+        <div class="form-group">
+          <label class="col-md-2 control-label text-left">ASGs:</label>
+          <div class="col-md-10">
+            <label class="control-label text-left nonbold">
+              <input type="radio" ng-model="vm.target.FleetPerSlice" ng-value="false" ng-disabled="!vm.canUser('edit')"> Create single ASG (recommended)
+              <br/><span class="formNote" style="padding-left: 18px">All service versions and slices deployed to same ASG</span>
+            </label>
+            <br />
+            <label class="control-label text-left nonbold">
+              <input type="radio" ng-model="vm.target.FleetPerSlice" ng-value="true" ng-disabled="!vm.canUser('edit')"> Create different ASGs for Blue and Green slices
+            </label>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="col-md-2 control-label text-left">Services:</label>
+          <div class="col-md-10">
+            <table id="TargetServices" class="table table-responsive">
+              <tbody>
+                <tr ng-repeat="service in vm.target.Services | orderBy: 'ServiceName'">
+                  <td>{{service.ServiceName}}</td>
+                  <td ng-if="vm.canUser('edit')" class="command command-delete"><span class="glyphicon glyphicon-remove" ng-click="vm.deleteTargetService(service.ServiceName)" title="Remove Service"></span></td>
+                  <td class="also-in">
+                     <span ng-if='service.$otherServerRoles.length > 0'>Also in:
+                       <span ng-repeat='serverRole in service.$otherServerRoles'>{{ serverRole }}, </span>
+                     </span>
+                  </td>
+                </tr>
+                <tr ng-if="vm.canUser('edit')">
+                  <td>
+                    <select class="form-control" name="NewService" ng-model="vm.newService" ng-options="s.ServiceName for s in vm.availableServices"></select>
+                  </td>
+                  <td class="command command-add"><span class="glyphicon glyphicon-plus" ng-click="vm.addService(vm.newService)" title="Add service"></span></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </uib-tab>
+    </uib-tabset>
+  </form>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-default" type="button" ng-click="vm.cancel()">Cancel</button>
+  <button class="btn btn-default" type="button" ng-click="vm.ok()" ng-if="vm.canUser('edit')" ng-disabled="!vm.formIsValid(form)">Save</button>
+</div>

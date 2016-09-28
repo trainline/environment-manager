@@ -1,0 +1,17 @@
+{
+  "name": "infra-governator-scheduler",
+  "version": "0.0.0",
+  "description": "InfraGovernatorScheduler",
+  "main": "index.js",
+    "scripts": {
+    "test": "mocha --recursive"
+  },
+  "author": {
+    "name": "Platform Services",
+    "email": "Platform.services@thetrainline.com"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.2.38",
+    "sinon": "^1.17.3"
+  }
+}

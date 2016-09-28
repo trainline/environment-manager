@@ -1,0 +1,46 @@
+<div class="row">
+    <div class="col-md-12"><h2>Deployment Maps</h2></div>
+    <div id="RefreshData">
+        <span class="glyphicon glyphicon-refresh" ng-click="Refresh()" title="Refresh data"></span>
+    </div>
+</div>
+
+<form id="SearchFilter" class="form-inline" ng-if="canUser('post')">
+    <div class="form-group">
+        <button type="button" class="btn btn-default" ng-click="NewItem()" ng-if="canUser('post')">Create New...</button>
+    </div>
+</form>
+<div class="row">
+    <div class="col-md-12" ng-if="dataLoading">
+        <spinner></spinner>
+    </div>
+    <div class="col-md-12" ng-show="!dataLoading && Data.length == 0">
+        <p>No deployment maps found.</p>
+    </div>
+    <div class="col-md-8" ng-show="!dataLoading && Data.length > 0">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="text-nowrap">Deployment Map Name</th>
+                    <th class="text-nowrap">Number of Targets</th>
+                    <th class="text-nowrap">Number of Services</th>
+                    <th class="text-nowrap">Used By</th>
+                    <!-- TODO: <th class="text-nowrap command-header">Compare</th> -->
+                    <th class="text-nowrap command-header">View History</th>
+                    <th ng-if="canUser('delete')" class="text-nowrap command-header">Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="map in Data | orderBy : 'DeploymentMapName' ">
+                    <td><a href="#/config/deploymentmaps/{{map.DeploymentMapName}}">{{map.DeploymentMapName}}</a></td>
+                    <td>{{map.Value.DeploymentTarget.length}}</td>
+                    <td>{{CountServices(map)}}</td>
+                    <td>{{UsedBy(map)}}</td>
+                    <!-- TODO <td class="command command-compare"><span class="glyphicon glyphicon-th-list" ng-click="Compare(map)" title="Compare"></span></td> -->
+                    <td class="command command-viewHistory"><span class="glyphicon glyphicon-time" ng-click="ViewHistory(map)" title="View History"></span></td>
+                    <td ng-if="canUser('delete')" class="command command-delete"><span class="glyphicon glyphicon-remove" ng-click="Delete(map)" title="Delete"></span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

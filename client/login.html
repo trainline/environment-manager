@@ -1,0 +1,51 @@
+﻿<html lang="en"><head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Environment Manager</title>
+
+    <link rel="stylesheet" href="assets/css/bootstrap-3.3.5/css/bootstrap.css" />
+    <link rel="stylesheet" href="styles/app-generated.css"/>
+
+    <link href="assets/images/favicon.ico" rel="SHORTCUT ICON" />
+    <link href="assets/images/favicon-32x32.png" rel="icon" type="image/png" sizes="32x32">
+    <link href="assets/images/favicon-16x16.png" rel="icon" type="image/png" sizes="16x16">
+  </head>
+
+  <body>
+
+    <div class="container">
+
+      <form name="login" class="form-signin" method="post" action="">
+
+        <h1 title="Environment Manager ${data.version}">Environment Manager</h1>
+
+        <p>Please sign in with your corporate credentials:</p>
+
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-addon"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></div>
+                <input type="text" class="form-control" name="username" id="username" placeholder="corp\username" ng-model="user.username" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-addon"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></div>
+                <input type="password" class="form-control" name="password" id="password" placeholder="password" ng-model="user.password" required>
+            </div>
+        </div>
+
+        <p class="bg-danger">${data.error}</p>
+
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      </form>
+
+    </div>
+
+</body>
+</html>

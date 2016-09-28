@@ -1,0 +1,12 @@
+[Service]
+EnvironmentFile=/etc/environment-manager.env
+WorkingDirectory=/opt/environment-manager/
+ExecStart=/usr/bin/node index.js mode=Release
+
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=environment-manager
+
+[Install]
+WantedBy=multi-user.target

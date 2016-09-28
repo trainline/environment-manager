@@ -1,0 +1,124 @@
+<div id="InfrastructureSettingsTab">
+  <div ng-if="vm.context === 'serverRole'" ng-include="'/app/common/launch-config/asg-size.html'"></div>
+
+  <div class="form-group" ng-class="{'has-error': form.InstanceType.$invalid}">
+    <label class="col-md-2 control-label text-left nowrap">Instance Type: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+    <div class="col-md-4">
+      <select class="form-control" name="InstanceType" required="" ng-model="vm.target.ASG.LaunchConfig.InstanceType" ng-disabled="!vm.canUser('edit')">
+        <option ng-repeat="instanceType in vm.awsInstanceTypesList" ng-selected="{{instanceType == vm.target.ASG.LaunchConfig.InstanceType}}" value="{{instanceType}}">{{instanceType}}</option>
+      </select>
+    </div>
+    <span class="help-block" ng-if="form.InstanceType.$dirty && form.InstanceType.$error.required">Instance Type is mandatory.</span>
+  </div>
+  <div class="form-group" ng-class="{'has-error': form.AMI.$invalid}">
+    <label class="col-md-2 control-label text-left nowrap">AMI: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+    <div class="col-md-4" style="padding-right:0px">
+      <input type="text" name="AMI" class="form-control" required="" readonly="" maxlength="50" ng-model="vm.target.ASG.LaunchConfig.AMI" pattern="[a-zA-Z-]+[\w-\.]+" />
+    </div>
+    <button class="btn btn-default left" type="button" ng-disabled="!vm.canUser('edit')" ng-click="vm.pickAmi()">...</button>
+    <span class="help-block" ng-if="form.AMI.$dirty && form.AMI.$error.required">AMI is mandatory.</span>
+    <span class="help-block" ng-if="form.AMI.$dirty && form.AMI.$error.pattern">AMI cannot contain spaces or special characters.</span>
+  </div>
+  <div class="form-group" ng-class="{'has-error': form.InstanceProfileName.$invalid}">
+    <label class="col-md-2 control-label text-left">IAM Role: <span class="glyphicon glyphicon-asterisk mandatory" ng-if="vm.context === 'asg'"></span></label>
+    <div class="col-md-4">
+      <input type="text" name="InstanceProfileName" class="form-control" maxlength="100" ng-model="vm.target.ASG.LaunchConfig.InstanceProfileName" pattern="[0-9a-zA-Z\+\=\.\@\_\-]*" ng-readonly="!vm.canUser('edit')" />
+    </div>
+    <span class="inline help-block" ng-if="form.InstanceProfileName.$dirty && form.InstanceProfileName.$error.pattern">This IAM role name contains invalid characters.</span>
+  </div>
+  <div class="form-group" ng-class="{'has-error': form.SecurityGroups.$invalid}">
+    <label class="col-md-2 control-label text-left">Security Group(s):</label>
+    <div class="col-md-4">
+      <input type="text" name="SecurityGroups" class="form-control" maxlength="100" ng-model="vm.target.ASG.LaunchConfig.UI_SecurityGroupsFlatList" pattern="[a-zA-Z]+[0-9a-zA-Z-]*(([ ]*[,]{1}[ ]*){1}[0-9a-zA-Z-]+)*" ng-readonly="!vm.canUser('edit')" />
+    </div>
+    <span class="help-block" ng-if="form.SecurityGroups.$dirty && form.SecurityGroups.$error.pattern">Enter one or more valid Security Group names separated by commas.</span>
+  </div>
+  <div class="form-group" ng-if="vm.context === 'serverRole'">
+    <label class="col-md-2 control-label text-left nowrap">Subnet:</label>
+
+    <div class="col-md-8">
+
+      <label class="control-label text-left nonbold inline">
+        <input type="radio" ng-model="vm.usePredefinedSubnet" ng-value="true" ng-disabled="!vm.canUser('edit')"> Use predefined subnet
+      </label>
+      &nbsp; &nbsp; 
+      <label class="control-label text-left nonbold inline">
+        <input type="radio" ng-model="vm.usePredefinedSubnet" ng-value="false" ng-disabled="!vm.canUser('edit')"> Use specific subnet name:
+      </label>
+    </div>
+
+  </div>
+
+  <div class="form-group" ng-if="vm.context ==='serverRole'">
+    <label class="col-md-2 control-label text-left nowrap"></label>
+
+    <div class="col-md-4" ng-if="vm.usePredefinedSubnet">
+      <select class="form-control" name="Subnet" ng-model="vm.target.ASG.SubnetTypeName" ng-disabled="!vm.canUser('edit')">
+        <option ng-repeat="subnet in vm.selectableSubnets()" ng-selected="{{subnet == vm.target.ASG.SubnetTypeName}}" value="{{subnet}}">{{subnet}}</option>
+      </select>
+    </div>
+
+    <div class="col-md-4" ng-if="vm.usePredefinedSubnet === false">
+      <input type="text" class="form-control" maxlength="50" ng-model="vm.target.ASG.SubnetTypeName"/>
+    </div>
+  </div>
+
+  <div class="form-group" ng-if="vm.context ==='serverRole'">
+    <label class="col-md-2 control-label text-left nowrap">Availability Zone(s):</label>
+    <div class="col-md-4">
+      <select class="form-control" name="AvailabilityZone" ng-model="vm.target.ASG.AvailabilityZone" ng-disabled="!vm.canUser('edit')" ng-options="az.Value as az.Name for az in vm.deploymentAzsList"></select>
+    </div>
+  </div>
+  <div class="form-group" ng-class="{'has-error': form.OSVolumeSize.$invalid}">
+    <label class="col-md-2 control-label text-left nowrap">OS Volume Size (GB): <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+    <div class="col-md-2">
+      <input type="number"
+             name="OSVolumeSize"
+             class="form-control"
+             required
+             min="{{vm.requiredImageSize}}"
+             ng-model="vm.target.ASG.LaunchConfig.Volumes[0].Size"
+             ng-readonly="!vm.canUser('edit')" />
+    </div>
+    <span class="help-block" ng-if="form.OSVolumeSize.$dirty && form.OSVolumeSize.$error.min">Selected AMI image requires at least {{vm.requiredImageSize}}GB</span>
+  </div>
+  <div class="form-group" ng-class="{'has-error': form.DataVolumeSize.$invalid}">
+    <label class="col-md-2 control-label text-left nowrap">Data Volume Size (GB): <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+    <div class="col-md-2">
+      <input type="number" name="DataVolumeSize" class="form-control" required ng-model="vm.target.ASG.LaunchConfig.Volumes[1].Size" ng-readonly="!vm.canUser('edit')" />
+    </div>
+    <div class="col-md-3">
+      <label class="control-label text-left inline">Type: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+      <select class="form-control inline" name="DataVolumeType" required ng-model="vm.target.ASG.LaunchConfig.Volumes[1].Type" ng-disabled="!vm.canUser('edit')">
+        <option value="Disk">Disk</option>
+        <option value="SSD">SSD</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group" ng-if="vm.context ==='serverRole'">
+    <label class="col-md-2 control-label text-left">EC2 Key Pair:</label>
+    <div class="col-md-8">
+      <label class="control-label text-left nonbold inline">
+        <input type="radio" ng-model="vm.target.ASG.LaunchConfig.UI_UseSpecificKey" ng-value="false" ng-disabled="!vm.canUser('edit')"> Use Owning Cluster's Key (recommended)
+      </label>
+      <br />
+      <label class="control-label text-left nonbold inline">
+        <input type="radio" ng-model="vm.target.ASG.LaunchConfig.UI_UseSpecificKey" ng-value="true" ng-disabled="!vm.canUser('edit')"> Use specific Key name:
+      </label>
+    </div>
+  </div>
+  <div class="form-group" ng-show="vm.target.ASG.LaunchConfig.UI_UseSpecificKey" ng-if="vm.context ==='serverRole'">
+    <label class="col-md-2">
+    </label>
+    <div class="col-md-4">
+      <input type="text" name="Key" class="form-control" maxlength="50" ng-model="vm.target.ASG.LaunchConfig.Key" ng-readonly="!vm.canUser('edit')" />
+    </div>
+  </div>
+  <div class="form-group" ng-class="{'has-error': form.PuppetRole.$invalid}" ng-if="vm.context ==='serverRole'">
+    <label class="col-md-2 control-label text-left">Puppet Role:</label>
+    <div class="col-md-4">
+      <input type="text" name="PuppetRole" class="form-control" ng-model="vm.target.ASG.LaunchConfig.PuppetRole" ng-readonly="!vm.canUser('edit')" />
+    </div>
+  </div>
+</div>

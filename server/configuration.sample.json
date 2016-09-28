@@ -1,0 +1,23 @@
+{
+  "ActiveDirectory": null,
+  "authentication": {
+    "loginUrl": "/login",
+    "cookieName": "environmentmanager",
+    "cookieDuration": "12h",
+    "tokenDuration": "5m"
+  },
+  "server": {
+    "port": 8080,
+    "ssl": true
+  },
+  "nugetRootUrl": "http://nuget-artifactory-url.com",
+  "content": {
+    "links": {
+      "LIST_OF_IMAGES": "http://link to documentation / list of available AWS AMIs",
+      "DYNAMO_CONFIG": "http://explanation-of-dynamo-config-potentially-on-environment-manager-page",
+      "SECURITY_ZONES": "http://link-to-security-zones-info",
+      "UPSTREAMS": "http://link-to-upstreams-explanation-page",
+      "LINUX_PUPPET_REPO": "http://link-to-linux-puppet-doc"
+    }
+  }
+}

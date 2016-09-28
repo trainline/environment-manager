@@ -1,0 +1,91 @@
+{
+    "c06-rm-26fe3cad": {
+        "Node": {
+            "Node": "c06-rm-26fe3cad",
+            "Address": "10.249.176.61",
+            "TaggedAddresses": {
+                "wan": "10.249.176.61"
+            },
+            "CreateIndex": 1528827,
+            "ModifyIndex": 1539163
+        },
+        "Services": {
+            "c06-RetailControlServiceData": {
+                "ID": "c06-RetailControlServiceData",
+                "Service": "c06-RetailControlServiceData",
+                "Tags": [
+                    "environment_type:Cluster",
+                    "environment:c06",
+                    "owning_cluster:RouteMaster",
+                    "server_role:ReferenceDataProviderServices",
+                    "version:1.1.1-alpha99",
+                    "slice:none",
+                    "deployment_id:9760f560-5a56-11e6-a73f-91a4491667db"
+                ],
+                "Address": "10.249.176.61",
+                "Port": 0,
+                "EnableTagOverride": false,
+                "CreateIndex": 1528881,
+                "ModifyIndex": 1531125
+            }
+        }
+    },
+    "c06-rm-5ae2ced6": {
+        "Node": {
+            "Node": "c06-rm-5ae2ced6",
+            "Address": "10.249.142.214",
+            "TaggedAddresses": null,
+            "CreateIndex": 1524193,
+            "ModifyIndex": 1525946
+        },
+        "Services": {
+            "c06-RetailControlServiceData": {
+                "ID": "c06-RetailControlServiceData",
+                "Service": "c06-RetailControlServiceData",
+                "Tags": [
+                    "environment_type:Cluster",
+                    "environment:c06",
+                    "owning_cluster:RouteMaster",
+                    "server_role:ReferenceDataProviderServices",
+                    "version:1.1.0-alpha93",
+                    "slice:none",
+                    "deployment_id:918cfea0-5a32-11e6-8f59-cd186460e5e1"
+                ],
+                "Address": "10.249.142.214",
+                "Port": 0,
+                "EnableTagOverride": false,
+                "CreateIndex": 1525498,
+                "ModifyIndex": 1525621
+            }
+        }
+    },
+    "c06-rm-747abbff": {
+        "Node": {
+            "Node": "c06-rm-747abbff",
+            "Address": "10.249.188.186",
+            "TaggedAddresses": null,
+            "CreateIndex": 1477946,
+            "ModifyIndex": 1523903
+        },
+        "Services": {
+            "c06-RetailControlServiceData": {
+                "ID": "c06-RetailControlServiceData",
+                "Service": "c06-RetailControlServiceData",
+                "Tags": [
+                    "environment_type:Cluster",
+                    "environment:c06",
+                    "owning_cluster:RouteMaster",
+                    "server_role:ReferenceDataProviderServices",
+                    "version:1.1.0-alpha88",
+                    "slice:none",
+                    "deployment_id:c9e2acd0-598f-11e6-8f59-cd186460e5e1"
+                ],
+                "Address": "10.249.188.186",
+                "Port": 0,
+                "EnableTagOverride": false,
+                "CreateIndex": 1504783,
+                "ModifyIndex": 1505133
+            }
+        }
+    }
+}

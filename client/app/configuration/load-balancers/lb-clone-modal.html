@@ -1,0 +1,49 @@
+<div class="modal-header">
+    <h2 class="text-danger">Clone Load Balancer Rules</h2><!-- TODO: upstream vs settings in header -->
+</div>
+
+<div class="modal-body">
+ 
+    <form name="form" class="form-horizontal">
+        <div class="form-group">
+            <div class="col-md-12">
+                <p class="text-danger">WARNING: This action will <strong>delete all</strong> Load Balancer Settings in the <strong>target environment</strong> and replace them with a copy of data from the source environment. This action cannot be undone.</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-md-4 control-label text-left">Source Environment: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+            <div class="col-md-3">
+                <select class="form-control" ng-model="CloneOptions.SourceEnvironment" ng-change="Refresh()">
+                    <option ng-repeat="env in EnvironmentsList" ng-selected="{{env == CloneOptions.SourceEnvironment}}" value="{{env}}">{{env}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group" ng-class="{'has-error': CloneOptions.SourceEnvironment == CloneOptions.TargetEnvironment}">
+            <label class="col-md-4 control-label text-left">Target Environment: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+            <div class="col-md-3">
+                <select class="form-control" ng-model="CloneOptions.TargetEnvironment" ng-change="Refresh()">
+                    <option ng-repeat="env in EnvironmentsList" ng-selected="{{env == CloneOptions.TargetEnvironment}}" value="{{env}}">{{env}}</option>
+                </select>
+            </div>
+            <span class="help-block" ng-if="CloneOptions.SourceEnvironment == CloneOptions.TargetEnvironment">Must be different to source</span>
+        </div>
+        <!-- TODO
+        <div class="form-group">
+            <label class="col-md-4 control-label text-left">Upstreams:</label>
+            <div class="col-md-5">
+                <label class="control-label text-left">
+                    <input type="radio" ng-model="CloneExisting" ng-value="false"> Ignore Upstreams
+                </label><br/>
+                <label class="control-label text-left">
+                    <input type="radio" ng-model="CloneExisting" ng-value="true"> Clone Upstreams too
+                </label>
+            </div>
+        </div>
+        -->
+    </form>
+
+</div>
+<div class="modal-footer">
+    <button class="btn btn-default" type="button" ng-click="Cancel()">Cancel</button>
+    <button class="btn btn-danger" type="button" ng-click="Ok()" ng-if="canUser('edit')" ng-disabled="form.$invalid || (CloneOptions.SourceEnvironment == CloneOptions.TargetEnvironment)">Clone Settings...</button>
+</div>

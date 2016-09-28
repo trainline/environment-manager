@@ -1,0 +1,8 @@
+<div class="schedule-viewer">
+    <span ng-show="!crons && !showOnlyCronSchedules">{{simpleOption}}</span>
+    <ul ng-show="crons">
+        <li ng-repeat="cron in crons">
+            {{ cron.cron }}
+        </li>
+    </ul>
+</div>

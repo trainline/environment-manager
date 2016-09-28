@@ -1,0 +1,43 @@
+<div class="row page-title">
+    <div class="col-md-12">
+        <h2>Export Config Data</h2>
+    </div>
+</div>
+
+<form class="form-horizontal">
+    <div class="form-group">
+        <label class="col-md-1 control-label text-left">Config Data:</label>
+        <div class="col-md-2">
+            <select name="configType" id="configType" class="form-control" ng-model="SelectedResource">
+                <option ng-repeat="resource in Resources" value={{resource.name}}>{{resource.description}}</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group" ng-show="IsSelectedResourceCrossAccount()">
+        <label class="col-md-1 control-label text-left">AWS Account:</label>
+        <div class="col-md-2">
+            <select class="form-control" ng-model="SelectedAccount" ng-change="Refresh()">
+                <option ng-repeat="account in AccountsList" ng-selected="{{account == SelectedAccount}}" value="{{account}}">{{account}}</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-1 col-md-4">
+            <button type="button" class="btn btn-default" ng-click="Export()">Export Data</button>
+            <button type="button" class="btn btn-default" ng-click="Download()">Download Data</button>
+        </div>
+    </div>
+</form>
+
+<hr/>
+
+<spinner ng-show="DataLoading"></spinner>
+
+<form class="form-horizontal" ng-show="ExportData != '' && !DataLoading">
+    <div class="form-group">
+        <label class="col-md-1 control-label text-left">Export Data: <span class="glyphicon glyphicon-question-sign" ng-click="ShowSchemaHelp()" title="Show schema help"></span></label>
+        <div class="col-md-11">
+            <div id="ExportValue" ui-ace="{ mode: 'json' }" ng-model="ExportData" readonly="readonly" rows="30" cols="70" class="form-control"></div>
+        </div>
+    </div>
+</form>

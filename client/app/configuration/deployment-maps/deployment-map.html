@@ -1,0 +1,89 @@
+<div class="row">
+    <div class="col-md-12">
+        <h2>Deployment Map "{{ vm.deploymentMap.DeploymentMapName }}"</h2>
+    </div>
+</div>
+
+<form id="SearchFilter" class="form-inline">
+    <div class="form-group">
+        <label class="control-label text-left">Owning Cluster:</label>
+    </div>
+    <div class="form-group">
+        <select class="form-control" ng-model="vm.selectedOwningCluster" ng-change="vm.search()">
+            <option ng-repeat="c in vm.owningClustersList" ng-selected="{{c == vm.selectedOwningCluster}}" value="{{c}}">{{c}}</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label class="control-label text-left">Server Role:</label>
+    </div>
+    <div class="form-group">
+        <input type="search" name="ServerRole" class="form-control" ng-model="vm.serverRole" ng-change="vm.search()" />
+    </div>
+    <div class="form-group">
+        <label class="control-label text-left">Service Name:</label>
+    </div>
+    <div class="form-group">
+        <input type="search" name="ServiceName" class="form-control" ng-model="vm.serviceName" ng-change="vm.search()" />
+    </div>
+    <div class="form-group">
+        <button type="button" class="btn btn-default right" ng-if="vm.canUser('edit')" ng-click="vm.add()">Create New Server Role...</button>
+    </div>
+</form>
+
+<hr />
+
+<spinner ng-show="vm.dataLoading"></spinner>
+
+<div ng-show="!vm.dataLoading">
+    <div ng-if="!vm.dataFound">No data found for specified deployment map</div>
+    <div ng-if="vm.dataFound">
+        
+        <div ng-if="vm.deploymentTargets.length == 0">No matching deployment targets found</div>
+
+        <!-- TODO: this should probably be a directive -->
+        <div ng-repeat="target in vm.deploymentTargets | orderBy : 'ServerRoleName'"
+             class="panel panel-default deploymentMapTarget" 
+             ng-class="{'panel-default': target.SecurityZone=='Other', 'panel-success': target.SecurityZone=='Public', 'panel-warning': target.SecurityZone=='Sensitive' || target.SecurityZone=='Management', 'panel-danger': target.SecurityZone=='Secure'}" 
+             ng-click="vm.showEditDialog(target)" >
+
+            <div class="panel-heading deploymentMapTargetHeading">
+                <h3>{{target.ServerRoleName}}</h3>
+                <div class="owningCluster">{{target.OwningCluster}}</div>
+                <div ng-if="vm.canUser('edit')" class="btn-group menu" uib-dropdown is-open="status.isopen" ng-click="$event.stopPropagation();">
+                    <button id="single-button" type="button" class="btn" uib-dropdown-toggle ng-disabled="disabled">
+                        <span class="glyphicon glyphicon-menu-hamburger"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="single-button">
+                        <li role="menuitem"><a ng-click="vm.showEditDialog(target)">View/Edit...</a></li>
+                        <li role="menuitem"><a ng-click="vm.clone(target)">Clone...</a></li>
+                        <li role="menuitem"><a ng-click="vm.copyToAnotherDeploymentMap(target)">Copy to another Deployment Map...</a></li>
+                        <li role="menuitem"><a ng-click="vm.delete(target)">Delete</a></li>
+                        <li role="menuitem"><a ng-click="vm.viewHistory(target)">View History...</a></li>
+                        <!-- TODO: in future, add compare option -->
+                    </ul>
+                </div>
+                <div ng-if="!vm.canUser('edit')" class="btn-group menu" uib-dropdown is-open="status.isopen" ng-click="$event.stopPropagation();">
+                    <button id="single-button" type="button" class="btn" uib-dropdown-toggle ng-disabled="disabled">
+                        <span class="glyphicon glyphicon-menu-hamburger"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="single-button">
+                        <li role="menuitem"><a ng-click="vm.showEditDialog(target)">View Details...</a></li>
+                        <li role="menuitem"><a ng-click="vm.viewHistory(target)">View History...</a></li>
+                        <!-- TODO: in future, add compare option -->
+                    </ul>
+                </div>
+            </div>
+            <div class="panel-body deploymentMapTargetServices">
+                <p ng-repeat="service in target.Services | orderBy: 'ServiceName'" ng-class="{'service-missing': !service.exists}">
+                    {{service.ServiceName}}
+                </p>
+            </div>
+            <div class="panel-heading deploymentMapTargetFooter">
+                <div class="typeAndSize"><strong>{{target.ASG.DesiredCapacity}} x {{target.ASG.LaunchConfig.InstanceType}}</strong></div>
+                <div class="securityZone"><span class="glyphicon glyphicon-lock"></span> {{target.SecurityZone}}</div>
+                <div class="AMI"><strong>AMI:</strong> {{target.ASG.LaunchConfig.AMI}}</div>
+            </div>
+        </div>
+
+    </div>
+</div>

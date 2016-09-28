@@ -1,0 +1,103 @@
+<div class="row">
+    <div class="col-md-12"><h2>Load Balancer Upstream Settings</h2></div>
+    <div id="RefreshData">
+        <span class="glyphicon glyphicon-refresh" ng-click="Refresh()" title="Refresh data"></span>
+    </div>
+</div>
+
+<form id="SearchFilter" class="form-inline">
+    <div class="form-group">
+        <label class="control-label text-left">Environment:</label>
+    </div>
+    <div class="form-group">
+        <select class="form-control" ng-model="SelectedEnvironment" ng-change="UpdateFilter()">
+            <option ng-repeat="env in EnvironmentsList" ng-selected="{{env == SelectedEnvironment}}" value="{{env}}">{{env}}</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label class="control-label text-left">Service:</label>
+    </div>
+    <div class="form-group">
+        <input type="search" name="ServiceName" class="form-control" ng-model="SelectedService" ng-change="UpdateFilter()" />
+    </div>
+    <div class="form-group">
+        <button type="button" class="btn btn-default right" ng-click="NewItem()" ng-if="canUser('post')">Create New...</button>
+    </div>
+</form>
+
+<hr />
+
+<spinner ng-show="DataLoading"></spinner>
+
+<div class="row" ng-show="!DataLoading">
+    <div class="col-md-12" ng-if="Data.length == 0">
+        <p>No matching upstreams found for selected environment.</p>
+    </div>
+    <div class="col-md-12" ng-if="Data.length > 0">
+
+        <table id="upstreams" class="table">
+            <thead>
+                <tr>
+                    <th class="text-nowrap">Upstream</th>
+                    <th class="text-nowrap">Service Name</th>
+                    <!--TODO <th class="text-nowrap">Used By</th>-->
+                    <th class="text-nowrap">Hosts</th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th colspan="2"></th>
+                    <th>
+                        <table class="hostSummary">
+                            <tr>
+                                <th class="upstream-host-dns">DNS Name / IP</th>
+                                <th class="upstream-host-port">Port</th>
+                                <th class="upstream-host-state">Configured State</th>
+                            </tr>
+                        </table>
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="upstream in Data | orderBy : 'Value.UpstreamName' ">
+                    <td><a ng-click="Edit(upstream)">{{upstream.Value.UpstreamName}}</a></td>
+                    <td>{{upstream.Value.ServiceName}}</td>
+                    <td>
+                        <table class="hostSummary" ng-show="upstream.Value.Hosts.length > 0">
+                            <tr ng-repeat="host in upstream.Value.Hosts | orderBy : 'DnsName' ">
+                                <td class="upstream-host-dns">{{host.DnsName}}</td>
+                                <td class="upstream-host-port">{{host.Port}}</td>
+                                <td class="upstream-host-state">
+                                    <span ng-if="host.State=='up'" class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> Up</span>
+                                    <span ng-if="host.State=='down'" class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span> Down</span>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td class="actions-button">
+                        <div class="btn-group " uib-dropdown is-open="status.isopen">
+                            <button id="single-button" type="button" class="btn btn-default" uib-dropdown-toggle>
+                                Actions <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="single-button">
+                                <li role="menuitem">
+                                    <a ng-click="Edit(upstream)"><span class="glyphicon glyphicon-pencil command-edit"></span> Edit / Toggle...</a>
+                                </li>
+                                <li role="menuitem">
+                                    <a ng-click="ViewHistory(upstream)"><span class="glyphicon glyphicon-time command-viewHistory"></span> View History</a>
+                                </li>
+                                <li role="menuitem">
+                                    <a ng-click="Copy(upstream)"><span class="glyphicon glyphicon-duplicate command-copy"></span> Copy...</a>
+                                </li>
+                                <li role="menuitem">
+                                    <a ng-click="Delete(upstream)" ><span class="glyphicon glyphicon-remove command-delete"></span> Delete...</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>

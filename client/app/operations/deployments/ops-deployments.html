@@ -1,0 +1,117 @@
+<div class="row">
+    <div class="col-md-12"><h2>Deployments</h2></div>
+    <div id="RefreshData">
+        <span class="glyphicon glyphicon-refresh" ng-click="vm.refresh()" title="Refresh data"></span>
+    </div>
+</div>
+
+<form id="SearchFilter" class="form-inline">
+    <div class="form-group">
+        <label class="control-label text-left">Date:</label>
+    </div>
+    <div class="form-group">
+        <select class="form-control" ng-model="SelectedDateRangeValue" ng-change="vm.refresh()" ng-options="d.value as d.name for d in vm.dateRangeList"></select>
+    </div>
+    <div class="form-group">
+        <label class="control-label text-left">Environment:</label>
+    </div>
+    <div class="form-group">
+        <select class="form-control" ng-model="SelectedEnvironment" ng-change="vm.refresh()">
+            <option ng-repeat="env in EnvironmentsList" ng-selected="{{env == SelectedEnvironment}}" value="{{env}}">{{env}}</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label class="control-label text-left">Status:</label>
+    </div>
+    <div class="form-group">
+        <select class="form-control" ng-model="SelectedStatus" ng-change="vm.refresh()">
+            <option ng-repeat="s in StatusList" ng-selected="{{s == SelectedStatus}}" value="{{s}}">{{s}}</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label class="control-label text-left">Cluster:</label>
+    </div>
+    <div class="form-group">
+        <select class="form-control" ng-model="SelectedOwningCluster" ng-change="vm.refresh()">
+            <option ng-repeat="c in OwningClustersList" ng-selected="{{c == SelectedOwningCluster}}" value="{{c}}">{{c}}</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label class="control-label text-left">Service Name:</label>
+    </div>
+    <div class="form-group">
+        <input type="search" name="ServiceName" class="form-control" ng-model="ServiceName" uib-typeahead="s for s in UniqueServices" ng-model-options="{debounce: 500}" />
+    </div>
+</form>
+
+<hr />
+
+<spinner ng-show="DataLoading"></spinner>
+
+<div class="row" ng-show="DataFound && !DataLoading">
+    <div class="col-md-12" ng-if="vm.deployments.length == 0">
+        <p>No deployments found<span ng-if="SelectedDateRangeValue > 0"> within selected date range</span>.</p>
+    </div>
+    <div class="col-md-12" ng-if="vm.deployments.length > 0">
+        <table class="table" id="DeploymentHistory">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Environment</th>
+                    <th>Service</th>
+                    <th>User</th>
+                    <th>Nodes</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="deployment in vm.deployments | filter: foundServicesFilter | orderBy: '-timestamp'">
+                    <td>
+                        <span am-time-ago="deployment.timestamp"></span><br />
+                        <small>{{deployment.timestamp | amDateFormat:'DD/MM/YYYY HH:mm:ss'}}</small>
+                    </td>
+                    <td class="status-{{deployment.normalisedStatus}}">
+                        <span ng-if="deployment.normalisedStatus=='in-progress'">
+                            <span class="glyphicon glyphicon-refresh"></span>
+                            <span>In progress</span>
+                        </span>
+                        <span ng-if="deployment.normalisedStatus=='success'">
+                            <span class="glyphicon glyphicon-ok"></span>
+                            <span>Success</span>
+                        </span>
+                        <span ng-if="deployment.normalisedStatus=='failed'">
+                            <span class="glyphicon glyphicon-remove"></span>
+                            <span>Failed</span>
+                        </span>
+                    </td>
+                    <td>
+                        <a ng-href='#/environment/servers/?environment={{deployment.environment.name}}'>{{deployment.environment.name}}<br />
+                        <small>({{deployment.environment.type}})</small></a>
+                    </td>
+                    <td>
+                        {{deployment.service.name}} <span ng-if="deployment.service.version">({{deployment.service.version}})</span>
+                    </td>
+                    <td>
+                        {{deployment.user}}<br/>
+                        <small>({{deployment.cluster}})</small>
+                    </td>
+                    <td>
+                        <ul ng-if="deployment.nodes.length > 0" class="node-list">
+                            <li ng-repeat="node in deployment.nodes" class="{{node.status.class}}">
+                                <span ng-if="node.status.status.toLowerCase()=='in progress'" class="glyphicon glyphicon-refresh"></span>
+                                <span ng-if="node.status.status.toLowerCase()=='success'" class="glyphicon glyphicon-ok"></span>
+                                <span ng-if="node.status.status.toLowerCase()=='failed'" class="glyphicon glyphicon-remove"></span>
+                                {{node.instanceId}}
+                            </li>
+                        </ul>
+                        <span ng-if="deployment.nodes.length == 0">-</span>
+                    </td>
+                    <td>
+                        <button class="btn btn-default" ng-click="vm.showDetails(deployment.data)">View Details...</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

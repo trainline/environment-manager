@@ -1,0 +1,99 @@
+<div class="row page-title">
+    <div class="col-md-12">
+        <h2 ng-if="!EditMode">New Cluster</h2>
+        <h2 ng-if="EditMode">Edit Cluster {{Cluster.ClusterName}}</h2>
+    </div>
+</div>
+
+<div ng-show="EditMode && !DataFound">No data found.</div>
+
+<form name="form" id="Cluster" class="form-horizontal" ng-show="DataFound || !EditMode">
+
+    <div class="form-group" ng-if="!EditMode" ng-class="{'has-error': form.ClusterName.$invalid}">
+        <label class="col-md-1 control-label text-left nowrap">Cluster Name: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+        <div class="col-md-2">
+            <input type="text"
+                   name="ClusterName"
+                   class="form-control"
+                   required=""
+                   autofocus
+                   maxlength="50"
+                   ng-model="Cluster.ClusterName"
+                   unique-among="ClusterNames"
+                   pattern="[a-zA-Z]+[a-zA-Z0-9]*"
+                   ng-readonly="!!EditMode || !canUser('edit')" />
+        </div>
+        <span class="help-block" ng-if="form.ClusterName.$dirty && form.ClusterName.$error.required">Cluster name is mandatory.</span>
+        <span class="help-block" ng-if="form.ClusterName.$dirty && form.ClusterName.$error.duplicated">A Cluster already exists with the same name.</span>
+        <span class="help-block" ng-if="form.ClusterName.$dirty && form.ClusterName.$error.pattern">Cluster name must be a single alphanumeric word.</span>
+    </div>
+    <div class="form-group" ng-class="{'has-error': form.ShortName.$invalid}">
+        <label class="col-md-1 control-label text-left nowrap">Short Name Code: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+        <div class="col-md-1">
+            <input type="text"
+                   name="ShortName"
+                   class="form-control"
+                   maxlength="2"
+                   required=""
+                   ng-model="Cluster.Value.ShortName"
+                   pattern="[a-z]{2}"
+                   ng-readonly="!canUser('edit')" />
+        </div>
+        <span class="help-block" ng-if="form.ShortName.$dirty && form.ShortName.$error.required">Short name is mandatory.</span>
+        <span class="help-block" ng-if="form.ShortName.$dirty && form.ShortName.$error.pattern">Short name must be 2 lowercase letters.</span>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': form.KeyPair.$invalid}">
+        <label class="col-md-1 control-label text-left nowrap">EC2 Key Pair: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+        <div class="col-md-2">
+            <input type="text"
+                   name="KeyPair"
+                   class="form-control"
+                   required=""
+                   ng-model="Cluster.Value.KeyPair"
+                   ng-readonly="!canUser('edit')" />
+        </div>
+        <span class="help-block" ng-if="form.KeyPair.$dirty && form.KeyPair.$error.required">Key Pair is required.</span>
+    </div>
+
+
+    <div class="form-group" ng-class="{'has-error': form.GroupEmailAddress.$invalid}">
+        <label class="col-md-1 control-label text-left">Group Email:</label>
+        <div class="col-md-2">
+            <input type="email"
+                   name="GroupEmailAddress"
+                   class="form-control"
+                   maxlength="100"
+                   ng-model="Cluster.Value.GroupEmailAddress"
+                   ng-readonly="!canUser('edit')">
+        </div>
+        <span class="help-block" ng-if="form.GroupEmailAddress.$dirty && form.GroupEmailAddress.$error.email">Email address is not valid.</span>
+    </div>
+    <div class="form-group" ng-class="{'has-error': form.ADMembershipGroup.$invalid}">
+        <label class="col-md-1 control-label text-left nowrap">AD Membership Group:</label>
+        <div class="col-md-2">
+            <input type="text"
+                   name="ADMembershipGroup"
+                   class="form-control"
+                   pattern="[a-zA-Z]+[-a-zA-Z0-9]*"
+                   ng-model="Cluster.Value.ADMembershipGroup"
+                   ng-readonly="!canUser('edit')">
+        </div>
+        <span class="help-block" ng-if="form.ADMembershipGroup.$dirty && form.ADMembershipGroup.$error.pattern">AD Membership Group name must contain only alphanumeric characters or dashes.</span>
+    </div>
+    <div class="form-group">
+        <label class="col-md-1">&nbsp;</label>
+        <div class="col-md-3">
+            <button type="button"
+                    class="btn btn-default"
+                    ng-click="Cancel()">
+                Cancel
+            </button>
+            <button type="button"
+                    class="btn btn-default"
+                    ng-if="canUser('edit')"
+                    ng-disabled="!form.$valid"
+                    ng-click="Save()">Save</button>
+        </div>
+    </div>
+</form>

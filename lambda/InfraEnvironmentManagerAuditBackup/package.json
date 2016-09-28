@@ -1,0 +1,30 @@
+{
+  "name": "infra-environment-manager-backup",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^1.5.2"
+  },
+  "scripts": {
+    "lint": "eslint"
+  },
+  "eslintConfig": {
+    "env": {
+      "es6": true,
+      "node": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+      "ecmaVersion": 6
+    },
+    "rules": {
+      "no-console": 0
+    }
+  },
+  "devDependencies": {
+    "eslint": "^3.4.0"
+  }
+}

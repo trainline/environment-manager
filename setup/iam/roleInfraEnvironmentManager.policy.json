@@ -1,0 +1,116 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:Batch*",
+                "dynamodb:DeleteItem",
+                "dynamodb:Describe*",
+                "dynamodb:Get*",
+                "dynamodb:List*",
+                "dynamodb:PutItem",
+                "dynamodb:Query",
+                "dynamodb:Scan",
+                "dynamodb:UpdateItem"
+            ],
+            "Resource": [
+                "arn:aws:dynamodb:eu-west-1:[MASTER-ACCOUNT-ID]:table/Config*",
+                "arn:aws:dynamodb:eu-west-1:[MASTER-ACCOUNT-ID]:table/Infra*",
+                "arn:aws:dynamodb:eu-west-1:[MASTER-ACCOUNT-ID]:table/Environment*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": "s3:GetObject",
+            "Resource": [
+                "arn:aws:s3:::[CONFIG-BUCKET]",
+                "arn:aws:s3:::[SECURE-BUCKET]",
+                "arn:aws:s3:::[BACKUP-BUCKET]"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::[LOGS-BUCKET]",
+                "arn:aws:s3:::[DEPLOY-BUCKET]"
+            ]
+        },
+        {
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Resource": [
+                "arn:aws:iam::[MASTER-ACCOUNT-ID]:role/roleInfraEnvironmentManagerChild",
+                "arn:aws:iam::[CHILD-ACCOUNT-ID]:role/roleInfraEnvironmentManagerChild"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ec2:Describe*",
+                "ec2:CreateTags"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "autoscaling:CreateAutoScalingGroup",
+                "autoscaling:DescribeAutoScalingGroups",
+                "autoscaling:DescribeScheduledActions",
+                "autoscaling:DescribeLaunchConfigurations",
+                "autoscaling:DescribeAutoScalingGroups",
+                "autoscaling:CreateLaunchConfiguration",
+                "autoscaling:DeleteLaunchConfiguration",
+                "autoscaling:UpdateAutoScalingGroup",
+                "autoscaling:AttachInstances*",
+                "autoscaling:PutNotificationConfiguration",
+                "autoscaling:PutScheduledUpdateGroupAction",
+                "autoscaling:PutLifecycleHook",
+                "autoscaling:CreateOrUpdateTags",
+                "autoscaling:EnterStandby",
+                "autoscaling:ExitStandby"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "sns:Get*",
+                "sns:List*"
+            ],
+            "Resource": [
+                "*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "iam:PassRole",
+                "iam:GetInstanceProfile",
+                "iam:GetRole"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "sns:Subscribe",
+                "sns:Unsubscribe",
+                "sns:Publish"
+            ],
+            "Resource": [
+                "arn:aws:sns:eu-west-1:[MASTER-ACCOUNT-ID]:footplate*",
+                "arn:aws:sns:eu-west-1:[MASTER-ACCOUNT-ID]:environment*"
+            ]
+        }
+    ]
+}

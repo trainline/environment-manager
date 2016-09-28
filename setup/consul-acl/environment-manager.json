@@ -1,0 +1,18 @@
+{
+  "key": {
+    "": {
+      "policy": "read"
+    },
+    "environments/": {
+      "policy": "write"
+    },
+    "deployments/": {
+      "policy": "write"
+    }
+  },
+  "service": {
+      "": {
+          "policy": "read"
+      }
+  }
+}

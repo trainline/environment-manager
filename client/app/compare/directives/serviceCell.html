@@ -1,0 +1,5 @@
+<div class="service-cell" uib-popover popover-trigger="'mouseenter'" uib-popover-html="$ctrl.popoverHtml" popover-placement="left">
+  <div ng-repeat="deployment in $ctrl.data.deployments">
+    {{ deployment.version }} <span ng-if="deployment.slice !== 'none'">(<span class="slice-symbol" ng-class="deployment.slice"></span>{{ deployment.slice }} )</span>
+  </div>
+</div>

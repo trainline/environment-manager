@@ -1,0 +1,49 @@
+<div class="modal-header">
+    <h3>Toggle Service</h3>
+</div>
+
+<div class="modal-body">
+
+    <form name="form" class="form-horizontal">
+
+        <div class="form-group" ng-class="{'has-error': form.EnvironmentName.$invalid}">
+            <label class="col-md-2 control-label text-left nowrap">Environment</label>
+            <div class="col-md-7">
+                <select class="form-control" name="EnvironmentName" ng-model="EnvironmentName" required="">
+                    <option ng-repeat="environmentName in EnvironmentNames" value="{{environmentName}}">{{environmentName}}</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group" ng-class="{'has-error': form.ServiceName.$invalid}">
+            <label class="col-md-2 control-label text-left nowrap">Service</label>
+            <div class="col-md-7">
+                <select class="form-control" name="ServiceName" ng-model="ServiceName" required="">
+                    <option ng-repeat="serviceName in ServiceNames" value="{{serviceName}}">{{serviceName}}</option>
+                </select>
+            </div>
+            <button class="btn btn-primary" type="button" ng-click="toggle()" ng-disabled="!form.$valid">Toggle</button>
+        </div>
+
+        <div class="form-group" ng-show="ToggledUpstreams.length">
+          <div class="col-md-12">
+            <p>The following upstreams have been successfully toggled:</p>
+            <ul>
+              <li ng-repeat="upstream in ToggledUpstreams">{{upstream}}</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="form-group text-danger" ng-show="ErrorMessage">
+          <div class="col-md-12">
+            <p>{{ErrorMessage}}</p>
+          </div>
+        </div>
+
+    </form>
+
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-default" type="button" ng-click="close()">Close</button>
+</div>

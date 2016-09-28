@@ -1,0 +1,12 @@
+{
+  "key": {
+    "": {
+      "policy": "read"
+    }
+  },
+  "service": {
+      "": {
+          "policy": "read"
+      }
+  }
+}
