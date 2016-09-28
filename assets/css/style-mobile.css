@@ -191,6 +191,11 @@
 	{
 		display: none;
 	}
+
+	.byline
+	{
+		display: none !important;
+	}
 	
 	#nav
 	{
