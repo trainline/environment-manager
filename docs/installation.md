@@ -1,7 +1,7 @@
 ---
 title: Installation and Setup Guide
 layout: docs
-weight: 10
+weight: 40
 ---
 
 <img src="/environment-manager/assets/images/not-simple.png" style="float:right; padding-left: 2em" />
@@ -18,7 +18,7 @@ Installing Environment Manager requires setup and configuration of the following
 
 -	AWS
     - Master AWS Account
-    - Slave AWS Account(s)
+    - Child AWS Account(s)
 -	Consul
 -	Active Directory
 -	Environment Manager application

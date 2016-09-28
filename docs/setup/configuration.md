@@ -15,7 +15,7 @@ Master Account:
 -	S3 Bucket Name/Path for Secure Credentials: 
 -	S3 Bucket Name/Path for Backups:
 
-Slave Accounts:
+Child Accounts:
 
 - Name
 - ID/Number
