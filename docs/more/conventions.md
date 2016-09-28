@@ -142,6 +142,6 @@ So for “ExampleService” in “d01” environment, the service would be calle
 
     d01-ExampleService
 
-If it was deployed using [Link:Blue/Green mode], it would also be suffixed with the relevant slice. For example:
+If it was deployed using Blue/Green mode, it would also be suffixed with the relevant slice. For example:
 
     d01-ExampleService-blue

@@ -15,9 +15,9 @@ To call any API, it is first necessary to obtain a security token that can be us
 Tokens are issued by calling the /api/token endpoint and passing appropriate Active Directory credentials.
 Post the following parameters in url-encoded format:
 
--	grant_type Only currently supported is password.
--	username Corp account domain and username
--	password Corp account password
+-	grant_type: Only currently supported is password.
+-	username: Account domain and username
+-	password: Account password
 
 For example:
 

@@ -8,7 +8,7 @@ weight: 90
 
 Environment Manager currently assumes the use of NGINX for:
 
-- Load Balancer configuration (i.e. [Link:LB Settings] and [Link:LB Upstreams])
+- Load Balancer configuration (i.e. [LB Settings](/environment-manager/docs/concepts#lb-settings) and [LB Upstreams](/environment-manager/docs/concepts#lb-upstreams) )
 - Blue/Green deployment toggling
 - The Upstream Status report - showing which slices (blue or green) are currently active for each service
 

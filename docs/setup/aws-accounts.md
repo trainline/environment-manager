@@ -46,7 +46,7 @@ Environment Manager makes use of S3 in the master account for three different re
 
 Notes
 
--	If your master account is also used for deployment (e.g. you have combined a Production VPC into the same account as the Management VPC), you will also need to run the non-network setup for a [Link:Child Accounts].
+-	If your master account is also used for deployment (e.g. you have combined a Production VPC into the same account as the Management VPC), you will also need to run the non-network setup for a Child Accounts.
 -	This covers account pre-requisites only, other AWS resource setup is described as part of the application installation.
 
 ### Child AWS Accounts
@@ -55,7 +55,7 @@ This section sets out the setup required for Child AWS Accounts. You can add mul
 
 **Network**
 
-1.	Create a new VPC named after the type of [link:environment] being hosted in this child account, for example: Dev, Staging, PerformanceTest etc.
+1.	Create a new VPC named after the type of [environment](/environment-manager/docs/concepts#environments) being hosted in this child account, for example: Dev, Staging, PerformanceTest etc.
 2.	Create at least one subnet within the new VPC that will be used to host application servers
 3.	Configure the network essentials – NAT, DNS, NTP etc. as appropriate to your environment
 4.	If you choose to apply a NACL to the new subnet:
