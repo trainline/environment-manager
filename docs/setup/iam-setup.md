@@ -9,12 +9,13 @@ This can be setup as follows:
 
 ### Master Account
 
-1.	Download the roleInfraEnvironmentManagerPolicy IAM policy from git [here]
+1.	Download the roleInfraEnvironmentManagerPolicy IAM policy from git
 2.	Modify the policy file to replace the variables with values appropriate to your setup:
+    - [MASTER-ACCOUNT-ID] – the AWS account ID for the master account
     - [CONFIG-BUCKET] – bucket/path for config 
     - [SECURE-BUCKET] – bucket/path for secure credentials
     - [BACKUP-BUCKET] – bucket/path for EM backups
-    - [ACCNO] – Add a separate row and update the account number for each child AWS account
+    - [CHILD-ACCOUNT-ID] – Add a separate row and update the account number for each child AWS account
 3.	Setup a new IAM policy from the AWS Console
     - Create a new Policy named: roleInfraEnvironmentManagerPolicy
     - Select ‘Create your own policy’ and upload the modified policy JSON
@@ -28,18 +29,18 @@ You can use the [AWS Policy Simulator](https://policysim.aws.amazon.com/) to tes
 
 ### Child Accounts
 
-1.	Download the roleInfraEnvironmentManagerChildPolicy IAM policy from git [here]
+1.	Download the roleInfraEnvironmentManagerChildPolicy IAM policy from git
 2.	For each child account:
-    a.	Modify the policy file to replace the variables with values appropriate to your setup:
-        i.	[DEPLOY-BUCKET] – bucket/path for storing deployment packages
-        ii.	[LOGS-BUCKET] – bucket/path for installation log files
-    b.	Setup a new IAM policy from the AWS Console
-        i.	Create a new Policy named: roleInfraEnvironmentManagerChildPolicy
-        ii.	Select ‘Create Your Own Policy’ and upload the modified policy JSON
-    c.	Setup a new IAM role from the AWS Console
-        i.	Name: roleInfraEnvironmentManagerChild
-        ii.	Role Type: Role for Cross-Account Access\Provide access between AWS accounts you own.  Enter your master account number.
-        iii.	Policy: select the roleInfraEnvironmentManagerChildPolicy created in step 2.b. above.
+    - Modify the policy file to replace the variables with values appropriate to your setup:
+        - [DEPLOY-BUCKET] – bucket/path for storing deployment packages
+        - [LOGS-BUCKET] – bucket/path for installation log files
+    - Setup a new IAM policy from the AWS Console
+        - Create a new Policy named: roleInfraEnvironmentManagerChildPolicy
+        - Select ‘Create Your Own Policy’ and upload the modified policy JSON
+    - Setup a new IAM role from the AWS Console
+        - Name: roleInfraEnvironmentManagerChild
+        - Role Type: Role for Cross-Account Access\Provide access between AWS accounts you own.  Enter your master account number.
+        - Policy: select the roleInfraEnvironmentManagerChildPolicy created in step 2.b. above.
 
 A simple test to check the cross-account role trust is setup correctly in the child accounts can be done by using the AWS Policy Simulator when logged into the master account:
 
@@ -50,23 +51,109 @@ A simple test to check the cross-account role trust is setup correctly in the ch
 5.	In the Resource box, input the ARN of the roleInfraEnvironmentManagerChild role
 6.	Click ‘Run Simulation’.  If the result is ‘allowed’ the trust relationship is correctly setup
 
-TODO: Merlin: Need policy files in our GIT repo to follow the conventions above so instructions work.
-
 ### Lambda Jobs
 
 Environment Manager also includes some ancillary Lambda jobs, each of which runs under a dedicated least privilege IAM role.
-TODO: unclear which lambdas run in which accounts
-TODO: unclear what if any dynamic values need replacing in these lambda IAM policies
+
 For each Lambda function, the table below shows the policy file to download, the variables to replace and the role that should be created and associated with the policy.
-Purpose	Accounts	Policy File	Values to replace	Role to Create
-Scheduler	All 	TODO: GIT LINK	TODO	
-Audit	All			
-Backup	Master			
-Dynamo Replication	Master			
+
+<table>
+<tbody>
+<tr>
+<td width="127">
+<p><strong>Purpose</strong></p>
+</td>
+<td width="109">
+<p><strong>Accounts</strong></p>
+</td>
+<td width="121">
+<p><strong>Source Code</strong></p>
+</td>
+<td width="122">
+<p><strong>CloudFormation Template</strong></p>
+</td>
+<td width="121">
+<p><strong>Customisations Required</strong></p>
+</td>
+</tr>
+<tr>
+<td width="127">
+<p>Scheduler</p>
+</td>
+<td width="109">
+<p>All</p>
+</td>
+<td width="121">
+<p><a href="https://github.com/trainline/environment-manager/tree/master/lambda/InfraEnvironmentManagerScheduler">InfraEnvironmentManagerScheduler</a></p>
+</td>
+<td width="122">
+<p><a href="https://github.com/trainline/environment-manager/blob/feature/restructure-folders/setup/cloudformation/EnvironmentManagerChildResources.template">EnvironmentManagerChildResources</a></p>
+</td>
+<td width="121">
+<p>None</p>
+</td>
+</tr>
+<tr>
+<td width="127">
+<p>Audit</p>
+</td>
+<td width="109">
+<p>All</p>
+</td>
+<td width="121">
+<p><a href="https://github.com/trainline/environment-manager/tree/master/lambda/InfraEnvironmentManagerAudit">InfraEnvironmentManagerAudit</a></p>
+</td>
+<td width="122">
+<p><a href="https://github.com/trainline/environment-manager/blob/feature/restructure-folders/setup/cloudformation/EnvironmentManagerCommonResources.template">EnvironmentManagerCommonResources</a></p>
+</td>
+<td width="121">
+<p>Edit roleInfraEnvironmentManagerAuditWriter. Allow this role in your master account to be assumed by each of your child accounts (see comments in CloudFormation template).</p>
+<p>&nbsp;</p>
+<p>Edit InfraEnvironmentManagerAudit/index.js. Set DESTINATION_ACCOUNT_ID to the AWS account ID of your master account (string)</p>
+</td>
+</tr>
+<tr>
+<td width="127">
+<p>Backup</p>
+</td>
+<td width="109">
+<p>Master</p>
+</td>
+<td width="121">
+<p>&nbsp;</p>
+</td>
+<td width="122">
+<p>&nbsp;</p>
+</td>
+<td width="121">
+<p>&nbsp;</p>
+</td>
+</tr>
+<tr>
+<td width="127">
+<p>Dynamo Replication</p>
+</td>
+<td width="109">
+<p>Master</p>
+</td>
+<td width="121">
+<p><a href="https://github.com/trainline/environment-manager/tree/master/lambda/InfraDynamoStreamReplica">InfraDynamoStreamReplica</a></p>
+</td>
+<td width="122">
+<p><a href="https://github.com/trainline/environment-manager/blob/feature/restructure-folders/setup/cloudformation/EnvironmentManagerCommonResources.template">EnvironmentManagerCommonResources</a></p>
+</td>
+<td width="121">
+<p>Edit roleInfraDynamoStreamReplica. Allow this role in your master account to assume roleInfraDynamoStreamReplicaWriter in each child account (see comments in CloudFormation template).</p>
+<p>&nbsp;</p>
+<p>Edit InfraDynamoStreamReplica/index.js. Set DESTINATION_ACCOUNTS to an array of the AWS account ID of each of your child accounts.</p>
+</td>
+</tr>
+</tbody>
+</table>
 
 ### Instance Profiles
 
-The instances that are dynamically created by Environment Manager also require certain permissions in order to deploy applications. Specifically, the deployment agent needs to download the packages to install from S3, and to write back installation logs to S3 following deployment. This is achieved using [Link: instance profiles http://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html].
+The instances that are dynamically created by Environment Manager also require certain permissions in order to deploy applications. Specifically, the deployment agent needs to download the packages to install from S3, and to write back installation logs to S3 following deployment. This is achieved using [instance profiles](http://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html).
 
 As this is a common requirement regardless of what applications are being deployed on the servers, it is recommended to create a Common IAM Policy and attach it to all Instance Profiles (in addition to whatever specific permissions may be required for each application).
 
@@ -74,17 +161,17 @@ Note that the common policy may vary slightly between accounts as the locations 
 
 The steps below create a test Instance Profile that can be used for testing deployment later.
 
-1.	Download the CommonInstanceProfile IAM policy from git [here] TODO: merlin: make this this is in Git
+1.	Download the CommonInstanceProfile IAM policy from git
 2.	For each Child Account:
-    a.	Modify the policy file to replace the variables with values appropriate to your setup:
-        i.	[DEPLOY-BUCKET] – bucket/path for storing deployment packages
-        ii.	[LOGS-BUCKET] – bucket/path for installation log files
-    b.	Setup a new IAM policy from the AWS Console
-        i.	Create a new Policy named: CommonInstanceProfile
-        ii.	Select ‘Create your own policy’ and upload the modified policy JSON
-    c.	Setup a test IAM policy/role from the AWS Console:
-        i.	Name: roleDeploymentTest
-        ii.	Role Type: AWS Service Roles\Amazon EC2
-        iii.	Policy: select the “CommonInstanceProfile” created above
+    - Modify the policy file to replace the variables with values appropriate to your setup:
+        - [DEPLOY-BUCKET] – bucket/path for storing deployment packages
+        - [LOGS-BUCKET] – bucket/path for installation log files
+    - Setup a new IAM policy from the AWS Console
+        - Create a new Policy named: CommonInstanceProfile
+        - Select ‘Create your own policy’ and upload the modified policy JSON
+    - Setup a test IAM policy/role from the AWS Console:
+        - Name: roleDeploymentTest
+        - Role Type: AWS Service Roles\Amazon EC2
+        - Policy: select the “CommonInstanceProfile” created above
 
 [Next (Active Directory) >](/environment-manager/docs/setup/active-directory)
