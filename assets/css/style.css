@@ -812,17 +812,6 @@ pre.highlight {
 		background-size: cover;
 		text-align: center;
 	}
-	
-		#header:before
-		{
-			content: '';
-			position: absolute;
-			left: 0;
-			top: 0;
-			width: 100%;
-			height: 100%;
-			background: rgba(64,64,64,0.125);
-		}
 
 /*********************************************************************************/
 /* Logo                                                                          */
@@ -852,9 +841,16 @@ pre.highlight {
 			margin: 0 0 0.125em 0;
 		}
 		
-		#logo span
+		#logo .tag
 		{
 			font-size: 4em;
+			color: #FFF;
+		}
+
+		#logo .byline
+		{
+			padding-top: 2em;
+			font-size: 1.5em;
 			color: #FFF;
 		}
 
@@ -943,6 +939,11 @@ pre.highlight {
 		padding-bottom: 0.50em;
 	}
 
+	#sidebar li.active
+	{
+		font-weight: bold;
+	}
+
 /*********************************************************************************/
 /* Footer                                                                        */
 /*********************************************************************************/
@@ -951,11 +952,6 @@ pre.highlight {
 	{
 		position: relative;
 		text-align: center;
-	}
-	
-	#footer header h2
-	{
-		color: #FFF !important;
 	}
 	
 	#footer header .byline
@@ -1026,31 +1022,15 @@ pre.highlight {
 		background-color: rgb(72, 213, 181);
 		background-attachment: fixed;
 		background-size: cover;
+		color: white;
 	}
 
-		#tweet:before
-		{
-			content: '';
-			position: absolute;
-			left: 0;
-			top: 0;
-			width: 100%;
-			height: 100%;
-			background: rgba(64,64,64,0.5);
-		}
-	
-		#tweet section
-		{
-			border-top: 1px solid;
-			border-bottom: 1px solid;
-			border-color: rgba(255,255,255,.1);
-		}
+	#tweet header h2
+	{
+		color: #FFF !important;
+	}
 
-		#tweet blockquote
-		{
-			position: relative;
-			border: none;
-			margin: 0;
-			font-weight: 300;
-			color: rgba(255,255,255,.6);
-		}	
+	#tweet a:hover
+	{
+			text-decoration: none;
+	}
