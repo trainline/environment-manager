@@ -26,7 +26,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
     <td>
       <p>Virtual Private Cloud – a custom network within AWS where you can control subnets, IP ranges and other network configuration. </p>
       <p>Each AWS Account can contain 1 or more VPCs. These act as self-contained networks but can be peered or linked together to enable cross-VPC and/or cross-Account connectivity.</p>
-      <p>We recommend creating separate VPCs for each [Environment Type](/environment-manager/docs/concepts#environment-type) to provide the best isolation for resources.</p>
+      <p>We recommend creating separate VPCs for each <a href="/environment-manager/docs/concepts#environment-types">Environment Type</a> to provide the best isolation for resources.</p>
     </td>
   </tr>
   <tr>
