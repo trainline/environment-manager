@@ -1,7 +1,6 @@
 ---
 title: What is Environment Manager?
 layout: overview
-featured: images/deployment-map.png
 weight: 10
 ---
 
@@ -14,3 +13,7 @@ Environment Manager provides 3 main facilities:
 -	A simple website that enables development teams to perform common infrastructure tasks themselves at a natural level of abstraction. This includes creating and refreshing environments, deploying applications, and managing load balancer rules
 -	A set of APIs for easily integrating deployment and management features into pipelines and other automation
 -	Operational and governance elements that improve visibility of environment status, deployments, security considerations and configuration changes
+
+![](/environment-manager/assets/images/deployment-map.png)
+
+[Next (Features and Benefits) >](/environment-manager/overview/features)

@@ -1,7 +1,6 @@
 ---
 title: Technology Overview
 layout: overview
-featured: images/arch.png
 weight: 21
 ---
 
@@ -14,3 +13,7 @@ Under the hood Environment Manager is built with the following technologies:
 -	Active Directory is used to authenticate users within the tool and detect group membership
 
 The diagram below shows a logical view of the application architecture.
+
+![](/environment-manager/assets/images/arch.png)
+
+[Next (Assumptions and Limitations) >](/environment-manager/overview/assumptions)
