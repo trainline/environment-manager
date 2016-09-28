@@ -26,3 +26,4 @@ To install nginx you only need to install the package in your OS, please follow 
 
 There is no need to modify any of the default parameters, just make certain that you include as part of your nginx configuration the directories in which your config files will be written to by Upstreamr (we use /etc/nginx/upstreamr.d to differentiate them).
 
+[Next (Upstreamr) >](/environment-manager/docs/setup/upstreamr)
