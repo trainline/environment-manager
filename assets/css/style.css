@@ -44,6 +44,10 @@
 	background-color: #eee
 }
 
+.main-content ul {
+	margin-bottom: 0;
+}
+
 pre.highlight {
 	font-family: monospace, monospace;
   font-size: 1em;
