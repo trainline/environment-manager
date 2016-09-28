@@ -62,7 +62,7 @@ pre.highlight {
 	{
 		margin: 0;
 		padding: 0;
-		background: #161616;
+		background: rgb(72, 213, 181);
 	}
 
 	body,input,textarea,select
@@ -105,7 +105,7 @@ pre.highlight {
 	a
 	{
 		text-decoration: none;
-		color: #80BA8E;
+		color: rgb(52, 154, 131);;
 	}
 	
 	a:hover
@@ -317,7 +317,7 @@ pre.highlight {
 	{
 		position: relative;
 		display: inline-block;
-		background: #80BA8E;
+		background: #41c0a3;
 		padding: 0.8em 2em;
 		text-decoration: none !important;
 		font-size: 1.2em;
@@ -334,7 +334,7 @@ pre.highlight {
 
 	.button:hover
 	{
-		background: #70AA7E;
+		background: rgb(52, 154, 131);;
 		color: #FFF !important;
 	}
 
@@ -817,7 +817,6 @@ pre.highlight {
 	#header
 	{
 		position: relative;
-		background-color: rgb(72, 213, 181);
 		background-attachment: fixed;
 		background-size: cover;
 		text-align: center;
@@ -975,23 +974,22 @@ pre.highlight {
 	
 	#copyright
 	{
+		background: rgba(0,0,0,.1);
 		position: relative;
 		text-align: center;
-		color: #774535;
+		color: white
 	}
 	
 	#copyright .container
 	{
 		padding: 1.5em 0em;
-		border-top: 1px solid;
-		border-color: rgba(255,255,255,.05);
-		color:  rgba(255,255,255,.1);
+		
 	}
 	
 	#copyright a
 	{
 		text-decoration: none;
-		color:  rgba(255,255,255,.2);
+		color:  white
 	}
 	
 /*********************************************************************************/
@@ -1029,9 +1027,6 @@ pre.highlight {
 	{
 		position: relative;
 		text-align: center;
-		background-color: rgb(72, 213, 181);
-		background-attachment: fixed;
-		background-size: cover;
 		color: white;
 	}
 
