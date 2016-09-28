@@ -121,7 +121,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <strong><a name="environment-types" href="#">Environment Type</a></strong>
+      <a name="environment-types" href="#environment-types">Environment Type</a>
     </td>
     <td>
       <p>Relates to the purpose of a group of environments. For example: Development, Integration, Performance Testing, Production, UAT etc.</p>
@@ -131,7 +131,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <strong><a name="environments" href="#">Environment</a></strong>
+      <a name="environments" href="#">Environment</a>
     </td>
     <td>
       <p>An environment is a logical grouping of AWS resources used for a particular purpose and owned by a particular team.</p>
@@ -142,7 +142,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <strong><a name="services" href="#">Service</a></strong>
+      <a name="services" href="#">Service</a>
     </td>
     <td>
       <p>This is one of the most overloaded terms in IT. In the context of Environment Manager, this term is most often used to refer to an application, micro-service or similar deployable package that can be registered, configured and deployed to AWS. In other words, Services are the applications that your company develops, deploys and operates.</p>
@@ -151,7 +151,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <strong><a name="deployment-maps" href="#">Deployment Map</a></strong>
+      <a name="deployment-maps" href="#">Deployment Map</a>
     </td>
     <td>
       <p>This is the concept in EM that tends to cause the most confusion.</p>
@@ -182,7 +182,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
         <li>You can modify the ASG settings and Launch Configuration for existing infrastructure from Environment Manager, but this is a separate process in the Environments section of the tool and does not need to involve Deployment Maps.</li>
       </ul>
 
-      <strong>Why Deployment Maps?</strong>
+      Why Deployment Maps?
       <p>The concept came about from a desire to ensure AWS remained the master of ASG/Launch Configuration settings whilst also being able to ensure Environments could be created consistently and identically where useful.</p> 
 
       <p>Deployment Maps allow initial settings to be stored outside of AWS and used to bootstrap Environments for consistency. However, once used, AWS takes over and we don’t store any local state about ASG settings. This ensures we can handle manual changes made outside of Environment Manager and can properly respond to the dynamic nature of Cloud infrastructure.</p>
@@ -190,7 +190,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <strong><a name="clusters" href="#">Clusters</a></strong>
+      <a name="clusters" href="#">Clusters</a>
     </td>
     <td>
       <p>Our term for cross-functional development teams.</p> 
@@ -199,7 +199,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <strong><a name="maintenance-mode" href="#">Maintenance Mode</a></strong>
+      <a name="maintenance-mode" href="#">Maintenance Mode</a>
     </td>
     <td>
       <p>Environment Manager includes an operational facility to put particular instances in ‘Maintenance Mode’. In practice this means that:</p>
@@ -215,7 +215,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <strong><a name="security-zones" href="#">Security Zone</a></strong>
+      <a name="security-zones" href="#">Security Zone</a>
     </td>
     <td>
       <p>A security zone is a logical concept that groups ASGs based on the risk profile of the Services they contain. For example, Services that deal with PCI payment data will have different security requirements to those hosting public reference data.</p>
@@ -224,7 +224,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <strong><a name="lb-settings" href="#">LB Setting</a></strong>
+      <a name="lb-settings" href="#">LB Setting</a>
     </td>
     <td>
       <p>A Load Balancer setting. Specifies the rules and conditions for routing traffic to one or more Upstreams. For example, requests to api.website.com over https from this source should go to Upstream X.</p> 
@@ -233,7 +233,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <strong><a name="lb-upstreams" href="#">LB Upstream</a></strong>
+      <a name="lb-upstreams" href="#">LB Upstream</a>
     </td>
     <td>
       <p>A logical target for receiving and handling a particular type of traffic.</p>
@@ -243,7 +243,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <strong><a name="hosts" href="#">Host</a></strong>
+      <a name="hosts" href="#">Host</a>
     </td>
     <td>
       <p>A server or group of servers (ASG) that can process traffic for an Upstream i.e. that are running the Service the Upstream is configured to handle.</p>

@@ -10,7 +10,7 @@ Unfortunately, installing EM isn’t yet an easy process. It interacts with a lo
 
 This installation guide presents an opinionated tutorial on what we believe is the best way to configure EM. There are many other ways this can be done, some of which are noted in the guide. All tutorials assume you are configuring the tool as suggested.
 
-If you have not already done so, it is recommended that you read the [Link:Concepts] section first.
+If you have not already done so, it is recommended that you read the [Concepts](/environment-manager/docs/concepts) section first.
 
 ### Overview
 
@@ -22,7 +22,7 @@ Installing Environment Manager requires setup and configuration of the following
 -	Consul
 -	Active Directory
 -	Environment Manager application
--	Machine images ([Link:AMIs])
+-	Machine images ( [AMIs](/environment-manager/docs/concepts#amis) )
 -	Configuration Management tooling
 -	Optional, if you want EM to manage load balancer rules:
     - NGINX
