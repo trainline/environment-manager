@@ -10,6 +10,8 @@ This section is intended to give a quick overview of the main concepts and termi
 
 The diagram below shows the logical relationships between AWS and Environment Manager entities.
 
+![](/environment-manager/assets/images/concepts.png)
+
 ### AWS Terms
 
 <table>
@@ -265,3 +267,5 @@ Environment Manager uses Consul for service discovery, health checking, and depl
 More information on Consul setup can be found [here](/environment-manager/docs/setup/consul). 
 
 More information about how deployment works using Consul can be found [here](/environment-manager/docs/more/consul).
+
+<a href="#top">^ Back to top</a>
