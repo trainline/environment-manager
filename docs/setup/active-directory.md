@@ -16,3 +16,5 @@ The setup of Active Directory is pretty simple:
     - Add yourself and any other users who should have full admin permissions to this group
 
 Other AD groups can be created and assigned specific permissions within EM later through the Configuration section of the website. See [Link: EM PERMISSIONS GUIDE].
+
+[Next (Consul) >](/environment-manager/docs/setup/consul)

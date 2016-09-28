@@ -86,3 +86,5 @@ The steps below create a test Instance Profile that can be used for testing depl
         i.	Name: roleDeploymentTest
         ii.	Role Type: AWS Service Roles\Amazon EC2
         iii.	Policy: select the “CommonInstanceProfile” created above
+
+[Next (Active Directory) >](/environment-manager/docs/setup/active-directory)

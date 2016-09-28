@@ -25,3 +25,4 @@ The number of Consul masters depend on the redundancy you want to have, our reco
 
 Environment Manager supports as many Consul Masters (datacentres) as you need, so follow the most logical way for your environment. For example, if you restrict traffic within each VPC then having a datacentre per VPC makes sense. You could also have one data centre per account as long as your network rules allow the Consul agents to form a coherent mesh network over port 8500 to all machines in that account. Having Consul datacentres that span different accounts is not necessarily recommended as higher latency can cause problems maintaining Consul connectivity.
 
+[Next (Security) >](/environment-manager/docs/setup/security)

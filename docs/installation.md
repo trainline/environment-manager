@@ -29,3 +29,5 @@ Installing Environment Manager requires setup and configuration of the following
     - Upstreamr (a dynamic config loader for NGINX)
 
 Each of these areas are explained in this guide.
+
+[Next (AWS Setup) >](/environment-manager/docs/setup/aws-setup)

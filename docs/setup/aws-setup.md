@@ -18,3 +18,5 @@ Notes:
 
 -	The minimum number of AWS accounts recommended is 2 – Production and Non-Production. You can configure multiple non-production VPCs in one account, and have the Production and Management VPCs in another. The management VPC still needs to be peered with all VPCs in both accounts.
 -	Other configurations of NGINX and Consul are possible - these are discussed in later sections.
+
+[Next (AWS Accounts) >](/environment-manager/docs/setup/aws-accounts)

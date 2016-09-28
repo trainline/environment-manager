@@ -83,3 +83,5 @@ Create or identify two S3 buckets/paths:
 **Keys**
 
 Create EC2 Key Pairs for each development team in your organisation, or a sample team to begin with. These key pairs are used by Environment Manager when setting up the Launch Configurations for dynamically created ASGs.
+
+[Next (Collect Configuration) >](/environment-manager/docs/setup/configuration)
