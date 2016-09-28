@@ -14,5 +14,3 @@ Under the hood Environment Manager is built with the following technologies:
 -	Active Directory is used to authenticate users within the tool and detect group membership
 
 The diagram below shows a logical view of the application architecture.
-
-[ LINK ]

@@ -10,7 +10,7 @@ Environment Manager has been designed to be as un-opinionated as possible. It su
 
 ### Key features/benefits include:
 
--	Developers save time by deploying new services flexibly and reliably using an innovative approach based around <LINK>Consul
+-	Developers save time by deploying new services flexibly and reliably using an innovative approach based around [Consul](https://www.consul.io/)
 -	Create and refresh entire environments, trigger deployments across one or more servers with full visibility into deployment progress and issues
 -	Reduce downtime with built in health-checks that alert and automatically remove misbehaving applications from the service pool
 -	Manage environments - who owns them, what they are for, what applications are deployed where
