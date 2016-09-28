@@ -14,8 +14,8 @@ The diagram below shows the logical relationships between AWS and Environment Ma
 
 <table>
   <tr>
-    <td>Term</td>
-    <td>Description / EM Usage</td>
+    <th width="30%">Term</th>
+    <th>Description / EM Usage</th>
   </tr>
   <tr>
     <td>
@@ -112,8 +112,8 @@ The diagram below shows the logical relationships between AWS and Environment Ma
 
 <table>
   <tr>
-    <td>Term</td>
-    <td>Description / EM Usage</td>
+    <th width="30%">Term</th>
+    <th>Description / EM Usage</th>
   </tr>
   <tr>
     <td>

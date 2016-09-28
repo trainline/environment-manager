@@ -34,6 +34,16 @@
 	max-width: 100%
 }
 
+.main-content th, td {
+	border: #A2A2A2 1px solid;
+	padding: 0.5em;
+}
+
+.main-content th {
+	font-weight: bold;
+	background-color: #eee
+}
+
 pre.highlight {
 	font-family: monospace, monospace;
   font-size: 1em;

@@ -44,6 +44,11 @@ Essentially this means some number of letters (including ‘.’ or ‘-‘ as r
 The following tags are applied to ASGs and EC2 Instances:
 
 <table>
+  <thead>
+    <th>Tag Name</th>
+    <th>Description</th>
+    <th>Example</th>
+  </thead>
   <tbody>
     <tr>
       <td>
@@ -75,6 +80,7 @@ The following tags are applied to ASGs and EC2 Instances:
       <td>
         <p>Security Zone in which the instance will reside (See&nbsp;LINK:Concept for more information)</p>
       </td>
+      <td></td>
     </tr>
     <tr>
       <td>
@@ -83,6 +89,7 @@ The following tags are applied to ASGs and EC2 Instances:
       <td>
         <p>Owning Cluster (i.e. team) name</p>
       </td>
+      <td></td>
     </tr>
     <tr>
       <td>
