@@ -5,7 +5,7 @@
 			{% assign current = page.url | downcase | split: '/' %}
 			<li {% if current[1] == 'index.html' %}class='current'{% endif %}><a href="/environment-manager/">Home</a></li>
 			<li {% if current[1] == 'overview' %}class='current'{% endif %}><a href="/environment-manager/overview/what-it-is">Overview</a></li>
-			<li {% if current[1] == 'docs' %}class='current'{% endif %}><a href="/environment-manager/docs">Docs</a></li>
+			<li {% if current[1] == 'docs' %}class='current'{% endif %}><a href="/environment-manager/docs/">Docs</a></li>
 			<li {% if current[1] == 'code' %}class='current'{% endif %}><a href="https://github.com/trainline/environment-manager">Code</a></li>
 		</ul>
 	</nav>
