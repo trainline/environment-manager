@@ -32,7 +32,7 @@
 		}
 
 		#logo {
-			padding: 3em;
+			padding: 1.5em;
 		}
 
 /*********************************************************************************/
@@ -94,7 +94,7 @@
 	
 	#featured
 	{
-		padding: 6em 0em;
+		padding: 3em 0em;
 	}
 	
 	#featured h3
@@ -120,7 +120,7 @@
 	
 	#tweet
 	{
-		padding: 6em 0em;
+		padding: 3em 0em;
 	}
 
 	#tweet blockquote

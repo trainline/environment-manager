@@ -972,7 +972,7 @@ pre.highlight {
 	
 	#copyright .container
 	{
-		padding: 3em 0em;
+		padding: 1.5em 0em;
 		border-top: 1px solid;
 		border-color: rgba(255,255,255,.05);
 		color:  rgba(255,255,255,.1);
@@ -1008,7 +1008,7 @@ pre.highlight {
 	
 	#featured .button
 	{
-		margin-top: 1.5em;
+		margin-top: 0.5em;
 	}
 
 /*********************************************************************************/
