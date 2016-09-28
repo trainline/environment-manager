@@ -21,17 +21,17 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <a href="https://aws.amazon.com/vpc/">VPC</a>
+      <a name="vpcs" href="https://aws.amazon.com/vpc/">VPC</a>
     </td>
     <td>
       <p>Virtual Private Cloud – a custom network within AWS where you can control subnets, IP ranges and other network configuration. </p>
       <p>Each AWS Account can contain 1 or more VPCs. These act as self-contained networks but can be peered or linked together to enable cross-VPC and/or cross-Account connectivity.</p>
-      <p>We recommend creating separate VPCs for each [LINK: Environment Type] to provide the best isolation for resources.</p>
+      <p>We recommend creating separate VPCs for each [Environment Type](/environment-manager/docs/concepts#environment-type) to provide the best isolation for resources.</p>
     </td>
   </tr>
   <tr>
     <td>
-      <a href="http://docs.aws.amazon.com/general/latest/gr/glos-chap.html#AutoScalingGroup">AMI</a>
+      <a name="amis" href="http://docs.aws.amazon.com/general/latest/gr/glos-chap.html#AutoScalingGroup">AMI</a>
     </td>
     <td>
       <p>Amazon machine image – a virtual machine image with a particular configuration on it. May be basic or ‘baked’ meaning it includes everything to run an application on boot.</p>
@@ -41,7 +41,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <a href="http://docs.aws.amazon.com/general/latest/gr/glos-chap.html#instance">Instance</a>
+      <a name="instances" href="http://docs.aws.amazon.com/general/latest/gr/glos-chap.html#instance">Instance</a>
     </td>
     <td>
       <p>A virtual machine in AWS based on an AMI.</p>
@@ -51,7 +51,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <a href="http://docs.aws.amazon.com/general/latest/gr/glos-chap.html#AutoScalingGroup">Auto-Scaling Group (ASG)</a>
+      <a name="asgs" href="http://docs.aws.amazon.com/general/latest/gr/glos-chap.html#AutoScalingGroup">Auto-Scaling Group (ASG)</a>
     </td>
     <td>
       <p>A container for a group of related instances. </p>
@@ -62,7 +62,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <a href="http://docs.aws.amazon.com/general/latest/gr/glos-chap.html#launchconfiguration">Launch Configuration</a>
+      <a name="launch-configs" href="http://docs.aws.amazon.com/general/latest/gr/glos-chap.html#launchconfiguration">Launch Configuration</a>
     </td>
     <td>
       <p>A launch configuration is used by an ASG to control the properties of new EC2 instances when scaling-up.</p>
@@ -83,7 +83,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html">User Data</a>
+      <a name="user-data" href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html">User Data</a>
     </td>
     <td>
       <p>A means of supplying configuration and optional scripts to execute when an instance boots.</p>
@@ -92,16 +92,16 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <a href="https://aws.amazon.com/iam/">IAM</a>
+      <a name="iam" href="https://aws.amazon.com/iam/">IAM</a>
     </td>
     <td>
       <p>A good understanding of IAM is required to help with [Link: initial EM setup IAM section].</p>
-      <p>From a user point of view, EM uses IAM to specify the [LINK: Instance Profiles] to associate with each ASG during deployment. These allow specific AWS permissions to be granted to instances and should map to the application’s requirements e.g. to manage SQS queues.</p>
+      <p>From a user point of view, EM uses IAM to specify the [Instance Profiles](http://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) to associate with each ASG during deployment. These allow specific AWS permissions to be granted to instances and should map to the application’s requirements e.g. to manage SQS queues.</p>
     </td>
   </tr>
   <tr>
     <td>
-      <a href="http://docs.aws.amazon.com/general/latest/gr/glos-chap.html#SecurityGroup">Security Groups</a>
+      <a name="security-groups" href="http://docs.aws.amazon.com/general/latest/gr/glos-chap.html#SecurityGroup">Security Groups</a>
     </td>
     <td>
       <p>Security Groups are essentially statefull firewall rules that can be applied to an instance in order to control incoming and outgoing traffic.</p>
@@ -121,7 +121,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <strong>Environment Type</strong>
+      <strong><a name="environment-types" href="#">Environment Type</a></strong>
     </td>
     <td>
       <p>Relates to the purpose of a group of environments. For example: Development, Integration, Performance Testing, Production, UAT etc.</p>
@@ -131,7 +131,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <strong>Environment</strong>
+      <strong><a name="environments" href="#">Environment</a></strong>
     </td>
     <td>
       <p>An environment is a logical grouping of AWS resources used for a particular purpose and owned by a particular team.</p>
@@ -142,7 +142,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <strong>Service</strong>
+      <strong><a name="services" href="#">Service</a></strong>
     </td>
     <td>
       <p>This is one of the most overloaded terms in IT. In the context of Environment Manager, this term is most often used to refer to an application, micro-service or similar deployable package that can be registered, configured and deployed to AWS. In other words, Services are the applications that your company develops, deploys and operates.</p>
@@ -151,7 +151,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <strong>Deployment Map</strong>
+      <strong><a name="deployment-maps" href="#">Deployment Map</a></strong>
     </td>
     <td>
       <p>This is the concept in EM that tends to cause the most confusion.</p>
@@ -190,7 +190,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <strong>Clusters</strong>
+      <strong><a name="clusters" href="#">Clusters</a></strong>
     </td>
     <td>
       <p>Our term for cross-functional development teams.</p> 
@@ -199,7 +199,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <strong>Maintenance Mode</strong>
+      <strong><a name="maintenance-mode" href="#">Maintenance Mode</a></strong>
     </td>
     <td>
       <p>Environment Manager includes an operational facility to put particular instances in ‘Maintenance Mode’. In practice this means that:</p>
@@ -215,7 +215,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <strong>Security Zone</strong>
+      <strong><a name="security-zones" href="#">Security Zone</a></strong>
     </td>
     <td>
       <p>A security zone is a logical concept that groups ASGs based on the risk profile of the Services they contain. For example, Services that deal with PCI payment data will have different security requirements to those hosting public reference data.</p>
@@ -224,7 +224,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <strong>LB Setting</strong>
+      <strong><a name="lb-settings" href="#">LB Setting</a></strong>
     </td>
     <td>
       <p>A Load Balancer setting. Specifies the rules and conditions for routing traffic to one or more Upstreams. For example, requests to api.website.com over https from this source should go to Upstream X.</p> 
@@ -233,7 +233,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <strong>LB Upstream</strong>
+      <strong><a name="lb-upstreams" href="#">LB Upstream</a></strong>
     </td>
     <td>
       <p>A logical target for receiving and handling a particular type of traffic.</p>
@@ -243,7 +243,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
   <tr>
     <td>
-      <strong>Host</strong>
+      <strong><a name="hosts" href="#">Host</a></strong>
     </td>
     <td>
       <p>A server or group of servers (ASG) that can process traffic for an Upstream i.e. that are running the Service the Upstream is configured to handle.</p>
