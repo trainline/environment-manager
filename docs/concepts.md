@@ -36,7 +36,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
     <td>
       <p>Amazon machine image – a virtual machine image with a particular configuration on it. May be basic or ‘baked’ meaning it includes everything to run an application on boot.</p>
       <p>EM assumes that all AMIs used with the tool have both the Consul Agent and EM Deployment Agent included on the image. Puppet roles can also be specified and passed in user data.</p>
-      <p>A particular naming convention is assumed for AMIs to help provide more intelligent info on out of date instances. See [Conventions](/environment-manager/docs/more/conventions)</p>
+      <p>A particular naming convention is assumed for AMIs to help provide more intelligent info on out of date instances. See <a href="/environment-manager/docs/more/conventions">Conventions</a></p>
     </td>
   </tr>
   <tr>
@@ -95,7 +95,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
       <a name="iam" href="https://aws.amazon.com/iam/">IAM</a>
     </td>
     <td>
-      <p>A good understanding of IAM is required to help with [Link: initial EM setup IAM section].</p>
+      <p>A good understanding of IAM is required to help with [initial EM setup](/environment-manager/docs/setup/iam-setup).</p>
       <p>From a user point of view, EM uses IAM to specify the [Instance Profiles](http://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html) to associate with each ASG during deployment. These allow specific AWS permissions to be granted to instances and should map to the application’s requirements e.g. to manage SQS queues.</p>
     </td>
   </tr>
@@ -136,7 +136,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
     <td>
       <p>An environment is a logical grouping of AWS resources used for a particular purpose and owned by a particular team.</p>
       <p>Environments exist primarily as an abstraction within Environment Manager realised in AWS through resource tags. Environments allow a group of resources to be managed as a whole, for example, scheduling Development environments to be shut down overnight.</p>
-      <p>Environments, even of the same type, can be quite different in size and shape depending on the [Link: Deployment Map] selected and what has actually been deployed. Environments only ever contain the infrastructure needed to support the [Link: Services] explicitly deployed there. This helps minimise costs compared to the more common templated pattern of other tools. Of course, environments can also be made to be identical by deploying the same Services with the same Deployment Map.</p>
+      <p>Environments, even of the same type, can be quite different in size and shape depending on the <a href="#deployment-maps">Deployment Map</a> selected and what has actually been deployed. Environments only ever contain the infrastructure needed to support the <a href="#services">Services</a> explicitly deployed there. This helps minimise costs compared to the more common templated pattern of other tools. Of course, environments can also be made to be identical by deploying the same Services with the same Deployment Map.</p>
       <p>Environment Manager includes features to compare settings across Environments, e.g. to view differences in the versions of applications deployed to development, integration and production Environments.</p>
     </td>
   </tr>
@@ -248,8 +248,8 @@ The diagram below shows the logical relationships between AWS and Environment Ma
     <td>
       <p>A server or group of servers (ASG) that can process traffic for an Upstream i.e. that are running the Service the Upstream is configured to handle.</p>
       <p>Upstreams can contain one or more Hosts. Each host may be active or inactive with only the active hosts receiving traffic passed to the Upstream. </p>
-      <p>In our implementation, a Host is typically the Consul Service name or DNS name of an Auto-scaling Group. However, any valid DNS or IP supported by [Link:Upstreamr]/[Link:NGINX] can be used.</p> 
-      <p>Hosts are related to the concept of [Link: Blue/Green deployment http://martinfowler.com/bliki/BlueGreenDeployment.html] versions or ‘slices’. Active hosts are currently serving traffic, inactive/offline hosts can be targets for the next deployment. In this way, by simply changing the active hosts, you can toggle between Blue and Green slices. This is how the Toggle API in Environment Manager works.</p>
+      <p>In our implementation, a Host is typically the Consul Service name or DNS name of an Auto-scaling Group. However, any valid DNS or IP supported by Upstreamr/NGINX can be used.</p> 
+      <p>Hosts are related to the concept of <a href="http://martinfowler.com/bliki/BlueGreenDeployment.html">Blue/Green</a> deployment versions or ‘slices’. Active hosts are currently serving traffic, inactive/offline hosts can be targets for the next deployment. In this way, by simply changing the active hosts, you can toggle between Blue and Green slices. This is how the Toggle API in Environment Manager works.</p>
     </td>
   </tr>
 </table>
