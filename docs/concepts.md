@@ -108,6 +108,8 @@ The diagram below shows the logical relationships between AWS and Environment Ma
   </tr>
 </table>
 
+<a href="#top">^ Back to top</a>
+
 ### Environment Manager Concepts
 
 <table>
@@ -249,6 +251,8 @@ The diagram below shows the logical relationships between AWS and Environment Ma
     </td>
   </tr>
 </table>
+
+<a href="#top">^ Back to top</a>
 
 ### Consul
 
