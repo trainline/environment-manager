@@ -4,11 +4,7 @@ layout: docs
 weight: 10
 ---
 
-We have supplied CloudFormation scripts that setup most of the key elements you need.
-TODO: Merlin: Instructions for CF
-Master Account
-Slave Account
-
+Customise and upload the Lambda Functions, then customise the CloudFormation templates and create the stacks.
 
 ### Lambda Functions
 

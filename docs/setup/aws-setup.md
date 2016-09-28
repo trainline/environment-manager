@@ -4,7 +4,7 @@ layout: docs
 weight: 20
 ---
 
-It is recommended to use separate AWS Accounts and VPCs for each [Link:Environment Type] (e.g. Dev, Staging, Prod etc.) as this provides the cleanest separation of resources and prevents any single account becoming too large.
+It is recommended to use separate AWS Accounts and VPCs for each [Environment Type](/environment-manager/docs/concepts#environment-types) (e.g. Dev, Staging, Prod etc.) as this provides the cleanest separation of resources and prevents any single account becoming too large.
 
 One AWS account should be nominated as the ‘master’ account. This will host the Environment Manager application that will work across all 'child' AWS accounts.
 

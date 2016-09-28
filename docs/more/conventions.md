@@ -78,7 +78,7 @@ The following tags are applied to ASGs and EC2 Instances:
         <p><strong>SecurityZone</strong></p>
       </td>
       <td>
-        <p>Security Zone in which the instance will reside (See []()LINK:Concept for more information)</p>
+        <p>Security Zone in which the instance will reside (See [Security Zones](/environment-manager/docs/concepts#security-zones) for more information)</p>
       </td>
       <td></td>
     </tr>
@@ -142,6 +142,6 @@ So for “ExampleService” in “d01” environment, the service would be calle
 
     d01-ExampleService
 
-If it was deployed using [Link:Blue/Green mode], it would also be suffixed with the relevant slice. For example:
+If it was deployed using Blue/Green mode, it would also be suffixed with the relevant slice. For example:
 
     d01-ExampleService-blue
