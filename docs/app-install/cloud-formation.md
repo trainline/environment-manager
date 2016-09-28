@@ -16,6 +16,7 @@ This project contains code for the following Lambda Functions
 
 <table>
     <tr><th>Lambda Function</th><th>Description</th></tr>
+    <tr><td>InfraAsgScale</td><td>Resizes auto scaling groups on a schedule</td></tr>
     <tr><td>InfraDynamoStreamReplica</td><td>Replicates data from each of the DynamoDB tables in your master account to the corresponding table in each of your child accounts</td></tr>
     <tr><td>InfraEnvironmentManagerAudit</td><td>Writes audit events that occur in your child accounts to a DynamoDB table in your master account</td></tr>
     <tr><td>InfraEnvironmentManagerScheduler</td><td>Schedules Auto Scaling Groups</td></tr>
@@ -23,6 +24,7 @@ This project contains code for the following Lambda Functions
 
 The Lambda Functions included in this project must be customized to your target environment, packaged as .zip files and uploaded to an S3 location readable by the account in which they will be created. 
 
+1. Configure the InfraAsgScale Lambda function to use your master account. Edit [InfraAsgLambdaScale/index.js][InfraAsgLambdaScale/index.js]; assign the AWS account ID of your master account to `MASTER_ACCOUNT`.
 1. Configure the InfraDynamoStreamReplica Lambda function to replicate data from the DynamoDB tables in your master account to each of your child accounts. Edit [InfraDynamoStreamReplica/index.js][InfraDynamoStreamReplica/index.js]; assign an array of the AWS account ID of each of your child accounts to `DESTINATION_ACCOUNTS`.
 1. Configure the InfraEnvironmentManagerAudit Lambda function to write audit events to your master account. Edit [InfraEnvironmentManagerAudit/index.js][InfraEnvironmentManagerAudit/index.js]; assign the AWS account ID of your master account to `DESTINATION_ACCOUNT_ID`.
 1. Run `npm install` in the root directory of each Lambda function and archive the contents (excluding `package.json`) to a zip file by the same name as the root directory.
@@ -55,6 +57,7 @@ The following steps will create the resources necessary for the Environment Mana
 [child]: https://github.com/trainline/environment-manager/blob/master/setup/cloudformation/EnvironmentManagerChildResources.template
 [common]: https://github.com/trainline/environment-manager/blob/master/setup/cloudformation/EnvironmentManagerChildResources.template
 [master]: https://github.com/trainline/environment-manager/blob/master/setup/cloudformation/EnvironmentManagerChildResources.template
+[InfraAsgLambdaScale/index.js]: https://github.com/trainline/environment-manager/blob/master/lambda/InfraAsgLambdaScale/index.js
 [InfraDynamoStreamReplica/index.js]: https://github.com/trainline/environment-manager/blob/master/lambda/InfraDynamoStreamReplica/index.js
 [InfraEnvironmentManagerAudit/index.js]: https://github.com/trainline/environment-manager/blob/master/lambda/InfraEnvironmentManagerAudit/index.js
 [EnvironmentManagerCommonResources.template]: https://github.com/trainline/environment-manager/blob/master/setup/cloudformation/EnvironmentManagerCommonResources.template
