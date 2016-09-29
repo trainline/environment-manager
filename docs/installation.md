@@ -1,7 +1,8 @@
 ---
 title: Installation and Setup Guide
 layout: docs
-weight: 40
+weight: 15
+sub-folder: /docs/setup/
 ---
 
 <img src="/environment-manager/assets/images/not-simple.png" style="float:right; padding-left: 2em" />

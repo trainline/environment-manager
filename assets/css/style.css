@@ -818,8 +818,13 @@ pre.highlight {
 		color: #fff;
 	}
 
-	#sidebar .setup-docs {
-		margin-left: 1em;
+	#sidebar li {
+		padding-bottom: 0.4em
+	}
+
+	#sidebar li > ul {
+		padding: 0.4em 0 0 0;
+		margin: 0 0 0 1em;
 	}
 
 /*********************************************************************************/
@@ -960,7 +965,7 @@ pre.highlight {
 		padding-bottom: 0.50em;
 	}
 
-	#sidebar li.active
+	#sidebar a.active
 	{
 		font-weight: bold;
 	}
