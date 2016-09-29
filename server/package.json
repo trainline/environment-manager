@@ -1,6 +1,6 @@
 {
   "name": "environmentmanager",
-  "version": "3.5.1",
+  "version": "3.6.0",
   "description": "EnvironmentManager Server",
   "main": "server.js",
   "scripts": {
@@ -68,6 +68,7 @@
     "eslint-plugin-import": "^1.15.0",
     "eslint-plugin-jsx-a11y": "^2.2.2",
     "eslint-plugin-react": "^6.3.0",
+    "gulp": "^3.9.1",
     "mocha": "^3.0.2",
     "mocha-teamcity-reporter": "^1.1.1",
     "proxyquire": "^1.7.10",

@@ -10,10 +10,12 @@ let cookieConfiguration = require('modules/authentications/cookieAuthenticationC
 let renderer = require('modules/renderer');
 let utils = require('modules/utilities');
 let logger = require('modules/logger');
+let config = require('config');
 
-const APP_VERSION = require('config').get('APP_VERSION');
+const APP_VERSION = config.get('APP_VERSION');
+const PUBLIC_DIR = config.get('PUBLIC_DIR');
 
-renderer.register('login', '../client/login.html');
+renderer.register('login', `${PUBLIC_DIR}/login.html`);
 
 function serveLoginPage(response, error) {
   let content = {

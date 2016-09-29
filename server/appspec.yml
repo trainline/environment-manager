@@ -1,21 +1,21 @@
 version: 0.0
 os: linux
 files:
-  - source: /Server
+  - source: /
     destination: /opt/environment-manager
 hooks:
   ApplicationStop:
-    - location: Server/deployment/code-deploy/application-stop.sh
+    - location: deployment/code-deploy/application-stop.sh
       runas: root
   BeforeInstall:
-    - location: Server/deployment/code-deploy/before-install.sh
+    - location: deployment/code-deploy/before-install.sh
       runas: root
   AfterInstall:
-    - location: Server/deployment/code-deploy/on-after-install.sh
+    - location: deployment/code-deploy/on-after-install.sh
       runas: root
   ApplicationStart:
-    - location: Server/deployment/code-deploy/application-start.sh
+    - location: deployment/code-deploy/application-start.sh
       runas: root
   ValidateService:
-    - location: Server/deployment/code-deploy/validate-service.sh
+    - location: deployment/code-deploy/validate-service.sh
       runas: root

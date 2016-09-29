@@ -35,10 +35,15 @@ nconf.defaults({
 });
 
 /**
- * Convenience boolean for NODE_ENV comparisons
+ * Convenience values
  */
-nconf.set('IS_PRODUCTION', nconf.get('NODE_ENV') === 'production');
+const isProduction = nconf.get('NODE_ENV') === 'production';
+const useDevSources = nconf.get('DEV_SOURCES') === 'true';
+const publicDir = isProduction || useDevSources ? './dist' : '../client';
+
+nconf.set('IS_PRODUCTION', isProduction);
 nconf.set('APP_VERSION', appVersion);
+nconf.set('PUBLIC_DIR', publicDir);
 
 /**
  * Ensure required values are set

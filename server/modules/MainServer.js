@@ -60,30 +60,18 @@ module.exports = function MainServer() {
         app.use(expressWinston.logger({ winstonInstance: logger }));
       }
 
-      // routing for static content
-      let staticFolder = '../client';
-
-      // If dist/ folder exists, it will be used, otherwise client/
-      try {
-        let tryDistPath = `${staticFolder}/dist`
-        fs.accessSync(`${staticFolder}/dist`, fs.F_OK);
-        staticFolder = tryDistPath;
-      } catch (e) {}
-
-      logger.info(`Serving static files from "${staticFolder}"`);
+      const PUBLIC_DIR = config.get('PUBLIC_DIR');
+      logger.info(`Serving static files from "${PUBLIC_DIR}"`);
 
       let staticPaths = ['*.js', '*.css', '*.html', '*.ico', '*.gif', '*.woff2', '*.ttf', '*.woff', '*.svg', '*.eot', '*.jpg', '*.png'];
-      app.get(staticPaths, authentication.allowUnknown, express.static('../client/dist'));
-      app.get(staticPaths, authentication.allowUnknown, express.static('../client'));
-      app.get('/', authentication.denyUnauthorized, express.static('../client/dist'));
-      app.get('/', authentication.denyUnauthorized, express.static('../client'));
+      app.get(staticPaths, authentication.allowUnknown, express.static(PUBLIC_DIR));
+      app.get('/', authentication.denyUnauthorized, express.static(PUBLIC_DIR));
 
-
-      app.get('/docs*', authentication.denyUnauthorized, express.static('../client'));
+      app.get('/docs*', authentication.denyUnauthorized, express.static(PUBLIC_DIR));
       app.get('*.js', authentication.allowUnknown, express.static('modules'));
       
       // routing for API JSON Schemas
-      app.use('/schema', authentication.allowUnknown, express.static('../client/schema'));
+      app.use('/schema', authentication.allowUnknown, express.static(`${PUBLIC_DIR}/schema`));
 
       // routing for html pages
       app.get('/login', authentication.allowUnknown, routes.form.login.get);
