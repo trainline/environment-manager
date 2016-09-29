@@ -64,7 +64,7 @@ class DynamoHelper {
    * Update (replace) a single Dynamo resource
    */
   update(key, keyName, value, expectedVersion, user) {
-    const item = { Value:_.omit(value, keyName) };
+    const item = { Value: _.omit(value, keyName) };
     const updatedItem = metadata.addMetadata({ resource: this.resource, key, item, expectedVersion, accountName, user });
     return updateValue(updatedItem);
   }
@@ -73,7 +73,7 @@ class DynamoHelper {
    * Update (replace) a single Dynamo resource in a table that incldudes a sort key
    */
   updateWithSortKey(value, partitionKey, sortKey, expectedVersion, user) {
-    const item = { Value:value };
+    const item = { Value: value };
     const updatedItem = metadata.addMetadata({ key: partitionKey, range: sortKey, resource: this.resource, item, expectedVersion, accountName, user });
     return updateValue(updatedItem);
   }

@@ -3,7 +3,7 @@
 
 // Manage specific service
 angular.module('EnvironmentManager.configuration').controller('ServiceController',
-  function ($scope, $routeParams, $location, $q, resources, cachedResources, modal) {
+  function ($scope, $routeParams, $location, $q, resources, cachedResources, modal, $http) {
 
     var RETURN_PATH = '/config/services';
 
@@ -86,16 +86,18 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
     };
 
     $scope.Save = function () {
-      var saveMethod = $scope.EditMode ? resources.config.services.put : resources.config.services.post;
+      var saveMethod = $scope.EditMode ? 'put' : 'post';
       var params = {
         key: $scope.Service.ServiceName,
         range: $scope.Service.OwningCluster,
-        expectedVersion: $scope.Version,
-        data: {
-          Value: saveableService($scope.Service).Value,
-        },
       };
-      saveMethod(params).then(function () {
+      
+      $http({
+        method: saveMethod,
+        url: '/api/v1/config/services/' + params.key + '/' + params.range,
+        data: saveableService($scope.Service).Value,
+        headers: { 'expected-version': $scope.Version }
+      }).then(function () {
         cachedResources.config.services.flush();
         navigateToList();
       });

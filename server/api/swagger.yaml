@@ -3,7 +3,7 @@ info:
   version: "1.0.0"
   title: Environment Manager API
 host: localhost:8080
-basePath: /apiv1
+basePath: /api/v1
 schemes:
   - http
   - https
@@ -1467,7 +1467,7 @@ paths:
       responses:
         201:
           description: OK
-  /config/services/{name}:
+  /config/services/{name}/{cluster}:
     x-swagger-router-controller: config/services/servicesConfigController
     get:
       operationId: getServiceConfigByName
@@ -1476,6 +1476,10 @@ paths:
         - Service
       parameters:
         - name: name
+          in: path
+          type: string
+          required: true
+        - name: cluster
           in: path
           type: string
           required: true
@@ -1494,6 +1498,10 @@ paths:
           in: path
           type: string
           required: true
+        - name: cluster
+          in: path
+          type: string
+          required: true
       responses:
         200:
           description: OK
@@ -1504,6 +1512,10 @@ paths:
         - Service
       parameters:
         - name: name
+          in: path
+          type: string
+          required: true
+        - name: cluster
           in: path
           type: string
           required: true
