@@ -1,0 +1,5 @@
+# Auto-detect text files, use LF in repository and working copy
+* text=auto eol=lf
+
+# Binary files. Do not attempt EOL conversion
+*.png -text
