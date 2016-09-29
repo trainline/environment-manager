@@ -44,6 +44,16 @@
 	background-color: #eee
 }
 
+.main-content li > ul {
+	padding: 0;
+	margin: 0;
+}
+
+.main-content li > ol {
+	padding: 0;
+	margin: 0;
+}
+
 /*.main-content ul {
 	margin-bottom: 0;
 }*/
@@ -823,7 +833,7 @@ pre.highlight {
 	}
 
 	#sidebar li > ul {
-		padding: 0.4em 0 0 0;
+		padding: 0.8em 0 0 0;
 		margin: 0 0 0 1em;
 	}
 
