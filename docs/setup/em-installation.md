@@ -1,7 +1,7 @@
 ---
-title: Server app
+title: Application Setup
 layout: docs
-weight: 50
+weight: 110
 ---
 
 ### Installation
