@@ -16,6 +16,10 @@
 	{
 	}
 
+	.docs #logo {
+		display: none !important;
+	}
+
 	header
 	{
 		margin-bottom: 1.6em;
