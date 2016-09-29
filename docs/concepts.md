@@ -36,7 +36,7 @@ The diagram below shows the logical relationships between AWS and Environment Ma
     <td>
       <p>Amazon machine image – a virtual machine image with a particular configuration on it. May be basic or ‘baked’ meaning it includes everything to run an application on boot.</p>
       <p>EM assumes that all AMIs used with the tool have both the Consul Agent and EM Deployment Agent included on the image. Puppet roles can also be specified and passed in user data.</p>
-      <p>A particular naming convention is assumed for AMIs to help provide more intelligent info on out of date instances. See <a href="/environment-manager/docs/more/conventions">Conventions</a></p>
+      <p>A particular naming convention is assumed for AMIs to help provide more intelligent info on out of date instances. See <a href="/environment-manager/docs/conventions">Conventions</a></p>
     </td>
   </tr>
   <tr>
@@ -266,6 +266,6 @@ Environment Manager uses Consul for service discovery, health checking, and depl
 
 More information on Consul setup can be found [here](/environment-manager/docs/setup/consul). 
 
-More information about how deployment works using Consul can be found [here](/environment-manager/docs/more/consul).
+More information about how deployment works using Consul can be found [here](/environment-manager/docs/consul).
 
 <a href="#top">^ Back to top</a>
