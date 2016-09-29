@@ -4,13 +4,13 @@
 const RESOURCE = 'config/environments';
 const KEY_NAME = 'EnvironmentName';
 
-let envConfig = require('api/api-utils/configController');
+let dynamoHelper = new (require('api/api-utils/DynamoHelper'))(RESOURCE);
 
 /**
  * GET /config/environments
  */
 function getEnvironmentsConfig(req, res, next) {
-  return envConfig.getAll(RESOURCE).then(data => res.json(data)).catch(next);
+  return dynamoHelper.getAll().then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -18,7 +18,7 @@ function getEnvironmentsConfig(req, res, next) {
  */
 function getEnvironmentConfigByName(req, res, next) {
   const key = req.swagger.params.name.value;
-  return envConfig.getByKey(RESOURCE, key).then(data => res.json(data)).catch(next);
+  return dynamoHelper.getByKey(key).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -28,7 +28,7 @@ function postEnvironmentsConfig(req, res, next) {
   const environment = req.swagger.params.body.value;
   const user = req.user;
 
-  return envConfig.create(RESOURCE, environment, KEY_NAME, user).then(_ => res.status(201).end()).catch(next);
+  return dynamoHelper.create(environment, KEY_NAME, user).then(_ => res.status(201).end()).catch(next);
 }
 
 /**
@@ -40,8 +40,8 @@ function putEnvironmentConfigByName(req, res, next) {
   const environment = req.swagger.params.body.value;
   const user = req.user;
 
-  return envConfig
-    .update(RESOURCE, key, KEY_NAME, environment, expectedVersion, user)
+  return dynamoHelper
+    .update(key, KEY_NAME, environment, expectedVersion, user)
     .then(_ => res.status(200).end())
     .catch(next);
 }
@@ -52,7 +52,7 @@ function putEnvironmentConfigByName(req, res, next) {
 function deleteEnvironmentConfigByName(req, res, next) {
   const key = req.swagger.params.name.value;
   const user = req.user;
-  return envConfig.deleteItem(RESOURCE, key, user).then(_ => res.status(200).end()).catch(next);
+  return dynamoHelper.deleteItem(key, user).then(_ => res.status(200).end()).catch(next);
 }
 
 module.exports = {

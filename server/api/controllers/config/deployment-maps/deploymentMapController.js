@@ -4,13 +4,13 @@
 const RESOURCE = 'config/deploymentmaps';
 const KEY_NAME = 'DeploymentMapName';
 
-let dmConfig = require('api/api-utils/configController');
+let dynamoHelper = new (require('api/api-utils/DynamoHelper'))(RESOURCE);
 
 /**
  * GET /config/deployment-maps
  */
 function getDeploymentMapsConfig(req, res, next) {
-  return dmConfig.getAll(RESOURCE).then(data => res.json(data)).catch(next);
+  return dynamoHelper.getAll().then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -18,7 +18,7 @@ function getDeploymentMapsConfig(req, res, next) {
  */
 function getDeploymentMapConfigByName(req, res, next) {
   const key = req.swagger.params.name.value;
-  return dmConfig.getByKey(RESOURCE, key).then(data => res.json(data)).catch(next);
+  return dynamoHelper.getByKey(key).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -28,7 +28,7 @@ function postDeploymentMapsConfig(req, res, next) {
   const deploymentMap = req.swagger.params.body.value;
   const user = req.user;
 
-  return dmConfig.create(RESOURCE, deploymentMap, KEY_NAME, user).then(_ => res.status(201).end()).catch(next);
+  return dynamoHelper.create(deploymentMap, KEY_NAME, user).then(_ => res.status(201).end()).catch(next);
 }
 
 /**
@@ -40,8 +40,8 @@ function putDeploymentMapConfigByName(req, res, next) {
   const deploymentMap = req.swagger.params.body.value;
   const user = req.user;
 
-  return dmConfig
-    .update(RESOURCE, key, KEY_NAME, deploymentMap, expectedVersion, user)
+  return dynamoHelper
+    .update(key, KEY_NAME, deploymentMap, expectedVersion, user)
     .then(_ => res.status(200).end())
     .catch(next);
 }
@@ -52,7 +52,7 @@ function putDeploymentMapConfigByName(req, res, next) {
 function deleteDeploymentMapConfigByName(req, res, next) {
   const key = req.swagger.params.name.value;
   const user = req.user;
-  return dmConfig.deleteItem(RESOURCE, key, user).then(_ => res.status(200).end()).catch(next);
+  return dynamoHelper.deleteItem(key, user).then(_ => res.status(200).end()).catch(next);
 }
 
 module.exports = {
