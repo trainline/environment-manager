@@ -106,6 +106,4 @@ Each element is described briefly below.
   </tbody>
 </table>
 
-<a href="#top">^ Back to top</a>
-
 [Next (Cloud Formation) >](/environment-manager/docs/app-setup/cloud-formation)

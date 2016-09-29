@@ -1,7 +1,7 @@
 ---
 title: Application Setup
 layout: docs
-weight: 110
+weight: 30
 ---
 
 ### Installation

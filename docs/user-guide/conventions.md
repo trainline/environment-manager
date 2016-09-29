@@ -1,7 +1,7 @@
 ---
 title: Conventions
 layout: docs
-weight: 30
+weight: 10
 ---
 
 This page lists the default conventions that Environment Manager uses for AWS resource naming and tagging. These can be modified in the code to suit your own requirements.

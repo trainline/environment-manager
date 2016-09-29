@@ -1,7 +1,7 @@
 ---
 title: Collect Configuration
 layout: docs
-weight: 40
+weight: 110
 ---
 
 Once all AWS accounts are setup, collect the following information together across your accounts to help with later EM configuration. This data will be referred back to throughout the rest of this guide.
@@ -26,4 +26,4 @@ Child Accounts:
 - S3 Deployment Path
 - S3 Log Path
 
-[Next (IAM Setup) >](/environment-manager/docs/setup/iam-setup)
+[Next (Application Installation - Master Account) >](/environment-manager/docs/app-setup/master-account)
