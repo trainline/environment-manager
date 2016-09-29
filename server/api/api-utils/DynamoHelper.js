@@ -22,8 +22,8 @@ class DynamoHelper {
   /**
    * Get all resources in a Dynamo table
    */
-  getAll() {
-    return getAllValues({ resource: this.resource, exposeAudit, accountName });
+  getAll(filter) {
+    return getAllValues({ resource: this.resource, exposeAudit, accountName, filter });
   }
 
   /**

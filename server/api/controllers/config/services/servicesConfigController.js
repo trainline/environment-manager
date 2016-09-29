@@ -5,7 +5,8 @@ const RESOURCE = 'config/services';
 let dynamoHelper = new (require('api/api-utils/DynamoHelper'))(RESOURCE);
 
 function getServicesConfig(req, res, next) {
-  return dynamoHelper.getAll().then(data => res.json(data)).catch(next);
+  const cluster = req.swagger.params.cluster.value;
+  return dynamoHelper.getAll({ OwningCluster: cluster }).then(data => res.json(data)).catch(next);
 }
 
 function getServiceConfigByName(req, res) {
