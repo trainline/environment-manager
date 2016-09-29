@@ -1,7 +1,7 @@
 ---
-title: Trouble shooting
+title: Trouble Shooting
 layout: docs
-weight: 70
+weight: 30
 ---
 
 **Why is my Deployment stuck with "In Progress" state?**

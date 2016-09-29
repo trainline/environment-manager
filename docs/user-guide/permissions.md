@@ -1,7 +1,7 @@
 ---
-title: Permissions
+title: User Permissions
 layout: docs
-weight: 10
+weight: 40
 ---
 
 Environment Manager allows you to authorize different users to perform different activities or functions based on their needs and responsibilities. Note that authorization largely applies to destructive operations such as creating and updating resources. Generally all authenticated Environment Manager users have read-only access within the system.
