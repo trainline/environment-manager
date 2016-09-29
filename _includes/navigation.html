@@ -7,12 +7,14 @@
         {% capture current %}{{ entry.url | remove: slug | remove: "//" }}{% endcapture %}
 
         {% if current == include.context %}
+        {% if !(entry.draft == true) %}
             <li>
                 <a class="{% if page.url == entry.url %}active{% endif %}" href="{{ site.baseurl }}{{ entry.url }}">{{ entry.title }}</a>
                 {% if entry.sub-folder %}
                 {% include navigation.html context=entry.sub-folder %}
                 {% endif %}
             </li>
+        {% endif %}
         {% endif %}
 
     {% endfor %}
