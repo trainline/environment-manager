@@ -25,7 +25,7 @@ The Lambda Functions included in this project must be customized to your target 
 1. Configure the InfraEnvironmentManagerAudit Lambda function to write audit events to your master account. Edit [InfraEnvironmentManagerAudit/index.js][InfraEnvironmentManagerAudit/index.js]; assign the AWS account ID of your master account to `DESTINATION_ACCOUNT_ID`.
 1. Run `npm install` in the root directory of each Lambda function and archive the contents (excluding `package.json`) to a zip file by the same name as the root directory.
 
-## CloudFormation
+### CloudFormation
 
 We have supplied CloudFormation templates to create most of the resources Environment Manager depends on.
 
