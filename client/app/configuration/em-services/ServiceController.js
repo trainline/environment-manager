@@ -5,42 +5,44 @@
 angular.module('EnvironmentManager.configuration').controller('ServiceController',
   function ($scope, $routeParams, $location, $q, resources, cachedResources, modal, $http) {
 
+    var vm = this;
     var RETURN_PATH = '/config/services';
+    var userHasPermission;
 
-    $scope.Service = {};
-    $scope.DataFound = false;
-    $scope.EditMode = $routeParams['service'] !== 'new';
-    $scope.OwningClustersList = [];
-    $scope.ServiceNames = [];
-    $scope.Version = 0;
+    vm.service = {};
+    vm.dataFound = false;
+    vm.editMode = $routeParams['service'] !== 'new';
+    vm.owningClustersList = [];
+    vm.serviceNames = [];
+    vm.version = 0;
 
-    $scope.Cancel = navigateToList;
+    vm.cancel = navigateToList;
 
     function init() {
 
       var serviceName = $routeParams['service'];
       var owningCluster = $routeParams['Range'];
-      $scope.EditMode = serviceName.toLowerCase() !== 'new';
+      vm.editMode = serviceName.toLowerCase() !== 'new';
 
-      var access = $scope.EditMode ? 'PUT' : 'POST';
-      var resource = $scope.EditMode ? name : '*';
-      $scope.userHasPermission = user.hasPermission({ access: access, resource: '/config/services/' + resource });
+      var access = vm.editMode ? 'PUT' : 'POST';
+      var resource = vm.editMode ? name : '*';
+      userHasPermission = user.hasPermission({ access: access, resource: '/config/services/' + resource });
 
       $q.all([
         cachedResources.config.clusters.all().then(function (clusters) {
-          $scope.OwningClustersList = _.map(clusters, 'ClusterName').sort();
+          vm.owningClustersList = _.map(clusters, 'ClusterName').sort();
         }),
 
         resources.config.services.all().then(function (services) {
-          $scope.ServiceNames = _.map(services, 'ServiceName');
+          vm.serviceNames = _.map(services, 'ServiceName');
         }),
       ]).then(function () {
 
-        if ($scope.EditMode) {
+        if (vm.editMode) {
           readItem(serviceName, owningCluster);
         } else {
-          $scope.Service = {
-            OwningCluster: $scope.OwningClustersList[0],
+          vm.service = {
+            OwningCluster: vm.owningClustersList[0],
             Value: {
               SchemaVersion: 1
             },
@@ -52,12 +54,12 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
 
     function readItem(name, range) {
       resources.config.services.get({ key: name, range: range }).then(function (data) {
-        $scope.DataFound = true;
-        $scope.Service = readableService(data);
-        $scope.Version = data.Version;
+        vm.dataFound = true;
+        vm.service = readableService(data);
+        vm.version = data.Version;
       }, function (err) {
 
-        $scope.DataFound = false;
+        vm.dataFound = false;
       });
     }
 
@@ -81,22 +83,22 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       return service;
     }
 
-    $scope.canUser = function () {
-      return $scope.userHasPermission;
+    vm.canUser = function () {
+      return userHasPermission;
     };
 
-    $scope.Save = function () {
-      var saveMethod = $scope.EditMode ? 'put' : 'post';
+    vm.save = function () {
+      var saveMethod = vm.editMode ? 'put' : 'post';
       var params = {
-        key: $scope.Service.ServiceName,
-        range: $scope.Service.OwningCluster,
+        key: vm.service.ServiceName,
+        range: vm.service.OwningCluster,
       };
       
       $http({
         method: saveMethod,
         url: '/api/v1/config/services/' + params.key + '/' + params.range,
-        data: saveableService($scope.Service).Value,
-        headers: { 'expected-version': $scope.Version }
+        data: saveableService(vm.service).Value,
+        headers: { 'expected-version': vm.version }
       }).then(function () {
         cachedResources.config.services.flush();
         navigateToList();

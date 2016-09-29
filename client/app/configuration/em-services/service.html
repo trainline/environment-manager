@@ -1,15 +1,15 @@
 <div class="row page-title">
     <div class="col-md-12">
-        <h2 ng-if="!EditMode">New Service</h2>
-        <h2 ng-if="EditMode">Edit Service {{Service.ServiceName}}</h2>
+        <h2 ng-if="!vm.editMode">New Service</h2>
+        <h2 ng-if="vm.editMode">Edit Service {{vm.service.ServiceName}}</h2>
     </div>
 </div>
 
-<div ng-show="EditMode && !DataFound">No data found.</div>
+<div ng-show="vm.editMode && !vm.dataFound">No data found.</div>
 
-<form name="form" class="form-horizontal" ng-show="DataFound || !EditMode">
+<form name="form" class="form-horizontal" ng-show="vm.dataFound || !vm.editMode">
 
-    <div class="form-group" ng-if="!EditMode" ng-class="{'has-error': form.ServiceName.$invalid}">
+    <div class="form-group" ng-if="!vm.editMode" ng-class="{'has-error': form.ServiceName.$invalid}">
         <label class="col-md-1 control-label text-left nowrap">Service Name: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
         <div class="col-md-2">
             <input type="text"
@@ -18,10 +18,10 @@
                    required=""
                    autofocus
                    maxlength="50"
-                   ng-model="Service.ServiceName"
-                   unique-among="ServiceNames"
+                   ng-model="vm.service.ServiceName"
+                   unique-among="vm.serviceNames"
                    pattern="[a-zA-Z]+[a-zA-Z0-9]*"
-                   ng-readonly="!!EditMode || !canUser('edit')" />
+                   ng-readonly="!!vm.editMode || !vm.canUser('edit')" />
         </div>
         <span class="help-block" ng-if="form.ServiceName.$dirty && form.ServiceName.$error.required">Service name is mandatory.</span>
         <span class="help-block" ng-if="form.ServiceName.$dirty && form.ServiceName.$error.duplicated">A Service already exists with the same name.</span>
@@ -33,9 +33,9 @@
             <select class="form-control"
                     name="OwningClusters"
                     required=""
-                    ng-model="Service.OwningCluster"
-                    ng-disabled="!!EditMode || !canUser('edit')" >
-                <option ng-repeat="cluster in OwningClustersList" ng-selected="{{cluster == Service.OwningCluster}}" value="{{cluster}}">{{cluster}}</option>
+                    ng-model="vm.service.OwningCluster"
+                    ng-disabled="!!vm.editMode || !vm.canUser('edit')" >
+                <option ng-repeat="cluster in vm.owningClustersList" ng-selected="{{cluster == vm.service.OwningCluster}}" value="{{cluster}}">{{cluster}}</option>
             </select>
         </div>
         <span class="help-block" ng-if="form.OwningClusters.$error.required">Owning cluster is mandatory.</span>
@@ -43,8 +43,8 @@
     <div class="form-group">
         <label class="col-md-1 control-label text-left nowrap">Description:</label>
         <div class="col-md-2">
-            <textarea ng-model="Service.Value.Description"
-                      ng-readonly="!canUser('edit')"></textarea>
+            <textarea ng-model="vm.service.Value.Description"
+                      ng-readonly="!vm.canUser('edit')"></textarea>
         </div>
     </div>
     <div class="form-group" ng-class="{'has-error': form.ApplicationId.$invalid}">
@@ -54,9 +54,9 @@
                    name="ApplicationId"
                    class="form-control"
                    maxlength="5"
-                   ng-model="Service.Value.ApplicationId"
+                   ng-model="vm.service.Value.ApplicationId"
                    pattern="[0-9]*"
-                   ng-readonly="!canUser('edit')" />
+                   ng-readonly="!vm.canUser('edit')" />
         </div>
         <span class="help-block" ng-if="form.ApplicationId.$dirty && form.ApplicationId.$error.pattern">Application ID must be a number.</span>
     </div>
@@ -67,10 +67,10 @@
                    name="BluePort"
                    class="form-control"
                    maxlength="5"
-                   ng-model="Service.Value.BluePort"
+                   ng-model="vm.service.Value.BluePort"
                    min="40000"
                    max="41000"
-                   ng-readonly="!canUser('edit')" />
+                   ng-readonly="!vm.canUser('edit')" />
         </div>
         <span class="help-block" ng-if="form.BluePort.$dirty && form.BluePort.$invalid">Blue Port must be between 40000 and 41000.</span>
     </div>
@@ -81,10 +81,10 @@
                    name="GreenPort"
                    class="form-control"
                    maxlength="5"
-                   ng-model="Service.Value.GreenPort"
+                   ng-model="vm.service.Value.GreenPort"
                    min="40000"
                    max="41000"
-                   ng-readonly="!canUser('edit')" />
+                   ng-readonly="!vm.canUser('edit')" />
         </div>
         <span class="help-block" ng-if="form.GreenPort.$dirty && form.GreenPort.$invalid">Blue Port must be between 40000 and 41000.</span>
     </div>
@@ -93,14 +93,14 @@
         <div class="col-md-offset-1 col-md-3">
             <button type="button"
                     class="btn btn-default"
-                    ng-click="Cancel()">
+                    ng-click="vm.cancel()">
                 Cancel
             </button>
             <button type="button"
                     class="btn btn-default"
-                    ng-if="canUser('edit')"
+                    ng-if="vm.canUser('edit')"
                     ng-disabled="!form.$valid"
-                    ng-click="Save()">Save</button>
+                    ng-click="vm.save()">Save</button>
         </div>
     </div>
 
