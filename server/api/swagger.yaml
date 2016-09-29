@@ -1441,6 +1441,11 @@ paths:
       summary: Get all service configurations.
       tags:
         - Service
+      parameters:
+        - name: cluster
+          in: query
+          required: false
+          type: string
       responses:
         200:
           description: The list of service configs

@@ -1,8 +1,12 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
-function getServicesConfig(req, res) {
-  res.json([{},{},{}]);
+const RESOURCE = 'config/services';
+let dynamoHelper = new (require('api/api-utils/DynamoHelper'))(RESOURCE);
+
+function getServicesConfig(req, res, next) {
+  const cluster = req.swagger.params.cluster.value;
+  return dynamoHelper.getAll({ OwningCluster: cluster }).then(data => res.json(data)).catch(next);
 }
 
 function getServiceConfigByName(req, res) {
