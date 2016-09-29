@@ -78,7 +78,7 @@ The following tags are applied to ASGs and EC2 Instances:
         <p><strong>SecurityZone</strong></p>
       </td>
       <td>
-        <p>Security Zone in which the instance will reside (See [Security Zones](/environment-manager/docs/concepts#security-zones) for more information)</p>
+        <p>Security Zone in which the instance will reside (See <a href="/environment-manager/docs/concepts#security-zones">Security Zones</a> for more information)</p>
       </td>
       <td></td>
     </tr>
