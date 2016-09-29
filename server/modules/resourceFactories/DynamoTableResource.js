@@ -43,6 +43,7 @@ function DynamoTableResource(config, client) {
     return primaryKey;
   }
 
+
   function standardifyError(error, request) {
     let awsError = new AwsError(error.message);
     logger.error(awsError);
@@ -53,19 +54,23 @@ function DynamoTableResource(config, client) {
 
       case 'ConditionalCheckFailedException':
         return new DynamoConditionCheckError(
-          'An error has occurred handling following request:' + JSON.stringify(request, null, ''),
+          `An error has occurred handling following request: ${parseRequest(request)}`,
           awsError
         );
 
       case 'ValidationException':
         return new DynamoRequestError(
-          'An error has occurred handling following request:' + JSON.stringify(request, null, ''),
+          `An error has occurred handling following request: ${parseRequest(request)}`,
           awsError
         );
 
       default:
         return awsError;
     }
+  }
+
+  function parseRequest(request) {
+    return util.inspect(request).replace('\n', '');
   }
 
   function arrangeItem(item, formatting) {
@@ -104,8 +109,8 @@ function DynamoTableResource(config, client) {
       return client.get(request).promise().then(data => {
         if (!data.Item) {
           let message = !params.range ?
-            `No ${_resourceName} found for ${_keyName} equals to "${params.key}".` :
-            `No ${_resourceName} found for ${_keyName} equals to "${params.key}" and ${_rangeName} equals to "${params.range}".`;
+            `No ${_resourceName} found for ${_keyName} ${params.key}.` :
+            `No ${_resourceName} found for ${_keyName} ${params.key} and ${_rangeName} "${params.range}".`;
 
           throw new DynamoItemNotFoundError(message);
         } else {
@@ -162,8 +167,8 @@ function DynamoTableResource(config, client) {
       return client.get(request).promise().then(data => {
         if (!data.Item) {
           let message = !params.range ?
-            `No ${_resourceName} found for ${_keyName} equals to "${key}."` :
-            `No ${_resourceName} found for ${_keyName} equals to "${key}" and ${_rangeName} equals to "${range}".`;
+            `No ${_resourceName} found for ${_keyName} ${key}.` :
+            `No ${_resourceName} found for ${_keyName} ${key} and ${_rangeName} ${range}.`;
 
           // Expected item to update not found
           throw new DynamoItemNotFoundError(message);

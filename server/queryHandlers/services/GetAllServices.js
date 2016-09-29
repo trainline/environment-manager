@@ -3,13 +3,13 @@
 
 let assertContract = require('modules/assertContract');
 let serviceReporter = require('modules/service-reporter');
+let bluebird = require('bluebird');
+let _ = require('lodash');
 
 module.exports = function GetAllServices(query) {
-  assertContract(query, 'query', {
-    properties: {
-      environment: { type: String, empty: false },
-    },
-  });
-
-  return serviceReporter.getAllServices(query.query);
+  let environments = _.castArray(query.environment);
+  
+  return bluebird.map(environments, environment =>
+    serviceReporter.getAllServices(environment).then(services => ({[environment]:services})))
 };
+

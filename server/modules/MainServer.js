@@ -5,7 +5,6 @@ let express = require('express');
 let bodyParser = require('body-parser');
 let cookieParser = require('cookie-parser');
 let logger = require('modules/logger');
-let expressWinston = require('express-winston');
 let winston = require('winston');
 let fs = require('fs');
 let config = require('config/');
@@ -15,14 +14,14 @@ let tokenAuthentication = require('modules/authentications/tokenAuthentication')
 let cookieAuthentication = require('modules/authentications/cookieAuthentication');
 let authentication = require('modules/authentication');
 let deploymentMonitorScheduler = require('modules/monitoring/DeploymentMonitorScheduler');
+let apiV1 = require('api/v1');
 
 const APP_VERSION = require('config').get('APP_VERSION');
 
 module.exports = function MainServer() {
 
   let httpServerFactory = require('modules/http-server-factory');
-
-  var _server;
+  let _server;
 
   this.start = function () {
     return createExpressApp()
@@ -47,43 +46,30 @@ module.exports = function MainServer() {
 
       // start express
       var app = express();
-
-      // enabling express middleweres
       app.use(cookieParser());
       app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
       app.use(bodyParser.json({ extended: false, limit: '50mb' }));
       app.use(cookieAuthentication.middleware);
       app.use(tokenAuthentication.middleware);
+
       /* notice how the router goes after the logger.
        * https://www.npmjs.com/package/express-winston#request-logging */
       if (config.get('IS_PRODUCTION') === true) {
         app.use(expressWinston.logger({ winstonInstance: logger }));
       }
 
-      // routing for static content
-      let staticFolder = '../client';
-
-      // If dist/ folder exists, it will be used, otherwise client/
-      try {
-        let tryDistPath = `${staticFolder}/dist`
-        fs.accessSync(`${staticFolder}/dist`, fs.F_OK);
-        staticFolder = tryDistPath;
-      } catch (e) {}
-
-      logger.info(`Serving static files from "${staticFolder}"`);
+      const PUBLIC_DIR = config.get('PUBLIC_DIR');
+      logger.info(`Serving static files from "${PUBLIC_DIR}"`);
 
       let staticPaths = ['*.js', '*.css', '*.html', '*.ico', '*.gif', '*.woff2', '*.ttf', '*.woff', '*.svg', '*.eot', '*.jpg', '*.png'];
-      app.get(staticPaths, authentication.allowUnknown, express.static('../client/dist'));
-      app.get(staticPaths, authentication.allowUnknown, express.static('../client'));
-      app.get('/', authentication.denyUnauthorized, express.static('../client/dist'));
-      app.get('/', authentication.denyUnauthorized, express.static('../client'));
+      app.get(staticPaths, authentication.allowUnknown, express.static(PUBLIC_DIR));
+      app.get('/', authentication.denyUnauthorized, express.static(PUBLIC_DIR));
 
-
-      app.get('/docs*', authentication.denyUnauthorized, express.static('../client'));
+      app.get('/docs*', authentication.denyUnauthorized, express.static(PUBLIC_DIR));
       app.get('*.js', authentication.allowUnknown, express.static('modules'));
-      
+
       // routing for API JSON Schemas
-      app.use('/schema', authentication.allowUnknown, express.static('../client/schema'));
+      app.use('/schema', authentication.allowUnknown, express.static(`${PUBLIC_DIR}/schema`));
 
       // routing for html pages
       app.get('/login', authentication.allowUnknown, routes.form.login.get);
@@ -103,6 +89,8 @@ module.exports = function MainServer() {
       if (config.get('IS_PRODUCTION') === true) {
         app.use(expressWinston.errorLogger({ winstonInstance: logger }));
       }
+
+      apiV1.setup(app);
 
       resolve(app);
     });
@@ -127,5 +115,4 @@ module.exports = function MainServer() {
     deploymentMonitorScheduler.start();
     logger.info(`EnvironmentManager v.${APP_VERSION} started!`);
   }
-
 };

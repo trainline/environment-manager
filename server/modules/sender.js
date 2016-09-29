@@ -4,6 +4,7 @@
 let guid = require('node-uuid');
 let assertContract = require('modules/assertContract');
 let logger = require('modules/logger');
+let commandMetadata = require('commands/utils/metadata');
 
 const COMMAND_TYPE = "Command";
 const QUERY_TYPE = "Query";
@@ -20,7 +21,10 @@ module.exports = {
       }
     });
 
-    let command = prepareCommand(parameters);
+    let command = commandMetadata.createFromParameters(parameters);
+    let message = getLogMessage(command);
+    logger.info(message);
+
     let type = COMMAND_TYPE;
     let promise = sendCommandOrQuery(command);
     return promiseOrCallback(promise, command, type, callback);
@@ -43,23 +47,6 @@ module.exports = {
     return promiseOrCallback(promise, query, type, callback);
   }
 };
-
-function prepareCommand(parameters) {
-  let command = Object.assign({}, parameters.command);
-
-  if (parameters.parent) {
-    command.commandId = parameters.parent.commandId;
-    command.username  = parameters.parent.username;
-  } else {
-    command.commandId = guid.v1();
-    command.username  = parameters.user.getName();
-  }
-
-  command.timestamp = new Date().toISOString();
-  let message = getLogMessage(command);
-  logger.debug(message);    
-  return command;
-}
 
 function prepareQuery(parameters) {
   let query = Object.assign({}, parameters.query);

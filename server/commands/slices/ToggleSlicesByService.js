@@ -10,10 +10,20 @@ let ToggleSlicesOrchestrator = toggleSlices.ToggleSlicesOrchestrator;
 let sender = require('modules/sender');
 
 module.exports = function ToggleSlicesByService(command) {
-  assert.equal(typeof command.accountName, 'string');
   assert.equal(typeof command.environmentName, 'string');
   assert.equal(typeof command.serviceName, 'string');
 
+  if (command.accountName === undefined) {
+    return getAccountByEnvironment({ environment:query.environmentName }).then(account => {
+      command.accountName = account;
+      return runToggle(command);
+    })
+  } else {
+    return runToggle(command);
+  }
+};
+
+function runToggle(command) {
   let resourceName = `Upstream for "${command.serviceName}" service in "${command.environmentName}" environment`;
   let provider = new UpstreamByServiceProvider(sender, command, resourceName);
   let verifier = new ToggleUpstreamByServiceVerifier(sender, command);
@@ -28,4 +38,4 @@ module.exports = function ToggleSlicesByService(command) {
 
     orchestrator.orchestrate(callback);
   });
-};
+}

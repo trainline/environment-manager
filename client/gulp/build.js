@@ -80,11 +80,12 @@ gulp.task('other', function () {
 
   return gulp.src([
     './assets/images/**/*',
+    './assets/css/**/*',
     './docs/**/*',
     './schema/**/*',
     './styles/**/*.css',
     './app/**/*.html',
-    // path.join('!' + conf.paths.src, '/**/*.{html,css,js,scss}')
+    'login.html'
   ], {base: '.'})
   .pipe(fileFilter)
   .pipe(gulp.dest(output));
