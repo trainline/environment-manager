@@ -88,16 +88,22 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
     };
 
     vm.save = function () {
-      var saveMethod = vm.editMode ? 'put' : 'post';
-      var params = {
-        key: vm.service.ServiceName,
-        range: vm.service.OwningCluster,
-      };
-      
+      var saveMethod;
+      var url = '/api/v1/config/services';
+      var data;
+      if (vm.editMode) {
+        data = saveableService(vm.service).Value;
+        saveMethod = 'put';
+        url += '/' + vm.service.ServiceName + '/' + vm.service.OwningCluster
+      } else {
+        data = saveableService(vm.service);
+        saveMethod = 'post';
+      }
+
       $http({
         method: saveMethod,
-        url: '/api/v1/config/services/' + params.key + '/' + params.range,
-        data: saveableService(vm.service).Value,
+        url: url,
+        data: data,
         headers: { 'expected-version': vm.version }
       }).then(function () {
         cachedResources.config.services.flush();
