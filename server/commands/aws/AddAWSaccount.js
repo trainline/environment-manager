@@ -19,7 +19,7 @@ function AddAWSAccount(command) {
         accountName: masterAccountName,
       };
 
-      return sender.sendCommand({ command: dynamoCommand, parent: command }).then(awsAccounts.flush)
+      return sender.sendCommand({ command: dynamoCommand, parent: command }).then(awsAccounts.flush);
     })
   } catch (error) {
     return Promise.reject(error);
