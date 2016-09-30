@@ -33,20 +33,18 @@ angular.module('EnvironmentManager.configuration').controller('PermissionControl
     vm.cancel = navigateToList;
 
     vm.save = function () {
+      vm.member.Permissions = JSON.parse(vm.permissions);
+
       var saveMethod = vm.editMode ? 'put' : 'post';
       var url = '/api/v1/config/permissions';
       var data;
       if (saveMethod === 'put') {
         url += '/' + vm.member.Name;
-        data = vm.member;
+        data = vm.member.Permissions;
       } else {
         data = vm.member;
       }
-      vm.member.Permissions = JSON.parse(vm.permissions);
-      // var params = {
-      //   key: vm.member.Name,
-      //   data: vm.member,
-      // };
+      
       $http({
         method: saveMethod,
         url: url,
