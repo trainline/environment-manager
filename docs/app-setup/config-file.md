@@ -2,7 +2,6 @@
 title: Configuration File
 layout: docs
 weight: 20
-draft: true
 ---
 
 The next step is to create the Environment Manager Application Configuration file and upload this to the Configuration S3 bucket/path that was setup earlier.
