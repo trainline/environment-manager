@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('PermissionController',
-  function ($routeParams, $location, $q, resources, cachedResources, modal, permissionsValidation) {
+  function ($routeParams, $http, $location, $q, resources, cachedResources, modal, permissionsValidation) {
     var vm = this;
 
     var RETURN_PATH = '/config/permissions';
@@ -33,26 +33,38 @@ angular.module('EnvironmentManager.configuration').controller('PermissionControl
     vm.cancel = navigateToList;
 
     vm.save = function () {
-      var saveMethod = vm.editMode ? resources.config.permissions.put : resources.config.permissions.post;
+      var saveMethod = vm.editMode ? 'put' : 'post';
+      var url = '/api/v1/config/permissions';
+      var data;
+      if (saveMethod === 'put') {
+        url += '/' + vm.member.Name;
+        data = vm.member;
+      } else {
+        data = vm.member;
+      }
       vm.member.Permissions = JSON.parse(vm.permissions);
-      var params = {
-        key: vm.member.Name,
-        expectedVersion: vm.version,
-        data: vm.member,
-      };
-      saveMethod(params).then(function () {
+      // var params = {
+      //   key: vm.member.Name,
+      //   data: vm.member,
+      // };
+      $http({
+        method: saveMethod,
+        url: url,
+        data: data,
+        headers: { 'expected-version': vm.version }
+      }).then(function() {
         navigateToList();
       });
     };
 
     function readItem(name) {
-      resources.config.permissions.get({ key: name }).then(function (data) {
+      $http.get('/api/v1/config/permissions/' + name).then(function (response) {
+        var data = response.data;
         vm.dataFound = true;
         vm.member = data;
         vm.permissions = JSON.stringify(data.Permissions, null, 2);
         vm.version = data.Version;
       }, function (err) {
-
         vm.dataFound = false;
       });
     }

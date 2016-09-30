@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('PermissionsController',
-  function ($routeParams, $location, resources, cachedResources, modal) {
+  function ($routeParams, $location, resources, cachedResources, modal, $http) {
     var vm = this;
 
     function init() {
@@ -11,10 +11,11 @@ angular.module('EnvironmentManager.configuration').controller('PermissionsContro
     }
 
     vm.refresh = function () {
-      resources.config.permissions.all().then(function (members) {
+      $http.get('/api/v1/config/permissions').then(function (response) {
+        var members = response.data;
         vm.members = members.sort(function (a, b) {
-          var nameA = a.Name.toLowerCase(),
-            nameB = b.Name.toLowerCase();
+          var nameA = a.Name.toLowerCase();
+          var nameB = b.Name.toLowerCase();
           if (nameA < nameB) return -1;
           if (nameA > nameB) return 1;
           return 0;
@@ -52,7 +53,7 @@ angular.module('EnvironmentManager.configuration').controller('PermissionsContro
         details: ["NOTE: This will delete all permissions assignment for '" + memberName + "'. It will not delete '" + memberName + "' from the directory."],
       }).then(function () {
         var params = { key: memberName };
-        resources.config.permissions.delete(params).then(function () {
+        $http.delete('/api/v1/config/permissions').then(function () {
           vm.refresh();
         });
       });
