@@ -1,5 +1,5 @@
 ---
-title: Cloud Formation
+title: CloudFormation
 layout: docs
 weight: 10
 ---

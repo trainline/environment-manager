@@ -1,5 +1,5 @@
 ---
-title: Installation and Setup Guide
+title: AWS Setup Guide
 layout: docs
 weight: 15
 sub-folder: /docs/setup/
