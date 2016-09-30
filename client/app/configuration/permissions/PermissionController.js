@@ -2,42 +2,43 @@
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('PermissionController',
-  function ($scope, $routeParams, $location, $q, resources, cachedResources, modal, permissionsValidation) {
+  function ($routeParams, $location, $q, resources, cachedResources, modal, permissionsValidation) {
+    var vm = this;
 
     var RETURN_PATH = '/config/permissions';
 
     function init() {
 
       var name = $routeParams['member'];
-      $scope.EditMode = name.toLowerCase() !== 'new';
+      vm.editMode = name.toLowerCase() !== 'new';
 
-      var access = $scope.EditMode ? 'PUT' : 'POST';
-      var resource = $scope.EditMode ? name : '*';
-      $scope.userHasPermission = user.hasPermission({ access: access, resource: '/config/permissions/' + resource });
+      var access = vm.editMode ? 'PUT' : 'POST';
+      var resource = vm.editMode ? name : '*';
+      vm.userHasPermission = user.hasPermission({ access: access, resource: '/config/permissions/' + resource });
 
-      if ($scope.EditMode) {
+      if (vm.editMode) {
         readItem(name);
       } else {
-        $scope.member = {};
+        vm.member = {};
       }
 
     }
 
-    $scope.ValidateJson = permissionsValidation;
+    vm.validateJson = permissionsValidation;
 
-    $scope.canUser = function () {
-      return $scope.userHasPermission;
+    vm.canUser = function () {
+      return vm.userHasPermission;
     };
 
-    $scope.Cancel = navigateToList;
+    vm.cancel = navigateToList;
 
-    $scope.Save = function () {
-      var saveMethod = $scope.EditMode ? resources.config.permissions.put : resources.config.permissions.post;
-      $scope.member.Permissions = JSON.parse($scope.permissions);
+    vm.save = function () {
+      var saveMethod = vm.editMode ? resources.config.permissions.put : resources.config.permissions.post;
+      vm.member.Permissions = JSON.parse(vm.permissions);
       var params = {
-        key: $scope.member.Name,
-        expectedVersion: $scope.Version,
-        data: $scope.member,
+        key: vm.member.Name,
+        expectedVersion: vm.version,
+        data: vm.member,
       };
       saveMethod(params).then(function () {
         navigateToList();
@@ -46,13 +47,13 @@ angular.module('EnvironmentManager.configuration').controller('PermissionControl
 
     function readItem(name) {
       resources.config.permissions.get({ key: name }).then(function (data) {
-        $scope.DataFound = true;
-        $scope.member = data;
-        $scope.permissions = JSON.stringify(data.Permissions, null, 2);
-        $scope.Version = data.Version;
+        vm.dataFound = true;
+        vm.member = data;
+        vm.permissions = JSON.stringify(data.Permissions, null, 2);
+        vm.version = data.Version;
       }, function (err) {
 
-        $scope.DataFound = false;
+        vm.dataFound = false;
       });
     }
 
