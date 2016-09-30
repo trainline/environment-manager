@@ -68,3 +68,5 @@ The main part of the authentication section to be aware of is the 'defaultAdmin'
 ### Content
 
 The content links are to documentation / help / guidance / info referenced from the Environment Manager UI and related to your environment. For example, wherever you record your AMI release notes.
+
+[Next (Application Setup) >](/environment-manager/docs/app-setup/em-installation)
