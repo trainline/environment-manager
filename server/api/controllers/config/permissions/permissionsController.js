@@ -1,23 +1,54 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
-function getPermissionsConfig(req, res) {
-  res.json([{},{},{}]);
+const RESOURCE = 'config/permissions';
+let dynamoHelper = new (require('api/api-utils/DynamoHelper'))(RESOURCE);
+
+/**
+ * GET /config/permissions
+ */
+function getPermissionsConfig(req, res, next) {
+  return dynamoHelper.getAll().then(data => res.json(data)).catch(next);
 }
 
-function getPermissionConfigByName(req, res) {
-  res.json({});
+/**
+ * GET /config/permissions/{name}
+ */
+function getPermissionConfigByName(req, res, next) {
+  const key = req.swagger.params.name.value;
+  console.log(key);
+  return dynamoHelper.getByKey(key).then(data => res.json(data)).catch(next);
 }
 
-function postPermissionsConfig(req, res) {
-  res.json();
+/**
+ * POST /config/permissions
+ */
+function postPermissionsConfig(req, res, next) {
+  const body = req.swagger.params.body.value;
+  const user = req.user;
+  const key = config.ServiceName;
+  const sortKey = config.OwningCluster;
+
+  return dynamoHelper.create(body.Value, key, user).then(data => res.json(data)).catch(next);
 }
 
-function putPermissionConfigByName(req, res) {
-  res.json();
+/**
+ * PUT /config/permissions/{name}
+ */
+function putPermissionConfigByName(req, res, next) {
+  const body = req.swagger.params.body.value;
+  const key = req.swagger.params.name.value
+  const expectedVersion = req.swagger.params['expected-version'].value;
+  const user = req.user;
+  console.log(body);
+
+  return dynamoHelper.update(body, key, expectedVersion, user).then(data => res.json(data)).catch(next);
 }
 
-function deletePermissionConfigByName(req, res) {
+/**
+ * DELETE /config/permissions/{name}
+ */
+function deletePermissionConfigByName(req, res, next) {
   res.json();
 }
 

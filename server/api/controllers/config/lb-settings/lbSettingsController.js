@@ -34,7 +34,7 @@ function postLBsettingsConfig(req, res, next) {
   const user = req.user;
 
   return dynamoHelper
-    .createWithSortKey(value, pKey, sKey, user)
+    .createWithSortKey({ Value: value }, pKey, sKey, user)
     .then(_ => res.status(201).end())
     .catch(next);
 }

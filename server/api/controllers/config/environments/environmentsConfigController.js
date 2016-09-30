@@ -28,7 +28,7 @@ function postEnvironmentsConfig(req, res, next) {
   const environment = req.swagger.params.body.value;
   const user = req.user;
 
-  return dynamoHelper.create(environment, KEY_NAME, user).then(_ => res.status(201).end()).catch(next);
+  return dynamoHelper.create({ Value: environment.Value }, environment[KEY_NAME], user).then(_ => res.status(201).end()).catch(next);
 }
 
 /**
@@ -41,7 +41,7 @@ function putEnvironmentConfigByName(req, res, next) {
   const user = req.user;
 
   return dynamoHelper
-    .update(key, KEY_NAME, environment, expectedVersion, user)
+    .update(key, { Value: environment }, expectedVersion, user)
     .then(_ => res.status(200).end())
     .catch(next);
 }

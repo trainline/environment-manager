@@ -28,7 +28,7 @@ function postDeploymentMapsConfig(req, res, next) {
   const deploymentMap = req.swagger.params.body.value;
   const user = req.user;
 
-  return dynamoHelper.create(deploymentMap, KEY_NAME, user).then(_ => res.status(201).end()).catch(next);
+  return dynamoHelper.create({ Value: deploymentMap.Value }, deploymentMap[KEY_NAME], user).then(_ => res.status(201).end()).catch(next);
 }
 
 /**
@@ -41,7 +41,7 @@ function putDeploymentMapConfigByName(req, res, next) {
   const user = req.user;
 
   return dynamoHelper
-    .update(key, KEY_NAME, deploymentMap, expectedVersion, user)
+    .update(key, { Value: deploymentMap }, expectedVersion, user)
     .then(_ => res.status(200).end())
     .catch(next);
 }
