@@ -65,3 +65,7 @@ The main part of the authentication section to be aware of is the 'defaultAdmin'
 
 - Port: This is the port that Environment Manager will run on.
 - SSL for S3: Here we set bucket name that will contain our deployable packages, and the certificate used to access this bucket.
+
+### Content
+
+The content links are to documentation / help / guidance / info referenced from the Environment Manager UI and related to your environment. For example, wherever you record your AMI release notes.
