@@ -85,7 +85,7 @@ pre.highlight {
 		font-size: 11pt;
 		font-weight: 300;
 		line-height: 1.75em;
-		color: #444;
+		color: #222;
 	}
 
 	code {
@@ -95,7 +95,7 @@ pre.highlight {
 	h1,h2,h3,h4,h5,h6
 	{
 		font-weight: 300;
-		color: #444;
+		color: #222;
 	}
 	
 		h2
@@ -193,7 +193,7 @@ pre.highlight {
 
 	.pennant
 	{
-		color: #bbb;
+		color: #888;
 	}
 
 	/* Sections/Articles */
