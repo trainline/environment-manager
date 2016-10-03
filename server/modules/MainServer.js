@@ -9,6 +9,7 @@ let expressWinston = require('express-winston');
 let winston = require('winston');
 let fs = require('fs');
 let config = require('config/');
+let compression = require('compression');
 
 let serverFactoryConfiguration = new(require('modules/serverFactoryConfiguration'))();
 let tokenAuthentication = require('modules/authentications/tokenAuthentication');
@@ -21,8 +22,7 @@ const APP_VERSION = require('config').get('APP_VERSION');
 module.exports = function MainServer() {
 
   let httpServerFactory = require('modules/http-server-factory');
-
-  var _server;
+  let _server;
 
   this.start = function () {
     return createExpressApp()
@@ -37,8 +37,8 @@ module.exports = function MainServer() {
   function createExpressApp() {
     return new Promise((resolve) => {
 
-      var routeInstaller = require('modules/routeInstaller');
-      var routes = {
+      let routeInstaller = require('modules/routeInstaller');
+      let routes = {
         home: require('routes/home'),
         form: require('routes/form'),
         initialData: require('routes/initialData'),
@@ -46,9 +46,9 @@ module.exports = function MainServer() {
       };
 
       // start express
-      var app = express();
+      let app = express();
 
-      // enabling express middleweres
+      app.use(compression());
       app.use(cookieParser());
       app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
       app.use(bodyParser.json({ extended: false, limit: '50mb' }));
@@ -97,16 +97,14 @@ module.exports = function MainServer() {
   };
 
   function createServer(app) {
-    var parameters = {
+    let parameters = {
       port: serverFactoryConfiguration.getPort(),
     };
 
     return httpServerFactory.create(app, parameters).then(server => {
-
       logger.info(`Main server created using ${httpServerFactory.constructor.name} service.`);
       logger.info(`Main server listening at port ${parameters.port}.`);
       return Promise.resolve(server);
-
     });
   }
 
