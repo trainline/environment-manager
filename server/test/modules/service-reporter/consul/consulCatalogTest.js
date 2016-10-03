@@ -21,7 +21,7 @@ describe('consulCatalog', function() {
       create: sinon.stub().returns(Promise.resolve(consul))
     };
     
-    sut = rewire('modules/service-reporter/consul/consulCatalog');
+    sut = rewire('modules/service-discovery/consul/consulCatalog');
     sut.__set__({ consulClient });
   });
 

@@ -4,7 +4,7 @@
 let consulCatalog = require('./consulCatalog');
 
 // TODO(filip): keyValueStore will have to be moved? keyValueStore is used as part of read-state, not definition
-let keyValueStore = require('modules/service-updater/consul/keyValueStore');
+let keyValueStore = require('modules/service-targets/consul/keyValueStore');
 let _ = require('lodash');
 
 module.exports = {

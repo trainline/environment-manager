@@ -2,10 +2,10 @@
 'use strict';
 
 let _ = require('lodash');
+let co = require('co');
 let getInstanceState = require('./getInstanceState');
 let getServicesState = require('./getServicesState');
 let AutoScalingGroup = require('models/AutoScalingGroup');
-let co = require('co');
 let resourceProvider = require('modules/resourceProvider');
 let logger = require('modules/logger');
 

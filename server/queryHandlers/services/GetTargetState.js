@@ -2,7 +2,7 @@
 'use strict';
 
 let co = require('co');
-let serviceUpdater = require('modules/service-updater');
+let serviceUpdater = require('modules/service-targets');
 let schema = require('modules/schema/schema');
 
 module.exports = function GetTargetState(query) {

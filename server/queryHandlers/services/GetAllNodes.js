@@ -2,7 +2,7 @@
 'use strict';
 
 let assertContract = require('modules/assertContract');
-let serviceReporter = require('modules/service-reporter');
+let serviceReporter = require('modules/service-discovery');
 
 module.exports = function GetAllNodes(query) {
   assertContract(query, 'query', {
