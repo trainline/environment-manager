@@ -27,7 +27,7 @@ function postPermissionsConfig(req, res, next) {
   let user = req.user;
   let key = body.Name;
 
-  return dynamoHelper.create({ Permissions: body.Permissions }, key, user).then(data => res.json(data)).catch(next);
+  return dynamoHelper.create(key, { Permissions: body.Permissions }, user).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -39,7 +39,7 @@ function putPermissionConfigByName(req, res, next) {
   let expectedVersion = req.swagger.params['expected-version'].value;
   let user = req.user;
 
-  return dynamoHelper.update({ Permissions: body }, key, expectedVersion, user).then(data => res.json(data)).catch(next);
+  return dynamoHelper.update(key, { Permissions: body }, expectedVersion, user).then(data => res.json(data)).catch(next);
 }
 
 /**

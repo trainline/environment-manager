@@ -27,7 +27,7 @@ function getClusterConfigByName(req, res, next) {
 function postClustersConfig(req, res, next) {
   const cluster = req.swagger.params.cluster.value;
   const user = req.user;
-  return dynamoHelper.create({ Value: cluster.Value }, cluster[KEY_NAME], user).then(_ => res.status(201).end()).catch(next);
+  return dynamoHelper.create(cluster[KEY_NAME], { Value: cluster.Value }, user).then(_ => res.status(201).end()).catch(next);
 }
 
 /**

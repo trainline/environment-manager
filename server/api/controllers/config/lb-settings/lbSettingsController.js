@@ -33,8 +33,7 @@ function postLBsettingsConfig(req, res, next) {
   const sKey = value[SORT_KEY];
   const user = req.user;
 
-  return dynamoHelper
-    .createWithSortKey({ Value: value }, pKey, sKey, user)
+  return dynamoHelper.createWithSortKey(pKey, sKey, { Value: value }, user)
     .then(_ => res.status(201).end())
     .catch(next);
 }
@@ -50,7 +49,7 @@ function putLBsettingConfigByName(req, res, next) {
   const user = req.user;
 
   return dynamoHelper
-    .updateWithSortKey(value, pKey, sKey, expectedVersion, user)
+    .updateWithSortKey(pKey, sKey, value, expectedVersion, user)
     .then(_ => res.status(200).end())
     .catch(next);
 }
@@ -63,8 +62,7 @@ function deleteLBsettingConfigByName(req, res, next) {
   const sKey = req.swagger.params.vHostName.value;
   const user = req.user;
 
-  return dynamoHelper
-    .deleteItemWithSortKey(pKey, sKey, user)
+  return dynamoHelper.deleteWithSortKey(pKey, sKey, user)
     .then(_ => res.status(200).end())
     .catch(next);
 }

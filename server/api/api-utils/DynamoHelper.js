@@ -43,7 +43,7 @@ class DynamoHelper {
   /**
    * Create a resource in a Dynamo table
    */
-  create(item, key, user) {
+  create(key, item, user) {
     const newItem = metadata.addMetadata({ resource: this.resource, key, item, accountName, user });
     return createValue(newItem);
   }
@@ -51,7 +51,7 @@ class DynamoHelper {
   /**
    * Create a resource in a Dynamo table that includes a sort key
    */
-  createWithSortKey(item, partitionKey, sortKey, user) {
+  createWithSortKey(partitionKey, sortKey, item, user) {
     const newItem = metadata.addMetadata({ key: partitionKey, range: sortKey, resource: this.resource, item, accountName, user });
     return createValue(newItem);
   }
@@ -59,7 +59,7 @@ class DynamoHelper {
   /**
    * Update (replace) a single Dynamo resource
    */
-  update(item, key, expectedVersion, user) {
+  update(key, item, expectedVersion, user) {
     const updatedItem = metadata.addMetadata({ resource: this.resource, key, item, expectedVersion, accountName, user });
     return updateValue(updatedItem);
   }
@@ -67,7 +67,7 @@ class DynamoHelper {
   /**
    * Update (replace) a single Dynamo resource in a table that incldudes a sort key
    */
-  updateWithSortKey(item, partitionKey, sortKey, expectedVersion, user) {
+  updateWithSortKey(partitionKey, sortKey, item, expectedVersion, user) {
     const updatedItem = metadata.addMetadata({ key: partitionKey, range: sortKey, resource: this.resource, item, expectedVersion, accountName, user });
     return updateValue(updatedItem);
   }

@@ -34,7 +34,7 @@ function postServicesConfig(req, res, next) {
   const key = config.ServiceName;
   const sortKey = config.OwningCluster;
 
-  return dynamoHelper.createWithSortKey({ Value: config.Value }, key, sortKey, user).then(data => res.json(data)).catch(next);
+  return dynamoHelper.createWithSortKey(key, sortKey, { Value: config.Value }, user).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -47,7 +47,7 @@ function putServiceConfigByName(req, res, next) {
   const expectedVersion = req.swagger.params['expected-version'].value;
   const config = req.swagger.params.config.value;
 
-  return dynamoHelper.updateWithSortKey({ Value: config }, key, sortKey, expectedVersion, user).then(data => res.json(data)).catch(next);
+  return dynamoHelper.updateWithSortKey(key, sortKey, { Value: config }, expectedVersion, user).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -58,8 +58,7 @@ function deleteServiceConfigByName(req, res) {
   const sKey = req.swagger.params.cluster.value;
   const user = req.user;
 
-  return dynamoHelper
-    .deleteItemWithSortKey(pKey, sKey, user)
+  return dynamoHelper.deleteWithSortKey(pKey, sKey, user)
     .then(_ => res.status(200).end())
     .catch(next);
 }

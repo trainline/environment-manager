@@ -28,7 +28,7 @@ function postEnvironmentTypesConfig(req, res, next) {
   const envType = req.swagger.params.body.value;
   const user = req.user;
 
-  return dynamoHelper.create({ Value: envType.Value }, envType[KEY_NAME], user).then(_ => res.status(201).end()).catch(next);
+  return dynamoHelper.create(envType[KEY_NAME], { Value: envType.Value }, user).then(_ => res.status(201).end()).catch(next);
 }
 
 /**
