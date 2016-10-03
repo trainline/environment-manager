@@ -1214,6 +1214,10 @@ paths:
       tags:
         - Export
       parameters:
+        - name: account
+          in: query
+          required: false
+          type: string
         - name: resource
           description: The name of the resource you want to export
           in: path
@@ -1221,13 +1225,13 @@ paths:
           enum:
             - accounts
             - clusters
-            - deployment-maps
+            - deploymentmaps
             - environments
-            - environment-types
-            - lb-settings
+            - environmenttypes
+            - lbsettings
             - permissions
             - services
-            - upstreams
+            - lbupstream
           required: true
       responses:
         200:

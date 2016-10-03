@@ -15,7 +15,7 @@ function RemoveAWSAccount(command) {
     
     let dynamoCommand = {
       name: 'DeleteDynamoResource',
-      resource: 'config/awsAccounts',
+      resource: 'config/accounts',
       key: accountNumber,
       accountName: masterAccountName,
     };

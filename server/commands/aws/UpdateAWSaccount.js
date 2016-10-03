@@ -14,7 +14,7 @@ function UpdateAWSAccount(command) {
     return accountValidator.validate(account).then(_ => {
       let dynamoCommand = {
         name: 'UpdateDynamoResource',
-        resource: 'config/awsAccounts',
+        resource: 'config/accounts',
         item: account,
         accountName: masterAccountName,
       };

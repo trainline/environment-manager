@@ -89,7 +89,7 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
       };
 
       this.export = function (params) {
-        var url = '/api/v1/config/export/' + resourceName;
+        var url = '/api/v1/config/export/' + resourceName.toLowerCase();
         return promisify($http.get(url));
       };
 

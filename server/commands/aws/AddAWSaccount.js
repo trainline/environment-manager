@@ -14,7 +14,7 @@ function AddAWSAccount(command) {
     return accountValidator.validate(account).then(_ => {
       let dynamoCommand = {
         name: 'CreateDynamoResource',
-        resource: 'config/awsAccounts',
+        resource: 'config/accounts',
         item: account,
         accountName: masterAccountName,
       };

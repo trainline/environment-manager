@@ -7,7 +7,9 @@ let notImplemented = require('api/api-utils/notImplemented');
  * GET /config/import/{resource}
  */
 function putResourceImport(req, res, next) {
-  notImplemented(res, 'Importing Dynamo resources')
+  const resource = req.swagger.params.resource.value;
+  const data = req.swagger.params.data.value;
+  const user = req.user;
 }
 
 module.exports = {
