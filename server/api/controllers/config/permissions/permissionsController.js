@@ -39,7 +39,7 @@ function putPermissionConfigByName(req, res, next) {
   const expectedVersion = req.swagger.params['expected-version'].value;
   const user = req.user;
 
-  return dynamoHelper.update(body, key, expectedVersion, user).then(data => res.json(data)).catch(next);
+  return dynamoHelper.update({ Permissions: body }, key, expectedVersion, user).then(data => res.json(data)).catch(next);
 }
 
 /**

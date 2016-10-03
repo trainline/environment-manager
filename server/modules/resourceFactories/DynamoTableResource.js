@@ -187,29 +187,27 @@ function DynamoTableResource(config, client) {
       });
     }
 
-    function tryUpdate(client) {
-      let request = !!_auditingEnabled ?
-        _builder.update().item(item).atVersion(expectedVersion).buildRequest() :
-        _builder.update().item(item).buildRequest();
+    let request = !!_auditingEnabled ?
+      _builder.update().item(item).atVersion(expectedVersion).buildRequest() :
+      _builder.update().item(item).buildRequest();
+    console.log('REQUEST');
+    console.log(request);
 
-      return client.update(request).promise().then(function (data) {
-        // Existing item succesfully updated
-        return data.Attributes;
-      }).catch(error => {
-        // Something went wrong...
-        let managedError = standardifyError(error, request);
+    return client.update(request).promise().then(function (data) {
+      // Existing item succesfully updated
+      return data.Attributes;
+    }).catch(error => {
+      // Something went wrong...
+      let managedError = standardifyError(error, request);
 
-        // I cannot furhter investigate on this error
-        if (managedError.name !== 'DynamoConditionCheckError') {
-          throw standardifyError(error, request);
-        }
+      // I cannot furhter investigate on this error
+      if (managedError.name !== 'DynamoConditionCheckError') {
+        throw standardifyError(error, request);
+      }
 
-        // I can further investigate...
-        return investigateOnErrorOccurred(client);
-      });
-    }
-
-    return tryUpdate(_client);
+      // I can further investigate...
+      return investigateOnErrorOccurred(client);
+    });
   };
 
   this.post = function (params) {

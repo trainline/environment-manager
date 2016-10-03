@@ -46,7 +46,7 @@ function* handler(command) {
 
   // Updating existing item into the storage
   let params = {
-    item: item,
+    item,
     expectedVersion: command.expectedVersion,
   };
 

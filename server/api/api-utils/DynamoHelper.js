@@ -59,7 +59,7 @@ class DynamoHelper {
   /**
    * Update (replace) a single Dynamo resource
    */
-  update(key, item, expectedVersion, user) {
+  update(item, key, expectedVersion, user) {
     const updatedItem = metadata.addMetadata({ resource: this.resource, key, item, expectedVersion, accountName, user });
     return updateValue(updatedItem);
   }
