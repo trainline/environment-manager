@@ -15,7 +15,7 @@ function getPermissionsConfig(req, res, next) {
  * GET /config/permissions/{name}
  */
 function getPermissionConfigByName(req, res, next) {
-  const key = req.swagger.params.name.value;
+  let key = req.swagger.params.name.value;
   return dynamoHelper.getByKey(key).then(data => res.json(data)).catch(next);
 }
 
@@ -23,9 +23,9 @@ function getPermissionConfigByName(req, res, next) {
  * POST /config/permissions
  */
 function postPermissionsConfig(req, res, next) {
-  const body = req.swagger.params.body.value;
-  const user = req.user;
-  const key = body.Name;
+  let body = req.swagger.params.body.value;
+  let user = req.user;
+  let key = body.Name;
 
   return dynamoHelper.create({ Permissions: body.Permissions }, key, user).then(data => res.json(data)).catch(next);
 }
@@ -34,10 +34,10 @@ function postPermissionsConfig(req, res, next) {
  * PUT /config/permissions/{name}
  */
 function putPermissionConfigByName(req, res, next) {
-  const body = req.swagger.params.body.value;
-  const key = req.swagger.params.name.value
-  const expectedVersion = req.swagger.params['expected-version'].value;
-  const user = req.user;
+  let body = req.swagger.params.body.value;
+  let key = req.swagger.params.name.value
+  let expectedVersion = req.swagger.params['expected-version'].value;
+  let user = req.user;
 
   return dynamoHelper.update({ Permissions: body }, key, expectedVersion, user).then(data => res.json(data)).catch(next);
 }
@@ -46,7 +46,9 @@ function putPermissionConfigByName(req, res, next) {
  * DELETE /config/permissions/{name}
  */
 function deletePermissionConfigByName(req, res, next) {
-  res.json();
+  let key = req.swagger.params.name.value
+  let user = req.user;
+  return dynamoHelper.delete(key, user).then(data => res.json(data)).catch(next);
 }
 
 module.exports = {

@@ -51,7 +51,7 @@ function putClusterConfigByName(req, res, next) {
 function deleteClusterConfigByName(req, res, next) {
   const key = req.swagger.params.name.value;
   const user = req.user;
-  return dynamoHelper.deleteItem(key, user).then(_ => res.status(200).end()).catch(next);
+  return dynamoHelper.delete(key, user).then(_ => res.status(200).end()).catch(next);
 }
 
 module.exports = {

@@ -75,7 +75,7 @@ class DynamoHelper {
   /**
    * Delete a single item from a Dynamo table
    */
-  deleteItem(key, user) {
+  delete(key, user) {
     const deletedItem = metadata.addMetadata({ resource: this.resource, key, accountName, user });
     return deleteValue(deletedItem);
   }
@@ -83,7 +83,7 @@ class DynamoHelper {
   /**
    * Delete a single item from a Dynamo table that includes a sort key
    */
-  deleteItemWithSortKey(partitionKey, sortKey, user) {
+  deleteWithSortKey(partitionKey, sortKey, user) {
     const deletedItem = metadata.addMetadata({ resource: this.resource, key: partitionKey, range: sortKey, accountName, user });
     return deleteValue(deletedItem);
   }

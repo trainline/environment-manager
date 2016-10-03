@@ -52,8 +52,7 @@ angular.module('EnvironmentManager.configuration').controller('PermissionsContro
         severity: 'Danger',
         details: ["NOTE: This will delete all permissions assignment for '" + memberName + "'. It will not delete '" + memberName + "' from the directory."],
       }).then(function () {
-        var params = { key: memberName };
-        $http.delete('/api/v1/config/permissions').then(function () {
+        $http.delete('/api/v1/config/permissions/' + memberName).then(function () {
           vm.refresh();
         });
       });
