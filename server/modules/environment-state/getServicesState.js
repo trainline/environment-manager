@@ -5,7 +5,7 @@ let _ = require('lodash');
 let Enums = require('Enums');
 let co = require('co');
 let logger = require('modules/logger');
-let serviceDiscovery = require('modules/service-discovery');
+let targetStates = require('modules/service-targets');
 
 /**
  * Generate service health info (with checks list and pass / fail)
@@ -33,7 +33,7 @@ function getServiceChecksInfo(serviceObjects) {
   });
 }
 
-function getServiceOverallHealth(healthChecks, instances) {
+function getServiceOverallHealth(healthChecks) {
   if (_.some(healthChecks, { Status: Enums.HEALTH_STATUS.Error })) {
     return {
       Status: Enums.HEALTH_STATUS.Error,
@@ -45,14 +45,13 @@ function getServiceOverallHealth(healthChecks, instances) {
   }
 }
 
-function* getServicesState(environmentName, runtimeServerRoleName, instances) {
-  let servicesList = yield serviceDiscovery.getServicesList(environmentName, runtimeServerRoleName);
-
+function* getServicesTargetState(environmentName, runtimeServerRoleName, instances) {
+  let targetServiceStates = yield targetStates.getAllServiceTargets(environmentName, runtimeServerRoleName);
   let allServiceObjects = _.flatMap(instances, instance => instance.Services);
 
   // Find all objects representing particular service for all nodes
   let servicesGrouped = _.groupBy(allServiceObjects, 'Name');
-  let services = _.map(servicesList, (service) => {
+  let services = _.map(targetServiceStates, (service) => {
 
     // serviceObjects now has all 'Name' service descriptors in instances
     let serviceObjects = servicesGrouped[service.Name];
@@ -66,11 +65,9 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
     });
 
     let serviceInstances = _.filter(instances, instance => _.some(instance.Services, { Name: service.Name }));
-
     let healthyNodes = _.filter(serviceInstances, (instance) => instance.OverallHealth.Status === Enums.HEALTH_STATUS.Healthy);
     let instancesHealthCount = healthyNodes.length + '/' + serviceInstances.length;
-
-    let serviceHealthChecks = getServiceChecksInfo(serviceObjects)
+    let serviceHealthChecks = getServiceChecksInfo(serviceObjects);
 
     return {
       Name: service.Name,
@@ -90,4 +87,4 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
   return services;
 }
 
-module.exports = co.wrap(getServicesState);
+module.exports = co.wrap(getServicesTargetState);
