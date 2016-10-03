@@ -8,9 +8,10 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
     asgState: '<',
   },
   controllerAs: 'vm',
-  controller: function (roles, $uibModal, modal, Deployment, serviceDiscovery) {
+  controller: function (roles, $uibModal, modal, Deployment) {
     var vm = this;
     vm.servicesList = vm.asgState.Services;
+    vm.helpTextTemplate = 'app/environments/dialogs/asg/popovers/help-disable-service.html';
 
     vm.showDeploymentLog = function (service) {
       Deployment.getById(vm.asg.$accountName, service.DeploymentId).then(function (deployment) {
@@ -45,6 +46,5 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
         },
       });
     };
-    
   }
 });
