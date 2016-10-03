@@ -60,7 +60,7 @@
       </thead>
       <tbody>
         <tr ng-repeat="upstream in vm.data | orderBy : 'Value.UpstreamName' ">
-          <td><a ng-click="Edit(upstream)">{{upstream.Value.UpstreamName}}</a></td>
+          <td><a ng-click="vm.edit(upstream)">{{upstream.Value.UpstreamName}}</a></td>
           <td>{{upstream.Value.ServiceName}}</td>
           <td>
             <table class="hostSummary" ng-show="upstream.Value.Hosts.length > 0">
