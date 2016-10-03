@@ -24,7 +24,7 @@ angular.module('EnvironmentManager.common').factory('resources',
 
     var resources = {
       config: {
-        awsAccounts: remoteResourceFactory.getFullAccess({
+        accounts: remoteResourceFactory.getFullAccess({
           name: 'accounts',
           description: 'AWS Accounts',
           section: 'aws',

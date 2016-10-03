@@ -15,7 +15,7 @@ angular.module('EnvironmentManager.common').factory('cachedResources',
         lbSettings: CachedResource('lbSettings', 'config', true),
         lbUpstream: CachedResource('lbUpstream', 'config', true),
         clusters: CachedResource('clusters', 'config'),
-        awsAccounts: CachedResource('awsAccounts', 'config'),
+        accounts: CachedResource('accounts', 'config'),
       },
       aws: {
         accounts: CachedResource('accounts', 'aws'),
