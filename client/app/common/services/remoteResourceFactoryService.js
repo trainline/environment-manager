@@ -11,24 +11,6 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
       var resourceSection = params.section || '';
       var resourcePerAccount = params.perAccount;
 
-      function arraify(target) {
-        return Array.isArray(target) ? target : [target];
-      }
-
-      function querify(query) {
-        var querystring = '';
-        if (!query) return querystring;
-
-        for (var property in query) {
-          arraify(query[property]).forEach(function (value) {
-            querystring += (querystring.length) ? '&' : '?';
-            querystring += property + '=' + encodeURIComponent(value);
-          });
-        }
-
-        return querystring;
-      }
-
       function urlify(params) {
         var segments = ['api'];
 
@@ -101,17 +83,13 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
 
       this.all = function (params) {
         var url = urlify(params);
-        if (params && params.query) url += querify(params.query);
-        return promisify($http.get(url));
+        var query;
+        if (params && params.query) query = params.query;
+        return promisify($http.get(url, { params: query }));
       };
 
       this.export = function (params) {
-        var url = '/api/';
-        if (params && params.account) {
-          url += params.account + '/';
-        }
-
-        url += 'config/' + resourceName + '/export';
+        var url = '/api/v1/config/export/' + resourceName;
         return promisify($http.get(url));
       };
 
