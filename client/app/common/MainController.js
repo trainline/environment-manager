@@ -118,18 +118,6 @@ angular.module('EnvironmentManager.common').controller('MainController',
       return !(!!value);
     }
 
-    // TODO: remove once no longer editing JSON in UI
-    $scope.tryParseJSON = function (jsonString) {
-      try {
-        var o = JSON.parse(jsonString);
-        if (o && typeof o === 'object' && o !== null) {
-          return o;
-        }
-      } catch (e) {}
-
-      return null;
-    };
-
     $scope.ShowSchemaHelp = function () {
       var DYNAMO_SCHEMA_WIKI_URL = window.links.DYNAMO_CONFIG;
       window.open(DYNAMO_SCHEMA_WIKI_URL, '_blank');
