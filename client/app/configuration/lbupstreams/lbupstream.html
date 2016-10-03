@@ -49,7 +49,7 @@
                     required=""
                     ng-model="LBUpstream.Value.ServiceName"
                     ng-disabled="!canUser('edit')">
-                <option ng-repeat="service in ServicesList" ng-selected="{{service == LBUpstream.Value.ServiceName}}" value="{{service}}">{{service}}</option>
+                <option ng-repeat="service in ServicesList track by $index" ng-selected="{{service == LBUpstream.Value.ServiceName}}" value="{{service}}">{{service}}</option>
             </select>
         </div>
         <a class="help-link" href="/#/config/services/{{SelectedService.ServiceName}}/?Range={{SelectedService.OwningCluster}}" target="_blank">Go to service definition</a>
