@@ -4,97 +4,98 @@
 // Manage Load Balancer Upstreams
 angular.module('EnvironmentManager.configuration').controller('LBUpstreamsController',
   function ($scope, $routeParams, $location, $q, modal, resources, cachedResources, accountMappingService) {
+    var vm = this;
 
-    $scope.EnvironmentsList = [];
-    $scope.SelectedEnvironment = '';
-    $scope.SelectedService = '';
+    vm.environmentsList = [];
+    vm.selectedEnvironment = '';
+    vm.selectedService = '';
 
-    $scope.FullData = [];
-    $scope.Data = [];
-    $scope.DataLoading = false;
+    vm.fullData = [];
+    vm.data = [];
+    vm.dataLoading = false;
 
     function init() {
 
-      $scope.canPost = user.hasPermission({ access: 'POST', resource: '/*/config/lbupstream/*' });
+      vm.canPost = user.hasPermission({ access: 'POST', resource: '/*/config/lbupstream/*' });
 
       $location.search('key', null);
       $location.search('mode', null);
       var env = $routeParams['up_environment'];
       var serviceFilter = $routeParams['serviceFilter'];
 
-      if (serviceFilter) $scope.SelectedService = serviceFilter;
+      if (serviceFilter) vm.selectedService = serviceFilter;
 
       $q.all([
         cachedResources.config.environments.all().then(function (environments) {
-          $scope.EnvironmentsList = _.map(environments, 'EnvironmentName').sort();
+          vm.environmentsList = _.map(environments, 'EnvironmentName').sort();
         }),
       ]).then(function () {
-        $scope.SelectedEnvironment = env ? env : $scope.EnvironmentsList[0];
-        $scope.Refresh();
+        vm.selectedEnvironment = env ? env : vm.environmentsList[0];
+        vm.refresh();
       });
     }
 
-    $scope.canUser = function (action) {
-      if (action == 'post') return $scope.canPost;
-      if (action == 'delete') return $scope.canDelete;
+    vm.canUser = function (action) {
+      if (action == 'post') return vm.canPost;
+      if (action == 'delete') return vm.canDelete;
     };
 
-    $scope.Refresh = function () {
-      $scope.DataLoading = true;
+    vm.refresh = function () {
+      vm.dataLoading = true;
       var params = { account: 'all' };
       resources.config.lbUpstream.all(params).then(function (data) {
-        $scope.FullData = data;
+        vm.fullData = data;
       }).finally(function () {
-        $scope.UpdateFilter();
-        $scope.DataLoading = false;
+        vm.updateFilter();
+        vm.dataLoading = false;
       });
     };
 
-    $scope.UpdateFilter = function () {
-      $location.search('up_environment', $scope.SelectedEnvironment);
-      $location.search('serviceFilter', $scope.SelectedService);
-      $scope.Data = $scope.FullData.filter(function (upstream) {
+    vm.updateFilter = function () {
+      $location.search('up_environment', vm.selectedEnvironment);
+      $location.search('serviceFilter', vm.selectedService);
+      vm.data = vm.fullData.filter(function (upstream) {
         var match = true;
-        match = match && upstream.Value.EnvironmentName == $scope.SelectedEnvironment;
+        match = match && upstream.Value.EnvironmentName == vm.selectedEnvironment;
         var serviceName = angular.lowercase(upstream.Value.ServiceName);
-        if ($scope.SelectedService) {
+        if (vm.selectedService) {
           if (!serviceName) return false;
-          match = match && serviceName.indexOf(angular.lowercase($scope.SelectedService)) != -1;
+          match = match && serviceName.indexOf(angular.lowercase(vm.selectedService)) != -1;
         }
 
         return match;
       });
     };
 
-    $scope.NewItem = function () {
+    vm.newItem = function () {
       $location.search('mode', 'New');
       $location.path('/config/upstream');
     };
 
-    $scope.Edit = function (upstream) {
+    vm.edit = function (upstream) {
       $location.search('mode', 'Edit');
       $location.search('key', encodeURIComponent(upstream.key));
       $location.path('/config/upstream');
     };
 
-    $scope.Copy = function (upstream) {
+    vm.copy = function (upstream) {
       $location.search('mode', 'Copy');
       $location.search('key', encodeURIComponent(upstream.key));
       $location.path('/config/upstream/');
     };
 
-    $scope.ViewHistory = function (upstream) {
+    vm.viewHistory = function (upstream) {
       $scope.ViewAuditHistory('LB Upstream', encodeURIComponent(upstream.key));
     };
 
-    $scope.Delete = function (upstream) {
+    vm.delete = function (upstream) {
       var key = upstream.key;
       var name = upstream.Value.UpstreamName;
       var env = upstream.Value.EnvironmentName;
       var accountName = '';
       var lbSettings = [];
 
-      accountMappingService.GetAccountForEnvironment($scope.SelectedEnvironment).then(function (acName) {
+      accountMappingService.GetAccountForEnvironment(vm.selectedEnvironment).then(function (acName) {
         accountName = acName;
 
         resources.config.lbSettings.all({ account: 'all' }).then(function (data) {
@@ -129,7 +130,7 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamsContro
               };
               resources.config.lbUpstream.delete(params).then(function () {
                 cachedResources.config.lbUpstream.flush();
-                $scope.Refresh();
+                vm.refresh();
               });
             });
           }
