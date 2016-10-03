@@ -127,17 +127,42 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
       });
     };
 
+    /**
+     * Returns a JSON representation of an object for diff generation.
+     * Any property values that are valid JSON representations
+     * of composite objects (Object or Array) are parsed before
+     * converting the root object to JSON.
+     * 
+     * @param obj {Object} any object
+     * @returns {String} JSON representation of object 
+     */
+    function diffableRepresentationOf(obj)
+    {
+      function replacer (key, value) {
+        if (typeof value === 'string' && /^[\[\{]/.test(value)) {
+          try {
+            return JSON.parse(value);
+          } catch (error) {
+            return value;
+          }
+        } else {
+          return value;
+        }
+      }
+      return JSON.stringify(obj, replacer, 4)
+    }
+
     function displayResults(data) {
         var link = linkHeader.parseHeaders(data.headers);
         $scope.nextPage = link !== undefined ? link.next : undefined;
         $scope.hasNextPage = $scope.nextPage !== undefined;
         $scope.Data = data.items.map(function addValueColumnChanges(audit) {
           if (audit.OldValue) { // Missing for new records
-            audit.OldValueDisplay = JSON.stringify(audit.OldValue.Value, null, 4);
+            audit.OldValueDisplay = diffableRepresentationOf(audit.OldValue);
           }
 
           if (audit.NewValue) { // Missing for deleted records
-            audit.NewValueDisplay = JSON.stringify(audit.NewValue.Value, null, 4);
+            audit.NewValueDisplay = diffableRepresentationOf(audit.NewValue);
           }
 
           return audit;
