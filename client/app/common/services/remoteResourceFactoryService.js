@@ -52,27 +52,6 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
         };
       }
 
-      function cleanData(data) {
-        function internalCleaning(data) {
-          for (var property in data) {
-            var value = data[property];
-            var type = typeof value;
-
-            switch (type) {
-              case 'string':
-                if (value === '') delete data[property];
-                break;
-              case 'object':
-                internalCleaning(value);
-                break;
-            }
-          }
-        }
-
-        internalCleaning(data);
-        return data;
-      };
-
       this.name = function () {
         return resourceName;
       };
@@ -107,16 +86,14 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
       this.put = function (params) {
         var url = urlify(params);
         var config = getExpectedVersionHeader(params.expectedVersion);
-        var data = cleanData(params.data);
 
-        return promisify($http.put(url, data, config));
+        return promisify($http.put(url, params.data, config));
       };
 
       this.post = function (params) {
         var url = urlify(params);
-        var data = cleanData(params.data);
 
-        return promisify($http.post(url, data));
+        return promisify($http.post(url, params.data));
       };
 
       this.replace = function (params) {
