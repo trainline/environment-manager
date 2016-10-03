@@ -3,7 +3,7 @@
 
 // Manage Load Balancer Upstreams
 angular.module('EnvironmentManager.configuration').controller('LBUpstreamsController',
-  function ($scope, $routeParams, $location, $q, modal, resources, cachedResources, accountMappingService) {
+  function ($scope, $routeParams, $location, $q, modal, resources, cachedResources, accountMappingService, $http) {
     var vm = this;
 
     vm.environmentsList = [];
@@ -42,9 +42,8 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamsContro
 
     vm.refresh = function () {
       vm.dataLoading = true;
-      var params = { account: 'all' };
-      resources.config.lbUpstream.all(params).then(function (data) {
-        vm.fullData = data;
+      $http.get('/api/v1/config/upstreams').then(function (response) {
+        vm.fullData = response.data;
       }).finally(function () {
         vm.updateFilter();
         vm.dataLoading = false;
@@ -98,8 +97,8 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamsContro
       accountMappingService.GetAccountForEnvironment(vm.selectedEnvironment).then(function (acName) {
         accountName = acName;
 
-        resources.config.lbSettings.all({ account: 'all' }).then(function (data) {
-          lbSettings = data;
+        $http.get('/api/v1/config/upstreams').then(function (response) {
+          lbSettings = response.data;
         }).then(function () {
 
           // Check whether upstream in use
@@ -126,9 +125,8 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamsContro
             }).then(function () {
               var params = {
                 account: accountName,
-                key: key,
               };
-              resources.config.lbUpstream.delete(params).then(function () {
+              $http.delete('/api/v1/config/upstreams/' + encodeURIComponent(key), { params: params }).then(function () {
                 cachedResources.config.lbUpstream.flush();
                 vm.refresh();
               });
