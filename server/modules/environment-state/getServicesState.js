@@ -2,11 +2,10 @@
 'use strict';
 
 let _ = require('lodash');
-let keyValueStore = require('modules/service-targets/consul/keyValueStore');
 let Enums = require('Enums');
 let co = require('co');
 let logger = require('modules/logger');
-let serviceReporter = require('modules/service-discovery');
+let serviceDiscovery = require('modules/service-discovery');
 
 /**
  * Generate service health info (with checks list and pass / fail)
@@ -47,7 +46,7 @@ function getServiceOverallHealth(healthChecks, instances) {
 }
 
 function* getServicesState(environmentName, runtimeServerRoleName, instances) {
-  let servicesList = yield serviceReporter.getServicesList(environmentName, runtimeServerRoleName);
+  let servicesList = yield serviceDiscovery.getServicesList(environmentName, runtimeServerRoleName);
 
   let allServiceObjects = _.flatMap(instances, instance => instance.Services);
 

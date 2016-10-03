@@ -2,7 +2,7 @@
 'use strict';
 
 let resourceProvider = require('modules/resourceProvider');
-let serviceUpdater = require('modules/service-targets');
+let serviceTargets = require('modules/service-targets');
 
 module.exports = function SetTargetMaintenanceState(command) {
   let accountName = command.accountName;
@@ -10,5 +10,5 @@ module.exports = function SetTargetMaintenanceState(command) {
   let host = command.instance.PrivateIpAddress;
   let enable = command.enable;
 
-  return serviceUpdater.setInstanceMaintenanceMode(accountName, host, environment, enable);
+  return serviceTargets.setInstanceMaintenanceMode(accountName, host, environment, enable);
 };

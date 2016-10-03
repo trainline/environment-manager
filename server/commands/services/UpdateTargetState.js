@@ -2,7 +2,7 @@
 'use strict';
 
 let co = require('co');
-let serviceUpdater = require('modules/service-targets');
+let serviceTargets = require('modules/service-targets');
 let DeploymentCommandHandlerLogger = require('commands/deployments/DeploymentCommandHandlerLogger');
 let schema = require('modules/schema/schema');
 
@@ -17,6 +17,6 @@ module.exports = function UpdateTargetState(command) {
     let value = command.value;
     let options = command.options;
 
-    return yield serviceUpdater.setTargetState(command.environment, { key, value, options });
+    return yield serviceTargets.setTargetState(command.environment, { key, value, options });
   });
 };

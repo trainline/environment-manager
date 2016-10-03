@@ -1,7 +1,7 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
-let serviceUpdater = require('modules/service-targets');
+let serviceTargets = require('modules/service-targets');
 let _ = require('lodash');
 let co = require('co');
 
@@ -25,7 +25,7 @@ function getRole(service) {
 function* GetServiceRolesQueryHandler(query) {
   let recurse = true;
   let key = `environments/${query.environmentName.toLowerCase()}/roles`;
-  let results = yield serviceUpdater.getTargetState(query.environmentName, { key, recurse });
+  let results = yield serviceTargets.getTargetState(query.environmentName, { key, recurse });
 
   return {
     AccountName: query.accountName,
