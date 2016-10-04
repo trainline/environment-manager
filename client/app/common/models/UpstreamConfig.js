@@ -26,7 +26,7 @@ angular.module('EnvironmentManager.common').factory('UpstreamConfig',
       return $http.delete(baseUrl + '/' + encodeURIComponent(key), { params: { account: account } });
     };
 
-    UpstreamConfig.createNew = function (environmentName) {
+    UpstreamConfig.createWithDefaults = function (environmentName) {
       // New Upstream, set defaults
       var data = {
         Value: {
@@ -42,7 +42,7 @@ angular.module('EnvironmentManager.common').factory('UpstreamConfig',
     }
 
     _.assign(UpstreamConfig.prototype, {
-      save: function (key) {
+      update: function (key) {
         return $http({
           method: 'put',
           url: baseUrl + '/' + encodeURIComponent(key),
@@ -51,7 +51,7 @@ angular.module('EnvironmentManager.common').factory('UpstreamConfig',
         });
       },
 
-      saveNew: function (key) {
+      save: function (key) {
         return $http({
           method: 'post',
           url: baseUrl,

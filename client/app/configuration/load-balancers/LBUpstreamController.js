@@ -76,7 +76,7 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
 
           }
         } else {
-          $scope.LBUpstream = UpstreamConfig.createNew(env);
+          $scope.LBUpstream = UpstreamConfig.createWithDefaults(env);
           $scope.userHasPermission = user.hasPermission({ access: 'POST', resource: '/*/config/lbupstream/**' });
         }
 
@@ -134,9 +134,9 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
 
         promise.then(function () {
           if ($scope.PageMode === 'Edit') {
-            return $scope.LBUpstream.save(key);
+            return $scope.LBUpstream.update(key);
           } else {
-            return $scope.LBupstream.saveNew(key);
+            return $scope.LBupstream.save(key);
           }
         }).then(function () {
           cachedResources.config.lbUpstream.flush();
