@@ -23,7 +23,7 @@ angular.module('EnvironmentManager.common').factory('UpstreamConfig',
     }
 
     UpstreamConfig.deleteByKey = function (key, account) {
-      return $http.delete('/api/v1/config/upstreams/' + encodeURIComponent(key), { params: { account: account } });
+      return $http.delete(baseUrl + '/' + encodeURIComponent(key), { params: { account: account } });
     };
 
     UpstreamConfig.createNew = function (environmentName) {
