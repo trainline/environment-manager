@@ -1,6 +1,6 @@
 {
   "name": "environmentmanager",
-  "version": "3.6.2",
+  "version": "3.6.3",
   "description": "EnvironmentManager Server",
   "main": "server.js",
   "scripts": {
@@ -27,6 +27,7 @@
     "body-parser": "^1.15.2",
     "co": "^4.6.0",
     "colors": "^1.1.2",
+    "compression": "^1.6.2",
     "consul": "^0.25.0",
     "cookie-parser": "^1.4.3",
     "es6-template-strings": "^2.0.1",
@@ -34,11 +35,11 @@
     "express-winston": "^2.0.0",
     "glob-intersection": "^0.1.3",
     "ip": "^1.1.3",
+    "js-joda": "^1.1.11",
     "jsondiffpatch": "^0.2.4",
     "jsonwebtoken": "^7.1.9",
     "lodash": "^4.16.1",
     "moment": "^2.15.1",
-    "js-joda": "^1.1.11",
     "ms": "^0.7.1",
     "mz": "^2.4.0",
     "nconf": "^0.8.4",
