@@ -10,10 +10,20 @@ angular.module('EnvironmentManager.common').factory('UpstreamConfig',
     }
 
     UpstreamConfig.getByKey = function (key, account) {
-      return $http.get('/api/v1/config/upstreams/' + encodeURIComponent(key), { params: { account: account } })
+      return $http.get(baseUrl + '/' + encodeURIComponent(key), { params: { account: account } })
         .then(function (response) {
           return new UpstreamConfig(response.data);
         });
+    };
+
+    UpstreamConfig.getAll = function () {
+      return $http.get(baseUrl).then(function (response) { 
+        return response.data;
+      });
+    }
+
+    UpstreamConfig.deleteByKey = function (key, account) {
+      return $http.delete('/api/v1/config/upstreams/' + encodeURIComponent(key), { params: { account: account } });
     };
 
     UpstreamConfig.createNew = function (environmentName) {
