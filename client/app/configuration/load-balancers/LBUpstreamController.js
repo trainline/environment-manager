@@ -114,11 +114,6 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
 
         var saveMethod;
         var data;
-        
-
-        // var params = {
-        //   account: accountName,
-        // };
 
         var activeHosts = GetActiveHostCount();
         var promise;

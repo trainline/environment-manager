@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('DeploymentMapController',
-  function ($scope, $routeParams, $location, $q, $uibModal, resources, cachedResources, modal, deploymentMapConverter) {
+  function ($scope, $routeParams, $location, $q, $uibModal, resources, cachedResources, modal, deploymentMapConverter, DeploymentMap) {
 
     var vm = this;
 
@@ -19,7 +19,6 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
 
     vm.dataFound = false;
     vm.dataLoading = true;
-    var version = 0;
 
     function init() {
       var deploymentMapName = $routeParams['deploymentmap'];
@@ -180,7 +179,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
 
     function readDeploymentMap(mapName) {
       vm.dataLoading = true;
-      resources.config.deploymentMaps.get({ key: mapName }).then(function (deploymentMap) {
+      DeploymentMap.getByName(mapName).then(function (deploymentMap) {
         deploymentMap.Value.DeploymentTarget = deploymentMap.Value.DeploymentTarget.map(deploymentMapConverter.toDeploymentTarget);
         vm.deploymentMap = deploymentMap;
         vm.deploymentTargets = deploymentMap.Value.DeploymentTarget;
@@ -192,7 +191,6 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
           });
         });
 
-        version = deploymentMap.Version;
         vm.dataFound = true;
         vm.search();
       }, function () {

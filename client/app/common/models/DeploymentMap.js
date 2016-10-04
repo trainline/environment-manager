@@ -15,6 +15,12 @@ angular.module('EnvironmentManager.common').factory('DeploymentMap',
       });
     };
 
+    DeploymentMap.getAll = function () {
+      return $http.get(baseUrl).then(function (response) { 
+        return response.data;
+      });
+    }
+
     DeploymentMap.createWithDefaults = function (environmentName) {
       var data = {
         DeploymentMapName: '',
@@ -24,13 +30,17 @@ angular.module('EnvironmentManager.common').factory('DeploymentMap',
         },
       };
       return new DeploymentMap(data);
-    }
+    };
+
+    DeploymentMap.deleteByName = function (name) {
+      return $http.delete(baseUrl + '/' + encodeURIComponent(name));
+    };
 
     _.assign(DeploymentMap.prototype, {
-      update: function (key) {
+      update: function () {
         return $http({
           method: 'put',
-          url: baseUrl + '/' + encodeURIComponent(key),
+          url: baseUrl + '/' + encodeURIComponent(this.DeploymentMapName),
           data: this.Value,
           headers: { 'expected-version': this.Version }
         });

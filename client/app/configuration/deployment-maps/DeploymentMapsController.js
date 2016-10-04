@@ -2,8 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('DeploymentMapsController',
-  function ($scope, $routeParams, $location, $uibModal, $q, modal, resources, cachedResources) {
-
+  function ($scope, $routeParams, $location, $uibModal, $q, modal, resources, cachedResources, DeploymentMap) {
     var vm = this;
 
     vm.data = [];
@@ -18,7 +17,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapsCon
       vm.dataLoading = true;
       var environments = [];
       $q.all([
-        resources.config.deploymentMaps.all().then(function (deploymentMaps) {
+        DeploymentMap.getAll().then(function (deploymentMaps) {
           vm.data = deploymentMaps.map(function (deploymentMap) {
             deploymentMap.UsedBy = [];
             return deploymentMap;
@@ -37,10 +36,10 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapsCon
         cachedResources.config.environments.all().then(function (envData) {
           environments = envData;
         }),
-      ]).then(function addUsedByEnvironmentsInfo() {
+      ]).then(function () {
         environments.forEach(function (env) {
-          var map = getDeploymentMapByName(env.Value.DeploymentMap);
-          if (map) {
+          var map = _.find(vm.data, { DeploymentMapName: env.Value.DeploymentMap });
+          if (map !== undefined) {
             map.UsedBy.push(env.EnvironmentName);
           }
         });
@@ -63,15 +62,15 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapsCon
       });
     };
 
-    vm.delete = function (map) {
-      var name = map.DeploymentMapName;
+    vm.delete = function (deploymentMap) {
+      var name = deploymentMap.DeploymentMapName;
       modal.confirmation({
         title: 'Deleting a Deployment Map',
         message: 'Are you sure you want to delete the <strong>' + name + '</strong> Deployment Map?',
         action: 'Delete',
         severity: 'Danger',
       }).then(function () {
-        resources.config.deploymentMaps.delete({ key: name }).then(function () {
+        DeploymentMap.deleteByName(name).then(function () {
           cachedResources.config.deploymentMaps.flush();
           vm.refresh();
         });
@@ -102,14 +101,6 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapsCon
 
       return displayUsedBy.join(', ');
     };
-
-    function getDeploymentMapByName(mapName) {
-      for (var i = 0; i < vm.data.length; i++) {
-        if (vm.data[i].DeploymentMapName == mapName) {
-          return vm.data[i];
-        }
-      }
-    }
 
     init();
   });
