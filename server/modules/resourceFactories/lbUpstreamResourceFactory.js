@@ -69,18 +69,17 @@ module.exports = {
     resourceDescriptor.name.toLowerCase() === 'config/lbupstream',
 
   create: (resourceDescriptor, parameters) =>
-  amazonClientFactory.createDynamoClient(parameters.accountName).then(
-    client => {
+  amazonClientFactory.createDynamoClient(parameters.accountName).then((client) => {
 
-      let config = {
-        resourceName:    resourceDescriptor.name,
-        table:           resourceDescriptor.tableName,
-        key:             resourceDescriptor.keyName,
-        range:           resourceDescriptor.rangeName,
-        auditingEnabled: resourceDescriptor.enableAuditing,
-        dateField:       resourceDescriptor.dateField,
-      };
+    let config = {
+      resourceName:    resourceDescriptor.name,
+      table:           resourceDescriptor.tableName,
+      key:             resourceDescriptor.keyName,
+      range:           resourceDescriptor.rangeName,
+      auditingEnabled: resourceDescriptor.enableAuditing,
+      dateField:       resourceDescriptor.dateField,
+    };
 
-      return new LBUpstreamTableResource(config, client);
-    }),
+    return new LBUpstreamTableResource(config, client);
+  }),
 };
