@@ -4,14 +4,14 @@
 let resourceDescriptorProvider = require('modules/resourceDescriptorProvider');
 let InvalidItemSchemaError = require('modules/errors/InvalidItemSchemaError.class');
 
-function getSchemaError(resource, resourceName) {
+function getSchemaError(item, resourceName) {
   let descriptor = resourceDescriptorProvider.get(resourceName);
   let keyName = descriptor.keyName;
   let rangeName = descriptor.rangeName;
 
-  if (rangeName && (!resource[keyName] || !resource[rangeName])) {
+  if (rangeName && (!item[keyName] || !item[rangeName])) {
     return `"${resourceName}" item must contain a key field named "${keyName}" and a range field named "${rangeName}".`;
-  } else if (!resource[keyName]) {
+  } else if (!item[keyName]) {
     return `${resourceName}" item must contain a key field named "${keyName}".`;
   }
 
