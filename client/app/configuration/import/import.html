@@ -1,51 +1,51 @@
 <div class="row">
-    <div class="col-md-12">
-        <h2>Import Config Data</h2>
-    </div>
+  <div class="col-md-12">
+    <h2>Import Config Data</h2>
+  </div>
 </div>
 
 <form class="form-horizontal">
-    <div class="form-group">
-        <div class="col-md-1"></div>
-        <div class="col-md-11">
-            <div class="bg-info" ng-show="!!InProgress">Import in progress. Please wait, this may take some time...</div>
-            <div class="bg-danger" ng-show="!!Error">{{Error}}</div>
-        </div>
+  <div class="form-group">
+    <div class="col-md-1"></div>
+    <div class="col-md-11">
+    <div class="bg-info" ng-show="!!vm.inProgress">Import in progress. Please wait, this may take some time...</div>
+      <div class="bg-danger" ng-show="!!vm.error">{{Error}}</div>
     </div>
-    <div class="form-group">
-        <label class="col-md-1 control-label text-left">Config Data:</label>
-        <div class="col-md-2">
-            <select name="configType" id="configType" class="form-control" ng-model="SelectedResource">
-                <option ng-repeat="resource in Resources" value="{{resource.name}}">{{resource.description}}</option>
-            </select>
-        </div>
+  </div>
+  <div class="form-group">
+    <label class="col-md-1 control-label text-left">Config Data:</label>
+    <div class="col-md-2">
+      <select name="configType" id="configType" class="form-control" ng-model="vm.selectedResource">
+        <option ng-repeat="resource in vm.resources" value="{{resource.name}}">{{resource.description}}</option>
+      </select>
     </div>
-    <div class="form-group" ng-show="IsSelectedResourceCrossAccount()">
-        <label class="col-md-1 control-label text-left">AWS Account:</label>
-        <div class="col-md-2">
-            <select class="form-control" ng-model="SelectedAccount" ng-change="Refresh()">
-                <option ng-repeat="account in AccountsList" ng-selected="{{account == SelectedAccount}}" value="{{account}}">{{account}}</option>
-            </select>
-        </div>
+  </div>
+  <div class="form-group" ng-show="vm.isSelectedResourceCrossAccount()">
+    <label class="col-md-1 control-label text-left">AWS Account:</label>
+    <div class="col-md-2">
+      <select class="form-control" ng-model="vm.selectedAccount" ng-change="vm.refresh()">
+        <option ng-repeat="account in vm.accountsList" ng-selected="{{account == vm.selectedAccount}}" value="{{account}}">{{account}}</option>
+      </select>
     </div>
-    <div class="form-group">
-        <div class="col-md-offset-1 col-md-2">
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox" ng-model="ForceDelete"> Delete existing data first
-                </label>
-            </div>
-        </div>
+  </div>
+  <div class="form-group">
+    <div class="col-md-offset-1 col-md-2">
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" ng-model="vm.forceDelete"> Delete existing data first
+        </label>
+      </div>
     </div>
-    <div class="form-group">
-        <label class="col-md-1 control-label text-left">Import Data: <span class="glyphicon glyphicon-question-sign" ng-click="ShowSchemaHelp()" title="Show schema help"></span></label>
-        <div class="col-md-11">
-            <div id="ImportValue" ui-ace="{ mode: 'json' }" ng-model="ImportData" rows="26" cols="75" class="form-control"></div>
-        </div>
+  </div>
+  <div class="form-group">
+    <label class="col-md-1 control-label text-left">Import Data: <span class="glyphicon glyphicon-question-sign" ng-click="ShowSchemaHelp()" title="Show schema help"></span></label>
+    <div class="col-md-11">
+      <div id="ImportValue" ui-ace="{ mode: 'json' }" ng-model="vm.importData" rows="26" cols="75" class="form-control"></div>
     </div>
-    <div class="form-group">
-        <div class="col-md-offset-1 col-md-2">
-            <button type="button" class="btn btn-default" ng-disabled="!!InProgress" ng-click="Import()">Import Data</button>
-        </div>
+  </div>
+  <div class="form-group">
+    <div class="col-md-offset-1 col-md-2">
+      <button type="button" class="btn btn-default" ng-disabled="!!vm.inProgress" ng-click="vm.import()">Import Data</button>
     </div>
+  </div>
 </form>

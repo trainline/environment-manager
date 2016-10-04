@@ -2,16 +2,17 @@
 'use strict';
 
 angular.module('EnvironmentManager.configuration')
-  .controller('ImportController', function ($scope, $http, resources, cachedResources, modal) {
+  .controller('ImportController', function ($http, resources, cachedResources, modal) {
+    var vm = this;
 
-    $scope.Resources = [];
-    $scope.SelectedResource = '';
-    $scope.AccountsList = [];
-    $scope.SelectedAccount = '';
-    $scope.ImportData = '';
-    $scope.InProgress = false;
-    $scope.Error = null;
-    $scope.ForceDelete = false;
+    vm.resources = [];
+    vm.selectedResource = '';
+    vm.accountsList = [];
+    vm.selectedAccount = '';
+    vm.importData = '';
+    vm.inProgress = false;
+    vm.error = null;
+    vm.forceDelete = false;
 
     function asResourceDescriptor(resource) {
       return {
@@ -23,69 +24,69 @@ angular.module('EnvironmentManager.configuration')
     function init() {
 
       cachedResources.aws.accounts.all().then(function (accounts) {
-        $scope.AccountsList = accounts.sort();
+        vm.accountsList = accounts.sort();
       }).then(function () {
         
-        $scope.Resources = Enumerable.From(resources.config).Select(asResourceDescriptor).ToArray();
-        $scope.SelectedResource = $scope.Resources[0].name;
-        $scope.SelectedAccount = $scope.AccountsList[0];
+        vm.resources = Enumerable.From(resources.config).Select(asResourceDescriptor).ToArray();
+        vm.selectedResource = vm.resources[0].name;
+        vm.selectedAccount = vm.accountsList[0];
       });
     };
 
-    $scope.Import = function () {
+    vm.import = function () {
 
-      if (!$scope.ImportData) {
-        $scope.Error = 'Please enter some data to import first';
+      if (!vm.importData) {
+        vm.error = 'Please enter some data to import first';
         return;
       }
 
       var appendImportConfirmParams = {
         title: 'Importing Configuration Data',
-        message: 'Are you sure you want to import <strong>' + $scope.SelectedResource + '</strong> data?',
+        message: 'Are you sure you want to import <strong>' + vm.selectedResource + '</strong> data?',
         action: 'Import',
         severity: 'Warning',
         details: ['This action will add new records but not delete or affect any existing data'],
       };
       var deleteImportConfirmParams = {
         title: 'Importing Configuration Data',
-        message: 'Are you sure you want to <span class="warning">delete and overwrite</span> all <strong>' + $scope.SelectedResource + '</strong> data?',
+        message: 'Are you sure you want to <span class="warning">delete and overwrite</span> all <strong>' + vm.selectedResource + '</strong> data?',
         action: 'Delete and Import',
         severity: 'Danger',
-        details: ['This action will blank all existing ' + $scope.SelectedResource + ' data and replace it with the values specified. This action cannot be undone. Please be extremely careful!'],
+        details: ['This action will blank all existing ' + vm.selectedResource + ' data and replace it with the values specified. This action cannot be undone. Please be extremely careful!'],
       };
 
-      var confirmParams = $scope.ForceDelete ? deleteImportConfirmParams : appendImportConfirmParams;
+      var confirmParams = vm.forceDelete ? deleteImportConfirmParams : appendImportConfirmParams;
 
       modal.confirmation(confirmParams).then(function () {
 
-        $scope.InProgress = true;
-        $scope.Error = null;
+        vm.inProgress = true;
+        vm.error = null;
 
         var params = {
-          mode: $scope.ForceDelete ? 'replace' : 'merge',
+          mode: vm.forceDelete ? 'replace' : 'merge',
         };
-        if ($scope.IsSelectedResourceCrossAccount()) {
-          params['account'] = $scope.SelectedAccount;
+        if (vm.isSelectedResourceCrossAccount()) {
+          params['account'] = vm.selectedAccount;
         }
 
         $http({
-          url: '/api/v1/config/import/' + $scope.SelectedResource.toLowerCase(),
+          url: '/api/v1/config/import/' + vm.selectedResource.toLowerCase(),
           method: 'put',
-          data: $scope.ImportData,
+          data: vm.importData,
           params: params,
         }).then(function () {
-          $scope.InProgress = false;
+          vm.inProgress = false;
         }, function (error) {
 
-          $scope.InProgress = false;
-          $scope.Error = error.data;
+          vm.inProgress = false;
+          vm.error = error.data;
         });
 
       });
     };
 
-    $scope.IsSelectedResourceCrossAccount = function () {
-      return ($scope.SelectedResource == 'lbSettings' || $scope.SelectedResource == 'lbUpstream');
+    vm.isSelectedResourceCrossAccount = function () {
+      return (vm.selectedResource == 'lbSettings' || vm.selectedResource == 'lbUpstream');
     };
 
     init();
