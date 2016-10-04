@@ -26,9 +26,9 @@ function getUpstreamConfigByName(req, res, next) {
 function postUpstreamsConfig(req, res, next) {
   let body = req.swagger.params.body.value;
   let user = req.user;
-  let key = body.Name;
+  let key = body.key;
 
-  return dynamoHelper.create(key, { Permissions: body.Permissions }, user).then(data => res.json(data)).catch(next);
+  return dynamoHelper.create(key, { Value: body.Value }, user).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -40,7 +40,7 @@ function putUpstreamConfigByName(req, res, next) {
   let expectedVersion = req.swagger.params['expected-version'].value;
   let user = req.user;
 
-  return dynamoHelper.update(key, { Permissions: body }, expectedVersion, user).then(data => res.json(data)).catch(next);
+  return dynamoHelper.update(key, { Value: body }, expectedVersion, user).then(data => res.json(data)).catch(next);
 }
 
 /**
