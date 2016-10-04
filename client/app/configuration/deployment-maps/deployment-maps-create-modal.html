@@ -45,5 +45,5 @@
 </div>
 <div class="modal-footer">
   <button class="btn btn-default" type="button" ng-click="vm.cancel()">Cancel</button>
-  <button class="btn btn-default" type="button" ng-click="vm.ok" ng-if="canUser('edit')" ng-disabled="form.DeploymentMapName.$pristine || form.DeploymentMapName.$invalid">Create</button>
+  <button class="btn btn-default" type="button" ng-click="vm.ok()" ng-if="canUser('edit')" ng-disabled="form.DeploymentMapName.$pristine || form.DeploymentMapName.$invalid">Create</button>
 </div>
