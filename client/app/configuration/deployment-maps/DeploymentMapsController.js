@@ -56,7 +56,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapsCon
     vm.newItem = function () {
       var instance = $uibModal.open({
         templateUrl: '/app/configuration/deployment-maps/deployment-maps-create-modal.html',
-        controller: 'DeploymentMapCreateController',
+        controller: 'DeploymentMapCreateController as vm',
       });
       instance.result.then(function () {
         vm.refresh();

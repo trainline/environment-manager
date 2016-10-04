@@ -2,63 +2,50 @@
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('DeploymentMapCreateController',
-  function ($scope, $uibModalInstance, resources, cachedResources) {
+  function ($uibModalInstance, resources, cachedResources, DeploymentMap) {
+    var vm = this;
 
-    $scope.DeploymentMaps = [];
-    $scope.DeploymentMapNames = [];
+    vm.deploymentMaps = [];
+    vm.deploymentMapNames = [];
 
-    $scope.DeploymentMap;
-    $scope.CloneExisting = false;
-    $scope.DeploymentMapNameToClone = '';
+    vm.deploymentMap;
+    vm.cloneExisting = false;
+    vm.deploymentMapNameToClone = '';
 
     function init() {
 
-      $scope.DeploymentMap = {
-        DeploymentMapName: '',
-        Value: {
-          SchemaVersion: 1,
-          DeploymentTarget: [],
-        },
-      };
+      vm.deploymentMap = DeploymentMap.createWithDefaults();
 
       resources.config.deploymentMaps.all().then(function (deploymentMaps) {
-        $scope.DeploymentMaps = deploymentMaps;
-        $scope.DeploymentMapNames = _.map(deploymentMaps, 'DeploymentMapName').sort();
-        $scope.DeploymentMapNameToClone = $scope.DeploymentMapNames[0];
+        vm.deploymentMaps = deploymentMaps;
+        vm.deploymentMapNames = _.map(deploymentMaps, 'DeploymentMapName').sort();
+        vm.deploymentMapNameToClone = vm.deploymentMapNames[0];
       });
 
     }
 
-    $scope.Ok = function () {
+    vm.ok = function () {
 
-      var params = {
-        key: $scope.DeploymentMap.DeploymentMapName,
-        expectedVersion: 0,
-        data: {
-          Value: $scope.DeploymentMap.Value,
-        },
-      };
-
-      if ($scope.CloneExisting) {
-        var selectedDeploymentMap = GetDeploymentMapByName($scope.DeploymentMapNameToClone);
+      if (vm.cloneExisting) {
+        var selectedDeploymentMap = GetDeploymentMapByName(vm.deploymentMapNameToClone);
         if (selectedDeploymentMap) {
-          params.data.Value.DeploymentTarget = angular.copy(selectedDeploymentMap.Value.DeploymentTarget);
+          vm.deploymentMap.Value.DeploymentTarget = angular.copy(selectedDeploymentMap.Value.DeploymentTarget);
         }
       }
 
-      resources.config.deploymentMaps.post(params).then(function (data) {
+      vm.deploymentMap.save().then(function (data) {
         cachedResources.config.deploymentMaps.flush();
         $uibModalInstance.close(data);
       });
     };
 
-    $scope.Cancel = function () {
+    vm.cancel = function () {
       $uibModalInstance.dismiss('cancel');
     };
 
     function GetDeploymentMapByName(name) {
       var matchingMap = null;
-      $scope.DeploymentMaps.forEach(function (map) {
+      vm.deploymentMaps.forEach(function (map) {
         if (map.DeploymentMapName == name) {
           matchingMap = map;
         }
