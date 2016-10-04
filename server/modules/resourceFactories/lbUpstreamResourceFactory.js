@@ -34,10 +34,10 @@ function LBUpstreamTableResource(config, client) {
 
   let $base = new DynamoTableResource(config, client);
 
-
   this.getKeyName = $base.getKeyName.bind($base);
   this.getRangeName = $base.getRangeName.bind($base);
   this.isAuditingEnabled = $base.isAuditingEnabled.bind($base);
+  this._buildPrimaryKey = $base._buildPrimaryKey.bind($base);
 
   this.get = function (params) {
     return $base.get(params).then(item => fromNativeDynamoItem(item));
@@ -57,7 +57,7 @@ function LBUpstreamTableResource(config, client) {
     return $base.post(params);
   };
 
-  this.delete = $base.delete.bind(this);
+  this.delete = $base.delete.bind($base);
 }
 
 
