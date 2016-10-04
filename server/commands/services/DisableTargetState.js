@@ -5,7 +5,7 @@ let co = require('co');
 let update = require('./UpdateTargetState');
 let getTargetState = require('queryHandlers/services/GetTargetState');
 
-module.exports = function DisableTargetState(command) {
+function* DisableTargetState(command) {
   let environment = command.environment;
   let service = command.service;
   let serverRole = command.serverRole;
@@ -14,5 +14,8 @@ module.exports = function DisableTargetState(command) {
   let recurse = true;
   let name = 'GetTargetState';
 
-  return getTargetState({ key, recurse, environment, name });
+  let currentState = yield getTargetState({ key, recurse, environment, name });
+  return currentState;
 };
+
+module.exports = co.wrap(DisableTargetState);

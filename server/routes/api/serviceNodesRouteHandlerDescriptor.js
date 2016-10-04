@@ -3,7 +3,6 @@
 
 let send = require('modules/helpers/send');
 let route = require('modules/helpers/route');
-let disableTargetState = require('commands/services/DisableTargetState');
 
 const DISABLE_SERVICE_MODEL = {
   name: 'body',
@@ -24,10 +23,10 @@ let getServiceNodes = route.get('/:account/environments/:environment/services/:s
   .withDocs({ tags: ['Services'] })
   .do((request, response) => {
     var query = {
-    name: 'GetServiceNodes',
-    accountName: request.params.account,
-    environment: request.params.environment,
-    serviceName: request.params.service,
+      name: 'GetServiceNodes',
+      accountName: request.params.account,
+      environment: request.params.environment,
+      serviceName: request.params.service,
     };
     send.query(query, request, response);
   });
