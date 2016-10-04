@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.configuration')
-  .controller('ImportController', function ($scope, resources, cachedResources, modal) {
+  .controller('ImportController', function ($scope, $http, resources, cachedResources, modal) {
 
     $scope.Resources = [];
     $scope.SelectedResource = '';
@@ -13,18 +13,19 @@ angular.module('EnvironmentManager.configuration')
     $scope.Error = null;
     $scope.ForceDelete = false;
 
+    function asResourceDescriptor(resource) {
+      return {
+        name: resource.Value.name(),
+        description: resource.Value.description(),
+      };
+    }
+
     function init() {
 
       cachedResources.aws.accounts.all().then(function (accounts) {
         $scope.AccountsList = accounts.sort();
       }).then(function () {
-        var asResourceDescriptor = function (resource) {
-          return {
-            name: resource.Value.name(),
-            description: resource.Value.description(),
-          };
-        };
-
+        
         $scope.Resources = Enumerable.From(resources.config).Select(asResourceDescriptor).ToArray();
         $scope.SelectedResource = $scope.Resources[0].name;
         $scope.SelectedAccount = $scope.AccountsList[0];
@@ -60,17 +61,19 @@ angular.module('EnvironmentManager.configuration')
         $scope.InProgress = true;
         $scope.Error = null;
 
-        var resource = resources.config[$scope.SelectedResource];
-        var action = $scope.ForceDelete ? resource.replace : resource.merge;
-
         var params = {
-          items: $scope.ImportData,
+          mode: $scope.ForceDelete ? 'replace' : 'merge',
         };
         if ($scope.IsSelectedResourceCrossAccount()) {
           params['account'] = $scope.SelectedAccount;
         }
 
-        action(params).then(function () {
+        $http({
+          url: '/api/v1/config/import/' + $scope.SelectedResource.toLowerCase(),
+          method: 'put',
+          data: $scope.ImportData,
+          params: params,
+        }).then(function () {
           $scope.InProgress = false;
         }, function (error) {
 

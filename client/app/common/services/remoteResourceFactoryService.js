@@ -96,25 +96,6 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
         return promisify($http.post(url, params.data));
       };
 
-      this.replace = function (params) {
-        var url = '/api/';
-        if (params && params.account && resourcePerAccount) {
-          url += params.account + '/';
-        }
-
-        url += 'config/' + resourceName + '/replace';
-        return promisify($http.put(url, params.items));
-      };
-
-      this.merge = function (params) {
-        var url = '/api/';
-        if (params && params.account && resourcePerAccount) {
-          url += params.account + '/';
-        }
-
-        url += 'config/' + resourceName + '/merge';
-        return promisify($http.put(url, params.items));
-      };
     };
 
     function FullAccessRemoteResource(params) {

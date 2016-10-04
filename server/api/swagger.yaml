@@ -1255,19 +1255,29 @@ paths:
           enum:
             - accounts
             - clusters
-            - deployment-maps
+            - deploymentmaps
             - environments
-            - environment-types
-            - lb-settings
+            - environmenttypes
+            - lbsettings
             - permissions
             - services
-            - upstreams
+            - lbupstream
           required: true
         - name: data
           in: body
           required: true
           schema:
-            type: object
+            type: array
+            items:
+              type: object
+        - name: mode
+          in: query
+          required: true
+          type: string
+        - name: account
+          in: query
+          required: false
+          type: string
       responses:
         200:
           description: OK
@@ -1537,7 +1547,7 @@ paths:
   /config/upstreams:
     x-swagger-router-controller: config/upstreams/upstreamsConfigController
     get:
-      operationId: getUpstreamConfigs
+      operationId: getUpstreamsConfig
       summary: Get all upstream configurations.
       tags:
         - Upstream
@@ -1549,7 +1559,7 @@ paths:
             items:
               type: object
     post:
-      operationId: postUpstreamConfigs
+      operationId: postUpstreamsConfig
       summary: Create an upsteram configuration.
       tags:
         - Upstream
