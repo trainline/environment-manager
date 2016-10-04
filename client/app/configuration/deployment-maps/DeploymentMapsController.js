@@ -4,20 +4,22 @@
 angular.module('EnvironmentManager.configuration').controller('DeploymentMapsController',
   function ($scope, $routeParams, $location, $uibModal, $q, modal, resources, cachedResources) {
 
-    $scope.Data = [];
+    var vm = this;
+
+    vm.data = [];
 
     function init() {
-      $scope.dataLoading = true
-      $scope.canPost = user.hasPermission({ access: 'POST', resource: '/config/deploymentmaps/*' });
-      $scope.Refresh();
+      vm.dataLoading = true
+      vm.canPost = user.hasPermission({ access: 'POST', resource: '/config/deploymentmaps/*' });
+      vm.refresh();
     }
 
-    $scope.Refresh = function () {
-      $scope.dataLoading = true;
+    vm.refresh = function () {
+      vm.dataLoading = true;
       var environments = [];
       $q.all([
         resources.config.deploymentMaps.all().then(function (deploymentMaps) {
-          $scope.Data = deploymentMaps.map(function (deploymentMap) {
+          vm.data = deploymentMaps.map(function (deploymentMap) {
             deploymentMap.UsedBy = [];
             return deploymentMap;
           });
@@ -26,7 +28,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapsCon
             var deploymentMap = deploymentMaps[i];
             var canDelete = user.hasPermission({ access: 'DELETE', resource: '/config/deploymentmaps/' + deploymentMap.DeploymentMapName });
             if (canDelete) {
-              $scope.canDelete = true;
+              vm.canDelete = true;
               break;
             }
           };
@@ -42,26 +44,26 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapsCon
             map.UsedBy.push(env.EnvironmentName);
           }
         });
-        $scope.dataLoading = false;
+        vm.dataLoading = false;
       });
     };
 
-    $scope.canUser = function (action) {
-      if (action == 'post') return $scope.canPost;
-      if (action == 'delete') return $scope.canDelete;
+    vm.canUser = function (action) {
+      if (action == 'post') return vm.canPost;
+      if (action == 'delete') return vm.canDelete;
     };
 
-    $scope.NewItem = function () {
+    vm.newItem = function () {
       var instance = $uibModal.open({
         templateUrl: '/app/configuration/deployment-maps/deployment-maps-create-modal.html',
         controller: 'DeploymentMapCreateController',
       });
       instance.result.then(function () {
-        $scope.Refresh();
+        vm.refresh();
       });
     };
 
-    $scope.Delete = function (map) {
+    vm.delete = function (map) {
       var name = map.DeploymentMapName;
       modal.confirmation({
         title: 'Deleting a Deployment Map',
@@ -71,26 +73,22 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapsCon
       }).then(function () {
         resources.config.deploymentMaps.delete({ key: name }).then(function () {
           cachedResources.config.deploymentMaps.flush();
-          $scope.Refresh();
+          vm.refresh();
         });
       });
     };
 
-    $scope.Compare = function (map) {
-      // TODO compare
-    };
-
-    $scope.ViewHistory = function (map) {
+    vm.viewHistory = function (map) {
       $scope.ViewAuditHistory('Deployment Map', map.DeploymentMapName);
     };
 
-    $scope.CountServices = function (map) {
+    vm.countServices = function (map) {
       return Enumerable.From(map.Value.DeploymentTarget).Sum(function (target) {
         return target.Services.length;
       });
     };
 
-    $scope.UsedBy = function (map) {
+    vm.usedBy = function (map) {
       var maxEnvironmentsToDisplay = 5;
       var displayUsedBy = angular.copy(map.UsedBy).sort();
       if (displayUsedBy.length > maxEnvironmentsToDisplay) {
@@ -106,9 +104,9 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapsCon
     };
 
     function getDeploymentMapByName(mapName) {
-      for (var i = 0; i < $scope.Data.length; i++) {
-        if ($scope.Data[i].DeploymentMapName == mapName) {
-          return $scope.Data[i];
+      for (var i = 0; i < vm.data.length; i++) {
+        if (vm.data[i].DeploymentMapName == mapName) {
+          return vm.data[i];
         }
       }
     }
