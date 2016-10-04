@@ -13,7 +13,6 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCrea
     vm.deploymentMapNameToClone = '';
 
     function init() {
-
       vm.deploymentMap = DeploymentMap.createWithDefaults();
 
       resources.config.deploymentMaps.all().then(function (deploymentMaps) {
@@ -21,14 +20,13 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCrea
         vm.deploymentMapNames = _.map(deploymentMaps, 'DeploymentMapName').sort();
         vm.deploymentMapNameToClone = vm.deploymentMapNames[0];
       });
-
     }
 
     vm.ok = function () {
 
       if (vm.cloneExisting) {
-        var selectedDeploymentMap = GetDeploymentMapByName(vm.deploymentMapNameToClone);
-        if (selectedDeploymentMap) {
+        var selectedDeploymentMap = _.find(vm.deploymentMaps, { DeploymentMapName: vm.deploymentMapNameToClone});
+        if (selectedDeploymentMap !== undefined) {
           vm.deploymentMap.Value.DeploymentTarget = angular.copy(selectedDeploymentMap.Value.DeploymentTarget);
         }
       }
@@ -42,17 +40,6 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCrea
     vm.cancel = function () {
       $uibModalInstance.dismiss('cancel');
     };
-
-    function GetDeploymentMapByName(name) {
-      var matchingMap = null;
-      vm.deploymentMaps.forEach(function (map) {
-        if (map.DeploymentMapName == name) {
-          matchingMap = map;
-        }
-      });
-
-      return matchingMap;
-    }
 
     init();
   });
