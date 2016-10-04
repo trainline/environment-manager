@@ -53,8 +53,8 @@ angular.module('EnvironmentManager.common').factory('UpstreamConfig',
 
       saveNew: function (key) {
         return $http({
-          method: 'put',
-          url: baseUrl + '/' + encodeURIComponent(key),
+          method: 'post',
+          url: baseUrl,
           data: { Value: this.Value, key: key },
           headers: { 'expected-version': this.Version }
         });
