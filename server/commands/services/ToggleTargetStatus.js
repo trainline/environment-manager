@@ -11,21 +11,18 @@ function* ToggleTargetStatus(command) {
   let slice = command.slice;
   let enabled = command.enabled;
   let key = `environments/${environment}/roles/${serverRole}/services/${serviceName}/${slice}`;
-
   let state = yield serviceTargets.getTargetState(environment, { key });
   let service = state.value;
+  let previousStatus = service.hasOwnProperty('Status') ? service.Status : 'Enabled';
 
-  if (service.hasOwnProperty('status')) {
-    service.status = null;
-    delete service.status;
-  }
   service.Status = enabled ? 'Enabled': 'Disabled';
 
   try {
     let result = yield serviceTargets.setTargetState(environment, { key, value:service });
     return service;
   } catch (error) {
-    throw new Error('There was an error updating the future Deployment Status.');
+    throw new Error(
+      `There was an problem updating the Future Deployment status for ${serviceName}. Its status is still currently set to ${previousStatus}`);
   }
 }
 

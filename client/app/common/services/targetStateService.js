@@ -1,8 +1,8 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
-angular.module('EnvironmentManager.common').factory('targetStateService', function($q, $http) {
-  
+angular.module('EnvironmentManager.common').factory('targetStateService', function($rootScope, $q, $http) {
+
  return {
    changeDeploymentStatus: function(enable, service, role, environment) {
      var deferred = $q.defer();
@@ -14,11 +14,12 @@ angular.module('EnvironmentManager.common').factory('targetStateService', functi
        serverRole: role
      };
 
-     $http.post(url, data).then(function(result) {
-       deferred.resolve(result.data)
-     }, function(error) {
-       deferred.reject(error.message);
-     });
+     $http.post(url, data)
+      .then(function(result) {
+         deferred.resolve(result.data)
+       },
+        $rootScope.$broadcast.bind($rootScope, 'error')
+      );
 
      return deferred.promise;
    }
