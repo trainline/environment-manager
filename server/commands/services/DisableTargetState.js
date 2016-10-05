@@ -6,14 +6,15 @@ let serviceTargets = require('modules/service-targets');
 
 function* DisableTargetState(command) {
   let environment = command.environment;
-  let service = command.service;
+  let serviceName = command.service;
   let serverRole = command.serverRole;
   let slice = command.slice;
-  let key = `environments/${environment}/roles/${serverRole}/services/${service}/${slice}`;
+  let key = `environments/${environment}/roles/${serverRole}/services/${serviceName}/${slice}`;
 
-  let value = yield serviceTargets.getTargetState(environment, { key });
-  value.status = 'Disabled';
-  return yield serviceTargets.setTargetState(environment, { key, value });
+  let state = yield serviceTargets.getTargetState(environment, { key });
+  let service = state.value;
+  service.status = 'Disabled';
+  return yield serviceTargets.setTargetState(environment, { key, value:service });
 }
 
 module.exports = co.wrap(DisableTargetState);
