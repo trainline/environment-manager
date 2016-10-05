@@ -1,91 +1,91 @@
 <div class="modal-header">
-    <h2>Deploy Service</h2>
+  <h2>Deploy Service</h2>
 </div>
 <div class="modal-body">
 
-    <form name="form" class="form-horizontal">
+  <form name="form" class="form-horizontal">
 
-        <div class="form-group" ng-class="{'has-error': form.Service.$invalid}">
-            <label class="col-md-3 control-label text-left">Service: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
-            <div class="col-md-5">
-                <select class="form-control"
-                        name="Service"
-                        required=""
-                        ng-model="DeploymentSettings.SelectedService"
-                        ng-disabled="!canUser('edit')">
-                    <option ng-repeat="service in ServicesList" ng-selected="{{service == DeploymentSettings.SelectedService}}" value="{{service}}">{{service}}</option>
-                </select>
-            </div>
-            <span class="help-block" ng-if="form.Service.$error.required">Please select a service.</span>
-        </div>
-        <div class="form-group" ng-if="DeploymentSettings.SelectedService !=''">
-            <label class="col-md-3 control-label text-left">Currently Deployed:</label>
-            <div class="col-md-7">
-                <label ng-if="SelectedServiceDeployInfoMessage" class="control-label info">{{SelectedServiceDeployInfoMessage}}</label>
-                <ul class="form-list" ng-show="SelectedServiceDeployInfo.length">
-                    <li ng-repeat="version in SelectedServiceDeployInfo">{{version}}</li>
-                </ul>
-            </div>
-        </div>
-        <div class="form-group" ng-class="{'has-error': form.Version.$invalid}">
-            <label class="col-md-3 control-label text-left ">Version: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
-            <div class="col-md-4">
-                <input type="text"
-                       name="Version"
-                       class="form-control"
-                       required=""
-                       maxlength="50"
-                       ng-model="DeploymentSettings.Version" />
-            </div>
-            <span class="help-block" ng-if="form.Version.$dirty && form.Version.$error.required">Service version is mandatory.</span>
-        </div>
-        <div class="form-group">
-            <label class="col-md-3 control-label text-left">Mode:</label>
-            <div class="col-md-4">
-                <select class="form-control"
-                        name="Mode"
-                        required=""
-                        ng-model="DeploymentSettings.Mode"
-                        ng-options="m.Value as m.Name for m in DeploymentMethodsList"></select>
-            </div>
-        </div>
-        <div class="form-group" ng-if="DeploymentSettings.SelectedService && DeploymentSettings.Mode=='bg'">
-            <label class="col-md-3 control-label text-left">Current Slices:</label>
-            <div class="col-md-7">
-                <label ng-if="SelectedServiceActiveSliceMessage" class="control-label info">{{SelectedServiceActiveSliceMessage}}</label>
-                <ul class="form-list" ng-show="SelectedServiceActiveSlices.length">
-                    <li ng-repeat="slice in SelectedServiceActiveSlices">{{slice}}</li>
-                </ul>
-            </div>
-        </div>
-        <div class="form-group" ng-if="DeploymentSettings.Mode=='bg'">
-            <label class="col-md-3 control-label text-left">Target Slice:</label>
-            <div class="col-md-4">
-                <select class="form-control"
-                        name="Slice"
-                        required=""
-                        ng-model="DeploymentSettings.Slice">
-                    <option value="blue">Blue</option>
-                    <option value="green">Green</option>
-                </select>
-            </div>
-        </div>
-        <div class="form-group" ng-class="{'has-error': form.PackagePath.$invalid}">
-            <label class="col-md-3 control-label text-left ">Package Path: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
-            <div class="col-md-6">
-                <input type="text"
-                       name="PackagePath"
-                       class="form-control"
-                       required=""
-                       ng-model="DeploymentSettings.PackagePath" />
-                       <p>e.g. https://s3.amazonaws.com/tl-deployment-test/binaries-internal/master/misc/package-3.4.3.zip</p>
-            </div>
-            <span class="help-block" ng-if="form.PackagePath.$dirty && form.PackagePath.$error.required">Package path is mandatory.</span>
-        </div>
+    <div class="form-group" ng-class="{'has-error': form.Service.$invalid}">
+      <label class="col-md-3 control-label text-left">Service: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+      <div class="col-md-5">
+        <select class="form-control"
+          name="Service"
+          required=""
+          ng-model="DeploymentSettings.SelectedService"
+          ng-disabled="!canUser('edit')">
+        <option ng-repeat="service in ServicesList" ng-selected="{{service == DeploymentSettings.SelectedService}}" value="{{service}}">{{service}}</option>
+      </select>
+    </div>
+    <span class="help-block" ng-if="form.Service.$error.required">Please select a service.</span>
+  </div>
+  <div class="form-group" ng-if="DeploymentSettings.SelectedService !=''">
+    <label class="col-md-3 control-label text-left">Currently Deployed:</label>
+    <div class="col-md-7">
+      <label ng-if="SelectedServiceDeployInfoMessage" class="control-label info">{{SelectedServiceDeployInfoMessage}}</label>
+      <ul class="form-list" ng-show="SelectedServiceDeployInfo.length">
+        <li ng-repeat="version in SelectedServiceDeployInfo">{{version}}</li>
+      </ul>
+    </div>
+  </div>
+  <div class="form-group" ng-class="{'has-error': form.Version.$invalid}">
+    <label class="col-md-3 control-label text-left ">Version: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+    <div class="col-md-4">
+      <input type="text"
+        name="Version"
+        class="form-control"
+        required=""
+        maxlength="50"
+        ng-model="DeploymentSettings.Version" />
+    </div>
+    <span class="help-block" ng-if="form.Version.$dirty && form.Version.$error.required">Service version is mandatory.</span>
+  </div>
+  <div class="form-group">
+    <label class="col-md-3 control-label text-left">Mode:</label>
+    <div class="col-md-4">
+      <select class="form-control"
+        name="Mode"
+        required=""
+        ng-model="DeploymentSettings.Mode"
+        ng-options="m.Value as m.Name for m in DeploymentMethodsList"></select>
+    </div>
+  </div>
+  <div class="form-group" ng-if="DeploymentSettings.SelectedService && DeploymentSettings.Mode=='bg'">
+    <label class="col-md-3 control-label text-left">Current Slices:</label>
+    <div class="col-md-7">
+      <label ng-if="SelectedServiceActiveSliceMessage" class="control-label info">{{SelectedServiceActiveSliceMessage}}</label>
+      <ul class="form-list" ng-show="SelectedServiceActiveSlices.length">
+        <li ng-repeat="slice in SelectedServiceActiveSlices">{{slice}}</li>
+      </ul>
+    </div>
+  </div>
+  <div class="form-group" ng-if="DeploymentSettings.Mode=='bg'">
+    <label class="col-md-3 control-label text-left">Target Slice:</label>
+    <div class="col-md-4">
+      <select class="form-control"
+        name="Slice"
+        required=""
+        ng-model="DeploymentSettings.Slice">
+      <option value="blue">Blue</option>
+      <option value="green">Green</option>
+    </select>
+  </div>
+</div>
+<div class="form-group" ng-class="{'has-error': form.PackagePath.$invalid}">
+  <label class="col-md-3 control-label text-left ">Package Path: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+  <div class="col-md-6">
+    <input type="text"
+      name="PackagePath"
+      class="form-control"
+      required=""
+      ng-model="DeploymentSettings.PackagePath" />
+    <p>e.g. https://s3.amazonaws.com/tl-deployment-test/binaries-internal/master/misc/package-3.4.3.zip</p>
+  </div>
+  <span class="help-block" ng-if="form.PackagePath.$dirty && form.PackagePath.$error.required">Package path is mandatory.</span>
+</div>
 
-    </form>
+</form>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-default" type="button" ng-click="Cancel()">Cancel</button>
-    <button class="btn btn-default" type="button" ng-click="Ok()" ng-disabled="form.$pristine || form.$invalid">Deploy...</button>
+  <button class="btn btn-default" type="button" ng-click="Cancel()">Cancel</button>
+  <button class="btn btn-default" type="button" ng-click="Ok()" ng-disabled="form.$pristine || form.$invalid">Deploy...</button>
 </div>
