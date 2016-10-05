@@ -16,7 +16,7 @@ function encodeValue(value) {
 
 function decodeValue(encodedValue) {
   if (!encodedValue) return null;
-  var value = utils.safeParseJSON(encodedValue);
+  let value = utils.safeParseJSON(encodedValue);
   return value || encodedValue;
 }
 
@@ -30,35 +30,33 @@ function asKeyValuePair(item) {
 function getTargetState(environment, parameters) {
   assert(parameters, 'Expected "parameters" not to be null or empty.');
 
-  var promiseFactoryMethod = () => new Promise((resolve, reject) => {
-
-    createConsulClient(environment).then(consulClient => {
-      consulClient.kv.get({ key: parameters.key, recurse: parameters.recurse }, function (error, result) {
-        if (error) {
-          return reject(new HttpRequestError(`An error has occurred contacting consul agent: ${error.message}`));
-        }
+  let promiseFactoryMethod = () => {
+    return createConsulClient(environment).then(consulClient => {
+      return consulClient.kv.get({ key: parameters.key, recurse: parameters.recurse }).catch((error) => {
+        throw new HttpRequestError(`An error has occurred contacting consul agent: ${error.message}`);
+      }).then((result) => {
         if (parameters.recurse) {
-          var data = result ? result.map(asKeyValuePair) : [];
-          return resolve(data);
+          let data = result ? result.map(asKeyValuePair) : [];
+          return data;
         }
         if (result) {
-          return resolve(asKeyValuePair(result));
+          return asKeyValuePair(result);
         }
-        return reject(new ResourceNotFoundError(`Key "${parameters.key}" in Consul key/value storage has not been found.`));
-      });
+        throw new ResourceNotFoundError(`Key "${parameters.key}" in Consul key/value storage has not been found.`);
+      })
     });
-  });
+  }
 
   return executeAction(promiseFactoryMethod);
 }
 
 function setTargetState(environment, parameters) {
   assert(parameters, 'Expected "parameters" not to be null or empty.');
-  var promiseFactoryMethod = () => new Promise((resolve, reject) => {
+  let promiseFactoryMethod = () => new Promise((resolve, reject) => {
 
     createConsulClient(environment).then(consulClient => {
-      var encodedValue = encodeValue(parameters.value);
-      var options = {};
+      let encodedValue = encodeValue(parameters.value);
+      let options = {};
 
       if (parameters.options) {
         if (parameters.options.expectedVersion !== undefined) {
@@ -86,7 +84,7 @@ function setTargetState(environment, parameters) {
 
 function removeTargetState(environment, parameters) {
   assert(parameters, 'Expected "parameters" not to be null or empty.');
-  var promiseFactoryMethod = () => new Promise((resolve, reject) => {
+  let promiseFactoryMethod = () => new Promise((resolve, reject) => {
 
     createConsulClient(environment).then(consulClient => {
       consulClient.kv.get({ key: parameters.key, recurse: parameters.recurse }, function (error, result) {
@@ -115,17 +113,17 @@ function executeAction(promiseFactoryMethod) {
   return new Promise((resolve, reject) => {
     operation.attempt(function () {
       promiseFactoryMethod()
-      .then(result => resolve(result))
-      .catch(error => {
-        if ((error instanceof HttpRequestError) && operation.retry(error)) return;
-        reject(error);
-      });
+        .then(result => resolve(result))
+        .catch(error => {
+          if ((error instanceof HttpRequestError) && operation.retry(error)) return;
+          reject(error);
+        });
     });
   });
 }
 
 function createConsulClient(environment) {
-  return consulClient.create({ environment });
+  return consulClient.create({ environment, promisify: true });
 }
 
 function logChange(operation, key, value){
