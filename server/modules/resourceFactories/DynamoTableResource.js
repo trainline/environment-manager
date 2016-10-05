@@ -70,7 +70,7 @@ class DynamoTableResource {
         return result;
       }
     }).catch(error => {
-      throw standardifyError(error, request);
+      throw standardifyError(error, request, params.suppressError);
     });
   }
 
@@ -88,7 +88,7 @@ class DynamoTableResource {
         request.ExclusiveStartKey = data.LastEvaluatedKey;
         return scan();
       }).catch(error => {
-        throw standardifyError(error, request);
+        throw standardifyError(error, request, params.suppressError);
       });
     }
 
@@ -214,9 +214,11 @@ class DynamoTableResource {
   }
 }
 
-function standardifyError(error, request) {
+function standardifyError(error, request, suppressError) {
   let awsError = new AwsError(error.message);
-  logger.error(awsError);
+  if (suppressError !== true) {
+    logger.error(awsError);
+  }
 
   switch (error.code) {
     case 'ResourceNotFoundException':

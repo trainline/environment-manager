@@ -31,6 +31,7 @@ function queryDeployment(query) {
     resource: 'deployments/history',
     key: query.key,
     accountName: query.account,
+    suppressError: true,
   };
 
   let completedDeploymentsQuery = {
@@ -38,6 +39,7 @@ function queryDeployment(query) {
     resource: 'deployments/completed',
     key: query.key,
     accountName: query.account,
+    suppressError: true,
   };
 
   return Promise.all([
@@ -62,15 +64,15 @@ function queryDeployments(query) {
   let currentDeploymentsQuery = {
     name: queryName,
     resource: 'deployments/history',
-    filter: query.filter,
-    accountName: query.account,
+    filter: filter,
+    suppressError: true,
   };
 
   let completedDeploymentsQuery = {
     name: queryName,
     resource: 'deployments/completed',
-    filter: query.filter,
-    accountName: query.account,
+    filter: filter,
+    suppressError: true,
   };
 
   return Promise.all([

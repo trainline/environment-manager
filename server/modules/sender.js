@@ -70,16 +70,18 @@ function prepareQuery(parameters) {
 function promiseOrCallback(promise, commandOrQuery, type, callback) {
 
   promise.catch(error => {
-    let errorMessage = getErrorMessage(commandOrQuery, error);
-    logger.error(errorMessage, {
-      error: {
-        name: error.name,
-        message: error.message,
-        stack: error.toString(true)
-      },
-      command: type === COMMAND_TYPE ? commandOrQuery : undefined,
-      query: type === QUERY_TYPE ? commandOrQuery : undefined
-    });
+    if (commandOrQuery.suppressError !== true) {
+      let errorMessage = getErrorMessage(commandOrQuery, error);
+      logger.error(errorMessage, {
+        error: {
+          name: error.name,
+          message: error.message,
+          stack: error.toString(true)
+        },
+        command: type === COMMAND_TYPE ? commandOrQuery : undefined,
+        query: type === QUERY_TYPE ? commandOrQuery : undefined
+      });
+    }
   });
 
   if (!callback) return promise;
