@@ -61,6 +61,15 @@ function queryDeployment(query) {
 function queryDeployments(query) {
   let queryName = 'ScanCrossAccountDynamoResources';
 
+  let filter = {
+    'Value.EnvironmentName': query.environment,
+    'Value.Status': query.status,
+    'Value.OwningCluster': query.cluster,
+    '$date_from': query.since,
+  }
+
+  filter = _.omitBy(filter, _.isUndefined);
+
   let currentDeploymentsQuery = {
     name: queryName,
     resource: 'deployments/history',

@@ -58,8 +58,7 @@ function deploymentView(deploymentRecord, clusters) {
         var logLink;
         if (node.Status.toLowerCase() === 'success' ||
           (node.Status.toLowerCase() === 'failed' && node.LastCompletedStage.toLowerCase() !== 'timed out')) {
-          logLink = '/deployments/nodes/logs?account=' + deployment.AccountName + '&environment=' + deployment.Value.EnvironmentName +
-            '&deploymentId=' + deployment.DeploymentID + '&node=' + node.InstanceId;
+          logLink = '/api/v1/deployments/' + deployment.DeploymentID + '/log?account=' + deployment.AccountName + '&instance=' + node.InstanceId
         }
 
         return {

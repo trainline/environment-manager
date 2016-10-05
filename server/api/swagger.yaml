@@ -205,6 +205,10 @@ paths:
           in: path
           type: string
           required: true
+        - name: account
+          in: query
+          type: string
+          required: true
       responses:
         200:
           description: The audit log
@@ -299,6 +303,10 @@ paths:
         - Deployment
       parameters:
         - name: instance
+          in: query
+          type: string
+          required: true
+        - name: account
           in: query
           type: string
           required: true

@@ -88,8 +88,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
         ServerRole: service.Tags.server_role,
         DeploymentId: service.Tags.deployment_id,
         DeploymentCause: yield serviceReporter.getServiceDeploymentCause(environmentName, service.Tags.deployment_id, instanceId),
-        LogLink: '/deployments/nodes/logs?account=' + accountName + '&environment=' +
-          environmentName + '&deploymentId=' + service.Tags.deployment_id + '&node=' + instanceId,
+        LogLink: `/api/v1/deployments/${service.Tags.deployment_id}/log?account=${accountName}&instance=${instanceId}`,
         OverallHealth: getInstanceServiceOverallHealth(instanceServiceHealthChecks),
         HealthChecks: instanceServiceHealthChecks,
         Issues: { Warnings: [], Errors: [] },
