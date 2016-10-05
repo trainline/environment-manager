@@ -4,6 +4,9 @@
 let deploymentsHelper = require('modules/queryHandlersUtil/deployments-helper');
 let GetNodeDeploymentLog = require('queryHandlers/deployments/GetNodeDeploymentLog');
 let co = require('co');
+let sender = require('modules/sender');
+let validUrl = require('valid-url');
+let Enums = require('Enums');
 
 /**
  * GET /deployments
@@ -50,22 +53,72 @@ function getDeploymentLog(req, res, next) {
 
     return GetNodeDeploymentLog(query).then(data => {
       res.send(data.replace(/\n/g,  '<br />'));
-  res.json();
     });
   }).catch(next);
 }
 
+// TODO(filip): add authorizer for this one!
 /**
  * POST /deployments
  */
 function postDeployment(req, res, next) {
-  res.json();
+  // These are required
+  const body = req.swagger.params.body.value; 
+  const environmentName = body.environment;
+  const serviceName = body.service;
+  const serviceVersion = body.version;
+  const packagePath = body.path;
+
+  // These are optional
+  const mode = body.mode;
+  const serviceSlice = body.slice;
+  const serverRoleName = body.serverRole;
+
+  let packageType = validUrl.isUri(packagePath) ? Enums.SourcePackageType.CodeDeployRevision : Enums.SourcePackageType.DeploymentMap;
+
+  let environment = Environment.getByName(environmentName);
+  let accountName = environment.account
+
+  // Check for input errors
+  let error = null;
+  if (mode === 'overwrite' && slice !== undefined && slice !== 'none') {
+    error = `Slice can be set only to 'none' in overwrite mode.`;
+  }
+
+  if (error !== null) {
+    res.send(error);
+    res.status(400);
+  }
+
+  let command = {
+    name: 'DeployService',
+    accountName,
+    environmentName,
+    serviceName,
+    serviceVersion,
+    serviceSlice,
+    packageType,
+    packagePath,
+    serverRoleName,
+  };
+
+  sender.sendCommand({ command: command, user: request.user }).then((deployment) => {
+    res.status(201);
+    res.location(`/api/${deployment.accountName}/deployments/history/${deployment.id}`);
+    res.json(deployment);
+  }).catch(next);
 }
 
 /**
  * PATCH /deployments
  */
 function patchDeployment(req, res, next) {
+  const body = req.swagger.params.body.value;
+  let action = body.action;
+  if (action === 'cancel') {
+
+  }
+  res.json({ ok: true });
 }
 
 module.exports = {

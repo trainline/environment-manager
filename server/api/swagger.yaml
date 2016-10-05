@@ -1697,8 +1697,15 @@ definitions:
         type: string
       mode:
         type: string
+        enum:
+          - bg
+          - overwrite
       slice:
         type: string
+        enum:
+          - blue
+          - green
+          - none
       path:
         type: string
       serverRole:
