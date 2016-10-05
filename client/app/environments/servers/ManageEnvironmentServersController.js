@@ -104,8 +104,8 @@ angular.module('EnvironmentManager.environments')
 
       vm.loadDeployDialog = function () {
         $uibModal.open({
-          templateUrl: '/app/environments/dialogs/env-deploy.html',
-          controller: 'DeployModalController',
+          templateUrl: '/app/environments/dialogs/env-deploy-modal.html',
+          controller: 'DeployModalController as vm',
           size: 'lg',
           resolve: {
             parameters: function () {
