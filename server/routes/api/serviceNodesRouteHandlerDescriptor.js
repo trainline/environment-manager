@@ -4,7 +4,7 @@
 let send = require('modules/helpers/send');
 let route = require('modules/helpers/route');
 
-const DISABLE_SERVICE_MODEL = {
+const TOGGLE_SERVICE_STATUS_MODEL = {
   name: 'body',
   in: 'body',
   required: true,
@@ -34,16 +34,31 @@ let getServiceNodes = route.get('/:account/environments/:environment/services/:s
 let disableService = route.post('/services/disable/:service')
   .inOrderTo('Disable a service from future deployments')
   .withDocs({ tags:['Services'] })
-  .parameters(DISABLE_SERVICE_MODEL)
+  .parameters(TOGGLE_SERVICE_STATUS_MODEL)
   .do((req, res) => {
     let serverRole = req.body.serverRole;
     let environment = req.body.environment;
     let slice = req.body.slice;
     let service = req.params.service;
-    let name = 'DisableTargetState';
+    let enabled = false;
+    let name = 'ToggleTargetStatus';
 
-    send.command({name, service, environment, slice, serverRole}, req, res)
+    send.command({name, service, environment, slice, serverRole, enabled}, req, res)
   });
 
+let enableService = route.post('/services/enable/:service')
+  .inOrderTo('Enable future deployments of a service')
+  .withDocs({ tags:['Services'] })
+  .parameters(TOGGLE_SERVICE_STATUS_MODEL)
+  .do((req, res) => {
+    let serverRole = req.body.serverRole;
+    let environment = req.body.environment;
+    let slice = req.body.slice;
+    let service = req.params.service;
+    let enabled = true;
+    let name = 'ToggleTargetStatus';
 
-module.exports = [getServiceNodes, disableService];
+    send.command({name, service, environment, slice, serverRole, enabled}, req, res)
+  });
+
+module.exports = [getServiceNodes, disableService, enableService ];
