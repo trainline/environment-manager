@@ -3,15 +3,16 @@
 
 angular.module('EnvironmentManager.environments').controller('DeployModalController',
   function ($scope, $uibModal, $uibModalInstance, $q, modal, awsService, accountMappingService, resources, cachedResources, parameters) {
+    var vm = this;
 
-    $scope.Environment = parameters.Environment;
-    $scope.AccountName = '';
-    $scope.ServicesList = [];
-    $scope.SelectedServiceDeployInfo = '';
-    $scope.SelectedServiceActiveSlice = 'N/A';
-    $scope.DeploymentMethodsList = [];
+    vm.environment = parameters.Environment;
+    vm.accountName = '';
+    vm.servicesList = [];
+    vm.selectedServiceDeployInfo = '';
+    vm.selectedServiceActiveSlice = 'N/A';
+    vm.deploymentMethodsList = [];
 
-    $scope.DeploymentSettings = {
+    vm.deploymentSettings = {
       Environment: parameters.Environment.EnvironmentName,
       SelectedService: '',
       Mode: '',
@@ -21,15 +22,13 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
     };
 
     function init() {
-      console.log('Initialising Deploy Controller for ' + parameters.Environment.EnvironmentName);
-
       resources.deployment.methods.all().then(function (deploymentMethods) {
-        $scope.DeploymentMethodsList = deploymentMethods;
-        $scope.DeploymentSettings.Mode = deploymentMethods[0].Value;
+        vm.deploymentMethodsList = deploymentMethods;
+        vm.deploymentSettings.Mode = deploymentMethods[0].Value;
       });
 
       cachedResources.config.deploymentMaps.all().then(function (deploymentMaps) {
-        var deployMapName = $scope.Environment.Value.DeploymentMap;
+        var deployMapName = vm.environment.Value.DeploymentMap;
         if (deployMapName) {
           var deployMap = cachedResources.config.deploymentMaps.getByName(deployMapName, 'DeploymentMapName', deploymentMaps);
           if (deployMap) {
@@ -41,7 +40,7 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
             });
             services = _.uniq(services);
 
-            $scope.ServicesList = services.sort();
+            vm.servicesList = services.sort();
           }
         }
 
@@ -49,35 +48,35 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
       });
 
       accountMappingService.GetAccountForEnvironment(parameters.Environment.EnvironmentName).then(function (accountName) {
-        $scope.AccountName = accountName;
+        vm.accountName = accountName;
       });
     }
 
-    $scope.$watch('DeploymentSettings.SelectedService', function (newVal, oldVal) {
+    $scope.$watch('vm.deploymentSettings.SelectedService', function (newVal, oldVal) {
       if (newVal) {
 
-        var env = $scope.DeploymentSettings.Environment;
+        var env = vm.deploymentSettings.Environment;
 
-        $scope.SelectedServiceActiveSliceMessage = 'Loading...';
-        $scope.SelectedServiceActiveSlices = [];
-        resources.environment(env).inAWSAccount($scope.AccountName).getSliceInfoForService(newVal).then(function (result) {
+        vm.selectedServiceActiveSliceMessage = 'Loading...';
+        vm.selectedServiceActiveSlices = [];
+        resources.environment(env).inAWSAccount(vm.accountName).getSliceInfoForService(newVal).then(function (result) {
             var slices = result.data;
             if (slices && slices.length > 0) {
-              $scope.SelectedServiceActiveSliceMessage = null;
-              $scope.SelectedServiceActiveSlices = slices.map(function(slice){
+              vm.selectedServiceActiveSliceMessage = null;
+              vm.selectedServiceActiveSlices = slices.map(function(slice){
                 return 'Upstream: ' + slice.UpstreamName + ' Slice: ' + slice.Name + ' (' + slice.State + ')';
               });
             }
         }).catch(function(err){
-            $scope.SelectedServiceActiveSliceMessage = (err.status === 404) ? 'None' : 'Unknown';
+            vm.selectedServiceActiveSliceMessage = (err.status === 404) ? 'None' : 'Unknown';
         });
 
-        $scope.SelectedServiceDeployInfoMessage = 'Loading...';
-        $scope.SelectedServiceDeployInfo = [];
-        resources.environment(env).inAWSAccount($scope.AccountName).getDeployedNodesInfoForService(newVal).then(function (result) {
+        vm.selectedServiceDeployInfoMessage = 'Loading...';
+        vm.selectedServiceDeployInfo = [];
+        resources.environment(env).inAWSAccount(vm.accountName).getDeployedNodesInfoForService(newVal).then(function (result) {
             var nodes = result.data;
             if (nodes && nodes.length > 0) {
-              $scope.SelectedServiceDeployInfoMessage = '';
+              vm.selectedServiceDeployInfoMessage = '';
               var nodeDescriptions = nodes.map(function(node){
                 var slice = 'v' + node.ServiceTags.version;
                 if (node.ServiceTags.slice && node.ServiceTags.slice != 'none') {
@@ -85,22 +84,22 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
                 }
                 return slice;
               });
-              $scope.SelectedServiceDeployInfo = _.uniqWith(nodeDescriptions, _.isEqual);
+              vm.selectedServiceDeployInfo = _.uniqWith(nodeDescriptions, _.isEqual);
             } else {
-              $scope.SelectedServiceDeployInfoMessage = 'Not deployed';
+              vm.selectedServiceDeployInfoMessage = 'Not deployed';
             }
         }).catch(function(err){
-            $scope.SelectedServiceDeployInfoMessage = 'Unknown';
+            vm.selectedServiceDeployInfoMessage = 'Unknown';
         });
 
       }
     });
 
-    $scope.Ok = function () {
+    vm.ok = function () {
 
-      var service = $scope.DeploymentSettings.SelectedService;
-      var version = $scope.DeploymentSettings.Version;
-      var env = $scope.DeploymentSettings.Environment;
+      var service = vm.deploymentSettings.SelectedService;
+      var version = vm.deploymentSettings.Version;
+      var env = vm.deploymentSettings.Environment;
 
       // TODO: Call Deploy API in dry-run mode to perform basic validation first
 
@@ -114,11 +113,11 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
         var params = {
           Service: service,
           Version: version,
-          Mode: $scope.DeploymentSettings.Mode,
-          Slice: $scope.DeploymentSettings.Slice,
-          PackagePath: $scope.DeploymentSettings.PackagePath,
+          Mode: vm.deploymentSettings.Mode,
+          Slice: vm.deploymentSettings.Slice,
+          PackagePath: vm.deploymentSettings.PackagePath,
         };
-        resources.environment(env).inAWSAccount($scope.AccountName).deploy(params).then(function (response) {
+        resources.environment(env).inAWSAccount(vm.accountName).deploy(params).then(function (response) {
           $uibModal.open({
             templateUrl: '/app/operations/deployments/ops-deployment-details-modal.html',
             windowClass: 'deployment-summary',
@@ -151,7 +150,7 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
       });
     };
 
-    $scope.Cancel = function () {
+    vm.cancel = function () {
       $uibModalInstance.dismiss('cancel');
     };
 

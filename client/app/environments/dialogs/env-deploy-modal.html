@@ -11,19 +11,19 @@
         <select class="form-control"
           name="Service"
           required=""
-          ng-model="DeploymentSettings.SelectedService"
+          ng-model="vm.deploymentSettings.SelectedService"
           ng-disabled="!canUser('edit')">
-        <option ng-repeat="service in ServicesList" ng-selected="{{service == DeploymentSettings.SelectedService}}" value="{{service}}">{{service}}</option>
+          <option ng-repeat="service in vm.servicesList" ng-selected="{{service == vm.deploymentSettings.SelectedService}}" value="{{service}}">{{service}}</option>
       </select>
     </div>
     <span class="help-block" ng-if="form.Service.$error.required">Please select a service.</span>
   </div>
-  <div class="form-group" ng-if="DeploymentSettings.SelectedService !=''">
+  <div class="form-group" ng-if="vm.deploymentSettings.SelectedService !=''">
     <label class="col-md-3 control-label text-left">Currently Deployed:</label>
     <div class="col-md-7">
-      <label ng-if="SelectedServiceDeployInfoMessage" class="control-label info">{{SelectedServiceDeployInfoMessage}}</label>
-      <ul class="form-list" ng-show="SelectedServiceDeployInfo.length">
-        <li ng-repeat="version in SelectedServiceDeployInfo">{{version}}</li>
+      <label ng-if="vm.selectedServiceDeployInfoMessage" class="control-label info">{{vm.selectedServiceDeployInfoMessage}}</label>
+      <ul class="form-list" ng-show="vm.selectedServiceDeployInfo.length">
+        <li ng-repeat="version in vm.selectedServiceDeployInfo">{{version}}</li>
       </ul>
     </div>
   </div>
@@ -35,7 +35,7 @@
         class="form-control"
         required=""
         maxlength="50"
-        ng-model="DeploymentSettings.Version" />
+        ng-model="vm.deploymentSettings.Version" />
     </div>
     <span class="help-block" ng-if="form.Version.$dirty && form.Version.$error.required">Service version is mandatory.</span>
   </div>
@@ -45,11 +45,11 @@
       <select class="form-control"
         name="Mode"
         required=""
-        ng-model="DeploymentSettings.Mode"
-        ng-options="m.Value as m.Name for m in DeploymentMethodsList"></select>
+        ng-model="vm.deploymentSettings.Mode"
+        ng-options="m.Value as m.Name for m in vm.deploymentMethodsList"></select>
     </div>
   </div>
-  <div class="form-group" ng-if="DeploymentSettings.SelectedService && DeploymentSettings.Mode=='bg'">
+  <div class="form-group" ng-if="vm.deploymentSettings.SelectedService && vm.deploymentSettings.Mode=='bg'">
     <label class="col-md-3 control-label text-left">Current Slices:</label>
     <div class="col-md-7">
       <label ng-if="SelectedServiceActiveSliceMessage" class="control-label info">{{SelectedServiceActiveSliceMessage}}</label>
@@ -58,13 +58,13 @@
       </ul>
     </div>
   </div>
-  <div class="form-group" ng-if="DeploymentSettings.Mode=='bg'">
+  <div class="form-group" ng-if="vm.deploymentSettings.Mode=='bg'">
     <label class="col-md-3 control-label text-left">Target Slice:</label>
     <div class="col-md-4">
       <select class="form-control"
         name="Slice"
         required=""
-        ng-model="DeploymentSettings.Slice">
+        ng-model="vm.deploymentSettings.Slice">
       <option value="blue">Blue</option>
       <option value="green">Green</option>
     </select>
@@ -77,7 +77,7 @@
       name="PackagePath"
       class="form-control"
       required=""
-      ng-model="DeploymentSettings.PackagePath" />
+      ng-model="vm.deploymentSettings.PackagePath" />
     <p>e.g. https://s3.amazonaws.com/tl-deployment-test/binaries-internal/master/misc/package-3.4.3.zip</p>
   </div>
   <span class="help-block" ng-if="form.PackagePath.$dirty && form.PackagePath.$error.required">Package path is mandatory.</span>
@@ -86,6 +86,6 @@
 </form>
 </div>
 <div class="modal-footer">
-  <button class="btn btn-default" type="button" ng-click="Cancel()">Cancel</button>
-  <button class="btn btn-default" type="button" ng-click="Ok()" ng-disabled="form.$pristine || form.$invalid">Deploy...</button>
+  <button class="btn btn-default" type="button" ng-click="vm.cancel()">Cancel</button>
+  <button class="btn btn-default" type="button" ng-click="vm.ok()" ng-disabled="form.$pristine || form.$invalid">Deploy...</button>
 </div>
