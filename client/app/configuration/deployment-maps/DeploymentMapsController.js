@@ -23,14 +23,9 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapsCon
             return deploymentMap;
           });
 
-          for (var i in deploymentMaps) {
-            var deploymentMap = deploymentMaps[i];
-            var canDelete = user.hasPermission({ access: 'DELETE', resource: '/config/deploymentmaps/' + deploymentMap.DeploymentMapName });
-            if (canDelete) {
-              vm.canDelete = true;
-              break;
-            }
-          };
+          vm.canDelete = _.some(deploymentMaps, function (deploymentMap) {
+            return user.hasPermission({ access: 'DELETE', resource: '/config/deploymentmaps/' + deploymentMap.DeploymentMapName });
+          });
         }),
 
         cachedResources.config.environments.all().then(function (envData) {
