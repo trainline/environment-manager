@@ -117,16 +117,15 @@ function executeAction(promiseFactoryMethod) {
       promiseFactoryMethod()
       .then(result => resolve(result))
       .catch(error => {
-        logger.error(error.toString(true));
         if ((error instanceof HttpRequestError) && operation.retry(error)) return;
-        reject(operation.mainError());
+        reject(error);
       });
     });
   });
 }
 
 function createConsulClient(environment) {
-  return consulClient.create({ environment }).catch(logger.error.bind(logger));
+  return consulClient.create({ environment });
 }
 
 function logChange(operation, key, value){
