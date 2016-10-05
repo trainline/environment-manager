@@ -94,29 +94,24 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
       var query = {};
 
       if ($scope.SelectedEnvironment !== SHOW_ALL_OPTION) {
-        query['Value.EnvironmentName'] = $scope.SelectedEnvironment;
+        query.environment = $scope.SelectedEnvironment;
       }
 
       if ($scope.SelectedStatus !== SHOW_ALL_OPTION) {
-        query['Value.Status'] = $scope.SelectedStatus;
+        query.status = $scope.SelectedStatus;
       }
 
       if ($scope.SelectedOwningCluster !== SHOW_ALL_OPTION) {
-        query['Value.OwningCluster'] = $scope.SelectedOwningCluster;
+        query.cluster = $scope.SelectedOwningCluster;
       }
 
       if ($scope.SelectedDateRangeValue && $scope.SelectedDateRangeValue > 0) {
         var dateNow = new Date().getTime();
         dateNow -= ($scope.SelectedDateRangeValue);
-        query['$date_from'] = new Date(dateNow).toISOString();
+        query.since = new Date(dateNow).toISOString();
       }
 
-      var params = {
-        account: 'all', // Always retrieve deployments across all accounts
-        query: query,
-      };
-
-      resources.deployments.all(params).then(function (data) {
+      Deployment.getAll(query).then(function (data) {
         vm.deployments = data.map(Deployment.convertToListView);
 
         $scope.UniqueServices = _.uniq(data.map(function (d) { return d.Value.ServiceName; }));
