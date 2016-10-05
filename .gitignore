@@ -36,3 +36,5 @@ server/configuration.js
 dist/
 build/
 /Lambda/**/*.zip
+
+.swp
