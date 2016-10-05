@@ -14,9 +14,19 @@ function* ToggleTargetStatus(command) {
 
   let state = yield serviceTargets.getTargetState(environment, { key });
   let service = state.value;
-  service.status = enabled ? 'Enabled': 'Disabled';
-  
-  return yield serviceTargets.setTargetState(environment, { key, value:service });
+
+  if (service.hasOwnProperty('status')) {
+    service.status = null;
+    delete service.status;
+  }
+  service.Status = enabled ? 'Enabled': 'Disabled';
+
+  try {
+    let result = yield serviceTargets.setTargetState(environment, { key, value:service });
+    return service;
+  } catch (error) {
+    throw new Error('There was an error updating the future Deployment Status.');
+  }
 }
 
 module.exports = co.wrap(ToggleTargetStatus);

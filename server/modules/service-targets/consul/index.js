@@ -12,5 +12,3 @@ module.exports = {
   getAllServiceTargets: consulKVstore.getAllServiceTargets,
   getServiceDeploymentCause: consulKVstore.getServiceDeploymentCause
 };
-
-

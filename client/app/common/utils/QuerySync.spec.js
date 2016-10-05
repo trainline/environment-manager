@@ -67,7 +67,6 @@ describe('QuerySync', function () {
     it('casts to integer', function() {
       $routeParams.date_range = '2000';
       querySync.init();
-      console.log(target);
       expect(target.DateRange).toEqual(2000);
     });
 

@@ -17,7 +17,7 @@
           <th class="text-nowrap">Health Checks</th>
           <th class="text-nowrap">Instances</th>
           <th class="text-nowrap">Deployment Log</th>
-          <th class="text-nowrap">Disable Future Deployments
+          <th class="text-nowrap">Future Deployments
             <span data-uib-popover
                   data-popover-trigger="'mouseenter'"
                   uib-popover-template="vm.helpTextTemplate"
@@ -36,7 +36,9 @@
           <td><health-checks list="service.HealthChecks"></health-checks></td>
           <td><a ng-click="vm.showAsgSingleService(service)" ng-if="service.InstancesNames.length > 0">{{ service.InstancesHealthCount }}</a><span ng-if="service.InstancesNames.length === 0">No instances</span></td>
           <td><a ng-click="vm.showDeploymentLog(service)">Show Deployment</a></td>
-          <td><a ng-click="vm.showDeploymentLog(service)">X</a></td>
+          <td><a ng-click="vm.toggleDeploymentStatus(service)">
+            {{ service.Status }}
+          </a></td>
         </tr>
       </tbody>
     </table>

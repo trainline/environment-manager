@@ -6,7 +6,6 @@ let _ = require('lodash');
 let co = require('co');
 
 function toRoleGroups(results) {
-  console.log(JSON.stringify(results, null, 2));
   var hash = _.groupBy(results, getRole);
   return Object.keys(hash).map(key => {
     return {

@@ -342,7 +342,6 @@ json-diff-patch > pre { overflow-y: scroll; }
   top: 4px;
 
   &.none, &.Unknown {
-    display: none;
     background-color: #EEEEEE;
     background-image: radial-gradient(#EEEEEE, #BBBBBB);
   }
