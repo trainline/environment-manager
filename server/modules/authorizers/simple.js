@@ -2,13 +2,13 @@
 'use strict';
 
 exports.getRules = request => {
-    return Promise.resolve([{
-        resource: request.url.replace(/\/+$/, ''),
-        access: request.method
-    }]);
+  return Promise.resolve([{
+    resource: request.url.replace(/\/+$/, ''),
+    access: request.method
+  }]);
 };
 
 exports.docs = {
-    requiresClusterPermissions: false,
-    requiresEnvironmentTypePermissions: false
+  requiresClusterPermissions: false,
+  requiresEnvironmentTypePermissions: false
 };
