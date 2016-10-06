@@ -62,28 +62,11 @@ angular.module('EnvironmentManager.common').factory('cachedResources',
     }
 
     function getByName(nameValue, nameAttrib, data) {
-      var matchingEntity = null;
       if (data) {
-        data.forEach(function (entity) {
-          var entityName = getEntityName(entity, nameAttrib);
-          if (entityName == nameValue) {
-            matchingEntity = entity;
-            return;
-          }
+        return _.find(data, function (entity) {
+          return _.get(entity, nameAttrib) === nameValue;
         });
       }
-
-      return matchingEntity;
-    }
-
-    function getEntityName(entity, nameAttrib) {
-      var path = nameAttrib.split('.');
-      var obj = entity;
-      for (var i = 0; i < path.length; i++) {
-        obj = obj[path[i]];
-      }
-
-      return obj;
     }
 
     return cachedResources;
