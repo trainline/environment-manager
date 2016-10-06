@@ -40,7 +40,7 @@ let disableService = route.post('/services/disable/:service')
     let environment = req.body.environment;
     let slice = req.body.slice;
     let service = req.params.service;
-    let enabled = false;
+    let enable = false;
     let name = 'ToggleTargetStatus';
 
     send.command({name, service, environment, slice, serverRole, enabled}, req, res)
@@ -55,7 +55,7 @@ let enableService = route.post('/services/enable/:service')
     let environment = req.body.environment;
     let slice = req.body.slice;
     let service = req.params.service;
-    let enabled = true;
+    let enable = true;
     let name = 'ToggleTargetStatus';
 
     send.command({name, service, environment, slice, serverRole, enabled}, req, res)
