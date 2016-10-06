@@ -111,7 +111,7 @@ function getLogMessage(commandOrQuery) {
 
 function getErrorMessage(commandOrQuery, error) {
   var message = [
-    'Error executing command:',
+    'Error executing:',
     THICK_SEPARATOR,
     `[${commandOrQuery.name}]`,
     JSON.stringify(commandOrQuery, null, '  '),
