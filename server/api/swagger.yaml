@@ -57,6 +57,7 @@ paths:
       summary: Apply partial updates to an ASG.
       tags:
         - ASG
+      x-authorizer: asgs
       parameters:
         - name: account
           in: query
@@ -104,6 +105,7 @@ paths:
       summary: Resize an ASG under the given account.
       tags:
         - ASG
+      x-authorizer: asgs
       parameters:
         - name: account
           in: query
@@ -128,6 +130,7 @@ paths:
       summary: Get the launch config associated with an ASG under the given account.
       tags:
         - ASG
+      x-authorizer: asgs  
       parameters:
         - name: account
           in: query
@@ -147,6 +150,7 @@ paths:
       summary: Update the launch config associated with an ASG under the given account.
       tags:
         - ASG
+      x-authorizer: asgs
       parameters:
         - name: account
           in: query
@@ -410,6 +414,7 @@ paths:
       summary: Set the schedule for an environment.
       tags:
         - Environment
+      x-authorizer: environments-schedule
       parameters:
         - name: name
           in: path
@@ -1079,6 +1084,7 @@ paths:
       summary: Create a new environment configuration.
       tags:
         - Environment
+      x-authorizer: environments
       parameters:
         - name: body
           in: body
@@ -1110,6 +1116,7 @@ paths:
       summary: Update an environment configuration.
       tags:
         - Environment
+      x-authorizer: environments
       parameters:
         - name: name
           in: path
@@ -1129,6 +1136,7 @@ paths:
       summary: Delete an environment configuration.
       tags:
         - Environment
+      x-authorizer: environments
       parameters:
         - name: name
           in: path
@@ -1308,6 +1316,7 @@ paths:
       summary: Create a load balancer setting.
       tags:
         - Load Balancers
+      x-authorizer: load-balancer-settings
       parameters:
         - name: body
           in: body
@@ -1343,6 +1352,7 @@ paths:
       summary: Update a load balancer setting.
       tags:
         - Load Balancers
+      x-authorizer: load-balancer-settings
       parameters:
         - name: environment
           in: path
@@ -1366,6 +1376,7 @@ paths:
       summary: Delete an load balancer setting.
       tags:
         - Load Balancers
+      x-authorizer: load-balancer-settings
       parameters:
         - name: environment
           in: path
@@ -1482,6 +1493,7 @@ paths:
       summary: Create a service configuration
       tags:
         - Service
+      x-authorizer: services
       parameters:
         - name: config
           in: body
@@ -1517,6 +1529,7 @@ paths:
       summary: Delete a service configuration.
       tags:
         - Service
+      x-authorizer: services
       parameters:
         - name: name
           in: path
@@ -1534,6 +1547,7 @@ paths:
       summary: Update a service configuration.
       tags:
         - Service
+      x-authorizer: services
       parameters:
         - name: name
           in: path
@@ -1571,6 +1585,7 @@ paths:
       summary: Create an upsteram configuration.
       tags:
         - Upstream
+      x-authorizer: upstreams
       parameters:
         - name: body
           in: body
@@ -1587,6 +1602,7 @@ paths:
       summary: Update an upstream configuration.
       tags:
         - Upstream
+      x-authorizer: upstreams
       parameters:
         - name: name
           in: path
@@ -1621,6 +1637,7 @@ paths:
       summary: Delete an upstream configuration.
       tags:
         - Upstream
+      x-authorizer: upstreams
       parameters:
         - name: name
           in: path
