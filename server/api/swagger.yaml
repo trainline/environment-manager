@@ -250,8 +250,9 @@ paths:
       summary: Create a new deployment. This will provision any required infrastructure and update the required target-state.
       tags:
         - Deployment
+      x-authorizer: deploy-authorizer
       parameters:
-        - name: deployment
+        - name: body
           in: body
           required: true
           schema:

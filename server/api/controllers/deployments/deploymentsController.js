@@ -7,6 +7,7 @@ let co = require('co');
 let sender = require('modules/sender');
 let validUrl = require('valid-url');
 let Enums = require('Enums');
+let Environment = require('models/Environment');
 
 /**
  * GET /deployments
@@ -61,7 +62,7 @@ function getDeploymentLog(req, res, next) {
 /**
  * POST /deployments
  */
-function postDeployment(req, res, next) {
+function* postDeployment(req, res, next) {
   // These are required
   const body = req.swagger.params.body.value; 
   const environmentName = body.environment;
@@ -70,23 +71,24 @@ function postDeployment(req, res, next) {
   const packagePath = body.path;
 
   // These are optional
-  const mode = body.mode;
-  const serviceSlice = body.slice;
-  const serverRoleName = body.serverRole;
+  const mode = body.mode || 'overwrite';
+  const serviceSlice = body.slice || 'none';
+  const serverRoleName = req.serverRoleName; // This is attached in authorizer, TODO(filip): extract to new middleware
 
   let packageType = validUrl.isUri(packagePath) ? Enums.SourcePackageType.CodeDeployRevision : Enums.SourcePackageType.DeploymentMap;
 
-  let environment = Environment.getByName(environmentName);
-  let accountName = environment.account
+  let environment = yield Environment.getByName(environmentName);
+  let environmentType = yield environment.getEnvironmentType();
+  let accountName = environmentType.AWSAccountName;
 
   // Check for input errors
   let error = null;
-  if (mode === 'overwrite' && slice !== undefined && slice !== 'none') {
+  if (mode === 'overwrite' && serviceSlice !== undefined && serviceSlice !== 'none') {
     error = `Slice can be set only to 'none' in overwrite mode.`;
   }
 
   if (error !== null) {
-    res.send(error);
+    res.send({ error });
     res.status(400);
   }
 
@@ -102,7 +104,8 @@ function postDeployment(req, res, next) {
     serverRoleName,
   };
 
-  sender.sendCommand({ command: command, user: request.user }).then((deployment) => {
+  sender.sendCommand({ command, user: req.user }).then((deployment) => {
+    console.log('YOOYOO');
     res.status(201);
     res.location(`/api/${deployment.accountName}/deployments/history/${deployment.id}`);
     res.json(deployment);
@@ -125,6 +128,6 @@ module.exports = {
   getDeployments,
   getDeploymentById,
   getDeploymentLog,
-  postDeployment,
+  postDeployment: co.wrap(postDeployment),
   patchDeployment
 };

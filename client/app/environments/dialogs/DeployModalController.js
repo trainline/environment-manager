@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('DeployModalController',
-  function ($scope, $uibModal, $uibModalInstance, $q, modal, awsService, accountMappingService, resources, cachedResources, parameters) {
+  function ($scope, $http, $uibModal, $uibModalInstance, $q, modal, awsService, accountMappingService, resources, cachedResources, parameters) {
     var vm = this;
 
     vm.environment = parameters.Environment;
@@ -110,14 +110,19 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
         severity: 'Warning',
       };
       modal.confirmation(modalParameters).then(function () {
-        var params = {
-          Service: service,
-          Version: version,
-          Mode: vm.deploymentSettings.Mode,
-          Slice: vm.deploymentSettings.Slice,
-          PackagePath: vm.deploymentSettings.PackagePath,
-        };
-        resources.environment(env).inAWSAccount(vm.accountName).deploy(params).then(function (response) {
+        $http({
+          url: '/api/v1/deployments',
+          method: 'post',
+          data: {
+            environment: env,
+            version: version,
+            service: service,
+            mode: vm.deploymentSettings.Mode,
+            slice: vm.deploymentSettings.Mode === 'bg' ? vm.deploymentSettings.Slice : undefined,
+            path: vm.deploymentSettings.PackagePath,
+          }
+        }).then(function (response) {
+          var data = response.data;
           $uibModal.open({
             templateUrl: '/app/operations/deployments/ops-deployment-details-modal.html',
             windowClass: 'deployment-summary',
@@ -126,21 +131,21 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
             resolve: {
               deployment: function () {
                 return {
-                  DeploymentID: response.data.id,
+                  DeploymentID: data.id,
                   Value: {
                     DeploymentType: "",
-                    EnvironmentName: response.data.environmentName,
-                    EnvironmentType: response.data.environmentTypeName,
+                    EnvironmentName: data.environmentName,
+                    EnvironmentType: data.environmentTypeName,
                     ExecutionLog: "Deployment starting...",
-                    OwningCluster: response.data.clusterName,
-                    ServiceName: response.data.serviceName,
-                    ServiceSlice: response.data.serviceSlice,
-                    ServiceVersion: response.data.serviceVersion,
+                    OwningCluster: data.clusterName,
+                    ServiceName: data.serviceName,
+                    ServiceSlice: data.serviceSlice,
+                    ServiceVersion: data.serviceVersion,
                     StartTimestamp: moment.utc().format(),
                     Status: "In progress",
-                    User: response.data.username
+                    User: data.username
                   },
-                  AccountName: response.data.accountName
+                  AccountName: data.accountName
                 };
               },
             },
