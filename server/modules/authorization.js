@@ -6,24 +6,19 @@ let BaseError = require('modules/errors/BaseError.class');
 let authorize = require('modules/authorizer');
 
 function authorizeRequest(authorizer, request, response, next) {
-
   if (!request.user) {
-
     response.status(401);
     response.send('Access Denied. Please sign in and try again.');
-
   } else {
 
     if (request.method == 'GET') return next();
     handleSecureRequest(authorizer, request, response, next)
 
   }
-
 }
 
 function handleSecureRequest(authorizer, request, response, next) {
-
-  var usersPermissions = request.user.getPermissions();
+  let usersPermissions = request.user.getPermissions();
   authorizer.getRules(request).then(requiredPermissions => {
 
     logRequestAndRequirements(request, requiredPermissions, usersPermissions);
@@ -38,18 +33,13 @@ function handleSecureRequest(authorizer, request, response, next) {
   }).catch(error => {
 
     if (error.name === 'BadRequestError') {
-
       response.status(400);
       response.send(error.message);
-
     } else {
-
       sendAuthorizationErrorResponse(error, response);
-
     }
 
   });
-
 }
 
 function sendAuthorizationErrorResponse(error, response) {
@@ -65,7 +55,7 @@ function sendAuthorizationErrorResponse(error, response) {
 
 function sendUnauthorizedResponse(unsatisfiedPermissions, response) {
 
-  var message = 'You are not authorized to perform that action. You are missing the following permissions: <br \><br \>';
+  let message = 'You are not authorized to perform that action. You are missing the following permissions: <br /><br />';
 
   unsatisfiedPermissions.forEach(function (permission) {
     message += '* ' + permission.access + ' > ' + permission.resource;
