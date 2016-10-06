@@ -43,7 +43,7 @@ let disableService = route.post('/services/disable/:service')
     let enable = false;
     let name = 'ToggleTargetStatus';
 
-    send.command({name, service, environment, slice, serverRole, enabled}, req, res)
+    send.command({name, service, environment, slice, serverRole, enable}, req, res)
   });
 
 let enableService = route.post('/services/enable/:service')
@@ -58,7 +58,7 @@ let enableService = route.post('/services/enable/:service')
     let enable = true;
     let name = 'ToggleTargetStatus';
 
-    send.command({name, service, environment, slice, serverRole, enabled}, req, res)
+    send.command({name, service, environment, slice, serverRole, enable}, req, res)
   });
 
 module.exports = [getServiceNodes, disableService, enableService ];
