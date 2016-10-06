@@ -428,6 +428,18 @@ paths:
       responses:
         200:
           description: OK
+  /environments/schedule-status:
+    x-swagger-router-controller: environments/environmentsController
+    get:
+      operationId: getEnvironmentsScheduleStatus
+      summary: Get current schedule status for all environmetns at a given time.
+      tags:
+        - Environment
+      responses:
+        200:
+          description: The schedule status
+          schema:
+            type: object
   /environments/{name}/schedule-status:
     x-swagger-router-controller: environments/environmentsController
     get:
@@ -1072,6 +1084,15 @@ paths:
       summary: Get all environment configurations.
       tags:
         - Environment
+      parameters:
+        - name: environmentType
+          in: query
+          type: string
+          required: false
+        - name: cluster
+          in: query
+          required: false
+          type: string
       responses:
         200:
           description: The list of environment configs
