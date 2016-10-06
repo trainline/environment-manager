@@ -15,6 +15,11 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
     vm.servicesList = vm.asgState.Services;
     vm.helpTextTemplate = 'app/environments/dialogs/asg/popovers/help-disable-service.html';
 
+    vm.servicesList = vm.servicesList.map(function(service) {
+      service.installationEnabled = service.Status !== 'Disabled';
+      return service;
+    });
+
     vm.showDeploymentLog = function (service) {
       Deployment.getById(vm.asg.$accountName, service.DeploymentId).then(function (deployment) {
         $uibModal.open({
@@ -49,8 +54,8 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
       });
     };
 
-    vm.toggleDeploymentStatus = function (service) {
-      var enableService = service.Status === 'Disabled';
+    vm.setDeploymentStatus = function (service) {
+      var enableService = service.installationEnabled;
       targetStateService.changeDeploymentStatus(enableService, service, vm.role, vm.environment).then(function(result) {
         service.Status = result.Status;
       });
