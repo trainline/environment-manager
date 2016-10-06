@@ -3,21 +3,22 @@
 
 angular.module('EnvironmentManager.environments').controller('EnvironmentsSummaryController',
   function ($scope, $routeParams, $location, $uibModal, $q, resources, cachedResources, configValidation, cron) {
+    var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
 
-    $scope.Data = [];
+    vm.data = [];
 
-    $scope.OwningClustersList = [];
-    $scope.EnvironmentTypesList = [];
-    $scope.SelectedEnvironmentType = SHOW_ALL_OPTION;
-    $scope.SelectedOwningCluster = SHOW_ALL_OPTION;
+    vm.owningClustersList = [];
+    vm.environmentTypesList = [];
+    vm.selectedEnvironmentType = SHOW_ALL_OPTION;
+    vm.selectedOwningCluster = SHOW_ALL_OPTION;
 
-    $scope.EnvironmentConfigValid = {};
+    vm.environmentConfigValid = {};
 
-    $scope.DataLoading = false;
+    vm.dataLoading = false;
 
-    $scope.gridOptions = {
+    vm.gridOptions = {
       data: 'Data',
       columnDefs: [{
         name: 'statusIcon',
@@ -35,44 +36,40 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
       }],
     };
 
-    $scope.whatIsRow = function (grid, row) {
-      console.log(row);
-    };
-
     function init() {
 
-      $scope.userHasPermission = user.hasPermission({ access: 'POST', resource: '/config/environments/*' });
+      vm.userHasPermission = user.hasPermission({ access: 'POST', resource: '/config/environments/*' });
 
       $q.all([
         cachedResources.config.clusters.all().then(function (clusters) {
-          $scope.OwningClustersList = [SHOW_ALL_OPTION].concat(_.map(clusters, 'ClusterName')).sort();
+          vm.owningClustersList = [SHOW_ALL_OPTION].concat(_.map(clusters, 'ClusterName')).sort();
         }),
 
         cachedResources.config.environmentTypes.all().then(function (environmentTypes) {
-          $scope.EnvironmentTypesList = [SHOW_ALL_OPTION].concat(_.map(environmentTypes, 'EnvironmentType').sort());
+          vm.environmentTypesList = [SHOW_ALL_OPTION].concat(_.map(environmentTypes, 'EnvironmentType').sort());
         }),
       ]).then(function () {
-        $scope.SelectedEnvironmentType = $routeParams.environmentType || SHOW_ALL_OPTION;
-        $scope.SelectedOwningCluster = $routeParams.cluster || SHOW_ALL_OPTION;
+        vm.selectedEnvironmentType = $routeParams.environmentType || SHOW_ALL_OPTION;
+        vm.selectedOwningCluster = $routeParams.cluster || SHOW_ALL_OPTION;
 
-        $scope.Refresh();
+        vm.refresh();
       });
     }
 
-    $scope.Refresh = function () {
-      $scope.DataLoading = true;
+    vm.refresh = function () {
+      vm.dataLoading = true;
       $location.search({
-        environmentType: $scope.SelectedEnvironmentType,
-        cluster: $scope.SelectedOwningCluster,
+        environmentType: vm.selectedEnvironmentType,
+        cluster: vm.selectedOwningCluster,
       });
 
       var query = {};
-      if ($scope.SelectedEnvironmentType != SHOW_ALL_OPTION) {
-        query['Value.EnvironmentType'] = $scope.SelectedEnvironmentType;
+      if (vm.selectedEnvironmentType != SHOW_ALL_OPTION) {
+        query['Value.EnvironmentType'] = vm.selectedEnvironmentType;
       }
 
-      if ($scope.SelectedOwningCluster != SHOW_ALL_OPTION) {
-        query['Value.OwningCluster'] = $scope.SelectedOwningCluster;
+      if (vm.selectedOwningCluster != SHOW_ALL_OPTION) {
+        query['Value.OwningCluster'] = vm.selectedOwningCluster;
       }
 
       $q.all([
@@ -82,7 +79,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
         var configEnvironments = results[0];
         var opsEnvironments = results[1];
 
-        $scope.Data = configEnvironments.merge(opsEnvironments,
+        vm.data = configEnvironments.merge(opsEnvironments,
           function (source, target) {
             return source.EnvironmentName === target.EnvironmentName;
           },
@@ -103,35 +100,35 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
             return result;
           });
 
-        $scope.DataLoading = false;
+        vm.dataLoading = false;
         setTimeout(ValidateEnvironments, 5000); // Don't call unless user is waiting on page to prevent excessive dynamo load
       });
     };
 
-    $scope.canUser = function () {
-      return $scope.userHasPermission;
+    vm.canUser = function () {
+      return vm.userHasPermission;
     };
 
-    $scope.ViewEnvironment = function (environment) {
+    vm.viewEnvironment = function (environment) {
       $location.path('/environments/' + environment.EnvironmentName);
     };
 
-    $scope.NewEnvironment = function () {
+    vm.newEnvironment = function () {
       var instance = $uibModal.open({
         templateUrl: '/app/environments/dialogs/env-create-environment-modal.html',
         controller: 'CreateEnvironmentController',
       });
       instance.result.then(function () {
-        $scope.Refresh();
+        vm.refresh();
       });
     };
 
-    $scope.ViewDeployments = function (env) {
+    vm.viewDeployments = function (env) {
       $location.search('environment', env.EnvironmentName);
       $location.path('/operations/deployments/');
     };
 
-    $scope.ViewHistory = function (environment) {
+    vm.viewHistory = function (environment) {
       $scope.ViewAuditHistory('Environment', environment.EnvironmentName);
     };
 
@@ -144,14 +141,14 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
         cachedResources.config.deploymentMaps.all(),
         cachedResources.config.lbSettings.all(),
       ]).then(function () {
-        $scope.Data.forEach(function (env) { ValidateEnvironment(env); });
+        vm.data.forEach(function (env) { ValidateEnvironment(env); });
       });
     }
 
     function ValidateEnvironment(environment) {
-      if (!$scope.EnvironmentConfigValid[environment.EnvironmentName]) {
+      if (!vm.environmentConfigValid[environment.EnvironmentName]) {
         configValidation.ValidateEnvironment(environment.EnvironmentName).then(function (node) {
-          $scope.EnvironmentConfigValid[environment.EnvironmentName] = node;
+          vm.environmentConfigValid[environment.EnvironmentName] = node;
         });
       }
     }
