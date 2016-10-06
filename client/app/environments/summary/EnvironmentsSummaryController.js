@@ -93,7 +93,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
               Operation: target.Value || {},
             };
 
-            var scheduleAction = GetScheduleAction(result.Operation);
+            var scheduleAction = getScheduleAction(result.Operation);
             result.Operation.getScheduleAction = function () {
               return scheduleAction; };
 
@@ -101,7 +101,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
           });
 
         vm.dataLoading = false;
-        setTimeout(ValidateEnvironments, 5000); // Don't call unless user is waiting on page to prevent excessive dynamo load
+        setTimeout(validateEnvironments, 5000); // Don't call unless user is waiting on page to prevent excessive dynamo load
       });
     };
 
@@ -132,7 +132,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
       $scope.ViewAuditHistory('Environment', environment.EnvironmentName);
     };
 
-    function ValidateEnvironments() {
+    function validateEnvironments() {
       $q.all([
         // Make sure cache populated to avoid async multiple hits
         cachedResources.config.environments.all(),
@@ -141,11 +141,11 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
         cachedResources.config.deploymentMaps.all(),
         cachedResources.config.lbSettings.all(),
       ]).then(function () {
-        vm.data.forEach(function (env) { ValidateEnvironment(env); });
+        vm.data.forEach(function (env) { validateEnvironment(env); });
       });
     }
 
-    function ValidateEnvironment(environment) {
+    function validateEnvironment(environment) {
       if (!vm.environmentConfigValid[environment.EnvironmentName]) {
         configValidation.ValidateEnvironment(environment.EnvironmentName).then(function (node) {
           vm.environmentConfigValid[environment.EnvironmentName] = node;
@@ -153,8 +153,8 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
       }
     }
 
-    function GetScheduleAction(data) {
-      function GetCurrentSchedule() {
+    function getScheduleAction(data) {
+      function getCurrentSchedule() {
         if (data.ScheduleAutomatically === false) {
           if (data.ManualScheduleUp === true) return '247';
           if (data.ManualScheduleUp === false) return 'OFF';
@@ -163,7 +163,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
         return data.DefaultSchedule;
       }
 
-      var schedule = GetCurrentSchedule();
+      var schedule = getCurrentSchedule();
       return cron.getActionBySchedule(schedule);
     }
 
