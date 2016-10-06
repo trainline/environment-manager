@@ -29,7 +29,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="service in vm.servicesList | orderBy : ['Name', 'Version']">
+        <tr ng-repeat="service in vm.servicesList | orderBy : ['Name', 'Version']" class="vertical-center">
           <td><health-status status='service.OverallHealth.Status'></health-status> {{ service.Name }}</td>
           <td>{{ service.Version }}</td>
           <td><span class="slice-symbol" ng-class="service.Slice"></span>{{ service.Slice }}</td>

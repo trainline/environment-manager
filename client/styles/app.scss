@@ -148,6 +148,10 @@ td.actions-button a { color: inherit; }
   border-bottom-width: 2px;
 }
 
+.table tr.vertical-center td {
+  vertical-align: middle;
+}
+
 /* Error Styles */
 .invalid { border: 1px solid red; }
 .ErrorList {
