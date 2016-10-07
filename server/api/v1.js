@@ -1,6 +1,8 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
+let _ = require('lodash');
+
 let authentication = require('modules/authentication');
 let yaml = require('js-yaml');
 let swaggerTools = require('swagger-tools');
@@ -30,6 +32,13 @@ function loggedInAuthorization(req, res, next) {
 function authorize(req, res, next) {
   let authorizerName = req.swagger.operation['x-authorizer'] || 'simple';
   let authorizer = require(`modules/authorizers/${authorizerName}`);
+
+  // We need to rewrite this for authorizers to work with swagger
+  // TODO(filip): remove this once we move to v1 API and drop old one
+  _.each(req.swagger.params, (param, key) => {
+    req.params[key] = param.value;
+  });
+  
   authorization(authorizer, req, res, next);
 }
 
