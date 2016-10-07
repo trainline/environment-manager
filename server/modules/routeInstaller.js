@@ -18,6 +18,8 @@ function asExpressRouteDescriptor(descriptor) {
     var authorizer = descriptor.authorizer || simpleAuthorizer;
 
     middlewares.push((request, response, next) => {
+      if (request.url.indexOf('/v1') === 0) next();
+
       return authorize(authorizer, request, response, next);
     });
   }
@@ -25,6 +27,8 @@ function asExpressRouteDescriptor(descriptor) {
   // Validation step
   if (validation) {
     middlewares.push(function (request, response, next) {
+      if (request.url.indexOf('/v1') === 0) next();
+      
       var error = validation(request.url, request.body);
       if (!error) return next();
 
