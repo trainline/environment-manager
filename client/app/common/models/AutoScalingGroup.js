@@ -49,7 +49,7 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
       },
 
       updateLaunchConfig: function (data) {
-        return $http.put('/api/v1/asgs/' + this.AsgName + '/launch-config', { params: { account: this.AccountName }}, { data: data });
+        return $http.put('/api/v1/asgs/' + this.AsgName + '/launch-config?account=' + this.AccountName, data);
       },
 
       getDeploymentMapTargetName: function () {
