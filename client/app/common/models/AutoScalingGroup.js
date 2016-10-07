@@ -2,7 +2,25 @@
 'use strict';
 
 angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
-  function ($q, awsService, resources, roles, serviceDiscovery) {
+  function ($q, $http, awsService, resources, roles, serviceDiscovery) {
+
+    function getSummaryFromAsg(asg) {
+      var asgSummary = {
+        AccountName: asg.AccountName || params.account,
+        AsgName: asg.AutoScalingGroupName,
+        MinSize: asg.MinSize,
+        MaxSize: asg.MaxSize,
+        DesiredCapacity: asg.DesiredCapacity,
+        CurrentSize: asg.Instances.length,
+        LaunchConfigurationName: (asg.LaunchConfigurationName) ? asg.LaunchConfigurationName.replace('LaunchConfig_', '') : null,
+        Instances: asg.Instances,
+      };
+      asg.Tags.forEach(function (tag) {
+        asgSummary[tag.Key] = tag.Value;
+      });
+
+      return asgSummary;
+    }
 
     function AutoScalingGroup(data) {
       _.assign(this, data);
@@ -36,11 +54,18 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
       },
     });
 
+    function getAsgDetails(asgName, account) {
+      return $http.get('/api/v1/asgs/' + asgName, { params: { account: account }}).then(function (response) {
+        return getSummaryFromAsg(response.data);
+      });
+    };
+
     /**
      * This will fetch AutoScalingGroup along with AMI and LaunchConfig
      */
-    AutoScalingGroup.getFullByName = function (account, environmentName, name) {
-      return awsService.asgs.GetAsgDetails({ account: account, AsgName: name }).then(function (asgDetails) {
+    AutoScalingGroup.getFullByName = function (account, environmentName, asgName) {
+      console.log('EJO!');
+      return getAsgDetails(asgName, account).then(function (asgDetails) {
         // Refresh ASG to get up to date list of instance IDs (changes after scaling)
         if (asgDetails) {
           return new AutoScalingGroup(asgDetails);

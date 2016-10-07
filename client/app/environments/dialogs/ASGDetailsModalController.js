@@ -99,7 +99,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
 
       $q.all([
-        serviceDiscovery.getASGState(parameters.accountName, parameters.environment.EnvironmentName, parameters.groupName),
+        serviceDiscovery.getASGState(parameters.environment.EnvironmentName, parameters.groupName),
         AutoScalingGroup.getFullByName(parameters.accountName, parameters.environment.EnvironmentName, parameters.groupName),
       ]).then(function (arr) {
         vm.asgState = arr[0];

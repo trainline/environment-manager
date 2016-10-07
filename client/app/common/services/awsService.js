@@ -1,6 +1,11 @@
 ﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
+/**
+ * DEPRECATED
+ * TODO(filip): Move this logic to middle-level abstraction, ie.:
+ * particular models / or their factories / managers, if necessary
+ */
 angular.module('EnvironmentManager.common').factory('awsService',
   function ($q, resources, cachedResources) {
 
@@ -14,37 +19,6 @@ angular.module('EnvironmentManager.common').factory('awsService',
     function AsgService() {
       var self = this;
 
-      self.GetAsgDetails = function (params) {
-
-        function getSummaryFromAsg(asg) {
-          var asgSummary = {
-            AccountName: asg.AccountName || params.account,
-            AsgName: asg.AutoScalingGroupName,
-            MinSize: asg.MinSize,
-            MaxSize: asg.MaxSize,
-            DesiredCapacity: asg.DesiredCapacity,
-            CurrentSize: asg.Instances.length,
-            LaunchConfigurationName: (asg.LaunchConfigurationName) ? asg.LaunchConfigurationName.replace('LaunchConfig_', '') : null,
-            Instances: asg.Instances,
-          };
-          asg.Tags.forEach(function (tag) {
-            asgSummary[tag.Key] = tag.Value;
-          });
-
-          return asgSummary;
-        }
-
-        var account = params.account;
-        var resourceFunction = params.AsgName ? resources.aws.asgs.get(params.AsgName) : resources.aws.asgs.all();
-        return resourceFunction.inAWSAccount(account).do().then(function (asgs) {
-          var summaryData = angular.isArray(asgs) ? asgs.map(getSummaryFromAsg) : getSummaryFromAsg(asgs);
-          return summaryData;
-        });
-      };
-
-      self.GetAsgLaunchConfig = function (asg) {
-        return resources.aws.asgs.get(asg.AsgName).inAWSAccount(asg.AccountName).launchConfiguration().do();
-      };
     }
 
     function InstanceService() {
