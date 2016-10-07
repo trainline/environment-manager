@@ -1,7 +1,10 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
-// TODO(filip): get rid of all these builders
+/**
+ * Depracated. Please use models / middle level abstraction instead
+ * TODO(filip): get rid of this
+ */
 angular.module('EnvironmentManager.common').factory('autoScalingGroupResourceFactory',
   function ($q, $http, $rootScope) {
 
@@ -82,7 +85,7 @@ angular.module('EnvironmentManager.common').factory('autoScalingGroupResourceFac
         return promisify(delegate);
       };
     }
-    
+
     function AutoScalingGroupSetAction(autoScalingGroupName) {
 
       if (!autoScalingGroupName) throw new Error('AutoScalingGroup name cannot be null or empty');
