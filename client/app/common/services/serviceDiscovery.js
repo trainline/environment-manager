@@ -9,8 +9,8 @@ angular.module('EnvironmentManager.common')
     }
 
     return {
-      getASGState: function (accountName, environmentName, asgName) {
-        var path = ['api', 'environments', environmentName, 'servers', asgName];
+      getASGState: function (environmentName, asgName) {
+        var path = ['api', 'v1', 'environments', environmentName, 'servers', asgName];
         return $http.get(path.join('/')).then(function (response) {
           return response.data;
         }, defaultFailure);

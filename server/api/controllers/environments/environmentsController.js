@@ -23,24 +23,19 @@ function getEnvironmentByName(req, res, next) {
  * GET /environments/{name}/servers
  */
 function getEnvironmentServers(req, res, next) {
-  let query = {
-    environmentName: request.params.environment,
-    filter: request.query,
-  };
+  const environmentName = req.swagger.params.name.value;
 
-  ScanServersStatus(query).then((data) => res.json(data)).catch(next);
+  ScanServersStatus({ environmentName, filter: {} }).then((data) => res.json(data)).catch(next);
 }
 
 /**
  * GET /environments/{name}/servers/{asgName}
  */
 function getEnvironmentServerByName(req, res, next) {
-  let query = {
-    environmentName: request.params.environment,
-    asgName: request.params.asgName,
-  };
+  const environmentName = req.swagger.params.name.value;
+  const asgName = req.swagger.params.asgName.value;
 
-  GetASGState(query).then((data) => res.json(data)).catch(next);
+  GetASGState({ environmentName, asgName }).then((data) => res.json(data)).catch(next);
 }
 
 
