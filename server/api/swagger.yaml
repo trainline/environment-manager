@@ -386,7 +386,7 @@ paths:
             type: array
             items:
               type: object
-  /environments/{name}/servers/{server}:
+  /environments/{name}/servers/{asgName}:
     x-swagger-router-controller: environments/environmentsController
     get:
       operationId: getEnvironmentServerByName
@@ -398,7 +398,7 @@ paths:
           in: path
           type: string
           required: true
-        - name: server
+        - name: asgName
           in: path
           type: string
           required: true
