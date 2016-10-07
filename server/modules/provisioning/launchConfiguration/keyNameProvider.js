@@ -11,7 +11,7 @@ module.exports = {
     assert(configuration, 'Expected "configuration" argument not to be null');
     assert(accountName, 'Expected "accountName" argument not to be null');
 
-    var customKeyName = configuration.serverRole.ClusterKeyName;
+    let customKeyName = configuration.serverRole.ClusterKeyName;
     if (customKeyName) {
       return getKeyPairByName(customKeyName, accountName)
         .then(
@@ -21,7 +21,11 @@ module.exports = {
             error))
         );
     } else {
-      var keyName = configuration.cluster.KeyPair;
+      let keyName = configuration.cluster.KeyPair;
+      if (keyName === '' || keyName === undefined || keyName === null) {
+        return Promise.reject(
+          new ConfigurationError(`Server role EC2 key pair set to cluster EC2 key pair, but this is empty. Please fix your configuration`));
+      }
 
       return getKeyPairByName(keyName, accountName)
         .then(
@@ -36,7 +40,7 @@ module.exports = {
 };
 
 function getKeyPairByName(keyName, accountName) {
-  var query = {
+  let query = {
     name: 'GetKeyPair',
     accountName: accountName,
     keyName: keyName,
