@@ -67,7 +67,7 @@ paths:
           in: path
           type: string
           required: true
-        - name: update
+        - name: body
           in: body
           required: true
           schema:
@@ -115,7 +115,7 @@ paths:
           in: path
           type: string
           required: true
-        - name: update
+        - name: body
           in: body
           required: true
           schema:
