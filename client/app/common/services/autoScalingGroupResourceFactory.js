@@ -82,54 +82,7 @@ angular.module('EnvironmentManager.common').factory('autoScalingGroupResourceFac
         return promisify(delegate);
       };
     }
-
-    function AutoScalingGroupAllAction() {
-
-      var $this = this;
-      var $data = new AutoScalingGroupRequest('GET');
-
-      $this.inAWSAccount = function (awsAccountName) {
-        if (!awsAccountName) throw new Error('Invalid "awsAccountName" argument');
-        $data.setAWSAccount(awsAccountName);
-        return $this;
-      };
-
-      $this.do = function () {
-        return $data.do();
-      };
-    }
-
-    function AutoScalingGroupGetAction(autoScalingGroupName) {
-
-      if (!autoScalingGroupName) throw new Error('AutoScalingGroup name cannot be null or empty');
-
-      var $this = this;
-      var $data = new AutoScalingGroupRequest('GET');
-
-      $data.setAutoScalingGroupName(autoScalingGroupName);
-
-      $this.inAWSAccount = function (awsAccountName) {
-        if (!awsAccountName) throw new Error('Invalid "awsAccountName" argument');
-        $data.setAWSAccount(awsAccountName);
-        return $this;
-      };
-
-      // TODO(filip): this is SOOOO CONFUSING. Kill all the chain builders!!!
-      $this.launchConfiguration = function () {
-        $data.setAction('launchconfig');
-        return $this;
-      };
-
-      $this.size = function () {
-        $data.setAction('size');
-        return $this;
-      };
-
-      $this.do = function () {
-        return $data.do();
-      };
-    }
-
+    
     function AutoScalingGroupSetAction(autoScalingGroupName) {
 
       if (!autoScalingGroupName) throw new Error('AutoScalingGroup name cannot be null or empty');
@@ -256,39 +209,6 @@ angular.module('EnvironmentManager.common').factory('autoScalingGroupResourceFac
 
     return {
       name: 'asgs',
-
-      getLaunchConfig: function (account, name) {
-        var segments = ['api', account, 'asgs', name, 'launchconfig'];
-        var url = segments.join('/');
-        return $http.get(url).then(function (response) {
-          return response.data;
-        });
-      },
-
-      getScalingSchedule: function (account, name) {
-        var segments = ['api', account, 'asgs', name, 'scaling-schedule'];
-        var url = segments.join('/');
-        return $http.get(url).then(function (response) {
-          return response.data;
-        });
-      },
-
-      updateLaunchConfig: function(account, name, data) {
-        var segments = ['api', account, 'asgs', name, 'launchconfig'];
-        var url = segments.join('/');
-        return $http.post(url, data).then(function (response) {
-          return response.data;
-        });
-      },
-
-      all: function () {
-        return new AutoScalingGroupAllAction();
-      },
-
-      // TODO(filip): remove chain builder pattern
-      get: function (autoScalingGroupName) {
-        return new AutoScalingGroupGetAction(autoScalingGroupName);
-      },
 
       set: function (autoScalingGroupName) {
         return new AutoScalingGroupSetAction(autoScalingGroupName);

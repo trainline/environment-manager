@@ -6,7 +6,7 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
 
     function getSummaryFromAsg(asg) {
       var asgSummary = {
-        AccountName: asg.AccountName || params.account,
+        AccountName: asg.AccountName,
         AsgName: asg.AutoScalingGroupName,
         MinSize: asg.MinSize,
         MaxSize: asg.MaxSize,
@@ -22,30 +22,34 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
       return asgSummary;
     }
 
-    function AutoScalingGroup(data) {
+    function AutoScalingGroup(data, accountName) {
       _.assign(this, data);
+      this.AccountName = accountName;
     }
 
     _.assign(AutoScalingGroup.prototype, {
 
       getLaunchConfig: function () {
         var self = this;
-        return resources.aws.asgs.getLaunchConfig(this.AccountName, this.AsgName).then(function(data) {
-          self.LaunchConfig = data;
-          return data;
+        return $http.get('/api/v1/asgs/' + this.AsgName + '/launch-config', { params: { account: this.AccountName }}).then(function(response) {
+          self.LaunchConfig = response.data;
+          return response.data;
         });
       },
 
       getScalingSchedule: function () {
         var self = this;
-        return resources.aws.asgs.getScalingSchedule(this.AccountName, this.AsgName).then(function(data) {
-          self.ScalingSchedule = data;
-          return data;
+        var segments = ['api', this.AccountName, 'asgs', this.AsgName, 'scaling-schedule'];
+        var url = segments.join('/');
+        
+        return $http.get(url).then(function(response) {
+          self.ScalingSchedule = response.data;
+          return response.data;
         });
       },
 
       updateLaunchConfig: function (data) {
-        return resources.aws.asgs.updateLaunchConfig(this.AccountName, this.AsgName, data);
+        return $http.put('/api/v1/asgs/' + this.AsgName + '/launch-config', { params: { account: this.AccountName }}, { data: data });
       },
 
       getDeploymentMapTargetName: function () {
@@ -64,11 +68,10 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
      * This will fetch AutoScalingGroup along with AMI and LaunchConfig
      */
     AutoScalingGroup.getFullByName = function (account, environmentName, asgName) {
-      console.log('EJO!');
       return getAsgDetails(asgName, account).then(function (asgDetails) {
         // Refresh ASG to get up to date list of instance IDs (changes after scaling)
         if (asgDetails) {
-          return new AutoScalingGroup(asgDetails);
+          return new AutoScalingGroup(asgDetails, account);
         } else {
           throw new Error('ASG data not found');
         }
@@ -80,6 +83,7 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
           asg.$accountName = account;
 
           return asg.getLaunchConfig().then(function (lc) {
+            console.log(lc);
             asg.LaunchConfig = lc;
 
             // Convert Launch Config AMI ID to full AMI with name/version for display
