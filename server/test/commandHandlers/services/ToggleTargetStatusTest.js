@@ -6,7 +6,7 @@ let assert = require('assert');
 let rewire = require('rewire');
 let sinon = require('sinon');
 
-describe('ToggleTargetStatus', function() {
+describe.only('ToggleTargetStatus', function() {
 
   const command = {
     environment: 'mock-environment',
@@ -45,7 +45,6 @@ describe('ToggleTargetStatus', function() {
   });
 
   describe('services with no Status defined', () => {
-    currentKeyValueState.value.Status = 'Enabled';
 
     describe('requests to disable the service', () => {
       beforeEach(() => command.enable = false)
