@@ -98,6 +98,10 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
       });
     };
 
+    AutoScalingGroup.resize = function (account, asgName, size) {
+      return $http.put('/api/v1/asgs/' + asgName + '/size?account=' + account, size);
+    };
+
     function parseAutoScalingGroupName(name) {
       var segments = name.split('-');
       if (segments.length < 3) return null;

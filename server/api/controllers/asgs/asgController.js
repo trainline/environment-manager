@@ -8,6 +8,7 @@ let getASG = require('queryHandlers/GetAutoScalingGroup');
 let getDynamo = require('queryHandlers/GetDynamoResource');
 let GetLaunchConfiguration = require('queryHandlers/GetLaunchConfiguration');
 let SetLaunchConfiguration = require('commands/launch-config/SetLaunchConfiguration');
+let SetAutoScalingGroupSize = require('commands/asg/SetAutoScalingGroupSize');
 
 /**
  * GET /asgs?account=xyz
@@ -65,7 +66,17 @@ function patchAsg(req, res, next) {
  * PUT /asgs/{name}/size?account=xyz
  */
 function putAsgSize(req, res, next) {
-  notImplemented(res, 'Resizing ASGS');
+  const accountName = req.swagger.params.account.value;
+  const autoScalingGroupName = req.swagger.params.name.value;
+  const body = req.swagger.params.body.value;
+  const autoScalingGroupMinSize = body.min;
+  const autoScalingGroupDesiredSize = body.desired;
+  const autoScalingGroupMaxSize = body.max;
+  console.log('HEE!');
+
+  SetAutoScalingGroupSize({ accountName, autoScalingGroupName,
+    autoScalingGroupMinSize, autoScalingGroupDesiredSize, autoScalingGroupMaxSize })
+    .then(data => res.json(data)).catch(next);
 }
 
 /**

@@ -86,7 +86,8 @@ module.exports = [
     }
 
     return null;
-  }).do((request, response) => {
+  }).do((request, response, next) => {
+    if (request.params.account === 'v1') next();
     var command = {
       name: 'SetAutoScalingGroupSize',
       accountName: request.params.account,

@@ -207,7 +207,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       var desired = vm.asgUpdate.DesiredCapacity;
       var max = vm.asgUpdate.MaxSize;
 
-      resources.aws.asgs.set(vm.asg.AsgName).inAWSAccount(parameters.accountName).minSize(min).desiredSize(desired).maxSize(max).do().then(function () {
+      AutoScalingGroup.resize(parameters.accountName, vm.asg.AsgName, { min: min, desired: desired, max: max }).then(function () {
         modal.information({
           title: 'ASG Resized',
           message: 'ASG resize successful. You can monitor instance changes by using the Refresh Icon in the top right of the window.<br/><br/><b>Note:</b> During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection draining before termination.',
