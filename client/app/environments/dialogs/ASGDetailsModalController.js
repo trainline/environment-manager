@@ -3,8 +3,8 @@
 
 angular.module('EnvironmentManager.environments').controller('ASGDetailsModalController',
   function ($scope, $uibModal, $uibModalInstance, $q, modal, serviceDiscovery, $rootScope, Image, awsService, AutoScalingGroup, resources, cachedResources, deploymentMapConverter, parameters) {
-
     var vm = this;
+    
     vm.context = 'asg';
 
     var selectedImageVersions = null;

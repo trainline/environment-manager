@@ -4,13 +4,23 @@
 const RESOURCE = 'config/environments';
 const KEY_NAME = 'EnvironmentName';
 
+let _ = require('lodash');
 let dynamoHelper = new (require('api/api-utils/DynamoHelper'))(RESOURCE);
 
 /**
  * GET /config/environments
  */
 function getEnvironmentsConfig(req, res, next) {
-  return dynamoHelper.getAll().then(data => res.json(data)).catch(next);
+  const environmentType = req.swagger.params.environmentType.value;
+  const cluster = req.swagger.params.cluster.value;
+
+  let filter = {
+    'Value.OwningCluster': cluster,
+    'Value.EnvironmentType': environmentType
+  };
+  filter = _.omitBy(filter, _.isUndefined);
+
+  return dynamoHelper.getAll(filter).then(data => res.json(data)).catch(next);
 }
 
 /**

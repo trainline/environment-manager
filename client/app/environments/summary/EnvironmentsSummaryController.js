@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('EnvironmentsSummaryController',
-  function ($scope, $routeParams, $location, $uibModal, $q, resources, cachedResources, configValidation, cron) {
+  function ($scope, $routeParams, $location, $uibModal, $q, resources, cachedResources, configValidation, cron, Environment) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -65,16 +65,16 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
 
       var query = {};
       if (vm.selectedEnvironmentType != SHOW_ALL_OPTION) {
-        query['Value.EnvironmentType'] = vm.selectedEnvironmentType;
+        query.environmentType = vm.selectedEnvironmentType;
       }
 
       if (vm.selectedOwningCluster != SHOW_ALL_OPTION) {
-        query['Value.OwningCluster'] = vm.selectedOwningCluster;
+        query.cluster = vm.selectedOwningCluster;
       }
 
       $q.all([
-        resources.config.environments.all({ query: query }),
-        resources.ops.environments.all(),
+        Environment.getAll({ query: query }),
+        Environment.getAllSchedules(),
       ]).then(function (results) {
         var configEnvironments = results[0];
         var opsEnvironments = results[1];
@@ -94,8 +94,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
             };
 
             var scheduleAction = getScheduleAction(result.Operation);
-            result.Operation.getScheduleAction = function () {
-              return scheduleAction; };
+            result.Operation.getScheduleAction = function () { return scheduleAction; };
 
             return result;
           });
