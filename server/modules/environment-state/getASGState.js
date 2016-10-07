@@ -8,6 +8,7 @@ let AutoScalingGroup = require('models/AutoScalingGroup');
 let co = require('co');
 let resourceProvider = require('modules/resourceProvider');
 let logger = require('modules/logger');
+let Environment = require('models/Environment');
 
 function* getAWSInstances(accountName, instancesIds) {
   let resource = yield resourceProvider.getInstanceByName('instances', { accountName });
@@ -34,8 +35,9 @@ function* getAWSInstances(accountName, instancesIds) {
   });
 }
 
-module.exports = function getASGState(accountName, environmentName, asgName) {
+module.exports = function getASGState(environmentName, asgName) {
   return co(function* () {
+    const accountName = yield (yield Environment.getByName(environmentName)).getAccountName();
     let asg = yield AutoScalingGroup.getByName(accountName, asgName);
 
     let instancesIds = _.map(asg.Instances, 'InstanceId');

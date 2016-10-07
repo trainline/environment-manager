@@ -20,6 +20,10 @@ class Environment {
     return DeploymentMap.getByName(this.DeploymentMap);
   }
 
+  getAccountName() {
+    return EnvironmentType.getByName(this.EnvironmentType).then((data) => data.AWSAccountName);
+  }
+
   static getByName(name) {
     return environmentDatabase.getEnvironmentByName(name).then((obj) => new Environment(obj));
   }

@@ -6,15 +6,19 @@ let co = require('co');
 let moment = require('moment');
 let logger = require('modules/logger');
 let sender = require('modules/sender');
+let Environment = require('models/Environment');
 
-module.exports = function ScanServersStatusQueryHandler(query) {
-  const environment = query.environmentName;
+module.exports = co.wrap(ScanServersStatusQueryHandler);
+
+function* ScanServersStatusQueryHandler(query) {
+  const environmentName = query.environmentName;
+  const accountName = yield (yield Environment.getByName(environmentName)).getAccountName();
 
   let allStartTime = moment.utc();
 
   return Promise.all([
-    getAllAsgs(query),
-    getAllInstances(environment),
+    getAllAsgs(accountName),
+    getAllInstances(environmentName),
     getAllImages()
   ]).then(results => {
 
@@ -22,7 +26,7 @@ module.exports = function ScanServersStatusQueryHandler(query) {
     let allInstances = results[1];
     let allImages = results[2];
 
-    let asgs = _.filter(allAsgs, (asg) => asg.getTag('Environment') === environment);
+    let asgs = _.filter(allAsgs, (asg) => asg.getTag('Environment') === environmentName);
     if (query.filter.cluster) {
       asgs = _.filter(asgs, (asg) => asg.getTag('OwningCluster') === query.filter.cluster);
     }
@@ -45,7 +49,7 @@ module.exports = function ScanServersStatusQueryHandler(query) {
       let status = getStatus(instances, asg.DesiredCapacity);
       let ami = getAmi(instances);
 
-      return getServicesInstalledOnInstances(environment, instances)
+      return getServicesInstalledOnInstances(environmentName, instances)
         .then(services => {
           return {
             Name: asg.AutoScalingGroupName,
@@ -57,7 +61,7 @@ module.exports = function ScanServersStatusQueryHandler(query) {
               Current: instanceCount,
               Desired: asg.DesiredCapacity
             },
-            Services: services.map(getServiceView(environment)),
+            Services: services.map(getServiceView(environmentName)),
             Ami: ami,
           };
         });
@@ -67,7 +71,7 @@ module.exports = function ScanServersStatusQueryHandler(query) {
       let asgs = asgResults.filter(byStatus(query.filter.status));
 
       let result = {
-        EnvironmentName: environment,
+        EnvironmentName: environmentName,
         Value: asgs
       };
 
@@ -227,13 +231,13 @@ function byTag(key, value) {
   };
 }
 
-function getAllAsgs(query) {
+function getAllAsgs(accountName) {
   let startTime = moment.utc();
 
   return sender.sendQuery({
     query: {
       name: 'ScanAutoScalingGroups',
-      accountName: query.accountName,
+      accountName: accountName,
     },
   }).then(result => {
     let duration = moment.duration(moment.utc().diff(startTime)).asMilliseconds();
@@ -273,3 +277,4 @@ function getAllImages() {
     return result;
   });
 }
+
