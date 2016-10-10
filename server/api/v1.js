@@ -30,6 +30,7 @@ function loggedInAuthorization(req, res, next) {
 }
 
 function authorize(req, res, next) {
+  if (req.swagger === undefined) return next();
   let authorizerName = req.swagger.operation['x-authorizer'] || 'simple';
   let authorizer = require(`modules/authorizers/${authorizerName}`);
 
