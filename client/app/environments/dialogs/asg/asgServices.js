@@ -14,6 +14,7 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
     var vm = this;
     vm.servicesList = vm.asgState.Services;
     vm.helpTextTemplate = 'app/environments/dialogs/asg/popovers/help-disable-service.html';
+    vm.allowServiceDisabling = window.FEATURE_DISABLE_SERVICE;
 
     vm.servicesList = vm.servicesList.map(function(service) {
       service.installationEnabled = service.Status !== 'Disabled';

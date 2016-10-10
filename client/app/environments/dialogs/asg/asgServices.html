@@ -17,7 +17,7 @@
           <th class="text-nowrap">Health Checks</th>
           <th class="text-nowrap">Instances</th>
           <th class="text-nowrap">Deployment Log</th>
-          <th class="text-nowrap">Installation
+          <th class="text-nowrap" data-ng-if="vm.allowServiceDisabling">Installation
             <span data-uib-popover
                   data-popover-trigger="'mouseenter'"
                   uib-popover-template="vm.helpTextTemplate"
@@ -36,7 +36,7 @@
           <td><health-checks list="service.HealthChecks"></health-checks></td>
           <td><a ng-click="vm.showAsgSingleService(service)" ng-if="service.InstancesNames.length > 0">{{ service.InstancesHealthCount }}</a><span ng-if="service.InstancesNames.length === 0">No instances</span></td>
           <td><a ng-click="vm.showDeploymentLog(service)">Show Deployment</a></td>
-          <td>
+          <td data-ng-if="vm.allowServiceDisabling">
             <div class="onoffswitch enabled-toggle">
               <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="toggle-{{::$index}}" data-ng-change="vm.setDeploymentStatus(service)" data-ng-model="service.installationEnabled">
               <label class="onoffswitch-label" for="toggle-{{::$index}}">
