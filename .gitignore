@@ -38,4 +38,3 @@ build/
 /Lambda/**/*.zip
 
 *.swp
-server/modules/consul-client/clientConfig.mock.js
