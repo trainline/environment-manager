@@ -57,6 +57,8 @@ function getAsgLaunchConfig(req, res, next) {
 
 /**
  * PATCH /asgs/{name}?account=xyz
+ *
+ * TODO(filip): shall we use this for scheduling?
  */
 function patchAsg(req, res, next) {
   notImplemented(res, 'Updating ASGS');
@@ -72,7 +74,6 @@ function putAsgSize(req, res, next) {
   const autoScalingGroupMinSize = body.min;
   const autoScalingGroupDesiredSize = body.desired;
   const autoScalingGroupMaxSize = body.max;
-  console.log('HEE!');
 
   SetAutoScalingGroupSize({ accountName, autoScalingGroupName,
     autoScalingGroupMinSize, autoScalingGroupDesiredSize, autoScalingGroupMaxSize })
