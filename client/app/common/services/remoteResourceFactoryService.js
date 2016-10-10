@@ -8,15 +8,13 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
 
       var resourceName = params.name;
       var resourceDescription = params.description;
-      var resourceSection = params.section || '';
+      var resourceSection = params.section;
       var resourcePerAccount = params.perAccount;
 
       function urlify(params) {
-        var segments = ['api'];
+        var segments = ['api', 'v1'];
 
-        if (params && params.account) segments.push(params.account);
-
-        if (resourceSection) segments.push(resourceSection);
+        if (resourceSection !== undefined) segments.push(resourceSection);
 
         segments.push(resourceName);
 
@@ -32,7 +30,7 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
           var data = response.data;
 
           if (params.name === 'audit') {
-            data = {items:response.data};
+            data = { items: response.data };
             data.headers = response.headers;
           } 
   

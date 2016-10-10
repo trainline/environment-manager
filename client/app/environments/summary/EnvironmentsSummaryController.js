@@ -134,7 +134,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
     function validateEnvironments() {
       $q.all([
         // Make sure cache populated to avoid async multiple hits
-        cachedResources.config.environments.all(),
+        Environment.all(),
         cachedResources.config.services.all(),
         cachedResources.config.lbUpstream.all(),
         cachedResources.config.deploymentMaps.all(),
