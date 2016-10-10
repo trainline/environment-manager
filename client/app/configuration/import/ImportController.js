@@ -23,7 +23,8 @@ angular.module('EnvironmentManager.configuration')
 
     function init() {
 
-      cachedResources.aws.accounts.all().then(function (accounts) {
+      cachedResources.config.accounts.all().then(function (accounts) {
+        accounts = _.map(accounts, 'AccountName');
         vm.accountsList = accounts.sort();
       }).then(function () {
         

@@ -24,7 +24,8 @@
         var runningInSandbox = false;
 
         $q.all([
-          cachedResources.aws.accounts.all().then(function (accounts) {
+          cachedResources.config.accounts.all().then(function (accounts) {
+            accounts = _.map(accounts, 'AccountName');
             runningInSandbox = (accounts.indexOf('Sandbox') != -1);
           }),
 

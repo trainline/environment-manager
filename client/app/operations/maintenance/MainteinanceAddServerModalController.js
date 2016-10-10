@@ -16,7 +16,8 @@ angular.module('EnvironmentManager.operations').controller('MaintenanceAddServer
     var RECORD_KEY = 'MAINTENANCE_MODE';
 
     function init() {
-      cachedResources.aws.accounts.all().then(function (accounts) {
+      cachedResources.config.accounts.all().then(function (accounts) {
+        accounts = _.map(accounts, 'AccountName');
         $scope.AccountsList = accounts.sort();
         $scope.SelectedAccount = (defaultAccount == SHOW_ALL_OPTION) ? accounts[0] : defaultAccount;
       });

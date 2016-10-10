@@ -19,7 +19,8 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
     $scope.DataLoading = false;
 
     function init() {
-      cachedResources.aws.accounts.all().then(function (accounts) {
+      cachedResources.config.accounts.all().then(function (accounts) {
+        accounts = _.map(accounts, 'AccountName');
         $scope.AccountsList = [SHOW_ALL_OPTION].concat(accounts).sort();
       }).then(function () {
         $scope.Refresh();

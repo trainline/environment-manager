@@ -27,7 +27,7 @@ angular.module('EnvironmentManager.common').factory('resources',
         accounts: remoteResourceFactory.getFullAccess({
           name: 'accounts',
           description: 'AWS Accounts',
-          section: 'aws',
+          section: 'config',
           perAccount: true,
         }),
         environments: remoteResourceFactory.getFullAccess({
@@ -90,10 +90,6 @@ angular.module('EnvironmentManager.common').factory('resources',
         }),
       },
       aws: {
-        accounts: remoteResourceFactory.getReadOnly({
-          name: 'accounts',
-          perAccount: false,
-        }),
         instances: remoteResourceFactory.getReadOnly({
           name: 'instances',
           description: 'EC2 Instances',
