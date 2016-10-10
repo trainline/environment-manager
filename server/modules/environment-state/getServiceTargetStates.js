@@ -22,7 +22,7 @@ function getServiceChecksInfo(serviceObjects) {
     // also, don't count in instance into working
     return {
       Name: checks[0].Name,
-      Status: _.some(checks, { Status: 'critical' }) ? HEALTH_GOOD : HEALTH_BAD
+      Status: _.some(checks, { Status: 'critical' }) ? HEALTH_BAD : HEALTH_GOOD
     };
   });
 }
