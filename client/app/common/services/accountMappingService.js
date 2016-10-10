@@ -3,10 +3,8 @@
 
 ﻿angular.module('EnvironmentManager.common').factory('accountMappingService',
   function ($q, cachedResources, $http) {
-
-    function accountMappingService() {
-
-      this.GetAccountForEnvironment = function (environmentName) {
+    return {
+      GetAccountForEnvironment: function (environmentName) {
         var deferred = $q.defer();
         var url = '/api/environments/' + environmentName + '/accountName';
 
@@ -16,9 +14,9 @@
           deferred.reject(error.message);
         });
         return deferred.promise;
-      };
+      },
 
-      this.GetEnvironmentLoadBalancers = function (environmentName) {
+      GetEnvironmentLoadBalancers: function (environmentName) {
         var deferred = $q.defer();
 
         var environments;
@@ -54,9 +52,6 @@
         });
 
         return deferred.promise;
-      };
-
-    }
-
-    return new accountMappingService();
+      }
+    };
   });
