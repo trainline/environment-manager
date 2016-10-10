@@ -6,7 +6,7 @@ let assert = require('assert');
 let rewire = require('rewire');
 let sinon = require('sinon');
 
-describe.only('ToggleTargetStatus', function() {
+describe('ToggleTargetStatus', function() {
 
   const command = {
     environment: 'mock-environment',
