@@ -8,8 +8,9 @@ angular.module('EnvironmentManager.common').factory('Environment',
       _.assign(this, data);
     }
 
-    Environment.getAll = function (params) {
-      return $http.get('/api/v1/config/environments', { params: params.query }).then(function (response) {
+    Environment.all = function (params) {
+      var query = params && params.query;
+      return $http.get('/api/v1/config/environments', { params: query, cache: true }).then(function (response) {
         return response.data;
       });
     };

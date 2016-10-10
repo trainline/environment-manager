@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.common').controller('MainController',
-  function ($rootScope, $scope, $route, $routeParams, $location, modal, cachedResources) {
+  function ($rootScope, $scope, $route, $routeParams, $location, modal, Environment) {
 
     $scope.$route = $route; // Used by index page to determine active section
     $scope.LoggedInUser = window.user.getName(); // For display in header
@@ -10,7 +10,7 @@ angular.module('EnvironmentManager.common').controller('MainController',
     $rootScope.WorkingEnvironment = { EnvironmentName: '' }; // For Environments section only, selected Environment from Sidebar drop-down
 
     function init() {
-      cachedResources.config.environments.all().then(function (environments) {
+      Environment.all().then(function (environments) {
         $scope.ParentEnvironmentsList = _.map(environments, 'EnvironmentName').sort();
       }).then(function () {
         if (!$rootScope.WorkingEnvironment.EnvironmentName) $rootScope.WorkingEnvironment.EnvironmentName = $scope.ParentEnvironmentsList[0];

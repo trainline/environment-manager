@@ -73,7 +73,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
       }
 
       $q.all([
-        Environment.getAll({ query: query }),
+        Environment.all({ query: query }),
         Environment.getAllSchedules(),
       ]).then(function (results) {
         var configEnvironments = results[0];
