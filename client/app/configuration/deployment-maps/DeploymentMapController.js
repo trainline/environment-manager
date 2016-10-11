@@ -35,6 +35,10 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
         property: 'serverRole',
         default: '',
       },
+      open_server: {
+        property: 'openServerRoleName',
+        default: null,
+      }
     });
 
     function init() {
@@ -47,8 +51,13 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
           vm.owningClustersList = [SHOW_ALL_OPTION].concat(_.map(clusters, 'ClusterName')).sort();
         }),
       ]).then(function () {
-        readDeploymentMap(deploymentMapName);
-      });
+        return readDeploymentMap(deploymentMapName);
+      }).then(function() {
+        if (vm.openServerRoleName !== null) {
+          var target = _.find(vm.deploymentTargets, { ServerRoleName: vm.openServerRoleName });
+          showTargetDialog(target, 'Edit');
+        }  
+      })
     }
 
     vm.canUser = function () {
@@ -181,12 +190,20 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
           },
         },
       });
+
+      vm.openServerRoleName = target.ServerRoleName;
+      querySync.updateQuery();
+
+      instance.result['finally'](function() {
+        vm.openServerRoleName = null;
+        querySync.updateQuery();
+      });
       return instance;
     }
 
     function readDeploymentMap(mapName) {
       vm.dataLoading = true;
-      DeploymentMap.getByName(mapName).then(function (deploymentMap) {
+      return DeploymentMap.getByName(mapName).then(function (deploymentMap) {
         deploymentMap.Value.DeploymentTarget = deploymentMap.Value.DeploymentTarget.map(deploymentMapConverter.toDeploymentTarget);
         vm.deploymentMap = deploymentMap;
         vm.deploymentTargets = deploymentMap.Value.DeploymentTarget;
