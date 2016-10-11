@@ -58,7 +58,7 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
 
       $scope.DataLoading = true;
 
-      accountMappingService.GetAccountForEnvironment($scope.SelectedEnvironment).then(function (accountName) {
+      accountMappingService.getAccountForEnvironment($scope.SelectedEnvironment).then(function (accountName) {
         var params = {
           account: accountName,
           query: {
@@ -141,7 +141,7 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
         severity: 'Danger',
       }).then(function () {
 
-        accountMappingService.GetAccountForEnvironment(env).then(function (accountName) {
+        accountMappingService.getAccountForEnvironment(env).then(function (accountName) {
           DeleteLBSetting(accountName, env, hostName).then(function () {
             $scope.Refresh();
           }).finally(function () {
@@ -221,7 +221,7 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
     };
 
     function DeleteAllLBSettings(env) {
-      accountMappingService.GetAccountForEnvironment(env).then(function (accountName) {
+      accountMappingService.getAccountForEnvironment(env).then(function (accountName) {
         $q.all(
           $scope.Data.forEach(function (lbSetting) {
             return DeleteLBSetting(accountName, env, lbSetting.VHostName);

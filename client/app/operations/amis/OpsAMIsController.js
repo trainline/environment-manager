@@ -63,7 +63,7 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
 
       querySync.updateQuery();
 
-      accountMappingService.GetAccountForEnvironment($scope.SelectedEnvironment).then(function (accountName) {
+      accountMappingService.getAccountForEnvironment($scope.SelectedEnvironment).then(function (accountName) {
         $scope.SelectedAccount = accountName;
 
         var params = {

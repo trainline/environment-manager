@@ -4,7 +4,7 @@
 ﻿angular.module('EnvironmentManager.common').factory('accountMappingService',
   function ($q, cachedResources, $http) {
     return {
-      GetAccountForEnvironment: function (environmentName) {
+      getAccountForEnvironment: function (environmentName) {
         var deferred = $q.defer();
         var url = '/api/v1/environments/' + environmentName + '/accountName';
 

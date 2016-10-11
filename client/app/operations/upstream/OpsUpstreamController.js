@@ -143,7 +143,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
         details: ['Note: In most cases it is better to use <b>Toggle Service</b> instead when doing Blue/Green cutovers as this performs additional validation and copes with multiple upstreams.'],
         action: 'Toggle Upstream',
       }).then(function () {
-        accountMappingService.GetAccountForEnvironment(environmentName).then(function (awsAccount) {
+        accountMappingService.getAccountForEnvironment(environmentName).then(function (awsAccount) {
           resources.environment(environmentName)
             .inAWSAccount(awsAccount)
             .toggleSlices()

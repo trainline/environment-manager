@@ -21,7 +21,7 @@ angular.module('EnvironmentManager.operations').controller('ToggleServiceModalCo
       $scope.ToggledUpstreams = [];
       $scope.ErrorMessage = null;
 
-      accountMappingService.GetAccountForEnvironment($scope.EnvironmentName).then(function (awsAccount) {
+      accountMappingService.getAccountForEnvironment($scope.EnvironmentName).then(function (awsAccount) {
         resources.environment($scope.EnvironmentName)
           .inAWSAccount(awsAccount)
           .toggleSlices()

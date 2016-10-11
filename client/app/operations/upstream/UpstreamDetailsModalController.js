@@ -69,7 +69,7 @@ angular.module('EnvironmentManager.operations').controller('UpstreamDetailsModal
 
     function GetAWSData(uniqueIPs) {
       var deferred = $q.defer();
-      accountMappingService.GetAccountForEnvironment(upstream.Value.EnvironmentName).then(function (accountName) {
+      accountMappingService.getAccountForEnvironment(upstream.Value.EnvironmentName).then(function (accountName) {
         if (uniqueIPs.length > 0) {
           var params = {
             account: accountName,

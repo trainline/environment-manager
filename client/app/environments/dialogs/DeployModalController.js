@@ -47,7 +47,7 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
         // TODO: error handling. If dep map not found, or no services, display error message on dialog instead and disable form
       });
 
-      accountMappingService.GetAccountForEnvironment(parameters.Environment.EnvironmentName).then(function (accountName) {
+      accountMappingService.getAccountForEnvironment(parameters.Environment.EnvironmentName).then(function (accountName) {
         vm.accountName = accountName;
       });
     }

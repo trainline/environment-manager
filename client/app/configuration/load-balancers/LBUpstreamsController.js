@@ -94,7 +94,7 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamsContro
       var accountName = '';
       var lbSettings = [];
 
-      accountMappingService.GetAccountForEnvironment(vm.selectedEnvironment).then(function (acName) {
+      accountMappingService.getAccountForEnvironment(vm.selectedEnvironment).then(function (acName) {
         accountName = acName;
 
         resources.config.lbSettings.all({ account: 'all' }).then(function (data) {

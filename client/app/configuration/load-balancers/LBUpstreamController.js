@@ -47,7 +47,7 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
             $scope.DataFound = false;
           } else {
 
-            accountMappingService.GetAccountForEnvironment(env).then(function (accountName) {
+            accountMappingService.getAccountForEnvironment(env).then(function (accountName) {
               UpstreamConfig.getByKey(key, accountName).then(function (data) {
                 $scope.LBUpstream = data;
                 updateSelectedService();
@@ -110,7 +110,7 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
         key = '/' + upstreamValue.EnvironmentName + '_' + upstreamValue.UpstreamName + '/config';
       }
 
-      accountMappingService.GetAccountForEnvironment(upstreamValue.EnvironmentName).then(function (accountName) {
+      accountMappingService.getAccountForEnvironment(upstreamValue.EnvironmentName).then(function (accountName) {
 
         var saveMethod;
         var data;

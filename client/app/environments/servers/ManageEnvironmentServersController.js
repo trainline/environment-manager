@@ -64,7 +64,7 @@ angular.module('EnvironmentManager.environments')
             vm.selected.environment = cachedResources.config.environments.getByName(environmentName, 'EnvironmentName', envData);
           }),
 
-          accountMappingService.GetAccountForEnvironment(vm.selected.environment.EnvironmentName).then(function (account) {
+          accountMappingService.getAccountForEnvironment(vm.selected.environment.EnvironmentName).then(function (account) {
             vm.selected.account = account;
           }),
         ]).then(function() {
