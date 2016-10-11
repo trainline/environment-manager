@@ -5,7 +5,6 @@ angular.module('EnvironmentManager.common').factory('targetStateService', functi
 
  return {
    changeDeploymentStatus: function(enable, service, role, environment) {
-     var deferred = $q.defer();
      var action = enable ? 'enable' : 'disable';
      var url = '/api/services/'+ action + '/' + service.Name;
      var data = {
@@ -14,14 +13,12 @@ angular.module('EnvironmentManager.common').factory('targetStateService', functi
        serverRole: role
      };
 
-     $http.post(url, data)
+     return $http.post(url, data)
       .then(function(result) {
          deferred.resolve(result.data)
        },
         $rootScope.$broadcast.bind($rootScope, 'error')
       );
-
-     return deferred.promise;
    }
  };
 });
