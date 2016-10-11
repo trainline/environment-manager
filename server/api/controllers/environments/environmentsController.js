@@ -6,6 +6,9 @@ let GetASGState = require('queryHandlers/GetASGState');
 let ScanServersStatus = require('queryHandlers/ScanServersStatus');
 let co = require('co');
 let Environment = require('models/Environment');
+let ScanDynamoResources = require('queryHandlers/ScanDynamoResources');
+let GetDynamoResource = require('queryHandlers/GetDynamoResource');
+let sender = require('modules/sender');
 
 /**
  * GET /environments
@@ -57,20 +60,43 @@ function getEnvironmentAccountName(req, res, next) {
  * GET /environments/schedule-status
  */
 function getEnvironmentsScheduleStatus(req, res, next) {
-  let ScanDynamoResources = require('queryHandlers/ScanDynamoResources');
-  const masterAccountName = config.getUserValue('masterAccountName');
 
   let filter = {};
   ScanDynamoResources({ resource: 'ops/environments', filter, exposeAudit: 'version-only', accountName: masterAccountName })
     .then(data => res.json(data)).catch(next);
 }
 
+/**
+ * GET /environments/{name}/schedule-status
+ */
 function getEnvironmentScheduleStatus(req, res, next) {
-  res.json({});
+  const masterAccountName = config.getUserValue('masterAccountName');
+  const key = req.swagger.params.name.value;
+
+  GetDynamoResource({ resource: 'ops/environments', key, exposeAudit: 'version-only', accountName: masterAccountName })
+    .then(data => res.json(data)).catch(next);
 }
 
+
+/**
+ * PUT /environments/{name}/schedule
+ */
 function putEnvironmentSchedule(req, res, next) {
-  res.json();
+  const masterAccountName = config.getUserValue('masterAccountName');
+  const key = req.swagger.params.name.value;
+  const item = { Value: req.swagger.params.body.value };
+  const user = req.user;
+
+  const command = {
+    name: 'UpdateDynamoResource',
+    resource: 'ops/environments',
+    key,
+    item,
+    expectedVersion: req.swagger.params['expected-version'].value,
+    accountName: masterAccountName,
+  };
+
+  sender.sendCommand({ command, user }).then((data) => res.json(data)).catch(next);
 }
 
 module.exports = {

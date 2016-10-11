@@ -425,6 +425,7 @@ paths:
           required: true
           schema:
             type: object
+        - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
           description: OK
