@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ManageEnvironmentScheduleController',
-  function ($rootScope, $scope, $routeParams, $location, $q, modal, resources, cachedResources, configValidation, cron) {
+  function ($rootScope, $scope, $routeParams, $location, $q, modal, resources, cachedResources, configValidation, cron, Environment) {
 
     $scope.Environment = {};
     $scope.EnvironmentVersion = 0;
@@ -44,7 +44,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
 
       };
 
-      resources.ops.environments.get({ key: $scope.Environment.EnvironmentName })
+      Environment.getScheduleStatus($scope.Environment.EnvironmentName)
         .then(function (operations) {
           assignToTheScope(operations);
           $scope.DataFound = true;
@@ -96,7 +96,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
           Value: $scope.Operations.Value,
         },
       };
-      resources.ops.environments.put(params).then(function () {
+      Environment.putSchedule($scope.Operations.EnvironmentName, $scope.OperationsVersion, $scope.Operations.Value).then(function () {
         cachedResources.config.environments.flush();
         modal.information({
           title: 'Environment Schedule Updated',

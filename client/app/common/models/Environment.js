@@ -21,6 +21,22 @@ angular.module('EnvironmentManager.common').factory('Environment',
       });
     };
 
+    Environment.getScheduleStatus = function (environmentName) {
+      return $http.get('/api/v1/environments/' + environmentName + '/schedule-status').then(function (response) {
+        return response.data;
+      });
+    };
+
+    Environment.putSchedule = function (environmentName, version, value) {
+      return $http({
+        method: 'put',
+        url: '/api/v1/environments/' + environmentName + '/schedule',
+        data: value,
+        headers: { 'expected-version': version }
+      });
+    };
+
+
     _.assign(Environment.prototype, {
 
     });
