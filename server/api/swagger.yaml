@@ -1534,7 +1534,7 @@ paths:
         - Service
       x-authorizer: services
       parameters:
-        - name: config
+        - name: body
           in: body
           required: true
           schema:
@@ -1596,7 +1596,7 @@ paths:
           in: path
           type: string
           required: true
-        - name: config
+        - name: body
           in: body
           required: true
           schema:

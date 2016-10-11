@@ -29,12 +29,12 @@ function getServiceConfigByName(req, res, next) {
  * POST /config/services
  */
 function postServicesConfig(req, res, next) {
-  const config = req.swagger.params.config.value;
+  const body = req.swagger.params.body.value;
   const user = req.user;
-  const key = config.ServiceName;
-  const sortKey = config.OwningCluster;
+  const key = body.ServiceName;
+  const sortKey = body.OwningCluster;
 
-  return dynamoHelper.createWithSortKey(key, sortKey, { Value: config.Value }, user).then(data => res.json(data)).catch(next);
+  return dynamoHelper.createWithSortKey(key, sortKey, { Value: body.Value }, user).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -45,15 +45,15 @@ function putServiceConfigByName(req, res, next) {
   const sortKey = req.swagger.params.cluster.value;
   const user = req.user;
   const expectedVersion = req.swagger.params['expected-version'].value;
-  const config = req.swagger.params.config.value;
+  const body = req.swagger.params.body.value;
 
-  return dynamoHelper.updateWithSortKey(key, sortKey, { Value: config }, expectedVersion, user).then(data => res.json(data)).catch(next);
+  return dynamoHelper.updateWithSortKey(key, sortKey, { Value: body }, expectedVersion, user).then(data => res.json(data)).catch(next);
 }
 
 /**
  * DELETE /config/services/{name}/{infra}
  */
-function deleteServiceConfigByName(req, res) {
+function deleteServiceConfigByName(req, res, next) {
   const pKey = req.swagger.params.name.value;
   const sKey = req.swagger.params.cluster.value;
   const user = req.user;

@@ -2,7 +2,8 @@
 'use strict';
 
 exports.getRules = request => {
-  let cluster = request.params.range;
+  // TODO(filip): once we move to v1, need only swagger param
+  let cluster = request.params.range || request.params.cluster || request.params.body.OwningCluster;
 
   return Promise.resolve([{
     resource: request.url.replace(/\/+$/, ''),
