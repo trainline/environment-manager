@@ -167,7 +167,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
         },
       };
 
-      resources.config.deploymentMaps.put(params).then(function () {
+      deploymentMap.update().then(function () {
         cachedResources.config.deploymentMaps.flush();
         $uibModalInstance.close();
       });

@@ -40,8 +40,7 @@ function putDeploymentMapConfigByName(req, res, next) {
   const deploymentMap = req.swagger.params.body.value;
   const user = req.user;
 
-  return dynamoHelper
-    .update(key, { Value: deploymentMap }, expectedVersion, user)
+  return dynamoHelper.update(key, { Value: deploymentMap }, expectedVersion, user)
     .then(_ => res.status(200).end())
     .catch(next);
 }
