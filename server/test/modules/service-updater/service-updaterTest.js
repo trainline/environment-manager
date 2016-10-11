@@ -3,10 +3,10 @@
 
 let assert = require('assert');
 
-describe('service-updater', function() {
+describe('service-targets', function() {
 
   let sut;
-  beforeEach(() => sut = require('modules/service-updater'));
+  beforeEach(() => sut = require('modules/service-targets'));
 
   it('exports the expected API', () => {
     assert.notEqual(sut.getTargetState, undefined, 'getTargetState is required');

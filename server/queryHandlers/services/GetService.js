@@ -2,16 +2,16 @@
 'use strict';
 
 let assertContract = require('modules/assertContract');
-let serviceReporter = require('modules/service-reporter');
-let bluebird = require('bluebird');
-let _ = require('lodash');
+let serviceDiscovery = require('modules/service-discovery');
 
 module.exports = function GetService(query) {
-  let environments = _.castArray(query.environment);
-
-  return bluebird.map(environments, function(environment) {
-    let service = `${environment}-${query.serviceName}`;
-    let tag = `environment:${environment}`;
-    return serviceReporter.getService(environment, { service, tag }).then(service => ({[environment]:service}));
-  })
+  assertContract(query, 'query', {
+    properties: {
+      accountName: { type: String, empty: false },
+      environment: { type: String, empty: false },
+      serviceName: { type: String, empty: false },
+    },
+  });
+  
+  return serviceDiscovery.getService(query.environment, query.serviceName);
 };

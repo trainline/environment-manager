@@ -14,9 +14,8 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     vm.awsInstanceTypesList = [];
     vm.deploymentMap = null;
     vm.deploymentMapTarget = null;
-    
+    vm.environmentName = environment.EnvironmentName;
     vm.asg = null;
-
     vm.serverData = [];
     vm.dataLoading = true;
     vm.asgUpdate = {
@@ -97,14 +96,12 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     vm.refresh = function (onInitialization) {
       vm.dataLoading = true;
 
-
       $q.all([
         serviceDiscovery.getASGState(parameters.environment.EnvironmentName, parameters.groupName),
         AutoScalingGroup.getFullByName(parameters.accountName, parameters.environment.EnvironmentName, parameters.groupName),
       ]).then(function (arr) {
         vm.asgState = arr[0];
         vm.asg = arr[1];
-
         vm.asg.LaunchConfig.UI_SecurityGroupsFlatList = vm.asg.LaunchConfig.SecurityGroups.join(', ');
         vm.target = { // TODO(filip): rename this in launch-config.html to simply "LaunchConfig"
           ASG: {
@@ -130,7 +127,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
             vm.deploymentMap.Value.DeploymentTarget = vm.deploymentMap.Value.DeploymentTarget.map(deploymentMapConverter.toDeploymentTarget);
 
             // Find the corresponding Target for this ASG
-            vm.deploymentMapTarget = findDeploymentMapTargetForAsg(vm.asg, vm.deploymentMap);
+            vm.deploymentMapTarget = findDeploymentMapTargetForAsg(vm.asg);
           } else {
             vm.deploymentMapTarget = null;
           }
@@ -257,7 +254,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     };
 
 
-    function findDeploymentMapTargetForAsg(asg, deploymentMap) {
+    function findDeploymentMapTargetForAsg(asg) {
       // Find by name and owning cluster
       var targetName = asg.getDeploymentMapTargetName();
       return _.find(vm.deploymentMap.Value.DeploymentTarget, { OwningCluster: asg.OwningCluster, ServerRoleName: targetName });

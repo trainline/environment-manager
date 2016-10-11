@@ -4,7 +4,6 @@
 let co = require('co');
 let configurationCache = require('modules/configurationCache');
 let consulSecretCache = require('modules/consulSecretCache');
-let logger = require('modules/logger');
 let _ = require('lodash');
 
 function* getConsulClientOptions(parameters) {

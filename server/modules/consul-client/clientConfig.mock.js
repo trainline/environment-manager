@@ -3,10 +3,10 @@
 
 module.exports = (parameters) => {
   return Promise.resolve({
-    host: '10.249.157.162',
+    host: '10.249.16.74',
     port: '8500',
     defaults: {
-      dc: 'tl-cluster',
+      dc: 'tl-c50',
     },
     promisify: parameters.promisify,
   });

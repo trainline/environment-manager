@@ -9,12 +9,9 @@ angular.module('EnvironmentManager.environments').component('asgSingleInstance',
     dismiss: '&'
   },
   controllerAs: 'vm',
-  controller: function (roles, Deployment, serviceDiscovery) {
+  controller: function () {
     var vm = this;
-
     vm.dataLoading = false;
-
-    var asg = vm.resolve.asg;
     vm.instance = vm.resolve.instance;
   }
 });

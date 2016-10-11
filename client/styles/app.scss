@@ -148,6 +148,10 @@ td.actions-button a { color: inherit; }
   border-bottom-width: 2px;
 }
 
+.table tr.vertical-center td {
+  vertical-align: middle;
+}
+
 /* Error Styles */
 .invalid { border: 1px solid red; }
 .ErrorList {
@@ -258,50 +262,102 @@ span.status-error span { color: red; }
 }
 
 .onoffswitch {
-  position: relative; width: 90px;
+  position: relative;
+  width: 90px;
   -webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
 }
 .onoffswitch-checkbox {
   display: none;
 }
 .onoffswitch-label {
-  display: block; overflow: hidden; cursor: pointer;
-  border: 2px solid #999999; border-radius: 20px;
+  display: block;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid #999999;
+  border-radius: 20px;
+
+  .enabled-toggle & {
+    width: 120px;
+  }
 }
+
+.enabled-toggle label {
+  max-width: none;
+}
+
 .onoffswitch-inner {
-  display: block; width: 200%; margin-left: -100%;
+  display: block;
+  width: 200%;
+  margin-left: -100%;
   transition: margin 0.3s ease-in 0s;
 }
 .onoffswitch-inner:before, .onoffswitch-inner:after {
-  display: block; float: left; width: 50%; height: 30px; padding: 0; line-height: 30px;
-  font-size: 14px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+  display: block;
+  float: left;
+  width: 50%;
+  height: 30px;
+  padding: 0;
+  line-height: 30px;
+  font-size: 14px;
+  color: white;
+  font-family: Trebuchet, Arial, sans-serif;
+  font-weight: bold;
   box-sizing: border-box;
 }
 .onoffswitch-inner:before {
   content: "Up";
   padding-left: 10px;
-  background-color: RGB(68,212,179); color: #FFFFFF;
+  background-color: RGB(68,212,179);
+  color: #FFFFFF;
+
+  .enabled-toggle & {
+    content: "Enabled";
+    padding-left: 20px;
+  }
 }
 .onoffswitch-inner:after {
   content: "Down";
   padding-right: 10px;
-  background-color: #EEEEEE; color: #999999;
+  background-color: #EEEEEE;
+  color: #999999;
   text-align: right;
+
+  .enabled-toggle & {
+    content: "Disabled";
+    padding-right: 0;
+    padding-left: 40px;
+    text-align: left;
+  }
 }
 .onoffswitch-switch {
-  display: block; width: 18px; margin: 6px;
+  display: block;
+  width: 18px;
+  margin: 6px;
   background: #FFFFFF;
-  position: absolute; top: 0; bottom: 0;
+  position: absolute;
+  top: 0;
+  bottom: 0;
   right: 56px;
-  border: 2px solid #999999; border-radius: 20px;
+  border: 2px solid #999999;
+  border-radius: 20px;
   transition: all 0.3s ease-in 0s;
+
+  .enabled-toggle & {
+    right: 0;
+    left: 0;
+  }
 }
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
   margin-left: 0;
 }
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
   right: 0px;
+
+  .enabled-toggle & {
+    left: 90px;
+  }
 }
+
 
 /* Config Clusters */
 form#Cluster label { width: 180px; }
@@ -342,7 +398,6 @@ json-diff-patch > pre { overflow-y: scroll; }
   top: 4px;
 
   &.none, &.Unknown {
-    display: none;
     background-color: #EEEEEE;
     background-image: radial-gradient(#EEEEEE, #BBBBBB);
   }
@@ -625,6 +680,11 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
     height: 38px;
     padding: 8px;
   }
+}
+
+.help-icon {
+  color: #858585;
+  margin-left: 12px;
 }
 
 #DeploymentHistory .node-list {
