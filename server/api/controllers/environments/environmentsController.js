@@ -60,6 +60,7 @@ function getEnvironmentAccountName(req, res, next) {
  * GET /environments/schedule-status
  */
 function getEnvironmentsScheduleStatus(req, res, next) {
+  const masterAccountName = config.getUserValue('masterAccountName');
 
   let filter = {};
   ScanDynamoResources({ resource: 'ops/environments', filter, exposeAudit: 'version-only', accountName: masterAccountName })
