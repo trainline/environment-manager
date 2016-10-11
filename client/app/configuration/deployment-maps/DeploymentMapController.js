@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('DeploymentMapController',
-  function ($scope, $routeParams, $location, $q, $uibModal, resources, cachedResources, modal, deploymentMapConverter, DeploymentMap) {
+  function ($scope, $routeParams, $location, $q, $uibModal, QuerySync, resources, cachedResources, modal, deploymentMapConverter, DeploymentMap) {
 
     var vm = this;
 
@@ -20,11 +20,25 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
     vm.dataFound = false;
     vm.dataLoading = true;
 
+    var deploymentMapName = $routeParams['deploymentmap'];
+
+    var querySync = new QuerySync(vm, {
+      cluster: {
+        property: 'selectedOwningCluster',
+        default: SHOW_ALL_OPTION,
+      },
+      service: {
+        property: 'serviceName',
+        default: '',
+      },
+      server: {
+        property: 'serverRole',
+        default: '',
+      },
+    });
+
     function init() {
-      var deploymentMapName = $routeParams['deploymentmap'];
-      var cluster = $routeParams['cluster'];
-      var service = $routeParams['service'];
-      var server = $routeParams['server'];
+      querySync.init();
 
       userHasPermission = user.hasPermission({ access: 'PUT', resource: '/config/deploymentmaps/' + deploymentMapName });
 
@@ -33,12 +47,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
           vm.owningClustersList = [SHOW_ALL_OPTION].concat(_.map(clusters, 'ClusterName')).sort();
         }),
       ]).then(function () {
-        if (deploymentMapName) {
-          vm.selectedOwningCluster = cluster || SHOW_ALL_OPTION;
-          vm.serverRole = server || '';
-          vm.serviceName = service || '';
-          readDeploymentMap(deploymentMapName);
-        }
+        readDeploymentMap(deploymentMapName);
       });
     }
 
@@ -48,9 +57,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
 
     vm.search = function () {
 
-      $location.search('cluster', vm.selectedOwningCluster);
-      $location.search('service', vm.serviceName || null);
-      $location.search('server', vm.serverRole || null);
+      querySync.updateQuery();
 
       // Client side filter of Server Roles/targets based on user selections
       vm.deploymentTargets = vm.deploymentMap.Value.DeploymentTarget.filter(function (target) {
