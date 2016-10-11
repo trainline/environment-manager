@@ -23,13 +23,8 @@
 
         var environments;
         var environmentTypes;
-        var runningInSandbox = false;
 
         $q.all([
-          cachedResources.aws.accounts.all().then(function (accounts) {
-            runningInSandbox = (accounts.indexOf('Sandbox') != -1);
-          }),
-
           cachedResources.config.environments.all().then(function (envData) {
             environments = envData;
           }),
@@ -40,7 +35,7 @@
         ]).then(function () {
 
           var env = cachedResources.config.environments.getByName(environmentName, 'EnvironmentName', environments);
-          var envTypeName = runningInSandbox ? 'Sandbox' : env.Value.EnvironmentType;
+          var envTypeName = env.Value.EnvironmentType;
           var envType = cachedResources.config.environmentTypes.getByName(envTypeName, 'EnvironmentType', environmentTypes);
 
           if (!env) {
