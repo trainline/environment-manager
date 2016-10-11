@@ -9,6 +9,8 @@ let targetStates = require('modules/service-targets');
 
 const HEALTH_GOOD = Enums.HEALTH_STATUS.Healthy;
 const HEALTH_BAD = Enums.HEALTH_STATUS.Error;
+const SERVICE_ACTION = Enums.serviceAction.NAME;
+const SERVICE_INSTALL = Enums.serviceAction.INSTALL;
 
 /**
  * Generate service health info (with checks list and pass / fail)
@@ -52,18 +54,18 @@ function* getServicesTargetState(environmentName, runtimeServerRoleName, instanc
     let healthyNodes = _.filter(serviceInstances, (instance) => instance.OverallHealth.Status === Enums.HEALTH_STATUS.Healthy);
     let instancesHealthCount = healthyNodes.length + '/' + serviceInstances.length;
     let serviceHealthChecks = getServiceChecksInfo(serviceObjects);
-    let Status = service.hasOwnProperty('Status') ? service.Status : 'Enabled';
+    let serviceAction = service.hasOwnProperty(SERVICE_ACTION) ? service[SERVICE_ACTION] : SERVICE_INSTALL;
 
     return {
       Name: service.Name,
       Version: service.Version,
       Slice: service.Slice,
       DeploymentId: service.DeploymentId,
-      Status,
       InstancesNames: _.map(serviceInstances, 'Name'),
       InstancesHealthCount: instancesHealthCount,
       OverallHealth: getServiceOverallHealth(serviceHealthChecks, serviceInstances),
       HealthChecks: serviceHealthChecks,
+      [SERVICE_ACTION]: serviceAction,
     };
   });
 }

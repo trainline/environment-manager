@@ -35,13 +35,13 @@ describe('ToggleTargetStatus', function() {
     describe('requests to disable the service', () => {
       beforeEach(() => command.enable = false);
       it('should return a disabled service',
-        () => sut(command).then(result => assert.equal(result.Status, 'Disabled')));
+        () => sut(command).then(result => assert.equal(result.Action, 'Ignore')));
     });
 
     describe('requests to enable the service', () => {
       beforeEach(() => command.enable = true);
       it('should return an enabled service',
-        () => sut(command).then(result => assert.equal(result.Status, 'Enabled')));
+        () => sut(command).then(result => assert.equal(result.Action, 'Install')));
     });
   }
 
@@ -58,23 +58,23 @@ describe('ToggleTargetStatus', function() {
   });
 
   describe('on services with an Enabled status', () => {
-    currentKeyValueState.value.Status = 'Enabled';
+    currentKeyValueState.value.Action = 'Install';
     testEnablingAndDisabling();
   });
 
   describe('on services with an Disabled status', () => {
-    currentKeyValueState.value.Status = 'Disabled';
+    currentKeyValueState.value.Action = 'Ignore';
     testEnablingAndDisabling();
   });
 
   describe('when a target state update errors', () => {
-    currentKeyValueState.value.Status = 'Enabled';
+    currentKeyValueState.value.Action = 'Install';
     beforeEach(() => serviceTargets.setTargetState = sinon.stub().throws());
 
     it('should provide a contextual error message', () => {
       return sut(command).catch(error => {
         return assert.equal(error.message,
-          `There was a problem updating the Future Deployment status for ${command.service}. Its status is still currently set to ${currentKeyValueState.value.Status}`)
+          `There was a problem updating the future installation status for ${command.service}. Its status is still currently set to ${currentKeyValueState.value.Action}`)
       })
     })
   });
