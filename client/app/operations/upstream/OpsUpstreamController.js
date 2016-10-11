@@ -4,7 +4,7 @@
 angular.module('EnvironmentManager.operations').controller('OpsUpstreamController',
   function ($scope, $routeParams, $location, $uibModal, $q, resources, QuerySync, cachedResources, accountMappingService, modal) {
     var vm = this;
-
+    var querySync;
     var SHOW_ALL_OPTION = 'Any';
 
     vm.environmentsList = [];
@@ -17,31 +17,31 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     vm.dataFound = false;
     vm.dataLoading = false;
 
-    var querySync = new QuerySync(vm, {
-      environment: {
-        property: 'selectedEnvironment',
-        default: 'pr1',
-      },
-      cluster: {
-        property: 'selectedOwningCluster',
-        default: SHOW_ALL_OPTION,
-      },
-      state: {
-        property: 'selectedState',
-        default: 'Up',
-      },
-      service: {
-        property: 'selectedService',
-        default: '',
-      }
-    });
-
     function init() {
-      querySync.init();
-      
       $q.all([
         cachedResources.config.environments.all().then(function (environments) {
           vm.environmentsList = _.map(environments, 'EnvironmentName').sort();
+
+          querySync = new QuerySync(vm, {
+            environment: {
+              property: 'selectedEnvironment',
+              default: vm.environmentsList[0],
+            },
+            cluster: {
+              property: 'selectedOwningCluster',
+              default: SHOW_ALL_OPTION,
+            },
+            state: {
+              property: 'selectedState',
+              default: 'Up',
+            },
+            service: {
+              property: 'selectedService',
+              default: '',
+            }
+          });
+
+          querySync.init();
         }),
 
         cachedResources.config.services.all().then(function (services) {
