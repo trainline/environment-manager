@@ -16,7 +16,7 @@
         return deferred.promise;
       },
 
-      GetEnvironmentLoadBalancers: function (environmentName) {
+      getEnvironmentLoadBalancers: function (environmentName) {
         var deferred = $q.defer();
 
         var environments;

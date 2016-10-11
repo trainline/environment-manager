@@ -208,7 +208,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     function updateLBStatus() {
 
       // Read LBs for this environment
-      accountMappingService.GetEnvironmentLoadBalancers(vm.selectedEnvironment).then(function (lbs) {
+      accountMappingService.getEnvironmentLoadBalancers(vm.selectedEnvironment).then(function (lbs) {
 
         // Clear existing data
         vm.data.forEach(function (upstreamHost) {
