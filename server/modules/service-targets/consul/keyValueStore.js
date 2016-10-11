@@ -8,6 +8,7 @@ let HttpRequestError = require('modules/errors/HttpRequestError.class');
 let consulClient = require('modules/consul-client');
 let logger = require('modules/logger');
 let retry = require('retry');
+let _ = require('lodash');
 
 function encodeValue(value) {
   if (!value) return null;
@@ -50,6 +51,19 @@ function getTargetState(environment, parameters) {
   });
 
   return executeAction(promiseFactoryMethod);
+}
+
+function getAllServiceTargets(environmentName, runtimeServerRole) {
+  let key = `environments/${environmentName}/roles/${runtimeServerRole}/services`;
+  return getTargetState(environmentName, { key, recurse: true }).then(data => _.map(data, 'value'));
+}
+
+function getServiceDeploymentCause(environmentName, deploymentId, instanceId) {
+  let key = `deployments/${deploymentId}/nodes/${instanceId}`;
+  let value = '[0].value.Cause';
+  let defaultValue = 'Unknown';
+
+  return getTargetState(environmentName, { key, recurse: true }).then(data => _.get(data, value, defaultValue));
 }
 
 function setTargetState(environment, parameters) {
@@ -136,5 +150,7 @@ function logChange(operation, key, value){
 module.exports = {
   getTargetState,
   setTargetState,
-  removeTargetState
+  removeTargetState,
+  getAllServiceTargets,
+  getServiceDeploymentCause
 };

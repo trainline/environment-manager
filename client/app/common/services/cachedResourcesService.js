@@ -5,7 +5,6 @@ angular.module('EnvironmentManager.common').factory('cachedResources',
   function ($q, resources) {
 
     var CachedData = [];
-
     var cachedResources = {
       config: {
         environments: CachedResource('environments', 'config'),

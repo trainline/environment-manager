@@ -2,7 +2,7 @@
 'use strict';
 
 let assertContract = require('modules/assertContract');
-let serviceReporter = require('modules/service-reporter');
+let serviceDiscovery = require('modules/service-discovery');
 
 module.exports = function GetAllServices(query) {
   assertContract(query, 'query', {
@@ -11,5 +11,5 @@ module.exports = function GetAllServices(query) {
     },
   });
 
-  return serviceReporter.getAllServices(query.query);
+  return serviceDiscovery.getAllServices(query.query);
 };

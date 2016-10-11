@@ -2,7 +2,7 @@
 'use strict';
 
 let assertContract = require('modules/assertContract');
-let serviceReporter = require('modules/service-reporter');
+let serviceDiscovery = require('modules/service-discovery');
 
 module.exports = function GetService(query) {
   assertContract(query, 'query', {
@@ -12,8 +12,6 @@ module.exports = function GetService(query) {
       serviceName: { type: String, empty: false },
     },
   });
-
-  // let service = `${query.environment}-${query.serviceName}`;
-  // let tag = `environment:${query.environment}`;
-  return serviceReporter.getService(query.environment, query.serviceName);
+  
+  return serviceDiscovery.getService(query.environment, query.serviceName);
 };

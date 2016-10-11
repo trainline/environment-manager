@@ -100,7 +100,6 @@ angular.module('EnvironmentManager.common').factory('environments',
 
       $this.do = function (success, failure) {
         var url = getUrl();
-        console.log(url); //TODO
         var value = getValue();
 
         return $http.post(url, value).then(success, failure || defaultFailure);
