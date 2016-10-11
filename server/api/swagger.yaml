@@ -440,6 +440,23 @@ paths:
           description: The schedule status
           schema:
             type: object
+  /environments/{name}/accountName:
+    x-swagger-router-controller: environments/environmentsController
+    get:
+      operationId: getEnvironmentAccountName
+      summary: Get account name for given environment.
+      tags:
+        - Environment
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Account name
+          schema:
+            type: string
   /environments/{name}/schedule-status:
     x-swagger-router-controller: environments/environmentsController
     get:

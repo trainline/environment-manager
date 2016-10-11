@@ -4,6 +4,8 @@
 let config = require('config');
 let GetASGState = require('queryHandlers/GetASGState');
 let ScanServersStatus = require('queryHandlers/ScanServersStatus');
+let co = require('co');
+let Environment = require('models/Environment');
 
 /**
  * GET /environments
@@ -38,6 +40,18 @@ function getEnvironmentServerByName(req, res, next) {
   GetASGState({ environmentName, asgName }).then((data) => res.json(data)).catch(next);
 }
 
+/**
+ * GET /environments/{name}/accountName
+ */
+function getEnvironmentAccountName(req, res, next) {
+  const environmentName = req.swagger.params.name.value;
+
+  return co(function* () {
+    const accountName = yield (yield Environment.getByName(environmentName)).getAccountName();
+    res.send(accountName);
+  }).catch(next);
+}
+
 
 /**
  * GET /environments/schedule-status
@@ -62,6 +76,7 @@ function putEnvironmentSchedule(req, res, next) {
 module.exports = {
   getEnvironments,
   getEnvironmentByName,
+  getEnvironmentAccountName,
   getEnvironmentServers,
   getEnvironmentServerByName,
   getEnvironmentScheduleStatus,

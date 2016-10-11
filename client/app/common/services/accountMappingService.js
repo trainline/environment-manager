@@ -6,7 +6,7 @@
     return {
       GetAccountForEnvironment: function (environmentName) {
         var deferred = $q.defer();
-        var url = '/api/environments/' + environmentName + '/accountName';
+        var url = '/api/v1/environments/' + environmentName + '/accountName';
 
         $http.get(url).then(function(account) {
           deferred.resolve(account.data)
