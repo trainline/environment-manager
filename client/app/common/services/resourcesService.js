@@ -81,14 +81,6 @@ angular.module('EnvironmentManager.common').factory('resources',
 
       },
       environment: environments,
-      ops: {
-        environments: remoteResourceFactory.getFullAccess({
-          name: 'environments',
-          description: 'Environments',
-          section: 'ops',
-          perAccount: false,
-        }),
-      },
       aws: {
         instances: remoteResourceFactory.getReadOnly({
           name: 'instances',
