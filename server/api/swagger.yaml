@@ -669,7 +669,7 @@ paths:
       responses:
         200:
           description: OK
-  /target-state:
+  /target-state/{environment}:
     x-swagger-router-controller: target-state/targetStateController
     get:
       operationId: getTargetState
@@ -680,7 +680,7 @@ paths:
         - Target State
       parameters:
         - name: environment
-          in: query
+          in: path
           type: string
           required: true
         - name: serverRole
@@ -694,8 +694,6 @@ paths:
             type: array
             items:
               type: object
-  /target-state/{environment}:
-    x-swagger-router-controller: target-state/targetStateController
     delete:
       operationId: deleteTargetStateByEnvironment
       summary: Remove the target state for all services in a given environment.
