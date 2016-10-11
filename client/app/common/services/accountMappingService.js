@@ -5,25 +5,21 @@
   function ($q, cachedResources, $http) {
     return {
       getAccountForEnvironment: function (environmentName) {
-        var deferred = $q.defer();
         var url = '/api/v1/environments/' + environmentName + '/accountName';
 
-        $http.get(url).then(function(account) {
-          deferred.resolve(account.data)
+        return $http.get(url).then(function(account) {
+          return account.data;
         }, function(error) {
-          deferred.reject(error.message);
+          throw error.message;
         });
-        return deferred.promise;
       },
 
       getEnvironmentLoadBalancers: function (environmentName) {
-        var deferred = $q.defer();
-
         var environments;
         var environmentTypes;
         var runningInSandbox = false;
 
-        $q.all([
+        return $q.all([
           cachedResources.config.accounts.all().then(function (accounts) {
             accounts = _.map(accounts, 'AccountName');
             runningInSandbox = (accounts.indexOf('Sandbox') != -1);
@@ -43,16 +39,14 @@
           var envType = cachedResources.config.environmentTypes.getByName(envTypeName, 'EnvironmentType', environmentTypes);
 
           if (!env) {
-            deferred.reject('Environment name ' + environmentName + ' not found');
+            throw 'Environment name ' + environmentName + ' not found';
           } else if (!envType) {
-            deferred.reject('Environment type ' + envTypeName + ' not found');
+            throw 'Environment type ' + envTypeName + ' not found';
           } else {
-            deferred.resolve(envType.Value.LoadBalancers);
+            return envType.Value.LoadBalancers;
           }
 
         });
-
-        return deferred.promise;
       }
     };
   });
