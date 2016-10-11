@@ -2,16 +2,16 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ManageEnvironmentScheduleController',
-  function ($rootScope, $scope, $routeParams, $location, $q, modal, resources, cachedResources, configValidation, cron, Environment) {
+  function ($rootScope, $routeParams, $location, $q, modal, resources, cachedResources, configValidation, cron, Environment) {
+    var vm = this;
 
-    $scope.Environment = {};
-    $scope.EnvironmentVersion = 0;
-    $scope.Operations = {};
-    $scope.OperationsVersion = 0;
-    $scope.DataFound = false;
-    $scope.DataLoading = true;
+    vm.environment = {};
+    vm.operations = {};
+    vm.operationsVersion = 0;
+    vm.dataFound = false;
+    vm.dataLoading = true;
 
-    $scope.NewSchedule = {
+    vm.newSchedule = {
       Type: '',
       DefaultSchedule: '',
     };
@@ -19,90 +19,90 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
     function init() {
 
       var environmentName = GetActiveEnvironment();
-      $scope.Environment.EnvironmentName = environmentName;
+      vm.environment.EnvironmentName = environmentName;
 
-      $scope.Refresh();
+      vm.refresh();
     }
 
-    $scope.Refresh = function () {
+    vm.refresh = function () {
 
-      $scope.DataLoading = true;
+      vm.dataLoading = true;
 
       function assignToTheScope(operations) {
 
-        $scope.Operations = operations;
-        $scope.OperationsVersion = operations.Version;
+        vm.operations = operations;
+        vm.operationsVersion = operations.Version;
 
         var scheduleAction = GetScheduleAction(operations.Value);
-        $scope.Operations.getScheduleAction = function () {
+        vm.operations.getScheduleAction = function () {
           return scheduleAction; };
 
-        $scope.NewSchedule = {
+        vm.newSchedule = {
           DefaultSchedule: operations.Value.DefaultSchedule,
           Type: operations.Value.ScheduleAutomatically ? 'Automatic' : operations.Value.ManualScheduleUp ? 'On' : 'Off',
         };
 
       };
 
-      Environment.getScheduleStatus($scope.Environment.EnvironmentName)
+      Environment.getScheduleStatus(vm.environment.EnvironmentName)
         .then(function (operations) {
           assignToTheScope(operations);
-          $scope.DataFound = true;
+          vm.dataFound = true;
         }, function () {
 
-          $scope.DataFound = false;
+          vm.dataFound = false;
         }).finally(function () {
-          $scope.DataLoading = false;
+          vm.dataLoading = false;
         });
     };
 
-    $scope.UseSpecificClicked = function () {
-      if (!$scope.NewSchedule.DefaultSchedule || $scope.NewSchedule.DefaultSchedule.indexOf(':') == -1) {
-        $scope.NewSchedule.DefaultSchedule = 'Start: 0 8 * * 1,2,3,4,5; Stop: 0 19 * * 1,2,3,4,5';
-        $scope.editing = true;
+    vm.useSpecificClicked = function () {
+      if (!vm.newSchedule.DefaultSchedule || vm.newSchedule.DefaultSchedule.indexOf(':') == -1) {
+        vm.newSchedule.DefaultSchedule = 'Start: 0 8 * * 1,2,3,4,5; Stop: 0 19 * * 1,2,3,4,5';
+        vm.editing = true;
       }
     };
 
-    $scope.NonSpecificClicked = function () {
-      $scope.editing = false;
+    vm.nonSpecificClicked = function () {
+      vm.editing = false;
     };
 
-    $scope.DoneClicked = function () {
-      $scope.editing = false;
-      if ($scope.NewSchedule.DefaultSchedule.indexOf(':') == -1) {
-        $scope.NewSchedule.Type = 'On';
+    vm.doneClicked = function () {
+      vm.editing = false;
+      if (vm.newSchedule.DefaultSchedule.indexOf(':') == -1) {
+        vm.newSchedule.Type = 'On';
       }
     };
 
-    $scope.ShouldShowEditor = function () {
-      return $scope.NewSchedule.Type == 'Automatic' && $scope.editing == true;
+    vm.shouldShowEditor = function () {
+      return vm.newSchedule.Type == 'Automatic' && vm.editing == true;
     };
 
-    $scope.EditClicked = function () {
-      $scope.editing = true;
+    vm.editClicked = function () {
+      vm.editing = true;
     };
 
-    $scope.ApplySchedule = function () {
+    vm.applySchedule = function () {
 
       // Update Environment with form values
-      $scope.Operations.Value.ScheduleAutomatically = $scope.NewSchedule.Type == 'Automatic';
-      $scope.Operations.Value.ManualScheduleUp = $scope.NewSchedule.Type == 'On';
-      $scope.Operations.Value.DefaultSchedule = $scope.NewSchedule.DefaultSchedule;
+      vm.operations.Value.ScheduleAutomatically = vm.newSchedule.Type == 'Automatic';
+      vm.operations.Value.ManualScheduleUp = vm.newSchedule.Type == 'On';
+      vm.operations.Value.DefaultSchedule = vm.newSchedule.DefaultSchedule;
 
       var params = {
-        key: $scope.Operations.EnvironmentName,
-        expectedVersion: $scope.OperationsVersion,
+        key: vm.operations.EnvironmentName,
+        expectedVersion: vm.operationsVersion,
         data: {
-          Value: $scope.Operations.Value,
+          Value: vm.operations.Value,
         },
       };
-      Environment.putSchedule($scope.Operations.EnvironmentName, $scope.OperationsVersion, $scope.Operations.Value).then(function () {
+      Environment.putSchedule(vm.operations.EnvironmentName, vm.operationsVersion, vm.operations.Value).then(function () {
         cachedResources.config.environments.flush();
         modal.information({
           title: 'Environment Schedule Updated',
           message: 'Environment schedule saved successfully.<br/><br/>Note: It may take up to 10 minutes for schedule changes to result in servers being turned on or off.',
         }).then(function () {
-          $scope.Refresh();
+          vm.refresh();
         });
       });
     };
