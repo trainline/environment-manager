@@ -15,7 +15,7 @@ angular.module('EnvironmentManager.common').factory('targetStateService', functi
 
      return $http.post(url, data)
       .then(function(result) {
-         deferred.resolve(result.data)
+         return result.data;
        },
         $rootScope.$broadcast.bind($rootScope, 'error')
       );

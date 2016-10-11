@@ -17,7 +17,7 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
     vm.allowServiceDisabling = window.FEATURE_DISABLE_SERVICE;
 
     vm.servicesList = vm.servicesList.map(function(service) {
-      service.installationEnabled = service.Status !== 'Disabled';
+      service.installationEnabled = service.Action !== 'Ignore';
       return service;
     });
 
@@ -58,7 +58,7 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
     vm.setDeploymentStatus = function (service) {
       var enableService = service.installationEnabled;
       targetStateService.changeDeploymentStatus(enableService, service, vm.role, vm.environment).then(function(result) {
-        service.Status = result.Status;
+        service.Action = result.Action;
       });
     };
   }
