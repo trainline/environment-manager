@@ -11,7 +11,6 @@ module.exports = route.get('/:account/environments/:environment/services/:servic
 
     var query = {
       name: 'GetServiceNodes',
-      accountName: request.params.account,
       environment: request.params.environment,
       serviceName: request.params.service,
     };
