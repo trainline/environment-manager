@@ -20,7 +20,9 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     function init() {
       $q.all([
         cachedResources.config.environments.all().then(function (environments) {
-          vm.environmentsList = _.map(environments, 'EnvironmentName').sort();
+          vm.environmentsList = _.map(environments, 'EnvironmentName').sort(function (a, b) {
+            return a.toLowerCase().localeCompare(b.toLowerCase());
+          });
 
           querySync = new QuerySync(vm, {
             environment: {
