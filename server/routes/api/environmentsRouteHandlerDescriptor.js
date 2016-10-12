@@ -5,6 +5,7 @@ let send = require('modules/helpers/send');
 let route = require('modules/helpers/route');
 let sender = require('modules/sender');
 let adapt = require('modules/callbackAdapter');
+let environmentProtection = require('modules/authorizers/environmentProtection');
 
 let scheduleStatusRoute =
   route.get('/environments/:environment/schedule-status')
@@ -53,8 +54,20 @@ let accountLookupRoute =
       sender.sendCommand({ command, user: request.user }).then(success, failure)
     });
 
+let protectedActionRoute =
+  route.get('/environments/:environment/protected')
+    .inOrderTo('Do something')
+    .withDocs({ description:'Environment', tags:['Environments'] })
+    .do((request, response) => {
+      let environment = request.params.environment;
+      let action = request.query.action;
+      environmentProtection.isActionProtected(environment, action)
+        .then(isProtected => response.json({isProtected}));
+    });
+
 module.exports = [
   scheduleStatusRoute,
   timedScheduleStatusRoute,
-  accountLookupRoute
+  accountLookupRoute,
+  protectedActionRoute
 ];
