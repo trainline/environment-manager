@@ -1,0 +1,12 @@
+{
+  "limitToEnvironment": "xxx",
+  "whatIf": true,
+  "listSkippedInstances": true,
+  "em": {
+    "host": "environment-manager-domain-name",
+    "credentials": {
+      "username": "username",
+      "password": "password"
+    }
+  }
+}
