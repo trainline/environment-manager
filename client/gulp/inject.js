@@ -24,5 +24,5 @@ gulp.task('inject', [], function () {
 
   return gulp.src(conf.paths.indexHtml)
     .pipe($.inject(injectScripts, injectOptions))
-    .pipe(gulp.dest('.'));
+    .pipe(gulp.dest(conf.getInjectTarget()));
 });

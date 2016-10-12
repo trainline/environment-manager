@@ -4,7 +4,6 @@
 var path = require('path');
 var gulp = require('gulp');
 var conf = require('./conf');
-var argv = require('yargs').argv;
 
 var $ = require('gulp-load-plugins')({
   pattern: ['gulp-*', 'main-bower-files', 'uglify-save-license', 'del']
@@ -38,7 +37,7 @@ gulp.task('html', ['inject', 'partials'], function () {
 
   var jsFilter = $.filter('**/*.js', { restore: true });
   var cssFilter = $.filter('**/*.css', { restore: true });
-  var output = getOutputTarget();
+  var output = conf.getOutputTarget();
 
   // TODO(filip): fix this path
   // return gulp.src(path.join(conf.paths.tmp, '/serve/*.html'))
@@ -53,21 +52,11 @@ gulp.task('html', ['inject', 'partials'], function () {
     .pipe($.sourcemaps.write('maps'))
     .pipe(jsFilter.restore)
     .pipe(cssFilter)
-    // .pipe($.sourcemaps.init())
     .pipe($.replace('../../bower_components/bootstrap-sass/assets/fonts/bootstrap/', '../fonts/'))
     .pipe($.cssnano())
     .pipe($.rev())
-    // .pipe($.sourcemaps.write('maps'))
     .pipe(cssFilter.restore)
     .pipe($.revReplace())
-    // .pipe(htmlFilter)
-    // .pipe($.htmlmin({
-    //   removeEmptyAttributes: true,
-    //   removeAttributeQuotes: true,
-    //   collapseBooleanAttributes: true,
-    //   collapseWhitespace: true
-    // }))
-    // .pipe(htmlFilter.restore)
     .pipe(gulp.dest(output))
     .pipe($.size({ title: path.join(conf.paths.dist, '/'), showFiles: true }));
 });
@@ -76,7 +65,7 @@ gulp.task('other', function () {
   var fileFilter = $.filter(function (file) {
     return file.stat.isFile();
   });
-  var output = getOutputTarget();
+  var output = conf.getOutputTarget();
 
   return gulp.src([
     './assets/images/**/*',
@@ -90,10 +79,6 @@ gulp.task('other', function () {
   .pipe(fileFilter)
   .pipe(gulp.dest(output));
 });
-
-function getOutputTarget() {
-  return argv.o || path.join(conf.paths.dist, '/');
-}
 
 gulp.task('clean', function () {
   return $.del([path.join(conf.paths.dist, '/'), path.join(conf.paths.tmp, '/')]);

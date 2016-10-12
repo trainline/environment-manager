@@ -6,6 +6,8 @@
  *  of the tasks
  */
 
+var argv = require('yargs').argv;
+
 /**
  *  The main paths of your project handle these with care
  */
@@ -36,5 +38,13 @@ module.exports = {
       console.error('[' + title + ']',  err.toString());
       this.emit('end');
     };
+  },
+
+  getOutputTarget() {
+    return argv.o || path.join('dist', '/');
+  },
+
+  getInjectTarget() {
+    return argv.o || '.';
   }
 };
