@@ -24,29 +24,28 @@ angular.module('EnvironmentManager.common').factory('awsService',
     function InstanceService() {
       var self = this;
 
-      self.GetInstanceDetails = function (params) {
+      self.getSummaryFromInstance = function (instance, account) {
+        var instanceSummary = {
 
-        function getSummaryFromInstance(instance) {
-          var instanceSummary = {
-
-            AccountName: instance.AccountName || params.account,
-            Ip: instance.PrivateIpAddress, // TODO: could be an array, cope with multiple
-            InstanceId: instance.InstanceId,
-            InstanceType: instance.InstanceType,
-            AvailabilityZone: instance.Placement.AvailabilityZone,
-            Status: _.capitalize(instance.State.Name),
-            ImageId: instance.ImageId,
-            LaunchTime: instance.LaunchTime,
-          };
-          instance.Tags.forEach(function (tag) {
-            instanceSummary[tag.Key] = tag.Value;
-          });
-
-          return instanceSummary;
+          AccountName: instance.AccountName || account,
+          Ip: instance.PrivateIpAddress, // TODO: could be an array, cope with multiple
+          InstanceId: instance.InstanceId,
+          InstanceType: instance.InstanceType,
+          AvailabilityZone: instance.Placement.AvailabilityZone,
+          Status: _.capitalize(instance.State.Name),
+          ImageId: instance.ImageId,
+          LaunchTime: instance.LaunchTime,
         };
+        instance.Tags.forEach(function (tag) {
+          instanceSummary[tag.Key] = tag.Value;
+        });
 
+        return instanceSummary;
+      }
+
+      self.GetInstanceDetails = function (params) {
         return resources.aws.instances.all(params).then(function (instances) {
-          return instances.map(getSummaryFromInstance);
+          return instances.map(self.getSummaryFromInstance, params.account);
         });
       };
     };
