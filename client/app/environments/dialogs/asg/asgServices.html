@@ -17,16 +17,34 @@
           <th class="text-nowrap">Health Checks</th>
           <th class="text-nowrap">Instances</th>
           <th class="text-nowrap">Deployment Log</th>
+          <th class="text-nowrap" data-ng-if="vm.allowServiceDisabling">Installation
+            <span data-uib-popover
+                  data-popover-trigger="'mouseenter'"
+                  uib-popover-template="vm.helpTextTemplate"
+                  data-popover-placement="top"
+                  class="glyphicon glyphicon-question-sign help-icon"
+                  aria-hidden="true">
+            </span>
+          </th>
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="service in vm.servicesList | orderBy : ['Name', 'Version']">
+        <tr ng-repeat="service in vm.servicesList | orderBy : ['Name', 'Version']" class="vertical-center">
           <td><health-status status='service.OverallHealth.Status'></health-status> {{ service.Name }}</td>
           <td>{{ service.Version }}</td>
           <td><span class="slice-symbol" ng-class="service.Slice"></span>{{ service.Slice }}</td>
           <td><health-checks list="service.HealthChecks"></health-checks></td>
           <td><a ng-click="vm.showAsgSingleService(service)" ng-if="service.InstancesNames.length > 0">{{ service.InstancesHealthCount }}</a><span ng-if="service.InstancesNames.length === 0">No instances</span></td>
           <td><a ng-click="vm.showDeploymentLog(service)">Show Deployment</a></td>
+          <td data-ng-if="vm.allowServiceDisabling">
+            <div class="onoffswitch enabled-toggle">
+              <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="toggle-{{::$index}}" data-ng-change="vm.setDeploymentStatus(service)" data-ng-model="service.installationEnabled">
+              <label class="onoffswitch-label" for="toggle-{{::$index}}">
+                <span class="onoffswitch-inner"></span>
+                <span class="onoffswitch-switch"></span>
+              </label>
+            </div>
+          </td>
         </tr>
       </tbody>
     </table>

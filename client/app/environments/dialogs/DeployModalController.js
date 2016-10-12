@@ -21,8 +21,6 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
     };
 
     function init() {
-      console.log('Initialising Deploy Controller for ' + parameters.Environment.EnvironmentName);
-
       resources.deployment.methods.all().then(function (deploymentMethods) {
         $scope.DeploymentMethodsList = deploymentMethods;
         $scope.DeploymentSettings.Mode = deploymentMethods[0].Value;

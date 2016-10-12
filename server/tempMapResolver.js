@@ -7,7 +7,7 @@ function createMap(directory) {
   let obj = {};
 
   fs.readdirSync(directory).filter(function (file) {
-    let pattern = new RegExp(`(.*).js`);
+    let pattern = new RegExp(`(.*).js$`);
     let match = file.match(pattern);
     if (match !== null) {
       obj[match[1]] = require(`${directory}/${file}`);

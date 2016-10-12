@@ -1,6 +1,6 @@
 {
   "name": "environmentmanager",
-  "version": "3.6.3",
+  "version": "3.7.0",
   "dependencies": {
     "accepts": {
       "version": "1.3.3",
@@ -494,9 +494,9 @@
       }
     },
     "consul": {
-      "version": "0.25.0",
-      "from": "consul@>=0.25.0 <0.26.0",
-      "resolved": "https://registry.npmjs.org/consul/-/consul-0.25.0.tgz"
+      "version": "0.26.0",
+      "from": "consul@0.26.0",
+      "resolved": "https://registry.npmjs.org/consul/-/consul-0.26.0.tgz"
     },
     "contains-path": {
       "version": "0.1.0",
@@ -2752,9 +2752,9 @@
       "resolved": "https://registry.npmjs.org/over/-/over-0.0.5.tgz"
     },
     "papi": {
-      "version": "0.25.1",
-      "from": "papi@>=0.25.0 <0.26.0",
-      "resolved": "https://registry.npmjs.org/papi/-/papi-0.25.1.tgz"
+      "version": "0.27.0",
+      "from": "papi@>=0.27.0 <0.28.0",
+      "resolved": "https://registry.npmjs.org/papi/-/papi-0.27.0.tgz"
     },
     "parse-filepath": {
       "version": "1.0.1",

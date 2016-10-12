@@ -8,7 +8,7 @@ angular.module('EnvironmentManager.environments').component('asgInstances', {
     asgState: '<',
   },
   controllerAs: 'vm',
-  controller: function (awsService, $q, $uibModal) {
+  controller: function ($uibModal) {
     var vm = this;
     vm.dataLoading = false;
 

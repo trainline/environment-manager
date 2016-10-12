@@ -54,4 +54,9 @@ module.exports = {
     Abandon: 'ABANDON'
   },
 
+  serviceAction: {
+    NAME: 'Action',
+    INSTALL: 'Install',
+    IGNORE: 'Ignore'
+  }
 };

@@ -1,6 +1,6 @@
 {
   "name": "environmentmanager",
-  "version": "3.6.3",
+  "version": "3.7.0",
   "description": "EnvironmentManager Server",
   "main": "server.js",
   "scripts": {
@@ -28,7 +28,7 @@
     "co": "^4.6.0",
     "colors": "^1.1.2",
     "compression": "^1.6.2",
-    "consul": "^0.25.0",
+    "consul": "^0.26.0",
     "cookie-parser": "^1.4.3",
     "es6-template-strings": "^2.0.1",
     "express": "^4.14.0",

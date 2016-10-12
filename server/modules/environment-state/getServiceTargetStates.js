@@ -2,11 +2,15 @@
 'use strict';
 
 let _ = require('lodash');
-let keyValueStore = require('modules/service-updater/consul/keyValueStore');
 let Enums = require('Enums');
 let co = require('co');
 let logger = require('modules/logger');
-let serviceReporter = require('modules/service-reporter');
+let targetStates = require('modules/service-targets');
+
+const HEALTH_GOOD = Enums.HEALTH_STATUS.Healthy;
+const HEALTH_BAD = Enums.HEALTH_STATUS.Error;
+const SERVICE_ACTION = Enums.serviceAction.NAME;
+const SERVICE_INSTALL = Enums.serviceAction.INSTALL;
 
 /**
  * Generate service health info (with checks list and pass / fail)
@@ -14,64 +18,43 @@ let serviceReporter = require('modules/service-reporter');
 function getServiceChecksInfo(serviceObjects) {
   // Get all health checks for all instances of this service
   var serviceChecks = _.flatMap(serviceObjects, 'HealthChecks');
-   
   var checksGrouped = _.groupBy(serviceChecks, 'Name');
   return _.map(checksGrouped, function (checks, checkName) {
-     
     // If some instances checks failed for a given check, mark as failed
     // also, don't count in instance into working
-    if (_.some(checks, { Status: 'critical' })) {
-      return {
-        Name: checks[0].Name,
-        Status: Enums.HEALTH_STATUS.Error,
-      };
-    } else {
-      return {
-        Name: checks[0].Name,
-        Status: Enums.HEALTH_STATUS.Healthy,
-      };
-    }
+    return {
+      Name: checks[0].Name,
+      Status: _.some(checks, { Status: 'critical' }) ? HEALTH_BAD : HEALTH_GOOD
+    };
   });
 }
 
-function getServiceOverallHealth(healthChecks, instances) {
-  if (_.some(healthChecks, { Status: Enums.HEALTH_STATUS.Error })) {
-    return {
-      Status: Enums.HEALTH_STATUS.Error,
-    };
-  } else {
-    return {
-      Status: Enums.HEALTH_STATUS.Healthy
-    };
-  }
+function getServiceOverallHealth(healthChecks) {
+  return {
+    Status:_.some(healthChecks, { Status: HEALTH_BAD }) ? HEALTH_BAD : HEALTH_GOOD
+  };
 }
 
-function* getServicesState(environmentName, runtimeServerRoleName, instances) {
-  let servicesList = yield serviceReporter.getServicesList(environmentName, runtimeServerRoleName);
-
+function* getServicesTargetState(environmentName, runtimeServerRoleName, instances) {
+  let targetServiceStates = yield targetStates.getAllServiceTargets(environmentName, runtimeServerRoleName);
   let allServiceObjects = _.flatMap(instances, instance => instance.Services);
 
   // Find all objects representing particular service for all nodes
   let servicesGrouped = _.groupBy(allServiceObjects, 'Name');
-  let services = _.map(servicesList, (service) => {
 
+  return _.map(targetServiceStates, (service) => {
     // serviceObjects now has all 'Name' service descriptors in instances
     let serviceObjects = servicesGrouped[service.Name];
     _.each(serviceObjects, (obj) => {
-      if (obj.Version !== service.Version) {
-        logger.warn(`${service.Name} ${service.Version} TODO service versions dont match - implement handling`);
-      }
-      if (obj.DeploymentId !== service.DeploymentId) {
-        logger.warn(`${service.Name} ${service.Version} TODO deployment ids dont match - implement handling`);
-      }
+      checkServiceProperties(obj, service, 'Version');
+      checkServiceProperties(obj, service, 'DeploymentId');
     });
 
     let serviceInstances = _.filter(instances, instance => _.some(instance.Services, { Name: service.Name }));
-
     let healthyNodes = _.filter(serviceInstances, (instance) => instance.OverallHealth.Status === Enums.HEALTH_STATUS.Healthy);
     let instancesHealthCount = healthyNodes.length + '/' + serviceInstances.length;
-
-    let serviceHealthChecks = getServiceChecksInfo(serviceObjects)
+    let serviceHealthChecks = getServiceChecksInfo(serviceObjects);
+    let serviceAction = service.hasOwnProperty(SERVICE_ACTION) ? service[SERVICE_ACTION] : SERVICE_INSTALL;
 
     return {
       Name: service.Name,
@@ -82,13 +65,17 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
       InstancesHealthCount: instancesHealthCount,
       OverallHealth: getServiceOverallHealth(serviceHealthChecks, serviceInstances),
       HealthChecks: serviceHealthChecks,
+      [SERVICE_ACTION]: serviceAction,
     };
   });
-
-  // TODO(filip): if services object not empty - means that there's some instance
-  // that has Service that's not in target state
-
-  return services;
 }
 
-module.exports = co.wrap(getServicesState);
+function checkServiceProperties(svcA, svcB, prop) {
+  if (svcA[prop] !== svcB[prop]) {
+    //TODO: What behaviour/feature do we expect if a service does not match the expected target?
+    logger.warn(`${svcB.Name} ${svcB.Version} ${prop} mismatch:`);
+    logger.warn(` Found: ${svcA[prop]} and ${svcB[prop]}`);
+  }
+}
+
+module.exports = co.wrap(getServicesTargetState);

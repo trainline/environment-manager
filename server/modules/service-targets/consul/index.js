@@ -8,5 +8,7 @@ module.exports = {
   getTargetState: consulKVstore.getTargetState,
   setTargetState: consulKVstore.setTargetState,
   removeTargetState: consulKVstore.removeTargetState,
-  setInstanceMaintenanceMode: consulMacro.setInstanceMaintenanceMode
+  setInstanceMaintenanceMode: consulMacro.setInstanceMaintenanceMode,
+  getAllServiceTargets: consulKVstore.getAllServiceTargets,
+  getServiceDeploymentCause: consulKVstore.getServiceDeploymentCause
 };
