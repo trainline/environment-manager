@@ -1,6 +1,7 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
+let co = require('co');
 let notImplemented = require('api/api-utils/notImplemented');
 let getAllASGs = require('queryHandlers/ScanCrossAccountAutoScalingGroups');
 let getAccountASGs = require('queryHandlers/ScanAutoScalingGroups');
@@ -9,6 +10,7 @@ let getDynamo = require('queryHandlers/GetDynamoResource');
 let GetLaunchConfiguration = require('queryHandlers/GetLaunchConfiguration');
 let SetLaunchConfiguration = require('commands/launch-config/SetLaunchConfiguration');
 let SetAutoScalingGroupSize = require('commands/asg/SetAutoScalingGroupSize');
+let SetAutoScalingGroupSchedule = require('commands/asg/SetAutoScalingGroupSchedule');
 
 /**
  * GET /asgs?account=xyz
@@ -58,10 +60,26 @@ function getAsgLaunchConfig(req, res, next) {
 /**
  * PATCH /asgs/{name}?account=xyz
  *
- * TODO(filip): shall we use this for scheduling?
+ * TODO(filip): shall we use separate end point for these? Might be preferable performance-wise, and also 
+ * improved logic separation
  */
 function patchAsg(req, res, next) {
-  notImplemented(res, 'Updating ASGS');
+  const body = req.swagger.params.body.value;
+  const accountName = req.swagger.params.account.value;
+  const autoScalingGroupName = req.swagger.params.name.value;
+
+  return co(function* () {
+    let data = {};
+
+    if (body.UpdateSchedule !== undefined) {
+      let schedule = body.UpdateSchedule.schedule;
+      let propagateToInstances = body.UpdateSchedule.propagateToInstances;
+
+      data.UpdateSchedule = yield SetAutoScalingGroupSchedule({ accountName, autoScalingGroupName, schedule, propagateToInstances });
+    }
+
+    res.json(data);
+  }).catch(next);
 }
 
 /**

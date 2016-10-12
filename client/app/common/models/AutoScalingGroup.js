@@ -98,6 +98,19 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
       });
     };
 
+    AutoScalingGroup.updateSchedule = function (account, asgName, newSchedule) {
+      return $http({
+        method: 'patch',
+        url: '/api/v1/asgs/' + asgName + '?account=' + account,
+        data: {
+          UpdateSchedule: {
+            propagateToInstances: true,
+            schedule: newSchedule
+          }
+        },
+      });
+    };
+
     AutoScalingGroup.resize = function (account, asgName, size) {
       return $http.put('/api/v1/asgs/' + asgName + '/size?account=' + account, size);
     };

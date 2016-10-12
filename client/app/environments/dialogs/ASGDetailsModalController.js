@@ -241,8 +241,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         newSchedule = vm.asgUpdate.NewSchedule;
       }
 
-      resources.aws.asgs.set(vm.asg.AsgName).inAWSAccount(parameters.accountName).schedule(newSchedule, { propagateToInstances: true }).do().then(function () {
-        console.log('ASG Schedule updated to ' + newSchedule);
+      AutoScalingGroup.updateSchedule(parameters.accountName, vm.asg.AsgName, newSchedule).then(function () {
         resetForm();
         modal.information({
           title: 'ASG Schedule Updated',

@@ -74,7 +74,7 @@ function AsgResource(client) {
         ResourceId: parameters.name,
         ResourceType: 'auto-scaling-group',
         Value: parameters.tagValue,
-      },],
+      }],
     };
     return client.createOrUpdateTags(request).promise().catch(function (error) {
       throw standardifyError(error, parameters.name);
