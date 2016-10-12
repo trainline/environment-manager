@@ -8,5 +8,8 @@
       "username": "username",
       "password": "password"
     }
+  },
+  "aws": {
+    "region": "eu-west-1"
   }
 }

@@ -3,29 +3,37 @@
 const AWS = require('aws-sdk');
 const _ = require('lodash');
 
-let ec2 = new AWS.EC2({ region: 'eu-west-1' });
+function createAWSService(config) {
 
-function getAllInstances() {
-  return ec2.describeInstances({})
-    .promise()
-    .then(result => {
-      let groups = _.flatten(result.Reservations);
-      return _.flatten(groups.map(group => group.Instances));
-    });
-}
+  let ec2 = new AWS.EC2(config);
 
-function switchInstancesOn(instances) {
-  return ec2.startInstances({ InstanceIds: instances, DryRun: true }).promise();
-}
+  function getAllInstances() {
+    return ec2.describeInstances({})
+      .promise()
+      .then(result => {
+        let groups = _.flatten(result.Reservations);
+        return _.flatten(groups.map(group => group.Instances));
+      });
+  }
 
-function switchInstancesOff(instances) {
-  return ec2.stopInstances({ InstanceIds: instances, DryRun: true }).promise();
+  function switchInstancesOn(instances) {
+    return ec2.startInstances({ InstanceIds: instances, DryRun: true }).promise();
+  }
+
+  function switchInstancesOff(instances) {
+    return ec2.stopInstances({ InstanceIds: instances, DryRun: true }).promise();
+  }
+
+  return {
+    ec2: {
+      getAllInstances,
+      switchInstancesOn,
+      switchInstancesOff
+    }
+  };
+
 }
 
 module.exports = {
-  ec2: {
-    getAllInstances,
-    switchInstancesOn,
-    switchInstancesOff
-  }
-}
+  create: createAWSService
+};

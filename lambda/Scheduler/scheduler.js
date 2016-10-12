@@ -3,7 +3,7 @@
 const co = require('co');
 const _ = require('lodash');
 
-const ec2 = require('./services/aws').ec2;
+const awsFactory = require('./services/aws');
 const emFactory = require('./services/em');
 
 const scheduling = require('./scheduling');
@@ -12,6 +12,7 @@ const reporting = require('./presentation/reporting');
 function createScheduler(config) {
 
   let em = emFactory.create(config.em);
+  let ec2 = awsFactory.create(config.aws).ec2;
 
   function doScheduling () {
     return co(function*() {
