@@ -16,6 +16,9 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       DefaultSchedule: '',
     };
 
+    var a = resources.environment('c50').canPerformAction('THING');
+    console.log('STUFF ' + a);
+
     function init() {
 
       var environmentName = GetActiveEnvironment();

@@ -163,6 +163,10 @@ angular.module('EnvironmentManager.common').factory('environments',
         DeployableResource($this, params);
         return $this.do();
       };
+
+      $this.canPerformAction = function(actionName) {
+        return true;
+      }
     };
 
     return function (environmentName) {
