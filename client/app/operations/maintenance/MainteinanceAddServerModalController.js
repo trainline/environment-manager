@@ -13,7 +13,6 @@ angular.module('EnvironmentManager.operations').controller('MaintenanceAddServer
     $scope.DataFound = false;
 
     var SHOW_ALL_OPTION = 'All';
-    var RECORD_KEY = 'MAINTENANCE_MODE';
 
     function init() {
       cachedResources.config.accounts.all().then(function (accounts) {
@@ -24,53 +23,9 @@ angular.module('EnvironmentManager.operations').controller('MaintenanceAddServer
     }
 
     $scope.Ok = function () {
-
       var newServer = $scope.ServerDetails;
-
-
-      // Get IPs under Maintenance
-      var params = {
-        account: $scope.SelectedAccount,
-        key: RECORD_KEY,
-      };
-
-      resources.asgips.get(params).then(function (data) {
-
-        // Avoid to put the same IP under maintenance twice
-        var ipList = data.IPs ? JSON.parse(data.IPs) : [];
-        if (ipList.indexOf(newServer.Ip) >= 0) {
-          $uibModalInstance.close();
-          return;
-        }
-
-        ipList.push(newServer.Ip);
-
-        var tasks = [];
-
-        // Add a task to update the IP under maintenance
-        tasks.push(resources.asgips.put({
-          account: $scope.SelectedAccount,
-          key: RECORD_KEY,
-          data: { IPs: JSON.stringify(ipList) },
-        }));
-
-        // If the instance belongs to an AutoScalingGroup it creates
-        // another task to move the instance from service to standby.
-        var groupName = newServer['aws:autoscaling:groupName'];
-        if (groupName) {
-          tasks.push(resources.aws.asgs.enter(groupName)
-            .instances([newServer.InstanceId])
-            .toStandby()
-            .inAWSAccount($scope.SelectedAccount)
-            .do());
-        }
-
-        instancesService.setMaintenanceMode($scope.SelectedAccount, newServer.InstanceId, true);
-
-        $q.all(tasks).then(function () {
-          $uibModalInstance.close();
-        });
-
+      instancesService.setMaintenanceMode($scope.SelectedAccount, newServer.InstanceId, true).then(function () {
+        $uibModalInstance.close();
       });
 
     };
