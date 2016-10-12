@@ -39,5 +39,7 @@ build/
 
 *.swp
 
-# Temp file used for build
-client/index.html.tmp
+# Build artifacts
+client/index-build-temp.html
+publish_id.txt
+environment-manager-*.zip

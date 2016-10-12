@@ -36,11 +36,13 @@ gulp.task('html', ['inject', 'partials'], function () {
     addRootSlash: false
   };
 
+  var injectedHtmlFileName = conf.getInjectedHTMLfileName();
+
   var jsFilter = $.filter('**/*.js', { restore: true });
   var cssFilter = $.filter('**/*.css', { restore: true });
-  var tmpHtmlFilter = $.filter('**/*.html.tmp', { restore: true });
+  var tmpHtmlFilter = $.filter('**/' + injectedHtmlFileName, { restore: true });
   var output = conf.getTargetDirectory();
-  var srcHtml = conf.getInjectedHTMLfilePath();
+  var srcHtml = path.join('./', injectedHtmlFileName);
 
   // TODO(filip): fix this path
   // return gulp.src(path.join(conf.paths.tmp, '/serve/*.html'))
@@ -61,10 +63,7 @@ gulp.task('html', ['inject', 'partials'], function () {
     .pipe(cssFilter.restore)
     .pipe($.revReplace())
     .pipe(tmpHtmlFilter)
-    .pipe(rename(function(path) {
-      path.extname = ''; // file.html.tmp -> file.html
-      return path;
-    }))
+    .pipe(rename('./index.html'))
     .pipe(tmpHtmlFilter.restore)
     .pipe(gulp.dest(output))
     .pipe($.size({ title: path.join(conf.paths.dist, '/'), showFiles: true }));

@@ -45,7 +45,7 @@ module.exports = {
     return argv.o || 'dist/';
   },
 
-  getInjectedHTMLfilePath: function() {
-    return argv.p ? './index.html.tmp' : './index.html';
+  getInjectedHTMLfileName: function() {
+    return argv.p ? 'index-build-temp.html' : 'index.html';
   }
 };
