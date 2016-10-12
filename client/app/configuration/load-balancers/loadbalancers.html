@@ -1,51 +1,48 @@
 <div class="row">
-    <div class="col-md-12"><h2>Load Balancer Settings</h2></div>
-    <div id="RefreshData">
-        <span class="glyphicon glyphicon-refresh" ng-click="Refresh()" title="Refresh data"></span>
-    </div>
+  <div class="col-md-12"><h2>Load Balancer Settings</h2></div>
+  <div id="RefreshData">
+    <span class="glyphicon glyphicon-refresh" ng-click="Refresh()" title="Refresh data"></span>
+  </div>
 </div>
 
 <form id="SearchFilter" class="form-inline">
-    <div class="form-group">
-        <label class="control-label text-left">Environment:</label>
-    </div>
-    <div class="form-group">
-        <select class="form-control" ng-model="SelectedEnvironment" ng-change="Refresh()">
-            <option ng-repeat="env in EnvironmentsList" ng-selected="{{env == SelectedEnvironment}}" value="{{env}}">{{env}}</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label class="control-label text-left">Type:</label>
-    </div>
-    <div class="form-group">
-        <select class="form-control" ng-model="SelectedSettingType" ng-change="Refresh()">
-            <option ng-repeat="s in SettingTypeList" ng-selected="{{s == SelectedSettingType}}" value="{{s}}">{{s}}</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label class="control-label text-left">Server FQDN:</label>
-    </div>
-    <div class="form-group">
-        <input type="search" name="ServerName" class="form-control" ng-model="SelectedServer" ng-change="UpdateFilter()" />
-    </div>
-    <div class="form-group">
-        <button type="button" class="btn btn-default right" ng-click="NewItem()" ng-if="canUser('post')">Create New...</button>
-    </div>
-    <div class="form-group" ng-if="canUser('delete-all')">
+  <div class="form-group">
+    <label class="control-label text-left">Environment:</label>
+  </div>
+  <div class="form-group">
+    <select class="form-control" ng-model="SelectedEnvironment" ng-change="Refresh()">
+      <option ng-repeat="env in EnvironmentsList" ng-selected="{{env == SelectedEnvironment}}" value="{{env}}">{{env}}</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="control-label text-left">Type:</label>
+  </div>
+  <div class="form-group">
+    <select class="form-control" ng-model="SelectedSettingType" ng-change="Refresh()">
+      <option ng-repeat="s in SettingTypeList" ng-selected="{{s == SelectedSettingType}}" value="{{s}}">{{s}}</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="control-label text-left">Server FQDN:</label>
+  </div>
+  <div class="form-group">
+    <input type="search" name="ServerName" class="form-control" ng-model="SelectedServer" ng-change="UpdateFilter()" />
+  </div>
+  <div class="form-group">
+    <button type="button" class="btn btn-default right" ng-click="NewItem()" ng-if="canUser('post')">Create New...</button>
+  </div>
+  <div class="form-group" ng-if="canUser('delete-all')">
 
-        <div class="btn-group" style="margin-left:10px;" uib-dropdown is-open="status.isopen">
-            <button id="single-button" type="button" class="btn btn-default right" uib-dropdown-toggle>
-                Bulk Actions <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu" aria-labelledby="single-button">
-                <!-- <li role="menuitem"><a ng-click="NotImplemented()">Compare...</a></li> TODO -->
-                <!-- TODO <li role="menuitem"><a ng-click="CloneEnvironment()">Clone settings...</a></li>
-                <li class="divider"></li>-->
-                <li role="menuitem"><a ng-click="DeleteAllRules()">Delete all settings...</a></li>
-            </ul>
-        </div>
-
+    <div class="btn-group" style="margin-left:10px;" uib-dropdown is-open="status.isopen">
+      <button id="single-button" type="button" class="btn btn-default right" uib-dropdown-toggle>
+        Bulk Actions <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="single-button">
+        <li role="menuitem"><a ng-click="DeleteAllRules()">Delete all settings...</a></li>
+      </ul>
     </div>
+
+  </div>
 </form>
 
 <hr />
@@ -53,43 +50,43 @@
 <spinner ng-show="DataLoading"></spinner>
 
 <div class="row" ng-show="!DataLoading">
-    <div class="col-md-10" ng-if="Data.length == 0">
-        <p>No load balancer settings found for selected environment.</p>
-    </div>
-    <div class="col-md-12" ng-if="Data.length > 0">
-        <table id="lbSettings" class="table">
-            <thead>
-                <tr>
-                    <th class="text-nowrap">Virtual Host Name</th>
-                    <th class="text-nowrap">Front/Back</th>
-                    <th class="text-nowrap">Server FQDNs</th>
-                    <th class="text-nowrap">Locations</th>
-                    <th class="text-nowrap">Upstreams</th>
-                    <th class="text-nowrap command-header">View History</th>
-                    <th ng-if="canUser('post')" class="text-nowrap command-header">Copy</th>
-                    <th ng-if="canUser('delete')" class="text-nowrap command-header">Delete</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="lb in Data | orderBy : 'VHostName' ">
-                    <td><a ng-click="Edit(lb)">{{lb.VHostName}}</a></td>
-                    <td>{{lb.Value.FrontEnd ? "Front End" : "Back End"}}</td>
-                    <td><p ng-repeat="n in lb.Value.ServerName track by $index">{{n}}</p></td>
-                    <td>
-                        <ul>
-                            <li ng-repeat="l in GetLocationSummary(lb.Value) | orderBy : l track by $index">{{l}}</li>
-                        </ul>
-                    </td>
-                    <td>
-                        <ul>
-                            <li ng-repeat="upstream in GetUpstreams(lb.Value) | orderBy : upstream"><a ng-click="GoToUpstream(upstream)">{{upstream}}</a></li>
-                        </ul>
-                    </td>
-                    <td class="command command-viewHistory"><span class="glyphicon glyphicon-time" ng-click="ViewHistory(lb)" title="View History"></span></td>
-                    <td ng-if="canUser('post')" class="command command-copy"><span class="glyphicon glyphicon-duplicate" ng-click="Copy(lb)" title="Copy"></span></td>
-                    <td ng-if="canUser('delete')" class="command command-delete"><span class="glyphicon glyphicon-remove" ng-click="Delete(lb)" title="Delete"></span></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+  <div class="col-md-10" ng-if="Data.length == 0">
+    <p>No load balancer settings found for selected environment.</p>
+  </div>
+  <div class="col-md-12" ng-if="Data.length > 0">
+    <table id="lbSettings" class="table">
+      <thead>
+        <tr>
+          <th class="text-nowrap">Virtual Host Name</th>
+          <th class="text-nowrap">Front/Back</th>
+          <th class="text-nowrap">Server FQDNs</th>
+          <th class="text-nowrap">Locations</th>
+          <th class="text-nowrap">Upstreams</th>
+          <th class="text-nowrap command-header">View History</th>
+          <th ng-if="canUser('post')" class="text-nowrap command-header">Copy</th>
+          <th ng-if="canUser('delete')" class="text-nowrap command-header">Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="lb in Data | orderBy : 'VHostName' ">
+          <td><a ng-click="Edit(lb)">{{lb.VHostName}}</a></td>
+          <td>{{lb.Value.FrontEnd ? "Front End" : "Back End"}}</td>
+          <td><p ng-repeat="n in lb.Value.ServerName track by $index">{{n}}</p></td>
+          <td>
+            <ul>
+              <li ng-repeat="l in GetLocationSummary(lb.Value) | orderBy : l track by $index">{{l}}</li>
+            </ul>
+          </td>
+          <td>
+            <ul>
+              <li ng-repeat="upstream in GetUpstreams(lb.Value) | orderBy : upstream"><a ng-click="GoToUpstream(upstream)">{{upstream}}</a></li>
+            </ul>
+          </td>
+          <td class="command command-viewHistory"><span class="glyphicon glyphicon-time" ng-click="ViewHistory(lb)" title="View History"></span></td>
+          <td ng-if="canUser('post')" class="command command-copy"><span class="glyphicon glyphicon-duplicate" ng-click="Copy(lb)" title="Copy"></span></td>
+          <td ng-if="canUser('delete')" class="command command-delete"><span class="glyphicon glyphicon-remove" ng-click="Delete(lb)" title="Delete"></span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

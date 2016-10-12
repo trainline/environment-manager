@@ -1,51 +1,51 @@
 ﻿<div class="row">
-    <div class="col-md-12">
-        <h2>Audit History</h2>
-    </div>
-    <div id="RefreshData">
-        <span class="glyphicon glyphicon-refresh" ng-click="Refresh()" title="Refresh data"></span>
-    </div>
+  <div class="col-md-12">
+    <h2>Audit History</h2>
+  </div>
+  <div id="RefreshData">
+    <span class="glyphicon glyphicon-refresh" ng-click="Refresh()" title="Refresh data"></span>
+  </div>
 </div>
 
 <form id="SearchFilter" class="form-inline">
-    <div class="form-group">
-        <label class="control-label text-left">Date:</label>
-    </div>
-    <div class="form-group">
-        <select class="form-control" ng-model="SelectedDateRangeValue" ng-options="d.Value as d.Name for d in DateRangeList"></select>
-    </div>
-    <div class="form-group">
-        <label class="control-label text-left">Entity Type:</label>
-    </div>
-    <div class="form-group">
-        <select class="form-control" ng-model="SelectedEntityType" ng-options="e.Value as e.Name for e in EntityTypesList"></select>
-    </div>
-    <div class="form-group">
-        <label class="control-label text-left">Change Type:</label>
-    </div>
-    <div class="form-group">
-        <select class="form-control" ng-model="SelectedChangeType">
-            <option ng-repeat="changeType in ChangeTypesList" ng-selected="{{changeType == SelectedChangeType}}" value="{{changeType}}">{{changeType}}</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label class="control-label text-left">ID / Name:</label>
-    </div>
-    <div class="form-group">
-        <input type="search" name="EntityName" class="form-control" ng-model="SelectedEntityKey" />
-    </div>
-    <div class="form-group" ng-if="SelectedEntityHasRange()">
-        <label class="control-label text-left">Range:</label>
-    </div>
-    <div class="form-group" ng-if="SelectedEntityHasRange()">
-        <input type="search" name="EntityRange" class="form-control" ng-model="SelectedEntityRange" />
-    </div>
-    <div class="form-group">
-        <button type="button" class="btn btn-default right" ng-click="Refresh()">Show Audits</button>
-    </div>
-    <div class="form-group" data-ng-if="hasNextPage">
-        <button type="button" class="btn btn-default right" ng-click="getPage(nextPage);">Next Page</button>
-    </div>
+  <div class="form-group">
+    <label class="control-label text-left">Date:</label>
+  </div>
+  <div class="form-group">
+    <select class="form-control" ng-model="SelectedDateRangeValue" ng-options="d.Value as d.Name for d in DateRangeList"></select>
+  </div>
+  <div class="form-group">
+    <label class="control-label text-left">Entity Type:</label>
+  </div>
+  <div class="form-group">
+    <select class="form-control" ng-model="SelectedEntityType" ng-options="e.Value as e.Name for e in EntityTypesList"></select>
+  </div>
+  <div class="form-group">
+    <label class="control-label text-left">Change Type:</label>
+  </div>
+  <div class="form-group">
+    <select class="form-control" ng-model="SelectedChangeType">
+      <option ng-repeat="changeType in ChangeTypesList" ng-selected="{{changeType == SelectedChangeType}}" value="{{changeType}}">{{changeType}}</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="control-label text-left">ID / Name:</label>
+  </div>
+  <div class="form-group">
+    <input type="search" name="EntityName" class="form-control" ng-model="SelectedEntityKey" />
+  </div>
+  <div class="form-group" ng-if="SelectedEntityHasRange()">
+    <label class="control-label text-left">Range:</label>
+  </div>
+  <div class="form-group" ng-if="SelectedEntityHasRange()">
+    <input type="search" name="EntityRange" class="form-control" ng-model="SelectedEntityRange" />
+  </div>
+  <div class="form-group">
+    <button type="button" class="btn btn-default right" ng-click="Refresh()">Show Audits</button>
+  </div>
+  <div class="form-group" data-ng-if="hasNextPage">
+    <button type="button" class="btn btn-default right" ng-click="getPage(nextPage);">Next Page</button>
+  </div>
 </form>
 
 <hr />
@@ -53,53 +53,53 @@
 <spinner ng-show="DataLoading"></spinner>
 
 <div class="row" ng-show="!DataLoading">
-    <div class="col-md-12" ng-if="Data.length == 0 && SearchPerformed">
-        <p>No matching audit records found.</p>
-    </div>
-    <div class="col-md-12" ng-if="Data.length > 0">
-        <table class="table" id="AuditHistory">
-            <thead>
-                <tr>
-                    <th class="text-nowrap">Change</th>
-                    <th class="text-nowrap">Change Type</th>
-                    <th class="text-nowrap">Entity</th>
-                    <th class="text-nowrap">Differences</th>
-                    <th class="text-nowrap command">Compare</th>
-                    <th class="text-nowrap command">Restore</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="audit in Data | orderBy: '-Timestamp'">
-                    <td>
-                        <p>
-                            <span am-time-ago="audit.Timestamp"></span><br />
-                            <small>{{audit.Timestamp | amDateFormat:'DD/MM/YYYY HH:mm:ss'}}</small>
-                        </p>
-                        <p>{{audit.ChangedBy}}</p>
-                    </td>
-                    <td>{{audit.ChangeType}}</td>
-                    <td>
-                        <p>{{audit.Entity.Key}}</p>
-                        <p>{{audit.Entity.Type}} <span ng-if="audit.Entity.Range">- {{audit.Entity.Range}}</span></p>
-                        <p><small>Version: {{audit.Entity.Version}}</small></p>
-                    </td>
-                    <td>
-                        <json-diff-patch class="compare-overview"
-                                         source="audit.OldValueDisplay"
-                                         target="audit.NewValueDisplay"
-                                         options="DiffOptions"
-                                         changed-only>
-                        </json-diff-patch>
-                    </td>
-                    <td class="command command-search">
-                        <span class="glyphicon glyphicon-search" ng-click="Compare(audit)" title="Compare Version"></span>
-                    </td>
-                    <td class="command command-restore">
-                        <span ng-if="audit.ChangeType != 'Deleted'" class="glyphicon glyphicon-repeat" ng-click="Restore(audit)" title="Restore Version"></span>
-                    </td>
-                    <!-- TODO: Group by entity and/or Transaction ID. Click to expand for individual history  -->
-                </tr>
-            </tbody>
-        </table>
-    </div>
+  <div class="col-md-12" ng-if="Data.length == 0 && SearchPerformed">
+    <p>No matching audit records found.</p>
+  </div>
+  <div class="col-md-12" ng-if="Data.length > 0">
+    <table class="table" id="AuditHistory">
+      <thead>
+        <tr>
+          <th class="text-nowrap">Change</th>
+          <th class="text-nowrap">Change Type</th>
+          <th class="text-nowrap">Entity</th>
+          <th class="text-nowrap">Differences</th>
+          <th class="text-nowrap command">Compare</th>
+          <th class="text-nowrap command">Restore</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="audit in Data | orderBy: '-Timestamp'">
+          <td>
+            <p>
+              <span am-time-ago="audit.Timestamp"></span><br />
+              <small>{{audit.Timestamp | amDateFormat:'DD/MM/YYYY HH:mm:ss'}}</small>
+            </p>
+            <p>{{audit.ChangedBy}}</p>
+          </td>
+          <td>{{audit.ChangeType}}</td>
+          <td>
+            <p>{{audit.Entity.Key}}</p>
+            <p>{{audit.Entity.Type}} <span ng-if="audit.Entity.Range">- {{audit.Entity.Range}}</span></p>
+            <p><small>Version: {{audit.Entity.Version}}</small></p>
+          </td>
+          <td>
+            <json-diff-patch class="compare-overview"
+              source="audit.OldValueDisplay"
+              target="audit.NewValueDisplay"
+              options="DiffOptions"
+              changed-only>
+            </json-diff-patch>
+          </td>
+          <td class="command command-search">
+            <span class="glyphicon glyphicon-search" ng-click="Compare(audit)" title="Compare Version"></span>
+          </td>
+          <td class="command command-restore">
+            <span ng-if="audit.ChangeType != 'Deleted'" class="glyphicon glyphicon-repeat" ng-click="Restore(audit)" title="Restore Version"></span>
+          </td>
+          <!-- TODO: Group by entity and/or Transaction ID. Click to expand for individual history  -->
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

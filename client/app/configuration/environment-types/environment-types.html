@@ -1,43 +1,43 @@
 <div class="row">
-    <div class="col-md-12"><h2>Environment Types</h2></div>
-    <div id="RefreshData">
-        <span class="glyphicon glyphicon-refresh" ng-click="Refresh()" title="Refresh data"></span>
-    </div>
+  <div class="col-md-12"><h2>Environment Types</h2></div>
+  <div id="RefreshData">
+    <span class="glyphicon glyphicon-refresh" ng-click="Refresh()" title="Refresh data"></span>
+  </div>
 </div>
 
 <form id="SearchFilter" class="form-inline" ng-if="canUser('post')">
-    <div class="form-group">
-        <button type="button" class="btn btn-default" ng-click="NewItem()" ng-if="canUser('post')">Create New...</button>
-    </div>
+  <div class="form-group">
+    <button type="button" class="btn btn-default" ng-click="NewItem()" ng-if="canUser('post')">Create New...</button>
+  </div>
 </form>
 
 <div class="row">
-    <div class="col-md-12" ng-if="dataLoading">
-        <spinner></spinner>
-    </div>
-    <div class="col-md-12" ng-show="!dataLoading && Data.length == 0">
-        <p>No environment types found.</p>
-    </div>
-    <div class="col-md-8" ng-show="!dataLoading && Data.length > 0">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th class="text-nowrap">Environment Type Name</th>
-                    <th class="text-nowrap">Account</th>
-					<th class="text-nowrap">VPC ID</th>
-                    <th class="text-nowrap command-header">View History</th>
-                    <th ng-if="canUser('delete')" class="text-nowrap command-header">Delete</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="envType in Data | orderBy : 'EnvironmentType' ">
-                    <td><a href="#/config/environmenttypes/{{envType.EnvironmentType}}">{{envType.EnvironmentType}}</a></td>
-                    <td>{{envType.Value.AWSAccountName}} ({{envType.Value.AWSAccountNumber}})</td>
-					<td>{{envType.Value.VpcId}}</td>
-                    <td class="command command-viewHistory"><span class="glyphicon glyphicon-time" ng-click="ViewHistory(envType)" title="View History"></span></td>
-                    <td ng-if="canUser('delete')" class="command command-delete"><span class="glyphicon glyphicon-remove" ng-click="Delete(envType)" title="Delete"></span></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+  <div class="col-md-12" ng-if="dataLoading">
+    <spinner></spinner>
+  </div>
+  <div class="col-md-12" ng-show="!dataLoading && Data.length == 0">
+    <p>No environment types found.</p>
+  </div>
+  <div class="col-md-8" ng-show="!dataLoading && Data.length > 0">
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="text-nowrap">Environment Type Name</th>
+          <th class="text-nowrap">Account</th>
+          <th class="text-nowrap">VPC ID</th>
+          <th class="text-nowrap command-header">View History</th>
+          <th ng-if="canUser('delete')" class="text-nowrap command-header">Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="envType in Data | orderBy : 'EnvironmentType' ">
+          <td><a href="#/config/environmenttypes/{{envType.EnvironmentType}}">{{envType.EnvironmentType}}</a></td>
+          <td>{{envType.Value.AWSAccountName}} ({{envType.Value.AWSAccountNumber}})</td>
+          <td>{{envType.Value.VpcId}}</td>
+          <td class="command command-viewHistory"><span class="glyphicon glyphicon-time" ng-click="ViewHistory(envType)" title="View History"></span></td>
+          <td ng-if="canUser('delete')" class="command command-delete"><span class="glyphicon glyphicon-remove" ng-click="Delete(envType)" title="Delete"></span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
