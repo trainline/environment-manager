@@ -1,7 +1,10 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
-function postAuthorization(req, res) {
+/**
+ * POST /token
+ */
+function postAuthorization(req, res, next) {
   res.json({});
 }
 
