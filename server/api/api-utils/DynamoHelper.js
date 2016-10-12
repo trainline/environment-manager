@@ -29,8 +29,12 @@ class DynamoHelper {
   /**
    * Get a specific resource from a Dynamo table
    */
-  getByKey(key) {
-    return getValue({ resource: this.resource, key, exposeAudit, accountName });
+  getByKey(key, options) {
+    options = options || {};
+    if (options.accountName === undefined) {
+      options.accountName = accountName;
+    }
+    return getValue({ resource: this.resource, key, exposeAudit, accountName: options.accountName });
   }
 
   /**
@@ -59,8 +63,12 @@ class DynamoHelper {
   /**
    * Update (replace) a single Dynamo resource
    */
-  update(key, item, expectedVersion, user) {
-    const updatedItem = metadata.addMetadata({ resource: this.resource, key, item, expectedVersion, accountName, user });
+  update(key, item, expectedVersion, user, options) {
+    options = options || {};
+    if (options.accountName === undefined) {
+      options.accountName = accountName;
+    }
+    const updatedItem = metadata.addMetadata({ resource: this.resource, key, item, expectedVersion, accountName: options.accountName, user });
     return updateValue(updatedItem);
   }
 
