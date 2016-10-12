@@ -148,81 +148,11 @@ angular.module('EnvironmentManager.common').factory('autoScalingGroupResourceFac
       };
     }
 
-    function AutoScalingGroupEnterAction(autoScalingGroupName) {
-
-      if (!autoScalingGroupName) throw new Error('AutoScalingGroup name cannot be null or empty');
-
-      var $this = this;
-      var $data = new AutoScalingGroupRequest('PUT');
-
-      $data.setAutoScalingGroupName(autoScalingGroupName);
-
-      $this.inAWSAccount = function (awsAccountName) {
-        if (!awsAccountName) throw new Error('Invalid "awsAccountName" argument');
-        $data.setAWSAccount(awsAccountName);
-        return $this;
-      };
-
-      $this.instances = function (instanceIds) {
-        if (!instanceIds || !instanceIds.length) throw new Error('Argument cannot be null or empty. Expected list of Instance IDs.');
-        $data.setRequest({ instanceIds: instanceIds });
-        return $this;
-      };
-
-      $this.toStandby = function () {
-        $data.setAction('enterToStandby');
-        return $this;
-      };
-
-      $this.do = function () {
-        return $data.do();
-      };
-    }
-
-    function AutoScalingGroupExitAction(autoScalingGroupName) {
-
-      if (!autoScalingGroupName) throw new Error('AutoScalingGroup name cannot be null or empty');
-
-      var $this = this;
-      var $data = new AutoScalingGroupRequest('PUT');
-
-      $data.setAutoScalingGroupName(autoScalingGroupName);
-
-      $this.inAWSAccount = function (awsAccountName) {
-        if (!awsAccountName) throw new Error('Invalid "awsAccountName" argument');
-        $data.setAWSAccount(awsAccountName);
-        return $this;
-      };
-
-      $this.instances = function (instanceIds) {
-        if (!instanceIds || !instanceIds.length) throw new Error('Argument cannot be null or empty. Expected list of Instance IDs.');
-        $data.setRequest({ instanceIds: instanceIds });
-        return $this;
-      };
-
-      $this.fromStandby = function () {
-        $data.setAction('exitFromStandby');
-        return $this;
-      };
-
-      $this.do = function () {
-        return $data.do();
-      };
-    }
-
     return {
       name: 'asgs',
 
       set: function (autoScalingGroupName) {
         return new AutoScalingGroupSetAction(autoScalingGroupName);
-      },
-
-      enter: function (autoScalingGroupName) {
-        return new AutoScalingGroupEnterAction(autoScalingGroupName);
-      },
-
-      exit: function (autoScalingGroupName) {
-        return new AutoScalingGroupExitAction(autoScalingGroupName);
       },
     };
   });
