@@ -2,7 +2,6 @@
 'use strict';
 
 let co = require('co');
-let notImplemented = require('api/api-utils/notImplemented');
 let getAllASGs = require('queryHandlers/ScanCrossAccountAutoScalingGroups');
 let getAccountASGs = require('queryHandlers/ScanAutoScalingGroups');
 let getASG = require('queryHandlers/GetAutoScalingGroup');
