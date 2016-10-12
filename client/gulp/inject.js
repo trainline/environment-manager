@@ -5,6 +5,7 @@ var gulp = require('gulp');
 var conf = require('./conf');
 var browserSync = require('browser-sync');
 var $ = require('gulp-load-plugins')();
+var rename = require('gulp-rename');
 
 var appStream = gulp.src(conf.paths.appScripts);
 
@@ -24,5 +25,6 @@ gulp.task('inject', [], function () {
 
   return gulp.src(conf.paths.indexHtml)
     .pipe($.inject(injectScripts, injectOptions))
-    .pipe(gulp.dest(conf.getInjectTarget()));
+    .pipe(rename(conf.getInjectedHTMLfilePath()))
+    .pipe(gulp.dest('.'));
 });

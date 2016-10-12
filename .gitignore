@@ -38,3 +38,6 @@ build/
 /Lambda/**/*.zip
 
 *.swp
+
+# Temp file used for build
+client/index.html.tmp

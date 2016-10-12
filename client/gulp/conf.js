@@ -7,6 +7,7 @@
  */
 
 var argv = require('yargs').argv;
+var path = require('path');
 
 /**
  *  The main paths of your project handle these with care
@@ -40,11 +41,11 @@ module.exports = {
     };
   },
 
-  getOutputTarget() {
-    return argv.o || path.join('dist', '/');
+  getTargetDirectory: function() {
+    return argv.o || 'dist/';
   },
 
-  getInjectTarget() {
-    return argv.o || '.';
+  getInjectedHTMLfilePath: function() {
+    return argv.p ? './index.html.tmp' : './index.html';
   }
 };

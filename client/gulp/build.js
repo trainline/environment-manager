@@ -4,6 +4,7 @@
 var path = require('path');
 var gulp = require('gulp');
 var conf = require('./conf');
+var rename = require('gulp-rename');
 
 var $ = require('gulp-load-plugins')({
   pattern: ['gulp-*', 'main-bower-files', 'uglify-save-license', 'del']
@@ -37,11 +38,13 @@ gulp.task('html', ['inject', 'partials'], function () {
 
   var jsFilter = $.filter('**/*.js', { restore: true });
   var cssFilter = $.filter('**/*.css', { restore: true });
-  var output = conf.getOutputTarget();
+  var tmpHtmlFilter = $.filter('**/*.html.tmp', { restore: true });
+  var output = conf.getTargetDirectory();
+  var srcHtml = conf.getInjectedHTMLfilePath();
 
   // TODO(filip): fix this path
   // return gulp.src(path.join(conf.paths.tmp, '/serve/*.html'))
-  return gulp.src('./index.html')
+  return gulp.src(srcHtml)
     .pipe($.inject(partialsInjectFile, partialsInjectOptions))
     .pipe($.useref())
     .pipe(jsFilter)
@@ -57,6 +60,12 @@ gulp.task('html', ['inject', 'partials'], function () {
     .pipe($.rev())
     .pipe(cssFilter.restore)
     .pipe($.revReplace())
+    .pipe(tmpHtmlFilter)
+    .pipe(rename(function(path) {
+      path.extname = ''; // file.html.tmp -> file.html
+      return path;
+    }))
+    .pipe(tmpHtmlFilter.restore)
     .pipe(gulp.dest(output))
     .pipe($.size({ title: path.join(conf.paths.dist, '/'), showFiles: true }));
 });
@@ -65,7 +74,7 @@ gulp.task('other', function () {
   var fileFilter = $.filter(function (file) {
     return file.stat.isFile();
   });
-  var output = conf.getOutputTarget();
+  var output = conf.getTargetDirectory();
 
   return gulp.src([
     './assets/images/**/*',
