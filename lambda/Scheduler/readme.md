@@ -2,7 +2,7 @@
 
 The scheduler is designed to run as a scheduled lambda function within one or more AWS accounts managed by Environment Manager. Its responsibility is to start and stop instances in the AWS account according to their schedule.
 
-This scheduler suplements the existing scheduler by providing support for ec2 instances which are not members of auto-scaling groups (which we call stand-alone instances). In time this scheduler will support all instances and the existing scheduler will be decommissioned.
+This scheduler supplements the existing scheduler by providing support for ec2 instances which are not members of auto-scaling groups (which we call stand-alone instances). In time this scheduler will support all instances and the existing scheduler will be decommissioned.
 
 ## Getting Started
 
@@ -13,11 +13,8 @@ npm install
 
 ### Running the tests
 
-Install mocha if you have not already done so and then run the tests.
-
 ```
-npm install mocha -g
-mocha ./**/*.spec.js
+npm test
 ```
 
 ### Running locally
