@@ -524,6 +524,14 @@ paths:
           in: query
           type: boolean
           required: false
+        - name: ip_address
+          in: query
+          type: string
+          required: false
+        - name: instance_id
+          in: query
+          type: string
+          required: false
       responses:
         200:
           description: The list of instances

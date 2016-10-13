@@ -20,6 +20,8 @@ function getInstances(req, res, next) {
   const cluster = req.swagger.params.cluster.value;
   const environment = req.swagger.params.environment.value;
   const maintenance = req.swagger.params.maintenance.value;
+  const ipAddress = req.swagger.params.ip_address.value;
+  const instanceId = req.swagger.params.instance_id.value;
 
   co(function* () {
     let filter = {};
@@ -34,6 +36,12 @@ function getInstances(req, res, next) {
       let entry = yield asgIpsDynamo.getByKey('MAINTENANCE_MODE', { accountName });
       let ips = JSON.parse(entry.IPs);
       filter['private-ip-address'] = ips;
+    }
+    if (ipAddress !== undefined) {
+      filter['private-ip-address'] = ipAddress;
+    }
+    if (instanceId !== undefined) {
+      filter['instance-id'] = instanceId;
     }
 
     if (_.isEmpty(filter)) {

@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('MaintenanceAddServerModalController',
-  function ($scope, $uibModalInstance, $q, resources, cachedResources, awsService, defaultAccount, instancesService) {
+  function ($scope, $uibModalInstance, $http, $q, resources, cachedResources, awsService, defaultAccount, instancesService) {
 
     $scope.AccountsList = [];
     $scope.SelectedAccount = '';
@@ -43,9 +43,9 @@ angular.module('EnvironmentManager.operations').controller('MaintenanceAddServer
 
       // Allow searching by IP or instance id
       if (IsIPv4($scope.ServerSearch)) {
-        filterType = 'private-ip-address';
+        filterType = 'ip_address';
       } else if ($scope.ServerSearch.startsWith('i-')) {
-        filterType = 'instance-id';
+        filterType = 'instance_id';
       } else {
         $scope.ServerDetails = {};
         $scope.DataFound = false;
@@ -54,13 +54,13 @@ angular.module('EnvironmentManager.operations').controller('MaintenanceAddServer
 
       var params = {
         account: $scope.SelectedAccount,
-        query: {},
       };
-      params.query[filterType] = $scope.ServerSearch;
+      params[filterType] = $scope.ServerSearch;
 
-      awsService.instances.GetInstanceDetails(params).then(function (data) {
-        $scope.ServerDetails = data[0] || {};
-        $scope.DataFound = (data.length > 0);
+
+      $http.get('/api/v1/instances', { params: params }).then(function (response) {
+        $scope.ServerDetails = awsService.instances.getSummaryFromInstance(response.data[0]) || {};
+        $scope.DataFound = (response.data.length > 0);
       }, function (error) {
 
         $scope.ServerDetails = {};
