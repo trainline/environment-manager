@@ -2,65 +2,65 @@
 'use strict';
 
 angular.module('EnvironmentManager.common')
-  .directive('scheduleEditor', function () {
-    return {
-      restrict: 'E',
-      scope: {
-        schedule: '=',
-        showOn: '=',
-        showOff: '=',
-        showDefault: '=',
-        showSpecific: '=',
-      },
-      templateUrl: '/app/common/directives/scheduleEditor.html',
-      controller: function ($scope) {
+  .component('scheduleEditor', {
+    restrict: 'E',
+    bindings: {
+      schedule: '=',
+      showOn: '=',
+      showOff: '=',
+      showDefault: '=',
+      showSpecific: '=',
+    },
+    templateUrl: '/app/common/directives/scheduleEditor.html',
+    controllerAs: 'vm',
+    controller: function ($scope) {
+      var vm = this;
 
-        if (!$scope.schedule || $scope.schedule.toUpperCase() === 'NOSCHEDULE') {
-          $scope.schedule = '';
+      if (!vm.schedule || vm.schedule.toUpperCase() === 'NOSCHEDULE') {
+        vm.schedule = '';
+      }
+
+      vm.updateSchedule = function () {
+        vm.schedule = _.join(vm.crons.map(function (cron) {
+          return cron.cron;
+        }), '; ');
+      };
+
+      vm.add = function () {
+        vm.crons.push({ cron: 'Start: 0 0 * * 1,2,3,4,5' });
+        vm.updateSchedule();
+      };
+
+      vm.remove = function (item) {
+        var itemIndex = vm.crons.indexOf(item);
+        vm.crons.splice(itemIndex, 1);
+        vm.updateSchedule();
+      };
+
+      vm.useSpecificClicked = function () {
+        if (!vm.schedule || vm.schedule.indexOf(':') === -1) {
+          console.log('ble!');
+          vm.schedule = 'Start: 0 8 * * 1,2,3,4,5; Stop: 0 19 * * 1,2,3,4,5';
         }
+      };
 
-        $scope.updateSchedule = function () {
-          $scope.schedule = _.join($scope.crons.map(function (cron) {
-            return cron.cron;
-          }), '; ');
-        };
+      function loadSchedule() {
+        vm.crons = [];
+        if (vm.schedule && vm.schedule.indexOf(':') !== -1) {
+          vm.crons = vm.schedule.split(';').map(function (cron) {
+            return { cron: cron.trim() };
+          });
+        }
+      }
 
-        $scope.$on('cron-updated', function () {
-          $scope.updateSchedule();
-        });
+      $scope.$on('cron-updated', function () {
+        vm.updateSchedule();
+      });
 
-        $scope.add = function () {
-          $scope.crons.push({ cron: 'Start: 0 0 * * 1,2,3,4,5' });
-          $scope.updateSchedule();
-        };
-
-        $scope.remove = function (item) {
-          var itemIndex = $scope.crons.indexOf(item);
-          $scope.crons.splice(itemIndex, 1);
-          $scope.updateSchedule();
-        };
-
-        $scope.useSpecificClicked = function () {
-          if (!$scope.schedule || $scope.schedule.indexOf(':') === -1) {
-            $scope.schedule = 'Start: 0 8 * * 1,2,3,4,5; Stop: 0 19 * * 1,2,3,4,5';
-          }
-        };
-
-        var loadSchedule = function () {
-          $scope.crons = [];
-          if ($scope.schedule && $scope.schedule.indexOf(':') !== -1) {
-            $scope.crons = $scope.schedule.split(';').map(function (cron) {
-              return { cron: cron.trim() };
-            });
-          }
-        };
-
-        $scope.$watch('schedule', function () {
-          loadSchedule();
-        });
-
+      $scope.$watch('vm.schedule', function () {
         loadSchedule();
+      });
 
-      },
-    };
+      loadSchedule();
+    }
   });
