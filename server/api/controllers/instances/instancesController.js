@@ -5,6 +5,13 @@ let _ = require('lodash');
 let co = require('co');
 let ScanInstances = require('queryHandlers/ScanInstances');
 let ScanCrossAccountInstances = require('queryHandlers/ScanCrossAccountInstances');
+let EnterAutoScalingGroupInstancesToStandby = require('commands/asg/EnterAutoScalingGroupInstancesToStandby');
+let ExitAutoScalingGroupInstancesFromStandby = require('commands/asg/ExitAutoScalingGroupInstancesFromStandby');
+let DynamoHelper = require('api/api-utils/DynamoHelper');
+let Instance = require('models/Instance');
+let asgIpsDynamo = new DynamoHelper('asgips');
+let serviceTargets = require('modules/service-targets');
+
 /**
  * GET /instances
  */
@@ -24,8 +31,9 @@ function getInstances(req, res, next) {
       filter['tag:Environment'] = environment;
     }
     if (maintenance === true) {
-      asgIpsDynamo.getByKey('MAINTENANCE_MODE');
-      filter['private-ip-address']
+      let entry = yield asgIpsDynamo.getByKey('MAINTENANCE_MODE', { accountName });
+      let ips = JSON.parse(entry.IPs);
+      filter['private-ip-address'] = ips;
     }
 
     if (_.isEmpty(filter)) {
@@ -37,12 +45,28 @@ function getInstances(req, res, next) {
   }).catch(next);
 }
 
-function getInstanceById(req, res) {
-  res.json({});
+/**
+ * GET /instances/{id}
+ */
+function getInstanceById(req, res, next) {
+  const id = req.swagger.params.id.value;
+  Instance.getById(id).then(instance => res.json(instance)).catch(next);
 }
 
-function getInstanceAsgStandby(req, res) {
-  res.json({});
+/**
+ * GET /instances/{id}/asg-standby
+ */
+function getInstanceAsgStandby(req, res, next) {
+  const id = req.swagger.params.id.value;
+
+  co(function* () {
+    let instance = yield Instance.getById(id);
+    let ipAddress = instance.PrivateIpAddress;
+    let accountName = instance.AccountName;
+    let entry = yield asgIpsDynamo.getByKey('MAINTENANCE_MODE', { accountName });
+    let ips = JSON.parse(entry.IPs);
+    res.send(ips);
+  }).catch(next);
 }
 
 function putInstanceAsgStandby(req, res) {
