@@ -76,7 +76,7 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
     $scope.Add = function () {
       var instance = $uibModal.open({
         templateUrl: '/app/operations/maintenance/ops-maintenance-addserver-modal.html',
-        controller: 'MaintenanceAddServerModalController',
+        controller: 'MaintenanceAddServerModalController as vm',
         resolve: {
           defaultAccount: function () {
             return $scope.SelectedAccount;

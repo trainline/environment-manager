@@ -2,69 +2,70 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('MaintenanceAddServerModalController',
-  function ($scope, $uibModalInstance, $http, $q, resources, cachedResources, awsService, defaultAccount, instancesService) {
+  function ($uibModalInstance, $http, $q, resources, cachedResources, awsService, defaultAccount, instancesService) {
+    var vm = this;
 
-    $scope.AccountsList = [];
-    $scope.SelectedAccount = '';
-    $scope.ServerSearch = '';
-    $scope.ServerDetails = {};
+    vm.accountsList = [];
+    vm.selectedAccount = '';
+    vm.serverSearch = '';
+    vm.serverDetails = {};
 
-    $scope.SearchPerformed = false;
-    $scope.DataFound = false;
+    vm.searchPerformed = false;
+    vm.dataFound = false;
 
     var SHOW_ALL_OPTION = 'All';
 
     function init() {
       cachedResources.config.accounts.all().then(function (accounts) {
         accounts = _.map(accounts, 'AccountName');
-        $scope.AccountsList = accounts.sort();
-        $scope.SelectedAccount = (defaultAccount == SHOW_ALL_OPTION) ? accounts[0] : defaultAccount;
+        vm.accountsList = accounts.sort();
+        vm.selectedAccount = (defaultAccount == SHOW_ALL_OPTION) ? accounts[0] : defaultAccount;
       });
     }
 
-    $scope.Ok = function () {
-      var newServer = $scope.ServerDetails;
-      instancesService.setMaintenanceMode($scope.SelectedAccount, newServer.InstanceId, true).then(function () {
+    vm.ok = function () {
+      var newServer = vm.serverDetails;
+      instancesService.setMaintenanceMode(vm.selectedAccount, newServer.InstanceId, true).then(function () {
         $uibModalInstance.close();
       });
 
     };
 
-    $scope.Cancel = function () {
+    vm.cancel = function () {
       $uibModalInstance.dismiss('cancel');
     };
 
-    $scope.Search = function () {
+    vm.search = function () {
 
-      $scope.SearchPerformed = true;
-      $scope.ServerSearch = $scope.ServerSearch.trim();
+      vm.searchPerformed = true;
+      vm.serverSearch = vm.serverSearch.trim();
 
       var filterType = '';
 
       // Allow searching by IP or instance id
-      if (IsIPv4($scope.ServerSearch)) {
+      if (IsIPv4(vm.serverSearch)) {
         filterType = 'ip_address';
-      } else if ($scope.ServerSearch.startsWith('i-')) {
+      } else if (vm.serverSearch.startsWith('i-')) {
         filterType = 'instance_id';
       } else {
-        $scope.ServerDetails = {};
-        $scope.DataFound = false;
+        vm.serverDetails = {};
+        vm.dataFound = false;
         return;
       }
 
       var params = {
-        account: $scope.SelectedAccount,
+        account: vm.selectedAccount,
       };
-      params[filterType] = $scope.ServerSearch;
+      params[filterType] = vm.serverSearch;
 
 
       $http.get('/api/v1/instances', { params: params }).then(function (response) {
-        $scope.ServerDetails = awsService.instances.getSummaryFromInstance(response.data[0]) || {};
-        $scope.DataFound = (response.data.length > 0);
+        vm.serverDetails = awsService.instances.getSummaryFromInstance(response.data[0]) || {};
+        vm.dataFound = (response.data.length > 0);
       }, function (error) {
 
-        $scope.ServerDetails = {};
-        $scope.DataFound = false;
+        vm.serverDetails = {};
+        vm.dataFound = false;
       });
 
     };
