@@ -6,6 +6,9 @@
  *  of the tasks
  */
 
+var argv = require('yargs').argv;
+var path = require('path');
+
 /**
  *  The main paths of your project handle these with care
  */
@@ -36,5 +39,13 @@ module.exports = {
       console.error('[' + title + ']',  err.toString());
       this.emit('end');
     };
+  },
+
+  getTargetDirectory: function() {
+    return argv.o || 'dist/';
+  },
+
+  getInjectedHTMLfileName: function() {
+    return argv.p ? 'index-build-temp.html' : 'index.html';
   }
 };
