@@ -92,6 +92,18 @@ function putInstanceAsgStandby(req, res, next) {
     const accountName = instance.AccountName;
     const autoScalingGroupName = instance.getAutoScalingGroupName();
     const environmentName = instance.getTag('Environment');
+    // /**
+    //  * First put instance to standby on AWS
+    //  */
+    let handler = enable ? EnterAutoScalingGroupInstancesToStandby : ExitAutoScalingGroupInstancesFromStandby;
+    try { 
+      yield handler({ accountName, autoScalingGroupName, instanceIds });
+    } catch (err) {
+      if (err.message.indexOf('is not in Standby') === -1 && err.message.indexOf('cannot be exited from standby as its LifecycleState is InService') !== -1) {
+        logger.warn(`ASG ${autoScalingGroupName} is already in desired state for ASG Standby: ${enable}`)
+        throw err;
+      }
+    }
 
     /**
      * Update ASG IPS table (previously done in separate end point through ASG IPs resource)
