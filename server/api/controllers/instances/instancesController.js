@@ -77,8 +77,41 @@ function getInstanceAsgStandby(req, res, next) {
   }).catch(next);
 }
 
-function putInstanceAsgStandby(req, res) {
-  res.json();
+/**
+ * PUT /instances/{id}/asg-standby
+ */
+function putInstanceAsgStandby(req, res, next) {
+  const id = req.swagger.params.id.value;
+  const body = req.swagger.params.body.value;
+  const enable = body.enable;
+
+  co(function* () {
+    let instance = yield Instance.getById(id);
+
+    const instanceIds = [id];
+    const accountName = instance.AccountName;
+    const autoScalingGroupName = instance.getAutoScalingGroupName();
+    const environmentName = instance.getTag('Environment');
+
+    /**
+     * Update ASG IPS table (previously done in separate end point through ASG IPs resource)
+     *
+     * TODO(filip): handle case when MAINTENANCE_MODE entry doesn't exist - need to create entry
+     */
+    let entry = yield asgIpsDynamo.getByKey('MAINTENANCE_MODE', { accountName });
+    let ips = JSON.parse(entry.IPs);
+    if (enable) {
+      ips.push(instance.PrivateIpAddress)
+      ips = _.uniq(ips);
+    } else {
+      _.pull(ips, instance.PrivateIpAddress);
+    }
+    yield asgIpsDynamo.update('MAINTENANCE_MODE', { IPs: JSON.stringify(ips) }, entry.Version, req.user, { accountName });
+
+    res.send({ok: true});
+
+
+  }).catch(next);
 }
 
 module.exports = {
