@@ -123,10 +123,17 @@ angular.module('EnvironmentManager.common').controller('MainController',
       window.open(DYNAMO_SCHEMA_WIKI_URL, '_blank');
     };
 
-    $rootScope.$on('error', function (event, data) {
+    $rootScope.$on('error', function (event, response) {
+      var errorMessage;
+      if (_.isString(response.data)) {
+        errorMessage = response.data;
+      } else {
+        errorMessage = response.data.error;
+      }
+
       modal.information({
         title: 'Error',
-        message: data.data,
+        message: errorMessage,
         severity: 'Danger',
       });
     });

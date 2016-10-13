@@ -2,12 +2,14 @@
 'use strict';
 
 angular.module('EnvironmentManager.common').factory('instancesService',
-  function ($http) {
+  function ($http, $rootScope) {
     return {
-      setMaintenanceMode: function(accountName, instanceId, enable) {
+      setMaintenanceMode: function (accountName, instanceId, enable) {
         var url = ['api', 'v1', 'instances', instanceId, 'asg-standby'].join('/');
         return $http.put(url, { enable: enable }).then(function (response) {
           return response.data;
+        }, function (response) {
+          $rootScope.$broadcast('error', response);
         });
       }
     };
