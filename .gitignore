@@ -38,3 +38,8 @@ build/
 /Lambda/**/*.zip
 
 *.swp
+
+# Build artifacts
+client/index-build-temp.html
+publish_id.txt
+environment-manager-*.zip

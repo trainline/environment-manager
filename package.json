@@ -1,9 +1,9 @@
 {
   "name": "environment-manager",
-  "version": "3.7.0",
+  "version": "3.8.0",
   "description": "Build wrapper for Environment Manager server and client components",
   "scripts": {
-    "build": "gulp build --gulpfile server/gulpfile.js -o ../build && gulp build --gulpfile client/gulpfile.js -o ../build/dist"
+    "build": "gulp build --gulpfile server/gulpfile.js -p -o ../build && gulp build --gulpfile client/gulpfile.js -p -o ../build/dist"
   },
   "repository": {
     "type": "git",
