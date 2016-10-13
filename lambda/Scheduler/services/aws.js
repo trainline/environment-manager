@@ -17,11 +17,11 @@ function createAWSService(config) {
   }
 
   function switchInstancesOn(instances) {
-    return ec2.startInstances({ InstanceIds: instances, DryRun: true }).promise();
+    return ec2.startInstances({ InstanceIds: instances }).promise();
   }
 
   function switchInstancesOff(instances) {
-    return ec2.stopInstances({ InstanceIds: instances, DryRun: true }).promise();
+    return ec2.stopInstances({ InstanceIds: instances }).promise();
   }
 
   return {
