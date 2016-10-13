@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsMaintenanceController',
-  function ($scope, $routeParams, $location, $uibModal, $q, resources, cachedResources, modal, awsService, instancesService) {
+  function ($scope, $http, $routeParams, $location, $uibModal, $q, resources, cachedResources, modal, awsService, instancesService) {
 
     var RECORD_KEY = 'MAINTENANCE_MODE';
     var SHOW_ALL_OPTION = 'All';
@@ -42,38 +42,9 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
         readAccountPromises = [ProcessMaintenanceIpsByAccount($scope.SelectedAccount)];
       }
 
-      $q.all(readAccountPromises).then(function () {
-
-        // Read EC2 meta data for selected IPs
-        if ($scope.AccountIPList.length > 0) {
-          var params = {
-            account: $scope.SelectedAccount,
-            query: {
-              'private-ip-address': [],
-            },
-          };
-          $scope.AccountIPList.forEach(function (accountIP) {
-            params.query['private-ip-address'].push(accountIP.Ip);
-          });
-
-          awsService.instances.GetInstanceDetails(params).then(function (data) {
-            $scope.Data = data;
-            // Check for IPs that don't have matching Instances in AWS - probably already removed by scaling or manual change
-            if ($scope.Data.length < $scope.AccountIPList.length) {
-              $scope.IPsNotFound = $scope.AccountIPList.filter(function awsDataNotFound(accountIP) {
-                var notFound = true;
-                for (var i = 0; i < data.length; i++) {
-                  if (data[i].Ip == accountIP.Ip) {
-                    notFound = false;
-                  }
-                }
-
-                return notFound;
-              });
-            }
-          });
-        }
-
+      $q.all(readAccountPromises).then(function (data) {
+        data = _.flatten(data);
+        $scope.Data = data;
       }).finally(function () {
         $scope.DataLoading = false;
       });
@@ -136,21 +107,21 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
 
     function ProcessMaintenanceIpsByAccount(account) {
 
-      if (account == SHOW_ALL_OPTION) return $q.when(true);
+      if (account == SHOW_ALL_OPTION) return $q.when([]);
 
-      var defer = $q.defer();
       var params = {
         account: account,
         key: RECORD_KEY,
       };
-      resources.asgips.get(params).then(function (data) {
+      return $http.get('/api/v1/instances', { params: { maintenance: true }}).then(function (response) {
+        var data = response.data;
 
         var ipList = [];
 
         // Read list of IPs under Maintenance and add account info
-        if (data.IPs && data.IPs.length > 0) {
-          ipList = JSON.parse(data.IPs).map(function (ip) {
-            return { AccountName: account, Ip: ip };
+        if (data.length > 0) {
+          ipList = _.map(data, function (instance) {
+            return { AccountName: account, Ip: instance.PrivateIpAddress };
           });
         }
 
@@ -159,32 +130,16 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
           $scope.AccountIPList.push(ip);
         });
 
-        defer.resolve(ipList);
-
-      }, function (error) {
-
-        // Record doesn't exist for this account, create empty placeholder
-        console.log(RECORD_KEY + ' not found for ' + account + ' account, creating for first time use');
-        var params = {
-          account: account,
-          key: RECORD_KEY,
-          data: {
-            IPs: JSON.stringify([]),
-          },
-        };
-        resources.asgips.post(params).then(function (data) {
-          defer.resolve();
+        return _.map(data, function (instance) {
+          return awsService.instances.getSummaryFromInstance(instance, $scope.SelectedAccount);
         });
 
       });
-
-      return defer.promise;
     }
 
     function getTasksForRemovingInstancesFromMaintenance(account, ipListTypeToManage) {
 
       var exitMaintenanceList = []; // IP list to remove from "MAINTENANCE_MODE" record in AsgIps DynamoDB table
-      var stayInMaintenanceList = []; // IP list to maintain in "MAINTENANCE_MODE" record in AsgIps DynamoDB table
       var asgForWhichPutInstancesInService = {}; // AutoScalingGroup for which move instances from Standby to InService
 
       function isItemBelongingToAccount(item, account) {
@@ -207,8 +162,6 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
             asgForWhichPutInstancesInService[groupName] = asgForWhichPutInstancesInService[groupName] || [];
             asgForWhichPutInstancesInService[groupName].push(item.InstanceId);
           }
-        } else {
-          stayInMaintenanceList.push(item);
         }
       });
 
@@ -221,13 +174,8 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
 
           // Adding to list of instances removed from maintenance
           exitMaintenanceList.push(item);
-        } else {
-          stayInMaintenanceList.push(item);
         }
       });
-
-      // If no IP is to remove then no operations are needed
-      if (!exitMaintenanceList.length) return [];
 
       var tasks = [];
 
@@ -235,26 +183,6 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
         var task = instancesService.setMaintenanceMode(account, instance.InstanceId, false);
         tasks.push(task);
       });
-
-      // Adding a task to updating "MAINTENANCE_MODE" record in AsgIps DynamoDB table
-      tasks.push(resources.asgips.put({
-        account: account,
-        key: RECORD_KEY,
-        data: {
-          IPs: JSON.stringify(_.map(stayInMaintenanceList, 'Ip')),
-        },
-      }));
-
-      // Adding a task for each AutoScalingGroup for which moving its instances from Standby to InService
-      for (var groupName in asgForWhichPutInstancesInService) {
-        var instanceIdsToPutInService = asgForWhichPutInstancesInService[groupName];
-
-        tasks.push(resources.aws.asgs.exit(groupName)
-          .instances(instanceIdsToPutInService)
-          .fromStandby()
-          .inAWSAccount(account)
-          .do());
-      }
 
       return tasks;
     }
