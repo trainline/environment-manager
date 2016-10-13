@@ -11,6 +11,7 @@ let DynamoHelper = require('api/api-utils/DynamoHelper');
 let Instance = require('models/Instance');
 let asgIpsDynamo = new DynamoHelper('asgips');
 let serviceTargets = require('modules/service-targets');
+let logger = require('modules/logger');
 
 /**
  * GET /instances
@@ -86,8 +87,8 @@ function putInstanceAsgStandby(req, res, next) {
   const enable = body.enable;
 
   co(function* () {
-    let instance = yield Instance.getById(id);
 
+    let instance = yield Instance.getById(id);
     const instanceIds = [id];
     const accountName = instance.AccountName;
     const autoScalingGroupName = instance.getAutoScalingGroupName();
@@ -112,7 +113,7 @@ function putInstanceAsgStandby(req, res, next) {
      */
     let entry = yield asgIpsDynamo.getByKey('MAINTENANCE_MODE', { accountName });
     let ips = JSON.parse(entry.IPs);
-    if (enable) {
+    if (enable === true) {
       ips.push(instance.PrivateIpAddress)
       ips = _.uniq(ips);
     } else {
@@ -120,9 +121,12 @@ function putInstanceAsgStandby(req, res, next) {
     }
     yield asgIpsDynamo.update('MAINTENANCE_MODE', { IPs: JSON.stringify(ips) }, entry.Version, req.user, { accountName });
 
+    /**
+     * Now switch Maintenance mode (previously done in separate end point)
+     */
+    serviceTargets.setInstanceMaintenanceMode(accountName, instance.PrivateIpAddress, environmentName, enable);
+
     res.send({ok: true});
-
-
   }).catch(next);
 }
 
