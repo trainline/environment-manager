@@ -150,46 +150,40 @@ describe('KeyNameProvider:', () => {
 
     });
 
-    describe('and the one by convention does not exist in AWS', () => {
+  });
 
-      it('should be possible to understand the error', () => {
+  it('when neither server role configuration nor Cluster have key pair set,'
+   + 'should be possible to understand the error', () => {
 
-        // Arrange
-        var senderMock = {
-          sendQuery: sinon.stub().returns(Promise.reject(new KeyPairNotFoundError(
-            `Key pair "ProdTango" not found.`
-          ))),
-        };
+    // Arrange
+    var senderMock = {
+      sendQuery: sinon.stub().returns(Promise.reject(new KeyPairNotFoundError())),
+    };
 
-        var configuration = {
-          serverRole: {
-            ClusterKeyName: null,
-          },
-          cluster: {
-            Name: 'Tango',
-          },
-          environmentType: {
-            AWSAccountName: 'Prod',
-          },
-        };
+    var configuration = {
+      serverRole: {
+        ClusterKeyName: null,
+      },
+      cluster: {
+        Name: 'Tango',
+      },
+      environmentType: {
+        AWSAccountName: 'Prod',
+      },
+    };
 
-        var accountName = 'Sandbox';
+    var accountName = 'Sandbox';
 
-        // Act
-        var target = proxyquire('modules/provisioning/launchConfiguration/keyNameProvider', {
-          'modules/sender': senderMock
-        });
-        var promise = target.get(configuration, accountName);
-
-        // Assert
-        return promise.catch(error =>
-          error.toString().should.be.containEql('key pair defined by convention') &&
-          error.toString().should.be.containEql('Key pair "ProdTango" not found')
-        );
-
-      });
-
+    // Act
+    var target = proxyquire('modules/provisioning/launchConfiguration/keyNameProvider', {
+      'modules/sender': senderMock
     });
+    var promise = target.get(configuration, accountName);
+
+    // Assert
+    return promise.catch(error =>
+      error.toString().should.be.containEql('Server role EC2 key pair set to cluster EC2 key pair, but this is empty. Please fix your configuration')
+    );
 
   });
 
