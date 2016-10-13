@@ -1,7 +1,5 @@
 'use strict'
 
-process.env['PATH'] = `${process.env['PATH']}:${process.env['LAMBDA_TASK_ROOT']}`;
-
 let config = require('./config.json');
 let schedulerFactory = require('./scheduler.js');
 
