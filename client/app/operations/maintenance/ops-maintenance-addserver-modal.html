@@ -1,62 +1,62 @@
 ﻿<div class="modal-header">
-    <h2>Take Server out of Service</h2>
+  <h2>Take Server out of Service</h2>
 </div>
 
 <div class="modal-body">
 
-    <form class="form-horizontal">
-        <div class="form-group">
-            <label class="col-md-3 control-label text-left">AWS Account:</label>
-            <div class="col-md-4">
-                <select class="form-control" ng-model="SelectedAccount">
-                    <option ng-repeat="account in AccountsList" ng-selected="{{account == SelectedAccount}}" value="{{account}}">{{account}}</option>
-                </select>
-            </div>
-        </div>
-        <div class="form-group" ng-class="{'has-error': form.ServiceName.$invalid}">
-            <label class="col-md-3 control-label text-left">Instance ID or IP:</label>
-            <div class="col-md-4">
-                <input type="search"
-                        name="ServerSearch"
-                        class="form-control"
-                        required=""
-                        autofocus
-                        maxlength="15"
-                        ng-model="ServerSearch"
-                        ng-readonly="!canUser('edit')" />
-            </div>
-            <div>
-                <button class="btn btn-default" type="button" ng-disabled="!ServerSearch" ng-click="Search()">Check Server Details</button>
-            </div>
-        </div>
-        <div class="form-group" ng-if="SearchPerformed">
-            <div class="col-md-12" ng-if="DataFound">
-<pre id="MaintenanceServerDetails">
-Environment Type: {{ServerDetails.EnvironmentType}}
-Environment: {{server.Environment}}
-Name: {{ServerDetails.Name}}
-InstanceId: {{ServerDetails.InstanceId}}
-Ip: {{ServerDetails.Ip}}
-Owning Cluster: {{ServerDetails.OwningCluster}}
-Role: {{ServerDetails.Role}}
-Status: {{ServerDetails.Status}}
-AutoScalingGroup: {{ServerDetails['aws:autoscaling:groupName'] || 'None'}}
-</pre>
-                <p>Important Notes:</p>
-                <ul>
-                    <li>Changes may take up to 5 minutes to take effect in DNS</li>
-                    <li>Traffic will only be restricted for HTTP services that are load balanced by NGINX.</li>
-                    <li>If this server is part of an ASG, it will be temporarily removed (suspended) from the group during maintenance</li>
-                </ul>
-            </div>
-            <div class="col-md-12" ng-if="!DataFound">
-                <p>No data found, please enter a valid IP or Instance ID</p>
-            </div>
-        </div>
-    </form>
+  <form class="form-horizontal">
+    <div class="form-group">
+      <label class="col-md-3 control-label text-left">AWS Account:</label>
+      <div class="col-md-4">
+        <select class="form-control" ng-model="SelectedAccount">
+          <option ng-repeat="account in AccountsList" ng-selected="{{account == SelectedAccount}}" value="{{account}}">{{account}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" ng-class="{'has-error': form.ServiceName.$invalid}">
+      <label class="col-md-3 control-label text-left">Instance ID or IP:</label>
+      <div class="col-md-4">
+        <input type="search"
+        name="ServerSearch"
+        class="form-control"
+        required=""
+        autofocus
+        maxlength="15"
+        ng-model="ServerSearch"
+        ng-readonly="!canUser('edit')" />
+      </div>
+      <div>
+        <button class="btn btn-default" type="button" ng-disabled="!ServerSearch" ng-click="Search()">Check Server Details</button>
+      </div>
+    </div>
+    <div class="form-group" ng-if="SearchPerformed">
+      <div class="col-md-12" ng-if="DataFound">
+        <pre id="MaintenanceServerDetails">
+          Environment Type: {{ServerDetails.EnvironmentType}}
+          Environment: {{server.Environment}}
+          Name: {{ServerDetails.Name}}
+          InstanceId: {{ServerDetails.InstanceId}}
+          Ip: {{ServerDetails.Ip}}
+          Owning Cluster: {{ServerDetails.OwningCluster}}
+          Role: {{ServerDetails.Role}}
+          Status: {{ServerDetails.Status}}
+          AutoScalingGroup: {{ServerDetails['aws:autoscaling:groupName'] || 'None'}}
+        </pre>
+        <p>Important Notes:</p>
+        <ul>
+          <li>Changes may take up to 5 minutes to take effect in DNS</li>
+          <li>Traffic will only be restricted for HTTP services that are load balanced by NGINX.</li>
+          <li>If this server is part of an ASG, it will be temporarily removed (suspended) from the group during maintenance</li>
+        </ul>
+      </div>
+      <div class="col-md-12" ng-if="!DataFound">
+        <p>No data found, please enter a valid IP or Instance ID</p>
+      </div>
+    </div>
+  </form>
 </div>
 
 <div class="modal-footer">
-    <button class="btn btn-default" type="button" ng-click="Cancel()">Cancel</button>
-    <button class="btn btn-default" type="button" ng-click="Ok()" ng-disabled="!DataFound">Take Out of Service</button>
+  <button class="btn btn-default" type="button" ng-click="Cancel()">Cancel</button>
+  <button class="btn btn-default" type="button" ng-click="Ok()" ng-disabled="!DataFound">Take Out of Service</button>
 </div>
