@@ -3,6 +3,7 @@
 
 angular.module('EnvironmentManager.operations').controller('OpsMaintenanceController',
   function ($scope, $http, $routeParams, $location, $uibModal, $q, resources, cachedResources, modal, awsService, instancesService) {
+    var vm = this;
 
     var RECORD_KEY = 'MAINTENANCE_MODE';
     var SHOW_ALL_OPTION = 'All';
@@ -11,46 +12,46 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
       NotFound: 'NotFound',
     };
 
-    $scope.AccountIPList = []; // [{ AccountName, Ip }]
-    $scope.Data = [];
-    $scope.IPsNotFound = [];
-    $scope.AccountsList = [];
-    $scope.SelectedAccount = SHOW_ALL_OPTION;
-    $scope.DataLoading = false;
+    vm.accountIPList = []; // [{ AccountName, Ip }]
+    vm.data = [];
+    vm.IPsNotFound = [];
+    vm.accountsList = [];
+    vm.selectedAccount = SHOW_ALL_OPTION;
+    vm.dataLoading = false;
 
     function init() {
       cachedResources.config.accounts.all().then(function (accounts) {
         accounts = _.map(accounts, 'AccountName');
-        $scope.AccountsList = [SHOW_ALL_OPTION].concat(accounts).sort();
+        vm.accountsList = [SHOW_ALL_OPTION].concat(accounts).sort();
       }).then(function () {
-        $scope.Refresh();
+        vm.refresh();
       });
     };
 
-    $scope.Refresh = function () {
+    vm.refresh = function () {
 
-      $scope.AccountIPList = [];
-      $scope.Data = [];
-      $scope.IPsNotFound = [];
-      $scope.DataLoading = true;
+      vm.accountIPList = [];
+      vm.data = [];
+      vm.IPsNotFound = [];
+      vm.dataLoading = true;
 
       var readAccountPromises;
       // Read all or just selected account
-      if ($scope.SelectedAccount == SHOW_ALL_OPTION) {
-        readAccountPromises = $scope.AccountsList.map(ProcessMaintenanceIpsByAccount);
+      if (vm.selectedAccount == SHOW_ALL_OPTION) {
+        readAccountPromises = vm.accountsList.map(ProcessMaintenanceIpsByAccount);
       } else {
-        readAccountPromises = [ProcessMaintenanceIpsByAccount($scope.SelectedAccount)];
+        readAccountPromises = [ProcessMaintenanceIpsByAccount(vm.selectedAccount)];
       }
 
       $q.all(readAccountPromises).then(function (data) {
         data = _.flatten(data);
-        $scope.Data = data;
+        vm.data = data;
       }).finally(function () {
-        $scope.DataLoading = false;
+        vm.dataLoading = false;
       });
     };
 
-    $scope.RemoveNotFound = function () {
+    vm.removeNotFound = function () {
       modal.confirmation({
         title: 'Remove Out of Date Records',
         message: 'This will remove the selected out of date records.',
@@ -61,7 +62,7 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
       });
     };
 
-    $scope.Remove = function () {
+    vm.remove = function () {
       modal.confirmation({
         title: 'Put Selected Servers Back in Service',
         message: 'Are you sure you want to bring the selected servers back into service?',
@@ -79,18 +80,18 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
         controller: 'MaintenanceAddServerModalController as vm',
         resolve: {
           defaultAccount: function () {
-            return $scope.SelectedAccount;
+            return vm.selectedAccount;
           },
         },
       }).result.then(function () {
-        $scope.Refresh();
+        vm.refresh();
       });
     };
 
     $scope.NumberOfItemsSelected = function () {
       var count = 0;
-      for (var i = 0; i < $scope.Data.length; i++) {
-        if ($scope.Data[i].Selected) { count++; }
+      for (var i = 0; i < vm.data.length; i++) {
+        if (vm.data[i].Selected) { count++; }
       }
 
       return count;
@@ -98,8 +99,8 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
 
     $scope.NumberOfNotFoundItemsSelected = function () {
       var count = 0;
-      for (var i = 0; i < $scope.IPsNotFound.length; i++) {
-        if ($scope.IPsNotFound[i].Selected) { count++; }
+      for (var i = 0; i < vm.IPsNotFound.length; i++) {
+        if (vm.IPsNotFound[i].Selected) { count++; }
       }
 
       return count;
@@ -127,11 +128,11 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
 
         // Append to $scope variable
         ipList.forEach(function (ip) {
-          $scope.AccountIPList.push(ip);
+          vm.accountIPList.push(ip);
         });
 
         return _.map(data, function (instance) {
-          return awsService.instances.getSummaryFromInstance(instance, $scope.SelectedAccount);
+          return awsService.instances.getSummaryFromInstance(instance, vm.selectedAccount);
         });
 
       });
@@ -146,7 +147,7 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
         return !item.AccountName || item.AccountName === account;
       }
 
-      $scope.Data.forEach(function (item) {
+      vm.data.forEach(function (item) {
 
         // Item must belong to the target AWS account
         if (!isItemBelongingToAccount(item, account)) return;
@@ -165,7 +166,7 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
         }
       });
 
-      $scope.IPsNotFound.forEach(function (item) {
+      vm.IPsNotFound.forEach(function (item) {
 
         // Item must belong to the target AWS account
         if (!isItemBelongingToAccount(item, account)) return;
@@ -190,14 +191,14 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
     function removingIPsFromMaintenance(ipListTypeToManage) {
 
       var tasks = [];
-      var accounts = $scope.SelectedAccount === SHOW_ALL_OPTION ? $scope.AccountsList : [$scope.SelectedAccount];
+      var accounts = vm.selectedAccount === SHOW_ALL_OPTION ? vm.accountsList : [vm.selectedAccount];
 
       accounts.forEach(function (account) {
         tasks = tasks.concat(getTasksForRemovingInstancesFromMaintenance(account, ipListTypeToManage));
       });
 
       $q.all(tasks).then(function () {
-        $scope.Refresh();
+        vm.refresh();
       });
     }
 

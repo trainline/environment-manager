@@ -3,7 +3,7 @@
     <h2>Server Maintenance</h2>
   </div>
   <div id="RefreshData">
-    <span class="glyphicon glyphicon-refresh" ng-click="Refresh()" title="Refresh data"></span>
+    <span class="glyphicon glyphicon-refresh" ng-click="vm.refresh()" title="Refresh data"></span>
   </div>
   <div class="col-md-12">
     <p>Use this page to temporarily take servers out of service during maintenance operations. Out of service means the selected server(s) will not recieve traffic from NGINX and will be temporarily taken out of of their ASG.</p>
@@ -21,28 +21,28 @@
   <div class="form-group">
     <label class="col-md-1 control-label text-left">AWS Account:</label>
     <div class="col-md-2">
-      <select class="form-control" ng-model="SelectedAccount" ng-change="Refresh()">
-        <option ng-repeat="account in AccountsList" ng-selected="{{account == SelectedAccount}}" value="{{account}}">{{account}}</option>
+      <select class="form-control" ng-model="vm.selectedAccount" ng-change="vm.refresh()">
+        <option ng-repeat="account in vm.accountsList" ng-selected="{{account == vm.selectedAccount}}" value="{{account}}">{{account}}</option>
       </select>
     </div>
     <div>
-      <button type="button" class="btn btn-default" ng-disabled="!canUser('edit')" ng-click="Add()">Take Server out of Service...</button>
+      <button type="button" class="btn btn-default" ng-disabled="!canUser('edit')" ng-click="vm.add()">Take Server out of Service...</button>
     </div>
   </div>
 </form>
 
-<spinner ng-show="DataLoading"></spinner>
+<spinner ng-show="vm.dataLoading"></spinner>
 
-<div class="row" ng-show="!DataLoading">
-  <div class="col-md-10" ng-show="Data.length == 0">
+<div class="row" ng-show="!vm.dataLoading">
+  <div class="col-md-10" ng-show="vm.data.length == 0">
     <p>No servers currently marked as out of service for maintenance.</p>
   </div>
-  <div class="col-md-10" ng-show="Data.length > 0">
+  <div class="col-md-10" ng-show="vm.data.length > 0">
     <table class="table">
       <thead>
         <tr>
           <th ng-if="canUser('edit')" class=""></th>
-          <th ng-if="SelectedAccount == 'All'">Account</th>
+          <th ng-if="vm.selectedAccount == 'All'">Account</th>
           <th class="text-nowrap">Environment</th>
           <th class="text-nowrap">Name</th>
           <th class="text-nowrap">InstanceId</th>
@@ -53,9 +53,9 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="server in Data | orderBy : ['server.AccountName', 'server.Name']">
+        <tr ng-repeat="server in vm.data | orderBy : ['server.AccountName', 'server.Name']">
           <td ng-if="canUser('edit')"><input type="checkbox" ng-model="server.Selected" /></td>
-          <td ng-if="SelectedAccount == 'All'">{{server.AccountName}}</td>
+          <td ng-if="vm.selectedAccount == 'All'">{{server.AccountName}}</td>
           <td>{{server.Environment}} <small ng-if="server.EnvironmentType">({{server.EnvironmentType}})</small></td>
           <td>{{server.Name}}</td>
           <td>{{server.InstanceId}}</td>
@@ -67,14 +67,14 @@
       </tbody>
     </table>
   </div>
-  <div class="form-group" ng-show="Data.length > 0">
+  <div class="form-group" ng-show="vm.data.length > 0">
     <div class="col-md-4">
-      <button type="button" ng-disabled="NumberOfItemsSelected() == 0" class="btn btn-default" ng-if="canUser('edit')" ng-click="Remove()">Put Selected Servers Back in Service</button>
+      <button type="button" ng-disabled="vm.numberOfItemsSelected() == 0" class="btn btn-default" ng-if="canUser('edit')" ng-click="vm.remove()">Put Selected Servers Back in Service</button>
     </div>
   </div>
 </div>
 
-<div class="row" ng-if="IPsNotFound.length > 0" style="margin-top: 25px">
+<div class="row" ng-if="vm.IPsNotFound.length > 0" style="margin-top: 25px">
   <div class="col-md-12">
     <h3>Out of Date Records</h3>
   </div>
@@ -86,14 +86,14 @@
       <thead>
         <tr>
           <th ng-if="canUser('edit')" class=""></th>
-          <th ng-if="SelectedAccount == 'All'">Account</th>
+          <th ng-if="vm.selectedAccount == 'All'">Account</th>
           <th class="text-nowrap">IP Address</th>
         </tr>
       </thead>
       <tbody>
         <tr ng-repeat="ip in IPsNotFound | orderBy : ['ip.AccountName', 'ip.Ip']">
           <td ng-if="canUser('edit')"><input type="checkbox" ng-model="ip.Selected" /></td>
-          <td ng-if="SelectedAccount == 'All'">{{ip.AccountName}}</td>
+          <td ng-if="vm.selectedAccount == 'All'">{{ip.AccountName}}</td>
           <td>{{ip.Ip}}</td>
         </tr>
       </tbody>
@@ -101,7 +101,7 @@
   </div>
   <div class="form-group">
     <div class="col-md-10">
-      <button type="button" ng-disabled="NumberOfNotFoundItemsSelected() == 0" class="btn btn-default" ng-if="canUser('edit')" ng-click="RemoveNotFound()">Remove Selected Records</button>
+      <button type="button" ng-disabled="vm.numberOfNotFoundItemsSelected() == 0" class="btn btn-default" ng-if="canUser('edit')" ng-click="vm.removeNotFound()">Remove Selected Records</button>
     </div>
   </div>
 </div>
