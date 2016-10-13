@@ -60,7 +60,7 @@ In order to execute this lambda in AWS all files must be added to a .zip package
 Exceptions include:
 
 - ./local
-- ./**/\*.spec.js
+- ./\*\*/\*.spec.js
 - Any dev specific module dependencies (currently mocha and chai)
 
 The package can then be uploaded to an AWS function. A task will shortly be provided for automating the construction and deployment of the lambda function.
