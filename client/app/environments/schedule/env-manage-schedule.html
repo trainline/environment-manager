@@ -13,11 +13,11 @@
     </div>
     <div class="col-md-12" ng-show="DataFound">
 
-        <div ng-if="Environment.EnvironmentName == 'pr1'"><!-- TODO: should be any Prod environment - startsWith -->
-            <p>The Production Environment cannot be scheduled.</p>
+        <div ng-if="schedulingProtected">
+            <p>This environment is protected and cannot be scheduled.</p>
             <p>You can still set schedules against particular ASGs or Instances where required.</p>
         </div>
-        <form name="form" id="EnvironmentSchedule" class="form-horizontal" ng-if="Environment.EnvironmentName != 'pr1'">
+        <form name="form" id="EnvironmentSchedule" class="form-horizontal" ng-if="!schedulingProtected">
             <div class="form-group">
                 <label class="col-md-1 control-label text-left">Current Status:</label>
                 <div class="col-md-8">

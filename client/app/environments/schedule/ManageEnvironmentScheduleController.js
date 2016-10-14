@@ -3,6 +3,8 @@
 
 angular.module('EnvironmentManager.environments').controller('ManageEnvironmentScheduleController',
   function ($rootScope, $scope, $routeParams, $location, $q, modal, resources, cachedResources, configValidation, cron) {
+    
+    var PROTECTED_ACTION = 'SCHEDULE_ENVIRONMENT';
 
     $scope.Environment = {};
     $scope.EnvironmentVersion = 0;
@@ -10,21 +12,21 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
     $scope.OperationsVersion = 0;
     $scope.DataFound = false;
     $scope.DataLoading = true;
+    $scope.schedulingProtected = false;
 
     $scope.NewSchedule = {
       Type: '',
       DefaultSchedule: '',
     };
 
-    var a = resources.environment('c50').canPerformAction('THING');
-    console.log('STUFF ' + a);
-
     function init() {
-
       var environmentName = GetActiveEnvironment();
       $scope.Environment.EnvironmentName = environmentName;
 
-      $scope.Refresh();
+      resources.environment(environmentName).isProtectedAgainstAction(PROTECTED_ACTION).then(function(isProtected) {
+        $scope.schedulingProtected = isProtected;
+        $scope.Refresh();
+      });
     }
 
     $scope.Refresh = function () {
@@ -32,7 +34,6 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       $scope.DataLoading = true;
 
       function assignToTheScope(operations) {
-
         $scope.Operations = operations;
         $scope.OperationsVersion = operations.Version;
 
@@ -44,7 +45,6 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
           DefaultSchedule: operations.Value.DefaultSchedule,
           Type: operations.Value.ScheduleAutomatically ? 'Automatic' : operations.Value.ManualScheduleUp ? 'On' : 'Off',
         };
-
       };
 
       resources.ops.environments.get({ key: $scope.Environment.EnvironmentName })

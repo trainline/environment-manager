@@ -163,8 +163,11 @@ angular.module('EnvironmentManager.common').factory('environments',
         return $this.do();
       };
 
-      $this.canPerformAction = function(actionName) {
-        return true;
+      $this.isProtectedAgainstAction = function(actionName) {
+        var url = 'api/environments/' + $this.environmentName + '/protected?action=' + actionName;
+        return $http.get(url).then(function(result) {
+          return result.data.isProtected;
+        })
       }
     };
 
