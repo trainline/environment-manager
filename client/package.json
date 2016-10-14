@@ -5,6 +5,10 @@
     "name": "Platform Development",
     "email": "platform.development@thetrainline.com"
   },
+  "scripts": {
+    "test": "gulp test",
+    "test-ci": "gulp test -c"
+  },
   "devDependencies": {
     "angular-templatecache": "0.0.1",
     "bower": "^1.7.9",
@@ -58,6 +62,7 @@
     "karma-jasmine": "^1.0.2",
     "karma-ng-html2js-preprocessor": "^1.0.0",
     "karma-phantomjs-launcher": "^1.0.2",
+    "karma-teamcity-reporter": "^1.0.0",
     "lodash": "~4.16.1",
     "lodash-node": "~3.10.2",
     "plumber": "^0.4.8",
