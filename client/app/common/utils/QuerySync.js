@@ -17,7 +17,7 @@ angular.module('EnvironmentManager.common').factory('QuerySync',
       init: function () {
         var _this = this;
         _.forIn(this.params, function (obj, key) {
-          
+
           var value = $location.search()[key] || obj.default;
           
           if (obj.castToInteger) {
@@ -30,12 +30,7 @@ angular.module('EnvironmentManager.common').factory('QuerySync',
 
       updateQuery: function() {
         var _this = this;
-        
         _.forIn(this.params, function (obj, key) {
-
-
-          console.log('Calling search with: ' + key, $parse(obj.property)(_this.target));
-
           $location.search(key, $parse(obj.property)(_this.target));
         });
       },
