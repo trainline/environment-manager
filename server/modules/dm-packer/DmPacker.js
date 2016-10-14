@@ -12,7 +12,7 @@ let s3Url = require('modules/amazon-client/s3Url');
 
 module.exports = function DmPacker(logger) {
 
-  let retry = retryLib({logger: logger, maxAttempts: 4});
+  let retry = retryLib({ logger: logger, maxAttempts: 4 });
 
   this.buildCodeDeployPackage = function (deploymentMap) {
     let options = {
@@ -41,7 +41,7 @@ module.exports = function DmPacker(logger) {
             logger.info("Packaging complete");
           });
           archive.on('error', err => {
-              throw err;
+            throw err;
           });
           entryStream.on("data", entry => {
             archive.append(entry.content, { name: entry.path });
@@ -64,9 +64,11 @@ module.exports = function DmPacker(logger) {
 
   this.getCodeDeployPackage = function (url) {
     if (s3Url.parse(url) !== undefined) {
+      logger.info(`Downloading package from S3: ${url}`);
       return Promise.resolve(s3Url.getObject(url));
     }
     return co(function* () {
+      logger.info(`Downloading package: ${url}`);
       let input = yield simpleHttp.getResponseStream(url);
       let headers = input.headers;
       if (!(/\/zip$/.test(headers["content-type"]))) {
@@ -78,6 +80,7 @@ module.exports = function DmPacker(logger) {
 
   this.uploadCodeDeployPackage = function (destination, stream, s3client) {
     return new Promise((resolve, reject) => {
+      stream.on('error', err => reject(err));
       s3client.upload({
         Bucket: destination.bucket,
         Key: destination.key,
@@ -89,8 +92,13 @@ module.exports = function DmPacker(logger) {
           resolve(data);
         }
       });
-      //.on('httpUploadProgress', evt => { logger.info(evt); });
-    });
+    }).then(
+      rsp => {
+        logger.info(`Package uploaded to: ${rsp.Location}`);
+      },
+      err => {
+        logger.error(`Package upload failed: ${err.message}`);
+      });
   };
 
   function downloadFile(item) {
