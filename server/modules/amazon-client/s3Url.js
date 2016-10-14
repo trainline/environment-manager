@@ -9,7 +9,7 @@
 'use strict';
 
 const AWS = require('aws-sdk');
-const _ = require('lodash');
+const _ = require('lodash/fp');
 
 /**
  * Parse a string as an S3 object URL.
@@ -41,9 +41,10 @@ function getObject(url, options) {
   if (params === undefined) {
     throw new Error(`The URL is not a valid S3 object or object version URL: ${url}`);
   }
-  let opts = Object.assign({}, options || {}, params.endpoint);
-  let getObjectArgs = Object.assign({}, _(params).pick('Bucket', 'Key', 'VersionId').omitBy(_.isUndefined));
-  return new AWS.S3(opts).getObject(getObjectArgs).createReadStream();
+  let opts = Object.assign({}, options || {}, _.pick(['endpoint'])(params));
+  let getObjectArgs = Object.assign({}, _.compose(_.pick(['Bucket', 'Key', 'VersionId']), _.omitBy(_.isUndefined))(params));
+  let request = new AWS.S3(opts).getObject(getObjectArgs);
+  return request.createReadStream();
 }
 
 module.exports = {

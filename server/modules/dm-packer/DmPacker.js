@@ -8,7 +8,7 @@ let simpleHttp = require('./simple-http');
 let dm = require('./deployment-map');
 let retryLib = require('./retry');
 let config = require('config');
-
+let s3Url = require('modules/amazon-client/s3Url');
 
 module.exports = function DmPacker(logger) {
 
@@ -63,6 +63,9 @@ module.exports = function DmPacker(logger) {
   };
 
   this.getCodeDeployPackage = function (url) {
+    if (s3Url.parse(url) !== undefined) {
+      return Promise.resolve(s3Url.getObject(url));
+    }
     return co(function* () {
       let input = yield simpleHttp.getResponseStream(url);
       let headers = input.headers;
