@@ -11,9 +11,7 @@ describe('QuerySync', function () {
 
   beforeEach(module(function ($provide) {
     $location = jasmine.createSpyObj('$location', ['search']);
-    $location.search.andReturn({});
-
-    console.log($location);
+    $location.search.and.callFake(function () { return {}; });
 
     $provide.service('$location', function() {
       return $location;
@@ -54,9 +52,6 @@ describe('QuerySync', function () {
 
   describe('.updateQuery()', function() {
     it('updates query', function() {
-
-      $location = jasmine.createSpyObj('$location', ['search']);
-
       querySync.init();
       target.SelectedEnvironment = 'testval1';
       querySync.updateQuery();
