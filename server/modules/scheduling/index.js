@@ -16,9 +16,8 @@ const sources = {
 };
 
 const skipReasons = {
-  memberOfAsg: "This instance is part of an ASG",
+  noEnvironment: "This instance has no environment",
   noScheduleTag: "There is no schedule tag for this instance",
-  noScheduleOrEnvironmentTag: "This instance has an empty schedule tag and no environment was found",
   explicitNoSchedule: "The schedule tag for this instance is set to 'noschedule'",
   invalidSchedule: "The schedule tag for this instance is not valid",
   transitioning: "This instance is currently transitioning between states",
@@ -33,41 +32,47 @@ const states = {
 
 function actionForInstance(instance, dateTime) {
 
-  let asgTag = getInstanceTag(instance, 'aws:autoscaling:groupName');
-
-  if (asgTag)
-    return skip(skipReasons.memberOfAsg);
-
   let currentState = currentStateOfInstance(instance);
-
   if (currentState === states.transitioning)
     return skip(skipReasons.transitioning);
 
-  let scheduleTag = getInstanceTag(instance, 'schedule');
+  if (!instance.Environment)
+    return skip(skipReasons.noEnvironment);
+
+  let scheduleTag = getInstanceOrASGScheduleTagValue(instance);
 
   if (!scheduleTag)
-    return skip(skipReasons.noScheduleTag);
-  
-  let scheduleValue = scheduleTag.Value.trim();
+    return actionForEnvironment(currentState, instance.Environment, dateTime);
 
-  if (!scheduleValue) {
-    if (instance.Environment)
-      return actionForEnvironment(currentState, instance.Environment, dateTime);
+  return actionForSchedule(currentState, scheduleTag, dateTime);
 
-    return skip(skipReasons.noScheduleOrEnvironmentTag);
-  }  
+}
 
-  let parseResult = parseSchedule(scheduleValue);
+function actionForSchedule(currentState, scheduleTag, dateTime) {
+
+  let parseResult = parseSchedule(scheduleTag.value);
 
   if (!parseResult.success)
-    return skip(`${skipReasons.invalidSchedule} - Value: '${scheduleValue}', Error: '${parseResult.error}'`, sources.instance);
+    return skip(`${skipReasons.invalidSchedule} - Value: '${scheduleTag.value}', Error: '${parseResult.error}'`, scheduleTag.source);
 
   let schedule = parseResult.schedule;
 
   if (schedule.skip)
-    return skip(skipReasons.explicitNoSchedule, sources.instance);
+    return skip(skipReasons.explicitNoSchedule, scheduleTag.source);
 
-  return actionFromState(currentState, schedule, dateTime, sources.instance);
+  return actionFromState(currentState, schedule, dateTime, scheduleTag.source);
+
+}
+
+function getInstanceOrASGScheduleTagValue(instance) {
+
+  let instanceScheduleTagValue = getInstanceTagValue(instance, 'schedule');
+  if (instanceScheduleTagValue) return { value: instanceScheduleTagValue, source: sources.instance };
+
+  if (instance.AutoScalingGroup) {
+    let asgScheduleTagValue = getInstanceTagValue(instance.AutoScalingGroup, 'schedule');
+    if (asgScheduleTagValue) return { value: asgScheduleTagValue, source: sources.asg };
+  }
 
 }
 
@@ -124,8 +129,10 @@ function actionFromState(currentState, schedule, dateTime, source) {
 
 }
 
-function getInstanceTag(instance, tagName) {
-  return _.first(instance.Tags.filter(tag => tag.Key.toLowerCase() == tagName.toLowerCase()));
+function getInstanceTagValue(instance, tagName) {
+  let tag = _.first(instance.Tags.filter(tag => tag.Key.toLowerCase() == tagName.toLowerCase()));
+  if (tag && tag.Value)
+    return tag.Value.trim();
 }
 
 function currentStateOfInstance(instance) {
