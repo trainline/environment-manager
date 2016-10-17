@@ -1,7 +1,7 @@
-./acceptance-tests
+./acceptance-tests/
 ./deployment/
-node_modules/
+./node_modules/
 ./scripts/
-./test
+./test/
 
 
