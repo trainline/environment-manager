@@ -20,7 +20,7 @@ function createEMService(config) {
     });
   }
 
-  function getAllEnvironments() {
+  function getScheduledInstanceActions(account) {
     return co(function*() {
     
       if (!token) {
@@ -28,7 +28,7 @@ function createEMService(config) {
       }
 
       let jsonResponse = yield request({
-        uri: 'https://environmentmanager.corp.local/api/ops/environments',
+        uri: `https://environmentmanager.corp.local/api/${account}/instances/schedule-actions`,
         rejectUnauthorized: false,
         headers: {
           authorization: `bearer ${token}`
