@@ -1,6 +1,6 @@
 {
   "name": "environmentmanager",
-  "version": "3.7.0",
+  "version": "3.8.0",
   "description": "EnvironmentManager Server",
   "main": "server.js",
   "scripts": {
@@ -16,6 +16,7 @@
     "name": "Platform Development",
     "email": "platform.development@thetrainline.com"
   },
+  "license": "Apache License, Version 2.0",
   "dependencies": {
     "activedirectory": "^0.7.2",
     "ajv": "^4.7.2",

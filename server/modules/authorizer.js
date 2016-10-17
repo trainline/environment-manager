@@ -5,7 +5,17 @@ let _ = require('lodash');
 let intersect = require('glob-intersection');
 
 module.exports = (usersPermissions, requiredPermissions) => {
+  let protectedEnvironment = _.find(requiredPermissions, rp => rp.protectedAction !== undefined);
+  if (protectedEnvironment !== undefined) {
+    // The requested action is not permitted against the given environment
+    return {
+      authorized: false,
+      protectedAction: protectedEnvironment.protectedAction,
+      environmentType: protectedEnvironment.environmentTypes[0]
+    }
+  }
 
+  // Else check other permissions
   let unsatisfiedPermissions = requiredPermissions.filter(function (requiredPermission) {
     return !permissionIsSatisfied(requiredPermission, usersPermissions);
   });
@@ -14,18 +24,15 @@ module.exports = (usersPermissions, requiredPermissions) => {
     authorized: unsatisfiedPermissions.length === 0,
     unsatisfiedPermissions: _.uniqWith(unsatisfiedPermissions, _.isEqual),
   };
-
 };
 
 function permissionIsSatisfied(requiredPermission, usersPermissions) {
-
-  var matchingPermissionFound = false;
-  var resourceSatisfied = false;
-  var requiredClusters = toRequiredAttributes(requiredPermission.clusters);
-  var requiredEnvironmentTypes = toRequiredAttributes(requiredPermission.environmentTypes);
+  let matchingPermissionFound = false;
+  let resourceSatisfied = false;
+  let requiredClusters = toRequiredAttributes(requiredPermission.clusters);
+  let requiredEnvironmentTypes = toRequiredAttributes(requiredPermission.environmentTypes);
 
   usersPermissions.forEach(permission => {
-
     if (resourceAndAccessMatch(requiredPermission, permission)) {
       if (!isLimitedResourcePermission(permission)) {
         resourceSatisfied = true;
@@ -41,13 +48,11 @@ function permissionIsSatisfied(requiredPermission, usersPermissions) {
     if (isEnvironmentTypePermission(permission)) {
       satisfyRequiredEnvironmentTypesFromEnvironmentTypePermission(requiredEnvironmentTypes, permission);
     }
-
   });
 
   return matchingPermissionFound || (resourceSatisfied &&
     attributesAreSatisfied(requiredClusters) &&
     attributesAreSatisfied(requiredEnvironmentTypes));
-  
 }
 
 function limitationsOnResourcePermissionMatch(requiredPermission, permission) {
@@ -98,7 +103,6 @@ function satisfyRequiredClustersFromResourcePermission(requiredClusters, permiss
 
         if (permittedCluster === requiredCluster.name)
           requiredCluster.satisfied = true;
-
       });
     }
   });
@@ -113,7 +117,6 @@ function satisfyRequiredEnvironmentTypesFromResourcePermission(requiredEnvironme
 
         if (permittedEnvironmentType === requiredEnvironmentType.name)
           requiredEnvironmentType.satisfied = true;
-
       });
     }
   });
@@ -121,7 +124,6 @@ function satisfyRequiredEnvironmentTypesFromResourcePermission(requiredEnvironme
 
 function satisfyRequiredClustersFromClusterPermission(requiredClusters, permission) {
   requiredClusters.forEach(requiredCluster => {
-
     let permittedCluster = toLower(permission.Cluster);
 
     let matchingCluster = (permittedCluster === 'all' || permittedCluster === requiredCluster.name);
@@ -129,13 +131,11 @@ function satisfyRequiredClustersFromClusterPermission(requiredClusters, permissi
 
     if (matchingCluster || matchingLegacyCluster)
       requiredCluster.satisfied = true;
-    
   });
 }
 
 function satisfyRequiredEnvironmentTypesFromEnvironmentTypePermission(requiredEnvironmentTypes, permission) {
   requiredEnvironmentTypes.forEach(requiredEnvironmentType => {
-
     let permittedEnvironmentType = toLower(permission.EnvironmentType);
 
     let matchingEnvironmentType = (permittedEnvironmentType === 'all' || permittedEnvironmentType === requiredEnvironmentType.name);
@@ -143,7 +143,6 @@ function satisfyRequiredEnvironmentTypesFromEnvironmentTypePermission(requiredEn
 
     if (matchingEnvironmentType || matchingLegacyEnvironmentType)
       requiredEnvironmentType.satisfied = true;
-    
   });
 }
 
@@ -162,18 +161,16 @@ function toRequiredAttributes(attributes) {
 }
 
 function resourceAndAccessMatch(requiredPermission, permission) {
+  let requiredResource = requiredPermission.resource.toLowerCase();
+  let requiredAccess = requiredPermission.access.toLowerCase();
 
-  var requiredResource = requiredPermission.resource.toLowerCase();
-  var requiredAccess = requiredPermission.access.toLowerCase();
+  let permittedResource = toLower(permission.Resource);
+  let permittedAccess = toLower(permission.Access);
 
-  var permittedResource = toLower(permission.Resource);
-  var permittedAccess = toLower(permission.Access);
-
-  var resourceMatches = intersect(permittedResource, requiredResource);
-  var accessMatches = permittedAccess === requiredAccess || permittedAccess === 'admin';
+  let resourceMatches = intersect(permittedResource, requiredResource);
+  let accessMatches = permittedAccess === requiredAccess || permittedAccess === 'admin';
 
   return resourceMatches && accessMatches
-
 }
 
 function toLower(str) {
