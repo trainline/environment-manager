@@ -2,7 +2,8 @@
 'use strict';
 
 let authorize = require('modules/authorizer');
-var should = require('should');
+let should = require('should');
+let assert = require('assert');
 
 describe('authorizer', () => {
 
@@ -535,6 +536,24 @@ describe('authorizer', () => {
 
   });
 
+  describe('permissions with protected actions', function() {
+    const PROTECTED_TEST_ACTION = 'PROTECTED_TEST_ACTION';
+    const TEST_ENVIRONMENT_TYPE = 'TEST_ENVIRONMENT_TYPE';
+
+    let requiredPermissions = [{
+      protectedAction:PROTECTED_TEST_ACTION,
+      environmentTypes: [TEST_ENVIRONMENT_TYPE]
+    }];
+
+    it('should not be authorized',
+      () => assert.equal(authorize({}, requiredPermissions).authorized, false));
+
+    it('should describe the action',
+      () => assert.equal(authorize({}, requiredPermissions).protectedAction, PROTECTED_TEST_ACTION));
+
+    it('should describe the environment Type',
+      () => assert.equal(authorize({}, requiredPermissions).environmentType, TEST_ENVIRONMENT_TYPE));
+  });
 });
 
 function isAuthorized(permissions, requirements) {

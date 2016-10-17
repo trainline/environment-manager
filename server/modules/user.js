@@ -76,13 +76,10 @@ if(typeof module !== 'undefined' && module.exports) {
   module.exports = {
 
     anonymous: function() {
-
       return new User();
-
     },
 
     new: function(name, roles, expiration, groups, permissions) {
-
       return new User({
           name: name,
           roles: roles,
@@ -90,25 +87,7 @@ if(typeof module !== 'undefined' && module.exports) {
           groups: groups,
           permissions: permissions
       });
-
     },
-
-    /*parse: function(value) {
-
-      if(!value) return new User();
-
-      var pieces = value.split('|');
-      if(pieces.length != 3) return new User();
-
-      var data = {
-        name: pieces[0],
-        roles: pieces[1].split(';'),
-        expiration: Number(pieces[2])
-      };
-
-      return new User(data);
-
-    }*/
 
     parse: function(json) {
       if(!json) return new User();
@@ -124,5 +103,4 @@ if(typeof module !== 'undefined' && module.exports) {
       return user;
     }
   }
-
 }
