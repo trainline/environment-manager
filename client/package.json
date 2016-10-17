@@ -63,7 +63,6 @@
     "karma-phantomjs-launcher": "^1.0.2",
     "karma-teamcity-reporter": "^1.0.0",
     "plumber": "^0.4.8",
-    "protractor": "^4.0.8",
     "run-sequence": "~1.2.2",
     "yargs": "^5.0.0"
   },
