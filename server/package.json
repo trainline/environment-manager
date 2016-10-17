@@ -9,7 +9,7 @@
     "test": "mocha --recursive ./test --EM_PROFILE test/test-profile.json",
     "test-ci": "npm test -- --reporter mocha-teamcity-reporter --timeout 4000",
     "mocha": "mocha",
-    "lint-server": "eslint",
+    "lint": "eslint ./modules",
     "acceptance-tests": "mocha --recursive ./acceptance-tests --EM_PROFILE acceptance-tests/test-profile.json"
   },
   "author": {
@@ -63,13 +63,9 @@
     "xpath": "0.0.23"
   },
   "devDependencies": {
-    "eslint": "^3.5.0",
-    "eslint-config-airbnb": "^11.1.0",
-    "eslint-config-angular": "^0.5.0",
-    "eslint-plugin-angular": "^1.4.1",
-    "eslint-plugin-import": "^1.15.0",
-    "eslint-plugin-jsx-a11y": "^2.2.2",
-    "eslint-plugin-react": "^6.3.0",
+    "eslint": "^3.8.0",
+    "eslint-config-airbnb-base": "^9.0.0",
+    "eslint-plugin-import": "^2.0.1",
     "gulp": "^3.9.1",
     "mocha": "^3.0.2",
     "mocha-teamcity-reporter": "^1.1.1",
