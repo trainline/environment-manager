@@ -110,4 +110,4 @@ To Install:
 ```
 You need one copy of this per account, if you have multiple environments in one account, then only 1 copy of the script will be needed.
 
-[Next (Configuration File) >](/environment-manager/docs/app-setup/config-file)
+[Next (Accounts Table) >](/environment-manager/docs/app-setup/accounts-table)
