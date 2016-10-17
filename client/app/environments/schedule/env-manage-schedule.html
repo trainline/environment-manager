@@ -1,32 +1,31 @@
 <div class="row page-title">
-    <div class="col-md-12"><h2>Schedule for {{Environment.EnvironmentName}}</h2></div>
+    <div class="col-md-12"><h2>Schedule for {{vm.Environment.EnvironmentName}}</h2></div>
     <div id="RefreshData">
-        <span class="glyphicon glyphicon-refresh" ng-click="Refresh()" title="Refresh data"></span>
+        <span class="glyphicon glyphicon-refresh" ng-click="vm.Refresh()" title="Refresh data"></span>
     </div>
 </div>
 
-<spinner ng-show="DataLoading"></spinner>
+<spinner ng-show="vm.DataLoading"></spinner>
 
-<div class="row" ng-show="!DataLoading">
-    <div class="col-md-12" ng-show="!DataFound">
+<div class="row" ng-show="!vm.DataLoading">
+    <div class="col-md-12" ng-show="!vm.DataFound">
         <p>Environment not found.</p>
     </div>
-    <div class="col-md-12" ng-show="DataFound">
-
-        <div ng-if="Environment.EnvironmentName == 'pr1'"><!-- TODO: should be any Prod environment - startsWith -->
-            <p>The Production Environment cannot be scheduled.</p>
+    <div class="col-md-12" ng-show="vm.DataFound">
+        <div ng-if="vm.schedulingProtected">
+            <p>This environment is protected and cannot be scheduled.</p>
             <p>You can still set schedules against particular ASGs or Instances where required.</p>
         </div>
-        <form name="form" id="EnvironmentSchedule" class="form-horizontal" ng-if="Environment.EnvironmentName != 'pr1'">
+        <form name="form" id="EnvironmentSchedule" class="form-horizontal" ng-if="!vm.schedulingProtected">
             <div class="form-group">
                 <label class="col-md-1 control-label text-left">Current Status:</label>
                 <div class="col-md-8">
                     <label class="control-label text-left">
-                        <span ng-class="{'warning': Operations.getScheduleAction()==='OFF', 'ok': Operations.getScheduleAction()!=='OFF'}">
-                            {{Operations.getScheduleAction()}}
+                        <span ng-class="{'warning': vm.Operations.getScheduleAction()==='OFF', 'ok': vm.Operations.getScheduleAction()!=='OFF'}">
+                            {{vm.Operations.getScheduleAction()}}
                         </span>
-                        <span ng-if="Operations.Value.ScheduleAutomatically === true"> (Automatic)</span>
-                        <span ng-if="Operations.Value.ScheduleAutomatically === false"> (Manual)</span>
+                        <span ng-if="vm.Operations.Value.ScheduleAutomatically === true"> (Automatic)</span>
+                        <span ng-if="vm.Operations.Value.ScheduleAutomatically === false"> (Manual)</span>
                     </label>
                 </div>
             </div>
@@ -34,22 +33,22 @@
                 <label class="col-md-1 control-label text-left">Environment should be:</label>
                 <div class="col-md-8">
                     <label class="control-label text-left nonbold">
-                        <input type="radio" ng-model="NewSchedule.Type" value="On" ng-click="NonSpecificClicked()"> Always On
+                        <input type="radio" ng-model="vm.NewSchedule.Type" value="On" ng-click="vm.NonSpecificClicked()"> Always On
                     </label><br />
                     <label class="control-label text-left nonbold">
-                        <input type="radio" ng-model="NewSchedule.Type" value="Off" ng-click="NonSpecificClicked()"> Off
+                        <input type="radio" ng-model="vm.NewSchedule.Type" value="Off" ng-click="vm.NonSpecificClicked()"> Off
                     </label><br />
                     <label class="control-label text-left nonbold">
-                        <input type="radio" ng-model="NewSchedule.Type" value="Automatic" ng-click="UseSpecificClicked()"> Use specific times
+                        <input type="radio" ng-model="vm.NewSchedule.Type" value="Automatic" ng-click="vm.UseSpecificClicked()"> Use specific times
                     </label>
                 </div>
             </div>
             <div class="form-group" ng-class="{'has-error': form.DefaultSchedule.$invalid}">
                 <div class="col-md-offset-1 col-md-10">
-                    <schedule-viewer schedule="NewSchedule.DefaultSchedule" ng-show="!ShouldShowEditor() && NewSchedule.Type == 'Automatic' && NewSchedule.DefaultSchedule"></schedule-viewer>
-                    <button class="btn btn-default" ng-click="EditClicked()" ng-show="!ShouldShowEditor() && NewSchedule.Type == 'Automatic'">Edit</button>
-                    <schedule-editor schedule="NewSchedule.DefaultSchedule" ng-show="ShouldShowEditor()"></schedule-editor>
-                    <button class="btn btn-default" ng-click="DoneClicked()" ng-show="ShouldShowEditor()">Done</button>
+                    <schedule-viewer schedule="vm.NewSchedule.DefaultSchedule" ng-show="!vm.ShouldShowEditor() && vm.NewSchedule.Type == 'Automatic' && vm.NewSchedule.DefaultSchedule"></schedule-viewer>
+                    <button class="btn btn-default" ng-click="vm.EditClicked()" ng-show="!vm.ShouldShowEditor() && vm.NewSchedule.Type == 'Automatic'">Edit</button>
+                    <schedule-editor schedule="vm.NewSchedule.DefaultSchedule" ng-show="vm.ShouldShowEditor()"></schedule-editor>
+                    <button class="btn btn-default" ng-click="vm.DoneClicked()" ng-show="vm.ShouldShowEditor()">Done</button>
                 </div>
                 <span class="help-block" ng-if="form.DefaultSchedule.$dirty && form.DefaultSchedule.$invalid">Schedule should be set to '247' or specific Start and End cron formats (see Tagging standards).</span>
             </div>
@@ -62,11 +61,10 @@
             <div class="form-group">
                 <label class="col-md-1 control-label">&nbsp;</label>
                 <div class="col-md-2">
-                    <button type="button" class="btn btn-default" ng-click="ApplySchedule()">Apply Change</button>
+                    <button type="button" class="btn btn-default" ng-click="vm.ApplySchedule()">Apply Change</button>
                 </div>
             </div>
             <!-- TODO: show list of ASGs with specific Schedule tag overrides -->
         </form>
-
     </div>
 </div>
