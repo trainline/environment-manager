@@ -1,3 +1,5 @@
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 /* eslint func-names: 0, import/no-extraneous-dependencies: 0, prefer-arrow-callback: 0 */
 'use strict';
 
