@@ -3,28 +3,28 @@
 
 ﻿angular.module('EnvironmentManager.common').factory('accountMappingService',
   function ($q, cachedResources, $http) {
-    return {
-      getAccountForEnvironment: function (environmentName) {
-        var url = '/api/v1/environments/' + environmentName + '/accountName';
 
-        return $http.get(url).then(function(account) {
-          return account.data;
+    function accountMappingService() {
+
+      this.GetAccountForEnvironment = function (environmentName) {
+        var deferred = $q.defer();
+        var url = '/api/environments/' + environmentName + '/accountName';
+
+        $http.get(url).then(function(account) {
+          deferred.resolve(account.data)
         }, function(error) {
-          throw error.message;
+          deferred.reject(error.message);
         });
-      },
+        return deferred.promise;
+      };
 
-      getEnvironmentLoadBalancers: function (environmentName) {
+      this.GetEnvironmentLoadBalancers = function (environmentName) {
+        var deferred = $q.defer();
+
         var environments;
         var environmentTypes;
-        var runningInSandbox = false;
 
-        return $q.all([
-          cachedResources.config.accounts.all().then(function (accounts) {
-            accounts = _.map(accounts, 'AccountName');
-            runningInSandbox = (accounts.indexOf('Sandbox') != -1);
-          }),
-
+        $q.all([
           cachedResources.config.environments.all().then(function (envData) {
             environments = envData;
           }),
@@ -33,20 +33,19 @@
             environmentTypes = envTypesData;
           }),
         ]).then(function () {
-
           var env = cachedResources.config.environments.getByName(environmentName, 'EnvironmentName', environments);
-          var envTypeName = runningInSandbox ? 'Sandbox' : env.Value.EnvironmentType;
+          if (!env) return deferred.reject('Environment name ' + environmentName + ' not found');
+
+          var envTypeName = env.Value.EnvironmentType;
           var envType = cachedResources.config.environmentTypes.getByName(envTypeName, 'EnvironmentType', environmentTypes);
+          if (!envType) return deferred.reject('Environment type ' + envTypeName + ' not found');
 
-          if (!env) {
-            throw 'Environment name ' + environmentName + ' not found';
-          } else if (!envType) {
-            throw 'Environment type ' + envTypeName + ' not found';
-          } else {
-            return envType.Value.LoadBalancers;
-          }
-
+          deferred.resolve(envType.Value.LoadBalancers);
         });
-      }
-    };
+
+        return deferred.promise;
+      };
+    }
+
+    return new accountMappingService();
   });

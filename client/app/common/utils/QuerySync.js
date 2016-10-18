@@ -17,10 +17,13 @@ angular.module('EnvironmentManager.common').factory('QuerySync',
       init: function () {
         var _this = this;
         _.forIn(this.params, function (obj, key) {
+
           var value = $location.search()[key] || obj.default;
+          
           if (obj.castToInteger) {
             value = parseInt(value);
           }
+          
           $parse(obj.property).assign(_this.target, value);
         });
       },

@@ -2,107 +2,110 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ManageEnvironmentScheduleController',
-  function ($rootScope, $routeParams, $location, $q, modal, resources, cachedResources, configValidation, cron, Environment) {
+  function ($rootScope, $routeParams, $location, $q, modal, resources, cachedResources, configValidation, cron) {
+
+    var PROTECTED_ACTION = 'SCHEDULE_ENVIRONMENT';
+
     var vm = this;
+    vm.Environment = {};
+    vm.EnvironmentVersion = 0;
+    vm.Operations = {};
+    vm.OperationsVersion = 0;
+    vm.DataFound = false;
+    vm.DataLoading = true;
+    vm.schedulingProtected = false;
 
-    vm.environment = {};
-    vm.operations = {};
-    vm.operationsVersion = 0;
-    vm.dataFound = false;
-    vm.dataLoading = true;
-
-    vm.newSchedule = {
+    vm.NewSchedule = {
       Type: '',
       DefaultSchedule: '',
     };
 
     function init() {
-
       var environmentName = GetActiveEnvironment();
-      vm.environment.EnvironmentName = environmentName;
+      vm.Environment.EnvironmentName = environmentName;
 
-      vm.refresh();
+      resources.environment(environmentName).isProtectedAgainstAction(PROTECTED_ACTION).then(function(isProtected) {
+        vm.schedulingProtected = isProtected;
+        vm.Refresh();
+      });
     }
 
-    vm.refresh = function () {
-
-      vm.dataLoading = true;
+    vm.Refresh = function () {
+      vm.DataLoading = true;
 
       function assignToTheScope(operations) {
-
-        vm.operations = operations;
-        vm.operationsVersion = operations.Version;
+        vm.Operations = operations;
+        vm.OperationsVersion = operations.Version;
 
         var scheduleAction = GetScheduleAction(operations.Value);
-        vm.operations.getScheduleAction = function () {
+        vm.Operations.getScheduleAction = function () {
           return scheduleAction; };
 
-        vm.newSchedule = {
+        vm.NewSchedule = {
           DefaultSchedule: operations.Value.DefaultSchedule,
           Type: operations.Value.ScheduleAutomatically ? 'Automatic' : operations.Value.ManualScheduleUp ? 'On' : 'Off',
         };
-
       };
 
-      Environment.getScheduleStatus(vm.environment.EnvironmentName)
+      resources.ops.environments.get({ key: vm.Environment.EnvironmentName })
         .then(function (operations) {
           assignToTheScope(operations);
-          vm.dataFound = true;
+          vm.DataFound = true;
         }, function () {
 
-          vm.dataFound = false;
+          vm.DataFound = false;
         }).finally(function () {
-          vm.dataLoading = false;
+          vm.DataLoading = false;
         });
     };
 
-    vm.useSpecificClicked = function () {
-      if (!vm.newSchedule.DefaultSchedule || vm.newSchedule.DefaultSchedule.indexOf(':') == -1) {
-        vm.newSchedule.DefaultSchedule = 'Start: 0 8 * * 1,2,3,4,5; Stop: 0 19 * * 1,2,3,4,5';
+    vm.UseSpecificClicked = function () {
+      if (!vm.NewSchedule.DefaultSchedule || vm.NewSchedule.DefaultSchedule.indexOf(':') == -1) {
+        vm.NewSchedule.DefaultSchedule = 'Start: 0 8 * * 1,2,3,4,5; Stop: 0 19 * * 1,2,3,4,5';
         vm.editing = true;
       }
     };
 
-    vm.nonSpecificClicked = function () {
+    vm.NonSpecificClicked = function () {
       vm.editing = false;
     };
 
-    vm.doneClicked = function () {
+    vm.DoneClicked = function () {
       vm.editing = false;
-      if (vm.newSchedule.DefaultSchedule.indexOf(':') == -1) {
-        vm.newSchedule.Type = 'On';
+      if (vm.NewSchedule.DefaultSchedule.indexOf(':') == -1) {
+        vm.NewSchedule.Type = 'On';
       }
     };
 
-    vm.shouldShowEditor = function () {
-      return vm.newSchedule.Type == 'Automatic' && vm.editing == true;
+    vm.ShouldShowEditor = function () {
+      return vm.NewSchedule.Type == 'Automatic' && vm.editing == true;
     };
 
-    vm.editClicked = function () {
+    vm.EditClicked = function () {
       vm.editing = true;
     };
 
-    vm.applySchedule = function () {
+    vm.ApplySchedule = function () {
 
       // Update Environment with form values
-      vm.operations.Value.ScheduleAutomatically = vm.newSchedule.Type == 'Automatic';
-      vm.operations.Value.ManualScheduleUp = vm.newSchedule.Type == 'On';
-      vm.operations.Value.DefaultSchedule = vm.newSchedule.DefaultSchedule;
+      vm.Operations.Value.ScheduleAutomatically = vm.NewSchedule.Type == 'Automatic';
+      vm.Operations.Value.ManualScheduleUp = vm.NewSchedule.Type == 'On';
+      vm.Operations.Value.DefaultSchedule = vm.NewSchedule.DefaultSchedule;
 
       var params = {
-        key: vm.operations.EnvironmentName,
-        expectedVersion: vm.operationsVersion,
+        key: vm.Operations.EnvironmentName,
+        expectedVersion: vm.OperationsVersion,
         data: {
-          Value: vm.operations.Value,
+          Value: vm.Operations.Value,
         },
       };
-      Environment.putSchedule(vm.operations.EnvironmentName, vm.operationsVersion, vm.operations.Value).then(function () {
+      resources.ops.environments.put(params).then(function () {
         cachedResources.config.environments.flush();
         modal.information({
           title: 'Environment Schedule Updated',
           message: 'Environment schedule saved successfully.<br/><br/>Note: It may take up to 10 minutes for schedule changes to result in servers being turned on or off.',
         }).then(function () {
-          vm.refresh();
+          vm.Refresh();
         });
       });
     };

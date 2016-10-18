@@ -15,28 +15,9 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
 
     $scope.SelectedAccount = '';
 
-    var querySync = new QuerySync($scope, {
-      environment: {
-        property: 'SelectedEnvironment',
-        default: 'pr1',
-      },
-      cluster: {
-        property: 'SelectedOwningCluster',
-        default: SHOW_ALL_OPTION,
-      },
-      server: {
-        property: 'SelectedServerRole',
-        default: '',
-      },
-      ami: {
-        property: 'SelectedAmi',
-        default: '',
-      }
-    });
+    var querySync;
 
     function init() {
-      querySync.init();
-
       $q.all([
         cachedResources.config.environments.all().then(function (environments) {
           environments.sort(function (source, target) {
@@ -44,6 +25,27 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
           }).forEach(function (environment) {
             $scope.EnvironmentsList[environment.EnvironmentName] = environment;
           });
+
+          querySync = new QuerySync($scope, {
+            environment: {
+              property: 'SelectedEnvironment',
+              default: environments[0].EnvironmentName,
+            },
+            cluster: {
+              property: 'SelectedOwningCluster',
+              default: SHOW_ALL_OPTION,
+            },
+            server: {
+              property: 'SelectedServerRole',
+              default: '',
+            },
+            ami: {
+              property: 'SelectedAmi',
+              default: '',
+            }
+          });
+
+          querySync.init();
         }),
 
         cachedResources.config.clusters.all().then(function (clusters) {

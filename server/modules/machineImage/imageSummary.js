@@ -1,6 +1,7 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
+let _ = require('lodash/fp');
 let semver = require('semver');
 
 module.exports = {
@@ -53,26 +54,22 @@ function getRootDevice(ec2image) {
 function summaryOf(ec2Image) {
   let name = ec2Image.Name;
   let rootDevice = getRootDevice(ec2Image);
+  let tags = _.flow([_.map(tag => [tag.Key, tag.Value]), _.fromPairs])(ec2Image.Tags);
   let summary = {
     ImageId: ec2Image.ImageId,
     CreationDate: ec2Image.CreationDate,
     Platform: ec2Image.Platform ? 'Windows' : 'Linux',
-    Name: ec2Image.Name,
+    Name: name,
     Description: ec2Image.Description || '',
     AmiType: getAmiType(name),
     AmiVersion: getAmiVersion(name),
     IsCompatibleImage: isCompatibleImage(name),
     IsStable: isStable(ec2Image),
-    Encrypted: rootDevice.Ebs.Encrypted,
-    RootVolumeSize: rootDevice.Ebs.VolumeSize,
+    Encrypted: _.get('Ebs.Encrypted')(rootDevice),
+    RootVolumeSize: _.get('Ebs.VolumeSize')(rootDevice),
   };
-  if (ec2Image.Tags) {
-    ec2Image.Tags.forEach(function (tag) {
-      summary[tag.Key] = tag.Value;
-    });
-  }
 
-  return summary;
+  return Object.assign(tags, summary);
 }
 
 function compare(summaryImageX, summaryImageY) {

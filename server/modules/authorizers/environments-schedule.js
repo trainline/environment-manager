@@ -1,7 +1,11 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
+let co = require('co');
 let config = require('config');
+let environmentProtection = require('./environmentProtection');
+
+const ACTION = environmentProtection.SCHEDULE_ENVIRONMENT;
 
 function getCurrentEnvironment(name, user) {
   const masterAccountName = config.getUserValue('masterAccountName');
@@ -17,26 +21,33 @@ function getCurrentEnvironment(name, user) {
   return sender.sendQuery({ query: query, user: user });
 }
 
-exports.getRules = request => {
+function* getRules(request) {
   let requiredPermission = {
     resource: request.url.replace(/\/+$/, ''),
     access: request.method
   };
 
-  // Need to check 'name' because of swagger
-  let environmentName = request.params.key || request.params.name;
+  let environmentName = request.params.key;
   let user = request.user;
+  let environment = yield getCurrentEnvironment(environmentName, user);
+  let environmentTypeName = environment.Value.EnvironmentType.toLowerCase();
+  if (environment) {
+    requiredPermission.clusters = [environment.Value.OwningCluster.toLowerCase()];
+    requiredPermission.environmentTypes = [environmentTypeName];
+  }
 
-  return getCurrentEnvironment(environmentName, user).then((environment) => {
-    if (environment) {
-      requiredPermission.clusters = [environment.Value.OwningCluster.toLowerCase()];
-      requiredPermission.environmentTypes = [environment.Value.EnvironmentType.toLowerCase()];
-    }
-    return [requiredPermission];
-  });
-};
+  let isProtected = yield environmentProtection.isActionProtected(environmentName, ACTION);
+  if (isProtected) {
+    requiredPermission.protectedAction = ACTION;
+  }
 
-exports.docs = {
-  requiresClusterPermissions: true,
-  requiresEnvironmentTypePermissions: true
+  return [requiredPermission];
+}
+
+module.exports = {
+  getRules: co.wrap(getRules),
+  docs: {
+    requiresClusterPermissions: true,
+    requiresEnvironmentTypePermissions: true
+  }
 };

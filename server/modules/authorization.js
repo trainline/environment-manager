@@ -10,17 +10,15 @@ function authorizeRequest(authorizer, request, response, next) {
     response.status(401);
     response.send('Access Denied. Please sign in and try again.');
   } else {
-
     if (request.method == 'GET') return next();
     handleSecureRequest(authorizer, request, response, next)
-
   }
 }
 
 function handleSecureRequest(authorizer, request, response, next) {
+
   let usersPermissions = request.user.getPermissions();
   authorizer.getRules(request).then(requiredPermissions => {
-
     logRequestAndRequirements(request, requiredPermissions, usersPermissions);
 
     let authorizationResult = authorize(usersPermissions, requiredPermissions);
@@ -28,56 +26,58 @@ function handleSecureRequest(authorizer, request, response, next) {
 
     if (authorizationResult.authorized) return next();
 
-    sendUnauthorizedResponse(authorizationResult.unsatisfiedPermissions, response);
-
+    if (authorizationResult.protectedAction !== undefined) {
+      sendProtectedActionResponse(
+        authorizationResult.protectedAction,
+        authorizationResult.environmentType,
+        response
+      )
+    } else {
+      sendUnauthorizedResponse(authorizationResult.unsatisfiedPermissions, response);
+    }
   }).catch(error => {
-
     if (error.name === 'BadRequestError') {
       response.status(400);
       response.send(error.message);
     } else {
       sendAuthorizationErrorResponse(error, response);
     }
-
   });
 }
 
-function sendAuthorizationErrorResponse(error, response) {
+function sendProtectedActionResponse(action, envType, response) {
+  response.status(403);
+  response.send(`The Environment Type '${envType}' is protected against ${action} operations`);
+}
 
+function sendAuthorizationErrorResponse(error, response) {
   logger.error(`An error has occurred authorizing user: ${error.message}`);
   logger.error(error.toString(true));
   logger.error(error.stack);
 
   response.status(500);
   response.send('An error has occurred. Please try again.');
-
 }
 
 function sendUnauthorizedResponse(unsatisfiedPermissions, response) {
-
-  let message = 'You are not authorized to perform that action. You are missing the following permissions: <br /><br />';
+  var message = 'You are not authorized to perform that action. You are missing the following permissions: <br \><br \>';
 
   unsatisfiedPermissions.forEach(function (permission) {
     message += '* ' + permission.access + ' > ' + permission.resource;
-    
     if (permission.clusters) {
       message += ' / clusters: ' + permission.clusters.join(', ');
     }
-
     if (permission.environmentTypes) {
       message += ' / environment types: ' + permission.environmentTypes.join(', ');
     }
-
     message += '<br \>';
   });
 
   response.status(403);
   response.send(message);
-
 }
 
 function logRequestAndRequirements(request, requiredPermissions, usersPermissions) {
-
   logger.info({
     method: request.method,
     url: request.url,
@@ -91,7 +91,6 @@ function logRequestAndRequirements(request, requiredPermissions, usersPermission
       user: request.user.getName(),
     }, `Authorizing ${request.user.getName()} user`);
   }
-
 }
 
 function logResult(authorizationResult) {
