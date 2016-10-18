@@ -156,9 +156,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       var params = {
         key: vm.environment.EnvironmentName,
         expectedVersion: vm.environmentVersion,
-        data: {
-          Value: vm.environment.Value,
-        },
+        data: vm.environment.Value,
       };
       resources.config.environments.put(params).then(function () {
         cachedResources.config.environments.flush();
