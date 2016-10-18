@@ -34,9 +34,10 @@ function* handleQuery(query, resourceName, upstreamFilter, hostFilter) {
   }
 
   // Flatting upstreams hosts in to a plain list
+  // eslint-disable-next-line arrow-body-style
   let upstreamValues = (upstream) => {
-    return upstream.Value.Hosts.filter(hostFilter).map((host) => {
-      return {
+    return upstream.Value.Hosts.filter(hostFilter).map((host) => (
+      {
         Key: upstream.key,
         EnvironmentName: upstream.Value.EnvironmentName,
         ServiceName: upstream.Value.ServiceName,
@@ -46,19 +47,15 @@ function* handleQuery(query, resourceName, upstreamFilter, hostFilter) {
         OwningCluster: '',
         Name: 'Unknown',
         State: host.State === 'up' ? 'Active' : 'Inactive',
-      };
-    });
+      }
+    ));
   };
 
   upstreams = _(upstreams).map(upstreamValues).compact().flatten().value();
-
   // Getting all services the upstreams refer to
 
   // Extracts all service names the found upstreams refer to
-  let serviceNames = upstreams.map((upstream) => {
-    return upstream.ServiceName;
-  }).distinct();
-
+  let serviceNames = upstreams.map(upstream => upstream.ServiceName).distinct();
 
   // Gets all services from DynamoDB table
   let promises = serviceNames.map((serviceName) => {
@@ -105,47 +102,34 @@ function* handleQuery(query, resourceName, upstreamFilter, hostFilter) {
 
 let QUERYING = {
   upstream: {
-    byUpstreamName: (query) => {
-      return `Upstream named "${query.upstreamName}"`;
-    },
-
-    byServiceName: (query) => {
-      return `Upstream for service "${query.serviceName}" in "${query.environmentName}" environment`;
-    },
+    byUpstreamName: query => `Upstream named "${query.upstreamName}"`,
+    byServiceName: query => `Upstream for service "${query.serviceName}" in "${query.environmentName}" environment`,
   },
 };
 
 let FILTER = {
   upstream: {
-    byUpstreamName: (query) => {
-      return (upstream) => {
-        return upstream.Value.EnvironmentName === query.environmentName && upstream.Value.UpstreamName === query.upstreamName;
-      };
+    byUpstreamName: function (query) {
+      return upstream =>
+        upstream.Value.EnvironmentName === query.environmentName && upstream.Value.UpstreamName === query.upstreamName;
     },
 
-    byServiceName: (query) => {
-      return (upstream) => {
-        return upstream.Value.EnvironmentName === query.environmentName && upstream.Value.ServiceName === query.serviceName;
-      };
+    byServiceName: function (query) {
+      return upstream =>
+        upstream.Value.EnvironmentName === query.environmentName && upstream.Value.ServiceName === query.serviceName;
     },
   },
   host: {
-    allSlices: () => {
-      return (host) => {
-        return true;
-      };
+    allSlices: function () {
+      return host => true;
     },
 
-    onlyActiveSlices: () => {
-      return (host) => {
-        return host.State === 'up';
-      };
+    onlyActiveSlices: function () {
+      return host => host.State === 'up';
     },
 
-    onlyInactiveSlices: () => {
-      return (host) => {
-        return host.State === 'down';
-      };
+    onlyInactiveSlices: function () {
+      return (host) => host.State === 'down';
     },
   },
 };

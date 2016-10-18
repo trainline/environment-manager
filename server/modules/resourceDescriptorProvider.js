@@ -16,13 +16,9 @@ function ResourceDescriptorRepository(descriptors) {
     });
   }
 
-  $this.all = () => {
-    return $descriptors;
-  };
+  $this.all = () => $descriptors;
 
-  $this.get = (name) => {
-    return $mappings[name.toLowerCase()];
-  };
+  $this.get = name => $mappings[name.toLowerCase()];
 
   loadMappings();
 }
@@ -32,9 +28,8 @@ let modules = [
   '../resources/config',
   '../resources/deployments',
   '../resources/ops',
-].map((directoryPath) => {
-  return _.values(requireDirectory(module, directoryPath, { include: /Resource\.js/, recurse: false }));
-});
+]
+.map(directoryPath => _.values(requireDirectory(module, directoryPath, { include: /Resource\.js/, recurse: false })));
 
 let resources = _.flatten(modules);
 

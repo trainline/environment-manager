@@ -187,20 +187,22 @@ function DynamoTableResource(config, client) {
         _builder.update().item(item).atVersion(expectedVersion).buildRequest() :
         _builder.update().item(item).buildRequest();
 
-      return client.update(request).promise().then((data) => {
-        // Existing item succesfully updated
-        return data.Attributes;
-      }).catch((error) => {
-        // Something went wrong...
-        let managedError = standardifyError(error, request);
+      // Existing item succesfully updated
+      return client
+        .update(request)
+        .promise()
+        .then(data => data.Attributes)
+        .catch((error) => {
+          // Something went wrong...
+          let managedError = standardifyError(error, request);
 
-        // I cannot furhter investigate on this error
-        if (managedError.name !== 'DynamoConditionCheckError') {
-          throw standardifyError(error, request);
-        }
+          // I cannot furhter investigate on this error
+          if (managedError.name !== 'DynamoConditionCheckError') {
+            throw standardifyError(error, request);
+          }
 
-        // I can further investigate...
-        return investigateOnErrorOccurred(client);
+          // I can further investigate...
+          return investigateOnErrorOccurred(client);
       });
     }
 

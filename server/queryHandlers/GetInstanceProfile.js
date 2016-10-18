@@ -14,7 +14,7 @@ module.exports = function GetInstanceProfile(query) {
   });
 
   let parameters = { accountName: query.accountName };
-  return resourceProvider.getInstanceByName('instanceprofiles', parameters).then((resource) => {
-    return resource.get({ instanceProfileName: query.instanceProfileName });
-  });
+  return resourceProvider.getInstanceByName('instanceprofiles', parameters).then(resource =>
+    resource.get({ instanceProfileName: query.instanceProfileName })
+  );
 };

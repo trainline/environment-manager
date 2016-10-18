@@ -13,9 +13,8 @@ module.exports = {
 
   create: (resourceDescriptor, parameters) => {
     logger.debug(`Getting ASG client for account "${parameters.accountName}"...`);
-    return amazonClientFactory.createASGClient(parameters.accountName).then((client) => {
-      return new AsgScheduledActionsResource(client);
-    });
+    return amazonClientFactory.createASGClient(parameters.accountName)
+                              .then((client) => new AsgScheduledActionsResource(client));
   },
 
 };

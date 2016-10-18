@@ -24,9 +24,7 @@ class SecurityGroup {
       groupIds,
     };
 
-    return sender.sendQuery({ query }).then((list) => {
-      return list.map(item => new SecurityGroup(item));
-    });
+    return sender.sendQuery({ query }).then(list => list.map(item => new SecurityGroup(item)));
   }
 
   static getAllByNames(accountName, vpcId, groupNames) {
@@ -37,9 +35,7 @@ class SecurityGroup {
       groupNames,
     };
 
-    return sender.sendQuery({ query }).then((list) => {
-      return list.map(item => new SecurityGroup(item));
-    });
+    return sender.sendQuery({ query }).then(list => list.map(item => new SecurityGroup(item)));
   }
 
 }

@@ -22,6 +22,7 @@ module.exports = function ActiveDirectoryAdapter() {
     }
   }
 
+  // eslint-disable-next-line arrow-body-style
   this.authorizeUser = (credentials) => {
     return co(function* () {
       // Authenticate ActiveDirectory via its credentials

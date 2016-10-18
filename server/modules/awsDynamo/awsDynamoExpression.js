@@ -17,12 +17,12 @@ function Expression(data) {
   };
 
   this.getNames = function () {
-    return $this.data.names.map((name) => {
-      return {
+    return $this.data.names.map((name) => (
+      {
         name,
         alias: `#${name}`,
-      };
-    });
+      }
+    ));
   };
 
   this.getValue = function () {

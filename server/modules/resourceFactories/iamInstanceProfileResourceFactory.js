@@ -18,11 +18,11 @@ function InstanceProfileResource(client) {
       InstanceProfileName: parameters.instanceProfileName,
     };
 
-    return client.getInstanceProfile(request).promise().then((response) => {
-      return response.InstanceProfile;
-    }).catch((error) => {
-      throw prettifyError(error, request);
-    });
+    return client.getInstanceProfile(request).promise()
+      .then(response => response.InstanceProfile)
+      .catch((error) => {
+        throw prettifyError(error, request);
+      });
   };
 
   function prettifyError(error, request) {

@@ -38,12 +38,10 @@ function Condition(data) {
   };
 
   this.getNames = function () {
-    return $this.data.names.map((name) => {
-      return {
-        name,
-        alias: `#${name}`,
-      };
-    });
+    return $this.data.names.map((name) => ({
+      name,
+      alias: `#${name}`,
+    }));
   };
 
   this.getValue = function () {

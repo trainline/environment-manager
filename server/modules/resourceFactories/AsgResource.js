@@ -124,39 +124,38 @@ function AsgResource(client) {
     return this.client.exitStandby(request).promise();
   };
 
-  this.post = (request) => {
+  this.post = function (request) {
     return this.client.createAutoScalingGroup(request).promise().catch((error) => {
       throw standardifyError(error, request.AutoScalingGroupName);
     });
   };
 
-  this.attachNotifications = (request) => {
+  this.attachNotifications = function (request) {
     return this.client.putNotificationConfiguration(request).promise().catch((error) => {
       throw standardifyError(error, request.AutoScalingGroupName);
     });
   };
 
-  this.attachLifecycleHook = (request) => {
+  this.attachLifecycleHook = function (request) {
     return this.client.putLifecycleHook(request).promise().catch((error) => {
       throw standardifyError(error, request.AutoScalingGroupName);
     });
   };
 
-  this.describeScheduledActions = (request) => {
-    return this.client.describeScheduledActions(request).promise().then((result) => {
-      return result.ScheduledUpdateGroupActions;
-    }).catch((error) => {
-      throw standardifyError(error, request.AutoScalingGroupName);
-    });
+  this.describeScheduledActions = function (request) {
+    return this.client.describeScheduledActions(request).promise().then((result) => result.ScheduledUpdateGroupActions)
+      .catch((error) => {
+        throw standardifyError(error, request.AutoScalingGroupName);
+      });
   };
 
-  this.deleteScheduledAction = (request) => {
+  this.deleteScheduledAction = function (request) {
     return this.client.deleteScheduledAction(request).promise().catch((error) => {
       throw standardifyError(error, request.AutoScalingGroupName);
     });
   };
 
-  this.createScheduledAction = (request) => {
+  this.createScheduledAction = function (request) {
     return this.client.putScheduledUpdateGroupAction(request).promise().catch((error) => {
       throw standardifyError(error, request.AutoScalingGroupName);
     });

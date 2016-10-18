@@ -45,6 +45,7 @@ module.exports = function ScanServersStatusQueryHandler(query) {
     let ami = getAmi(instances);
 
     return getServicesInstalledOnInstances(environment, instances)
+        // eslint-disable-next-line arrow-body-style
         .then((services) => {
           return {
             Name: asg.AutoScalingGroupName,
@@ -77,6 +78,7 @@ module.exports = function ScanServersStatusQueryHandler(query) {
 };
 
 function getServicesInstalledOnInstances(environment, instances) {
+  // eslint-disable-next-line arrow-body-style
   return Promise.all(instances.map((instance) => {
     return getConsulServicesForNode(environment, instance.name).then((consulServices) => {
       let services = sanitizeConsulServices(consulServices);
@@ -176,18 +178,12 @@ function getTagValue(resource, key) {
     return [];
   }
 
-  let tags = resource.Tags.filter((tag) => {
-    return tag.Key === key;
-  });
-
+  let tags = resource.Tags.filter(tag => tag.Key === key);
   return (tags.length > 0) ? tags[0].Value : '';
 }
 
 function getImage(images, imageId) {
-  let foundImages = images.filter((image) => {
-    return image.ImageId === imageId;
-  });
-
+  let foundImages = images.filter(image => image.ImageId === imageId);
   if (foundImages.length === 0) return;
 
   let image = foundImages[0];
@@ -198,13 +194,11 @@ function getImage(images, imageId) {
 }
 
 function getInstance(instances, instanceId) {
-  return instances.filter((instance) => {
-    return instance.InstanceId === instanceId;
-  })[0];
+  return instances.filter(instance => instance.InstanceId === instanceId)[0];
 }
 
 function byStatus(status) {
-  return (resource) => {
+  return function (resource) {
     if (!status) return true;
     return resource.Status.toLowerCase() == status.toLowerCase();
   };
@@ -215,10 +209,7 @@ function byStatus(status) {
 function byTag(key, value) {
   return (resource) => {
     if (!value) return true;
-    return _.some(resource.Tags, (tag) => {
-      return tag.Key === key &&
-        tag.Value.toLowerCase() === value.toLowerCase();
-    });
+    return _.some(resource.Tags, tag => tag.Key === key && tag.Value.toLowerCase() === value.toLowerCase());
   };
 }
 

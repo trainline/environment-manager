@@ -104,9 +104,7 @@ function setAutoScalingGroupScheduleTag(client, autoScalingGroupName, schedule, 
 function setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, newScheduledActions, accountName) {
   return co(function* () {
     let existingScheduledActions = yield getScheduledActions(client, autoScalingGroupName);
-    yield existingScheduledActions.map((action) => {
-      return deleteScheduledAction(client, action);
-    });
+    yield existingScheduledActions.map(action => deleteScheduledAction(client, action));
 
     if (!(newScheduledActions instanceof Array)) return Promise.resolve();
 

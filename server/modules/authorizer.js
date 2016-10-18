@@ -17,9 +17,8 @@ module.exports = (usersPermissions, requiredPermissions) => {
   }
 
   // Else check other permissions
-  let unsatisfiedPermissions = requiredPermissions.filter((requiredPermission) => {
-    return !permissionIsSatisfied(requiredPermission, usersPermissions);
-  });
+  let unsatisfiedPermissions =
+    requiredPermissions.filter(requiredPermission => !permissionIsSatisfied(requiredPermission, usersPermissions));
 
   return {
     authorized: unsatisfiedPermissions.length === 0,
@@ -155,12 +154,10 @@ function attributesAreSatisfied(attributes) {
 
 function toRequiredAttributes(attributes) {
   if (!(attributes && attributes.length > 0)) return [];
-  return attributes.map((attribute) => {
-    return {
-      name: attribute.toLowerCase(),
-      satisfied: false,
-    };
-  });
+  return attributes.map((attribute) => ({
+    name: attribute.toLowerCase(),
+    satisfied: false,
+  }));
 }
 
 function resourceAndAccessMatch(requiredPermission, permission) {

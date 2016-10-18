@@ -18,9 +18,7 @@ function asExpressRouteDescriptor(descriptor) {
   if (!descriptor.allowsAnonymous) {
     let authorizer = descriptor.authorizer || simpleAuthorizer;
 
-    middlewares.push((request, response, next) => {
-      return authorize(authorizer, request, response, next);
-    });
+    middlewares.push((request, response, next) => authorize(authorizer, request, response, next));
   }
 
   // Validation step

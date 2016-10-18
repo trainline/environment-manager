@@ -37,9 +37,9 @@ function KeyPairResource(client) {
 }
 
 module.exports = {
-  create: (parameters) => {
-    return amazonClientFactory.createEC2Client(parameters.accountName).then(
+  create: (parameters) => (
+    amazonClientFactory.createEC2Client(parameters.accountName).then(
       client => new KeyPairResource(client)
-    );
-  },
+    )
+  ),
 };

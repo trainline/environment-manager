@@ -14,14 +14,14 @@ function AsgScheduledActionsResource(client) {
     return describeScheduledActions(parameters.name).then((result) => {
       if (result.ScheduledUpdateGroupActions) {
         return {
-          ScheduledActions: result.ScheduledUpdateGroupActions.map((action) => {
-            return {
+          ScheduledActions: result.ScheduledUpdateGroupActions.map((action) => (
+            {
               MinSize: action.MinSize,
               MaxSize: action.MaxSize,
               DesiredCapacity: action.DesiredCapacity,
               Recurrence: action.Recurrence,
-            };
-          }),
+            }
+          )),
         };
       }
       throw new AutoScalingGroupNotFoundError(`AutoScalingGroup "${parameters.name}" not found.`);

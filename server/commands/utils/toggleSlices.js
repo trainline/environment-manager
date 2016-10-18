@@ -67,9 +67,7 @@ function ToggleUpstreamByServiceVerifier(toggleCommand) {
       return makeUpstreamError(upstream, 'cannot be toggled because it has more than two slices');
     }
 
-    let statuses = upstream.Value.Hosts.map((host) => {
-      return host.State === 'up' ? 'Active' : 'Inactive';
-    }).distinct();
+    let statuses = upstream.Value.Hosts.map(host => host.State === 'up' ? 'Active' : 'Inactive').distinct();
     if (statuses.length == 1) {
       return makeUpstreamError(upstream, `cannot be toggled because all its slices are "${statuses[0]}"`);
     }
@@ -148,9 +146,8 @@ function UpstreamByServiceProvider(sender, toggleCommand, resourceName) {
   let $base = new UpstreamProviderBase(sender, toggleCommand, resourceName);
 
   $this.provideUpstreams = (callback) => {
-    let condition = (upstream) => {
-      return upstream.Value.EnvironmentName === toggleCommand.environmentName && upstream.Value.ServiceName === toggleCommand.serviceName;
-    };
+    let condition = (upstream) =>
+      upstream.Value.EnvironmentName === toggleCommand.environmentName && upstream.Value.ServiceName === toggleCommand.serviceName;
 
     $base.provideUpstreams(condition, callback);
   };
@@ -161,9 +158,8 @@ function UpstreamByNameProvider(sender, toggleCommand, resourceName) {
   let $base = new UpstreamProviderBase(sender, toggleCommand, resourceName);
 
   $this.provideUpstreams = (callback) => {
-    let condition = (upstream) => {
-      return upstream.Value.EnvironmentName === toggleCommand.environmentName && upstream.Value.UpstreamName === toggleCommand.upstreamName;
-    };
+    let condition = (upstream) =>
+      upstream.Value.EnvironmentName === toggleCommand.environmentName && upstream.Value.UpstreamName === toggleCommand.upstreamName;
 
     $base.provideUpstreams(condition, callback);
   };
@@ -211,9 +207,7 @@ function ToggleSlicesOrchestrator(provider, verifier, toggler) {
             return;
           }
 
-          let toggledUpstreamNames = upstreams.map((upstream) => {
-            return upstream.Value.UpstreamName;
-          });
+          let toggledUpstreamNames = upstreams.map(upstream => upstream.Value.UpstreamName);
           callback(null, { ToggledUpstreams: toggledUpstreamNames });
         });
       },

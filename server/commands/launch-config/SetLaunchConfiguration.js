@@ -56,12 +56,10 @@ module.exports = function SetLaunchConfiguration(command) {
     }
 
     if (data.SecurityGroups !== undefined) {
-      let securityGroupsNamesAndReasons = _.map(data.SecurityGroups, (name) => {
-        return {
-          name,
-          reason: 'It was set by user in LaunchConfig form',
-        };
-      });
+      let securityGroupsNamesAndReasons = _.map(data.SecurityGroups, (name) => ({
+        name,
+        reason: 'It was set by user in LaunchConfig form',
+      }));
       let securityGroups = yield securityGroupsProvider.getFromSecurityGroupNames(command.accountName, vpcId, securityGroupsNamesAndReasons, logger);
       updated.SecurityGroups = _.map(securityGroups, 'GroupId');
     }

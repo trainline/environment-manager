@@ -33,18 +33,18 @@ module.exports = {
   },
   // reverse function
   fromAWS(awsVolumes) {
-    return awsVolumes.filter((vol) => {
-      return _.includes([OS_DEVICE_NAME, DATA_DEVICE_NAME], vol.DeviceName);
-    }).map((awsVolume) => {
+    return awsVolumes.filter(vol =>
+      _.includes([OS_DEVICE_NAME, DATA_DEVICE_NAME], vol.DeviceName)
+    ).map((awsVolume) => {
       let volume = {};
       volume.Name = awsVolume.DeviceName === OS_DEVICE_NAME ? 'OS' : 'Data';
       volume.Size = awsVolume.Ebs.VolumeSize;
       volume.Type = awsVolume.Ebs.VolumeType === 'standard' ? 'Disk' : 'SSD';
       return volume;
-    }).sort((vol1, vol2) => {
+    }).sort((vol1, vol2) => (
       // sda1 before sda2 etc.
-      return vol1.Name < vol2.Name;
-    });
+      vol1.Name < vol2.Name
+    ));
   },
 };
 

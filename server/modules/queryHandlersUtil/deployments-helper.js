@@ -1,4 +1,4 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
 
@@ -77,9 +77,8 @@ function queryDeployments(query) {
   return Promise.all([
     sender.sendQuery({ query: currentDeploymentsQuery }),
     sender.sendQuery({ query: completedDeploymentsQuery }),
-  ]).then((results) => {
-    return _.flatten(results).filter(x => !!x);
-  });
+  ])
+  .then(results => _.flatten(results).filter(x => !!x));
 }
 
 function queryDeploymentNodeStates(environment, key, account) {
@@ -96,19 +95,12 @@ function queryDeploymentNodeStates(environment, key, account) {
 
 module.exports = {
 
-  get: (query) => {
-    return queryDeployment(query).then((deployment) => {
-      return mapDeployment(deployment, query.account);
-    });
-  },
+  get: (query) => queryDeployment(query).then(deployment => mapDeployment(deployment, query.account)),
 
-  scan: (query) => {
-    return queryDeployments(query).then((deployments) => {
-      let deploymentsWithNodes = deployments.map((deployment) => {
-        return mapDeployment(deployment, deployment.AccountName);
-      });
-
+  scan: (query) => (
+    queryDeployments(query).then((deployments) => {
+      let deploymentsWithNodes = deployments.map(deployment => mapDeployment(deployment, deployment.AccountName));
       return Promise.all(deploymentsWithNodes);
-    });
-  },
+    })
+  ),
 };

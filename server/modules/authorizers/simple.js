@@ -2,12 +2,12 @@
 
 'use strict';
 
-exports.getRules = (request) => {
-  return Promise.resolve([{
+exports.getRules = (request) => (
+  Promise.resolve([{
     resource: request.url.replace(/\/+$/, ''),
     access: request.method,
-  }]);
-};
+  }])
+);
 
 exports.docs = {
   requiresClusterPermissions: false,

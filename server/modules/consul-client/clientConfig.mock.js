@@ -2,13 +2,13 @@
 
 'use strict';
 
-module.exports = (parameters) => {
-  return Promise.resolve({
+module.exports = (parameters) => (
+  Promise.resolve({
     host: '10.249.16.74',
     port: '8500',
     defaults: {
       dc: 'tl-c50',
     },
     promisify: parameters.promisify,
-  });
-};
+  })
+);

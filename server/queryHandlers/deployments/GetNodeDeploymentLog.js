@@ -1,4 +1,4 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
 
@@ -22,6 +22,7 @@ function getNode(query) {
 }
 
 function fetchS3Object(account, s3Details) {
+  // eslint-disable-next-line arrow-body-style
   return amazonClientFactory.createS3Client(account).then((client) => {
     return new Promise((resolve, reject) => {
       let s3Request = new S3GetObjectRequest(client, s3Details);

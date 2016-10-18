@@ -18,9 +18,7 @@ const day = (() => {
   };
 })();
 
-const qualifiedName = (() => {
-  return awsResourceNameProvider.getTableName;
-})();
+const qualifiedName = (() => awsResourceNameProvider.getTableName)();
 
 const recentDeploymentsTableName = qualifiedName('ConfigDeploymentExecutionStatus');
 const completedDeploymentsTableName = qualifiedName('ConfigCompletedDeployments');
@@ -145,12 +143,12 @@ function getDeploymentsStartedBetween(min, max) {
 }
 
 function getDeploymentById(deploymentId) {
-  let createGetRequestFromTableName = (tableName) => {
-    return {
+  let createGetRequestFromTableName = (tableName) => (
+    {
       TableName: tableName,
       Key: { DeploymentID: deploymentId },
-    };
-  };
+    }
+  );
 
   let resultPromises = [completedDeploymentsTableName, recentDeploymentsTableName]
     .map(createGetRequestFromTableName)

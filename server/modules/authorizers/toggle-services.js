@@ -29,14 +29,15 @@ function getModifyPermissions(serviceName, environmentName, accountName, user) {
   });
 }
 
+// eslint-disable-next-line arrow-body-style
 exports.getRules = (request) => {
-  return getModifyPermissions(request.params.service, request.params.environment, request.params.account, request.user).then((sliceCluster) => {
-    return [{
+  return getModifyPermissions(request.params.service, request.params.environment, request.params.account, request.user).then((sliceCluster) => (
+    [{
       resource: request.url.replace(/\/+$/, ''),
       access: request.method,
       clusters: [sliceCluster],
-    }];
-  });
+    }]
+  ));
 };
 
 exports.docs = {

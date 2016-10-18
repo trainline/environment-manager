@@ -39,16 +39,12 @@ function EraseRoleSliceAction(environmentName) {
 
       let erasedServicesInstallationKeys = yield keyValueStoreEraser.scanAndDelete({
         keyPrefix: `environments/${environmentName}/services/`,
-        condition: (key) => {
-          return serviceInstallationKeysToErase.indexOf(key) >= 0;
-        },
+        condition: key => serviceInstallationKeysToErase.indexOf(key) >= 0,
       });
 
-      let result = erasedServicesDefinitionKeys
+      return erasedServicesDefinitionKeys
         .concat(erasedServicesInstallationKeys)
         .concat(erasedRolesKeys);
-
-      return result;
     });
   };
 

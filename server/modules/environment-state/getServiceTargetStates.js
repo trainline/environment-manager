@@ -20,14 +20,14 @@ function getServiceChecksInfo(serviceObjects) {
   // Get all health checks for all instances of this service
   let serviceChecks = _.flatMap(serviceObjects, 'HealthChecks');
   let checksGrouped = _.groupBy(serviceChecks, 'Name');
-  return _.map(checksGrouped, (checks, checkName) => {
+  return _.map(checksGrouped, (checks, checkName) => (
     // If some instances checks failed for a given check, mark as failed
     // also, don't count in instance into working
-    return {
+    {
       Name: checks[0].Name,
       Status: _.some(checks, { Status: 'critical' }) ? HEALTH_BAD : HEALTH_GOOD,
-    };
-  });
+    }
+  ));
 }
 
 function getServiceOverallHealth(healthChecks) {
