@@ -31,17 +31,15 @@
     </div>
     <div class="form-group" ng-if="vm.searchPerformed">
       <div class="col-md-12" ng-if="vm.dataFound">
-        <pre id="MaintenanceServerDetails">
-          Environment Type: {{vm.serverDetails.EnvironmentType}}
-          Environment: {{server.Environment}}
-          Name: {{vm.serverDetails.Name}}
-          InstanceId: {{vm.serverDetails.InstanceId}}
-          Ip: {{vm.serverDetails.Ip}}
-          Owning Cluster: {{vm.serverDetails.OwningCluster}}
-          Role: {{vm.serverDetails.Role}}
-          Status: {{vm.serverDetails.Status}}
-          AutoScalingGroup: {{vm.serverDetails['aws:autoscaling:groupName'] || 'None'}}
-        </pre>
+        <pre id="MaintenanceServerDetails">Environment Type: {{vm.serverDetails.EnvironmentType}}
+Environment: {{server.Environment}}
+Name: {{vm.serverDetails.Name}}
+InstanceId: {{vm.serverDetails.InstanceId}}
+Ip: {{vm.serverDetails.Ip}}
+Owning Cluster: {{vm.serverDetails.OwningCluster}}
+Role: {{vm.serverDetails.Role}}
+Status: {{vm.serverDetails.Status}}
+AutoScalingGroup: {{vm.serverDetails['aws:autoscaling:groupName'] || 'None'}}</pre>
         <p>Important Notes:</p>
         <ul>
           <li>Changes may take up to 5 minutes to take effect in DNS</li>
