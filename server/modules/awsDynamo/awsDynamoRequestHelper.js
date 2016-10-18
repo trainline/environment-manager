@@ -3,8 +3,9 @@
 'use strict';
 
 function addExpressionAttributeNamesToRequest(request, names) {
-  if (!request.ExpressionAttributeNames)
-    { request.ExpressionAttributeNames = {}; }
+  if (!request.ExpressionAttributeNames) {
+    request.ExpressionAttributeNames = {};
+  }
 
   let aliases = [];
 
@@ -17,8 +18,9 @@ function addExpressionAttributeNamesToRequest(request, names) {
 }
 
 function addExpressionAttributeValuesToRequest(request, value) {
-  if (!request.ExpressionAttributeValues)
-    { request.ExpressionAttributeValues = {}; }
+  if (!request.ExpressionAttributeValues) {
+    request.ExpressionAttributeValues = {};
+  }
 
   let alias = `:p${Object.keys(request.ExpressionAttributeValues).length}`;
   request.ExpressionAttributeValues[alias] = value;

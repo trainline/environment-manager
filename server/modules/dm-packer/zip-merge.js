@@ -23,8 +23,7 @@ function createEntryStream(input, filter, logger) {
   .on('entry', (entry) => {
     if (filter(entry.path)) {
       output.push({ path: entry.path, content: entry });
-    }
-    else {
+    } else {
       entry.autodrain();
     }
   })

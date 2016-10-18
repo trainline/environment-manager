@@ -36,7 +36,7 @@ function* handler(command) {
 
   let childCommands = [];
   command.items.forEach((item) => {
-    let exists = currentItems.some((current) => { return comparer(item, current); });
+    let exists = currentItems.some(current => comparer(item, current));
     if (exists) {
       childCommands.push({
         name: 'UpdateDynamoResource',
@@ -55,7 +55,7 @@ function* handler(command) {
   });
 
   currentItems.forEach((current) => {
-    let exists = command.items.some((item) => { return comparer(item, current); });
+    let exists = command.items.some(item => comparer(item, current));
     if (exists) return;
 
     childCommands.push({

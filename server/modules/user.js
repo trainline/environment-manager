@@ -68,7 +68,9 @@ let User = function (data) {
   };
 };
 
-User.prototype.toString = function () { return 'User'; };
+User.prototype.toString = function () {
+  return 'User';
+};
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {

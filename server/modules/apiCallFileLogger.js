@@ -19,8 +19,7 @@ try {
 } catch (err) {}
 
 let logFn = (() => {
-  if (!winstonLogger)
-        { return () => {}; }
+  if (!winstonLogger) return () => {};
 
   return (request) => {
     winstonLogger.info({

@@ -39,6 +39,8 @@ module.exports = function ActiveDirectoryAdapter() {
       };
 
       return activeDirectoryUser;
-    }).catch((error) => { throw standardizeError(error); });
+    }).catch((error) => {
+      throw standardizeError(error);
+    });
   };
 };

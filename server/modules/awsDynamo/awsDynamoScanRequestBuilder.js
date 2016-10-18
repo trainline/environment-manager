@@ -92,8 +92,9 @@ function ScanRequestBuilder(parameters) {
       RequestHelper.addFilterExpression(request, filters);
     }
 
-    if ($data.resultsLimit !== null)
-      { RequestHelper.addResultsLimit(request, $data.resultsLimit); }
+    if ($data.resultsLimit !== null) {
+      RequestHelper.addResultsLimit(request, $data.resultsLimit);
+    }
 
     return request;
   };

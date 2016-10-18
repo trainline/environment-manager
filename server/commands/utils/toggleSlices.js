@@ -74,8 +74,7 @@ function ToggleUpstreamByServiceVerifier(toggleCommand) {
       return makeUpstreamError(upstream, `cannot be toggled because all its slices are "${statuses[0]}"`);
     }
 
-    let slicesNames = upstream.Value.Hosts.map((host) => {
-      return portMapping[host.Port]; });
+    let slicesNames = upstream.Value.Hosts.map(host => portMapping[host.Port]);
     if (slicesNames.indexOf('Blue') < 0) {
       return makeUpstreamError(upstream, 'cannot be toggled because there is no way to detect which slice is "blue"');
     }
@@ -103,8 +102,7 @@ function ToggleUpstreamByNameVerifier(resourceName) {
 
   function detectUpstreamsInconsistency(upstreams) {
     if (upstreams.length > 1) {
-      let keys = upstreams.map((upstream) => {
-        return upstream.key; }).join(', ');
+      let keys = upstreams.map(upstream => upstream.key).join(', ');
       var message = `${resourceName} cannot be toggled because all following keys refer to it: ${keys}.`;
       return new InconsistentSlicesStatusError(message);
     }

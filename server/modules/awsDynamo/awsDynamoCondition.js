@@ -6,8 +6,9 @@ function decodeValue(value) {
   if (typeof value !== 'string') return value;
 
   if ((value[0] === '"' && value[value.length - 1] === '"') ||
-     (value[0] === '\'' && value[value.length - 1] === '\''))
-    { return value.substring(1, value.length - 1); }
+     (value[0] === '\'' && value[value.length - 1] === '\'')) {
+    return value.substring(1, value.length - 1);
+  }
 
   if (value.toLowerCase() === 'true') return true;
   if (value.toLowerCase() === 'false') return false;
@@ -45,7 +46,9 @@ function Condition(data) {
     });
   };
 
-  this.getValue = function () { return decodeValue($this.data.value); };
+  this.getValue = function () {
+    return decodeValue($this.data.value);
+  };
 
   this.toString = function (name, value) {
     return [name, $this.data.operator, value].join(' ');

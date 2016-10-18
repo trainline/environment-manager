@@ -129,11 +129,13 @@ module.exports = [
   .withAuthorizer(authorizer).whenRequest((url, value) => {
     let imageId = getPropertyByName(value, 'ImageId');
 
-    if (imageId === undefined)
-      { return new Error('Request body must contain "ImageId" field.'); }
+    if (imageId === undefined) {
+      return new Error('Request body must contain "ImageId" field.');
+    }
 
-    if (imageId === '')
-      { return new Error('Provided ImageId must be not empty.'); }
+    if (imageId === '') {
+      return new Error('Provided ImageId must be not empty.');
+    }
 
     return null;
   }).do((request, response) => {
@@ -155,11 +157,13 @@ module.exports = [
   .withAuthorizer(authorizer).whenRequest((url, value) => {
     let instanceType = getPropertyByName(value, 'InstanceType');
 
-    if (instanceType === undefined)
-      { return new Error('Request body must contain "InstanceType" field.'); }
+    if (instanceType === undefined) {
+      return new Error('Request body must contain "InstanceType" field.');
+    }
 
-    if (instanceType === '')
-      { return new Error('Provided InstanceType must be not empty.'); }
+    if (instanceType === '') {
+      return new Error('Provided InstanceType must be not empty.');
+    }
 
     return null;
   }).do((request, response) => {

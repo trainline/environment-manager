@@ -25,9 +25,17 @@ function Expression(data) {
     });
   };
 
-  this.getValue = function () { return $this.data.value; };
-  this.getOperation = function () { return $this.data.operation; };
-  this.getFunction = function () { return $this.data.function; };
+  this.getValue = function () {
+    return $this.data.value;
+  };
+
+  this.getOperation = function () {
+    return $this.data.operation;
+  };
+
+  this.getFunction = function () {
+    return $this.data.function;
+  };
 }
 
 function AddExpression(name) {

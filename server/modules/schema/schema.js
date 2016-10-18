@@ -58,9 +58,7 @@ function getSchema(schemaId) {
       ajv.compileAsync(rawSchema, (error, schema) => {
         if (error) {
           reject(error);
-        }
-        else {
-          // ajv.addSchema(schema);
+        } else {
           resolve(schema);
         }
       });

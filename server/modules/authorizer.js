@@ -60,14 +60,15 @@ function limitationsOnResourcePermissionMatch(requiredPermission, permission) {
   let requiredClusters = toRequiredAttributes(requiredPermission.clusters);
   let requiredEnvironmentTypes = toRequiredAttributes(requiredPermission.environmentTypes);
 
-  if (isClusterLimitedResourcePermission(permission))
-    { satisfyRequiredClustersFromResourcePermission(requiredClusters, permission); }
+  if (isClusterLimitedResourcePermission(permission)) {
+    satisfyRequiredClustersFromResourcePermission(requiredClusters, permission);
+  }
 
-  if (isEnvironmentTypeLimitedResourcePermission(permission))
-    { satisfyRequiredEnvironmentTypesFromResourcePermission(requiredEnvironmentTypes, permission); }
+  if (isEnvironmentTypeLimitedResourcePermission(permission)) {
+    satisfyRequiredEnvironmentTypesFromResourcePermission(requiredEnvironmentTypes, permission);
+  }
 
-  return attributesAreSatisfied(requiredClusters) &&
-    attributesAreSatisfied(requiredEnvironmentTypes);
+  return attributesAreSatisfied(requiredClusters) && attributesAreSatisfied(requiredEnvironmentTypes);
 }
 
 function isClusterPermission(permission) {
@@ -83,8 +84,7 @@ function isEnvironmentTypePermission(permission) {
 }
 
 function isLimitedResourcePermission(permission) {
-  return isClusterLimitedResourcePermission(permission) ||
-    isEnvironmentTypeLimitedResourcePermission(permission);
+  return isClusterLimitedResourcePermission(permission) || isEnvironmentTypeLimitedResourcePermission(permission);
 }
 
 function isClusterLimitedResourcePermission(permission) {
@@ -101,8 +101,9 @@ function satisfyRequiredClustersFromResourcePermission(requiredClusters, permiss
       requiredCluster.satisfied = true;
     } else {
       permission.Clusters.forEach((permittedCluster) => {
-        if (permittedCluster === requiredCluster.name)
-          { requiredCluster.satisfied = true; }
+        if (permittedCluster === requiredCluster.name) {
+          requiredCluster.satisfied = true;
+        }
       });
     }
   });
@@ -114,8 +115,9 @@ function satisfyRequiredEnvironmentTypesFromResourcePermission(requiredEnvironme
       requiredEnvironmentType.satisfied = true;
     } else {
       permission.EnvironmentTypes.forEach((permittedEnvironmentType) => {
-        if (permittedEnvironmentType === requiredEnvironmentType.name)
-          { requiredEnvironmentType.satisfied = true; }
+        if (permittedEnvironmentType === requiredEnvironmentType.name) {
+          requiredEnvironmentType.satisfied = true;
+        }
       });
     }
   });
@@ -128,8 +130,9 @@ function satisfyRequiredClustersFromClusterPermission(requiredClusters, permissi
     let matchingCluster = (permittedCluster === 'all' || permittedCluster === requiredCluster.name);
     let matchingLegacyCluster = intersect(toLower(permission.Resource), `/permissions/clusters/${requiredCluster.name}`);
 
-    if (matchingCluster || matchingLegacyCluster)
-      { requiredCluster.satisfied = true; }
+    if (matchingCluster || matchingLegacyCluster) {
+      requiredCluster.satisfied = true;
+    }
   });
 }
 
@@ -140,8 +143,9 @@ function satisfyRequiredEnvironmentTypesFromEnvironmentTypePermission(requiredEn
     let matchingEnvironmentType = (permittedEnvironmentType === 'all' || permittedEnvironmentType === requiredEnvironmentType.name);
     let matchingLegacyEnvironmentType = intersect(toLower(permission.Resource), `/permissions/environmenttypes/${requiredEnvironmentType.name}`);
 
-    if (matchingEnvironmentType || matchingLegacyEnvironmentType)
-      { requiredEnvironmentType.satisfied = true; }
+    if (matchingEnvironmentType || matchingLegacyEnvironmentType) {
+      requiredEnvironmentType.satisfied = true;
+    }
   });
 }
 

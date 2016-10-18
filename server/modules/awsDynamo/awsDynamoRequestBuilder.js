@@ -15,10 +15,21 @@ function RequestBuilder(parameters) {
     dateField: parameters.dateField,
   };
 
-  this.getTable = function () { return $data.table; };
-  this.getKey = function () { return $data.key; };
-  this.getRange = function () { return $data.range; };
-  this.getVersion = function () { return $data.version; };
+  this.getTable = function () {
+    return $data.table;
+  };
+
+  this.getKey = function () {
+    return $data.key;
+  };
+
+  this.getRange = function () {
+    return $data.range;
+  };
+
+  this.getVersion = function () {
+    return $data.version;
+  };
 
   this.scan = function () {
     return new ScanRequestBuilder($data);

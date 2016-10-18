@@ -114,8 +114,19 @@ function RouteHandlerDescriptorBuilder(verb, url) {
 }
 
 module.exports = {
-  get(url) { return new RouteHandlerDescriptorBuilder('GET', url); },
-  put(url) { return new RouteHandlerDescriptorBuilder('PUT', url); },
-  post(url) { return new RouteHandlerDescriptorBuilder('POST', url); },
-  delete(url) { return new RouteHandlerDescriptorBuilder('DELETE', url); },
+  get(url) {
+    return new RouteHandlerDescriptorBuilder('GET', url);
+  },
+
+  put(url) {
+    return new RouteHandlerDescriptorBuilder('PUT', url);
+  },
+
+  post(url) {
+    return new RouteHandlerDescriptorBuilder('POST', url);
+  },
+
+  delete(url) {
+    return new RouteHandlerDescriptorBuilder('DELETE', url);
+  },
 };

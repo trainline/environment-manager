@@ -172,8 +172,9 @@ function sanitizeConsulServices(consulServices) {
 }
 
 function getTagValue(resource, key) {
-  if (!resource || !resource.Tags)
-    { return []; }
+  if (!resource || !resource.Tags) {
+    return [];
+  }
 
   let tags = resource.Tags.filter((tag) => {
     return tag.Key === key;
