@@ -33,8 +33,6 @@ function getMappingsByTopicName(topicName, accountName) {
     };
     return Promise.resolve(mapping);
   });
-
-  return [mapping];
 }
 
 function getTopicByName(topicName, accountName) {
