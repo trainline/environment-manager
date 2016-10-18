@@ -36,11 +36,12 @@ function getCredentials(roleARN) {
     RoleSessionName: guid.v1(),
   };
 
-  return stsClient.assumeRole(stsParameters).promise().then(response =>
-    new AWS.Credentials(
-      response.Credentials.AccessKeyId,
-      response.Credentials.SecretAccessKey,
-      response.Credentials.SessionToken
+  return stsClient.assumeRole(stsParameters).promise()
+    .then(response =>
+      new AWS.Credentials(
+        response.Credentials.AccessKeyId,
+        response.Credentials.SecretAccessKey,
+        response.Credentials.SessionToken
     )
   );
 }
