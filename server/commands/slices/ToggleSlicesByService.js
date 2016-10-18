@@ -8,12 +8,13 @@ let ToggleUpstreamByServiceVerifier = toggleSlices.ToggleUpstreamByServiceVerifi
 let UpstreamToggler = toggleSlices.UpstreamToggler;
 let ToggleSlicesOrchestrator = toggleSlices.ToggleSlicesOrchestrator;
 let sender = require('modules/sender');
+let Environment = require('models/Environment');
 
 module.exports = function ToggleSlicesByService(command) {
   assert.equal(typeof command.environmentName, 'string');
   assert.equal(typeof command.serviceName, 'string');
 
-  return getAccountByEnvironment({ environment: query.environmentName }).then(account => {
+  return Environment.getAccountNameForEnvironment(command.environmentName).then(account => {
     command.accountName = account;
 
     let resourceName = `Upstream for "${command.serviceName}" service in "${command.environmentName}" environment`;

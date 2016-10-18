@@ -2,17 +2,24 @@
 'use strict';
 
 let assert = require('assert');
+let co = require('co');
 let getSlices = require('modules/queryHandlersUtil/getSlices');
+let Environment = require('models/Environment');
+
 const FILTER = getSlices.FILTER;
 const QUERYING = getSlices.QUERYING;
 
-module.exports = function GetSlicesByUpstream(query) {
-  assert.equal(typeof query.accountName, 'string');
-  assert.equal(typeof query.environmentName, 'string');
+function* GetSlicesByUpstream(query) {
   assert.equal(typeof query.upstreamName, 'string');
+  let upstream = Upstream.getByName(query.upstreamName);
+
+  query.environmentName = yield upstream.getEnvironmentName();
+  query.accountName = yield Environment.getAccountNameForEnvironment(query.environmentName);
 
   return getSlices.handleQuery(query,
     QUERYING.upstream.byUpstreamName(query),
     FILTER.upstream.byUpstreamName(query),
     FILTER.host.allSlices());
-};
+}
+
+module.exports = co.wrap(GetSlicesByUpstream);
