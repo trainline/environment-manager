@@ -62,14 +62,13 @@ function getServiceByName(serviceName) {
 
   return sender
     .sendQuery({ query })
-    .then(
-      services => services.length ?
-      Promise.resolve(services[0].Value) :
-      Promise.reject(new ConfigurationError(`Service "${serviceName}" not found.`)),
-      error => Promise.reject(
-        new Error(`An error has occurred retrieving "${serviceName}" service: ${error.message}`)
-      )
-    );
+    .then(services =>
+      (services.length ?
+        Promise.resolve(services[0].Value) :
+        Promise.reject(new ConfigurationError(`Service "${serviceName}" not found.`))))
+    .catch(error => {
+      throw new Error(`An error has occurred retrieving "${serviceName}" service: ${error.message}`)
+    });
 }
 
 function getClusterByName(clusterName) {

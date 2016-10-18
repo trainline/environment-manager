@@ -34,9 +34,11 @@ function getImageByName(imageName) {
 
   return sender
     .sendQuery({ query })
-    .then(amiImages => amiImages.length ?
-      Promise.resolve(new Image(amiImages[0])) :
-      Promise.reject(new ImageNotFoundError(`No AMI image named "${imageName}" found.`))
+    .then(amiImages =>
+      (amiImages.length ?
+        Promise.resolve(new Image(amiImages[0])) :
+        Promise.reject(new ImageNotFoundError(`No AMI image named "${imageName}" found.`))
+      )
     );
 }
 

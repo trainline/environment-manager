@@ -181,11 +181,11 @@ function provideLaunchConfiguration(launchConfigurationTemplate, accountName, pa
     template: launchConfigurationTemplate,
   };
 
-  return sender.sendCommand({ command, parent: parentCommand }).catch(error =>
+  return sender.sendCommand({ command, parent: parentCommand }).catch(error => (
       error.name === 'LaunchConfigurationAlreadyExistsError' ?
         Promise.resolve() :
         Promise.reject(error)
-    );
+  ));
 }
 
 function provideAutoScalingGroup(autoScalingTemplate, accountName, parentCommand) {
@@ -195,9 +195,9 @@ function provideAutoScalingGroup(autoScalingTemplate, accountName, parentCommand
     template: autoScalingTemplate,
   };
 
-  return sender.sendCommand({ command, parent: parentCommand }).catch(error =>
+  return sender.sendCommand({ command, parent: parentCommand }).catch(error => (
       error.name === 'AutoScalingGroupAlreadyExistsError' ?
         Promise.resolve() :
         Promise.reject(error)
-    );
+  ));
 }

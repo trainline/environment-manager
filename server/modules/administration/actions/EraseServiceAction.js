@@ -15,9 +15,9 @@ function EraseServiceAction(environmentName) {
 
       let erasedRolesKeys = yield keyValueStoreEraser.scanAndDelete({
         keyPrefix: `environments/${environmentName}/roles/`,
-        condition: key =>
-          //TODO: Check redundant escapes in regex (eslint no-useless-escape)
-          key.match(`environments\/.*\/roles\/.*\/services\/${serviceName}\/`),
+
+        //TODO: Check redundant escapes in regex (eslint no-useless-escape)
+        condition: key => (key.match(`environments\/.*\/roles\/.*\/services\/${serviceName}\/`)),
       });
 
       return erasedServicesKeys.concat(erasedRolesKeys);

@@ -20,6 +20,7 @@ module.exports = {
     "no-use-before-define": 0,
     "no-useless-escape": 0,
     "newline-per-chained-call": 0,
-    "no-plusplus": 0
+    "no-plusplus": 0,
+    "no-confusing-arrow": [2, {'allowParens': true}]
   }
 };
