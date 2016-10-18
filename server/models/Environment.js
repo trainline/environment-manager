@@ -24,6 +24,10 @@ class Environment {
     return EnvironmentType.getByName(this.EnvironmentType).then((data) => data.AWSAccountName);
   }
 
+  static getAccountNameForEnvironment(name) {
+    return Environment.getByName(name).then(environment => environment.getAccountName());
+  }
+
   static getByName(name) {
     return environmentDatabase.getEnvironmentByName(name).then((obj) => new Environment(obj));
   }

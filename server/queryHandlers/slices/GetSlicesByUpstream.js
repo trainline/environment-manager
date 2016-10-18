@@ -15,11 +15,10 @@ function* GetSlicesByUpstream(query) {
 
   query.environmentName = yield upstream.getEnvironmentName();
   query.accountName = yield Environment.getAccountNameForEnvironment(query.environmentName);
-
+  
   return getSlices.handleQuery(query,
     QUERYING.upstream.byUpstreamName(query),
-    FILTER.upstream.byUpstreamName(query),
-    FILTER.host.allSlices());
+    FILTER.upstream.byUpstreamName(query));
 }
 
 module.exports = co.wrap(GetSlicesByUpstream);

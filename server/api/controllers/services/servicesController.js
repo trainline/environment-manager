@@ -4,8 +4,6 @@
 let getAllServices = require('queryHandlers/services/GetAllServices');
 let getService = require('queryHandlers/services/GetService');
 let getSlices = require('queryHandlers/slices/GetSlicesByService');
-let getActiveSlices = require('queryHandlers/slices/GetActiveSlicesByService');
-let getInactiveSlices = require('queryHandlers/slices/GetInactiveSlicesByService');
 let toggleService = require('commands/slices/ToggleSlicesByService');
 
 /**
@@ -35,13 +33,7 @@ function getServiceSlices(req, res, next) {
   const serviceName = req.swagger.params.service.value;
   const active = req.swagger.params.active.value;
 
-  if (active === undefined) {
-    return getSlices({ environmentName, serviceName }).then(data => res.json(data)).catch(next);
-  } else if (active === true) {
-    return getActiveSlices({ environmentName, serviceName }).then(data => res.json(data)).catch(next);
-  } else {
-    return getInactiveSlices({ environmentName, serviceName }).then(data => res.json(data)).catch(next);
-  }
+  return getSlices({ environmentName, serviceName, active }).then(data => res.json(data)).catch(next);
 }
 
 /**

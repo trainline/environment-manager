@@ -11,12 +11,11 @@ const QUERYING = getSlices.QUERYING;
 module.exports = function GetSlicesByService(query) {
   assert.equal(typeof query.environmentName, 'string');
   assert.equal(typeof query.serviceName, 'string');
-
+  
   return getAccountByEnvironment({ environment: query.environmentName }).then(account => {
     query.accountName = account;
     return getSlices.handleQuery(query,
       QUERYING.upstream.byServiceName(query),
-      FILTER.upstream.byServiceName(query),
-      FILTER.host.allSlices());
+      FILTER.upstream.byServiceName(query));
   });
 };
