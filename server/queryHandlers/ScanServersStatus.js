@@ -26,20 +26,20 @@ module.exports = function ScanServersStatusQueryHandler(query) {
       asgs = _.filter(asgs, asg => asg.getTag('OwningCluster') === query.filter.cluster);
     }
 
-	  return Promise.all(asgs.map((asg) => {
-    let instances = asg.Instances.map((asgInstance) => {
-      let instance = getInstance(allInstances, asgInstance.InstanceId);
-      if (instance && instance.State.Name !== 'terminated') {
-        let image = getImage(allImages, instance.ImageId); // TODO(filip): use Image in place of this
-        return {
-          instanceId: instance.InstanceId,
-          name: getTagValue(instance, 'Name'),
-          ami: image,
-          status: asgInstance.HealthStatus,
-        };
-      } else {
-        return null;
-      }
+    return Promise.all(asgs.map((asg) => {
+      let instances = asg.Instances.map((asgInstance) => {
+        let instance = getInstance(allInstances, asgInstance.InstanceId);
+        if (instance && instance.State.Name !== 'terminated') {
+          let image = getImage(allImages, instance.ImageId); // TODO(filip): use Image in place of this
+          return {
+            instanceId: instance.InstanceId,
+            name: getTagValue(instance, 'Name'),
+            ami: image,
+            status: asgInstance.HealthStatus,
+          };
+        } else {
+          return null;
+        }
     }).filter(instance => !!instance);
 
     let instanceCount = instances.length;

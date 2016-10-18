@@ -11,10 +11,10 @@ module.exports = class ConsulManager {
   }
 
   setServerMaintenanceMode(enable) {
-  	logger.debug(`consul: setting maintenance mode to ${enable}`);
-  	let promisified = Promise.promisify(this.client.agent.maintenance, { context: this.client.agent });
-  	return promisified({ enable, reason: 'Maintanance mode triggered from EnvironmentManager' }).catch((err) => {
-    throw new Error(`Couldn't connect to consul client: ${err.message}`);
-  });
+    logger.debug(`consul: setting maintenance mode to ${enable}`);
+    let promisified = Promise.promisify(this.client.agent.maintenance, { context: this.client.agent });
+      return promisified({ enable, reason: 'Maintanance mode triggered from EnvironmentManager' }).catch((err) => {
+      throw new Error(`Couldn't connect to consul client: ${err.message}`);
+    });
   }
 };
