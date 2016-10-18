@@ -3,7 +3,7 @@
 
 let assert = require('assert');
 let toggleSlices = require('../utils/toggleSlices');
-let UpstreamByServiceProvider = toggleSlices.UpstreamByServiceProvider;
+let UpstreamProvider = toggleSlices.UpstreamProvider;
 let ToggleUpstreamByServiceVerifier = toggleSlices.ToggleUpstreamByServiceVerifier;
 let UpstreamToggler = toggleSlices.UpstreamToggler;
 let orchestrate = toggleSlices.orchestrate;
@@ -18,7 +18,7 @@ module.exports = function ToggleSlicesByService(command) {
     command.accountName = account;
 
     let resourceName = `Upstream for "${command.serviceName}" service in "${command.environmentName}" environment`;
-    let provider = new UpstreamByServiceProvider(sender, command, resourceName);
+    let provider = new UpstreamProvider(sender, command, resourceName);
     let verifier = new ToggleUpstreamByServiceVerifier(sender, command);
     let toggler = new UpstreamToggler(sender, command);
 

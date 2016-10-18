@@ -4,6 +4,7 @@
 let co = require('co');
 let config = require('config');
 let sender = require('modules/sender');
+let _ = require('lodash');
 
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
 let InconsistentSlicesStatusError = require('modules/errors/InconsistentSlicesStatusError.class');
@@ -99,8 +100,8 @@ function ToggleUpstreamByNameVerifier(resourceName) {
   }
 }
 
-function UpstreamProviderBase(sender, toggleCommand, resourceName) {
-  this.provideUpstreams = (condition) => {
+function UpstreamProvider(sender, toggleCommand, resourceName) {
+  this.provideUpstreams = () => {
     return co(function* () {
       // Requires all LoadBalancer upstreams in the specified AWS account.
       let query = {
@@ -110,35 +111,17 @@ function UpstreamProviderBase(sender, toggleCommand, resourceName) {
       };
 
       let upstreams = yield sender.sendQuery({ query, parent: toggleCommand });
-      let filteredUpstreams = upstreams.filter(condition);
+      let filteredUpstreams = _.filter(upstreams, (upstream) => upstream.Value.EnvironmentName === toggleCommand.environmentName);
+      if (toggleCommand.serviceName) {
+        filteredUpstreams = _.filter(upstreams, (upstream) => upstream.Value.ServiceName === toggleCommand.serviceName);
+      }
+      if (toggleCommand.upstreamName) {
+        filteredUpstreams = _.filter(upstreams, (upstream) => upstream.Value.UpstreamName === toggleCommand.upstreamName);
+      }
 
       if (filteredUpstreams.length) return filteredUpstreams;
       else throw new ResourceNotFoundError(`No ${resourceName} has been found.`);
     });
-  };
-}
-
-function UpstreamByServiceProvider(sender, toggleCommand, resourceName) {
-  let $base = new UpstreamProviderBase(sender, toggleCommand, resourceName);
-
-  this.provideUpstreams = () => {
-    let condition = (upstream) => {
-      return upstream.Value.EnvironmentName === toggleCommand.environmentName && upstream.Value.ServiceName === toggleCommand.serviceName;
-    };
-
-    return $base.provideUpstreams(condition);
-  };
-}
-
-function UpstreamByNameProvider(sender, toggleCommand, resourceName) {
-  let $base = new UpstreamProviderBase(sender, toggleCommand, resourceName);
-
-  this.provideUpstreams = () => {
-    let condition = (upstream) => {
-      return upstream.Value.EnvironmentName === toggleCommand.environmentName && upstream.Value.UpstreamName === toggleCommand.upstreamName;
-    };
-
-    return $base.provideUpstreams(condition);
   };
 }
 
@@ -171,8 +154,7 @@ function* orchestrate(provider, verifier, toggler) {
 }
 
 module.exports = {
-  UpstreamByNameProvider,
-  UpstreamByServiceProvider,
+  UpstreamProvider,
   UpstreamToggler,
   orchestrate: co.wrap(orchestrate),
   ToggleUpstreamByServiceVerifier,
