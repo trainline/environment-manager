@@ -14,6 +14,7 @@ module.exports = {
     'import/no-unresolved': 0,
     'strict': [2, 'global'],
     'prefer-const': 0,
-    'global-require': 1
+    'global-require': 1,
+    "import/no-extraneous-dependencies": 0
   }
 };
