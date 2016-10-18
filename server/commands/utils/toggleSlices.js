@@ -9,7 +9,7 @@ let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class'
 let InconsistentSlicesStatusError = require('modules/errors/InconsistentSlicesStatusError.class');
 
 function ToggleUpstreamByServiceVerifier(toggleCommand) {
-  var $this = this;
+  let $this = this;
 
   $this.verifyUpstreams = (upstreams, mainCallback) => {
     // TODO(filip): remove async
@@ -17,7 +17,7 @@ function ToggleUpstreamByServiceVerifier(toggleCommand) {
 
     async.waterfall([
       (callback) => {
-        var query = {
+        let query = {
           name: 'ScanDynamoResources',
           resource: 'config/services',
           accountName: masterAccountName,
@@ -34,7 +34,7 @@ function ToggleUpstreamByServiceVerifier(toggleCommand) {
 
       (portMapping, callback) => {
         function upstreamIterator(upstream, iteratorCallback) {
-          var inconsistency = detectUpstreamInconsistency(upstream, portMapping);
+          let inconsistency = detectUpstreamInconsistency(upstream, portMapping);
           iteratorCallback(inconsistency);
         }
 
@@ -44,7 +44,7 @@ function ToggleUpstreamByServiceVerifier(toggleCommand) {
   };
 
   function asPortMapping(service) {
-    var portMapping = {};
+    let portMapping = {};
     if (service) {
       if (service.Value.BluePort) portMapping[service.Value.BluePort] = 'Blue';
       if (service.Value.GreenPort) portMapping[service.Value.GreenPort] = 'Green';
@@ -66,14 +66,14 @@ function ToggleUpstreamByServiceVerifier(toggleCommand) {
       return makeUpstreamError(upstream, 'cannot be toggled because it has more than two slices');
     }
 
-    var statuses = upstream.Value.Hosts.map((host) => {
+    let statuses = upstream.Value.Hosts.map((host) => {
       return host.State === 'up' ? 'Active' : 'Inactive';
     }).distinct();
     if (statuses.length == 1) {
       return makeUpstreamError(upstream, `cannot be toggled because all its slices are "${statuses[0]}"`);
     }
 
-    var slicesNames = upstream.Value.Hosts.map((host) => {
+    let slicesNames = upstream.Value.Hosts.map((host) => {
       return portMapping[host.Port]; });
     if (slicesNames.indexOf('Blue') < 0) {
       return makeUpstreamError(upstream, 'cannot be toggled because there is no way to detect which slice is "blue"');
@@ -87,30 +87,30 @@ function ToggleUpstreamByServiceVerifier(toggleCommand) {
   }
 
   function makeUpstreamError(upstream, reason) {
-    var message = `Upstream named "${upstream.Value.UpstreamName}" which refers to "${upstream.Value.ServiceName}" service in "${upstream.Value.EnvironmentName}" environment ${reason}.`;
+    let message = `Upstream named "${upstream.Value.UpstreamName}" which refers to "${upstream.Value.ServiceName}" service in "${upstream.Value.EnvironmentName}" environment ${reason}.`;
     return new InconsistentSlicesStatusError(message);
   }
 }
 
 function ToggleUpstreamByNameVerifier(resourceName) {
-  var $this = this;
+  let $this = this;
 
   $this.verifyUpstreams = (upstreams, callback) => {
-    var inconsistency = detectUpstreamsInconsistency(upstreams);
+    let inconsistency = detectUpstreamsInconsistency(upstreams);
     callback(inconsistency);
   };
 
   function detectUpstreamsInconsistency(upstreams) {
     if (upstreams.length > 1) {
-      var keys = upstreams.map((upstream) => {
+      let keys = upstreams.map((upstream) => {
         return upstream.key; }).join(', ');
-      var message = `${resourceName} cannot be toggled because all following keys refer to it: ${keys}.`;
+      let message = `${resourceName} cannot be toggled because all following keys refer to it: ${keys}.`;
       return new InconsistentSlicesStatusError(message);
     }
 
-    var upstream = upstreams[0];
+    let upstream = upstreams[0];
     if (upstream.Value.Hosts.length == 0) {
-      var message = `Upstream named "${upstream.Value.UpstreamName}" which refers to "${upstream.Value.ServiceName}" service in "${upstream.Value.EnvironmentName}" environment cannot be toggled because it has no slice.`;
+      let message = `Upstream named "${upstream.Value.UpstreamName}" which refers to "${upstream.Value.ServiceName}" service in "${upstream.Value.EnvironmentName}" environment cannot be toggled because it has no slice.`;
       return new InconsistentSlicesStatusError(message);
     }
 
@@ -119,13 +119,13 @@ function ToggleUpstreamByNameVerifier(resourceName) {
 }
 
 function UpstreamProviderBase(sender, toggleCommand, resourceName) {
-  var $this = this;
+  let $this = this;
   $this.provideUpstreams = (condition, mainCallback) => {
     // TODO(filip): remove async
     async.waterfall([
       (callback) => {
         // Requires all LoadBalancer upstreams in the specified AWS account.
-        var query = {
+        let query = {
           name: 'ScanDynamoResources',
           resource: 'config/lbupstream',
           accountName: toggleCommand.accountName,
@@ -135,7 +135,7 @@ function UpstreamProviderBase(sender, toggleCommand, resourceName) {
       },
 
       (upstreams, callback) => {
-        var filteredUpstreams = upstreams.filter(condition);
+        let filteredUpstreams = upstreams.filter(condition);
 
         if (filteredUpstreams.length) callback(null, filteredUpstreams);
         else callback(new ResourceNotFoundError(`No ${resourceName} has been found.`));
@@ -145,11 +145,11 @@ function UpstreamProviderBase(sender, toggleCommand, resourceName) {
 }
 
 function UpstreamByServiceProvider(sender, toggleCommand, resourceName) {
-  var $this = this;
-  var $base = new UpstreamProviderBase(sender, toggleCommand, resourceName);
+  let $this = this;
+  let $base = new UpstreamProviderBase(sender, toggleCommand, resourceName);
 
   $this.provideUpstreams = (callback) => {
-    var condition = (upstream) => {
+    let condition = (upstream) => {
       return upstream.Value.EnvironmentName === toggleCommand.environmentName && upstream.Value.ServiceName === toggleCommand.serviceName;
     };
 
@@ -158,11 +158,11 @@ function UpstreamByServiceProvider(sender, toggleCommand, resourceName) {
 }
 
 function UpstreamByNameProvider(sender, toggleCommand, resourceName) {
-  var $this = this;
-  var $base = new UpstreamProviderBase(sender, toggleCommand, resourceName);
+  let $this = this;
+  let $base = new UpstreamProviderBase(sender, toggleCommand, resourceName);
 
   $this.provideUpstreams = (callback) => {
-    var condition = (upstream) => {
+    let condition = (upstream) => {
       return upstream.Value.EnvironmentName === toggleCommand.environmentName && upstream.Value.UpstreamName === toggleCommand.upstreamName;
     };
 
@@ -172,27 +172,27 @@ function UpstreamByNameProvider(sender, toggleCommand, resourceName) {
 }
 
 function UpstreamToggler(sender, toggleCommand) {
-  var $this = this;
+  let $this = this;
   $this.toggleUpstream = (upstream, callback) => {
     function toggleHost(host) {
       host.State = (host.State === 'up' ? 'down' : 'up');
     }
 
     upstream.Value.Hosts.forEach(toggleHost);
-    var command = {
+    let command = {
       name: 'UpdateDynamoResource',
       resource: 'config/lbupstream',
       key: upstream.key,
       item: upstream,
       accountName: toggleCommand.accountName,
     };
-    sender.sendCommand({ command: command, parent: toggleCommand }, callback);
+    sender.sendCommand({ command, parent: toggleCommand }, callback);
   };
 
 }
 
 function ToggleSlicesOrchestrator(provider, verifier, toggler) {
-  var $this = this;
+  let $this = this;
   $this.orchestrate = (mainCallback) => {
     // TODO(filip): remove async
     async.waterfall([
@@ -215,7 +215,7 @@ function ToggleSlicesOrchestrator(provider, verifier, toggler) {
             return;
           }
 
-          var toggledUpstreamNames = upstreams.map((upstream) => {
+          let toggledUpstreamNames = upstreams.map((upstream) => {
             return upstream.Value.UpstreamName;
           });
           callback(null, { ToggledUpstreams: toggledUpstreamNames });
