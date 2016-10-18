@@ -7,11 +7,14 @@ const later = require('later');
 const actions = {
   switchOn: "switchOn",
   switchOff: "switchOff",
+  putInService: "putInService",
+  putOutOfService: "putOutOfService",
   skip: "skip"
 };
 
 const sources = {
   instance: "instance",
+  asg: "asg",
   environment: "environment"
 };
 
@@ -21,7 +24,13 @@ const skipReasons = {
   explicitNoSchedule: "The schedule tag for this instance is set to 'noschedule'",
   invalidSchedule: "The schedule tag for this instance is not valid",
   transitioning: "This instance is currently transitioning between states",
+  asgTransitioning: "This instance is currently transitioning between ASG lifecycle states",
   stateIsCorrect: "The instance is already in the correct state"
+};
+
+const lifeCycleStates = {
+  inService: "InService",
+  outOfService: "Standby"
 };
 
 const states = {
@@ -39,63 +48,89 @@ function actionForInstance(instance, dateTime) {
   if (!instance.Environment)
     return skip(skipReasons.noEnvironment);
 
-  let scheduleTag = getInstanceOrASGScheduleTagValue(instance);
+  if (instance.AutoScalingGroup) {
+    let lifeCycleState = getInstanceLifeCycleState(instance);
+    if (lifeCycleState === lifeCycleStates.transitioning)
+      return skip(skipReasons.asgTransitioning);
+  }
 
-  if (!scheduleTag)
-    return actionForEnvironment(currentState, instance.Environment, dateTime);
+  let foundSchedule = getScheduleForInstance(instance);
 
-  return actionForSchedule(currentState, scheduleTag, dateTime);
-
-}
-
-function actionForSchedule(currentState, scheduleTag, dateTime) {
-
-  let parseResult = parseSchedule(scheduleTag.value);
+  let source = foundSchedule.source;
+  let parseResult = foundSchedule.parseResult;
 
   if (!parseResult.success)
-    return skip(`${skipReasons.invalidSchedule} - Value: '${scheduleTag.value}', Error: '${parseResult.error}'`, scheduleTag.source);
+    return skip(`${skipReasons.invalidSchedule} - Error: '${parseResult.error}'`, source);
 
   let schedule = parseResult.schedule;
 
   if (schedule.skip)
-    return skip(skipReasons.explicitNoSchedule, scheduleTag.source);
+    return skip(skipReasons.explicitNoSchedule, source);
 
-  return actionFromState(currentState, schedule, dateTime, scheduleTag.source);
+  let expectedState = expectedStateFromSchedule(schedule, dateTime);
+
+  if (currentState === expectedState)
+    return skip(skipReasons.stateIsCorrect, source);
+
+  if (expectedState === states.on)
+    return takeAction(switchOnAction(instance), source);
+
+  return takeAction(switchOffAction(instance), source);
 
 }
 
-function getInstanceOrASGScheduleTagValue(instance) {
+function switchOnAction(instance) {
+  if (instance.AutoScalingGroup) {
+    let lifeCycleStatus = getInstanceLifeCycleState(instance);
+    if (lifeCycleStatus === lifeCycleStates.outOfService)
+      return actions.putInService;
+  }
+  return actions.switchOn;
+}
 
-  let instanceScheduleTagValue = getInstanceTagValue(instance, 'schedule');
-  if (instanceScheduleTagValue) return { value: instanceScheduleTagValue, source: sources.instance };
+function switchOffAction(instance) {
+  if (instance.AutoScalingGroup) {
+    let lifeCycleStatus = getInstanceLifeCycleState(instance);
+    if (lifeCycleStatus === lifeCycleStates.inService)
+      return actions.putOutOfService;
+  }
+  return actions.switchOff;
+}
+
+function getInstanceLifeCycleState(instance) {
+  let asgInstanceEntry = _.first(instance.AutoScalingGroup.Instances.filter(i => i.InstanceId.toLowerCase() == instance.InstanceId.toLowerCase()));
+  
+  if (asgInstanceEntry) {
+    if (asgInstanceEntry.LifecycleState === 'Standby') return lifeCycleStates.outOfService;
+    if (asgInstanceEntry.LifecycleState === 'InService') return lifeCycleStates.inService;
+  }
+  
+  return lifeCycleStates.transitioning;
+}
+
+function getScheduleForInstance(instance) {
+
+  let instanceSchedule = getTagValue(instance, 'schedule');
+  if (instanceSchedule) return { parseResult: parseSchedule(instanceSchedule), source: sources.instance };
 
   if (instance.AutoScalingGroup) {
-    let asgScheduleTagValue = getInstanceTagValue(instance.AutoScalingGroup, 'schedule');
-    if (asgScheduleTagValue) return { value: asgScheduleTagValue, source: sources.asg };
+    let asgSchedule = getTagValue(instance.AutoScalingGroup, 'schedule');
+    if (asgSchedule) return { parseResult: parseSchedule(asgSchedule), source: sources.asg };
   }
+  
+  return { parseResult: parseEnvironmentSchedule(instance.Environment), source: sources.environment };
 
 }
 
-function actionForEnvironment(currentState, environment, dateTime) {
+function parseEnvironmentSchedule(environmentSchedule) {
 
-  let parseResult = parseEnvironmentSchedule(environment);
-
-  if (!parseResult.success)
-    return skip(`${skipReasons.invalidSchedule} - Value: '${environment.DefaultSchedule}', Error: '${parseResult.error}'`, sources.environment);
-
-  return actionFromState(currentState, parseResult.schedule, dateTime, sources.environment);
-
-}
-
-function parseEnvironmentSchedule(environment) {
-
-  if (environment.ManualScheduleUp === false && environment.ScheduleAutomatically === false)
+  if (environmentSchedule.ManualScheduleUp === false && environmentSchedule.ScheduleAutomatically === false)
     return { success: true, schedule: { permanent: 'off' } };
   
-  if (!(environment.ManualScheduleUp !== true && environment.ScheduleAutomatically === true))
+  if (!(environmentSchedule.ManualScheduleUp !== true && environmentSchedule.ScheduleAutomatically === true))
     return { success: true, schedule: { permanent: 'on' } };
   
-  return parseSchedule(environment.DefaultSchedule);
+  return parseSchedule(environmentSchedule.DefaultSchedule);
 
 }
 
@@ -115,24 +150,12 @@ function expectedStateFromSchedule(schedule, dateTime) {
   return latest.state;
 }
 
-function actionFromState(currentState, schedule, dateTime, source) {
-
-  let expectedState = expectedStateFromSchedule(schedule, dateTime);
-
-  if (currentState === expectedState)
-    return skip(skipReasons.stateIsCorrect, source);
-
-  if (expectedState === states.on)
-    return takeAction(actions.switchOn, source);
-
-  return takeAction(actions.switchOff, source);
-
-}
-
-function getInstanceTagValue(instance, tagName) {
-  let tag = _.first(instance.Tags.filter(tag => tag.Key.toLowerCase() == tagName.toLowerCase()));
-  if (tag && tag.Value)
-    return tag.Value.trim();
+function getTagValue(instance, tagName) {
+  if (instance.Tags) {
+    let tag = _.first(instance.Tags.filter(tag => tag.Key.toLowerCase() == tagName.toLowerCase()));
+    if (tag && tag.Value)
+      return tag.Value.trim();
+  }
 }
 
 function currentStateOfInstance(instance) {
