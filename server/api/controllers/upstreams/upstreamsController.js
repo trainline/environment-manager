@@ -2,7 +2,7 @@
 'use strict';
 
 let getSlices = require('queryHandlers/slices/GetSlicesByUpstream');
-let toggleService = require('commands/slices/ToggleSlicesByUpstream');
+let toggleSlices = require('commands/slices/ToggleSlicesByUpstream');
 
 /**
  * GET /upstreams/{name}/slices
@@ -20,8 +20,8 @@ function getUpstreamSlices(req, res, next) {
 function putUpstreamSlicesToggle(req, res, next) {
   const upstreamName = req.swagger.params.name.value;
   const user = req.user;
-  
-  return toggleService({ environmentName, serviceName, user }).then(data => res.json(data)).catch(next);
+
+  return toggleSlices({ environmentName, serviceName, user }).then(data => res.json(data)).catch(next);
 }
 
 module.exports = {

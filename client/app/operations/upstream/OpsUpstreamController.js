@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsUpstreamController',
-  function ($scope, $routeParams, $location, $uibModal, $q, resources, QuerySync, cachedResources, accountMappingService, modal) {
+  function ($scope, $routeParams, $location, $uibModal, $q, $http, resources, QuerySync, cachedResources, accountMappingService, modal) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -143,12 +143,12 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
         details: ['Note: In most cases it is better to use <b>Toggle Service</b> instead when doing Blue/Green cutovers as this performs additional validation and copes with multiple upstreams.'],
         action: 'Toggle Upstream',
       }).then(function () {
-        accountMappingService.getAccountForEnvironment(environmentName).then(function (awsAccount) {
-          resources.environment(environmentName)
-            .inAWSAccount(awsAccount)
-            .toggleSlices()
-            .byUpstream(upstreamName)
-            .do(function (result) { vm.refresh(); });
+        $http({
+          method: 'put',
+          url: '/api/v1/upstreams/' + upstreamName + '/slices/toggle',
+          data: {}
+        }).then(function() {
+          vm.refresh();
         });
       });
     };

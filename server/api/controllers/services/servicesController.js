@@ -4,7 +4,7 @@
 let getAllServices = require('queryHandlers/services/GetAllServices');
 let getService = require('queryHandlers/services/GetService');
 let getSlices = require('queryHandlers/slices/GetSlicesByService');
-let toggleService = require('commands/slices/ToggleSlicesByService');
+let toggleSlices = require('commands/slices/ToggleSlicesByService');
 
 /**
  * GET /services?environment=a,b,c
@@ -44,7 +44,7 @@ function putServiceSlicesToggle(req, res, next) {
   const serviceName = req.swagger.params.service.value;
   const user = req.user;
 
-  return toggleService({ environmentName, serviceName, user }).then(data => res.json(data)).catch(next);
+  return toggleSlices({ environmentName, serviceName, user }).then(data => res.json(data)).catch(next);
 }
 
 module.exports = {
