@@ -22,13 +22,6 @@ module.exports = function ToggleSlicesByUpstream(command) {
     let verifier = new ToggleUpstreamByNameVerifier(resourceName);
     let toggler = new UpstreamToggler(sender, command);
 
-    return new Promise((resolve, reject) => {
-      let callback = (err, result) => {
-        if (err) reject(err);
-        else resolve(result);
-      };
-
-      orchestrate(provider, verifier, toggler, callback);
-    });
+    return orchestrate(provider, verifier, toggler);
   });
 };
