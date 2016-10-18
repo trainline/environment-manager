@@ -1,5 +1,9 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
-
+/* eslint-disable */
+/**
+ * TODO: This file needs a lot of attention (or wholesale replacement)
+ * Until then it't not worth trying to make it play nice with eslint
+ */
 'use strict';
 
 ﻿function buildCronService() {
@@ -311,7 +315,7 @@
       datetime = now_utc;
     }
     if (!scheduledActions) return null;
-    
+
     let mostRecentDate = new Date(2000, 1, 1); // don't look back before y2k
     let response;
     let cronArray;
