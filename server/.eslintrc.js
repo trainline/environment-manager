@@ -15,6 +15,7 @@ module.exports = {
     'strict': [2, 'global'],
     'prefer-const': 0,
     'global-require': 1,
-    "import/no-extraneous-dependencies": 0
+    "import/no-extraneous-dependencies": 0,
+    "no-use-before-define": 0
   }
 };
