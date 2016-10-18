@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 require('app-module-path').addPath(__dirname);
@@ -13,7 +14,7 @@ let checkAppPrerequisites = require('modules/checkAppPrerequisites');
 let co = require('co');
 require('./globals');
 
-process.on('unhandledRejection', function (reason, promise) {
+process.on('unhandledRejection', (reason, promise) => {
   logger.warn('Promise rejection was unhandled. ', reason);
 });
 
@@ -23,7 +24,7 @@ function start() {
   co(function* () {
     let configurationProvider = new ConfigurationProvider();
     yield configurationProvider.init();
-    
+
     if (config.getUserValue('masterAccountName') === undefined) {
       logger.error('No Master account found. Check the Accounts Dynamo Table.');
       process.exit(1);
@@ -41,9 +42,9 @@ function start() {
     ];
 
     yield servers.map(server => server.start());
-  }).catch(error => {
+  }).catch((error) => {
     if (error !== undefined && error.stack !== undefined) {
-      console.error(error.stack)
+      console.error(error.stack);
     }
   });
 }

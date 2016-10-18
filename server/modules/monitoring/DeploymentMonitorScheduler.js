@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let logger = require('modules/logger');
@@ -9,12 +10,11 @@ const MIN_MONITOR_INTERVAL = 45;
 let _monitorInterval = 0;
 
 function scheduleDeploymentMonitor(isPeakTime) {
-  var interval = getDeploymentMonitorInterval(isPeakTime);
+  let interval = getDeploymentMonitorInterval(isPeakTime);
 
   logger.debug(`DeploymentMonitor: Next execution will start in ${interval} seconds`);
 
   setTimeout(() => {
-
     deploymentMonitor.monitorActiveDeployments().then(
 
       (activeDeploymentsMonitored) => {
@@ -27,7 +27,6 @@ function scheduleDeploymentMonitor(isPeakTime) {
       }
 
     );
-
   }, interval * 1000);
 }
 
@@ -48,7 +47,7 @@ function getDeploymentMonitorInterval(isPeakTime) {
 }
 
 module.exports = {
-  start: function () {
+  start() {
     scheduleDeploymentMonitor(false);
   },
 };

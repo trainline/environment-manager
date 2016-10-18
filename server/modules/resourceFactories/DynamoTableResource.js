@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let util = require('util');
@@ -53,13 +54,13 @@ function DynamoTableResource(config, client) {
 
       case 'ConditionalCheckFailedException':
         return new DynamoConditionCheckError(
-          'An error has occurred handling following request:' + JSON.stringify(request, null, ''),
+          `An error has occurred handling following request:${JSON.stringify(request, null, '')}`,
           awsError
         );
 
       case 'ValidationException':
         return new DynamoRequestError(
-          'An error has occurred handling following request:' + JSON.stringify(request, null, ''),
+          `An error has occurred handling following request:${JSON.stringify(request, null, '')}`,
           awsError
         );
 
@@ -101,7 +102,7 @@ function DynamoTableResource(config, client) {
     };
 
     function tryGet(client) {
-      return client.get(request).promise().then(data => {
+      return client.get(request).promise().then((data) => {
         if (!data.Item) {
           let message = !params.range ?
             `No ${_resourceName} found for ${_keyName} equals to "${params.key}".` :
@@ -112,7 +113,7 @@ function DynamoTableResource(config, client) {
           let result = arrangeItem(data.Item, params.formatting);
           return result;
         }
-      }).catch(error => {
+      }).catch((error) => {
         throw standardifyError(error, request);
       });
     }
@@ -125,14 +126,14 @@ function DynamoTableResource(config, client) {
     let items = [];
 
     function scan(client) {
-      return client.scan(request).promise().then(data => {
+      return client.scan(request).promise().then((data) => {
         items = items.concat(data.Items.map(item => arrangeItem(item, params.formatting)));
         if (request.Limit || !data.LastEvaluatedKey) return items;
 
         // Scan from next index
         request.ExclusiveStartKey = data.LastEvaluatedKey;
         return scan(client);
-      }).catch(error => {
+      }).catch((error) => {
         throw standardifyError(error, request);
       });
     }
@@ -159,7 +160,7 @@ function DynamoTableResource(config, client) {
         Key: buildPrimaryKey(key, range),
       };
 
-      return client.get(request).promise().then(data => {
+      return client.get(request).promise().then((data) => {
         if (!data.Item) {
           let message = !params.range ?
             `No ${_resourceName} found for ${_keyName} equals to "${key}."` :
@@ -176,7 +177,7 @@ function DynamoTableResource(config, client) {
           let message = 'Item update has failed even if an item with the same key has been found.';
           throw new DynamoConditionCheckError(message);
         }
-      }).catch(error => {
+      }).catch((error) => {
         // Something went wrong
         throw standardifyError(error, request);
       });
@@ -187,10 +188,10 @@ function DynamoTableResource(config, client) {
         _builder.update().item(item).atVersion(expectedVersion).buildRequest() :
         _builder.update().item(item).buildRequest();
 
-      return client.update(request).promise().then(function (data) {
+      return client.update(request).promise().then((data) => {
         // Existing item succesfully updated
         return data.Attributes;
-      }).catch(error => {
+      }).catch((error) => {
         // Something went wrong...
         let managedError = standardifyError(error, request);
 
@@ -218,7 +219,7 @@ function DynamoTableResource(config, client) {
         Key: buildPrimaryKey(key, range),
       };
 
-      return client.get(request).promise().then(data => {
+      return client.get(request).promise().then((data) => {
         if (data.Item) { // Found an item with the same key
           let message = 'Item cannot be created as an item with the same key already exists.';
           throw new DynamoItemAlreadyExistsError(message);
@@ -226,15 +227,14 @@ function DynamoTableResource(config, client) {
           let message = 'Item creation has failed but no item with the same key has been found.';
           throw new DynamoConditionCheckError(message);
         }
-      }).catch(error => {
+      }).catch((error) => {
         throw standardifyError(error, request);
       });
     }
 
     let request = _builder.insert().item(item).buildRequest();
     return client.put(request).promise().then(data => data.Attributes)
-      .catch(error => {
-
+      .catch((error) => {
         // Something went wrong...
         let managedError = standardifyError(error, request);
 
@@ -259,8 +259,8 @@ function DynamoTableResource(config, client) {
       Key: buildPrimaryKey(params.key, params.range),
     };
 
-    return client.delete(request).promise().then(data => {})
-      .catch(error => {
+    return client.delete(request).promise().then((data) => {})
+      .catch((error) => {
         throw standardifyError(error, request);
       });
   };

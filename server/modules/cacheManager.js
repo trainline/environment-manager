@@ -16,7 +16,7 @@ const cacheManager = {
    * @param {string} name - identifies the cache.
    * @param {CacheMissCallback} fn - function called to get the value on a cache miss.
    */
-  create: function (name, fn, options) {
+  create(name, fn, options) {
     if (caches.has(name)) {
       throw new Error(`Cache "${name}" already exists`);
     }
@@ -35,7 +35,7 @@ const cacheManager = {
     return result;
   },
 
-  get: function (name) {
+  get(name) {
     if (caches.has(name)) {
       return caches.get(name);
     }
@@ -43,7 +43,7 @@ const cacheManager = {
     throw new Error(`Cache "${name}" does not exist`);
   },
 
-  hasCache: function (name) {
+  hasCache(name) {
     return caches.has(name);
   },
 
@@ -51,20 +51,19 @@ const cacheManager = {
    * Clear all named caches.
    * This method should only be used by tests.
    */
-  clear: function () {
+  clear() {
     caches.clear();
   },
 };
 
 function createCache(name, cache, fn, pending, logger, logHits) {
-
   return {
-    get: get,
-    del: del,
+    get,
+    del,
     mget: cache.mget.bind(cache),
     keys: cache.keys.bind(cache),
     set: setInCache,
-    flushAll: cache.flushAll.bind(cache)
+    flushAll: cache.flushAll.bind(cache),
   };
 
   /**
@@ -91,11 +90,11 @@ function createCache(name, cache, fn, pending, logger, logHits) {
         if (!fn) return Promise.resolve();
         let item = fn(key);
         pending[key] = item;
-        return item.then(i => {
+        return item.then((i) => {
           delete pending[key];
           setInCache(key, i);
           return val(i);
-        }, error => {
+        }, (error) => {
           delete pending[key];
           throw error;
         });

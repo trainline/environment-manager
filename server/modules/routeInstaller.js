@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let authorize = require('modules/authorization');
@@ -8,14 +9,14 @@ let simpleAuthorizer = require('modules/authorizers/simple');
 let apiCallFileLogger = require('modules/apiCallFileLogger');
 
 function asExpressRouteDescriptor(descriptor) {
-  var validation = descriptor.validation;
-  var action = descriptor.action;
-  var middlewares = [];
+  let validation = descriptor.validation;
+  let action = descriptor.action;
+  let middlewares = [];
 
   middlewares.push(apiCallFileLogger);
 
   if (!descriptor.allowsAnonymous) {
-    var authorizer = descriptor.authorizer || simpleAuthorizer;
+    let authorizer = descriptor.authorizer || simpleAuthorizer;
 
     middlewares.push((request, response, next) => {
       return authorize(authorizer, request, response, next);
@@ -24,8 +25,8 @@ function asExpressRouteDescriptor(descriptor) {
 
   // Validation step
   if (validation) {
-    middlewares.push(function (request, response, next) {
-      var error = validation(request.url, request.body);
+    middlewares.push((request, response, next) => {
+      let error = validation(request.url, request.body);
       if (!error) return next();
 
       response.status(400);
@@ -40,18 +41,18 @@ function asExpressRouteDescriptor(descriptor) {
     name: descriptor.$name,
     method: descriptor.method,
     url: descriptor.url,
-    middlewares: middlewares,
+    middlewares,
     priority: descriptor.priority,
   };
 }
 
 function buildRouter() {
-  var router = express.Router();
+  let router = express.Router();
 
   routeHandlerProvider
     .get()
     .map(asExpressRouteDescriptor)
-    .forEach(function (descriptor) {
+    .forEach((descriptor) => {
       // Registering route in express
       router[descriptor.method](descriptor.url, descriptor.middlewares);
     });

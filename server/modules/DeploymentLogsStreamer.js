@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -7,23 +8,22 @@ let logger = require('modules/logger');
 let sender = require('modules/sender');
 
 module.exports = function DeploymentLogsStreamer() {
-
-  var deploymentLogStreams = {};
-  var isRunning = false;
+  let deploymentLogStreams = {};
+  let isRunning = false;
 
   this.log = function (deploymentId, accountName, message) {
-    var logStreams = getLogStreamsByDeploymentIdAndAccountName(deploymentId, accountName);
-    var timestamp = new Date().toISOString();
+    let logStreams = getLogStreamsByDeploymentIdAndAccountName(deploymentId, accountName);
+    let timestamp = new Date().toISOString();
 
     logStreams.logs.push(`[${timestamp}] ${message}`);
   };
 
   function getLogStreamsByDeploymentIdAndAccountName(deploymentId, accountName) {
-    var logStreams = deploymentLogStreams[deploymentId];
+    let logStreams = deploymentLogStreams[deploymentId];
     if (!logStreams) {
       logStreams = {
-        deploymentId: deploymentId,
-        accountName: accountName,
+        deploymentId,
+        accountName,
         logs: [],
       };
 
@@ -34,28 +34,28 @@ module.exports = function DeploymentLogsStreamer() {
   }
 
   function getDeploymentHistory(deploymentId, accountName) {
-    var query = {
+    let query = {
       name: 'GetDynamoResource',
       resource: 'deployments/history',
-      accountName: accountName,
+      accountName,
       key: deploymentId,
     };
 
-    return sender.sendQuery({ query: query });
+    return sender.sendQuery({ query });
   }
 
   function flushLogStream(logStream) {
     return co(function* () {
-      var deploymentHistory = yield getDeploymentHistory(
+      let deploymentHistory = yield getDeploymentHistory(
         logStream.deploymentId, logStream.accountName
       );
 
-      var executionLog = deploymentHistory.Value.ExecutionLog;
-      var executionLogEntries = executionLog ? executionLog.split('\n') : [];
+      let executionLog = deploymentHistory.Value.ExecutionLog;
+      let executionLogEntries = executionLog ? executionLog.split('\n') : [];
 
       executionLogEntries = executionLogEntries.concat(logStream.logs);
 
-      var command = {
+      let command = {
         name: 'UpdateDynamoResource',
         resource: 'deployments/history',
         accountName: logStream.accountName,
@@ -65,7 +65,7 @@ module.exports = function DeploymentLogsStreamer() {
         },
       };
 
-      yield sender.sendCommand({ command: command, user: systemUser });
+      yield sender.sendCommand({ command, user: systemUser });
     });
   }
 
@@ -89,7 +89,5 @@ module.exports = function DeploymentLogsStreamer() {
         logger.error(`An error has occurred streaming logs to DynamoDB: ${error.message}`);
       }
     );
-
   }, 1000);
-
 };

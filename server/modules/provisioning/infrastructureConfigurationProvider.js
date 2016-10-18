@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -14,11 +15,10 @@ let Environment = require('models/Environment');
 let EnvironmentType = require('models/EnvironmentType');
 
 module.exports = {
-  get: function (environmentName, serviceName, serverRoleName) {
-
-    assert(environmentName, "Expected 'environmentName' argument not to be null or empty");
-    assert(serviceName, "Expected 'serviceName' argument not to be null or empty");
-    assert(serverRoleName, "Expected 'serviceName' argument not to be null or empty");
+  get(environmentName, serviceName, serverRoleName) {
+    assert(environmentName, 'Expected \'environmentName\' argument not to be null or empty');
+    assert(serviceName, 'Expected \'serviceName\' argument not to be null or empty');
+    assert(serverRoleName, 'Expected \'serviceName\' argument not to be null or empty');
 
     return co(function* () {
       let environment = yield Environment.getByName(environmentName);
@@ -62,7 +62,7 @@ function getServiceByName(serviceName) {
   };
 
   return sender
-    .sendQuery({ query: query })
+    .sendQuery({ query })
     .then(
       services => services.length ?
       Promise.resolve(services[0].Value) :
@@ -84,7 +84,7 @@ function getClusterByName(clusterName) {
   };
 
   return sender
-    .sendQuery({ query: query })
+    .sendQuery({ query })
     .then(
       cluster => Promise.resolve({
         Name: cluster.ClusterName,

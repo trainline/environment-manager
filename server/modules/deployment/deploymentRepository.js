@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let awsMasterClient = require('modules/amazon-client/masterAccountClient');
@@ -25,7 +26,6 @@ const recentDeploymentsTableName = qualifiedName('ConfigDeploymentExecutionStatu
 const completedDeploymentsTableName = qualifiedName('ConfigCompletedDeployments');
 
 function getRunningDeployments() {
-
   function createScan(lastEvaluatedKey) {
     let t = {
       TableName: recentDeploymentsTableName,
@@ -50,7 +50,6 @@ function getRunningDeployments() {
 }
 
 function archiveRecentlyCompletedDeployments() {
-
   function createScan(lastEvaluatedKey) {
     let t = {
       TableName: recentDeploymentsTableName,
@@ -71,14 +70,14 @@ function archiveRecentlyCompletedDeployments() {
     return t;
   }
 
-  let archive = deployment => {
+  let archive = (deployment) => {
     let startTimestamp = new Date(deployment.Value.StartTimestamp).toISOString();
     deployment.StartTimestamp = startTimestamp;
     deployment.StartDate = startTimestamp.substr(0, 10);
     return executePut({
-        TableName: completedDeploymentsTableName,
-        Item: deployment,
-      })
+      TableName: completedDeploymentsTableName,
+      Item: deployment,
+    })
       .then(() => executeDelete({
         TableName: recentDeploymentsTableName,
         Key: { DeploymentID: deployment.DeploymentID },
@@ -91,7 +90,6 @@ function archiveRecentlyCompletedDeployments() {
 }
 
 function getDeploymentsStartedBetween(min, max) {
-
   let createQuery = (date, options, lastEvaluatedKey) => {
     let keyConditionExpression = array => array.filter(x => x).join(' and ');
     let dateString = date.toISOString().substring(0, 10);
@@ -115,8 +113,7 @@ function getDeploymentsStartedBetween(min, max) {
   };
 
   let createQueries = function* () {
-
-    yield(lastEvaluatedKey => createQuery(max, {
+    yield (lastEvaluatedKey => createQuery(max, {
       KeyConditionExpression: 'StartTimestamp <= :upperbound',
       ExpressionAttributeValues: {
         ':upperbound': max.toISOString(),
@@ -124,14 +121,14 @@ function getDeploymentsStartedBetween(min, max) {
     }, lastEvaluatedKey));
 
     for (let t of daysBetween(day.before(max), day.after(min))) {
-      yield(lastEvaluatedKey => createQuery(t, {
+      yield (lastEvaluatedKey => createQuery(t, {
         KeyConditionExpression: undefined,
         ExpressionAttributeValues: undefined,
       }, lastEvaluatedKey));
     }
 
     if (min < day.of(max)) {
-      yield(lastEvaluatedKey => createQuery(min, {
+      yield (lastEvaluatedKey => createQuery(min, {
         KeyConditionExpression: ':lowerbound <= StartTimestamp',
         ExpressionAttributeValues: { ':lowerbound': min.toISOString() },
       }, lastEvaluatedKey));
@@ -148,8 +145,7 @@ function getDeploymentsStartedBetween(min, max) {
 }
 
 function getDeploymentById(deploymentId) {
-
-  let createGetRequestFromTableName = tableName => {
+  let createGetRequestFromTableName = (tableName) => {
     return {
       TableName: tableName,
       Key: { DeploymentID: deploymentId },
@@ -160,7 +156,7 @@ function getDeploymentById(deploymentId) {
     .map(createGetRequestFromTableName)
     .map(executeGet);
 
-  return Promise.all(resultPromises).then(results => {
+  return Promise.all(resultPromises).then((results) => {
     let result = results.find(x => x.Item);
     return (result) ? result.Item : {};
   });
@@ -201,7 +197,7 @@ function getAllPages(getPage) {
 }
 
 function forAllPages(fn, getPage) {
-  let doRest = lastEvaluatedKey => {
+  let doRest = (lastEvaluatedKey) => {
     if (!lastEvaluatedKey) {
       return Promise.resolve();
     }

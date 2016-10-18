@@ -1,4 +1,5 @@
-﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let S3GetObjectRequest = require('modules/S3GetObjectRequest');
@@ -14,16 +15,16 @@ function getNode(query) {
     recurse: false,
   };
 
-  return sender.sendQuery({ query: consulQuery }).then(node => {
-    var s3Details = parseBucketAndPathFromS3Url(node.value.Log);
+  return sender.sendQuery({ query: consulQuery }).then((node) => {
+    let s3Details = parseBucketAndPathFromS3Url(node.value.Log);
     return fetchS3Object(query.account, s3Details);
   });
 }
 
 function fetchS3Object(account, s3Details) {
-  return amazonClientFactory.createS3Client(account).then(client => {
+  return amazonClientFactory.createS3Client(account).then((client) => {
     return new Promise((resolve, reject) => {
-      var s3Request = new S3GetObjectRequest(client, s3Details);
+      let s3Request = new S3GetObjectRequest(client, s3Details);
       s3Request.execute((err, result) => {
         if (err) return reject(err);
         return resolve(result.Body.toString());

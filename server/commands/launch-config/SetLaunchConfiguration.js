@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assertContract = require('modules/assertContract');
@@ -25,12 +26,12 @@ module.exports = function SetLaunchConfiguration(command) {
           properties: {
             AMI: { type: String, empty: true },
             InstanceType: { type: String, empty: true },
-            InstanceProfileName: { type: String, empty: true},
+            InstanceProfileName: { type: String, empty: true },
             Volumes: { type: Array, empty: true },
             // KeyName: { type: String, empty: true },
             SecurityGroups: { type: Array, empty: true },
-          }
-        }
+          },
+        },
       },
     });
 
@@ -59,7 +60,7 @@ module.exports = function SetLaunchConfiguration(command) {
       let securityGroupsNamesAndReasons = _.map(data.SecurityGroups, (name) => {
         return {
           name,
-          reason: 'It was set by user in LaunchConfig form'
+          reason: 'It was set by user in LaunchConfig form',
         };
       });
       let securityGroups = yield securityGroupsProvider.getFromSecurityGroupNames(command.accountName, vpcId, securityGroupsNamesAndReasons, logger);
@@ -68,11 +69,11 @@ module.exports = function SetLaunchConfiguration(command) {
 
     if (data.AMI !== undefined) {
       let image = yield imageProvider.get(data.AMI);
-      updated.ImageId = image.id
+      updated.ImageId = image.id;
     }
 
-    var accountName = command.accountName;
-    var autoScalingGroupName = command.autoScalingGroupName;
+    let accountName = command.accountName;
+    let autoScalingGroupName = command.autoScalingGroupName;
 
     logger.debug(`Updating ASG ${autoScalingGroupName} with: ${JSON.stringify(updated)}`);
 
@@ -88,10 +89,10 @@ module.exports = function SetLaunchConfiguration(command) {
 
 
 function getInstanceProfileByName(accountName, instanceProfileName) {
-  var query = {
+  let query = {
     name: 'GetInstanceProfile',
-    accountName: accountName,
-    instanceProfileName: instanceProfileName,
+    accountName,
+    instanceProfileName,
   };
 
   return sender.sendQuery({ query });

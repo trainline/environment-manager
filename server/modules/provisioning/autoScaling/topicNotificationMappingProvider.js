@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let AutoScalingNotificationType = require('Enums').AutoScalingNotificationType;
@@ -9,8 +10,8 @@ const TopicsToNotify = [
 ];
 
 module.exports = {
-  get: function (accountName) {
-    var mappings = TopicsToNotify.map(topicName =>
+  get(accountName) {
+    let mappings = TopicsToNotify.map(topicName =>
       getMappingsByTopicName(topicName, accountName)
     );
 
@@ -19,11 +20,9 @@ module.exports = {
 };
 
 function getMappingsByTopicName(topicName, accountName) {
-
-  return getTopicByName(topicName, accountName).then(topic => {
-
-    var mapping = {
-      topicName: topicName,
+  return getTopicByName(topicName, accountName).then((topic) => {
+    let mapping = {
+      topicName,
       topicArn: topic.TopicArn,
       notificationTypes: [
         AutoScalingNotificationType.InstanceLaunch,
@@ -39,12 +38,11 @@ function getMappingsByTopicName(topicName, accountName) {
 }
 
 function getTopicByName(topicName, accountName) {
-
-  var query = {
+  let query = {
     name: 'GetTopic',
-    accountName: accountName,
-    topicName: topicName,
+    accountName,
+    topicName,
   };
 
-  return sender.sendQuery({ query: query });
+  return sender.sendQuery({ query });
 }

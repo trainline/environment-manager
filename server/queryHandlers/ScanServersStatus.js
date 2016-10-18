@@ -1,4 +1,5 @@
-﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -15,38 +16,37 @@ module.exports = function ScanServersStatusQueryHandler(query) {
   return Promise.all([
     getAllAsgs(query),
     getAllInstances(environment),
-    getAllImages()
-  ]).then(results => {
-
+    getAllImages(),
+  ]).then((results) => {
     let allAsgs = results[0];
     let allInstances = results[1];
     let allImages = results[2];
 
-    let asgs = _.filter(allAsgs, (asg) => asg.getTag('Environment') === environment);
+    let asgs = _.filter(allAsgs, asg => asg.getTag('Environment') === environment);
     if (query.filter.cluster) {
-      asgs = _.filter(asgs, (asg) => asg.getTag('OwningCluster') === query.filter.cluster);
+      asgs = _.filter(asgs, asg => asg.getTag('OwningCluster') === query.filter.cluster);
     }
- 
-	  return Promise.all(asgs.map(asg => {
-      let instances = asg.Instances.map(asgInstance => {
-        var instance = getInstance(allInstances, asgInstance.InstanceId);
-        if (instance && instance.State.Name !== 'terminated') {
-          var image = getImage(allImages, instance.ImageId); // TODO(filip): use Image in place of this
-          return {
-            instanceId: instance.InstanceId,
-            name: getTagValue(instance, 'Name'),
-            ami: image,
-            status: asgInstance.HealthStatus,
-          };
-        }
-      }).filter(instance => !!instance);
 
-      let instanceCount = instances.length;
-      let status = getStatus(instances, asg.DesiredCapacity);
-      let ami = getAmi(instances);
+	  return Promise.all(asgs.map((asg) => {
+    let instances = asg.Instances.map((asgInstance) => {
+      let instance = getInstance(allInstances, asgInstance.InstanceId);
+      if (instance && instance.State.Name !== 'terminated') {
+        let image = getImage(allImages, instance.ImageId); // TODO(filip): use Image in place of this
+        return {
+          instanceId: instance.InstanceId,
+          name: getTagValue(instance, 'Name'),
+          ami: image,
+          status: asgInstance.HealthStatus,
+        };
+      }
+    }).filter(instance => !!instance);
 
-      return getServicesInstalledOnInstances(environment, instances)
-        .then(services => {
+    let instanceCount = instances.length;
+    let status = getStatus(instances, asg.DesiredCapacity);
+    let ami = getAmi(instances);
+
+    return getServicesInstalledOnInstances(environment, instances)
+        .then((services) => {
           return {
             Name: asg.AutoScalingGroupName,
             Role: asg.getServerRoleName(),
@@ -55,61 +55,56 @@ module.exports = function ScanServersStatusQueryHandler(query) {
             Schedule: getTagValue(asg, 'Schedule'),
             Size: {
               Current: instanceCount,
-              Desired: asg.DesiredCapacity
+              Desired: asg.DesiredCapacity,
             },
             Services: services.map(getServiceView(environment)),
             Ami: ami,
           };
         });
+  })).then((asgResults) => {
+    let asgs = asgResults.filter(byStatus(query.filter.status));
 
-    })).then(asgResults => {
+    let result = {
+      EnvironmentName: environment,
+      Value: asgs,
+    };
 
-      let asgs = asgResults.filter(byStatus(query.filter.status));
+    let duration = moment.duration(moment.utc().diff(allStartTime)).asMilliseconds();
+    logger.debug(`server-status-query: Whole query took: ${duration}ms`);
 
-      let result = {
-        EnvironmentName: environment,
-        Value: asgs
-      };
-
-      let duration = moment.duration(moment.utc().diff(allStartTime)).asMilliseconds();
-      logger.debug(`server-status-query: Whole query took: ${duration}ms`);
-
-      return result;
-
-    });
-
+    return result;
+  });
   });
 };
 
 function getServicesInstalledOnInstances(environment, instances) {
-  return Promise.all(instances.map(instance => {
-    return getConsulServicesForNode(environment, instance.name).then(consulServices => {
+  return Promise.all(instances.map((instance) => {
+    return getConsulServicesForNode(environment, instance.name).then((consulServices) => {
       let services = sanitizeConsulServices(consulServices);
       return services;
     });
-  })).then(services => {
+  })).then((services) => {
     let uniqueServices = _.uniqWith(_.flatten(services), _.isEqual);
     return uniqueServices;
   });
 }
 
 function getConsulServicesForNode(environment, nodeName) {
-  if (!nodeName) return Promise.resolve({}); 
+  if (!nodeName) return Promise.resolve({});
   return sender.sendQuery({
     query: {
       name: 'GetNode',
-      environment: environment,
-      nodeName: nodeName
-    }
-  }).then(consulNode => {
+      environment,
+      nodeName,
+    },
+  }).then((consulNode) => {
     if (!consulNode) return [];
     return consulNode.Services;
   });
 }
 
 function getServiceView(env) {
-  return service => {
-
+  return (service) => {
     let regExp = new RegExp(`^${env}-`);
     let nameWithoutPrefix = service.name.replace(regExp, '');
     let name = nameWithoutPrefix.replace(/(-green|-blue)$/, '');
@@ -141,7 +136,6 @@ function getAmi(instances) {
 
 
 function getStatus(instances, desiredCapacity) {
-
   if (_.some(instances, instance => instance.status !== 'Healthy')) {
     return {
       Status: 'Error',
@@ -164,13 +158,12 @@ function getStatus(instances, desiredCapacity) {
 function sanitizeConsulServices(consulServices) {
   let keys = _.keys(consulServices);
 
-  return keys.map(key => {
-
+  return keys.map((key) => {
     let obj = {
       name: consulServices[key].Service,
     };
 
-    consulServices[key].Tags.forEach(tag => {
+    consulServices[key].Tags.forEach((tag) => {
       let parts = tag.split(':');
       obj[parts[0]] = parts[1];
     });
@@ -181,9 +174,9 @@ function sanitizeConsulServices(consulServices) {
 
 function getTagValue(resource, key) {
   if (!resource || !resource.Tags)
-    return [];
+    { return []; }
 
-  let tags = resource.Tags.filter(tag => {
+  let tags = resource.Tags.filter((tag) => {
     return tag.Key === key;
   });
 
@@ -191,7 +184,7 @@ function getTagValue(resource, key) {
 }
 
 function getImage(images, imageId) {
-  let foundImages = images.filter(image => {
+  let foundImages = images.filter((image) => {
     return image.ImageId === imageId;
   });
 
@@ -205,22 +198,22 @@ function getImage(images, imageId) {
 }
 
 function getInstance(instances, instanceId) {
-  return instances.filter(instance => {
+  return instances.filter((instance) => {
     return instance.InstanceId === instanceId;
   })[0];
 }
 
 function byStatus(status) {
-  return resource => {
+  return (resource) => {
     if (!status) return true;
     return resource.Status.toLowerCase() == status.toLowerCase();
   };
 }
 
 function byTag(key, value) {
-  return resource => {
+  return (resource) => {
     if (!value) return true;
-    return _.some(resource.Tags, tag => {
+    return _.some(resource.Tags, (tag) => {
       return tag.Key === key &&
         tag.Value.toLowerCase() === value.toLowerCase();
     });
@@ -235,7 +228,7 @@ function getAllAsgs(query) {
       name: 'ScanAutoScalingGroups',
       accountName: query.accountName,
     },
-  }).then(result => {
+  }).then((result) => {
     let duration = moment.duration(moment.utc().diff(startTime)).asMilliseconds();
     logger.debug(`server-status-query: AllAsgsQuery took ${duration}ms`);
     return result;
@@ -251,9 +244,9 @@ function getAllInstances(environment) {
   return sender.sendQuery({
     query: {
       name: 'ScanCrossAccountInstances',
-      filter: filter,
+      filter,
     },
-  }).then(result => {
+  }).then((result) => {
     let duration = moment.duration(moment.utc().diff(startTime)).asMilliseconds();
     logger.debug(`server-status-query: InstancesQuery took ${duration}ms`);
     return result;
@@ -267,7 +260,7 @@ function getAllImages() {
     query: {
       name: 'ScanCrossAccountImages',
     },
-  }).then(result => {
+  }).then((result) => {
     let duration = moment.duration(moment.utc().diff(startTime)).asMilliseconds();
     logger.debug(`server-status-query: AllImagesQuery took ${duration}ms`);
     return result;

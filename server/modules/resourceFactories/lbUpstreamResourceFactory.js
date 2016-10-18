@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let utils = require('modules/utilities');
@@ -59,7 +60,7 @@ function LBUpstreamTableResource(config, client) {
 }
 
 module.exports = {
-  canCreate: (resourceDescriptor) =>
+  canCreate: resourceDescriptor =>
 
     // NOTE: Find a better way to specialize factories
     resourceDescriptor.type.toLowerCase() === 'dynamodb/table' &&
@@ -67,15 +68,14 @@ module.exports = {
 
   create: (resourceDescriptor, parameters) =>
   amazonClientFactory.createDynamoClient(parameters.accountName).then(
-    client => {
-
+    (client) => {
       let config = {
-        resourceName:    resourceDescriptor.name,
-        table:           resourceDescriptor.tableName,
-        key:             resourceDescriptor.keyName,
-        range:           resourceDescriptor.rangeName,
+        resourceName: resourceDescriptor.name,
+        table: resourceDescriptor.tableName,
+        key: resourceDescriptor.keyName,
+        range: resourceDescriptor.rangeName,
         auditingEnabled: resourceDescriptor.enableAuditing,
-        dateField:       resourceDescriptor.dateField,
+        dateField: resourceDescriptor.dateField,
       };
 
       return new LBUpstreamTableResource(config, client);

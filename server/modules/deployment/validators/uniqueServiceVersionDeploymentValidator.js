@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -46,13 +47,13 @@ function validateServiceNotCurrentlyBeingDeployed(deployment) {
       'Value.EnvironmentName': deployment.environmentName,
       'Value.ServiceName': deployment.serviceName,
       'Value.ServerRoleName': deployment.serverRoleName,
-      $date_from: minimumRangeDate,
-      $date_to: maximumRangeDate,
+      '$date_from': minimumRangeDate,
+      '$date_to': maximumRangeDate,
       'Value.SchemaVersion': 2,
     },
   };
 
-  return sender.sendQuery({ query }).then(deployments => {
+  return sender.sendQuery({ query }).then((deployments) => {
     if (deployments.length) {
       return Promise.reject(new DeploymentValidationError(
         `The '${deployment.serviceName}' service is already being deployed to '${deployment.serverRoleName}' at this time.`

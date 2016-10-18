@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assert = require('assert');
@@ -17,9 +18,9 @@ module.exports = function ExitAutoScalingGroupInstancesFromStandby(command) {
   return co(function* () {
     let parameters;
     let childCommand;
-    
+
     let autoScalingGroup = yield AutoScalingGroup.getByName(command.accountName, command.autoScalingGroupName);
-    
+
     // Predict AutoScalingGroup size after exiting instances from standby
     let expectedSize = yield autoScalingGroupSizePredictor.predictSizeAfterExitingInstancesFromStandby(autoScalingGroup, command.instanceIds);
 

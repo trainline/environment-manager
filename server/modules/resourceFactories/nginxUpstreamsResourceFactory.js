@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let url = require('url');
@@ -9,7 +10,6 @@ let HttpRequestError = require('modules/errors/HttpRequestError.class');
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
 
 function NginxUpstreamsResource() {
-
   function httpErrorToError(error) {
     switch (error.code) {
       case 'ENOTFOUND':
@@ -33,8 +33,8 @@ function NginxUpstreamsResource() {
 
   function asUpstreamItem(nginxUpstreamPeer) {
     let upstreamItem = {
-      server:        nginxUpstreamPeer.server,
-      state:         nginxUpstreamPeer.state,
+      server: nginxUpstreamPeer.server,
+      state: nginxUpstreamPeer.state,
       health_checks: nginxUpstreamPeer.health_checks,
     };
 
@@ -42,7 +42,6 @@ function NginxUpstreamsResource() {
   }
 
   this.all = function (parameters) {
-
     let uri = url.format({
       protocol: 'http',
       hostname: parameters.instanceDomainName,
@@ -50,8 +49,7 @@ function NginxUpstreamsResource() {
     });
 
     return new Promise((resolve, reject) => {
-
-      request(uri, function (error, response, body) {
+      request(uri, (error, response, body) => {
         // Error connecting to the host
         if (error) return reject(httpErrorToError(error));
 
@@ -65,7 +63,6 @@ function NginxUpstreamsResource() {
         let upstreams = [];
 
         for (let upstreamName in nginxUpstreams) {
-
           let nginxUpstream = nginxUpstreams[upstreamName];
 
           if (!nginxUpstream || !nginxUpstream.peers) return invalidJsonToError(body);
@@ -82,10 +79,9 @@ function NginxUpstreamsResource() {
       });
     });
   };
-
 }
 
 module.exports = {
-  canCreate: (resourceDescriptor) => resourceDescriptor.type.toLowerCase() === 'nginx/upstreams',
+  canCreate: resourceDescriptor => resourceDescriptor.type.toLowerCase() === 'nginx/upstreams',
   create: (resourceDescriptor, parameters) => Promise.resolve(new NginxUpstreamsResource()),
 };

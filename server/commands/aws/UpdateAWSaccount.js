@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let config = require('config');
@@ -13,14 +14,13 @@ function UpdateAWSAccount(command) {
     let account = command.data;
     accountValidator.validate(account);
 
-    var dynamoCommand = {
+    let dynamoCommand = {
       name: 'UpdateDynamoResource',
       resource: 'config/awsAccounts',
       item: account,
       accountName: masterAccountName,
     };
     return sender.sendCommand({ command: dynamoCommand, parent: command }).then(awsAccounts.flush);
-
   } catch (error) {
     return Promise.reject(error);
   }

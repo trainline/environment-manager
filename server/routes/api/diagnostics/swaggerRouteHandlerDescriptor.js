@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let route = require('modules/helpers/route');
@@ -12,9 +13,8 @@ module.exports = route
   .get('/swagger.json')
   .inOrderTo('Describe all available API endpoints.')
   .do((request, response) => {
-
     function getParams(url, docs) {
-      var r = /\/:([^/]*)/g,
+      let r = /\/:([^/]*)/g,
         matches,
         parameters = [];
 
@@ -27,8 +27,8 @@ module.exports = route
       }
 
       if (docs && docs.params) {
-        docs.params.forEach(function (docParam) {
-          _.remove(parameters, function (urlParam) {
+        docs.params.forEach((docParam) => {
+          _.remove(parameters, (urlParam) => {
             return urlParam.name == docParam.name;
           });
 
@@ -40,8 +40,8 @@ module.exports = route
     }
 
     function getRouteDescription(route) {
-      var verb = route.docs.verb || route.method;
-      var perAccount = route.docs.perAccount ? ' within an account' : '';
+      let verb = route.docs.verb || route.method;
+      let perAccount = route.docs.perAccount ? ' within an account' : '';
 
       switch (verb) {
         case 'scan':
@@ -72,7 +72,7 @@ module.exports = route
     }
 
     function getDescription(summary, route) {
-      var description = summary;
+      let description = summary;
       if (route.authorizer) {
         if (route.authorizer.docs.requiresClusterPermissions) {
           description += '<br><br>Cluster permissions are required to call this endpoint';
@@ -84,19 +84,18 @@ module.exports = route
       }
 
       if (route.docs && route.docs.link) {
-        description += "<br><br>For more information please visit:<br><a href='" + route.docs.link + "'>" + route.docs.link + '</a>';
+        description += `<br><br>For more information please visit:<br><a href='${route.docs.link}'>${route.docs.link}</a>`;
       }
 
       return description;
     }
 
     function getPathsFromRoutes(routes) {
-      var paths = {};
-      routes.forEach(route => {
-
-        var summary = getSummaryFromRoute(route);
-        var definition = {
-          summary: summary,
+      let paths = {};
+      routes.forEach((route) => {
+        let summary = getSummaryFromRoute(route);
+        let definition = {
+          summary,
           description: getDescription(summary, route),
           responses: {
             200: {
@@ -110,13 +109,13 @@ module.exports = route
 
         definition.tags = route.docs && route.docs.tags ? route.docs.tags : ['Other'];
 
-        var params = getParams(route.url, route.docs);
+        let params = getParams(route.url, route.docs);
 
-        var url = route.url;
-        params.forEach(function (param) {
+        let url = route.url;
+        params.forEach((param) => {
           url = url.replace(`:${param.name}`, `{${param.name}}`);
         });
-        
+
         if (route.parameters !== undefined) params = params.concat(route.parameters);
         if (params.length > 0) definition.parameters = params;
 
@@ -125,30 +124,29 @@ module.exports = route
         if (paths[url]) {
           paths[url][route.method] = definition;
         } else {
-          var path = {};
+          let path = {};
           path[route.method] = definition;
           paths[url] = path;
         }
-
       });
       return paths;
     }
 
     let routeHandlerProvider = require('modules/routeHandlerProvider');
-    var routes = routeHandlerProvider.get().filter(route => {
+    let routes = routeHandlerProvider.get().filter((route) => {
       if (route.docs) return !route.docs.disableDocs;
       return true;
     });
 
-    //Allow HTTP calls to API when running locally
+    // Allow HTTP calls to API when running locally
     let schemes = IS_PROD ? ['https'] : ['http'];
 
-    var swagger = {
+    let swagger = {
       swagger: '2.0',
       info: {
         title: 'Environment Manager API',
       },
-      schemes: schemes,
+      schemes,
       basePath: '/api',
       produces: [
         'application/json',

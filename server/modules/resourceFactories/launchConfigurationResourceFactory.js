@@ -1,11 +1,12 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
 let amazonClientFactory = require('modules/amazon-client/childAccountClient');
 
-var AwsError = require('modules/errors/AwsError.class');
-var LaunchConfigurationAlreadyExistsError = require('modules/errors/LaunchConfigurationAlreadyExistsError.class');
+let AwsError = require('modules/errors/AwsError.class');
+let LaunchConfigurationAlreadyExistsError = require('modules/errors/LaunchConfigurationAlreadyExistsError.class');
 
 // TODO(filip): don't define methods in constructor, convert to class
 function LaunchConfigurationResource(client) {
@@ -22,7 +23,7 @@ function LaunchConfigurationResource(client) {
   function standardifyError(error, launchConfigurationName) {
     if (!error) return null;
 
-    var awsError = new AwsError(error.message);
+    let awsError = new AwsError(error.message);
 
     if (error.code === 'AlreadyExists') {
       return new LaunchConfigurationAlreadyExistsError(
@@ -42,7 +43,7 @@ function LaunchConfigurationResource(client) {
     }
 
     function query() {
-      return client.describeLaunchConfigurations(request).promise().then(data => {
+      return client.describeLaunchConfigurations(request).promise().then((data) => {
         launchconfigs = launchconfigs.concat(data.LaunchConfigurations);
 
         if (!data.NextToken) return launchconfigs;
@@ -67,7 +68,7 @@ function LaunchConfigurationResource(client) {
   this.delete = function (parameters) {
     let request = { LaunchConfigurationName: parameters.name };
 
-    return client.deleteLaunchConfiguration(request).promise().catch(error => {
+    return client.deleteLaunchConfiguration(request).promise().catch((error) => {
       throw standardifyError(error, parameters.name);
     });
   };
@@ -76,7 +77,7 @@ function LaunchConfigurationResource(client) {
     cleanup(parameters);
 
     let request = parameters;
-    return client.createLaunchConfiguration(request).promise().catch(error => {
+    return client.createLaunchConfiguration(request).promise().catch((error) => {
       throw standardifyError(error, parameters.LaunchConfigurationName);
     });
   };
@@ -84,7 +85,7 @@ function LaunchConfigurationResource(client) {
 
 module.exports = {
 
-  canCreate: (resourceDescriptor) =>
+  canCreate: resourceDescriptor =>
     resourceDescriptor.type.toLowerCase() == 'launchconfig',
 
   create: (resourceDescriptor, parameters) =>

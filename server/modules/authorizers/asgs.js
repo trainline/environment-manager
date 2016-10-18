@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -15,32 +16,32 @@ function getEnvironment(name, user) {
     accountName: masterAccountName,
   };
 
-  return sender.sendQuery({ query: query, user: user });
+  return sender.sendQuery({ query, user });
 }
 
 function getModifyPermissionsForEnvironment(environmentName, user) {
-  return getEnvironment(environmentName, user).then(environment => {
+  return getEnvironment(environmentName, user).then((environment) => {
     if (environment) {
       return {
         cluster: environment.Value.OwningCluster.toLowerCase(),
-        environmentType: environment.Value.EnvironmentType.toLowerCase()
+        environmentType: environment.Value.EnvironmentType.toLowerCase(),
       };
     }
     throw `Could not find environment: ${environmentName}`;
   });
 }
 
-exports.getRules = request => {
+exports.getRules = (request) => {
   let r = /^(.*?)-/;
   let match = r.exec(request.params.name);
 
   if (match && match[1]) {
-    return getModifyPermissionsForEnvironment(match[1], request.user).then(envPermissions => {
+    return getModifyPermissionsForEnvironment(match[1], request.user).then((envPermissions) => {
       return [{
         resource: request.url.replace(/\/+$/, ''),
         access: request.method,
         clusters: [envPermissions.cluster],
-        environmentTypes: [envPermissions.environmentType]
+        environmentTypes: [envPermissions.environmentType],
       }];
     });
   }
@@ -50,5 +51,5 @@ exports.getRules = request => {
 
 exports.docs = {
   requiresClusterPermissions: true,
-  requiresEnvironmentTypePermissions: true
+  requiresEnvironmentTypePermissions: true,
 };

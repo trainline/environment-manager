@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -25,12 +26,12 @@ module.exports =
       let enable = request.body.enable;
 
       if (enable === undefined) {
-        throw new Error(`'enable' JSON param needs to be specified`);
+        throw new Error('\'enable\' JSON param needs to be specified');
       }
 
       let query = {
         name: 'ScanInstances',
-        accountName: accountName,
+        accountName,
         filter: {
           'instance-id': instanceId,
         },
@@ -48,7 +49,7 @@ module.exports =
         name,
         instance,
         accountName,
-        enable
+        enable,
       };
 
       return sender.sendCommand({ command, user }).then(() => {

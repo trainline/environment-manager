@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let async = require('async');
@@ -43,39 +44,34 @@ module.exports = function SSLComponentsRepository() {
       // Following function creates a couple of request in order to download
       // these two S3 objects.
       (client, callback) => {
-
-        var privateKeyRequestParameters = {
+        let privateKeyRequestParameters = {
           bucketName: sslComponentsRepositoryConfiguration.getBucketName(),
           objectPath: sslComponentsRepositoryConfiguration.getPrivateKeyObjectPath(),
         };
 
-        var privateKeyRequest = new S3GetObjectRequest(client, privateKeyRequestParameters);
+        let privateKeyRequest = new S3GetObjectRequest(client, privateKeyRequestParameters);
 
-        var certificateRequestParameters = {
+        let certificateRequestParameters = {
           bucketName: sslComponentsRepositoryConfiguration.getBucketName(),
           objectPath: sslComponentsRepositoryConfiguration.getCertificateObjectPath(),
         };
 
-        var certificateRequest = new S3GetObjectRequest(client, certificateRequestParameters);
+        let certificateRequest = new S3GetObjectRequest(client, certificateRequestParameters);
 
         async.parallel({
-          privateKeyS3Object:  privateKeyRequest.execute,
+          privateKeyS3Object: privateKeyRequest.execute,
           certificateS3Object: certificateRequest.execute,
         }, callback);
-
       },
 
       // Previous function returns a couple of S3 objects. The following one
       // gets their content.
       (response, callback) => {
-
         callback(null, {
-          privateKey:  response.privateKeyS3Object.Body.toString('utf8'),
+          privateKey: response.privateKeyS3Object.Body.toString('utf8'),
           certificate: response.certificateS3Object.Body.toString('utf8'),
         });
-
       },
     ], mainCallback);
   }
-
 };

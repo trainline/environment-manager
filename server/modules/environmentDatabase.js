@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let ConfigurationError = require('modules/errors/ConfigurationError.class');
@@ -17,7 +18,7 @@ function getEnvironmentByName(environmentName) {
   };
 
   return sender
-    .sendQuery({ query: query })
+    .sendQuery({ query })
     .then(
       environment => Promise.resolve(environment.Value),
       error => Promise.reject(error instanceof DynamoItemNotFoundError ?
@@ -37,7 +38,7 @@ function getEnvironmentTypeByName(environmentTypeName) {
   };
 
   return sender
-    .sendQuery({ query: query })
+    .sendQuery({ query })
     .then(
       environmentType => Promise.resolve(environmentType.Value),
       error => Promise.reject(error instanceof DynamoItemNotFoundError ?

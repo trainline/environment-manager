@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -23,7 +24,7 @@ function* ToggleTargetStatus(command) {
   service[SERVICE_ACTION] = enabled ? SERVICE_INSTALL : SERVICE_IGNORE;
 
   try {
-    let result = yield serviceTargets.setTargetState(environment, { key, value:service });
+    let result = yield serviceTargets.setTargetState(environment, { key, value: service });
     return service;
   } catch (error) {
     throw new Error(

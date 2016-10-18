@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let amazonClientFactory = require('modules/amazon-client/childAccountClient');
@@ -6,7 +7,7 @@ let SecurityGroupResource = require('./SecurityGroupResource');
 
 module.exports = {
 
-  canCreate: (resourceDescriptor) =>
+  canCreate: resourceDescriptor =>
     resourceDescriptor.type.toLowerCase() == 'ec2/sg',
 
   create: (resourceDescriptor, parameters) =>

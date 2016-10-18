@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 let co = require('co');
 let config = require('config');
@@ -47,9 +47,9 @@ function insertDefaultAdminPermission() {
           TransactionID: guid.v1(),
           User: 'system',
           LastChanged: new Date().toISOString(),
-          Version: 0
-        }
-      }
+          Version: 0,
+        },
+      },
     });
   });
 }
@@ -62,4 +62,4 @@ module.exports = () => {
     }
     return checkAppPrerequisites();
   });
-}
+};

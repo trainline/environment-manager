@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -22,11 +23,12 @@ module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
 
   return co(function* () {
     var schedule = command.schedule;
-    var accountName = command.accountName;
-    var autoScalingGroupName = command.autoScalingGroupName;
-    var propagateToInstances = command.propagateToInstances;
+    let accountName = command.accountName;
+    let autoScalingGroupName = command.autoScalingGroupName;
+    let propagateToInstances = command.propagateToInstances;
 
-    var schedule, scalingSchedule;
+    var schedule,
+      scalingSchedule;
     if (_.isArray(command.schedule)) {
       scalingSchedule = command.schedule;
       schedule = 'NOSCHEDULE';
@@ -41,7 +43,7 @@ module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
       ));
     }
 
-    var result = {
+    let result = {
       ChangedAutoScalingGroups: undefined,
       ChangedInstances: undefined,
     };
@@ -54,8 +56,8 @@ module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
     );
 
     if (propagateToInstances) {
-      var autoScalingGroup = yield getAutoScalingGroupByName(autoScalingGroupName, accountName);
-      var instanceIds = autoScalingGroup.Instances.map(instance => instance.InstanceId);
+      let autoScalingGroup = yield getAutoScalingGroupByName(autoScalingGroupName, accountName);
+      let instanceIds = autoScalingGroup.Instances.map(instance => instance.InstanceId);
 
       result.ChangedInstances = setEC2InstancesScheduleTag(
         instanceIds,
@@ -69,30 +71,28 @@ module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
 };
 
 function getAutoScalingGroupByName(autoScalingGroupName, accountName) {
-  var query = {
+  let query = {
     name: 'GetAutoScalingGroup',
-    accountName: accountName,
-    autoScalingGroupName: autoScalingGroupName,
+    accountName,
+    autoScalingGroupName,
   };
 
-  return sender.sendQuery({ query: query });
+  return sender.sendQuery({ query });
 }
 
 function setAutoScalingGroupSchedule(autoScalingGroupName, schedule, scalingSchedule, accountName) {
-  return autoScalingGroupClientFactory.create({ accountName }).then(client => {
-
-    var setScheduleTask = setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, scalingSchedule, accountName);
-    var setTagsTask = setAutoScalingGroupScheduleTag(client, autoScalingGroupName, schedule, accountName);
+  return autoScalingGroupClientFactory.create({ accountName }).then((client) => {
+    let setScheduleTask = setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, scalingSchedule, accountName);
+    let setTagsTask = setAutoScalingGroupScheduleTag(client, autoScalingGroupName, schedule, accountName);
 
     return Promise
       .all([setScheduleTask, setTagsTask])
       .then(() => [autoScalingGroupName]);
-      
   });
 }
 
 function setAutoScalingGroupScheduleTag(client, autoScalingGroupName, schedule, accountName) {
-  var parameters = {
+  let parameters = {
     name: autoScalingGroupName,
     tagKey: 'Schedule',
     tagValue: schedule,
@@ -102,30 +102,26 @@ function setAutoScalingGroupScheduleTag(client, autoScalingGroupName, schedule, 
 }
 
 function setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, newScheduledActions, accountName) {
-
   return co(function* () {
-    
-    var existingScheduledActions = yield getScheduledActions(client, autoScalingGroupName);
-    yield existingScheduledActions.map(action => {
+    let existingScheduledActions = yield getScheduledActions(client, autoScalingGroupName);
+    yield existingScheduledActions.map((action) => {
       return deleteScheduledAction(client, action);
     });
 
     if (!(newScheduledActions instanceof Array)) return Promise.resolve();
 
     return newScheduledActions.map((action, index) => {
-      var namedAction = {
+      let namedAction = {
         AutoScalingGroupName: autoScalingGroupName,
         ScheduledActionName: `EM-Scheduled-Action-${++index}`,
         MinSize: action.MinSize,
         MaxSize: action.MaxSize,
         DesiredCapacity: action.DesiredCapacity,
-        Recurrence: action.Recurrence
+        Recurrence: action.Recurrence,
       };
       return createScheduledAction(client, namedAction);
     });
-
   });
-
 }
 
 function getScheduledActions(client, autoScalingGroupName) {
@@ -138,7 +134,7 @@ function getScheduledActions(client, autoScalingGroupName) {
 function deleteScheduledAction(client, action) {
   let parameters = {
     AutoScalingGroupName: action.AutoScalingGroupName,
-    ScheduledActionName: action.ScheduledActionName
+    ScheduledActionName: action.ScheduledActionName,
   };
   return client.deleteScheduledAction(parameters);
 }
@@ -150,9 +146,9 @@ function createScheduledAction(client, action) {
 
 function setEC2InstancesScheduleTag(instanceIds, schedule, accountName) {
   if (!instanceIds.length) return Promise.resolve();
-  return ec2InstanceClientFactory.create({ accountName }).then(client => {
+  return ec2InstanceClientFactory.create({ accountName }).then((client) => {
     let parameters = {
-      instanceIds: instanceIds,
+      instanceIds,
       tagKey: 'Schedule',
       tagValue: schedule,
     };

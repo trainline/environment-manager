@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let config = require('config');
@@ -20,7 +21,7 @@ function getAccountByEnvironment(command) {
     .then(getEnvType)
     .then(configCache.getEnvironmentTypeByName)
     .then(getAccountName)
-    .catch(e => { throw new Error(getErrorMsg(command, e)) });
+    .catch((e) => { throw new Error(getErrorMsg(command, e)); });
 }
 
 /**
@@ -31,10 +32,10 @@ function getAccountByEnvironment(command) {
  * @returns {String} The API specific error description
  */
 function getErrorMsg(command, error) {
-  switch(error.message.substring(22, error.message.length -9)) {
-    case 'EnvironmentType':     return `Could not find environment ${command.environment}`;  break;
-    case 'AWSAccountName':      return `Could not find environment type for ${command.environment}`; break;
-    default:                    return error.message;
+  switch (error.message.substring(22, error.message.length - 9)) {
+    case 'EnvironmentType': return `Could not find environment ${command.environment}`; break;
+    case 'AWSAccountName': return `Could not find environment type for ${command.environment}`; break;
+    default: return error.message;
   }
 }
 

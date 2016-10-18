@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -17,21 +18,21 @@ const SERVICE_INSTALL = Enums.serviceAction.INSTALL;
  */
 function getServiceChecksInfo(serviceObjects) {
   // Get all health checks for all instances of this service
-  var serviceChecks = _.flatMap(serviceObjects, 'HealthChecks');
-  var checksGrouped = _.groupBy(serviceChecks, 'Name');
-  return _.map(checksGrouped, function (checks, checkName) {
+  let serviceChecks = _.flatMap(serviceObjects, 'HealthChecks');
+  let checksGrouped = _.groupBy(serviceChecks, 'Name');
+  return _.map(checksGrouped, (checks, checkName) => {
     // If some instances checks failed for a given check, mark as failed
     // also, don't count in instance into working
     return {
       Name: checks[0].Name,
-      Status: _.some(checks, { Status: 'critical' }) ? HEALTH_BAD : HEALTH_GOOD
+      Status: _.some(checks, { Status: 'critical' }) ? HEALTH_BAD : HEALTH_GOOD,
     };
   });
 }
 
 function getServiceOverallHealth(healthChecks) {
   return {
-    Status:_.some(healthChecks, { Status: HEALTH_BAD }) ? HEALTH_BAD : HEALTH_GOOD
+    Status: _.some(healthChecks, { Status: HEALTH_BAD }) ? HEALTH_BAD : HEALTH_GOOD,
   };
 }
 
@@ -51,8 +52,8 @@ function* getServicesTargetState(environmentName, runtimeServerRoleName, instanc
     });
 
     let serviceInstances = _.filter(instances, instance => _.some(instance.Services, { Name: service.Name }));
-    let healthyNodes = _.filter(serviceInstances, (instance) => instance.OverallHealth.Status === Enums.HEALTH_STATUS.Healthy);
-    let instancesHealthCount = healthyNodes.length + '/' + serviceInstances.length;
+    let healthyNodes = _.filter(serviceInstances, instance => instance.OverallHealth.Status === Enums.HEALTH_STATUS.Healthy);
+    let instancesHealthCount = `${healthyNodes.length}/${serviceInstances.length}`;
     let serviceHealthChecks = getServiceChecksInfo(serviceObjects);
     let serviceAction = service.hasOwnProperty(SERVICE_ACTION) ? service[SERVICE_ACTION] : SERVICE_INSTALL;
 
@@ -72,7 +73,7 @@ function* getServicesTargetState(environmentName, runtimeServerRoleName, instanc
 
 function checkServiceProperties(svcA, svcB, prop) {
   if (svcA[prop] !== svcB[prop]) {
-    //TODO: What behaviour/feature do we expect if a service does not match the expected target?
+    // TODO: What behaviour/feature do we expect if a service does not match the expected target?
     logger.warn(`${svcB.Name} ${svcB.Version} ${prop} mismatch:`);
     logger.warn(` Found: ${svcA[prop]} and ${svcB[prop]}`);
   }

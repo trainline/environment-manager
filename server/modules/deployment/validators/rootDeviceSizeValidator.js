@@ -1,12 +1,11 @@
-"use strict";
+'use strict';
 
 let DeploymentValidationError = require('modules/errors/DeploymentValidationError.class');
 
 module.exports = {
-  validate: function (deployment, configuration) {
-    
+  validate(deployment, configuration) {
     let requiredSize = configuration.image.rootVolumeSize;
-    let rootDevice = configuration.serverRole.Volumes.find(v => v.Name === "OS");
+    let rootDevice = configuration.serverRole.Volumes.find(v => v.Name === 'OS');
     let serverRole = configuration.serverRole.ServerRoleName;
 
     if (!rootDevice) {
@@ -20,7 +19,7 @@ module.exports = {
     }
 
     return success();
-  }
+  },
 };
 
 function error(message) {

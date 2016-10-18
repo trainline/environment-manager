@@ -1,15 +1,14 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
 let KeyValueStoreEraser = require('modules/administration/services/KeyValueStoreEraser');
 
 function EraseServiceVersionAction(environmentName) {
-
   let keyValueStoreEraser = new KeyValueStoreEraser(environmentName);
 
   this.do = function (serviceName, serviceVersion) {
-
     return co(function* () {
       let erasedServicesKeys = yield keyValueStoreEraser.scanAndDelete({
         keyPrefix: `environments/${environmentName}/services/${serviceName}/${serviceVersion}/`,

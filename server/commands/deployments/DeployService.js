@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -13,7 +14,7 @@ let deploymentValidators = require('modules/deployment/deploymentValidators');
 let sender = require('modules/sender');
 let infrastructureConfigurationProvider = require('modules/provisioning/infrastructureConfigurationProvider');
 let namingConventionProvider = require('modules/provisioning/namingConventionProvider');
-let packagePathProvider = new(require('modules/PackagePathProvider'))();
+let packagePathProvider = new (require('modules/PackagePathProvider'))();
 let deploymentLogger = require('modules/DeploymentLogger');
 
 module.exports = function DeployServiceCommandHandler(command) {
@@ -41,13 +42,12 @@ module.exports = function DeployServiceCommandHandler(command) {
 
 function validateCommandAndCreateDeployment(command) {
   return co(function* () {
-    
-    var configuration = yield infrastructureConfigurationProvider.get(
+    let configuration = yield infrastructureConfigurationProvider.get(
       command.environmentName, command.serviceName, command.serverRoleName
     );
 
-    var roleName = namingConventionProvider.getRoleName(configuration, command.serviceSlice);
-    var deployment = new Deployment({
+    let roleName = namingConventionProvider.getRoleName(configuration, command.serviceSlice);
+    let deployment = new Deployment({
       id: command.commandId,
       environmentTypeName: configuration.environmentTypeName,
       environmentName: command.environmentName,
@@ -69,7 +69,7 @@ function validateCommandAndCreateDeployment(command) {
 
 function deploy(deployment, destination, sourcePackage, command) {
   return co(function* () {
-    var accountName = deployment.accountName;
+    let accountName = deployment.accountName;
     yield deploymentLogger.started(deployment, accountName);
     yield provideInfrastructure(accountName, deployment, command);
     yield preparePackage(accountName, destination, sourcePackage, command);
@@ -79,8 +79,7 @@ function deploy(deployment, destination, sourcePackage, command) {
       deployment.accountName,
       'Waiting for nodes to perform service deployment...'
     );
-
-  }).catch(error => {
+  }).catch((error) => {
     let deploymentStatus = {
       deploymentId: deployment.id,
       accountName: deployment.accountName,
@@ -97,7 +96,7 @@ function deploy(deployment, destination, sourcePackage, command) {
 }
 
 function provideInfrastructure(accountName, deployment, parentCommand) {
-  var command = {
+  let command = {
     name: 'ProvideInfrastructure',
     accountName,
     deployment,
@@ -107,7 +106,7 @@ function provideInfrastructure(accountName, deployment, parentCommand) {
 }
 
 function preparePackage(accountName, destination, source, parentCommand) {
-  var command = {
+  let command = {
     name: 'PreparePackage',
     accountName,
     destination,
@@ -118,7 +117,7 @@ function preparePackage(accountName, destination, source, parentCommand) {
 }
 
 function pushDeployment(accountName, deployment, s3Path, parentCommand) {
-  var command = {
+  let command = {
     name: 'PushDeployment',
     accountName,
     deployment,

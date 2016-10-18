@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -22,7 +23,7 @@ function asRouteHandlerDescriptor(resource, action, commandName) {
     docs.perAccount = resource.perAccount;
   }
   const masterAccountName = config.getUserValue('masterAccountName');
-  
+
   return route
     .put(url)
     .named(resource.name)

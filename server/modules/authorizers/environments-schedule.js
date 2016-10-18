@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -18,13 +19,13 @@ function getCurrentEnvironment(name, user) {
     accountName: masterAccountName,
   };
 
-  return sender.sendQuery({ query: query, user: user });
+  return sender.sendQuery({ query, user });
 }
 
 function* getRules(request) {
   let requiredPermission = {
     resource: request.url.replace(/\/+$/, ''),
-    access: request.method
+    access: request.method,
   };
 
   let environmentName = request.params.key;
@@ -48,6 +49,6 @@ module.exports = {
   getRules: co.wrap(getRules),
   docs: {
     requiresClusterPermissions: true,
-    requiresEnvironmentTypePermissions: true
-  }
+    requiresEnvironmentTypePermissions: true,
+  },
 };

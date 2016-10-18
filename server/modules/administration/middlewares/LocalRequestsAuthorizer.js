@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-let ip = require("ip");
+let ip = require('ip');
 
 /**
  * TODO: Permitting admin requests purely on the basis of a
@@ -11,10 +11,10 @@ function middleware(req, res, next) {
     next();
   } else {
     res.status(401);
-    res.send("Only local requests are allowed to this host.");
+    res.send('Only local requests are allowed to this host.');
   }
 }
 
 module.exports = {
-  middleware: middleware
+  middleware,
 };

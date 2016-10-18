@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let send = require('modules/helpers/send');
@@ -9,8 +10,7 @@ module.exports = [
   .inOrderTo('Get the current status of servers for an environment')
   .withDocs({ tags: ['Environments'] })
   .do((request, response) => {
-
-    var query = {
+    let query = {
       name: 'ScanServersStatus',
       accountName: request.query.account,
       environmentName: request.params.environment,
@@ -18,14 +18,12 @@ module.exports = [
     };
 
     send.query(query, request, response);
-
   }),
   route.get('/environments/:environment/servers/:asgName')
   .inOrderTo('Get the current status of ASG for an environment')
   .withDocs({ tags: ['Environments'] })
   .do((request, response) => {
-
-    var query = {
+    let query = {
       name: 'GetASGState',
       accountName: request.query.account,
       environmentName: request.params.environment,

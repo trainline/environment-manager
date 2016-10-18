@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -12,6 +13,6 @@ function* handler(query) {
 
   // Scan resource items
   return resource.all({});
-};
+}
 
 module.exports = co.wrap(handler);

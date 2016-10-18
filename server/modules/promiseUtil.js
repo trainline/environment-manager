@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let Promise = require('bluebird');
@@ -21,6 +22,6 @@ module.exports = {
       context = params.context;
     }
 
-    return Promise.promisify(transformToCallbackLast(fn, context), { context: context });
+    return Promise.promisify(transformToCallbackLast(fn, context), { context });
   },
 };

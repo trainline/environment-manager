@@ -76,7 +76,7 @@ function getLogs(params) {
   }
 
   function hasMore(partitionKey) {
-    let hasMoreQuery = t => {
+    let hasMoreQuery = (t) => {
       let remaining = query(1, t);
       remaining.Select = 'COUNT';
       return remaining;

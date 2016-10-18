@@ -1,4 +1,5 @@
-﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -10,7 +11,7 @@ let valid = {
 let invalid = (err) => {
   return {
     isValid: false,
-    err: err,
+    err,
   };
 };
 
@@ -58,7 +59,6 @@ exports.validate = (upstream, account, services) => {
 
   if (hosts) {
     for (let host of hosts) {
-
       let dnsCheck = validateDnsName(host.DnsName, account.IsProd);
       if (!dnsCheck.isValid) {
         return dnsCheck;

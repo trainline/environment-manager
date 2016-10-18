@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 const amazonClientFactory = require('modules/amazon-client/childAccountClient');
@@ -19,15 +20,13 @@ function KeyPairResource(client) {
       };
 
       function get(client) {
-        client.describeKeyPairs(request, function (error, response) {
+        client.describeKeyPairs(request, (error, response) => {
           if (error) {
             return reject(new AwsError(`An error has occurred describing EC2 key pairs: ${error.message}`));
+          } else if (response.KeyPairs.length) {
+            return resolve(response.KeyPairs[0]);
           } else {
-            if (response.KeyPairs.length) {
-              return resolve(response.KeyPairs[0]);
-            } else {
-              return reject(new KeyPairNotFoundError(`Key pair "${parameters.keyName}" not found.`));
-            }
+            return reject(new KeyPairNotFoundError(`Key pair "${parameters.keyName}" not found.`));
           }
         });
       }

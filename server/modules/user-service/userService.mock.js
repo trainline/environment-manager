@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let ms = require('ms');
@@ -9,10 +10,9 @@ let utils = require('modules/utilities');
 let ActiveDirectoryError = require('modules/errors/ActiveDirectoryError.class');
 
 module.exports = function UserService() {
-
   this.authenticateUser = (credentials, duration) => {
     if (!credentials.username) {
-      return Promise.reject(new Error('User must belong to "corp" domain.'))
+      return Promise.reject(new Error('User must belong to "corp" domain.'));
     }
 
     let name = credentials.username.toLowerCase().replace('corp\\', '');

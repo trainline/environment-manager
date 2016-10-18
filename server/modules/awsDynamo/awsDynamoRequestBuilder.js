@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let Expression = require('./awsDynamoExpression');
@@ -8,12 +9,11 @@ let UpdateRequestBuilder = require('./awsDynamoUpdateRequestBuilder');
 let ScanRequestBuilder = require('./awsDynamoScanRequestBuilder');
 
 function RequestBuilder(parameters) {
-
-  var $data = {
-    table:     parameters.table,
-    key:       parameters.key,
-    range:     parameters.range,
-    version:   parameters.version,
+  let $data = {
+    table: parameters.table,
+    key: parameters.key,
+    range: parameters.range,
+    version: parameters.version,
     dateField: parameters.dateField,
   };
 
@@ -33,7 +33,6 @@ function RequestBuilder(parameters) {
   this.update = function () {
     return new UpdateRequestBuilder($data);
   };
-
-};
+}
 
 module.exports = RequestBuilder;

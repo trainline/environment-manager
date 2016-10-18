@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let semver = require('semver');
@@ -20,9 +21,9 @@ function isCompatibleImage(amiName) {
 }
 
 function getAmiType(name) {
-  var amiType = name;
+  let amiType = name;
   if (name && isCompatibleImage(name)) {
-    var pos = name.lastIndexOf('-');
+    let pos = name.lastIndexOf('-');
     if (pos) amiType = name.substr(0, pos);
   }
 
@@ -30,9 +31,9 @@ function getAmiType(name) {
 }
 
 function getAmiVersion(name) {
-  var amiVersion = '';
+  let amiVersion = '';
   if (name && isCompatibleImage(name)) {
-    var pos = name.lastIndexOf('-');
+    let pos = name.lastIndexOf('-');
     if (pos) amiVersion = name.substr(pos + 1);
   }
 
@@ -67,7 +68,7 @@ function summaryOf(ec2Image) {
     RootVolumeSize: rootDevice.Ebs.VolumeSize,
   };
   if (ec2Image.Tags) {
-    ec2Image.Tags.forEach(function (tag) {
+    ec2Image.Tags.forEach((tag) => {
       summary[tag.Key] = tag.Value;
     });
   }

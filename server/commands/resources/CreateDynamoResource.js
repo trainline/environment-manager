@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -23,7 +24,7 @@ function* handler(command) {
   if (!!command.key) item[keyName] = command.key;
   if (!!command.range) item[rangeName] = command.range;
 
-  delete item['Audit'];
+  delete item.Audit;
 
   // Get resource uri just for response
   let resourceUri = OperationResult.resourceUri(command.resource, item[keyName], item[rangeName]);

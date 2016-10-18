@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 // TODO(filip): replace this with proper error handling middleware
@@ -38,8 +39,8 @@ function callbackToExpress(req, res) {
     // Everything ok!
     if (!error) return res.send(data);
 
-    var statusCode = getStatusCode(error);
-    var message = error.toString();
+    let statusCode = getStatusCode(error);
+    let message = error.toString();
 
     res.status(statusCode);
     res.send(message);
@@ -49,9 +50,9 @@ function callbackToExpress(req, res) {
 function promiseToExpress(req, res) {
   let callback = callbackToExpress(req, res);
   return function (promise) {
-    promise.then((result) => callback(null, result), (err) => callback(err));
-  }
-} 
+    promise.then(result => callback(null, result), err => callback(err));
+  };
+}
 
 module.exports = {
   callbackToExpress,

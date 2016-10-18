@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let express = require('express');
@@ -11,7 +12,7 @@ let fs = require('fs');
 let config = require('config/');
 let compression = require('compression');
 
-let serverFactoryConfiguration = new(require('modules/serverFactoryConfiguration'))();
+let serverFactoryConfiguration = new (require('modules/serverFactoryConfiguration'))();
 let tokenAuthentication = require('modules/authentications/tokenAuthentication');
 let cookieAuthentication = require('modules/authentications/cookieAuthentication');
 let authentication = require('modules/authentication');
@@ -20,7 +21,6 @@ let deploymentMonitorScheduler = require('modules/monitoring/DeploymentMonitorSc
 const APP_VERSION = require('config').get('APP_VERSION');
 
 module.exports = function MainServer() {
-
   let httpServerFactory = require('modules/http-server-factory');
   let _server;
 
@@ -36,7 +36,6 @@ module.exports = function MainServer() {
 
   function createExpressApp() {
     return new Promise((resolve) => {
-
       let routeInstaller = require('modules/routeInstaller');
       let routes = {
         home: require('routes/home'),
@@ -69,7 +68,7 @@ module.exports = function MainServer() {
 
       app.get('/docs*', authentication.denyUnauthorized, express.static(PUBLIC_DIR));
       app.get('*.js', authentication.allowUnknown, express.static('modules'));
-      
+
       // routing for API JSON Schemas
       app.use('/schema', authentication.allowUnknown, express.static(`${PUBLIC_DIR}/schema`));
 
@@ -84,7 +83,7 @@ module.exports = function MainServer() {
       app.get('/api/initial-data', authentication.denyUnauthorized, routes.initialData);
       app.use('/api', routeInstaller());
 
-      app.get('/version', authentication.allowUnknown, function (req, res) {
+      app.get('/version', authentication.allowUnknown, (req, res) => {
         res.send(APP_VERSION);
       });
 
@@ -94,14 +93,14 @@ module.exports = function MainServer() {
 
       resolve(app);
     });
-  };
+  }
 
   function createServer(app) {
     let parameters = {
       port: serverFactoryConfiguration.getPort(),
     };
 
-    return httpServerFactory.create(app, parameters).then(server => {
+    return httpServerFactory.create(app, parameters).then((server) => {
       logger.info(`Main server created using ${httpServerFactory.constructor.name} service.`);
       logger.info(`Main server listening at port ${parameters.port}.`);
       return Promise.resolve(server);
@@ -113,5 +112,4 @@ module.exports = function MainServer() {
     deploymentMonitorScheduler.start();
     logger.info(`EnvironmentManager v.${APP_VERSION} started!`);
   }
-
 };

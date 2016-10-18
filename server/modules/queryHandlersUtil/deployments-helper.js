@@ -1,4 +1,5 @@
-﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -10,8 +11,8 @@ function mapDeployment(deployment, account) {
     return deployment;
   }
 
-  return queryDeploymentNodeStates(deployment.Value.EnvironmentName, deployment.DeploymentID, account).then(nodes => {
-    deployment.Value.Nodes = nodes.map(node => {
+  return queryDeploymentNodeStates(deployment.Value.EnvironmentName, deployment.DeploymentID, account).then((nodes) => {
+    deployment.Value.Nodes = nodes.map((node) => {
       let resultNode = node.value;
 
       let r = /.*\/(.*)$/g;
@@ -43,7 +44,7 @@ function queryDeployment(query) {
   return Promise.all([
     sender.sendQuery({ query: currentDeploymentsQuery }).catch(err => null),
     sender.sendQuery({ query: completedDeploymentsQuery }).catch(err => null),
-  ]).then(results => {
+  ]).then((results) => {
     let result = results[0] || results[1];
 
     if (!result) {
@@ -76,10 +77,9 @@ function queryDeployments(query) {
   return Promise.all([
     sender.sendQuery({ query: currentDeploymentsQuery }),
     sender.sendQuery({ query: completedDeploymentsQuery }),
-  ]).then(results => {
+  ]).then((results) => {
     return _.flatten(results).filter(x => !!x);
   });
-
 }
 
 function queryDeploymentNodeStates(environment, key, account) {
@@ -87,7 +87,7 @@ function queryDeploymentNodeStates(environment, key, account) {
     name: 'GetTargetState',
     key: `deployments/${key}/nodes`,
     accountName: account,
-    environment: environment,
+    environment,
     recurse: true,
   };
 
@@ -96,15 +96,15 @@ function queryDeploymentNodeStates(environment, key, account) {
 
 module.exports = {
 
-  get: query => {
-    return queryDeployment(query).then(deployment => {
+  get: (query) => {
+    return queryDeployment(query).then((deployment) => {
       return mapDeployment(deployment, query.account);
     });
   },
 
-  scan: query => {
-    return queryDeployments(query).then(deployments => {
-      let deploymentsWithNodes = deployments.map(deployment => {
+  scan: (query) => {
+    return queryDeployments(query).then((deployments) => {
+      let deploymentsWithNodes = deployments.map((deployment) => {
         return mapDeployment(deployment, deployment.AccountName);
       });
 

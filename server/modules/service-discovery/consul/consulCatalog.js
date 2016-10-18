@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let retry = require('retry');
@@ -16,7 +17,7 @@ function getAllServices(query) {
 
   let promiseFactoryMethod = () =>
     createConsulClient(environment)
-      .then(consulClient => consulClient.catalog.service.list()).then(function (list) {
+      .then(consulClient => consulClient.catalog.service.list()).then((list) => {
         if (query.server_role !== undefined) {
           list = _.pickBy(list, tags => _.includes(tags, `server_role:${query.server_role}`));
         }
@@ -77,5 +78,5 @@ module.exports = {
   getService,
   getAllNodes,
   getNodeHealth,
-  getNode
+  getNode,
 };

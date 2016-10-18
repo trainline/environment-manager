@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assert = require('assert');
@@ -11,11 +12,11 @@ let _ = require('lodash');
  */
 module.exports = {
 
-  getFromSecurityGroupNames: function (accountName, vpcId, securityGroupNamesAndReasons, logger) {
+  getFromSecurityGroupNames(accountName, vpcId, securityGroupNamesAndReasons, logger) {
     let securityGroupNames = [];
     let securityGroupNamesAndReasonsMapping = {};
 
-    securityGroupNamesAndReasons.forEach(group => {
+    securityGroupNamesAndReasons.forEach((group) => {
       securityGroupNames.push(group.name);
       securityGroupNamesAndReasonsMapping[group.name] = group.reason;
     });
@@ -26,7 +27,7 @@ module.exports = {
       );
   },
 
-  getFromConfiguration: function (configuration, image, accountName, logger) {
+  getFromConfiguration(configuration, image, accountName, logger) {
     assert(configuration, 'Expected "configuration" argument not to be null');
     assert(image, 'Expected "image" argument not to be null');
     assert(accountName, 'Expected "accountName" argument not to be null');
@@ -40,13 +41,12 @@ module.exports = {
 };
 
 function getAndVerifyAllExpectedSecurityGroups(securityGroups, vpcId, securityGroupNamesAndReasonsMapping, logger) {
-
   let atLeastOneFound = false;
   for (let securityGroupName in securityGroupNamesAndReasonsMapping) {
     let found = _.find(securityGroups, sg => sg.getName() === securityGroupName);
     if (found === undefined) {
-      logger.warn(`Security group "${securityGroupName}" not found in "${vpcId}" VPC. ` +
-        securityGroupNamesAndReasonsMapping[securityGroupName]
+      logger.warn(`Security group "${securityGroupName}" not found in "${vpcId}" VPC. ${
+        securityGroupNamesAndReasonsMapping[securityGroupName]}`
       );
     } else {
       atLeastOneFound = true;
@@ -54,7 +54,7 @@ function getAndVerifyAllExpectedSecurityGroups(securityGroups, vpcId, securityGr
   }
 
   if (atLeastOneFound === false) {
-    let errorMessage = `You need at least 1 SecurityGroup to start an ASG`;
+    let errorMessage = 'You need at least 1 SecurityGroup to start an ASG';
     logger.error(errorMessage);
     throw new Error(errorMessage);
   }
@@ -63,7 +63,6 @@ function getAndVerifyAllExpectedSecurityGroups(securityGroups, vpcId, securityGr
 }
 
 function getSecurityGroupsNamesAndReasons(configuration, image) {
-
   let cluster = configuration.cluster;
   let imagePlatform = image.platform;
   let securityZone = configuration.serverRole.SecurityZone;
@@ -97,12 +96,10 @@ function getSecurityGroupsNamesAndReasons(configuration, image) {
               'Secure security zone.',
     });
   } else {
-
     securityGroupNamesAndReasons.push({
       name: getSecurityGroupNameByPlatform(image, securityZone),
       reason: `It is assigned by default because instances image is ${imagePlatform} based.`,
     });
-
   }
 
   return securityGroupNamesAndReasons;

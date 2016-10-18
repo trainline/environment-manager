@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 let config = require('config/');
 let fs = require('fs');
@@ -7,7 +7,6 @@ let S3ConfigurationProvider = require('./S3ConfigurationProvider');
 let awsAccounts = require('modules/awsAccounts');
 
 module.exports = function ConfigurationProvider() {
-
   this.init = function () {
     let configurationProvider;
     if (config.get('IS_PRODUCTION')) {

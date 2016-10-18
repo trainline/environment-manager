@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let logger = require('modules/logger');
@@ -11,14 +12,13 @@ function authorizeRequest(authorizer, request, response, next) {
     response.send('Access Denied. Please sign in and try again.');
   } else {
     if (request.method == 'GET') return next();
-    handleSecureRequest(authorizer, request, response, next)
+    handleSecureRequest(authorizer, request, response, next);
   }
 }
 
 function handleSecureRequest(authorizer, request, response, next) {
-
   let usersPermissions = request.user.getPermissions();
-  authorizer.getRules(request).then(requiredPermissions => {
+  authorizer.getRules(request).then((requiredPermissions) => {
     logRequestAndRequirements(request, requiredPermissions, usersPermissions);
 
     let authorizationResult = authorize(usersPermissions, requiredPermissions);
@@ -31,11 +31,11 @@ function handleSecureRequest(authorizer, request, response, next) {
         authorizationResult.protectedAction,
         authorizationResult.environmentType,
         response
-      )
+      );
     } else {
       sendUnauthorizedResponse(authorizationResult.unsatisfiedPermissions, response);
     }
-  }).catch(error => {
+  }).catch((error) => {
     if (error.name === 'BadRequestError') {
       response.status(400);
       response.send(error.message);
@@ -60,15 +60,15 @@ function sendAuthorizationErrorResponse(error, response) {
 }
 
 function sendUnauthorizedResponse(unsatisfiedPermissions, response) {
-  var message = 'You are not authorized to perform that action. You are missing the following permissions: <br \><br \>';
+  let message = 'You are not authorized to perform that action. You are missing the following permissions: <br \><br \>';
 
-  unsatisfiedPermissions.forEach(function (permission) {
-    message += '* ' + permission.access + ' > ' + permission.resource;
+  unsatisfiedPermissions.forEach((permission) => {
+    message += `* ${permission.access} > ${permission.resource}`;
     if (permission.clusters) {
-      message += ' / clusters: ' + permission.clusters.join(', ');
+      message += ` / clusters: ${permission.clusters.join(', ')}`;
     }
     if (permission.environmentTypes) {
-      message += ' / environment types: ' + permission.environmentTypes.join(', ');
+      message += ` / environment types: ${permission.environmentTypes.join(', ')}`;
     }
     message += '<br \>';
   });
@@ -86,20 +86,18 @@ function logRequestAndRequirements(request, requiredPermissions, usersPermission
 
   if (requiredPermissions) {
     logger.info({
-      requiredPermissions: requiredPermissions,
-      usersPermissions: usersPermissions,
+      requiredPermissions,
+      usersPermissions,
       user: request.user.getName(),
     }, `Authorizing ${request.user.getName()} user`);
   }
 }
 
 function logResult(authorizationResult) {
+  if (authorizationResult.authorized) logger.info('Authorised');
+  else logger.info('Not Authorized');
 
-    if (authorizationResult.authorized) logger.info('Authorised');
-    else logger.info('Not Authorized');
-
-    logger.info('');
-
+  logger.info('');
 }
 
 module.exports = authorizeRequest;

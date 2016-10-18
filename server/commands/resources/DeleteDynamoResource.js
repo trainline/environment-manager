@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -25,14 +26,13 @@ function* handler(command) {
   // Mark item as deleted in order to trace the right audit
   // Run this step only if auditing is enabled
   if (resource.isAuditingEnabled()) {
-
     let keyName = resource.getKeyName();
     let rangeName = resource.getRangeName();
 
     // __Deleted property is needed by lambda script to recognise this change
     // as made for a delete operation.
     let item = {
-      __Deleted: true,
+      '__Deleted': true,
       'Audit.TransactionID': command.commandId,
       'Audit.User': command.username,
       'Audit.LastChanged': command.timestamp,

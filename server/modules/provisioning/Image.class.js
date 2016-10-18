@@ -1,10 +1,10 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-var assert = require('assert');
+let assert = require('assert');
 
 module.exports = function Image(imageSummary) {
-
   assert(imageSummary, 'Expected "ami" argument not to be null.');
 
   this.id = imageSummary.ImageId;

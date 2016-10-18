@@ -38,7 +38,7 @@ function createFilter(query) {
     predicates.push(['=', ['attr', 'Entity', 'Type'], ['val', query['Entity.Type']]]);
   }
   if (query.hasOwnProperty('ChangeType')) {
-    predicates.push(['=', ['attr', 'ChangeType'], ['val', query['ChangeType']]]);
+    predicates.push(['=', ['attr', 'ChangeType'], ['val', query.ChangeType]]);
   }
   if (query.hasOwnProperty('Entity.Key')) {
     predicates.push(['=', ['attr', 'Entity', 'Key'], ['val', query['Entity.Key']]]);

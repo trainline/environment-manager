@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let authorizer = require('modules/authorizers/load-balancer-settings');
@@ -6,7 +7,7 @@ let authorizer = require('modules/authorizers/load-balancer-settings');
 module.exports = {
   name: 'config/lbsettings',
   type: 'dynamodb/table',
-  authorizer: authorizer,
+  authorizer,
   tableName: 'ConfigLBSettings',
   keyName: 'EnvironmentName',
   rangeName: 'VHostName',
@@ -17,7 +18,7 @@ module.exports = {
   exportable: true,
   importable: true,
   docs: {
-      description: 'Load Balancer Settings',
-      tags: ["Load Balancer Settings"]
-  }
+    description: 'Load Balancer Settings',
+    tags: ['Load Balancer Settings'],
+  },
 };

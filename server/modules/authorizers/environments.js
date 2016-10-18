@@ -1,32 +1,33 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let config = require('config');
 
 function getCurrentEnvironment(name, user) {
   const masterAccountName = config.getUserValue('masterAccountName');
-  var sender = require('modules/sender');
+  let sender = require('modules/sender');
 
-  var query = {
+  let query = {
     name: 'GetDynamoResource',
     key: name,
     resource: 'config/environments',
     accountName: masterAccountName,
   };
 
-  return sender.sendQuery({ query: query, user: user });
+  return sender.sendQuery({ query, user });
 }
 
-exports.getRules = request => {
-  var requiredPermission = {
+exports.getRules = (request) => {
+  let requiredPermission = {
     resource: request.url.replace(/\/+$/, ''),
     access: request.method,
     clusters: [],
-    environmentTypes: []
+    environmentTypes: [],
   };
 
   if (request.method === 'POST') {
-    var newCluster = request.body.Value.OwningCluster;
+    let newCluster = request.body.Value.OwningCluster;
     if (newCluster) {
       requiredPermission.clusters.push(newCluster.toLowerCase());
     }
@@ -47,8 +48,8 @@ exports.getRules = request => {
     }
   }
 
-  var environmentName = request.params.key;
-  var user = request.user;
+  let environmentName = request.params.key;
+  let user = request.user;
 
   return getCurrentEnvironment(environmentName, user).then((environment) => {
     if (environment) {
@@ -62,5 +63,5 @@ exports.getRules = request => {
 
 exports.docs = {
   requiresClusterPermissions: true,
-  requiresEnvironmentTypePermissions: true
+  requiresEnvironmentTypePermissions: true,
 };

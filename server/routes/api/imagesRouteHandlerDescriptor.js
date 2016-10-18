@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let send = require('modules/helpers/send');
@@ -13,7 +14,7 @@ module.exports = [
     verb: 'crossScan',
     tags: ['Images (AMIs)'],
   }).do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanCrossAccountImages',
       filter: utilities.extractQuery(request),
     };
@@ -28,7 +29,7 @@ module.exports = [
     perAccount: true,
     tags: ['Images (AMIs)'],
   }).do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanImages',
       accountName: request.params.account,
       filter: utilities.extractQuery(request),

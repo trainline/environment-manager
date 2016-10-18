@@ -1,11 +1,12 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let authorizer = require('modules/authorizers/upstreams');
 
 module.exports = {
   name: 'config/lbupstream',
-  authorizer: authorizer,
+  authorizer,
   type: 'dynamodb/table',
   tableName: 'ConfigLBUpstream',
   keyName: 'key',
@@ -16,7 +17,7 @@ module.exports = {
   exportable: true,
   importable: true,
   docs: {
-      description: 'Upstream',
-      tags: ['Upstreams']
-  }
+    description: 'Upstream',
+    tags: ['Upstreams'],
+  },
 };

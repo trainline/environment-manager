@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assert = require('assert');
@@ -9,7 +10,7 @@ let _ = require('lodash');
 const SECURE_SECURITY_ZONE = 'Secure';
 
 module.exports = {
-  get: function (configuration) {
+  get(configuration) {
     assert(configuration, 'Expected "configuration" argument not to be null.');
 
     return co(function* () {
@@ -17,7 +18,7 @@ module.exports = {
       validateSubnetType(configuration);
       let subnets = yield getSubnetsByAvailabilityZone(subnetTypeName, configuration);
       return subnets;
-    }).catch(error => {
+    }).catch((error) => {
       throw new ConfigurationError(
             `Error retrieving subnet from "${configuration.environmentTypeName}": ${error.message}`);
     });
@@ -25,7 +26,6 @@ module.exports = {
 };
 
 function validateSubnetType(configuration) {
-
   let securityZone = configuration.serverRole.SecurityZone;
   let subnetTypeName = configuration.serverRole.SubnetTypeName;
 
@@ -41,14 +41,13 @@ function validateSubnetType(configuration) {
 }
 
 function getSubnetsByAvailabilityZone(subnetTypeName, configuration) {
-
-  var subnetType = configuration.environmentType.Subnets[subnetTypeName];
+  let subnetType = configuration.environmentType.Subnets[subnetTypeName];
   if (!subnetType) {
     throw new Error(`"${subnetTypeName}" subnet type not found`);
   }
 
-  var availabilityZoneName = (configuration.serverRole.AvailabilityZoneName || '*');
-  var subnets = [];
+  let availabilityZoneName = (configuration.serverRole.AvailabilityZoneName || '*');
+  let subnets = [];
 
   switch (availabilityZoneName.toUpperCase()) {
     case 'A':
@@ -73,13 +72,13 @@ function getSubnetsByAvailabilityZone(subnetTypeName, configuration) {
       subnets = [
         subnetType.AvailabilityZoneA, subnetType.AvailabilityZoneB,
         subnetType.AvailabilityZoneC, subnetType.AvailabilityZoneD,
-        subnetType.AvailabilityZoneE, subnetType.AvailabilityZoneF
+        subnetType.AvailabilityZoneE, subnetType.AvailabilityZoneF,
       ];
       subnets = _.compact(subnets); // Strip subnets C, D, E, F if they don't exist
       break;
     default:
       throw new Error(`Unknown "${availabilityZoneName}" availability zone specified in configuration. ` +
-        `Please specify one of the following values: "A", "B", "C" or "*".`);
+        'Please specify one of the following values: "A", "B", "C" or "*".');
   }
 
   if (subnets.some(subnet => !subnet.trim())) {

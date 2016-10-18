@@ -1,11 +1,10 @@
-"use strict";
+'use strict';
 
-let BaseError = require("./BaseError.class");
+let BaseError = require('./BaseError.class');
 
 module.exports = class DeploymentValidationError extends BaseError {
 
   constructor(message, innerError) {
-
     super();
 
     this.name = this.constructor.name;
@@ -13,7 +12,6 @@ module.exports = class DeploymentValidationError extends BaseError {
     this.innerError = innerError;
 
     Error.captureStackTrace(this, this.constructor);
-
   }
 
-}
+};

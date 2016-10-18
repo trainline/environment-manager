@@ -1,7 +1,8 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-let _  = require('lodash');
+let _ = require('lodash');
 let AwsError = require('modules/errors/AwsError.class');
 let AutoScalingGroupNotFoundError = require('modules/errors/AutoScalingGroupNotFoundError.class');
 let AutoScalingGroupAlreadyExistsError = require('modules/errors/AutoScalingGroupAlreadyExistsError.class');
@@ -11,7 +12,7 @@ function AsgResource(client) {
 
   function standardifyError(error, autoScalingGroupName) {
     if (!error) return null;
-    var awsError = new AwsError(error.message);
+    let awsError = new AwsError(error.message);
     if (error.message.indexOf('AutoScalingGroup name not found') >= 0) {
       return new AutoScalingGroupNotFoundError(
         `AutoScalingGroup "${autoScalingGroupName}" not found.`, awsError
@@ -38,7 +39,7 @@ function AsgResource(client) {
     }
 
     function query() {
-      return client.describeAutoScalingGroups(request).promise().then(data => {
+      return client.describeAutoScalingGroups(request).promise().then((data) => {
         asgs = asgs.concat(data.AutoScalingGroups);
         if (!data.NextToken) {
           return _.map(asgs, asg => new AutoScalingGroup(asg));
@@ -47,16 +48,16 @@ function AsgResource(client) {
         request.NextToken = data.NextToken;
         return query(client);
       });
-    };
+    }
 
     return query();
   }
 
   this.get = function (parameters) {
-    return describeAutoScalingGroups([parameters.name]).then(result => {
+    return describeAutoScalingGroups([parameters.name]).then((result) => {
       if (result.length > 0) return result[0];
       throw new AutoScalingGroupNotFoundError(`AutoScalingGroup "${parameters.name}" not found.`);
-    }).catch(function (error) {
+    }).catch((error) => {
       throw new AwsError(error.message);
     });
   };
@@ -66,7 +67,6 @@ function AsgResource(client) {
   };
 
   this.setTag = function (parameters) {
-
     let request = {
       Tags: [{
         Key: parameters.tagKey,
@@ -76,7 +76,7 @@ function AsgResource(client) {
         Value: parameters.tagValue,
       },],
     };
-    return client.createOrUpdateTags(request).promise().catch(function (error) {
+    return client.createOrUpdateTags(request).promise().catch((error) => {
       throw standardifyError(error, parameters.name);
     });
   };
@@ -102,7 +102,7 @@ function AsgResource(client) {
       request.LaunchConfigurationName = parameters.launchConfigurationName;
     }
 
-    return client.updateAutoScalingGroup(request).promise().catch(function (error) {
+    return client.updateAutoScalingGroup(request).promise().catch((error) => {
       throw standardifyError(error, parameters.name);
     });
   };
@@ -125,25 +125,25 @@ function AsgResource(client) {
   };
 
   this.post = (request) => {
-    return this.client.createAutoScalingGroup(request).promise().catch(error => {
+    return this.client.createAutoScalingGroup(request).promise().catch((error) => {
       throw standardifyError(error, request.AutoScalingGroupName);
     });
   };
 
   this.attachNotifications = (request) => {
-    return this.client.putNotificationConfiguration(request).promise().catch(error => {
+    return this.client.putNotificationConfiguration(request).promise().catch((error) => {
       throw standardifyError(error, request.AutoScalingGroupName);
     });
   };
 
   this.attachLifecycleHook = (request) => {
-    return this.client.putLifecycleHook(request).promise().catch(error => {
+    return this.client.putLifecycleHook(request).promise().catch((error) => {
       throw standardifyError(error, request.AutoScalingGroupName);
     });
   };
 
   this.describeScheduledActions = (request) => {
-    return this.client.describeScheduledActions(request).promise().then(result => {
+    return this.client.describeScheduledActions(request).promise().then((result) => {
       return result.ScheduledUpdateGroupActions;
     }).catch((error) => {
       throw standardifyError(error, request.AutoScalingGroupName);
@@ -151,17 +151,16 @@ function AsgResource(client) {
   };
 
   this.deleteScheduledAction = (request) => {
-    return this.client.deleteScheduledAction(request).promise().catch(error => {
+    return this.client.deleteScheduledAction(request).promise().catch((error) => {
       throw standardifyError(error, request.AutoScalingGroupName);
     });
   };
 
   this.createScheduledAction = (request) => {
-    return this.client.putScheduledUpdateGroupAction(request).promise().catch(error => {
+    return this.client.putScheduledUpdateGroupAction(request).promise().catch((error) => {
       throw standardifyError(error, request.AutoScalingGroupName);
     });
   };
-
 }
 
 module.exports = AsgResource;

@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let send = require('modules/helpers/send');
@@ -13,7 +14,7 @@ module.exports = [
     tags: ['Instances'],
   })
   .withPriority(10).do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanCrossAccountInstances',
       filter: utilities.extractQuery(request),
     };
@@ -28,7 +29,7 @@ module.exports = [
     tags: ['Instances'],
   })
   .withPriority(10).do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanCrossAccountInstances',
       filter: utilities.extractQuery(request),
     };
@@ -47,7 +48,7 @@ module.exports = [
     tags: ['Instances'],
   })
   .do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanInstances',
       accountName: request.params.account,
       filter: utilities.extractQuery(request),
@@ -64,7 +65,7 @@ module.exports = [
     tags: ['Instances'],
   })
   .do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanInstances',
       accountName: request.params.account,
       filter: utilities.extractQuery(request),

@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assert = require('assert');
@@ -17,7 +18,7 @@ function encodeValue(value) {
 
 function decodeValue(encodedValue) {
   if (!encodedValue) return null;
-  var value = utils.safeParseJSON(encodedValue);
+  let value = utils.safeParseJSON(encodedValue);
   return value || encodedValue;
 }
 
@@ -31,15 +32,14 @@ function asKeyValuePair(item) {
 function getTargetState(environment, parameters) {
   assert(parameters, 'Expected "parameters" not to be null or empty.');
 
-  var promiseFactoryMethod = () => new Promise((resolve, reject) => {
-
-    createConsulClient(environment).then(consulClient => {
-      consulClient.kv.get({ key: parameters.key, recurse: parameters.recurse }, function (error, result) {
+  let promiseFactoryMethod = () => new Promise((resolve, reject) => {
+    createConsulClient(environment).then((consulClient) => {
+      consulClient.kv.get({ key: parameters.key, recurse: parameters.recurse }, (error, result) => {
         if (error) {
           return reject(new HttpRequestError(`An error has occurred contacting consul agent: ${error.message}`));
         }
         if (parameters.recurse) {
-          var data = result ? result.map(asKeyValuePair) : [];
+          let data = result ? result.map(asKeyValuePair) : [];
           return resolve(data);
         }
         if (result) {
@@ -68,18 +68,17 @@ function getServiceDeploymentCause(environmentName, deploymentId, instanceId) {
 
 function setTargetState(environment, parameters) {
   assert(parameters, 'Expected "parameters" not to be null or empty.');
-  var promiseFactoryMethod = () => new Promise((resolve, reject) => {
-
-    createConsulClient(environment).then(consulClient => {
-      var encodedValue = encodeValue(parameters.value);
-      var options = {};
+  let promiseFactoryMethod = () => new Promise((resolve, reject) => {
+    createConsulClient(environment).then((consulClient) => {
+      let encodedValue = encodeValue(parameters.value);
+      let options = {};
 
       if (parameters.options) {
         if (parameters.options.expectedVersion !== undefined) {
           options.cas = parameters.options.expectedVersion;
         }
       }
-      consulClient.kv.set(parameters.key, encodedValue, options, function (error, created) {
+      consulClient.kv.set(parameters.key, encodedValue, options, (error, created) => {
         if (error) {
           return reject(new HttpRequestError(
             `An error has occurred contacting consul agent: ${error.message}`
@@ -90,7 +89,7 @@ function setTargetState(environment, parameters) {
             `Consul '${parameters.key}' key cannot be updated`
           ));
         }
-        logChange("SET", parameters.key, encodedValue);
+        logChange('SET', parameters.key, encodedValue);
         return resolve();
       });
     });
@@ -100,13 +99,12 @@ function setTargetState(environment, parameters) {
 
 function removeTargetState(environment, parameters) {
   assert(parameters, 'Expected "parameters" not to be null or empty.');
-  var promiseFactoryMethod = () => new Promise((resolve, reject) => {
-
-    createConsulClient(environment).then(consulClient => {
-      consulClient.kv.get({ key: parameters.key, recurse: parameters.recurse }, function (error, result) {
-        consulClient.kv.del(parameters.key, function (error) {
+  let promiseFactoryMethod = () => new Promise((resolve, reject) => {
+    createConsulClient(environment).then((consulClient) => {
+      consulClient.kv.get({ key: parameters.key, recurse: parameters.recurse }, (error, result) => {
+        consulClient.kv.del(parameters.key, (error) => {
           if (!error) {
-            logChange("DELETE", parameters.key, result);
+            logChange('DELETE', parameters.key, result);
             return resolve();
           }
           return reject(new HttpRequestError(
@@ -127,10 +125,10 @@ function executeAction(promiseFactoryMethod) {
   });
 
   return new Promise((resolve, reject) => {
-    operation.attempt(function () {
+    operation.attempt(() => {
       promiseFactoryMethod()
       .then(result => resolve(result))
-      .catch(error => {
+      .catch((error) => {
         logger.error(error.toString(true));
         if ((error instanceof HttpRequestError) && operation.retry(error)) return;
         reject(operation.mainError());
@@ -143,7 +141,7 @@ function createConsulClient(environment) {
   return consulClient.create({ environment }).catch(logger.error.bind(logger));
 }
 
-function logChange(operation, key, value){
+function logChange(operation, key, value) {
   logger.debug(`Consul key value store operation: ${operation} ${key}. ${value}`);
 }
 
@@ -152,5 +150,5 @@ module.exports = {
   setTargetState,
   removeTargetState,
   getAllServiceTargets,
-  getServiceDeploymentCause
+  getServiceDeploymentCause,
 };

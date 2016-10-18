@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -47,7 +48,7 @@ class AutoScalingGroup {
   getRuntimeServerRoleName() {
     let name = this.$nameSegments.serverRole;
     if (this.$nameSegments.slice !== null) {
-      name += '-' + this.$nameSegments.slice;
+      name += `-${this.$nameSegments.slice}`;
     }
     return name;
   }

@@ -1,11 +1,12 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
 let sender = require('modules/sender');
 let systemUser = require('modules/systemUser');
 
-//TODO: Create KVSE Singleton as no configuration changes
+// TODO: Create KVSE Singleton as no configuration changes
 
 function TargetStateEraser(environmentName) {
   this.scanAndDelete = function (parameters) {
@@ -28,17 +29,17 @@ function TargetStateEraser(environmentName) {
       name: 'GetTargetState',
       environment: environmentName,
       recurse: true,
-      key: key,
+      key,
     };
 
-    return sender.sendQuery({ query: query });
+    return sender.sendQuery({ query });
   }
 
   function deleteTargetState(key) {
     let command = {
       name: 'DeleteTargetState',
       environment: environmentName,
-      key: key,
+      key,
     };
 
     return sender.sendCommand({ command, user });

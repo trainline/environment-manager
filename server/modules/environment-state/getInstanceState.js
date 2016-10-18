@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let serviceDiscovery = require('modules/service-discovery');
@@ -8,8 +9,8 @@ let co = require('co');
 let Enums = require('Enums');
 
 function mapConsulTags(tags) {
-  return _.reduce(tags, function (result, tag) {
-    var spl = tag.split(':');
+  return _.reduce(tags, (result, tag) => {
+    let spl = tag.split(':');
     result[spl[0]] = spl[1];
     return result;
   }, {});
@@ -25,9 +26,9 @@ function getOverallHealth(checks) {
   } else {
     status = Enums.HEALTH_STATUS.Error;
   }
-  
+
   return {
-    Status: status
+    Status: status,
   };
 }
 
@@ -49,7 +50,7 @@ function getInstanceServiceHealthChecks(checks, serviceName) {
     return {
       CheckId: check.CheckID,
       Name: check.Name,
-      Status: check.Status
+      Status: check.Status,
     };
   });
 }
@@ -82,14 +83,14 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
         ServerRole: service.Tags.server_role,
         DeploymentId: service.Tags.deployment_id,
         DeploymentCause: yield serviceTargets.getServiceDeploymentCause(environmentName, service.Tags.deployment_id, instanceId),
-        LogLink: '/deployments/nodes/logs?account=' + accountName + '&environment=' +
-          environmentName + '&deploymentId=' + service.Tags.deployment_id + '&node=' + instanceId,
+        LogLink: `/deployments/nodes/logs?account=${accountName}&environment=${
+          environmentName}&deploymentId=${service.Tags.deployment_id}&node=${instanceId}`,
         OverallHealth: getInstanceServiceOverallHealth(instanceServiceHealthChecks),
         HealthChecks: instanceServiceHealthChecks,
         Issues: { Warnings: [], Errors: [] },
       };
     }));
-    // If undefined, it's not EM deployed service        
+    // If undefined, it's not EM deployed service
     services = _.filter(services, service => service.DeploymentId !== undefined);
 
     return {
@@ -97,4 +98,4 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
       Services: services,
     };
   });
-}
+};

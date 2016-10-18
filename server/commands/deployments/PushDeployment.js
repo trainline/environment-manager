@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -10,14 +11,13 @@ let DeploymentContract = require('modules/deployment/DeploymentContract');
 let sender = require('modules/sender');
 let consulClient = require('modules/consul-client');
 
-let serverRoleDefinitionKeyValueProvider = new(require('modules/deployment/ServerRoleDefinitionKeyValueProvider.class'))();
-let serviceInstallationKeyValueProvider = new(require('modules/deployment/ServiceInstallationKeyValueProvider.class'))();
-let serviceDefinitionKeyValueProvider = new(require('modules/deployment/ServiceDefinitionKeyValueProvider.class'))();
-let deploymentServiceKeyValueProvider = new(require('modules/deployment/DeploymentServiceKeyValueProvider.class'))();
-let deploymentKeyValueProvider = new(require('modules/deployment/DeploymentKeyValueProvider.class'))();
+let serverRoleDefinitionKeyValueProvider = new (require('modules/deployment/ServerRoleDefinitionKeyValueProvider.class'))();
+let serviceInstallationKeyValueProvider = new (require('modules/deployment/ServiceInstallationKeyValueProvider.class'))();
+let serviceDefinitionKeyValueProvider = new (require('modules/deployment/ServiceDefinitionKeyValueProvider.class'))();
+let deploymentServiceKeyValueProvider = new (require('modules/deployment/DeploymentServiceKeyValueProvider.class'))();
+let deploymentKeyValueProvider = new (require('modules/deployment/DeploymentKeyValueProvider.class'))();
 
 module.exports = function PushDeploymentCommandHandler(command) {
-
   let logger = new DeploymentCommandHandlerLogger(command);
 
   assertContract(command, 'command', {
@@ -31,7 +31,6 @@ module.exports = function PushDeploymentCommandHandler(command) {
   let s3Path = command.s3Path;
 
   return co(function* () {
-    
     let consulConfig = yield consulClient.createConfig({ environment: deployment.environmentName });
     let dataCentre = consulConfig.defaults.dc;
 
@@ -54,8 +53,7 @@ module.exports = function PushDeploymentCommandHandler(command) {
     ];
 
     logger.info('Consul metadata has been updated');
-
-  }).catch(error => {
+  }).catch((error) => {
     logger.error('An error has occurred updating consul metadata', error);
     return Promise.reject(error);
   });
@@ -68,7 +66,7 @@ function updateTargetState(command, keyValue, options) {
       environment: command.deployment.environmentName,
       key: keyValue.key,
       value: keyValue.value,
-      options: options,
+      options,
     },
     parent: command,
   });

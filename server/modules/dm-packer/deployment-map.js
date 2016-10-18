@@ -1,28 +1,29 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-var co = require('co');
-var moment = require('moment');
-var uuid = require('node-uuid');
-var path = require('path');
-var io = require('./deployment-map-io');
-var through = require('through2');
-var z = require('./zip-merge');
+let co = require('co');
+let moment = require('moment');
+let uuid = require('node-uuid');
+let path = require('path');
+let io = require('./deployment-map-io');
+let through = require('through2');
+let z = require('./zip-merge');
 
 function getCodeDeployEntries(deploymentMap, inputPackages, options, logger) {
   let isMain = pack => pack.id === deploymentMap.id && pack.version == deploymentMap.version;
-  let entryStreams = (function *() {
+  let entryStreams = (function* () {
     yield getCodeDeploySpecialEntries(deploymentMap, options);
     for (let pack of inputPackages) {
       let mapPath = x => path.join(isMain(pack) ? 'DM' : pack.id, x);
-      let result = z.createEntryStream(pack.contentStream, filterOutNugetJunk, logger).pipe(z.mapS(entry => {
+      let result = z.createEntryStream(pack.contentStream, filterOutNugetJunk, logger).pipe(z.mapS((entry) => {
         let transformedPath = mapPath(entry.path);
         entry.path = transformedPath;
         return entry;
       }));
       yield result;
     }
-  })();
+  }());
 
   let entryStream = z.mergeS(Array.from(entryStreams));
   return Promise.resolve(entryStream);
@@ -31,14 +32,14 @@ function getCodeDeployEntries(deploymentMap, inputPackages, options, logger) {
 function getCodeDeploySpecialEntries(deploymentMap, options) {
   let uuidForDirectoryDiscovery = uuid.v1();
 
-  let output = through({objectMode: true});
+  let output = through({ objectMode: true });
 
-  output.push({path: 'appspec.yml', content: getAppSpec()});
-  output.push({path: 'ScriptArguments.ps1', content: getScriptArguments({
-    deploymentMap: deploymentMap
-  })});
+  output.push({ path: 'appspec.yml', content: getAppSpec() });
+  output.push({ path: 'ScriptArguments.ps1', content: getScriptArguments({
+    deploymentMap,
+  }) });
 
-  co (function *() {
+  co(function* () {
     let staticContent = yield io.getStaticContent(path.resolve(__dirname, 'code-deploy-files'));
     for (let entry of staticContent) {
       output.push(entry);
@@ -91,6 +92,6 @@ hooks:
 }
 
 module.exports = {
-  getCodeDeployEntries: getCodeDeployEntries,
-  getCodeDeployFileName: getCodeDeployFileName
+  getCodeDeployEntries,
+  getCodeDeployFileName,
 };

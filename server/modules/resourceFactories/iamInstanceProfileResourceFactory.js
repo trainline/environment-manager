@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let amazonClientFactory = require('modules/amazon-client/childAccountClient');
@@ -17,9 +18,9 @@ function InstanceProfileResource(client) {
       InstanceProfileName: parameters.instanceProfileName,
     };
 
-    return client.getInstanceProfile(request).promise().then(response => {
+    return client.getInstanceProfile(request).promise().then((response) => {
       return response.InstanceProfile;
-    }).catch(error => {
+    }).catch((error) => {
       throw prettifyError(error, request);
     });
   };
@@ -31,11 +32,10 @@ function InstanceProfileResource(client) {
       return new AwsError(`An error has occurred getting Iam instance profile: ${error.message}`);
     }
   }
-
-};
+}
 
 module.exports = {
-  canCreate: (resourceDescriptor) =>
+  canCreate: resourceDescriptor =>
     resourceDescriptor.type.toLowerCase() === 'iam/instanceprofiles',
 
   create: (resourceDescriptor, parameters) =>

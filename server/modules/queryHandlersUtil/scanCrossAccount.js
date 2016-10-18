@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -16,7 +17,7 @@ function* handler(query, simpleScanQueryName) {
 
     let items = yield sender.sendQuery({ query: childQuery, parent: query });
 
-    items.forEach(function (item) {
+    items.forEach((item) => {
       item.AccountName = account.AccountName;
     });
 
@@ -24,6 +25,6 @@ function* handler(query, simpleScanQueryName) {
   }
 
   return results;
-};
+}
 
 module.exports = co.wrap(handler);

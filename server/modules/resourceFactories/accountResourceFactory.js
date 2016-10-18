@@ -1,11 +1,12 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
 let awsAccounts = require('modules/awsAccounts');
 
 function AccountResource(accounts) {
-  var _data = {
+  let _data = {
     accounts: accounts.map(account => account.AccountName),
   };
 
@@ -24,6 +25,6 @@ function canCreate(resourceDescriptor) {
 }
 
 module.exports = {
-  canCreate: canCreate,
+  canCreate,
   create: co.wrap(create),
 };

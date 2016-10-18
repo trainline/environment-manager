@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assert = require('assert');
@@ -6,7 +7,7 @@ let Expression = require('./awsDynamoExpression');
 let Condition = require('./awsDynamoCondition');
 let RequestHelper = require('./awsDynamoRequestHelper');
 
-var DATE_FORMAT = {
+let DATE_FORMAT = {
   ISO: 'ISO',
   UNIX: 'UNIX',
 };
@@ -14,7 +15,7 @@ var DATE_FORMAT = {
 function tryParseDate(value, format) {
   if (!value) return null;
 
-  var date = new Date(value);
+  let date = new Date(value);
   if (date == 0) return new Date();
   if (date == 'Invalid Date') return new Date();
 
@@ -22,8 +23,8 @@ function tryParseDate(value, format) {
 }
 
 function ScanRequestBuilder(parameters) {
-  var DATE_FROM_FIELD = '$date_from';
-  var DATE_TO_FIELD = '$date_to';
+  let DATE_FROM_FIELD = '$date_from';
+  let DATE_TO_FIELD = '$date_to';
 
   assert(parameters,
     'Argument "parameters" cannot be null.');
@@ -39,11 +40,11 @@ function ScanRequestBuilder(parameters) {
       'Argument "parameters.dateField.format" cannot be null or empty.');
 
     assert(parameters.dateField.format === DATE_FORMAT.ISO || parameters.dateField.format === DATE_FORMAT.UNIX,
-      'Argument "parameters.dateField.format" value can be "ISO" or "UNIX" only. Current value: ' + parameters.dateField.format);
+      `Argument "parameters.dateField.format" value can be "ISO" or "UNIX" only. Current value: ${parameters.dateField.format}`);
   }
 
-  var $this = this;
-  var $data = {
+  let $this = this;
+  let $data = {
     table: parameters.table,
     key: parameters.key,
     range: parameters.range,
@@ -63,16 +64,14 @@ function ScanRequestBuilder(parameters) {
   };
 
   this.buildRequest = function () {
-    var request = {
+    let request = {
       TableName: $data.table,
     };
 
     if ($data.filter) {
+      let filters = [];
 
-      var filters = [];
-
-      for (var field in $data.filter) {
-
+      for (let field in $data.filter) {
         switch (field.toLowerCase()) {
           case DATE_FROM_FIELD:
             var dateFrom = tryParseDate($data.filter[field], $data.dateField.format);
@@ -87,19 +86,17 @@ function ScanRequestBuilder(parameters) {
           default:
             filters.push(new Condition.Equal(field).to($data.filter[field]));
             break;
-        };
+        }
       }
 
       RequestHelper.addFilterExpression(request, filters);
-
     }
 
     if ($data.resultsLimit !== null)
-      RequestHelper.addResultsLimit(request, $data.resultsLimit);
+      { RequestHelper.addResultsLimit(request, $data.resultsLimit); }
 
     return request;
   };
-
-};
+}
 
 module.exports = ScanRequestBuilder;
