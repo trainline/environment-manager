@@ -16,7 +16,8 @@ module.exports = {
     'prefer-const': 0,
     'global-require': 1,
     "import/no-extraneous-dependencies": 0,
+    "import/newline-after-import": 0,
     "no-use-before-define": 0,
-    "no-useless-escape": 0,
+    "no-useless-escape": 0
   }
 };
