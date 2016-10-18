@@ -191,8 +191,10 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
         },
       });
 
-      vm.openServerRoleName = target.ServerRoleName;
-      querySync.updateQuery();
+      if (target !== null) {
+        vm.openServerRoleName = target.ServerRoleName;
+        querySync.updateQuery();
+      }
 
       instance.result['finally'](function() {
         vm.openServerRoleName = null;
