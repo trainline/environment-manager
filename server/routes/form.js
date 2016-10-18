@@ -26,8 +26,8 @@ function serveLoginPage(response, error) {
     },
   };
 
-  renderer.render('login', content, (content) => {
-    response.send(content);
+  renderer.render('login', content, (renderedContent) => {
+    response.send(renderedContent);
   });
 }
 

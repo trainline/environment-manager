@@ -102,8 +102,8 @@ module.exports = function UserService() {
           jsonwebtoken.verify(token, sslComponents.certificate, options, callback);
         },
 
-        (token, callback) => {
-          getUserSessionByToken(token, callback);
+        (localToken, callback) => {
+          getUserSessionByToken(localToken, callback);
         },
 
         (session, callback) => {

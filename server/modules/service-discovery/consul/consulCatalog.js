@@ -17,7 +17,7 @@ function getAllServices(query) {
 
   let promiseFactoryMethod = () =>
     createConsulClient(environment)
-      .then(consulClient => consulClient.catalog.service.list()).then((list) => {
+      .then(clientInstance => clientInstance.catalog.service.list()).then((list) => {
         if (query.server_role !== undefined) {
           list = _.pickBy(list, tags => _.includes(tags, `server_role:${query.server_role}`));
         }
@@ -30,19 +30,19 @@ function getAllServices(query) {
 }
 
 function getService(environment, service) {
-  return executeConsul(environment, consulClient => consulClient.catalog.service.nodes(service));
+  return executeConsul(environment, clientInstance => clientInstance.catalog.service.nodes(service));
 }
 
 function getAllNodes(environment) {
-  return executeConsul(environment, consulClient => consulClient.catalog.node.list());
+  return executeConsul(environment, clientInstance => clientInstance.catalog.node.list());
 }
 
 function getNode(environment, nodeName) {
-  return executeConsul(environment, consulClient => consulClient.catalog.node.services(nodeName));
+  return executeConsul(environment, clientInstance => clientInstance.catalog.node.services(nodeName));
 }
 
 function getNodeHealth(environment, nodeName) {
-  return executeConsul(environment, consulClient => consulClient.health.node(nodeName));
+  return executeConsul(environment, clientInstance => consulClient.health.node(nodeName));
 }
 
 function executeConsul(environment, fn) {

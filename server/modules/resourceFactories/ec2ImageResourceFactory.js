@@ -45,11 +45,11 @@ function ImageResource(client, account) {
       if (result) {
         return result;
       } else {
-        return getAll(params).then((result) => {
-          if (result) {
-            imagesCache.set(accountName, result);
+        return getAll(params).then((freshResult) => {
+          if (freshResult) {
+            imagesCache.set(accountName, freshResult);
           }
-          return result;
+          return freshResult;
         });
       }
     });

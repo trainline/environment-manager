@@ -33,8 +33,8 @@ function getTargetState(environment, parameters) {
   assert(parameters, 'Expected "parameters" not to be null or empty.');
 
   let promiseFactoryMethod = () => new Promise((resolve, reject) => {
-    createConsulClient(environment).then((consulClient) => {
-      consulClient.kv.get({ key: parameters.key, recurse: parameters.recurse }, (error, result) => {
+    createConsulClient(environment).then((clientInstance) => {
+      clientInstance.kv.get({ key: parameters.key, recurse: parameters.recurse }, (error, result) => {
         if (error) {
           return reject(new HttpRequestError(`An error has occurred contacting consul agent: ${error.message}`));
         }
@@ -69,7 +69,7 @@ function getServiceDeploymentCause(environmentName, deploymentId, instanceId) {
 function setTargetState(environment, parameters) {
   assert(parameters, 'Expected "parameters" not to be null or empty.');
   let promiseFactoryMethod = () => new Promise((resolve, reject) => {
-    createConsulClient(environment).then((consulClient) => {
+    createConsulClient(environment).then((clientInstance) => {
       let encodedValue = encodeValue(parameters.value);
       let options = {};
 
@@ -78,7 +78,7 @@ function setTargetState(environment, parameters) {
           options.cas = parameters.options.expectedVersion;
         }
       }
-      consulClient.kv.set(parameters.key, encodedValue, options, (error, created) => {
+      clientInstance.kv.set(parameters.key, encodedValue, options, (error, created) => {
         if (error) {
           return reject(new HttpRequestError(
             `An error has occurred contacting consul agent: ${error.message}`
@@ -100,15 +100,15 @@ function setTargetState(environment, parameters) {
 function removeTargetState(environment, parameters) {
   assert(parameters, 'Expected "parameters" not to be null or empty.');
   let promiseFactoryMethod = () => new Promise((resolve, reject) => {
-    createConsulClient(environment).then((consulClient) => {
-      consulClient.kv.get({ key: parameters.key, recurse: parameters.recurse }, (error, result) => {
-        consulClient.kv.del(parameters.key, (error) => {
-          if (!error) {
+    createConsulClient(environment).then((clientInstance) => {
+      clientInstance.kv.get({ key: parameters.key, recurse: parameters.recurse }, (error, result) => {
+        clientInstance.kv.del(parameters.key, (deletionError) => {
+          if (!deletionError) {
             logChange('DELETE', parameters.key, result);
             return resolve();
           }
           return reject(new HttpRequestError(
-            `An error has occurred contacting consul agent: ${error.message}`
+            `An error has occurred contacting consul agent: ${deletionError.message}`
           ));
         });
       });

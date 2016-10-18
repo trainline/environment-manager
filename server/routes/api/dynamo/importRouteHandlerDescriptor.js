@@ -28,7 +28,7 @@ function asRouteHandlerDescriptor(resource, action, commandName) {
     .put(url)
     .named(resource.name)
     .withDocs(docs)
-    .whenRequest((url, value) => _.isNil(value) ? new Error.InvalidOperation('Expected one or more items to import.') : null)
+    .whenRequest((uri, value) => _.isNil(value) ? new Error.InvalidOperation('Expected one or more items to import.') : null)
     .do((request, response) => {
       let command = {
         name: commandName,

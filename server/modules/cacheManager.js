@@ -56,7 +56,7 @@ const cacheManager = {
   },
 };
 
-function createCache(name, cache, fn, pending, logger, logHits) {
+function createCache(name, cache, fn, pending, instanceLogger, logHits) {
   return {
     get,
     del,
@@ -77,16 +77,16 @@ function createCache(name, cache, fn, pending, logger, logHits) {
     let value = cache.get(key);
     if (value) {
       if (logHits) {
-        logger.debug(`Cache hit: namespace: "${name}", key: "${key}"`);
+        instanceLogger.debug(`Cache hit: namespace: "${name}", key: "${key}"`);
       }
       return Promise.resolve(value);
     } else {
       let result = pending[key];
       if (result) {
-        logger.debug(`Cache wait: namespace: "${name}", key: "${key}"`);
+        instanceLogger.debug(`Cache wait: namespace: "${name}", key: "${key}"`);
         return result.then(val);
       } else {
-        logger.debug(`Cache miss: namespace: "${name}", key: "${key}"`);
+        instanceLogger.debug(`Cache miss: namespace: "${name}", key: "${key}"`);
         if (!fn) return Promise.resolve();
         let item = fn(key);
         pending[key] = item;

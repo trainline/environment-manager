@@ -100,8 +100,8 @@ function DynamoTableResource(config, client) {
       Key: buildPrimaryKey(params.key, params.range),
     };
 
-    function tryGet(client) {
-      return client.get(request).promise().then((data) => {
+    function tryGet(clientInstance) {
+      return clientInstance.get(request).promise().then((data) => {
         if (!data.Item) {
           let message = !params.range ?
             `No ${_resourceName} found for ${_keyName} equals to "${params.key}".` :
@@ -124,14 +124,14 @@ function DynamoTableResource(config, client) {
     let request = _builder.scan().filterBy(params.filter).limitTo(params.limit).buildRequest();
     let items = [];
 
-    function scan(client) {
-      return client.scan(request).promise().then((data) => {
+    function scan(clientInstance) {
+      return clientInstance.scan(request).promise().then((data) => {
         items = items.concat(data.Items.map(item => arrangeItem(item, params.formatting)));
         if (request.Limit || !data.LastEvaluatedKey) return items;
 
         // Scan from next index
         request.ExclusiveStartKey = data.LastEvaluatedKey;
-        return scan(client);
+        return scan(clientInstance);
       }).catch((error) => {
         throw standardifyError(error, request);
       });
@@ -153,13 +153,13 @@ function DynamoTableResource(config, client) {
       return data.Item.Audit.Version !== expectedVersion;
     }
 
-    function investigateOnErrorOccurred(client) {
+    function investigateOnErrorOccurred(clientInstance) {
       let request = {
         TableName: _tableName,
         Key: buildPrimaryKey(key, range),
       };
 
-      return client.get(request).promise().then((data) => {
+      return clientInstance.get(request).promise().then((data) => {
         if (!data.Item) {
           let message = !params.range ?
             `No ${_resourceName} found for ${_keyName} equals to "${key}."` :
@@ -182,13 +182,13 @@ function DynamoTableResource(config, client) {
       });
     }
 
-    function tryUpdate(client) {
+    function tryUpdate(clientInstance) {
       let request = !!_auditingEnabled ?
         _builder.update().item(item).atVersion(expectedVersion).buildRequest() :
         _builder.update().item(item).buildRequest();
 
       // Existing item succesfully updated
-      return client
+      return clientInstance
         .update(request)
         .promise()
         .then(data => data.Attributes)
@@ -202,7 +202,7 @@ function DynamoTableResource(config, client) {
           }
 
           // I can further investigate...
-          return investigateOnErrorOccurred(client);
+          return investigateOnErrorOccurred(clientInstance);
       });
     }
 
@@ -214,13 +214,13 @@ function DynamoTableResource(config, client) {
     let key = (!!_keyName) ? item[_keyName] : null;
     let range = (!!_rangeName) ? item[_rangeName] : null;
 
-    function investigateOnErrorOccurred(client) {
+    function investigateOnErrorOccurred(clientInstance) {
       let request = {
         TableName: _tableName,
         Key: buildPrimaryKey(key, range),
       };
 
-      return client.get(request).promise().then((data) => {
+      return clientInstance.get(request).promise().then((data) => {
         if (data.Item) { // Found an item with the same key
           let message = 'Item cannot be created as an item with the same key already exists.';
           throw new DynamoItemAlreadyExistsError(message);

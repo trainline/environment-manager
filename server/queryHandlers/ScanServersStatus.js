@@ -62,11 +62,11 @@ module.exports = function ScanServersStatusQueryHandler(query) {
           };
         });
   })).then((asgResults) => {
-    let asgs = asgResults.filter(byStatus(query.filter.status));
+    let filteredASGs = asgResults.filter(byStatus(query.filter.status));
 
     let result = {
       EnvironmentName: environment,
-      Value: asgs,
+      Value: filteredASGs,
     };
 
     let duration = moment.duration(moment.utc().diff(allStartTime)).asMilliseconds();

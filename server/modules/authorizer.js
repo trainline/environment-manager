@@ -72,14 +72,14 @@ function limitationsOnResourcePermissionMatch(requiredPermission, permission) {
 
 function isClusterPermission(permission) {
   let isLegacyClusterPermission = intersect(toLower(permission.Resource), '/permissions/clusters/*');
-  let isClusterPermission = !!permission.Cluster;
-  return isClusterPermission || isLegacyClusterPermission;
+  let hasPermission = !!permission.Cluster;
+  return hasPermission || isLegacyClusterPermission;
 }
 
 function isEnvironmentTypePermission(permission) {
   let isLegacyEnvironmentTypePermission = intersect(toLower(permission.Resource), '/permissions/environmenttypes/*');
-  let isEnvironmentTypePermission = !!permission.EnvironmentType;
-  return isEnvironmentTypePermission || isLegacyEnvironmentTypePermission;
+  let hasPermission = !!permission.EnvironmentType;
+  return hasPermission || isLegacyEnvironmentTypePermission;
 }
 
 function isLimitedResourcePermission(permission) {

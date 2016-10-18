@@ -59,13 +59,13 @@ function* handleQuery(query, resourceName, upstreamFilter, hostFilter) {
 
   // Gets all services from DynamoDB table
   let promises = serviceNames.map((serviceName) => {
-    let subquery = {
+    let newSubquery = {
       name: 'ScanDynamoResources',
       resource: 'config/services',
       accountName: masterAccountName,
       filter: { ServiceName: serviceName },
     };
-    return sender.sendQuery({ query: subquery, parent: query });
+    return sender.sendQuery({ query: newSubquery, parent: query });
   });
 
   let services = yield Promise.all(promises);
@@ -73,9 +73,9 @@ function* handleQuery(query, resourceName, upstreamFilter, hostFilter) {
   services = _(services).filter(hasLength).flatten();
 
   // Assigning blue/green port reference to the found slices
-  function getServicesPortMapping(services) {
+  function getServicesPortMapping(sliceServices) {
     let result = {};
-    services.forEach((service) => {
+    sliceServices.forEach((service) => {
       let portsMapping = {};
       portsMapping.owningCluster = service.OwningCluster;
       if (service.Value.BluePort) portsMapping[service.Value.BluePort] = 'Blue';

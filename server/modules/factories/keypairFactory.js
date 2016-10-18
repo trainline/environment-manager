@@ -19,8 +19,8 @@ function KeyPairResource(client) {
         ],
       };
 
-      function get(client) {
-        client.describeKeyPairs(request, (error, response) => {
+      function get(instanceClient) {
+        instanceClient.describeKeyPairs(request, (error, response) => {
           if (error) {
             return reject(new AwsError(`An error has occurred describing EC2 key pairs: ${error.message}`));
           } else if (response.KeyPairs.length) {

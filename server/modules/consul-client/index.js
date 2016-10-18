@@ -17,7 +17,7 @@ function createConfig(options) {
 }
 
 function create(options) {
-  return createConfig(options).then(config => consul(config));
+  return createConfig(options).then(newConfig => consul(newConfig));
 }
 
 module.exports = { createConfig, create };

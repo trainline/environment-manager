@@ -2,14 +2,14 @@
 
 'use strict';
 
-let route = require('modules/helpers/route');
+let routeHelper = require('modules/helpers/route');
 let pluralize = require('pluralize');
 let config = require('config');
 let _ = require('lodash');
 
 const IS_PROD = config.get('IS_PRODUCTION');
 
-module.exports = route
+module.exports = routeHelper
   .get('/swagger.json')
   .inOrderTo('Describe all available API endpoints.')
   .do((request, response) => {

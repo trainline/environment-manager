@@ -4,13 +4,13 @@
 
 let async = require('async');
 let config = require('config');
-let sender = require('modules/sender');
 
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
 let InconsistentSlicesStatusError = require('modules/errors/InconsistentSlicesStatusError.class');
 
 function ToggleUpstreamByServiceVerifier(toggleCommand) {
   let $this = this;
+  let sender = require('modules/sender');
 
   $this.verifyUpstreams = (upstreams, mainCallback) => {
     // TODO(filip): remove async

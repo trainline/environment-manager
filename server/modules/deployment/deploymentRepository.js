@@ -135,8 +135,9 @@ function getDeploymentsStartedBetween(min, max) {
 
   let runningDeploymentsPromise = getRunningDeployments();
   let completedDeploymentsPromises = Array.from(createQueries())
-    .map(createQuery => getAllPages(lastEvaluatedKey => executeQuery(createQuery(lastEvaluatedKey)))
-      .then(pages => flatten(pages.map(page => page.Items))));
+    .map(createLocalQuery => getAllPages(lastEvaluatedKey => executeQuery(createLocalQuery(lastEvaluatedKey)))
+    .then(pages => flatten(pages.map(page => page.Items))));
+
   let allDeploymentsPromises = flatten([runningDeploymentsPromise, completedDeploymentsPromises]);
 
   return Promise.all(allDeploymentsPromises).then(deploymentLists => flatten(deploymentLists));
