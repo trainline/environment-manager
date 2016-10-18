@@ -40,7 +40,7 @@ function validateDnsName(dnsName, isProd) {
 
 function validatePort(port, service) {
   if (port && service.Value.BluePort && service.Value.GreenPort) {
-    if (port != service.Value.BluePort && port != service.Value.GreenPort) {
+    if (port !== service.Value.BluePort && port !== service.Value.GreenPort) {
       let err = `Host port ${port} does not match blue or green port of ${service.ServiceName}`;
       return invalid(err);
     }

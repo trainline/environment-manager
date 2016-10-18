@@ -11,7 +11,7 @@ let through = require('through2');
 let z = require('./zip-merge');
 
 function getCodeDeployEntries(deploymentMap, inputPackages, options, logger) {
-  let isMain = pack => pack.id === deploymentMap.id && pack.version == deploymentMap.version;
+  let isMain = pack => pack.id === deploymentMap.id && pack.version === deploymentMap.version;
   let entryStreams = (function* () {
     yield getCodeDeploySpecialEntries(deploymentMap, options);
     for (let pack of inputPackages) {

@@ -16,8 +16,8 @@ function tryParseDate(value, format) {
   if (!value) return null;
 
   let date = new Date(value);
-  if (date == 0) return new Date();
-  if (date == 'Invalid Date') return new Date();
+  if (date === 0) return new Date();
+  if (date === 'Invalid Date') return new Date();
 
   return format === DATE_FORMAT.ISO ? date.toISOString() : date.getTime();
 }

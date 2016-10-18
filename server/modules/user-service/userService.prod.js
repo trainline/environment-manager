@@ -180,7 +180,7 @@ module.exports = function UserService() {
 
     let cachedSession = sessionCache[userSessionKey];
 
-    if (cachedSession && cachedSession.sessionId == expectedSessionId) {
+    if (cachedSession && cachedSession.sessionId === expectedSessionId) {
       callback(null, cachedSession);
     } else {
       getUserSessionFromDb(userSessionKey, (err, dbSession) => {

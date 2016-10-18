@@ -17,7 +17,7 @@ let asgCache = cacheManager.get('Auto Scaling Groups');
 module.exports = {
 
   canCreate: resourceDescriptor =>
-    resourceDescriptor.type.toLowerCase() == 'asgs',
+    resourceDescriptor.type.toLowerCase() === 'asgs',
 
   create: (resourceDescriptor, parameters) => {
     logger.debug(`Getting ASG client for account "${parameters.accountName}"...`);

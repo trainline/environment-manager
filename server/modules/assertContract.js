@@ -33,7 +33,7 @@ let assertContract = function (contract, contractName, contractAssertion) {
         if (typeof contract !== 'number' && !(contract instanceof Number)) {
           throw new InvalidContractError(`Expected "${contractName}" to be instance of Number`);
         }
-      } else if (!(contract instanceof contractAssertion.type) && contract.getType && contract.getType() != contractAssertion.type) {
+      } else if (!(contract instanceof contractAssertion.type) && contract.getType && contract.getType() !== contractAssertion.type) {
         throw new InvalidContractError(`Expected "${contractName}" to be instance of ${contractAssertion.type.name}`);
       }
     }

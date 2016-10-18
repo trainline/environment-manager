@@ -45,7 +45,7 @@ let User = function (data) {
     for (let userPermission of userData.permissions) {
       if (userPermission.Resource && userPermission.Access) {
         let matchingResources = globIntersection(requiredPermission.resource.toLowerCase(), userPermission.Resource.toLowerCase());
-        let matchingAccess = (userPermission.Access.toLowerCase() == requiredPermission.access.toLowerCase()) || userPermission.Access == 'ADMIN';
+        let matchingAccess = (userPermission.Access.toLowerCase() === requiredPermission.access.toLowerCase()) || userPermission.Access === 'ADMIN';
 
         if (matchingAccess && matchingResources) {
           return true;

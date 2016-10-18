@@ -31,7 +31,7 @@ function KeyPairResource(client) {
 
 module.exports = {
   canCreate: resourceDescriptor =>
-    resourceDescriptor.type.toLowerCase() == 'ec2/keypair',
+    resourceDescriptor.type.toLowerCase() === 'ec2/keypair',
 
   create: (resourceDescriptor, parameters) =>
     amazonClientFactory.createEC2Client(parameters.accountName).then(client => new KeyPairResource(client)),

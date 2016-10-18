@@ -200,7 +200,7 @@ function getInstance(instances, instanceId) {
 function byStatus(status) {
   return function (resource) {
     if (!status) return true;
-    return resource.Status.toLowerCase() == status.toLowerCase();
+    return resource.Status.toLowerCase() === status.toLowerCase();
   };
 }
 

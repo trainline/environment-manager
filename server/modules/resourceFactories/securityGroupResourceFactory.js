@@ -8,7 +8,7 @@ let SecurityGroupResource = require('./SecurityGroupResource');
 module.exports = {
 
   canCreate: resourceDescriptor =>
-    resourceDescriptor.type.toLowerCase() == 'ec2/sg',
+    resourceDescriptor.type.toLowerCase() === 'ec2/sg',
 
   create: (resourceDescriptor, parameters) =>
     amazonClientFactory.createEC2Client(parameters.accountName).then(client => new SecurityGroupResource(client)),

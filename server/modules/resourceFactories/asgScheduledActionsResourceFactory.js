@@ -8,8 +8,7 @@ let logger = require('modules/logger');
 
 module.exports = {
 
-  canCreate: resourceDescriptor =>
-    resourceDescriptor.type.toLowerCase() == 'asgs-scheduled-actions',
+  canCreate: resourceDescriptor => resourceDescriptor.type.toLowerCase() === 'asgs-scheduled-actions',
 
   create: (resourceDescriptor, parameters) => {
     logger.debug(`Getting ASG client for account "${parameters.accountName}"...`);

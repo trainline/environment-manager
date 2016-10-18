@@ -54,7 +54,7 @@ function NginxUpstreamsResource() {
         if (error) return reject(httpErrorToError(error));
 
         // Error response from the host
-        if (response.statusCode != 200) return reject(httpResponseToError(response));
+        if (response.statusCode !== 200) return reject(httpResponseToError(response));
 
         // Unexpected non JSON body
         let nginxUpstreams = utils.safeParseJSON(body);

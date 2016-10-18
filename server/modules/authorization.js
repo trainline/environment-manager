@@ -10,7 +10,7 @@ function authorizeRequest(authorizer, request, response, next) {
     response.status(401);
     response.send('Access Denied. Please sign in and try again.');
   } else {
-    if (request.method == 'GET') return next();
+    if (request.method === 'GET') return next();
     handleSecureRequest(authorizer, request, response, next);
   }
 }
