@@ -1,10 +1,12 @@
 "use strict";
 
-const deployment = null;
-require("should");
+let should = require("should");
+let validator = require("modules/deployment/validators/rootDeviceSizeValidator");
 
-let validator = require("./rootDeviceSizeValidator");
+const deployment = null;
+
 describe("CreateLaunchConfigurationCommandValidator", function() {
+
   context("Root device is large enough for AMI", function() {
     let configuration = {
       image: { rootVolumeSize: 10 },
