@@ -28,7 +28,7 @@ function asExpressRouteDescriptor(descriptor) {
       if (!error) return next();
 
       response.status(400);
-      response.send(error.message);
+      return response.send(error.message);
     });
   }
 

@@ -8,10 +8,10 @@ let authorize = require('modules/authorizer');
 function authorizeRequest(authorizer, request, response, next) {
   if (!request.user) {
     response.status(401);
-    response.send('Access Denied. Please sign in and try again.');
+    return response.send('Access Denied. Please sign in and try again.');
   } else {
     if (request.method === 'GET') return next();
-    handleSecureRequest(authorizer, request, response, next);
+    return handleSecureRequest(authorizer, request, response, next);
   }
 }
 
@@ -26,13 +26,13 @@ function handleSecureRequest(authorizer, request, response, next) {
     if (authorizationResult.authorized) return next();
 
     if (authorizationResult.protectedAction !== undefined) {
-      sendProtectedActionResponse(
+      return sendProtectedActionResponse(
         authorizationResult.protectedAction,
         authorizationResult.environmentType,
         response
       );
     } else {
-      sendUnauthorizedResponse(authorizationResult.unsatisfiedPermissions, response);
+      return sendUnauthorizedResponse(authorizationResult.unsatisfiedPermissions, response);
     }
   }).catch((error) => {
     if (error.name === 'BadRequestError') {

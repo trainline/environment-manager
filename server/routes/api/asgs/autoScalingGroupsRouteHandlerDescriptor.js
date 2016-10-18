@@ -8,13 +8,15 @@ let route = require('modules/helpers/route');
 let _ = require('lodash');
 
 function getPropertyByName(object, name) {
-  if (!object) return;
+  if (!object) return null;
   let lowerCaseName = name.toLowerCase();
 
   for (let propertyName in object) {
     if (lowerCaseName !== propertyName.toLowerCase()) continue;
     return object[propertyName];
   }
+
+  return null;
 }
 
 module.exports = [

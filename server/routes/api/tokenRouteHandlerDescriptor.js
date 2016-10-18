@@ -14,6 +14,7 @@ module.exports = route
   .allowAnonymous()
   .whenRequest((url, value) => {
     if (value.grant_type !== 'password') return new Error('unsupported_grant_type');
+    else return null;
   })
   .do((request, response) => {
     let credentials = {

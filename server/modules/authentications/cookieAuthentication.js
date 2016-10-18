@@ -11,7 +11,8 @@ module.exports = {
 
     let cookie = req.cookies[cookieAuthenticationConfiguration.getCookieName()];
     if (!cookie) return next();
-    userService.getUserByToken(cookie)
+
+    return userService.getUserByToken(cookie)
       .then((user) => {
         req.user = user;
         req.authenticatedBy = 'cookie';

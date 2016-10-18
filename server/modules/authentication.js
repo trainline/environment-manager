@@ -26,7 +26,7 @@ module.exports = {
       let redirectUrl = getRedirectUrl(request);
       response.redirect(redirectUrl);
     } else {
-      return next();
+      next();
     }
   },
 };

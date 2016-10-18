@@ -97,7 +97,7 @@ function promiseOrCallback(promise, commandOrQuery, type, callback) {
 
   if (!callback) return promise;
 
-  promise.then(
+  return promise.then(
     result => callback(null, result),
     error => callback(error)
   );

@@ -43,7 +43,7 @@ function callbackToExpress(req, res) {
     let message = error.toString();
 
     res.status(statusCode);
-    res.send(message);
+    return res.send(message);
   };
 }
 

@@ -16,7 +16,7 @@ module.exports = {
     let match = PATTERN.exec(authorization);
     if (!match) return next();
 
-    userService.getUserByToken(match[1])
+    return userService.getUserByToken(match[1])
       .then((user) => {
         req.user = user;
         req.authenticatedBy = 'bearer';

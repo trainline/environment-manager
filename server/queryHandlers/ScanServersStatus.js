@@ -37,6 +37,8 @@ module.exports = function ScanServersStatusQueryHandler(query) {
           ami: image,
           status: asgInstance.HealthStatus,
         };
+      } else {
+        return null;
       }
     }).filter(instance => !!instance);
 
@@ -120,12 +122,12 @@ function getServiceView(env) {
 }
 
 function getAmi(instances) {
-  if (_.some(instances, i => !i.ami)) return;
+  if (_.some(instances, i => !i.ami)) return null;
 
   let amis = instances.map(i => i.ami);
   let amiNames = _.uniq(amis.map(ami => ami.name));
 
-  if (amiNames.length !== 1) return;
+  if (amiNames.length !== 1) return null;
 
   let ami = amis[0];
 
@@ -184,7 +186,7 @@ function getTagValue(resource, key) {
 
 function getImage(images, imageId) {
   let foundImages = images.filter(image => image.ImageId === imageId);
-  if (foundImages.length === 0) return;
+  if (foundImages.length === 0) return null;
 
   let image = foundImages[0];
   return {

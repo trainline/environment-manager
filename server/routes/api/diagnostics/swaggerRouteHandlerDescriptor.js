@@ -59,6 +59,8 @@ module.exports = routeHelper
           return `Import (merge) ${pluralize(route.docs.description)}${perAccount}`;
         case 'export':
           return `Export ${pluralize(route.docs.description)}${perAccount}`;
+        default:
+          return null;
       }
     }
 

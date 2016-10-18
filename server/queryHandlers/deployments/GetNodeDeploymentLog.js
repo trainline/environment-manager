@@ -43,6 +43,8 @@ function parseBucketAndPathFromS3Url(url) {
       bucketName: matches[1],
       objectPath: matches[2],
     };
+  } else {
+    return null;
   }
 }
 
