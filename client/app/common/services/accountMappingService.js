@@ -4,27 +4,21 @@
 ﻿angular.module('EnvironmentManager.common').factory('accountMappingService',
   function ($q, cachedResources, $http) {
 
-    function accountMappingService() {
-
-      this.GetAccountForEnvironment = function (environmentName) {
-        var deferred = $q.defer();
+    return {
+      getAccountForEnvironment: function (environmentName) {
         var url = '/api/environments/' + environmentName + '/accountName';
 
-        $http.get(url).then(function(account) {
-          deferred.resolve(account.data)
+        return $http.get(url).then(function(account) {
+          return account.data;
         }, function(error) {
-          deferred.reject(error.message);
+          throw error.message;
         });
-        return deferred.promise;
-      };
-
-      this.GetEnvironmentLoadBalancers = function (environmentName) {
-        var deferred = $q.defer();
-
+      },
+      getEnvironmentLoadBalancers: function (environmentName) {
         var environments;
         var environmentTypes;
 
-        $q.all([
+        return $q.all([
           cachedResources.config.environments.all().then(function (envData) {
             environments = envData;
           }),
@@ -34,18 +28,15 @@
           }),
         ]).then(function () {
           var env = cachedResources.config.environments.getByName(environmentName, 'EnvironmentName', environments);
-          if (!env) return deferred.reject('Environment name ' + environmentName + ' not found');
+          if (!env) throw 'Environment name ' + environmentName + ' not found';
 
           var envTypeName = env.Value.EnvironmentType;
           var envType = cachedResources.config.environmentTypes.getByName(envTypeName, 'EnvironmentType', environmentTypes);
-          if (!envType) return deferred.reject('Environment type ' + envTypeName + ' not found');
+          if (!envType) throw 'Environment type ' + envTypeName + ' not found';
 
-          deferred.resolve(envType.Value.LoadBalancers);
+          return envType.Value.LoadBalancers;
         });
-
-        return deferred.promise;
-      };
-    }
-
-    return new accountMappingService();
+      }
+    };
+    
   });
