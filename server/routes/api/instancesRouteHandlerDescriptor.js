@@ -59,10 +59,7 @@ module.exports = [
   route.get('/:account/instances/schedule-actions')
   .inOrderTo('List instances changes needed due to scheduling')
   .withDocs({
-    description: 'Instance',
-    verb: 'scan',
-    perAccount: true,
-    tags: ['Instances'],
+    disableDocs: true
   })
   .do((request, response) => {
     var query = {
