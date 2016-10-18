@@ -4,7 +4,6 @@
 
 let co = require('co');
 let DeploymentCommandHandlerLogger = require('commands/deployments/DeploymentCommandHandlerLogger');
-let configurationCache = require('modules/configurationCache');
 let assertContract = require('modules/assertContract');
 let S3PathContract = require('modules/deployment/S3PathContract');
 let DeploymentContract = require('modules/deployment/DeploymentContract');

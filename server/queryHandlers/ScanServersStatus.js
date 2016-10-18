@@ -1,9 +1,8 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
 
 let _ = require('lodash');
-let co = require('co');
 let moment = require('moment');
 let logger = require('modules/logger');
 let sender = require('modules/sender');
@@ -210,6 +209,8 @@ function byStatus(status) {
   };
 }
 
+// TODO: Double-check usage of this function
+// eslint-disable-next-line no-unused-vars
 function byTag(key, value) {
   return (resource) => {
     if (!value) return true;

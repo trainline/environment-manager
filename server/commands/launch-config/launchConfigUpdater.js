@@ -5,8 +5,6 @@
 let co = require('co');
 let autoScalingGroupClientFactory = require('modules/clientFactories/autoScalingGroupClientFactory');
 let launchConfigurationClientFactory = require('modules/clientFactories/launchConfigurationClientFactory');
-let sender = require('modules/sender');
-let AutoScalingGroup = require('models/AutoScalingGroup');
 
 module.exports = {
   //

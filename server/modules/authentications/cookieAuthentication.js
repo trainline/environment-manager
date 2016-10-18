@@ -2,7 +2,6 @@
 
 'use strict';
 
-let User = require('modules/user');
 let userService = require('modules/user-service');
 let cookieAuthenticationConfiguration = require('modules/authentications/cookieAuthenticationConfiguration');
 

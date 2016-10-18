@@ -144,10 +144,10 @@
 
     let decrement = 60000;
 
-    let list = 0;
-    let wildcard = 0;
-    let literal = 0;
-    let ratect = 0;
+    let list = 0; // eslint-disable-line no-unused-vars
+    let wildcard = 0; // eslint-disable-line no-unused-vars
+    let literal = 0; // eslint-disable-line no-unused-vars
+    let ratect = 0; // eslint-disable-line no-unused-vars
 
     for (let i = array.length - 1; i > -1; i--) {
             // list of numbers
@@ -281,7 +281,6 @@
       while (cronArray.length > 6) cronArray.shift();
 
       let d = new Date(datetime);
-      let previous = new Date();
             // 1073 = worst case 1 year of tries
       let giveup = 1073;
       let giveupcount = 0;
@@ -312,8 +311,7 @@
       datetime = now_utc;
     }
     if (!scheduledActions) return null;
-
-    let cronString;
+    
     let mostRecentDate = new Date(2000, 1, 1); // don't look back before y2k
     let response;
     let cronArray;
@@ -329,7 +327,6 @@
       while (cronArray.length > 6) cronArray.shift();
 
       let d = new Date(datetime);
-      let previous = new Date();
             // 1073 = worst case 1 year of tries
       let giveup = 1073;
       let giveupcount = 0;

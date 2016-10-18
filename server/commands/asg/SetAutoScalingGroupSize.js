@@ -7,11 +7,8 @@ let _ = require('lodash');
 let OperationResult = require('../utils/operationResult');
 let resourceProvider = require('modules/resourceProvider');
 let InvalidOperationError = require('modules/errors/InvalidOperationError.class');
-let sender = new require('modules/sender');
 
 function* handler(command) {
-  const result = new OperationResult();
-
   // Validation
   let min = command.autoScalingGroupMinSize;
   let desired = command.autoScalingGroupDesiredSize;

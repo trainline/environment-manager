@@ -2,11 +2,9 @@
 
 'use strict';
 
-let _ = require('lodash');
 let config = require('config');
 
 function getUpstream(accountName, upstreamName, user) {
-  const masterAccountName = config.getUserValue('masterAccountName');
   let sender = require('modules/sender');
 
   let query = {

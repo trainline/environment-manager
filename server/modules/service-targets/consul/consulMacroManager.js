@@ -2,7 +2,6 @@
 
 'use strict';
 
-let assert = require('assert');
 let ConsulManager = require('./ConsulManager');
 let co = require('co');
 let consulClient = require('modules/consul-client');

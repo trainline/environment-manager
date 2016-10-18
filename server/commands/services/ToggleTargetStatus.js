@@ -24,7 +24,9 @@ function* ToggleTargetStatus(command) {
   service[SERVICE_ACTION] = enabled ? SERVICE_INSTALL : SERVICE_IGNORE;
 
   try {
+    // eslint-disable-next-line no-unused-vars
     let result = yield serviceTargets.setTargetState(environment, { key, value: service });
+    // It's better to assign the result and do nothing than have a non-assignment expression
     return service;
   } catch (error) {
     throw new Error(

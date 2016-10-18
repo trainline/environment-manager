@@ -2,7 +2,6 @@
 
 'use strict';
 
-let _ = require('lodash');
 let logger = require('modules/logger');
 let ms = require('ms');
 let sender = require('modules/sender');

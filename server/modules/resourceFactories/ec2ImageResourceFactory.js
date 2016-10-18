@@ -4,7 +4,6 @@
 
 let _ = require('lodash');
 let co = require('co');
-let config = require('config');
 let amazonClientFactory = require('modules/amazon-client/childAccountClient');
 let awsAccounts = require('modules/awsAccounts');
 let cacheManager = require('modules/cacheManager');

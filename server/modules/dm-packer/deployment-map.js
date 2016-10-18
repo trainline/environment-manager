@@ -30,8 +30,6 @@ function getCodeDeployEntries(deploymentMap, inputPackages, options, logger) {
 }
 
 function getCodeDeploySpecialEntries(deploymentMap, options) {
-  let uuidForDirectoryDiscovery = uuid.v1();
-
   let output = through({ objectMode: true });
 
   output.push({ path: 'appspec.yml', content: getAppSpec() });

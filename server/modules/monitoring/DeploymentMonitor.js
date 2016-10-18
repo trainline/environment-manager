@@ -3,7 +3,6 @@
 'use strict';
 
 let _ = require('lodash');
-
 let fs = require('fs');
 let co = require('co');
 let ms = require('ms');
@@ -13,9 +12,7 @@ let activeDeploymentsStatusProvider = require('modules/monitoring/activeDeployme
 let DEFAULT_INFRASTRUCTURE_PROVISIONING_TIMEOUT = '60m';
 let Enums = require('Enums');
 let NodeDeploymentStatus = require('Enums').NodeDeploymentStatus;
-let deploymentRepository = require('modules/deployment/deploymentRepository');
 let deploymentLogger = require('modules/DeploymentLogger');
-
 
 module.exports = {
   monitorActiveDeployments() {

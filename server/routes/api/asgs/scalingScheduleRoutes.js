@@ -3,9 +3,7 @@
 'use strict';
 
 let send = require('modules/helpers/send');
-let authorizer = require('modules/authorizers/asgs');
 let route = require('modules/helpers/route');
-let _ = require('lodash');
 
 module.exports = [
 

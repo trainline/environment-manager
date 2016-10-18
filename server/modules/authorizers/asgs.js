@@ -2,7 +2,6 @@
 
 'use strict';
 
-let _ = require('lodash');
 let config = require('config');
 
 function getEnvironment(name, user) {

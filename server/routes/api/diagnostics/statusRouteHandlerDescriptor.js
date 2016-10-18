@@ -3,7 +3,6 @@
 'use strict';
 
 let route = require('modules/helpers/route');
-let noAuthorization = require('modules/authorizers/none');
 
 const APP_VERSION = require('config').get('APP_VERSION');
 

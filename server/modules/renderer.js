@@ -13,8 +13,6 @@ function Template(name, path) {
   let _path = path;
   let _template = null;
 
-  function getName() { return _name; }
-
   function getPath() { return _path; }
 
   function getTemplate() { return _template; }

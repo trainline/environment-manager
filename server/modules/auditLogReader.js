@@ -30,6 +30,8 @@ function createQuery(date, limit, options, exclusiveStartKey) {
   return result;
 }
 
+// TODO: Double-check usage of this function
+// eslint-disable-next-line no-unused-vars
 function key(item) {
   return {
     AuditID: item.AuditID,

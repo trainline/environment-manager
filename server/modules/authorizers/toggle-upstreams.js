@@ -2,8 +2,6 @@
 
 'use strict';
 
-let _ = require('lodash');
-
 function getSlicesByUpstream(upstreamName, environmentName, accountName, user) {
   return new Promise((resolve, reject) => {
     let sender = require('modules/sender');

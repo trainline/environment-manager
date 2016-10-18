@@ -3,7 +3,6 @@
 'use strict';
 
 let co = require('co');
-let assert = require('assert');
 let resourceProvider = require('modules/resourceProvider');
 
 function* handleQuery(query) {

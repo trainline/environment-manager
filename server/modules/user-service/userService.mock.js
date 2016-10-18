@@ -3,7 +3,6 @@
 'use strict';
 
 let ms = require('ms');
-let jsonwebtoken = require('jsonwebtoken');
 let User = require('modules/user');
 let utils = require('modules/utilities');
 

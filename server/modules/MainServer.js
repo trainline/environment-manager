@@ -7,8 +7,6 @@ let bodyParser = require('body-parser');
 let cookieParser = require('cookie-parser');
 let logger = require('modules/logger');
 let expressWinston = require('express-winston');
-let winston = require('winston');
-let fs = require('fs');
 let config = require('config/');
 let compression = require('compression');
 

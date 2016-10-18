@@ -1,7 +1,5 @@
 'use strict';
 
-let _ = require('lodash');
-
 function getSlicesByService(serviceName, environmentName, accountName, user) {
   return new Promise((resolve, reject) => {
     let sender = require('modules/sender');

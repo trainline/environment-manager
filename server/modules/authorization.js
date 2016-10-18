@@ -3,7 +3,6 @@
 'use strict';
 
 let logger = require('modules/logger');
-let BaseError = require('modules/errors/BaseError.class');
 let authorize = require('modules/authorizer');
 
 function authorizeRequest(authorizer, request, response, next) {

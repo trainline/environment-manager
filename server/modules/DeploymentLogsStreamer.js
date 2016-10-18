@@ -9,7 +9,7 @@ let sender = require('modules/sender');
 
 module.exports = function DeploymentLogsStreamer() {
   let deploymentLogStreams = {};
-  let isRunning = false;
+  let isRunning = false; // eslint-disable-line no-unused-vars
 
   this.log = function (deploymentId, accountName, message) {
     let logStreams = getLogStreamsByDeploymentIdAndAccountName(deploymentId, accountName);

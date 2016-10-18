@@ -2,7 +2,6 @@
 
 'use strict';
 
-let path = require('path');
 let logger = require('modules/logger');
 let deploymentLogger = require('modules/DeploymentLogger');
 

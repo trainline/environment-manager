@@ -2,7 +2,6 @@
 
 'use strict';
 
-let util = require('util');
 let RequestBuilder = require('modules/awsDynamo/awsDynamoRequestBuilder');
 let awsResourceNameProvider = require('modules/awsResourceNameProvider');
 let AwsError = require('modules/errors/AwsError.class');

@@ -2,8 +2,6 @@
 
 'use strict';
 
-let Expression = require('./awsDynamoExpression');
-let Condition = require('./awsDynamoCondition');
 let InsertRequestBuilder = require('./awsDynamoInsertRequestBuilder');
 let UpdateRequestBuilder = require('./awsDynamoUpdateRequestBuilder');
 let ScanRequestBuilder = require('./awsDynamoScanRequestBuilder');

@@ -10,7 +10,6 @@ let DynamoItemNotFoundError = require('modules/errors/DynamoItemNotFoundError.cl
 let config = require('config');
 let sender = require('modules/sender');
 let imageProvider = require('modules/provisioning/launchConfiguration/imageProvider');
-let logger = require('modules/logger');
 let Environment = require('models/Environment');
 let EnvironmentType = require('models/EnvironmentType');
 

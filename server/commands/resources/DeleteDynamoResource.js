@@ -15,8 +15,6 @@ function* handler(command) {
 
   // Prepare request for deletion
   let params = {};
-  let keyName = resource.getKeyName();
-  let rangeName = resource.getRangeName();
 
   if (command.key) params.key = command.key;
   if (command.range) params.range = command.range;

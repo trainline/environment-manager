@@ -5,7 +5,6 @@
 let co = require('co');
 let AutoScalingGroup = require('models/AutoScalingGroup');
 let instanceDevicesProvider = require('modules/provisioning/launchConfiguration/instanceDevicesProvider');
-let imageProvider = require('modules/provisioning/launchConfiguration/imageProvider');
 let Image = require('models/Image');
 let SecurityGroup = require('models/SecurityGroup');
 

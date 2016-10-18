@@ -1,7 +1,6 @@
 'use strict';
 
 let config = require('config/');
-let fs = require('fs');
 let LocalConfigurationProvider = require('./LocalConfigurationProvider');
 let S3ConfigurationProvider = require('./S3ConfigurationProvider');
 let awsAccounts = require('modules/awsAccounts');

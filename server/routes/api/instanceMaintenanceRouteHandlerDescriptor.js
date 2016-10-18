@@ -3,9 +3,7 @@
 'use strict';
 
 let co = require('co');
-let send = require('modules/helpers/send');
 let route = require('modules/helpers/route');
-let utilities = require('modules/utilities');
 let callbackAdapter = require('modules/callbackAdapter');
 let sender = require('modules/sender');
 let logger = require('modules/logger');

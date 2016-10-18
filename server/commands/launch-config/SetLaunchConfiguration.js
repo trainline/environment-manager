@@ -13,7 +13,6 @@ let imageProvider = require('modules/provisioning/launchConfiguration/imageProvi
 let instanceDevicesProvider = require('modules/provisioning/launchConfiguration/instanceDevicesProvider');
 let securityGroupsProvider = require('modules/provisioning/launchConfiguration/securityGroupsProvider');
 
-let SecurityGroup = require('models/SecurityGroup');
 let AutoScalingGroup = require('models/AutoScalingGroup');
 
 module.exports = function SetLaunchConfiguration(command) {

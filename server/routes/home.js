@@ -3,11 +3,10 @@
 'use strict';
 
 let config = require('config');
+let renderer = require('modules/renderer');
 
-const APP_VERSION = config.get('APP_VERSION');
 const PUBLIC_DIR = config.get('PUBLIC_DIR');
 
-let renderer = require('modules/renderer');
 renderer.register('home', `${PUBLIC_DIR}/index.html`);
 
 module.exports = function (request, response) {

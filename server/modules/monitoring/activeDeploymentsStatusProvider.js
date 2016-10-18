@@ -16,9 +16,7 @@ let sender = require('modules/sender');
 let infrastructureConfigurationProvider = require('modules/provisioning/infrastructureConfigurationProvider');
 let namingConventionProvider = require('modules/provisioning/namingConventionProvider');
 let logger = require('modules/logger');
-let deploymentRepository = require('modules/deployment/deploymentRepository');
 let utils = require('modules/utilities');
-
 let Environment = require('models/Environment');
 
 module.exports = {

@@ -2,7 +2,6 @@
 
 'use strict';
 
-let _ = require('lodash');
 let AwsError = require('modules/errors/AwsError.class');
 let AutoScalingGroupNotFoundError = require('modules/errors/AutoScalingGroupNotFoundError.class');
 

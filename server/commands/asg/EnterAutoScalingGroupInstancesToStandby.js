@@ -7,7 +7,6 @@ let co = require('co');
 let resourceProvider = require('modules/resourceProvider');
 let sender = require('modules/sender');
 let autoScalingGroupSizePredictor = require('modules/autoScalingGroupSizePredictor');
-let logger = require('modules/logger');
 let AutoScalingGroup = require('models/AutoScalingGroup');
 
 module.exports = function EnterAutoScalingGroupInstancesToStandbyCommandHandler(command) {

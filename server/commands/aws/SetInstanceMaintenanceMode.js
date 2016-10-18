@@ -2,7 +2,6 @@
 
 'use strict';
 
-let resourceProvider = require('modules/resourceProvider');
 let serviceTargets = require('modules/service-targets');
 
 module.exports = function SetTargetMaintenanceState(command) {
