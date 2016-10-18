@@ -8,6 +8,7 @@ let co = require('co');
 let autoScalingGroupClientFactory = require('modules/clientFactories/autoScalingGroupClientFactory');
 let sender = require('modules/sender');
 
+//TODO: Check redundant escapes in regex (eslint no-useless-escape)
 let SCHEDULE_PATTERN = /^(NOSCHEDULE\s+)?((247|OFF|on|on6)|(((Start|Stop): [\d\,\-\*\\]+ [\d\,\-\*\\]+ [\d\,\-\*\\\w]+ [\d\,\-\*\\\w]+ [\d\,\-\*\\\w]+\s?[\d\,\-\*]*)(\s*\;?\s+|$))+)?(\s*NOSCHEDULE)?$/i;
 let InvalidOperationError = require('modules/errors/InvalidOperationError.class');
 let ec2InstanceClientFactory = require('modules/clientFactories/ec2InstanceClientFactory');

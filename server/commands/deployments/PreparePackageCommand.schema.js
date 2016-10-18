@@ -80,7 +80,7 @@ module.exports = {
       type: 'string',
       minLength: 1,
       maxLength: 127,
-      pattern: '^[0-9]+\.[0-9]+\.[0-9]+(-.+)?',
+      pattern: '^[0-9]+\.[0-9]+\.[0-9]+(-.+)?', //TODO: Check redundant escapes in regex (eslint no-useless-escape)
     },
     url: {
       type: 'string',

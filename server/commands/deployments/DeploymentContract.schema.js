@@ -33,7 +33,7 @@ module.exports = {
     serviceVersion: {
       description: 'The version of the service to deploy',
       type: 'string',
-      pattern: '^[0-9]+\.[0-9]+\.[0-9]+(-.+)?',
+      pattern: '^[0-9]+\.[0-9]+\.[0-9]+(-.+)?', //TODO: Check redundant escapes in regex (eslint no-useless-escape)
     },
     serviceSlice: {
       description: 'The name of the slice of the service to deploy',

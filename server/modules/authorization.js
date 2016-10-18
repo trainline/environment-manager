@@ -59,6 +59,7 @@ function sendAuthorizationErrorResponse(error, response) {
 }
 
 function sendUnauthorizedResponse(unsatisfiedPermissions, response) {
+  //TODO: Return data instead of pre-rendered HTML
   let message = 'You are not authorized to perform that action. You are missing the following permissions: <br \><br \>';
 
   unsatisfiedPermissions.forEach((permission) => {

@@ -8,5 +8,5 @@ module.exports = {
   type: 'string',
   minLength: 1,
   maxLength: 255,
-  pattern: '^[a-zA-Z][0-9a-zA-Z\.\-_]*$',
+  pattern: '^[a-zA-Z][0-9a-zA-Z\.\-_]*$', //TODO: Check redundant escapes in regex (eslint no-useless-escape)
 };

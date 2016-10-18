@@ -17,5 +17,6 @@ module.exports = {
     'global-require': 1,
     "import/no-extraneous-dependencies": 0,
     "no-use-before-define": 0,
+    "no-useless-escape": 0
   }
 };
