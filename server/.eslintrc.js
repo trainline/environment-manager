@@ -22,5 +22,6 @@ module.exports = {
     "newline-per-chained-call": 0,
     "no-plusplus": 0,
     "no-confusing-arrow": [2, {'allowParens': true}],
+    "no-irregular-whitespace": 0
   }
 };
