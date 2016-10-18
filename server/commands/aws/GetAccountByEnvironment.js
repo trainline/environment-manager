@@ -1,6 +1,7 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 /* eslint-disable no-unreachable */
 // eslint doesn't understand returning early in switch statements
+
 'use strict';
 
 let configCache = require('modules/configurationCache');

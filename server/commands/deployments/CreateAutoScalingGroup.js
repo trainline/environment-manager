@@ -112,10 +112,12 @@ function getCreateAutoScalingGroupRequest(template) {
 function getAutoScalingGroupTags(tags) {
   let autoScalingGroupTags = [];
   for (let tag in tags) {
-    autoScalingGroupTags.push({
-      Key: tag,
-      Value: tags[tag],
-    });
+    if ({}.hasOwnProperty.call(tags, tag)) {
+      autoScalingGroupTags.push({
+        Key: tag,
+        Value: tags[tag],
+      });
+    }
   }
 
   return autoScalingGroupTags;

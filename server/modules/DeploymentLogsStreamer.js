@@ -73,8 +73,10 @@ module.exports = function DeploymentLogsStreamer() {
     isRunning = true;
     let promises = [];
     for (let deploymentId in deploymentLogStreams) {
-      let logStream = deploymentLogStreams[deploymentId];
-      promises.push(flushLogStream(logStream));
+      if ({}.hasOwnProperty.call(deploymentLogStreams, deploymentId)) {
+        let logStream = deploymentLogStreams[deploymentId];
+        promises.push(flushLogStream(logStream));
+      }
     }
 
     deploymentLogStreams = {};

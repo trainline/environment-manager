@@ -43,13 +43,15 @@ module.exports = {
 function getAndVerifyAllExpectedSecurityGroups(securityGroups, vpcId, securityGroupNamesAndReasonsMapping, logger) {
   let atLeastOneFound = false;
   for (let securityGroupName in securityGroupNamesAndReasonsMapping) {
-    let found = _.find(securityGroups, sg => sg.getName() === securityGroupName);
-    if (found === undefined) {
-      logger.warn(`Security group "${securityGroupName}" not found in "${vpcId}" VPC. ${
-        securityGroupNamesAndReasonsMapping[securityGroupName]}`
-      );
-    } else {
-      atLeastOneFound = true;
+    if ({}.hasOwnProperty.call(securityGroupNamesAndReasonsMapping, securityGroupName)) {
+      let found = _.find(securityGroups, sg => sg.getName() === securityGroupName);
+      if (found === undefined) {
+        logger.warn(`Security group "${securityGroupName}" not found in "${vpcId}" VPC. ${
+          securityGroupNamesAndReasonsMapping[securityGroupName]}`
+        );
+      } else {
+        atLeastOneFound = true;
+      }
     }
   }
 

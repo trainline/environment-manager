@@ -72,20 +72,22 @@ function ScanRequestBuilder(parameters) {
       let filters = [];
 
       for (let field in $data.filter) {
-        switch (field.toLowerCase()) {
-          case DATE_FROM_FIELD:
-            let dateFrom = tryParseDate($data.filter[field], $data.dateField.format);
-            if (!dateFrom) continue;
-            filters.push(new Condition.GreaterOrEqual($data.dateField.name).than(dateFrom));
-            break;
-          case DATE_TO_FIELD:
-            let dateTo = tryParseDate($data.filter[field], $data.dateField.format);
-            if (!dateTo) continue;
-            filters.push(new Condition.LessOrEqual($data.dateField.name).than(dateTo));
-            break;
-          default:
-            filters.push(new Condition.Equal(field).to($data.filter[field]));
-            break;
+        if ({}.hasOwnProperty.call($data.filter, field)) {
+          switch (field.toLowerCase()) {
+            case DATE_FROM_FIELD:
+              let dateFrom = tryParseDate($data.filter[field], $data.dateField.format);
+              if (!dateFrom) continue;
+              filters.push(new Condition.GreaterOrEqual($data.dateField.name).than(dateFrom));
+              break;
+            case DATE_TO_FIELD:
+              let dateTo = tryParseDate($data.filter[field], $data.dateField.format);
+              if (!dateTo) continue;
+              filters.push(new Condition.LessOrEqual($data.dateField.name).than(dateTo));
+              break;
+            default:
+              filters.push(new Condition.Equal(field).to($data.filter[field]));
+              break;
+          }
         }
       }
 

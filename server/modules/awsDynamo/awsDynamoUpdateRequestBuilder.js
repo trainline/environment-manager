@@ -66,7 +66,9 @@ function UpdateRequestBuilder(parameters) {
     }
 
     for (let field in $data.item) {
-      expressions.push(new Expression.Set(field).to($data.item[field]));
+      if ({}.hasOwnProperty.call($data.item, field)) {
+        expressions.push(new Expression.Set(field).to($data.item[field]));
+      }
     }
 
     RequestHelper.addConditionExpression(request, conditions);

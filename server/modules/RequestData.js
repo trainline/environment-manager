@@ -14,11 +14,15 @@ module.exports = function RequestData(request) {
     let dataFromRequest = {};
 
     for (let property in request.query) {
-      dataFromRequest[property.toLowerCase()] = request.query[property];
+      if ({}.hasOwnProperty.call(request.query, property)) {
+        dataFromRequest[property.toLowerCase()] = request.query[property];
+      }
     }
 
     for (let property in request.body) {
-      dataFromRequest[property.toLowerCase()] = request.body[property];
+      if ({}.hasOwnProperty.call(request.body, property)) {
+        dataFromRequest[property.toLowerCase()] = request.body[property];
+      }
     }
 
     return dataFromRequest;

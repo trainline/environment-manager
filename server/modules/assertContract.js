@@ -55,11 +55,13 @@ let assertContract = function (contract, contractName, contractAssertion) {
     if (!contractAssertion.properties) return;
 
     for (let property in contractAssertion.properties) {
-      assertContract(
-        contract[property],
-        `${contractName}.${property}`,
-        contractAssertion.properties[property]
-      );
+      if ({}.hasOwnProperty.call(contractAssertion.properties, property)) {
+        assertContract(
+          contract[property],
+          `${contractName}.${property}`,
+          contractAssertion.properties[property]
+        );
+      }
     }
   }
 };

@@ -126,9 +126,11 @@ function getNodesDeployment(nodesId, nodesDeployment) {
     if (!nodeDeployment) return result;
 
     for (let propertyName in nodeDeployment) {
-      let property = nodeDeployment[propertyName];
-      if (!property) continue;
-      result[propertyName] = property;
+      if ({}.hasOwnProperty.call(nodeDeployment, propertyName)) {
+        let property = nodeDeployment[propertyName];
+        if (!property) continue;
+        result[propertyName] = property;
+      }
     }
 
     return result;
