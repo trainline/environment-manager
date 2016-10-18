@@ -18,7 +18,7 @@ function getCurrentEnvironment(name, user) {
 }
 
 exports.getRules = request => {
-  var requiredPermission = {
+  let requiredPermission = {
     resource: request.url.replace(/\/+$/, ''),
     access: request.method,
     clusters: [],
@@ -26,12 +26,12 @@ exports.getRules = request => {
   };
 
   if (request.method === 'POST') {
-    var newCluster = request.body.Value.OwningCluster;
+    let newCluster = request.body.Value.OwningCluster;
     if (newCluster) {
       requiredPermission.clusters.push(newCluster.toLowerCase());
     }
 
-    var environmentType = request.body.Value.EnvironmentType;
+    let environmentType = request.body.Value.EnvironmentType;
     if (environmentType) {
       requiredPermission.environmentTypes.push(environmentType.toLowerCase());
     }
@@ -40,15 +40,17 @@ exports.getRules = request => {
   }
 
   if (request.method === 'PUT') {
-    var environmentType = request.body.Value.EnvironmentType;
+    // TODO(filip): second for swagger API
+    let environmentType = request.body.EnvironmentType || request.body.Value.EnvironmentType;
 
     if (environmentType) {
       requiredPermission.environmentTypes.push(environmentType.toLowerCase());
     }
   }
 
-  var environmentName = request.params.key;
-  var user = request.user;
+  // TODO(filip): second for swagger API
+  let environmentName = request.params.key || request.params.name;
+  let user = request.user;
 
   return getCurrentEnvironment(environmentName, user).then((environment) => {
     if (environment) {
