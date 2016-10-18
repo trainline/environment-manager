@@ -39,7 +39,6 @@ angular.module('EnvironmentManager.common')
 
       vm.useSpecificClicked = function () {
         if (!vm.schedule || vm.schedule.indexOf(':') === -1) {
-          console.log('ble!');
           vm.schedule = 'Start: 0 8 * * 1,2,3,4,5; Stop: 0 19 * * 1,2,3,4,5';
         }
       };

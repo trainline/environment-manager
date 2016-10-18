@@ -239,8 +239,6 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
           }, function error(err) {
             var message = 'Unable to retrieve data for ' + lb + ': <br/><br/>' + err.data;
             $scope.$emit('error', { data: message });
-
-            console.log(message);
           });
 
         });

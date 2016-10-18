@@ -83,7 +83,6 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
           asg.$accountName = account;
 
           return asg.getLaunchConfig().then(function (lc) {
-            console.log(lc);
             asg.LaunchConfig = lc;
 
             // Convert Launch Config AMI ID to full AMI with name/version for display
