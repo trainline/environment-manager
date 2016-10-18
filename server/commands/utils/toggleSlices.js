@@ -101,13 +101,13 @@ function ToggleUpstreamByNameVerifier(resourceName) {
   function detectUpstreamsInconsistency(upstreams) {
     if (upstreams.length > 1) {
       let keys = upstreams.map(upstream => upstream.key).join(', ');
-      var message = `${resourceName} cannot be toggled because all following keys refer to it: ${keys}.`;
+      let message = `${resourceName} cannot be toggled because all following keys refer to it: ${keys}.`;
       return new InconsistentSlicesStatusError(message);
     }
 
     let upstream = upstreams[0];
     if (upstream.Value.Hosts.length == 0) {
-      var message = `Upstream named "${upstream.Value.UpstreamName}" which refers to "${upstream.Value.ServiceName}" service in "${upstream.Value.EnvironmentName}" environment cannot be toggled because it has no slice.`;
+      let message = `Upstream named "${upstream.Value.UpstreamName}" which refers to "${upstream.Value.ServiceName}" service in "${upstream.Value.EnvironmentName}" environment cannot be toggled because it has no slice.`;
       return new InconsistentSlicesStatusError(message);
     }
 

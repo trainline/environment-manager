@@ -58,14 +58,14 @@ function addUpdateExpressionToRequest(request, expressions) {
     let valueAlias = addExpressionAttributeValuesToRequest(request, expression.getValue());
 
     if (expression.getOperation() === 'add') {
-      var expression = [nameAliases.join('.'), valueAlias].join(' ');
-      addExpressions.push(expression);
+      var expressionAdd = [nameAliases.join('.'), valueAlias].join(' ');
+      addExpressions.push(expressionAdd);
       return;
     }
 
     if (expression.getOperation() === 'set') {
-      var expression = [nameAliases.join('.'), '=', valueAlias].join(' ');
-      setExpressions.push(expression);
+      var expressionSet = [nameAliases.join('.'), '=', valueAlias].join(' ');
+      setExpressions.push(expressionSet);
       return;
     }
   });

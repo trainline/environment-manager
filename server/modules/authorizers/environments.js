@@ -32,7 +32,7 @@ exports.getRules = (request) => {
       requiredPermission.clusters.push(newCluster.toLowerCase());
     }
 
-    var environmentType = request.body.Value.EnvironmentType;
+    let environmentType = request.body.Value.EnvironmentType;
     if (environmentType) {
       requiredPermission.environmentTypes.push(environmentType.toLowerCase());
     }
@@ -41,7 +41,7 @@ exports.getRules = (request) => {
   }
 
   if (request.method === 'PUT') {
-    var environmentType = request.body.Value.EnvironmentType;
+    let environmentType = request.body.Value.EnvironmentType;
 
     if (environmentType) {
       requiredPermission.environmentTypes.push(environmentType.toLowerCase());
