@@ -797,6 +797,10 @@ paths:
           in: path
           type: string
           required: true
+        - name: environment
+          in: query
+          type: string
+          required: true
         - name: active
           in: query
           type: boolean
@@ -818,6 +822,10 @@ paths:
       parameters:
         - name: name
           in: path
+          type: string
+          required: true
+        - name: environment
+          in: query
           type: string
           required: true
       responses:

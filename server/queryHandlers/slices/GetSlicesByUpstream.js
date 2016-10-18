@@ -11,9 +11,8 @@ const QUERYING = getSlices.QUERYING;
 
 function* GetSlicesByUpstream(query) {
   assert.equal(typeof query.upstreamName, 'string');
-  let upstream = Upstream.getByName(query.upstreamName);
+  assert.equal(typeof query.environmentName, 'string');
 
-  query.environmentName = yield upstream.getEnvironmentName();
   query.accountName = yield Environment.getAccountNameForEnvironment(query.environmentName);
   
   return getSlices.handleQuery(query,

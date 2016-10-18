@@ -6,7 +6,6 @@ const PARTITION_KEY = 'EnvironmentName';
 const SORT_KEY = 'VHostName';
 
 let dynamoHelper = new (require('api/api-utils/DynamoHelper'))(RESOURCE);
-let metadata = require('commands/utils/metadata');
 
 /**
  * GET /config/lb-settings

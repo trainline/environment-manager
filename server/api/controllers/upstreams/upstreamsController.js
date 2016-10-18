@@ -3,15 +3,17 @@
 
 let getSlices = require('queryHandlers/slices/GetSlicesByUpstream');
 let toggleSlices = require('commands/slices/ToggleSlicesByUpstream');
+let metadata = require('commands/utils/metadata');
 
 /**
  * GET /upstreams/{name}/slices
  */
 function getUpstreamSlices(req, res, next) {
   const upstreamName = req.swagger.params.name.value;
+  const environmentName = req.swagger.params.environment.value;
   const active = req.swagger.params.active.value;
 
-  return getSlices({ environmentName, serviceName, active }).then(data => res.json(data)).catch(next);
+  return getSlices({ environmentName, upstreamName, active }).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -19,9 +21,11 @@ function getUpstreamSlices(req, res, next) {
  */
 function putUpstreamSlicesToggle(req, res, next) {
   const upstreamName = req.swagger.params.name.value;
+  const environmentName = req.swagger.params.environment.value;
   const user = req.user;
 
-  return toggleSlices({ environmentName, serviceName, user }).then(data => res.json(data)).catch(next);
+  const command = metadata.addMetadata({ environmentName, upstreamName, user });
+  return toggleSlices(command).then(data => res.json(data)).catch(next);
 }
 
 module.exports = {

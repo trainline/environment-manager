@@ -145,7 +145,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
       }).then(function () {
         $http({
           method: 'put',
-          url: '/api/v1/upstreams/' + upstreamName + '/slices/toggle',
+          url: '/api/v1/upstreams/' + upstreamName + '/slices/toggle?environment=' + environmentName,
           data: {}
         }).then(function() {
           vm.refresh();
