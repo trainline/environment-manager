@@ -39,9 +39,13 @@ function validateDnsName(dnsName, isProd) {
 }
 
 function validatePort(port, service) {
-  if (port && service.Value.BluePort && service.Value.GreenPort) {
-    if (port !== service.Value.BluePort && port !== service.Value.GreenPort) {
-      let err = `Host port ${port} does not match blue or green port of ${service.ServiceName}`;
+  let safePort = _.isNil(port) ? null : String(port);
+  let safeBluePort = _.isNil(service.Value.BluePort) ? null : String(service.Value.BluePort);
+  let safeGreenPort = _.isNil(service.Value.GreenPort) ? null : String(service.Value.GreenPort);
+
+  if (safePort && safeBluePort && safeGreenPort) {
+    if (safePort !== safeBluePort && safePort !== safeGreenPort) {
+      let err = `Host port ${safePort} does not match blue or green port of ${service.ServiceName}`;
       return invalid(err);
     }
   }
