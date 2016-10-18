@@ -109,28 +109,16 @@ let QUERYING = {
 
 let FILTER = {
   upstream: {
-    byUpstreamName: function (query) {
-      return upstream =>
-        upstream.Value.EnvironmentName === query.environmentName && upstream.Value.UpstreamName === query.upstreamName;
-    },
+    byUpstreamName: (query) => upstream =>
+        upstream.Value.EnvironmentName === query.environmentName && upstream.Value.UpstreamName === query.upstreamName,
 
-    byServiceName: function (query) {
-      return upstream =>
-        upstream.Value.EnvironmentName === query.environmentName && upstream.Value.ServiceName === query.serviceName;
-    },
+    byServiceName: (query) => upstream =>
+        upstream.Value.EnvironmentName === query.environmentName && upstream.Value.ServiceName === query.serviceName,
   },
   host: {
-    allSlices: function () {
-      return host => true;
-    },
-
-    onlyActiveSlices: function () {
-      return host => host.State === 'up';
-    },
-
-    onlyInactiveSlices: function () {
-      return (host) => host.State === 'down';
-    },
+    allSlices: host => true,
+    onlyActiveSlices: host => host.State === 'up',
+    onlyInactiveSlices: host => host.State === 'down',
   },
 };
 

@@ -9,15 +9,15 @@ let logger = require('modules/logger');
 module.exports = function AdministrationServer() {
   let httpServerFactory = require('modules/http-server-factory');
 
-  let _server;
+  let serverInstance;
 
   this.start = function () {
     return createExpressApp().then(createServer);
   };
 
   this.stop = function () {
-    if (!_server) return;
-    _server.close();
+    if (!serverInstance) return;
+    serverInstance.close();
   };
 
   let createExpressApp = function () {
@@ -63,7 +63,7 @@ module.exports = function AdministrationServer() {
     let parameters = { port: 3000 };
 
     return httpServerFactory.create(app, parameters).then((server) => {
-      _server = server;
+      serverInstance = server;
       logger.info(`Administration server created using ${httpServerFactory.constructor.name} service.`);
       logger.info(`Administration server listening at port ${parameters.port}.`);
 

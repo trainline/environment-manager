@@ -1,5 +1,9 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
-
+/*eslint no-underscore-dangle: 0 */
+/**
+ * TODO: This module uses _underscoredNames in many places
+ * Disabling eslint of this until it can be properly refactored
+ */
 'use strict';
 
 let RequestBuilder = require('modules/awsDynamo/awsDynamoRequestBuilder');

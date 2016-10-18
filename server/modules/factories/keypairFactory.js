@@ -9,7 +9,6 @@ const KeyPairNotFoundError = require('modules/errors/KeyPairNotFoundError.class'
 
 function KeyPairResource(client) {
   // TODO(filip): promisify client, use chaining
-  let _client = client;
 
   this.get = function (parameters) {
     return new Promise((resolve, reject) => {
@@ -19,7 +18,7 @@ function KeyPairResource(client) {
         ],
       };
 
-      function get(instanceClient) {
+      function getKeyPair(instanceClient) {
         instanceClient.describeKeyPairs(request, (error, response) => {
           if (error) {
             return reject(new AwsError(`An error has occurred describing EC2 key pairs: ${error.message}`));
@@ -31,7 +30,7 @@ function KeyPairResource(client) {
         });
       }
 
-      get(_client);
+      getKeyPair(client);
     });
   };
 }

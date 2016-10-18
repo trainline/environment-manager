@@ -20,7 +20,7 @@ const APP_VERSION = require('config').get('APP_VERSION');
 
 module.exports = function MainServer() {
   let httpServerFactory = require('modules/http-server-factory');
-  let _server;
+  let serverInstance;
 
   this.start = function () {
     return createExpressApp()
@@ -29,7 +29,7 @@ module.exports = function MainServer() {
   };
 
   this.stop = function () {
-    _server.close();
+    serverInstance.close();
   };
 
   function createExpressApp() {
@@ -106,7 +106,7 @@ module.exports = function MainServer() {
   }
 
   function initializeServer(server) {
-    _server = server;
+    serverInstance = server;
     deploymentMonitorScheduler.start();
     logger.info(`EnvironmentManager v.${APP_VERSION} started!`);
   }

@@ -6,20 +6,20 @@ let async = require('async');
 let S3GetObjectRequest = require('modules/S3GetObjectRequest');
 let config = require('config');
 let amazonClientFactory = require('modules/amazon-client/childAccountClient');
-let _sslComponentsCache = null;
+let sslComponentsCache = null;
 
 module.exports = function SSLComponentsRepository() {
   let sslComponentsRepositoryConfiguration = new (require('modules/sslComponentsRepositoryConfiguration'))();
 
   this.get = function () {
     return new Promise((resolve, reject) => {
-      if (_sslComponentsCache) {
-        resolve(_sslComponentsCache);
+      if (sslComponentsCache) {
+        resolve(sslComponentsCache);
       } else {
         loadSSLComponentsFromS3((error, sslComponents) => {
           if (error) reject(error);
           else {
-            _sslComponentsCache = sslComponents;
+            sslComponentsCache = sslComponents;
             resolve(sslComponents);
           }
         });

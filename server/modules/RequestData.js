@@ -3,25 +3,24 @@
 'use strict';
 
 module.exports = function RequestData(request) {
-  let _data;
+  let data;
 
   this.get = function (key, defaultValue) {
-    if (!_data) _data = getDataFromRequest(request);
-    let value = _data[key.toLowerCase()] || defaultValue;
-    return value;
+    if (!data) data = getDataFromRequest(request);
+    return data[key.toLowerCase()] || defaultValue;
   };
 
   function getDataFromRequest() {
-    let data = {};
+    let dataFromRequest = {};
 
     for (let property in request.query) {
-      data[property.toLowerCase()] = request.query[property];
+      dataFromRequest[property.toLowerCase()] = request.query[property];
     }
 
     for (let property in request.body) {
-      data[property.toLowerCase()] = request.body[property];
+      dataFromRequest[property.toLowerCase()] = request.body[property];
     }
 
-    return data;
+    return dataFromRequest;
   }
 };

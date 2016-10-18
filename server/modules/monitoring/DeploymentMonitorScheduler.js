@@ -7,7 +7,7 @@ let deploymentMonitor = require('modules/monitoring/DeploymentMonitor');
 const MAX_MONITOR_INTERVAL = 60;
 const MIN_MONITOR_INTERVAL = 45;
 
-let _monitorInterval = 0;
+let monitorInterval = 0;
 
 function scheduleDeploymentMonitor(isPeakTime) {
   let interval = getDeploymentMonitorInterval(isPeakTime);
@@ -32,18 +32,18 @@ function scheduleDeploymentMonitor(isPeakTime) {
 
 function getDeploymentMonitorInterval(isPeakTime) {
   if (isPeakTime) {
-    _monitorInterval = 0;
+    monitorInterval = 0;
   } else {
-    _monitorInterval *= 2;
+    monitorInterval *= 2;
   }
 
-  if (_monitorInterval > MAX_MONITOR_INTERVAL) {
-    _monitorInterval = MAX_MONITOR_INTERVAL;
-  } else if (_monitorInterval < MIN_MONITOR_INTERVAL) {
-    _monitorInterval = MIN_MONITOR_INTERVAL;
+  if (monitorInterval > MAX_MONITOR_INTERVAL) {
+    monitorInterval = MAX_MONITOR_INTERVAL;
+  } else if (monitorInterval < MIN_MONITOR_INTERVAL) {
+    monitorInterval = MIN_MONITOR_INTERVAL;
   }
 
-  return _monitorInterval;
+  return monitorInterval;
 }
 
 module.exports = {

@@ -6,18 +6,16 @@ let co = require('co');
 let awsAccounts = require('modules/awsAccounts');
 
 function AccountResource(accounts) {
-  let _data = {
+  let data = {
     accounts: accounts.map(account => account.AccountName),
   };
 
-  this.all = () => Promise.resolve(_data.accounts);
+  this.all = () => Promise.resolve(data.accounts);
 }
 
 function* create(resourceDescriptor, parameters) {
   let accounts = yield awsAccounts.all();
-  let resource = new AccountResource(accounts);
-
-  return resource;
+  return new AccountResource(accounts);
 }
 
 function canCreate(resourceDescriptor) {

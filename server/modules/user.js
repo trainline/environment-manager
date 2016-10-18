@@ -3,46 +3,46 @@
 'use strict';
 
 let User = function (data) {
-  let _data = {
+  let userData = {
     name: null,
     roles: [],
     expiration: 0,
   };
 
   if (data) {
-    _data.name = data.name || null;
-    _data.groups = data.groups || [];
-    _data.roles = data.roles || [];
-    _data.expiration = data.expiration || 0;
-    _data.permissions = data.permissions || [];
+    userData.name = data.name || null;
+    userData.groups = data.groups || [];
+    userData.roles = data.roles || [];
+    userData.expiration = data.expiration || 0;
+    userData.permissions = data.permissions || [];
   }
 
   this.getName = function () {
-    return _data.name;
+    return userData.name;
   };
 
   this.getExpiration = function () {
-    return _data.expiration;
+    return userData.expiration;
   };
 
   this.isAuthenticated = function () {
-    return _data.roles.length > 0;
+    return userData.roles.length > 0;
   };
 
   this.isAnonymous = function () {
-    return !!_data.name;
+    return !!userData.name;
   };
 
   this.isInRole = function (role) {
-    return _data.roles.indexOf(role) >= 0;
+    return userData.roles.indexOf(role) >= 0;
   };
 
   this.getPermissions = function () {
-    return _data.permissions;
+    return userData.permissions;
   };
 
   this.hasPermission = function (requiredPermission) {
-    for (let userPermission of _data.permissions) {
+    for (let userPermission of userData.permissions) {
       if (userPermission.Resource && userPermission.Access) {
         let matchingResources = globIntersection(requiredPermission.resource.toLowerCase(), userPermission.Resource.toLowerCase());
         let matchingAccess = (userPermission.Access.toLowerCase() == requiredPermission.access.toLowerCase()) || userPermission.Access == 'ADMIN';
@@ -56,15 +56,15 @@ let User = function (data) {
   };
 
   this.getGroups = function () {
-    return _data.groups;
+    return userData.groups;
   };
 
   this.toString = function () {
-    return [_data.name, _data.roles.join(';'), _data.expiration].join('|');
+    return [userData.name, userData.roles.join(';'), userData.expiration].join('|');
   };
 
   this.toJson = function () {
-    return _data;
+    return userData;
   };
 };
 
@@ -92,15 +92,13 @@ if (typeof module !== 'undefined' && module.exports) {
     parse(json) {
       if (!json) return new User();
 
-      let user = new User({
+      return new User({
         name: json.name,
         roles: json.roles,
         expiration: json.expiration,
         groups: json.groups,
         permissions: json.permissions,
       });
-
-      return user;
     },
   };
 }
