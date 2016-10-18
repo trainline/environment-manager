@@ -11,7 +11,6 @@ let InconsistentSlicesStatusError = require('modules/errors/InconsistentSlicesSt
 
 function ToggleUpstreamByServiceVerifier(toggleCommand) {
   this.verifyUpstreams = (upstreams) => {
-    // TODO(filip): remove async
     const masterAccountName = config.getUserValue('masterAccountName');
     return co(function* () {
       let query = {
