@@ -16,14 +16,14 @@ function validate(account) {
     });
 
     required.forEach((p) => {
-      if (!account.hasOwnProperty(p)) throw new Error(`Missing required attribute: ${p}`);
+      if (!{}.hasOwnProperty.call(account, p)) throw new Error(`Missing required attribute: ${p}`);
     });
 
     flags.forEach((f) => {
       if (typeof account[f] !== 'boolean') throw new Error(`Attribute ${f} must be boolean`);
     });
 
-    if (account.IsMaster && account.hasOwnProperty('RoleArn') && account.RoleArn !== null) {
+    if (account.IsMaster && {}.hasOwnProperty.call(account, 'RoleArn') && account.RoleArn !== null) {
       throw new Error('Role ARN values can only be specified for child accounts');
     }
 

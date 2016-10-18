@@ -14,7 +14,7 @@ function canCreate(resourceDescriptor) {
 }
 
 function create(resourceDescriptor, parameters, callback) {
-  let isMasterResource = resourceDescriptor.hasOwnProperty('perAccount') && resourceDescriptor.perAccount === false;
+  let isMasterResource = {}.hasOwnProperty.call(resourceDescriptor, 'perAccount') && resourceDescriptor.perAccount === false;
   let amazonClientFactory = isMasterResource ? masterAccountClientFactory : childAccountClientFactory;
 
   return amazonClientFactory.createDynamoClient(parameters.accountName).then(

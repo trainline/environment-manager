@@ -101,7 +101,7 @@ function getLogs(params) {
     acc.LastEvaluatedKey = lastEvaluatedKey(acc.LastEvaluatedKey, response);
     let limit = params.limit - acc.Items.length;
     let nextKey = nextPartitionKey(partitionKey);
-    if (!response.hasOwnProperty('LastEvaluatedKey') && (!inQueryDomain(nextKey) || !hasMore(nextKey))) {
+    if (!{}.hasOwnProperty.call(response, 'LastEvaluatedKey') && (!inQueryDomain(nextKey) || !hasMore(nextKey))) {
       delete acc.LastEvaluatedKey;
       return Promise.resolve(acc);
     }

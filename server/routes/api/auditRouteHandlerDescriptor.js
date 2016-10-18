@@ -34,13 +34,13 @@ function parseDate(str) {
 
 function createFilter(query) {
   let predicates = [];
-  if (query.hasOwnProperty('Entity.Type')) {
+  if ({}.hasOwnProperty.call(query, 'Entity.Type')) {
     predicates.push(['=', ['attr', 'Entity', 'Type'], ['val', query['Entity.Type']]]);
   }
-  if (query.hasOwnProperty('ChangeType')) {
+  if ({}.hasOwnProperty.call(query, 'ChangeType')) {
     predicates.push(['=', ['attr', 'ChangeType'], ['val', query.ChangeType]]);
   }
-  if (query.hasOwnProperty('Entity.Key')) {
+  if ({}.hasOwnProperty.call(query, 'Entity.Key')) {
     predicates.push(['=', ['attr', 'Entity', 'Key'], ['val', query['Entity.Key']]]);
   }
   return (predicates.length > 0) ? ['and'].concat(predicates) : undefined;
@@ -66,9 +66,9 @@ module.exports = [
       redirectUrl.search = null;
       let query = redirectUrl.query;
       let now = LocalDate.now(ZoneOffset.UTC);
-      let minDate = query.hasOwnProperty('minDate') ? parseDate(query.minDate) : now;
-      let maxDate = query.hasOwnProperty('maxDate') ? parseDate(query.maxDate) : now;
-      let exclusiveStartKey = query.hasOwnProperty('exclusiveStartKey') ? base64.decode(query.exclusiveStartKey) : undefined;
+      let minDate = {}.hasOwnProperty.call(query, 'minDate') ? parseDate(query.minDate) : now;
+      let maxDate = {}.hasOwnProperty.call(query, 'maxDate') ? parseDate(query.maxDate) : now;
+      let exclusiveStartKey = {}.hasOwnProperty.call(query, 'exclusiveStartKey') ? base64.decode(query.exclusiveStartKey) : undefined;
       function sendResponse(auditLog) {
         query.minDate = minDate.toString();
         query.maxDate = maxDate.toString();

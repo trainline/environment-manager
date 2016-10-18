@@ -21,6 +21,6 @@ module.exports = {
     "no-useless-escape": 0,
     "newline-per-chained-call": 0,
     "no-plusplus": 0,
-    "no-confusing-arrow": [2, {'allowParens': true}]
+    "no-confusing-arrow": [2, {'allowParens': true}],
   }
 };
