@@ -6,38 +6,37 @@ const parseSchedule = require('./parseSchedule');
 const later = require('later');
 
 const actions = {
-  switchOn: "switchOn",
-  switchOff: "switchOff",
-  putInService: "putInService",
-  putOutOfService: "putOutOfService",
-  skip: "skip"
+  switchOn: 'switchOn',
+  switchOff: 'switchOff',
+  putInService: 'putInService',
+  putOutOfService: 'putOutOfService',
+  skip: 'skip'
 };
 
 const sources = {
-  instance: "instance",
-  asg: "asg",
-  environment: "environment"
+  instance: 'instance',
+  asg: 'asg',
+  environment: 'environment'
 };
 
 const skipReasons = {
-  noEnvironment: "This instance has no environment",
-  noScheduleTag: "There is no schedule tag for this instance",
-  explicitNoSchedule: "The schedule tag for this instance is set to 'noschedule'",
-  invalidSchedule: "The schedule tag for this instance is not valid",
-  transitioning: "This instance is currently transitioning between states",
-  asgTransitioning: "This instance is currently transitioning between ASG lifecycle states",
-  stateIsCorrect: "The instance is already in the correct state"
+  noEnvironment: 'This instance has no environment',
+  explicitNoSchedule: 'The schedule tag for this instance is set to "noschedule"',
+  invalidSchedule: 'The schedule tag for this instance is not valid',
+  transitioning: 'This instance is currently transitioning between states',
+  asgTransitioning: 'This instance is currently transitioning between ASG lifecycle states',
+  stateIsCorrect: 'The instance is already in the correct state'
 };
 
 const lifeCycleStates = {
-  inService: "InService",
-  outOfService: "Standby"
+  inService: 'InService',
+  outOfService: 'Standby'
 };
 
 const states = {
-  on: "on",
-  off: "off",
-  transitioning: "transitioning"
+  on: 'on',
+  off: 'off',
+  transitioning: 'transitioning'
 };
 
 function actionForInstance(instance, dateTime) {
