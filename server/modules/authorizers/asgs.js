@@ -26,7 +26,7 @@ function getModifyPermissionsForEnvironment(environmentName, user) {
         environmentType: environment.Value.EnvironmentType.toLowerCase(),
       };
     }
-    throw `Could not find environment: ${environmentName}`;
+    throw new Error(`Could not find environment: ${environmentName}`);
   });
 }
 

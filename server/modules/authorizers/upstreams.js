@@ -38,7 +38,7 @@ function getModifyPermissionsForEnvironment(environmentName, user) {
         environmentType: environment.Value.EnvironmentType.toLowerCase(),
       };
     }
-    throw `Could not find environment: ${environmentName}`;
+    throw new Error(`Could not find environment: ${environmentName}`);
   });
 }
 
@@ -58,7 +58,7 @@ function getEnvironmentPermissionsPromise(request) {
       return getModifyPermissionsForEnvironment(environmentName, user);
     }
 
-    throw `Could not find upstream: ${upstreamName}`;
+    throw new Error(`Could not find upstream: ${upstreamName}`);
   });
 }
 
