@@ -11,20 +11,13 @@ let logger = require('modules/logger');
 const caches = new Map();
 
 const cacheManager = {
-  /**
-   * Create a cache that delegates to an async function on a cache miss.
-   * @param {string} name - identifies the cache.
-   * @param {CacheMissCallback} fn - function called to get the value on a cache miss.
-   */
-  create(name, fn, options) {
+
+  create(name, fn, userOptions) {
     if (caches.has(name)) {
       throw new Error(`Cache "${name}" already exists`);
     }
 
-    if (!options) {
-      options = { stdTTL: 60 * 10 };
-    }
-
+    let options = userOptions || { stdTTL: 60 * 10 };
     if (options.useClones === undefined) {
       // We need this for perfomance reasons, as cloning some big objects is too expensive
       options.useClones = false;

@@ -15,13 +15,12 @@ inputs is an iterable of objects of the following form
 */
 
 function createEntryStream(input, filter, logger) {
-  if (!(filter instanceof Function)) {
-    filter = () => true;
-  }
+  let safeFilter = (filter instanceof Function) ? filter : () => true;
+
   let output = through.obj();
   input.pipe(unzip.Parse())
   .on('entry', (entry) => {
-    if (filter(entry.path)) {
+    if (safeFilter(entry.path)) {
       output.push({ path: entry.path, content: entry });
     } else {
       entry.autodrain();

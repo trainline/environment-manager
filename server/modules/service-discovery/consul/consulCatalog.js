@@ -18,10 +18,12 @@ function getAllServices(query) {
   let promiseFactoryMethod = () =>
     createConsulClient(environment)
       .then(clientInstance => clientInstance.catalog.service.list()).then((list) => {
+        let filteredList = list;
+
         if (query.server_role !== undefined) {
-          list = _.pickBy(list, tags => _.includes(tags, `server_role:${query.server_role}`));
+          filteredList = _.pickBy(list, tags => _.includes(tags, `server_role:${query.server_role}`));
         }
-        return list;
+        return filteredList;
       })
       .then(list => _.pickBy(list, s => s.some(tag => tag.indexOf('deployment_id:') === 0)))
       .catch(throwHttpError);

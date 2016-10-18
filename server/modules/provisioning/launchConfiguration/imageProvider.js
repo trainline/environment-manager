@@ -14,8 +14,8 @@ module.exports = {
     if (doesSpecifyVersion(imageNameOrType)) {
       return getImageByName(imageNameOrType);
     } else {
-      includeUnstable = includeUnstable === undefined ? false : includeUnstable;
-      return getLatestImageByType(imageNameOrType, includeUnstable);
+      let safeIncludeUnstable = includeUnstable === undefined ? false : includeUnstable;
+      return getLatestImageByType(imageNameOrType, safeIncludeUnstable);
     }
   },
 };

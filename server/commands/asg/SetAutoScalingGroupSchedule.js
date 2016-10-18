@@ -112,7 +112,7 @@ function setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, newSch
     return newScheduledActions.map((action, index) => {
       let namedAction = {
         AutoScalingGroupName: autoScalingGroupName,
-        ScheduledActionName: `EM-Scheduled-Action-${++index}`,
+        ScheduledActionName: `EM-Scheduled-Action-${index + 1}`,
         MinSize: action.MinSize,
         MaxSize: action.MaxSize,
         DesiredCapacity: action.DesiredCapacity,

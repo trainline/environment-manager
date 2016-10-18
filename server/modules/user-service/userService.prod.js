@@ -114,9 +114,9 @@ module.exports = function UserService() {
   }
 
   function getExpiration(duration) {
-    duration = ms(duration);
+    let durationMs = ms(duration);
     let dateNow = new Date();
-    let dateEnd = new Date(dateNow.setMilliseconds(dateNow.getMilliseconds() + duration));
+    let dateEnd = new Date(dateNow.setMilliseconds(dateNow.getMilliseconds() + durationMs));
 
     return dateEnd.getTime();
   }
