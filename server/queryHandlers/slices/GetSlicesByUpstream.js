@@ -10,14 +10,14 @@ const FILTER = getSlices.FILTER;
 const QUERYING = getSlices.QUERYING;
 
 function* GetSlicesByUpstream(query) {
-  assert.equal(typeof query.upstreamName, 'string');
   assert.equal(typeof query.environmentName, 'string');
+  assert.equal(typeof query.upstreamName, 'string');
 
   query.accountName = yield Environment.getAccountNameForEnvironment(query.environmentName);
   
   return getSlices.handleQuery(query,
     QUERYING.upstream.byUpstreamName(query),
     FILTER.upstream.byUpstreamName(query));
-}
+};
 
 module.exports = co.wrap(GetSlicesByUpstream);
