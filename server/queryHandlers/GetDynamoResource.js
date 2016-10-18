@@ -3,8 +3,10 @@
 
 let resourceProvider = require('modules/resourceProvider');
 let co = require('co');
+let assert = require('assert');
 
 function* GetDynamoResourceQueryHandler(query) {
+  assert(query.key);
   // Create an instance of the resource to work with based on the resource
   // descriptor and AWS account name.
   let parameters = { accountName: query.accountName };
