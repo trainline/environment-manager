@@ -6,7 +6,7 @@ let toggleSlices = require('../utils/toggleSlices');
 let UpstreamByNameProvider = toggleSlices.UpstreamByNameProvider;
 let ToggleUpstreamByNameVerifier = toggleSlices.ToggleUpstreamByNameVerifier;
 let UpstreamToggler = toggleSlices.UpstreamToggler;
-let ToggleSlicesOrchestrator = toggleSlices.ToggleSlicesOrchestrator;
+let orchestrate = toggleSlices.orchestrate;
 let sender = require('modules/sender');
 let Environment = require('models/Environment');
 
@@ -21,7 +21,6 @@ module.exports = function ToggleSlicesByUpstream(command) {
     let provider = new UpstreamByNameProvider(sender, command, resourceName);
     let verifier = new ToggleUpstreamByNameVerifier(resourceName);
     let toggler = new UpstreamToggler(sender, command);
-    let orchestrator = new ToggleSlicesOrchestrator(provider, verifier, toggler);
 
     return new Promise((resolve, reject) => {
       let callback = (err, result) => {
@@ -29,7 +28,7 @@ module.exports = function ToggleSlicesByUpstream(command) {
         else resolve(result);
       };
 
-      orchestrator.orchestrate(callback);
+      orchestrate(provider, verifier, toggler, callback);
     });
   });
 };

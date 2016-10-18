@@ -191,45 +191,41 @@ function UpstreamToggler(sender, toggleCommand) {
 
 }
 
-function ToggleSlicesOrchestrator(provider, verifier, toggler) {
-  let $this = this;
-  $this.orchestrate = (mainCallback) => {
-    // TODO(filip): remove async
-    async.waterfall([
-      (callback) => {
-        provider.provideUpstreams(callback);
+function orchestrate(provider, verifier, toggler, mainCallback) {
+  // TODO(filip): remove async
+  async.waterfall([
+    (callback) => {
+      provider.provideUpstreams(callback);
+    },
 
-      },
+    (upstreams, callback) => {
+      verifier.verifyUpstreams(upstreams, (error) => {
+        if (error) callback(error);
+        else callback(null, upstreams);
+      });
+    },
 
-      (upstreams, callback) => {
-        verifier.verifyUpstreams(upstreams, (error) => {
-          if (error) callback(error);
-          else callback(null, upstreams);
+    (upstreams, callback) => {
+      async.map(upstreams, toggler.toggleUpstream, (error, childResults) => {
+        if (error) {
+          callback(error);
+          return;
+        }
+
+        let toggledUpstreamNames = upstreams.map((upstream) => {
+          return upstream.Value.UpstreamName;
         });
-      },
-
-      (upstreams, callback) => {
-        async.map(upstreams, toggler.toggleUpstream, (error, childResults) => {
-          if (error) {
-            callback(error);
-            return;
-          }
-
-          let toggledUpstreamNames = upstreams.map((upstream) => {
-            return upstream.Value.UpstreamName;
-          });
-          callback(null, { ToggledUpstreams: toggledUpstreamNames });
-        });
-      },
-    ], mainCallback);
-  };
+        callback(null, { ToggledUpstreams: toggledUpstreamNames });
+      });
+    },
+  ], mainCallback);
 }
 
 module.exports = {
   UpstreamByNameProvider,
   UpstreamByServiceProvider,
   UpstreamToggler,
-  ToggleSlicesOrchestrator,
+  orchestrate,
   ToggleUpstreamByServiceVerifier,
   ToggleUpstreamByNameVerifier,
 };
