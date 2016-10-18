@@ -146,8 +146,8 @@ function DynamoTableResource(config, client) {
 
   this.put = function (params) {
     let item = params.item;
-    let key = (!!_keyName) ? item[_keyName] : null;
-    let range = (!!_rangeName) ? item[_rangeName] : null;
+    let key = _keyName ? item[_keyName] : null;
+    let range = _rangeName ? item[_rangeName] : null;
     let expectedVersion = params.expectedVersion;
 
     function hasNotExpectedVersion(data) {
@@ -187,7 +187,7 @@ function DynamoTableResource(config, client) {
     }
 
     function tryUpdate(clientInstance) {
-      let request = !!_auditingEnabled ?
+      let request = _auditingEnabled ?
         _builder.update().item(item).atVersion(expectedVersion).buildRequest() :
         _builder.update().item(item).buildRequest();
 
@@ -215,8 +215,8 @@ function DynamoTableResource(config, client) {
 
   this.post = function (params) {
     let item = params.item;
-    let key = (!!_keyName) ? item[_keyName] : null;
-    let range = (!!_rangeName) ? item[_rangeName] : null;
+    let key = _keyName ? item[_keyName] : null;
+    let range = _rangeName ? item[_rangeName] : null;
 
     function investigateOnErrorOccurred(clientInstance) {
       let request = {

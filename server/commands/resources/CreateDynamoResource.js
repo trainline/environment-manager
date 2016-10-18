@@ -21,8 +21,8 @@ function* handler(command) {
   let item = command.item;
 
   // Prepare item to put (if request comes from APIs then key/range are command fields)
-  if (!!command.key) item[keyName] = command.key;
-  if (!!command.range) item[rangeName] = command.range;
+  if (command.key) item[keyName] = command.key;
+  if (command.range) item[rangeName] = command.range;
 
   delete item.Audit;
 

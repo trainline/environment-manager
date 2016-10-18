@@ -70,8 +70,8 @@ function addUpdateExpressionToRequest(request, expressions) {
   });
 
   let expressionBodies = [];
-  if (!!addExpressions.length) expressionBodies = expressionBodies.concat(['add'], addExpressions.join(', '));
-  if (!!setExpressions.length) expressionBodies = expressionBodies.concat(['set'], setExpressions.join(', '));
+  if (addExpressions.length) expressionBodies = expressionBodies.concat(['add'], addExpressions.join(', '));
+  if (setExpressions.length) expressionBodies = expressionBodies.concat(['set'], setExpressions.join(', '));
 
   request.UpdateExpression = expressionBodies.join(' ');
 }
