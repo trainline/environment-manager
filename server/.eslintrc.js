@@ -19,6 +19,7 @@ module.exports = {
     "import/newline-after-import": 0,
     "no-use-before-define": 0,
     "no-useless-escape": 0,
-    "newline-per-chained-call": 0
+    "newline-per-chained-call": 0,
+    "no-plusplus": 0
   }
 };
