@@ -74,7 +74,7 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
       });
     };
 
-    $scope.Add = function () {
+    vm.add = function () {
       var instance = $uibModal.open({
         templateUrl: '/app/operations/maintenance/ops-maintenance-addserver-modal.html',
         controller: 'MaintenanceAddServerModalController as vm',
@@ -88,7 +88,7 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
       });
     };
 
-    $scope.NumberOfItemsSelected = function () {
+    vm.numberOfItemsSelected = function () {
       var count = 0;
       for (var i = 0; i < vm.data.length; i++) {
         if (vm.data[i].Selected) { count++; }
@@ -97,7 +97,7 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
       return count;
     };
 
-    $scope.NumberOfNotFoundItemsSelected = function () {
+    vm.numberOfNotFoundItemsSelected = function () {
       var count = 0;
       for (var i = 0; i < vm.IPsNotFound.length; i++) {
         if (vm.IPsNotFound[i].Selected) { count++; }
