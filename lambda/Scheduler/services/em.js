@@ -10,7 +10,7 @@ function createEMService(config) {
   function getToken() {
     return request({
       method: 'POST',
-      uri: `https://${config.host}/api/token`,
+      uri: `${config.host}/api/token`,
       rejectUnauthorized: false,
       form: {
           grant_type: 'password',
@@ -28,7 +28,7 @@ function createEMService(config) {
       }
 
       let jsonResponse = yield request({
-        uri: `https://environmentmanager.corp.local/api/${account}/instances/schedule-actions`,
+        uri: `${config.host}/api/${account}/instances/schedule-actions`,
         rejectUnauthorized: false,
         headers: {
           authorization: `bearer ${token}`
@@ -40,7 +40,7 @@ function createEMService(config) {
     });
   }
 
-  return { getAllEnvironments };
+  return { getScheduledInstanceActions };
 
 }
 
