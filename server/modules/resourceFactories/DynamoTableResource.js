@@ -13,6 +13,22 @@ let DynamoConditionCheckError = require('modules/errors/DynamoConditionCheckErro
 let DynamoItemAlreadyExistsError = require('modules/errors/DynamoItemAlreadyExistsError.class');
 let logger = require('modules/logger');
 
+function removeEmptyStrings(data) {
+  for (let property in data) {
+    let value = data[property];
+    let type = typeof value;
+
+    switch (type) {
+      case 'string':
+        if (value === '') delete data[property];
+        break;
+      case 'object':
+        removeEmptyStrings(value);
+        break;
+    }
+  }
+}
+
 class DynamoTableResource {
 
   constructor(config, client) {
@@ -102,6 +118,8 @@ class DynamoTableResource {
     let range = (!!this._rangeName) ? item[this._rangeName] : null;
     let expectedVersion = params.expectedVersion;
 
+    removeEmptyStrings(item);
+
     function hasNotExpectedVersion(data) {
       if (!expectedVersion) return false;
       if (!data.Item.Audit) return false;
@@ -165,6 +183,8 @@ class DynamoTableResource {
     let key = (!!this._keyName) ? item[this._keyName] : null;
     let range = (!!this._rangeName) ? item[this._rangeName] : null;
 
+    removeEmptyStrings(item);
+
     function investigateOnErrorOccurred() {
       let request = {
         TableName: self._tableName,
@@ -193,7 +213,7 @@ class DynamoTableResource {
 
         // I cannot furhter investigate on this error
         if (managedError.name !== 'DynamoConditionCheckError') {
-          throw standardifyError(error, request);
+          throw standardifyError(error, request, true);
         }
 
         // I can furhter investigate...
