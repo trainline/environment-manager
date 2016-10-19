@@ -5,7 +5,7 @@ angular.module('EnvironmentManager.common').factory('instancesService',
   function ($http, $rootScope) {
     return {
       setMaintenanceMode: function (accountName, instanceId, enable) {
-        var url = ['api', 'v1', 'instances', instanceId, 'asg-standby'].join('/');
+        var url = ['api', 'v1', 'instances', instanceId, 'maintenance'].join('/');
         return $http.put(url, { enable: enable }).then(function (response) {
           return response.data;
         }, function (response) {

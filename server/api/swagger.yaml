@@ -556,25 +556,10 @@ paths:
           description: The instance
           schema:
             type: object
-  /instances/{id}/asg-standby:
+  /instances/{id}/maintenance:
     x-swagger-router-controller: instances/instancesController
-    get:
-      operationId: getInstanceAsgStandby
-      summary: Get the ASG standby-state of a given instance.
-      tags:
-        - Instance
-      parameters:
-        - name: id
-          in: path
-          type: string
-          required: true
-      responses:
-        200:
-          description: The ASg standby-state of the instance.
-          schema:
-            type: object
     put:
-      operationId: putInstanceAsgStandby
+      operationId: putInstanceMaintenance
       summary: Update the ASG standby-state of a given instance.
       tags:
         - Instance

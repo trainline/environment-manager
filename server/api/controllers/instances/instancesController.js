@@ -63,25 +63,9 @@ function getInstanceById(req, res, next) {
 }
 
 /**
- * GET /instances/{id}/asg-standby
+ * PUT /instances/{id}/maintenance
  */
-function getInstanceAsgStandby(req, res, next) {
-  const id = req.swagger.params.id.value;
-
-  co(function* () {
-    let instance = yield Instance.getById(id);
-    let ipAddress = instance.PrivateIpAddress;
-    let accountName = instance.AccountName;
-    let entry = yield asgIpsDynamo.getByKey('MAINTENANCE_MODE', { accountName });
-    let ips = JSON.parse(entry.IPs);
-    res.send(ips);
-  }).catch(next);
-}
-
-/**
- * PUT /instances/{id}/asg-standby
- */
-function putInstanceAsgStandby(req, res, next) {
+function putInstanceMaintenance(req, res, next) {
   const id = req.swagger.params.id.value;
   const body = req.swagger.params.body.value;
   const enable = body.enable;
@@ -102,6 +86,7 @@ function putInstanceAsgStandby(req, res, next) {
     } catch (err) {
       if (err.message.indexOf('is not in Standby') === -1 && err.message.indexOf('cannot be exited from standby as its LifecycleState is InService') !== -1) {
         logger.warn(`ASG ${autoScalingGroupName} is already in desired state for ASG Standby: ${enable}`)
+      } else {
         throw err;
       }
     }
@@ -133,6 +118,5 @@ function putInstanceAsgStandby(req, res, next) {
 module.exports = {
   getInstances,
   getInstanceById,
-  getInstanceAsgStandby,
-  putInstanceAsgStandby
+  putInstanceMaintenance
 };
