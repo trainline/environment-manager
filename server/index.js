@@ -33,12 +33,12 @@ function start() {
     yield checkAppPrerequisites();
     config.logBootstrapValues();
 
-    let adminServer = require('modules/administration/AdministrationServer');
+    let AdminServer = require('modules/administration/AdministrationServer');
     let MainServer = require('modules/MainServer');
 
     servers = [
       new MainServer(),
-      new adminServer(),
+      new AdminServer(),
     ];
 
     yield servers.map(server => server.start());

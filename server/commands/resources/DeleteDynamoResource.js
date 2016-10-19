@@ -5,7 +5,7 @@
 let co = require('co');
 let OperationResult = require('../utils/operationResult');
 let resourceProvider = require('modules/resourceProvider');
-let sender = new require('modules/sender');
+let sender = require('modules/sender');
 
 function* handler(command) {
   // Create an instance of the resource to work with based on the resource

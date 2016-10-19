@@ -45,7 +45,7 @@ function asExpressRouteDescriptor(descriptor) {
 }
 
 function buildRouter() {
-  let router = express.Router();
+  let router = express.Router(); // eslint-disable-line new-cap
 
   routeHandlerProvider
     .get()

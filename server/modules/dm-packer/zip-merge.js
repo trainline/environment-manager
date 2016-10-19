@@ -18,7 +18,7 @@ function createEntryStream(input, filter, logger) {
   let safeFilter = (filter instanceof Function) ? filter : () => true;
 
   let output = through.obj();
-  input.pipe(unzip.Parse())
+  input.pipe(unzip.Parse()) // eslint-disable-line new-cap
   .on('entry', (entry) => {
     if (safeFilter(entry.path)) {
       output.push({ path: entry.path, content: entry });

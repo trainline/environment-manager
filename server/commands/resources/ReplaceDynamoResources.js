@@ -6,7 +6,7 @@ let co = require('co');
 let OperationResult = require('../utils/operationResult');
 let resourceDescriptorProvider = require('modules/resourceDescriptorProvider');
 let dynamoResourceValidation = require('./dynamoResourceValidation');
-let sender = new require('modules/sender');
+let sender = require('modules/sender');
 
 function* handler(command) {
   // Validate all resources schema

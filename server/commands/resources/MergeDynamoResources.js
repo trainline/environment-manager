@@ -6,7 +6,7 @@ let co = require('co');
 let OperationResult = require('../utils/operationResult');
 let resourceDescriptorProvider = require('modules/resourceDescriptorProvider');
 let dynamoResourceValidation = require('./dynamoResourceValidation');
-let sender = new require('modules/sender');
+let sender = require('modules/sender');
 
 // TODO(filip): DRY, look at ReplaceDynamoResources
 function* handler(command) {
