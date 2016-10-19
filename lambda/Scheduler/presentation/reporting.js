@@ -1,7 +1,6 @@
 'use strict'
 
 const _ = require('lodash');
-const scheduling = require('../scheduling');
 
 function createReport(details, listSkippedInstances) {
 
@@ -34,20 +33,6 @@ function getInstanceTagValue(instance, tagName) {
   }
 }
 
-function createChangePlan(instanceActions) {
-
-  let result = {};
-  Object.keys(scheduling.actions).forEach(action => result[action] = []);
-
-  instanceActions.forEach(instanceAction => {
-    result[instanceAction.action.action].push(instanceAction);
-  });
-
-  return result;
-
-}
-
 module.exports = {
-  createReport,
-  createChangePlan
+  createReport
 }
