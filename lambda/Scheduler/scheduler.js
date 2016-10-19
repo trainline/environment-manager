@@ -67,7 +67,9 @@ function createScheduler(account, config) {
     
       return {
         switchOn: yield performChange(ec2.switchInstancesOn, actionGroups.switchOn, config.whatIf),
-        switchOff: yield performChange(ec2.switchInstancesOff, actionGroups.switchOff, config.whatIf)
+        switchOff: yield performChange(ec2.switchInstancesOff, actionGroups.switchOff, config.whatIf),
+        putInService: yield performChange(ec2.putAsgInstancesInService, actionGroups.putInService, config.whatIf),
+        putOutOfService: yield performChange(ec2.putAsgInstancesInStandby, actionGroups.putOutOfService, config.whatIf)
       };
 
     });

@@ -14,10 +14,31 @@ function createAWSService(config) {
     return ec2.stopInstances({ InstanceIds: instances }).promise();
   }
 
+  function putAsgInstancesInService(asgs) {
+    return Promise.all(asgs.map(asg => {
+      return ec2.exitStandby({
+        AutoScalingGroupName: asg.AutoScalingGroupName,
+        InstanceIds: asg.Instances 
+      }).promise();
+    }));
+  }
+
+  function putAsgInstancesInStandby(asgs) {
+    return Promise.all(asgs.map(asg => {
+      return ec2.enterStandby({
+        AutoScalingGroupName: asg.AutoScalingGroupName,
+        InstanceIds: asg.Instances,
+        ShouldDecrementDesiredCapacity: true
+      }).promise();
+    }));
+  }
+
   return {
     ec2: {
       switchInstancesOn,
-      switchInstancesOff
+      switchInstancesOff,
+      putAsgInstancesInService,
+      putAsgInstancesInStandby
     }
   };
 
