@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.common').factory('DeploymentMap',
-  function ($http) {
+  function ($http, deploymentMapConverter) {
     var baseUrl = '/api/v1/config/deployment-maps';
 
     function DeploymentMap(data) {
@@ -37,11 +37,18 @@ angular.module('EnvironmentManager.common').factory('DeploymentMap',
     };
 
     _.assign(DeploymentMap.prototype, {
+      _getValueWithConvertedServerRoles: function () {
+        var value = _.clone(this.Value);
+
+        value.DeploymentTarget = value.DeploymentTarget.map(deploymentMapConverter.toDynamoSchema);
+        return value;
+      },
+      
       update: function () {
         return $http({
           method: 'put',
           url: baseUrl + '/' + encodeURIComponent(this.DeploymentMapName),
-          data: this.Value,
+          data: this._getValueWithConvertedServerRoles(),
           headers: { 'expected-version': this.Version }
         });
       },
@@ -50,7 +57,10 @@ angular.module('EnvironmentManager.common').factory('DeploymentMap',
         return $http({
           method: 'post',
           url: baseUrl,
-          data: _.pick(this, 'Value', 'DeploymentMapName'),
+          data: {
+            DeploymentMapName: this.DeploymentMapName,
+            Value: this._getValueWithConvertedServerRoles()
+          },
           headers: { 'expected-version': this.Version }
         });
       }
