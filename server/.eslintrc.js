@@ -3,6 +3,7 @@ module.exports = {
     'ecmaVersion': 6,
     'sourceType': 'script'
   },
+
   "extends": "airbnb-base",
   'rules': {
     'max-len': [1, 120, 2, {ignoreComments: true}],
@@ -22,6 +23,7 @@ module.exports = {
     "newline-per-chained-call": 0,
     "no-plusplus": 0,
     "no-confusing-arrow": [2, {'allowParens': true}],
-    "no-irregular-whitespace": 0
+    "no-irregular-whitespace": 0,
+    "no-param-reassign": [2, { "props": false }]
   }
 };
