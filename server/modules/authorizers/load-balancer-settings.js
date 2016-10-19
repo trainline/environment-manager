@@ -35,7 +35,7 @@ function getModifyPermissionsForEnvironment(environmentName, user) {
 
 // eslint-disable-next-line arrow-body-style
 exports.getRules = (request) => {
-  return getModifyPermissionsForEnvironment(request.params.key, request.user).then((envPermissions) => (
+  return getModifyPermissionsForEnvironment(request.params.key, request.user).then(envPermissions => (
     [{
       resource: request.url.replace(/\/+$/, ''),
       access: request.method,

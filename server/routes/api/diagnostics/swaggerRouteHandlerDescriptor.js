@@ -28,7 +28,7 @@ module.exports = routeHelper
 
       if (docs && docs.params) {
         docs.params.forEach((docParam) => {
-          _.remove(parameters, (urlParam) => urlParam.name === docParam.name);
+          _.remove(parameters, urlParam => urlParam.name === docParam.name);
           parameters.push(docParam);
         });
       }

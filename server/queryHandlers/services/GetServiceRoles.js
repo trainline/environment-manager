@@ -8,7 +8,7 @@ let co = require('co');
 
 function toRoleGroups(results) {
   let hash = _.groupBy(results, getRole);
-  return Object.keys(hash).map((key) => (
+  return Object.keys(hash).map(key => (
     {
       Role: key,
       Services: _.map(hash[key], 'value'),

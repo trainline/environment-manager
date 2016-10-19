@@ -2,7 +2,7 @@
 
 'use strict';
 
-module.exports = (parameters) => (
+module.exports = parameters => (
   Promise.resolve({
     host: '10.249.16.74',
     port: '8500',

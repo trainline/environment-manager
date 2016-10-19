@@ -17,7 +17,7 @@ function Expression(data) {
   };
 
   this.getNames = function () {
-    return $this.data.names.map((name) => (
+    return $this.data.names.map(name => (
       {
         name,
         alias: `#${name}`,

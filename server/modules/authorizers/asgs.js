@@ -35,7 +35,7 @@ exports.getRules = (request) => {
   let match = r.exec(request.params.name);
 
   if (match && match[1]) {
-    return getModifyPermissionsForEnvironment(match[1], request.user).then((envPermissions) => (
+    return getModifyPermissionsForEnvironment(match[1], request.user).then(envPermissions => (
       [{
         resource: request.url.replace(/\/+$/, ''),
         access: request.method,

@@ -14,7 +14,7 @@ module.exports = function GetServiceNodesQueryHandler(query) {
       environment: query.environment,
       serviceName: query.serviceName,
     },
-  }).then((nodes) => (
+  }).then(nodes => (
     nodes.map((node) => {
       let result = _.clone(node);
       result.ServiceTags = tagsToMap(node.ServiceTags);

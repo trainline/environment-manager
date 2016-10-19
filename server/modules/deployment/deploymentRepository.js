@@ -144,7 +144,7 @@ function getDeploymentsStartedBetween(min, max) {
 }
 
 function getDeploymentById(deploymentId) {
-  let createGetRequestFromTableName = (tableName) => (
+  let createGetRequestFromTableName = tableName => (
     {
       TableName: tableName,
       Key: { DeploymentID: deploymentId },

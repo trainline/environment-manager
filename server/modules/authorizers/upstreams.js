@@ -68,7 +68,7 @@ exports.getRules = (request) => {
   let path = `/${request.params.account}/config/lbUpstream/${match[1]}`;
   let getEnvironmentPermissions = getEnvironmentPermissionsPromise(request);
 
-  return getEnvironmentPermissions.then((envPermissions) => (
+  return getEnvironmentPermissions.then(envPermissions => (
     [{
       resource: path,
       access: request.method,

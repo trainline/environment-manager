@@ -146,7 +146,7 @@ function UpstreamByServiceProvider(sender, toggleCommand, resourceName) {
   let $base = new UpstreamProviderBase(sender, toggleCommand, resourceName);
 
   $this.provideUpstreams = (callback) => {
-    let condition = (upstream) =>
+    let condition = upstream =>
       upstream.Value.EnvironmentName === toggleCommand.environmentName && upstream.Value.ServiceName === toggleCommand.serviceName;
 
     $base.provideUpstreams(condition, callback);
@@ -158,7 +158,7 @@ function UpstreamByNameProvider(sender, toggleCommand, resourceName) {
   let $base = new UpstreamProviderBase(sender, toggleCommand, resourceName);
 
   $this.provideUpstreams = (callback) => {
-    let condition = (upstream) =>
+    let condition = upstream =>
       upstream.Value.EnvironmentName === toggleCommand.environmentName && upstream.Value.UpstreamName === toggleCommand.upstreamName;
 
     $base.provideUpstreams(condition, callback);

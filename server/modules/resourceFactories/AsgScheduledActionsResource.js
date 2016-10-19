@@ -14,7 +14,7 @@ function AsgScheduledActionsResource(client) {
     return describeScheduledActions(parameters.name).then((result) => {
       if (result.ScheduledUpdateGroupActions) {
         return {
-          ScheduledActions: result.ScheduledUpdateGroupActions.map((action) => (
+          ScheduledActions: result.ScheduledUpdateGroupActions.map(action => (
             {
               MinSize: action.MinSize,
               MaxSize: action.MaxSize,

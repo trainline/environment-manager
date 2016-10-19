@@ -33,7 +33,7 @@ function getModifyPermissions(upstreamName, environmentName, accountName, user) 
 
 // eslint-disable-next-line arrow-body-style
 exports.getRules = (request) => {
-  return getModifyPermissions(request.params.upstream, request.params.environment, request.params.account, request.user).then((sliceCluster) => (
+  return getModifyPermissions(request.params.upstream, request.params.environment, request.params.account, request.user).then(sliceCluster => (
     [{
       resource: request.url.replace(/\/+$/, ''),
       access: request.method,

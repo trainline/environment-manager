@@ -2,7 +2,7 @@
 
 'use strict';
 
-exports.getRules = (request) => (
+exports.getRules = request => (
   Promise.resolve([{
     resource: request.url.replace(/\/+$/, ''),
     access: request.method,

@@ -143,7 +143,7 @@ function AsgResource(client) {
   };
 
   this.describeScheduledActions = function (request) {
-    return this.client.describeScheduledActions(request).promise().then((result) => result.ScheduledUpdateGroupActions)
+    return this.client.describeScheduledActions(request).promise().then(result => result.ScheduledUpdateGroupActions)
       .catch((error) => {
         throw standardifyError(error, request.AutoScalingGroupName);
       });

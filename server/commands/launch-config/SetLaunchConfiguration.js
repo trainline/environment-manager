@@ -56,7 +56,7 @@ module.exports = function SetLaunchConfiguration(command) {
     }
 
     if (data.SecurityGroups !== undefined) {
-      let securityGroupsNamesAndReasons = _.map(data.SecurityGroups, (name) => ({
+      let securityGroupsNamesAndReasons = _.map(data.SecurityGroups, name => ({
         name,
         reason: 'It was set by user in LaunchConfig form',
       }));

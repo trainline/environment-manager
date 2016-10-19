@@ -95,9 +95,9 @@ function queryDeploymentNodeStates(environment, key, account) {
 
 module.exports = {
 
-  get: (query) => queryDeployment(query).then(deployment => mapDeployment(deployment, query.account)),
+  get: query => queryDeployment(query).then(deployment => mapDeployment(deployment, query.account)),
 
-  scan: (query) => (
+  scan: query => (
     queryDeployments(query).then((deployments) => {
       let deploymentsWithNodes = deployments.map(deployment => mapDeployment(deployment, deployment.AccountName));
       return Promise.all(deploymentsWithNodes);

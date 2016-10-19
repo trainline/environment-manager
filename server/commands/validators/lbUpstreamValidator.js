@@ -8,7 +8,7 @@ let valid = {
   isValid: true,
 };
 
-let invalid = (err) => ({ isValid: false, err });
+let invalid = err => ({ isValid: false, err });
 
 function validateDnsName(dnsName, isProd) {
   let consulMatch = /^[^\.]*?-[^\.]*$/.exec(dnsName);

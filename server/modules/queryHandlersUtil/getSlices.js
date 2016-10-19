@@ -36,7 +36,7 @@ function* handleQuery(query, resourceName, upstreamFilter, hostFilter) {
   // Flatting upstreams hosts in to a plain list
   // eslint-disable-next-line arrow-body-style
   let upstreamValues = (upstream) => {
-    return upstream.Value.Hosts.filter(hostFilter).map((host) => (
+    return upstream.Value.Hosts.filter(hostFilter).map(host => (
       {
         Key: upstream.key,
         EnvironmentName: upstream.Value.EnvironmentName,
@@ -109,10 +109,12 @@ let QUERYING = {
 
 let FILTER = {
   upstream: {
-    byUpstreamName: (query) => upstream =>
+    byUpstreamName: query =>
+      upstream =>
         upstream.Value.EnvironmentName === query.environmentName && upstream.Value.UpstreamName === query.upstreamName,
 
-    byServiceName: (query) => upstream =>
+    byServiceName: query =>
+      upstream =>
         upstream.Value.EnvironmentName === query.environmentName && upstream.Value.ServiceName === query.serviceName,
   },
   host: {
