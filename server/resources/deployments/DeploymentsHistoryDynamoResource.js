@@ -2,17 +2,17 @@
 'use strict';
 
 module.exports = {
-    name: 'deployments/history',
-    type: 'dynamodb/table',
-    tableName: 'ConfigDeploymentExecutionStatus',
-    keyName: 'DeploymentID',
-    perAccount: true,
-    queryable: true,
-    dateField: {
-        name: 'Value.StartTimestamp',
-        format: 'ISO'
-    },
-    docs: {
-        disableDocs: true
-    }
+  name: 'deployments/history',
+  type: 'dynamodb/table',
+  tableName: 'ConfigDeploymentExecutionStatus',
+  keyName: 'DeploymentID',
+  perAccount: true,
+  queryable: true,
+  dateField: {
+    name: 'Value.StartTimestamp',
+    format: 'ISO'
+  },
+  docs: {
+    disableDocs: true
+  }
 };

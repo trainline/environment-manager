@@ -2,11 +2,11 @@
 'use strict';
 
 module.exports = {
-    name: 'asgs-scheduled-actions',
-    type: 'asgs-scheduled-actions',
-    perAccount: true,
-    queryable: false,
-    docs: {
-        disableDocs: true
-    }
+  name: 'asgs-scheduled-actions',
+  type: 'asgs-scheduled-actions',
+  perAccount: true,
+  queryable: false,
+  docs: {
+    disableDocs: true,
+  },
 };
