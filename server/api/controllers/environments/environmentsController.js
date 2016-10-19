@@ -79,13 +79,6 @@ function getEnvironmentSchedule(req, res, next) {
 }
 
 /**
- * GET /environments/{name}/schedule-status
- */
-function getEnvironmentScheduleStatus(req, res, next) {
-  throw 'not working!!!!';
-}
-
-/**
  * PUT /environments/{name}/schedule
  */
 function putEnvironmentSchedule(req, res, next) {
@@ -104,6 +97,13 @@ function putEnvironmentSchedule(req, res, next) {
   };
 
   sender.sendCommand({ command, user }).then((data) => res.json(data)).catch(next);
+}
+
+/**
+ * GET /environments/{name}/schedule-status
+ */
+function getEnvironmentScheduleStatus(req, res, next) {
+  throw 'not working!!!!';
 }
 
 module.exports = {
