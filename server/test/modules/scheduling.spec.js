@@ -47,18 +47,6 @@ describe('scheduling', () => {
     expect(action.reason).to.equal(scheduling.skipReasons.explicitNoSchedule);
   });
 
-  it('should skip instances in an ASG which are transitioning between lifecycle states', function() {
-    instance.AutoScalingGroup = {
-      AutoScalingGroupName: 'x',
-      Instances: [ { InstanceId: 'instanceId', LifecycleState: 'some-weird-state' } ]
-    }
-
-    let action = scheduling.actionForInstance(instance);
-
-    expect(action.action).to.equal(scheduling.actions.skip);
-    expect(action.reason).to.equal(scheduling.skipReasons.asgTransitioning);
-  });
-
   let invalidCrons = ['rubbish', 'rubbish:* * * * *', ':', 'start:;', 'start:*;gah:']
 
   invalidCrons.forEach(cron => {
@@ -70,6 +58,68 @@ describe('scheduling', () => {
       expect(action.action).to.equal(scheduling.actions.skip);
       expect(action.reason).to.contain(scheduling.skipReasons.invalidSchedule);
     });
+  });
+
+  describe('instances in an ASG', () => {
+
+    let asgInstance = { InstanceId: 'instanceId' };
+
+    beforeEach(() => {
+      instance.AutoScalingGroup = {
+        AutoScalingGroupName: 'x',
+        Instances: [ asgInstance ]
+      };
+    });
+
+    it('should be skipped when transitioning between lifecycle states', function() {
+      asgInstance.LifecycleState = 'some-weird-state';
+
+      let action = scheduling.actionForInstance(instance);
+
+      expect(action.action).to.equal(scheduling.actions.skip);
+      expect(action.reason).to.equal(scheduling.skipReasons.asgTransitioning);
+    });
+
+    it('should be put in to standby before being switched off if they\'re in service', function() {
+      instance.State.Name = 'running';
+      scheduleTag.Value = 'off';
+      asgInstance.LifecycleState = 'InService';
+
+      let action = scheduling.actionForInstance(instance);
+
+      expect(action.action).to.equal(scheduling.actions.putOutOfService);
+    });
+
+    it('should be switched off if they\'re if they\'re already in standby and scheduled off', function() {
+      instance.State.Name = 'running';
+      scheduleTag.Value = 'off';
+      asgInstance.LifecycleState = 'Standby';
+
+      let action = scheduling.actionForInstance(instance);
+
+      expect(action.action).to.equal(scheduling.actions.switchOff);
+    });
+
+    it('should be switched on before being put in service if they\'re switched off', function() {
+      instance.State.Name = 'stopped';
+      scheduleTag.Value = '247';
+      asgInstance.LifecycleState = 'Standby';
+
+      let action = scheduling.actionForInstance(instance);
+
+      expect(action.action).to.equal(scheduling.actions.switchOn);
+    });
+
+    it('should be put in service if they\'re already switched on and scheduled on', function() {
+      instance.State.Name = 'running';
+      scheduleTag.Value = '247';
+      asgInstance.LifecycleState = 'Standby';
+
+      let action = scheduling.actionForInstance(instance);
+
+      expect(action.action).to.equal(scheduling.actions.putInService);
+    });
+
   });
 
   describe('instances with a schedule tag', () => {
@@ -358,7 +408,7 @@ describe('scheduling', () => {
 
         let action = scheduling.actionForInstance(instance);
 
-        expect(action.action).to.equal(scheduling.actions.putInService);
+        expect(action.action).to.equal(scheduling.actions.switchOn);
         expect(action.source).to.equal(scheduling.sources.asg);
       });
 
@@ -375,7 +425,7 @@ describe('scheduling', () => {
 
           let action = scheduling.actionForInstance(instance, testCase.dateTime);
 
-          expect(action.action).to.equal(scheduling.actions.putInService);
+          expect(action.action).to.equal(scheduling.actions.switchOn);
           expect(action.source).to.equal(scheduling.sources.asg);
         });
       });
@@ -445,14 +495,13 @@ describe('scheduling', () => {
         });
       });
 
-      it('should be skipped when instance schedule tag is "247"', function() {
+      it('should be put in service when instance schedule tag is "247"', function() {
         asgScheduleTag.Value = '247'
 
         let action = scheduling.actionForInstance(instance);
 
-        expect(action.action).to.equal(scheduling.actions.skip);
+        expect(action.action).to.equal(scheduling.actions.putInService);
         expect(action.source).to.equal(scheduling.sources.asg);
-        expect(action.reason).to.equal(scheduling.skipReasons.stateIsCorrect);
       });
 
       let skipTestCases = [
@@ -463,14 +512,13 @@ describe('scheduling', () => {
       ];
 
       skipTestCases.forEach(testCase => {
-        it(`should be skipped when instance schedule tag is "${testCase.schedule}" and the datetime is ${testCase.dateTime}`, function() {
+        it(`should be put in service when instance schedule tag is "${testCase.schedule}" and the datetime is ${testCase.dateTime}`, function() {
           asgScheduleTag.Value = testCase.schedule
 
           let action = scheduling.actionForInstance(instance, testCase.dateTime);
 
-          expect(action.action).to.equal(scheduling.actions.skip);
+          expect(action.action).to.equal(scheduling.actions.putInService);
           expect(action.source).to.equal(scheduling.sources.asg);
-          expect(action.reason).to.equal(scheduling.skipReasons.stateIsCorrect);
         });
       });
 
@@ -497,12 +545,12 @@ describe('scheduling', () => {
         instance.AutoScalingGroup.Instances = [ { InstanceId: 'instanceId', LifecycleState: 'Standby' } ];
       });
 
-      it('should be put in service when environment schedule is "on"', function() {
+      it('should be switched on when environment schedule is "on"', function() {
         instance.Environment.ManualScheduleUp = true;
 
         let action = scheduling.actionForInstance(instance);
 
-        expect(action.action).to.equal(scheduling.actions.putInService);
+        expect(action.action).to.equal(scheduling.actions.switchOn);
         expect(action.source).to.equal(scheduling.sources.environment);
       });
 
@@ -511,13 +559,13 @@ describe('scheduling', () => {
       ];
 
       switchOnTestCases.forEach(testCase => {
-        it(`should be put in service when environment schedule is "${testCase.schedule}" and the datetime is ${testCase.dateTime}`, function() {
+        it(`should be switched on when environment schedule is "${testCase.schedule}" and the datetime is ${testCase.dateTime}`, function() {
           instance.Environment.ScheduleAutomatically = true;
           instance.Environment.DefaultSchedule = testCase.schedule;
 
           let action = scheduling.actionForInstance(instance, testCase.dateTime);
 
-          expect(action.action).to.equal(scheduling.actions.putInService);
+          expect(action.action).to.equal(scheduling.actions.switchOn);
           expect(action.source).to.equal(scheduling.sources.environment);
         });
       });
@@ -585,14 +633,13 @@ describe('scheduling', () => {
         });
       });
 
-      it('should be skipped when environment schedule is "on"', function() {
+      it('should be put in service when environment schedule is "on"', function() {
         instance.Environment.ManualScheduleUp = true;
 
         let action = scheduling.actionForInstance(instance);
 
-        expect(action.action).to.equal(scheduling.actions.skip);
+        expect(action.action).to.equal(scheduling.actions.putInService);
         expect(action.source).to.equal(scheduling.sources.environment);
-        expect(action.reason).to.equal(scheduling.skipReasons.stateIsCorrect);
       });
 
       let skipTestCases = [
@@ -600,15 +647,14 @@ describe('scheduling', () => {
       ];
 
       skipTestCases.forEach(testCase => {
-        it(`should be skipped when environment schedule is "${testCase.schedule}" and the datetime is ${testCase.dateTime}`, function() {
+        it(`should be put in service when environment schedule is "${testCase.schedule}" and the datetime is ${testCase.dateTime}`, function() {
           instance.Environment.ScheduleAutomatically = true;
           instance.Environment.DefaultSchedule = testCase.schedule
 
           let action = scheduling.actionForInstance(instance, testCase.dateTime);
 
-          expect(action.action).to.equal(scheduling.actions.skip);
+          expect(action.action).to.equal(scheduling.actions.putInService);
           expect(action.source).to.equal(scheduling.sources.environment);
-          expect(action.reason).to.equal(scheduling.skipReasons.stateIsCorrect);
         });
       });
 
