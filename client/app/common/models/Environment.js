@@ -16,13 +16,13 @@ angular.module('EnvironmentManager.common').factory('Environment',
     };
 
     Environment.getAllSchedules = function () {
-      return $http.get('/api/v1/environments/schedule-status').then(function (response) {
+      return $http.get('/api/v1/environments/schedule').then(function (response) {
         return response.data;
       });
     };
 
-    Environment.getScheduleStatus = function (environmentName) {
-      return $http.get('/api/v1/environments/' + environmentName + '/schedule-status').then(function (response) {
+    Environment.getSchedule = function (environmentName) {
+      return $http.get('/api/v1/environments/' + environmentName + '/schedule').then(function (response) {
         return response.data;
       });
     };

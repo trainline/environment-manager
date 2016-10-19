@@ -102,7 +102,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
 
         $q.all([
           resources.config.environments.get({ key: vm.environment.EnvironmentName }),
-          Environment.getScheduleStatus(vm.environment.EnvironmentName),
+          Environment.getSchedule(vm.environment.EnvironmentName),
         ]).then(function (results) {
           var configuration = results[0];
           var operations = results[1];

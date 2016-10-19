@@ -98,6 +98,49 @@ paths:
             type: array
             items:
               type: object
+  /asgs/{name}/scaling-schedule:
+    x-swagger-router-controller: asgs/asgController
+    get:
+      operationId: getScalingSchedule
+      summary: Resize an ASG under the given account.
+      tags:
+        - ASG
+      x-authorizer: asgs
+      parameters:
+        - name: account
+          in: query
+          type: string
+          required: true
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Ok
+    put:
+      operationId: putScalingSchedule
+      summary: Resize an ASG under the given account.
+      tags:
+        - ASG
+      x-authorizer: asgs
+      parameters:
+        - name: account
+          in: query
+          type: string
+          required: true
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+      responses:
+        200:
+          description: Ok
   /asgs/{name}/size:
     x-swagger-router-controller: asgs/asgController
     put:
@@ -429,11 +472,27 @@ paths:
       responses:
         200:
           description: OK
-  /environments/schedule-status:
+    get:
+      operationId: getEnvironmentSchedule
+      summary: Get schedule for an environment.
+      tags:
+        - Environment
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+
+      responses:
+        200:
+          description: The schedule status
+          schema:
+            type: object
+  /environments/schedule:
     x-swagger-router-controller: environments/environmentsController
     get:
-      operationId: getEnvironmentsScheduleStatus
-      summary: Get current schedule status for all environmetns at a given time.
+      operationId: getEnvironmentsSchedule
+      summary: Get schedule for all environments.
       tags:
         - Environment
       responses:

@@ -57,9 +57,9 @@ function getEnvironmentAccountName(req, res, next) {
 
 
 /**
- * GET /environments/schedule-status
+ * GET /environments/schedule
  */
-function getEnvironmentsScheduleStatus(req, res, next) {
+function getEnvironmentsSchedule(req, res, next) {
   const masterAccountName = config.getUserValue('masterAccountName');
 
   let filter = {};
@@ -68,9 +68,9 @@ function getEnvironmentsScheduleStatus(req, res, next) {
 }
 
 /**
- * GET /environments/{name}/schedule-status
+ * GET /environments/{name}/schedule
  */
-function getEnvironmentScheduleStatus(req, res, next) {
+function getEnvironmentSchedule(req, res, next) {
   const masterAccountName = config.getUserValue('masterAccountName');
   const key = req.swagger.params.name.value;
 
@@ -78,6 +78,12 @@ function getEnvironmentScheduleStatus(req, res, next) {
     .then(data => res.json(data)).catch(next);
 }
 
+/**
+ * GET /environments/{name}/schedule-status
+ */
+function getEnvironmentScheduleStatus(req, res, next) {
+  throw 'not working!!!!';
+}
 
 /**
  * PUT /environments/{name}/schedule
@@ -107,6 +113,7 @@ module.exports = {
   getEnvironmentServers,
   getEnvironmentServerByName,
   getEnvironmentScheduleStatus,
-  getEnvironmentsScheduleStatus,
-  putEnvironmentSchedule
+  getEnvironmentsSchedule,
+  putEnvironmentSchedule,
+  getEnvironmentSchedule,
 };
