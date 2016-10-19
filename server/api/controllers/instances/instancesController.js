@@ -93,9 +93,9 @@ function putInstanceAsgStandby(req, res, next) {
     const accountName = instance.AccountName;
     const autoScalingGroupName = instance.getAutoScalingGroupName();
     const environmentName = instance.getTag('Environment');
-    // /**
-    //  * First put instance to standby on AWS
-    //  */
+    /**
+     * First put instance to standby on AWS
+     */
     let handler = enable ? EnterAutoScalingGroupInstancesToStandby : ExitAutoScalingGroupInstancesFromStandby;
     try { 
       yield handler({ accountName, autoScalingGroupName, instanceIds });
