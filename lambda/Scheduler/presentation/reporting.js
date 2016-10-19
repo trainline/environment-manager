@@ -1,6 +1,7 @@
 'use strict'
 
 const _ = require('lodash');
+const scheduling = require('../scheduling');
 
 function createReport(details, listSkippedInstances) {
 
@@ -12,34 +13,18 @@ function createReport(details, listSkippedInstances) {
     success: success,
     switchOn: {
       result: details.changeResults.switchOn,
-      instances: details.actionGroups.switchOn.map(viewableActionGroup)
+      instances: details.actionGroups.switchOn
     },
     switchOff: {
       result: details.changeResults.switchOff,
-      instances: details.actionGroups.switchOff.map(viewableActionGroup)
+      instances: details.actionGroups.switchOff
     }
   }
 
   if (listSkippedInstances)
-    result.skippedInstances = details.actionGroups.skip.map(viewableActionGroup);
+    result.skippedInstances = details.actionGroups.skip;
 
   return result;
-}
-
-function viewableActionGroup(actionGroup) {
-
-  let instance = actionGroup.instance;
-  let action = actionGroup.action;
-
-  return {
-    instance:{
-      id: instance.InstanceId,
-      name: getInstanceTagValue(instance, 'Name'),
-      role: getInstanceTagValue(instance, 'Role')
-    },
-    reason: action.reason,
-    source: action.source
-  };
 }
 
 function getInstanceTagValue(instance, tagName) {
@@ -49,6 +34,20 @@ function getInstanceTagValue(instance, tagName) {
   }
 }
 
+function createChangePlan(instanceActions) {
+
+  let result = {};
+  Object.keys(scheduling.actions).forEach(action => result[action] = []);
+
+  instanceActions.forEach(instanceAction => {
+    result[instanceAction.action.action].push(instanceAction);
+  });
+
+  return result;
+
+}
+
 module.exports = {
-  createReport
+  createReport,
+  createChangePlan
 }
