@@ -4,7 +4,7 @@ const expect = require('chai').expect;
 const _ = require('lodash');
 const scheduling = require('modules/scheduling');
 
-describe.only('scheduling', () => {
+describe('scheduling', () => {
 
   let instance, scheduleTag;
 
