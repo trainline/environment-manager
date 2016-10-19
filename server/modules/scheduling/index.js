@@ -41,18 +41,8 @@ const states = {
 
 function actionForInstance(instance, dateTime) {
 
-  let currentState = currentStateOfInstance(instance);
-  if (currentState === states.transitioning)
-    return skip(skipReasons.transitioning);
-
   if (!instance.Environment)
     return skip(skipReasons.noEnvironment);
-
-  if (instance.AutoScalingGroup) {
-    let lifeCycleState = getInstanceLifeCycleState(instance);
-    if (lifeCycleState === lifeCycleStates.transitioning)
-      return skip(skipReasons.asgTransitioning);
-  }
 
   let foundSchedule = getScheduleForInstance(instance);
 
@@ -69,35 +59,66 @@ function actionForInstance(instance, dateTime) {
 
   let expectedState = expectedStateFromSchedule(schedule, dateTime);
 
-  if (currentState === expectedState)
-    return skip(skipReasons.stateIsCorrect, source);
-
   if (expectedState === states.on)
-    return takeAction(switchOnAction(instance), source);
+    return switchOn(instance, source);
 
-  return takeAction(switchOffAction(instance), source);
+  return switchOff(instance, source);
 
 }
 
-function switchOnAction(instance) {
+function switchOn(instance, source) {
+
+  let currentState = currentStateOfInstance(instance);
+
+  if (currentState === states.off)
+    return takeAction(actions.switchOn, source);
+  
+  if (currentState === states.transitioning)
+    return skip(skipReasons.transitioning);
+
   if (instance.AutoScalingGroup) {
-    let lifeCycleStatus = getInstanceLifeCycleState(instance);
-    if (lifeCycleStatus === lifeCycleStates.outOfService)
-      return actions.putInService;
+
+    let lifeCycleState = getAsgInstanceLifeCycleState(instance);
+
+    if (lifeCycleState === lifeCycleStates.outOfService)
+      return takeAction(actions.putInService, source);
+
+    if (lifeCycleState === lifeCycleStates.transitioning)
+      return skip(skipReasons.asgTransitioning);
+
   }
-  return actions.switchOn;
+
+  return skip(skipReasons.stateIsCorrect, source);
+
 }
 
-function switchOffAction(instance) {
+function switchOff(instance, source) {
+
   if (instance.AutoScalingGroup) {
-    let lifeCycleStatus = getInstanceLifeCycleState(instance);
-    if (lifeCycleStatus === lifeCycleStates.inService)
-      return actions.putOutOfService;
+
+    let lifeCycleState = getAsgInstanceLifeCycleState(instance);
+
+    if (lifeCycleState === lifeCycleStates.inService)
+      return takeAction(actions.putOutOfService, source);
+
+    if (lifeCycleState === lifeCycleStates.transitioning)
+      return skip(skipReasons.asgTransitioning);
+
   }
-  return actions.switchOff;
+
+  let currentState = currentStateOfInstance(instance);
+
+  if (currentState === states.on)
+    return takeAction(actions.switchOff, source);
+
+  if (currentState === states.transitioning)
+    return skip(skipReasons.transitioning);
+
+  return skip(skipReasons.stateIsCorrect, source);
+  
 }
 
-function getInstanceLifeCycleState(instance) {
+function getAsgInstanceLifeCycleState(instance) {
   let asgInstanceEntry = _.first(instance.AutoScalingGroup.Instances.filter(i => i.InstanceId.toLowerCase() == instance.InstanceId.toLowerCase()));
   
   if (asgInstanceEntry) {
