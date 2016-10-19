@@ -5,7 +5,7 @@ let config = require('config');
 
 function getHealthcheck(req, res, next) {
   // TODO(filip): implement some sanity checks - Redis, dynamodb, consul
-  res.json({ok: true, version: config.get('APP_VERSION') }).catch(next);
+  res.json({ ok: true, version: config.get('APP_VERSION') }).catch(next);
 }
 
 module.exports = {
