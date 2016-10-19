@@ -12,7 +12,7 @@ module.exports = co.wrap(ScanServersStatusQueryHandler);
 
 function* ScanServersStatusQueryHandler(query) {
   const environmentName = query.environmentName;
-  const accountName = yield (yield Environment.getByName(environmentName)).getAccountName();
+  const accountName = yield Environment.getAccountNameForEnvironment(environmentName);
 
   let allStartTime = moment.utc();
 

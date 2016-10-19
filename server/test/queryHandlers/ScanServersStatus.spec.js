@@ -20,9 +20,10 @@ function stubSender(responseStubs) {
   };
 }
 
-function sutWithSender(mockedSender) {
+function sutWithSender(mockedSender, mockedEnvironment) {
   let sut = proxyquire('queryHandlers/ScanServersStatus', {
     'modules/sender': mockedSender,
+    'models/Environment': mockedEnvironment,
   });
   return sut;
 }
@@ -45,11 +46,17 @@ describe('ScanServersStatus', function () {
       GetAutoScalingGroupScheduledActions: () => { return Promise.resolve([]); }
     };
 
+    let mockedEnvironment = {
+      getAccountNameForEnvironment: function() {
+        return Promise.resolve();
+      }
+    };
+
     it('then the services that were on them should be hidden', function () {
       this.timeout(10000);
 
       let stubbedSender = stubSender(responseStubs);
-      let sut = sutWithSender(stubbedSender);
+      let sut = sutWithSender(stubbedSender, mockedEnvironment);
       let query = {
         environmentName: 'c06',
         filter: {
