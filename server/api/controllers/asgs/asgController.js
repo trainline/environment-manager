@@ -10,6 +10,8 @@ let GetLaunchConfiguration = require('queryHandlers/GetLaunchConfiguration');
 let SetLaunchConfiguration = require('commands/launch-config/SetLaunchConfiguration');
 let SetAutoScalingGroupSize = require('commands/asg/SetAutoScalingGroupSize');
 let SetAutoScalingGroupSchedule = require('commands/asg/SetAutoScalingGroupSchedule');
+let GetAutoScalingGroupScheduledActions = require('queryHandlers/GetAutoScalingGroupScheduledActions');
+
 
 /**
  * GET /asgs?account=xyz
@@ -58,11 +60,25 @@ function getAsgLaunchConfig(req, res, next) {
 
 /**
  * PATCH /asgs/{name}?account=xyz
- *
- * TODO(filip): shall we use separate end point for these? Might be preferable performance-wise, and also 
- * improved logic separation
  */
 function patchAsg(req, res, next) {
+  throw 'not implemented';
+}
+
+/**
+ * GET /asgs/{name}/scaling-schedule
+ */
+function getScalingSchedule(req, res, next) {
+  const accountName = req.swagger.params.account.value;
+  const autoScalingGroupName = req.swagger.params.name.value;
+  
+  GetAutoScalingGroupScheduledActions({ accountName, autoScalingGroupName }).then(data => res.json(data)).catch(next);
+}
+
+/**
+ * PUT /asgs/{name}/scaling-schedule
+ */
+function putScalingSchedule(req, res, next) {
   const body = req.swagger.params.body.value;
   const accountName = req.swagger.params.account.value;
   const autoScalingGroupName = req.swagger.params.name.value;
@@ -113,6 +129,8 @@ module.exports = {
   getAsgByName,
   getAsgIps,
   getAsgLaunchConfig,
+  putScalingSchedule,
+  getScalingSchedule,
   patchAsg,
   putAsgSize,
   putAsgLaunchConfig

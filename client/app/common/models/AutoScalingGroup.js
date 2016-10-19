@@ -39,10 +39,10 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
 
       getScalingSchedule: function () {
         var self = this;
-        var segments = ['api', this.AccountName, 'asgs', this.AsgName, 'scaling-schedule'];
+        var segments = ['api', 'v1', 'asgs', this.AsgName, 'scaling-schedule'];
         var url = segments.join('/');
         
-        return $http.get(url).then(function(response) {
+        return $http.get(url, { params: { account: this.AccountName } }).then(function(response) {
           self.ScalingSchedule = response.data;
           return response.data;
         });

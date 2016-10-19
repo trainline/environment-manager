@@ -102,7 +102,7 @@ paths:
     x-swagger-router-controller: asgs/asgController
     get:
       operationId: getScalingSchedule
-      summary: Resize an ASG under the given account.
+      summary: Get scaling schedule actions for given ASG.
       tags:
         - ASG
       x-authorizer: asgs
@@ -120,7 +120,7 @@ paths:
           description: Ok
     put:
       operationId: putScalingSchedule
-      summary: Resize an ASG under the given account.
+      summary: Update scaling schedule actions for given ASG.
       tags:
         - ASG
       x-authorizer: asgs

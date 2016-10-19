@@ -38,8 +38,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
         vm.OperationsVersion = operations.Version;
 
         var scheduleAction = GetScheduleAction(operations.Value);
-        vm.Operations.getScheduleAction = function () {
-          return scheduleAction; };
+        vm.Operations.getScheduleAction = function () { return scheduleAction; };
 
         vm.NewSchedule = {
           DefaultSchedule: operations.Value.DefaultSchedule,
