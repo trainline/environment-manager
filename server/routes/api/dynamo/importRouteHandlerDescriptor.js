@@ -43,14 +43,16 @@ function asRouteHandlerDescriptor(resource, action, commandName) {
 
 let replaceHandler;
 let mergeHandler;
+let importRoutes = [];
 
 resourceDescriptorProvider
   .all()
   .filter(resource => resource.type === 'dynamodb/table')
   .filter(resource => !!resource.importable)
-  .map((resource) => {
+  .forEach((resource) => {
     replaceHandler = asRouteHandlerDescriptor(resource, 'replace', 'ReplaceDynamoResources');
     mergeHandler = asRouteHandlerDescriptor(resource, 'merge', 'MergeDynamoResources');
+    importRoutes.push(replaceHandler, mergeHandler);
   });
 
-module.exports = [replaceHandler, mergeHandler];
+module.exports = importRoutes;

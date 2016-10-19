@@ -7,6 +7,7 @@ let fs = require('fs');
 function createMap(directory) {
   let obj = {};
 
+  // eslint-disable-next-line array-callback-return
   fs.readdirSync(directory).filter((file) => {
     let pattern = new RegExp('(.*).js$');
     let match = file.match(pattern);
