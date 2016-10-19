@@ -77,6 +77,7 @@ function putInstanceMaintenance(req, res, next) {
     const accountName = instance.AccountName;
     const autoScalingGroupName = instance.getAutoScalingGroupName();
     const environmentName = instance.getTag('Environment');
+    
     /**
      * First put instance to standby on AWS
      */
