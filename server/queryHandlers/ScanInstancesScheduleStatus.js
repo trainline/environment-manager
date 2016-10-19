@@ -71,8 +71,16 @@ function buildEnvironmentIndex(environmentData) {
 
 }
 
-function buildASGIndex(asgs) {
-  return _.groupBy(asgs, asg => asg.AutoScalingGroupName);
+function buildASGIndex(asgData) {
+
+  let asgs = {};
+
+  asgData.forEach(asg => {
+    asgs[asg.AutoScalingGroupName] = asg;
+  });
+
+  return asgs;
+
 }
 
 function findInIndex(map, name) {

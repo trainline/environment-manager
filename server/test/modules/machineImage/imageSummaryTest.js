@@ -145,4 +145,15 @@ describe('imageSummary', function () {
       });
     }
   });
+
+  describe('summaryOf', function () {
+    context('when the image has a tag with key "Name"', function () {
+      it('The "Name" property of the image summary should not be overwritten', function () {
+        sut.summaryOf({
+          Name: 'windows-2012r2-ttl-app-7.0.17',
+          Tags: [{ Key: 'Name', Value: '' }]
+        }).should.have.property('Name').eql('windows-2012r2-ttl-app-7.0.17');
+      });
+    });
+  });
 });
