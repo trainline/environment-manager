@@ -15,8 +15,8 @@ angular.module('EnvironmentManager.common').factory('Environment',
       });
     };
 
-    Environment.getAllSchedules = function () {
-      return $http.get('/api/v1/environments/schedule').then(function (response) {
+    Environment.getAllOps = function () {
+      return $http.get('/api/v1/environments').then(function (response) {
         return response.data;
       });
     };

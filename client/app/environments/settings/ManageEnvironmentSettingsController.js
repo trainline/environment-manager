@@ -77,8 +77,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
         vm.operationsVersion = operations.Version;
 
         var scheduleAction = GetScheduleAction(operations.Value);
-        vm.operations.getScheduleAction = function () {
-          return scheduleAction; };
+        vm.operations.getScheduleAction = function () { return scheduleAction; };
 
         vm.newEnvironment = {
           OwningCluster: configuration.Value.OwningCluster,

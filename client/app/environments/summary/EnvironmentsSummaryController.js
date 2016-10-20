@@ -74,7 +74,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
 
       $q.all([
         Environment.all({ query: query }),
-        Environment.getAllSchedules(),
+        Environment.getAllOps(),
       ]).then(function (results) {
         var configEnvironments = results[0];
         var opsEnvironments = results[1];
@@ -93,7 +93,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
               Operation: target.Value || {},
             };
 
-            var scheduleAction = getScheduleAction(result.Operation);
+            var scheduleAction = target.Value.ScheduleStatus;
             result.Operation.getScheduleAction = function () { return scheduleAction; };
 
             return result;
@@ -150,20 +150,6 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
           vm.environmentConfigValid[environment.EnvironmentName] = node;
         });
       }
-    }
-
-    function getScheduleAction(data) {
-      function getCurrentSchedule() {
-        if (data.ScheduleAutomatically === false) {
-          if (data.ManualScheduleUp === true) return '247';
-          if (data.ManualScheduleUp === false) return 'OFF';
-        }
-
-        return data.DefaultSchedule;
-      }
-
-      var schedule = getCurrentSchedule();
-      return cron.getActionBySchedule(schedule);
     }
 
     init();
