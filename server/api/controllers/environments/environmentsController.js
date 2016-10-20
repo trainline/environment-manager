@@ -99,7 +99,11 @@ function putEnvironmentSchedule(req, res, next) {
  * GET /environments/{name}/schedule-status
  */
 function getEnvironmentScheduleStatus(req, res, next) {
-  throw 'not working!!!!';
+  const environmentName = req.swagger.params.name.value;
+
+  OpsEnvironment.getByName(environmentName).then((env) => {
+    return { Status: env.getScheduleStatus() };
+  }).then((data) => res.json(data)).catch(next);
 }
 
 module.exports = {
