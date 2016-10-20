@@ -61,7 +61,7 @@ function createFilter(query) {
 module.exports = [
   route.get('/all/audit').whenUserCan('view')
     .withDocs({ disableDocs: false })
-    .do((request, response) => {
+    .do((request, response, next) => {
       let redirectUrl = url.parse(request.originalUrl, true);
       redirectUrl.search = null;
       let query = redirectUrl.query;
@@ -82,6 +82,6 @@ module.exports = [
       let filter = createFilter(query);
       let auditLogQuery = createAuditLogQuery(minDate, maxDate, exclusiveStartKey, query.per_page, filter);
       return auditLogReader.getLogs(auditLogQuery)
-        .then(sendResponse);
+        .then(sendResponse).catch(next);
     }),
 ];
