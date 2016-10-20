@@ -1,13 +1,18 @@
 'use strict';
 
+/* eslint-disable import/no-extraneous-dependencies */
 const auditLogReader = require('modules/auditLogReader');
 const base64 = require('modules/base64');
+const logger = require('modules/logger');
+const route = require('modules/helpers/route');
+const weblink = require('modules/weblink');
+/* eslint-enable import/no-extraneous-dependencies */
+
+const fp = require('lodash/fp');
 const Instant = require('js-joda').Instant;
 const LocalDate = require('js-joda').LocalDate;
 const ZoneOffset = require('js-joda').ZoneOffset;
-const route = require('modules/helpers/route');
 const url = require('url');
-const weblink = require('modules/weblink');
 
 function createAuditLogQuery(minDate, maxDate, exclusiveStartKey, perPage, filter) {
   let rq = {
@@ -33,17 +38,19 @@ function parseDate(str) {
 }
 
 function createFilter(query) {
-  let predicates = [];
-  if (query.hasOwnProperty('Entity.Type')) {
-    predicates.push(['=', ['attr', 'Entity', 'Type'], ['val', query['Entity.Type']]]);
-  }
-  if (query.hasOwnProperty('ChangeType')) {
-    predicates.push(['=', ['attr', 'ChangeType'], ['val', query['ChangeType']]]);
-  }
-  if (query.hasOwnProperty('Entity.Key')) {
-    predicates.push(['=', ['attr', 'Entity', 'Key'], ['val', query['Entity.Key']]]);
-  }
-  return (predicates.length > 0) ? ['and'].concat(predicates) : undefined;
+  let exprs = {
+    'Entity.Type': val => ['=', ['attr', 'Entity', 'Type'], ['val', val]],
+    'ChangeType': val => ['=', ['attr', 'ChangeType'], ['val', val]],
+    'Entity.Key': val => ['=', ['attr', 'Entity', 'Key'], ['val', val]],
+  };
+
+  let filter = fp.flow(
+    fp.pick(fp.keys(exprs)),
+    fp.toPairs,
+    fp.map(x => exprs[x[0]](x[1])),
+    predicates => (predicates.length > 0 ? ['and'].concat(predicates) : undefined));
+
+  return filter(query);
 }
 
 /* Get audit log entries in reverse order of occurrence.
@@ -66,9 +73,23 @@ module.exports = [
       redirectUrl.search = null;
       let query = redirectUrl.query;
       let now = LocalDate.now(ZoneOffset.UTC);
-      let minDate = query.hasOwnProperty('minDate') ? parseDate(query.minDate) : now;
-      let maxDate = query.hasOwnProperty('maxDate') ? parseDate(query.maxDate) : now;
-      let exclusiveStartKey = query.hasOwnProperty('exclusiveStartKey') ? base64.decode(query.exclusiveStartKey) : undefined;
+
+      function paramOrDefault(param, fn, defaultValue) {
+        function f(x) {
+          try {
+            fn(x);
+          } catch (error) {
+            logger.error(error);
+            throw new Error(`Error parsing parameter: ${param}`);
+          }
+        }
+        let t = fp.has(param)(query) ? fp.flow(fp.get(param), f)(query) : defaultValue;
+        return t;
+      }
+
+      let minDate = paramOrDefault('minDate', parseDate, now);
+      let maxDate = paramOrDefault('maxDate', parseDate, now);
+      let exclusiveStartKey = paramOrDefault('exclusiveStartKey', base64.decode, undefined);
       function sendResponse(auditLog) {
         query.minDate = minDate.toString();
         query.maxDate = maxDate.toString();
