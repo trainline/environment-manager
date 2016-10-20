@@ -5,7 +5,7 @@ let schedulerFactory = require('./scheduler.js');
 
 exports.handler = (event, context, callback) => {
 
-  let account = context.invoked_function_arn.split(':')[4];
+  let account = context.invokedFunctionArn.split(':')[4];
   let scheduler = schedulerFactory.create(account, config);
 
   try {
