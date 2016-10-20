@@ -12,24 +12,20 @@ exports.handler = (event, context, callback) => {
 
     scheduler.doScheduling()
     .then(result => {
-      if (result.success)
-        callback(null, result);
-      else {
-        console.log('Scheduling Failure');
-        console.log(JSON.stringify(result, null, 2));
-        callback('An unhandled scheduling exception occurred. See log for more details');
-      }
+      if (result.success) callback(null, result);
+      else callback(logError('Scheduling Failure', result));
     })
     .catch(err => {
-      console.log('Unhandled Exception');
-      console.log(JSON.stringify(err, null, 2));
-      callback('An unhandled async exception ocurred. See log for more details');
+      callback(logError('Unhandled Exception', err));
     });
 
   } catch (err) {
-    console.log('Unhandled Exception');
-    console.log(JSON.stringify(err, null, 2));
-    callback('An unhandled exception ocurred. See log for more details');
+    callback(logError('Unhandled Exception', err));
   }
 
 };
+
+function logError(err, details) {
+  console.error({ err, details });
+  return `ERROR: ${err}. See logs for more details.`;
+}
