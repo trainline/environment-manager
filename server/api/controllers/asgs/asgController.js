@@ -59,13 +59,6 @@ function getAsgLaunchConfig(req, res, next) {
 }
 
 /**
- * PATCH /asgs/{name}?account=xyz
- */
-function patchAsg(req, res, next) {
-  throw 'not implemented';
-}
-
-/**
  * GET /asgs/{name}/scaling-schedule
  */
 function getScalingSchedule(req, res, next) {
@@ -131,7 +124,6 @@ module.exports = {
   getAsgLaunchConfig,
   putScalingSchedule,
   getScalingSchedule,
-  patchAsg,
   putAsgSize,
   putAsgLaunchConfig
 };

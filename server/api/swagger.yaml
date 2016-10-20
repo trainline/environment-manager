@@ -52,29 +52,6 @@ paths:
           description: The matching ASG
           schema:
             type: object
-    patch:
-      operationId: patchAsg
-      summary: Apply partial updates to an ASG.
-      tags:
-        - ASG
-      x-authorizer: asgs
-      parameters:
-        - name: account
-          in: query
-          type: string
-          required: true
-        - name: name
-          in: path
-          type: string
-          required: true
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-      responses:
-        200:
-          description: Ok
   /asgs/{name}/ips:
     x-swagger-router-controller: asgs/asgController
     get:
