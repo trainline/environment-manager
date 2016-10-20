@@ -68,7 +68,6 @@ module.exports = function MainServer() {
       app.get(staticPaths, authentication.allowUnknown, express.static(PUBLIC_DIR));
       app.get('/', authentication.denyUnauthorized, express.static(PUBLIC_DIR));
 
-      app.get('/docs*', authentication.denyUnauthorized, express.static(PUBLIC_DIR));
       app.get('*.js', authentication.allowUnknown, express.static('modules'));
 
       // routing for API JSON Schemas
