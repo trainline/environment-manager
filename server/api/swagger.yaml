@@ -465,18 +465,6 @@ paths:
           description: The schedule status
           schema:
             type: object
-  /environments/schedule:
-    x-swagger-router-controller: environments/environmentsController
-    get:
-      operationId: getEnvironmentsSchedule
-      summary: Get schedule for all environments.
-      tags:
-        - Environment
-      responses:
-        200:
-          description: The schedule status
-          schema:
-            type: object
   /environments/{name}/accountName:
     x-swagger-router-controller: environments/environmentsController
     get:

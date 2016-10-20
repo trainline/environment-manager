@@ -14,7 +14,11 @@ let sender = require('modules/sender');
  * GET /environments
  */
 function getEnvironments(req, res, next) {
-  res.json([{},{},{}]);
+  const masterAccountName = config.getUserValue('masterAccountName');
+
+  let filter = {};
+  ScanDynamoResources({ resource: 'ops/environments', filter, exposeAudit: 'version-only', accountName: masterAccountName })
+    .then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -53,18 +57,6 @@ function getEnvironmentAccountName(req, res, next) {
     const accountName = yield (yield Environment.getByName(environmentName)).getAccountName();
     res.send(accountName);
   }).catch(next);
-}
-
-
-/**
- * GET /environments/schedule
- */
-function getEnvironmentsSchedule(req, res, next) {
-  const masterAccountName = config.getUserValue('masterAccountName');
-
-  let filter = {};
-  ScanDynamoResources({ resource: 'ops/environments', filter, exposeAudit: 'version-only', accountName: masterAccountName })
-    .then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -113,7 +105,6 @@ module.exports = {
   getEnvironmentServers,
   getEnvironmentServerByName,
   getEnvironmentScheduleStatus,
-  getEnvironmentsSchedule,
   putEnvironmentSchedule,
   getEnvironmentSchedule,
 };
