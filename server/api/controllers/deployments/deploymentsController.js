@@ -105,7 +105,6 @@ function* postDeployment(req, res, next) {
   };
 
   sender.sendCommand({ command, user: req.user }).then((deployment) => {
-    console.log('YOOYOO');
     res.status(201);
     res.location(`/api/${deployment.accountName}/deployments/history/${deployment.id}`);
     res.json(deployment);
