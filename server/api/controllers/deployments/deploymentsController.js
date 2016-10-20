@@ -81,14 +81,11 @@ function* postDeployment(req, res, next) {
   let accountName = environmentType.AWSAccountName;
 
   // Check for input errors
-  let error = null;
   if (mode === 'overwrite' && serviceSlice !== undefined && serviceSlice !== 'none') {
-    error = `Slice can be set only to 'none' in overwrite mode.`;
-  }
-
-  if (error !== null) {
+    let error = `Slice can be set only to 'none' in overwrite mode.`;
     res.send({ error });
     res.status(400);
+    return;
   }
 
   let command = {
