@@ -62,7 +62,7 @@ describe('reporting', () => {
           }
         ]
       },
-      skippedInstances: [
+      skip: [
         {
           instance: {
             id: "skipped",

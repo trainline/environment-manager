@@ -6,7 +6,9 @@ function createReport(details, listSkippedInstances) {
 
   let success =
     details.changeResults.switchOff.success &&
-    details.changeResults.switchOn.success;
+    details.changeResults.switchOn.success &&
+    details.changeResults.putInService.success &&
+    details.changeResults.putOutOfService.success;
 
   let result = {
     success: success,
@@ -17,11 +19,19 @@ function createReport(details, listSkippedInstances) {
     switchOff: {
       result: details.changeResults.switchOff,
       instances: details.actionGroups.switchOff
+    },
+    putInService: {
+      result: details.changeResults.putInService,
+      instances: details.actionGroups.putInService
+    },
+    putOutOfService: {
+      result: details.changeResults.putOutOfService,
+      instances: details.actionGroups.putOutOfService
     }
   }
 
   if (listSkippedInstances)
-    result.skippedInstances = details.actionGroups.skip;
+    result.skip = details.actionGroups.skip;
 
   return result;
 }
