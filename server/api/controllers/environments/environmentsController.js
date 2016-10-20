@@ -6,9 +6,9 @@ let GetASGState = require('queryHandlers/GetASGState');
 let ScanServersStatus = require('queryHandlers/ScanServersStatus');
 let co = require('co');
 let Environment = require('models/Environment');
-let ScanDynamoResources = require('queryHandlers/ScanDynamoResources');
 let GetDynamoResource = require('queryHandlers/GetDynamoResource');
 let sender = require('modules/sender');
+let OpsEnvironment = require('models/OpsEnvironment');
 
 /**
  * GET /environments
@@ -17,15 +17,19 @@ function getEnvironments(req, res, next) {
   const masterAccountName = config.getUserValue('masterAccountName');
 
   let filter = {};
-  ScanDynamoResources({ resource: 'ops/environments', filter, exposeAudit: 'version-only', accountName: masterAccountName })
-    .then(data => res.json(data)).catch(next);
+  OpsEnvironment.getAll().then((list) => {
+    return list.map((env) => env.toAPIOutput())
+  }).then((data) => res.json(data)).catch(next);
 }
 
 /**
  * GET /environments/{name}
  */
 function getEnvironmentByName(req, res, next) {
-  res.json({});
+  const environmentName = req.swagger.params.name.value;
+
+  OpsEnvironment.getByName(environmentName).then((env) => env.toAPIOutput())
+    .then((data) => res.json(data)).catch(next);
 }
 
 /**
