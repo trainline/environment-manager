@@ -206,10 +206,6 @@ paths:
           type: string
           format: date-time
           required: false
-        - name: account
-          in: query
-          type: string
-          required: false
       responses:
         200:
           description: A list of Audit logs
@@ -227,10 +223,6 @@ paths:
       parameters:
         - name: key
           in: path
-          type: string
-          required: true
-        - name: account
-          in: query
           type: string
           required: true
       responses:
