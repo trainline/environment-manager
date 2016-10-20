@@ -9,7 +9,6 @@ class Instance {
 
   constructor(data) {
     _.assign(this, data);
-
   }
 
   getAutoScalingGroupName() {

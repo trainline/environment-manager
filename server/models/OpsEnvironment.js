@@ -3,6 +3,7 @@
 
 let _ = require('lodash');
 let config = require('config');
+let cronService = require('modules/cronService')();
 
 class OpsEnvironment {
   
@@ -13,7 +14,7 @@ class OpsEnvironment {
   getSchedule(date) {
     let env = this.Value;
     if (env.ScheduleAutomatically) {
-      var schedule = cronService.getActionBySchedule(env.DefaultSchedule, date);
+      let schedule = cronService.getActionBySchedule(env.DefaultSchedule, date);
       return schedule ? schedule : 'ON';
     }
 
@@ -23,8 +24,8 @@ class OpsEnvironment {
   static getByName(environmentName) {
     const masterAccountName = config.getUserValue('masterAccountName');
     
-    var sender = require('modules/sender');
-    var childQuery = {
+    let sender = require('modules/sender');
+    let childQuery = {
       name: 'GetDynamoResource',
       resource: 'ops/environments',
       key: environmentName,

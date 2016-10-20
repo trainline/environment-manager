@@ -2,8 +2,6 @@
 'use strict';
 
 let moment = require('moment');
-let cronService = require('modules/cronService')();
-let config = require('config');
 let OpsEnvironment = require('models/OpsEnvironment');
 
 function handler(query) {
