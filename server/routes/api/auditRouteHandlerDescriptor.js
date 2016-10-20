@@ -14,6 +14,7 @@ const LocalDate = require('js-joda').LocalDate;
 const ZoneOffset = require('js-joda').ZoneOffset;
 const url = require('url');
 
+
 function createAuditLogQuery(minDate, maxDate, exclusiveStartKey, perPage, filter) {
   let rq = {
     limit: perPage || 10,
@@ -38,6 +39,7 @@ function parseDate(str) {
 }
 
 function createFilter(query) {
+  logger.debug('Audit History: Creating filter.');
   let exprs = {
     'Entity.Type': val => ['=', ['attr', 'Entity', 'Type'], ['val', val]],
     'ChangeType': val => ['=', ['attr', 'ChangeType'], ['val', val]],
@@ -87,16 +89,19 @@ module.exports = [
         return t;
       }
 
+      logger.debug('Audit History: Extracting parameters from request.');
       let minDate = paramOrDefault('minDate', parseDate, now);
       let maxDate = paramOrDefault('maxDate', parseDate, now);
       let exclusiveStartKey = paramOrDefault('exclusiveStartKey', base64.decode, undefined);
       function sendResponse(auditLog) {
+        logger.debug('Audit History: Constructing navigation links');
         query.minDate = minDate.toString();
         query.maxDate = maxDate.toString();
         if (auditLog.LastEvaluatedKey) {
           query.exclusiveStartKey = base64.encode(auditLog.LastEvaluatedKey);
           response.header('Link', weblink.link({ next: url.format(redirectUrl) }));
         }
+        logger.debug('Audit History: sending response');
         return response.status(200).send(auditLog.Items);
       }
 
