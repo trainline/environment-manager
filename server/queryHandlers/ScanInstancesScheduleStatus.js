@@ -55,7 +55,8 @@ function scheduledActionsForInstances(instances) {
     let instanceVM = {
       id: instance.InstanceId,
       name: getInstanceTagValue(instance, 'name'),
-      role: getInstanceTagValue(instance, 'role')
+      role: getInstanceTagValue(instance, 'role'),
+      environment: getInstanceTagValue(instance, 'environment')
     };
 
     if (instance.AutoScalingGroup)
