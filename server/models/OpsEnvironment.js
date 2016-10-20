@@ -11,7 +11,7 @@ class OpsEnvironment {
     _.assign(this, data);
   }
 
-  getSchedule(date) {
+  getScheduleStatus(date) {
     let env = this.Value;
     if (env.ScheduleAutomatically) {
       let schedule = cronService.getActionBySchedule(env.DefaultSchedule, date);

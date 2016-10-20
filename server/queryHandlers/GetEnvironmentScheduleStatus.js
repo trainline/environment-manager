@@ -6,7 +6,7 @@ let OpsEnvironment = require('models/OpsEnvironment');
 
 function handler(query) {
   return OpsEnvironment.getByName(query.environmentName).then(opsEnvironment => {
-    var schedule = opsEnvironment.getSchedule(moment(query.date).toDate());
+    var schedule = opsEnvironment.getScheduleStatus(moment(query.date).toDate());
     return { status: schedule };
   });
 };
