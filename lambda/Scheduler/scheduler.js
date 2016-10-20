@@ -6,7 +6,6 @@ const _ = require('lodash');
 const awsFactory = require('./services/aws');
 const emFactory = require('./services/em');
 
-const scheduling = require('./scheduling');
 const reporting = require('./presentation/reporting');
 
 function createScheduler(account, config) {
@@ -46,13 +45,14 @@ function createScheduler(account, config) {
   }
 
   function getScheduledActions() {
-    return em.getScheduledInstanceActions(account);
+    return em.getScheduledInstanceActions(account).then(instanceActions => {
+      return instanceActions.filter(x => environmentMatchesFilter(x.instance.environment, config.limitToEnvironment));
+    });
   }
 
   function groupActionsByType(instanceActions) {
 
-    let result = {};
-    Object.keys(scheduling.actions).forEach(action => result[action] = []);
+    let result = { switchOn: [], switchOff: [], putInService: [], putOutOfService: [], skip: [] };
 
     instanceActions.forEach(instanceAction => {
       result[instanceAction.action.action].push(instanceAction);
@@ -62,22 +62,32 @@ function createScheduler(account, config) {
 
   }
 
+  function environmentMatchesFilter(environmentName, environmentFilter) {
+
+    if (!environmentFilter) return true;
+    if (!environmentName) return false;
+
+    var re = new RegExp(environmentFilter);
+    return re.test(environmentName);
+
+  }
+
   function performChanges(actionGroups) {
     return co(function*() {
     
       return {
-        switchOn: yield performChange(ec2.switchInstancesOn, actionGroups.switchOn, config.whatIf),
-        switchOff: yield performChange(ec2.switchInstancesOff, actionGroups.switchOff, config.whatIf),
-        putInService: yield performChange(ec2.putAsgInstancesInService, actionGroups.putInService, config.whatIf),
-        putOutOfService: yield performChange(ec2.putAsgInstancesInStandby, actionGroups.putOutOfService, config.whatIf)
+        switchOn: yield performChange(ec2.switchInstancesOn, actionGroups.switchOn),
+        switchOff: yield performChange(ec2.switchInstancesOff, actionGroups.switchOff),
+        putInService: yield performChange(ec2.putAsgInstancesInService, actionGroups.putInService),
+        putOutOfService: yield performChange(ec2.putAsgInstancesInStandby, actionGroups.putOutOfService)
       };
 
     });
   }
 
-  function performChange(doChange, actions, whatIf) {
+  function performChange(doChange, actions) {
 
-    if (!actions.length || whatIf) {
+    if (!actions.length || config.whatIf) {
       return Promise.resolve({ success: true });
     }
 

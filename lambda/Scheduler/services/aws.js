@@ -7,30 +7,28 @@ function createAWSService(config) {
   let ec2 = new AWS.EC2(config);
 
   function switchInstancesOn(instances) {
-    return ec2.startInstances({ InstanceIds: instances, DryRun: true }).promise();
+    return ec2.startInstances({ InstanceIds: instances }).promise();
   }
 
   function switchInstancesOff(instances) {
-    return ec2.stopInstances({ InstanceIds: instances, DryRun: true }).promise();
+    return ec2.stopInstances({ InstanceIds: instances }).promise();
   }
 
-  function putAsgInstancesInService(asgs) {
-    return Promise.all(asgs.map(asg => {
+  function putAsgInstancesInService(instances) {
+    return Promise.all(instances.map(instance => {
       return ec2.exitStandby({
-        AutoScalingGroupName: asg.AutoScalingGroupName,
-        InstanceIds: asg.Instances ,
-        DryRun: true
+        AutoScalingGroupName: instance.asg,
+        InstanceIds: [instance.id]
       }).promise();
     }));
   }
 
-  function putAsgInstancesInStandby(asgs) {
-    return Promise.all(asgs.map(asg => {
+  function putAsgInstancesInStandby(instances) {
+    return Promise.all(instances.map(instance => {
       return ec2.enterStandby({
-        AutoScalingGroupName: asg.AutoScalingGroupName,
-        InstanceIds: asg.Instances,
-        ShouldDecrementDesiredCapacity: true,
-        DryRun: true
+        AutoScalingGroupName: instance.asg,
+        InstanceIds: [instance.id],
+        ShouldDecrementDesiredCapacity: true
       }).promise();
     }));
   }
