@@ -58,7 +58,6 @@ function getDeploymentLog(req, res, next) {
   }).catch(next);
 }
 
-// TODO(filip): add authorizer for this one!
 /**
  * POST /deployments
  */
@@ -68,7 +67,7 @@ function* postDeployment(req, res, next) {
   const environmentName = body.environment;
   const serviceName = body.service;
   const serviceVersion = body.version;
-  const packagePath = body.path;
+  const packagePath = body.packageLocation;
 
   // These are optional
   const mode = body.mode || 'overwrite';
