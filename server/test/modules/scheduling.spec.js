@@ -4,7 +4,7 @@ const expect = require('chai').expect;
 const _ = require('lodash');
 const scheduling = require('modules/scheduling');
 
-describe.only('scheduling', () => {
+describe('scheduling', () => {
 
   let instance, scheduleTag;
 
@@ -58,6 +58,25 @@ describe.only('scheduling', () => {
       expect(action.action).to.equal(scheduling.actions.skip);
       expect(action.reason).to.contain(scheduling.skipReasons.invalidSchedule);
     });
+  });
+
+  it('should be skipped when the instance has only schedules in the future', function() {
+    let dateTime = '2016-10-21T15:57:00Z';
+    scheduleTag.Value = 'stop: 27 16 21 10 * 2016';
+
+    let action = scheduling.actionForInstance(instance, dateTime);
+
+    expect(action.action).to.equal(scheduling.actions.skip);
+    expect(action.reason).to.equal(scheduling.skipReasons.stateIsCorrect);
+  });
+
+  it('should be stopped when a future stop schedule arrives', function() {
+    let dateTime = '2016-10-21T16:57:00Z';
+    scheduleTag.Value = 'stop: 27 16 21 10 * 2016';
+
+    let action = scheduling.actionForInstance(instance, dateTime);
+
+    expect(action.action).to.equal(scheduling.actions.switchOff);
   });
 
   describe('instances in an ASG', () => {
