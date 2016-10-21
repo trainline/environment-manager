@@ -52,7 +52,17 @@ function scheduledActionsForInstances(instances) {
 
   return instances.map(instance => {
     let action = scheduling.actionForInstance(instance, dateTime);
-    return { action, instance: instance.InstanceId };
+    let instanceVM = {
+      id: instance.InstanceId,
+      name: getInstanceTagValue(instance, 'name'),
+      role: getInstanceTagValue(instance, 'role'),
+      environment: getInstanceTagValue(instance, 'environment')
+    };
+
+    if (instance.AutoScalingGroup)
+      instanceVM.asg = instance.AutoScalingGroup.AutoScalingGroupName;
+
+    return { action, instance: instanceVM };
   });
 
 }
