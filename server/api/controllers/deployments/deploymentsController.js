@@ -27,10 +27,10 @@ function getDeployments(req, res, next) {
  * GET /deployments/{key}
  */
 function getDeploymentById(req, res, next) {
-  const key = req.swagger.params.key.value;
-  const account = req.swagger.params.account.value;
+  const key = req.swagger.params.id.value;
 
-  return deploymentsHelper.get({ key, account });
+  return deploymentsHelper.get({ key })
+    .then((data) => res.json(data)).catch(next);
 }
 
 /**
