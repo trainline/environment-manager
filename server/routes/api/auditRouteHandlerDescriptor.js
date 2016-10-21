@@ -79,7 +79,7 @@ module.exports = [
       function paramOrDefault(param, fn, defaultValue) {
         function f(x) {
           try {
-            fn(x);
+            return fn(x);
           } catch (error) {
             logger.error(error);
             throw new Error(`Error parsing parameter: ${param}`);
