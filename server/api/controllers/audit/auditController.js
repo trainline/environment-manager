@@ -20,8 +20,8 @@ let url = require('url');
 function createAuditLogQuery(since, until, exclusiveStartKey, perPage, filter) {
   let rq = {
     limit: perPage || 10,
-    until: until.toString(),
-    since: since.toString(),
+    maxDate: until.toString(),
+    minDate: since.toString(),
   };
   if (exclusiveStartKey) {
     rq.exclusiveStartKey = exclusiveStartKey;
