@@ -50,7 +50,7 @@ class OpsEnvironment {
       accountName: masterAccountName,
     };
 
-    return sender.sendQuery({ query: childQuery }).then((obj) => new OpsEnvironment(obj));;
+    return sender.sendQuery({ query: childQuery }).then((obj) => new OpsEnvironment(obj));
   }
 }
 

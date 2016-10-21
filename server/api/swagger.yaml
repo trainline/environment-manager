@@ -24,6 +24,10 @@ paths:
           in: query
           type: string
           required: false
+        - name: environment
+          in: query
+          type: string
+          required: false
       responses:
         200:
           description: A list of matching ASGs.
@@ -35,11 +39,11 @@ paths:
     x-swagger-router-controller: asgs/asgController
     get:
       operationId: getAsgByName
-      summary: Get a single ASG from the given account.
+      summary: Get a single ASG for the given environment.
       tags:
         - ASG
       parameters:
-        - name: account
+        - name: environment
           in: query
           type: string
           required: true
@@ -60,7 +64,7 @@ paths:
       tags:
         - ASG
       parameters:
-        - name: account
+        - name: environment
           in: query
           type: string
           required: true
@@ -84,7 +88,7 @@ paths:
         - ASG
       x-authorizer: asgs
       parameters:
-        - name: account
+        - name: environment
           in: query
           type: string
           required: true
@@ -102,7 +106,7 @@ paths:
         - ASG
       x-authorizer: asgs
       parameters:
-        - name: account
+        - name: environment
           in: query
           type: string
           required: true
@@ -127,7 +131,7 @@ paths:
         - ASG
       x-authorizer: asgs
       parameters:
-        - name: account
+        - name: environment
           in: query
           type: string
           required: true
@@ -152,7 +156,7 @@ paths:
         - ASG
       x-authorizer: asgs  
       parameters:
-        - name: account
+        - name: environment
           in: query
           type: string
           required: true
@@ -172,7 +176,7 @@ paths:
         - ASG
       x-authorizer: asgs
       parameters:
-        - name: account
+        - name: environment
           in: query
           type: string
           required: true
@@ -308,6 +312,11 @@ paths:
           required: true
           schema:
             type: object
+            required:
+              - Status
+            properties:
+              Status:
+                type: string
       responses:
         200:
           description: OK
@@ -320,10 +329,6 @@ paths:
         - Deployment
       parameters:
         - name: instance
-          in: query
-          type: string
-          required: true
-        - name: account
           in: query
           type: string
           required: true
