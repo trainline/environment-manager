@@ -63,6 +63,9 @@ function actionForInstance(instance, dateTime) {
 
   let expectedState = expectedStateFromSchedule(schedule, dateTime);
 
+  if (expectedState.noSchedule)
+    return skip(skipReasons.stateIsCorrect);
+
   if (expectedState === states.on)
     return switchOn(instance, source);
 
@@ -178,6 +181,9 @@ function expectedStateFromSchedule(schedule, dateTime) {
   });
 
   let latest = _.maxBy(scheduleStates, scheduleState => scheduleState.dateTime);
+
+  if (latest.dateTime === 0)
+    return { noSchedule: true };
 
   return latest.state;
 }
