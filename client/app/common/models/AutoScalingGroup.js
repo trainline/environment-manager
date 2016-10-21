@@ -2,8 +2,10 @@
 'use strict';
 
 angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
-  function ($q, $http, awsService, resources, roles, serviceDiscovery) {
+  function ($q, $http, awsService, resources, roles, serviceDiscovery, taggable, accountMappingService) {
 
+    // TODO(Filip): get rid of this mapping, and just operate on ASG model.
+    // It's confusing. 
     function getSummaryFromAsg(asg) {
       var asgSummary = {
         AccountName: asg.AccountName,
@@ -14,6 +16,7 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
         CurrentSize: asg.Instances.length,
         LaunchConfigurationName: (asg.LaunchConfigurationName) ? asg.LaunchConfigurationName.replace('LaunchConfig_', '') : null,
         Instances: asg.Instances,
+        Tags: asg.Tags,
       };
       asg.Tags.forEach(function (tag) {
         asgSummary[tag.Key] = tag.Value;
@@ -27,11 +30,13 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
       this.AccountName = accountName;
     }
 
+    taggable(AutoScalingGroup);
+
     _.assign(AutoScalingGroup.prototype, {
 
       getLaunchConfig: function () {
         var self = this;
-        return $http.get('/api/v1/asgs/' + this.AsgName + '/launch-config', { params: { account: this.AccountName }}).then(function(response) {
+        return $http.get('/api/v1/asgs/' + this.AsgName + '/launch-config', { params: { environment: this.getTag('Environment') }}).then(function(response) {
           self.LaunchConfig = response.data;
           return response.data;
         });
@@ -42,14 +47,14 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
         var segments = ['api', 'v1', 'asgs', this.AsgName, 'scaling-schedule'];
         var url = segments.join('/');
         
-        return $http.get(url, { params: { account: this.AccountName } }).then(function(response) {
+        return $http.get(url, { params: { environment: this.getTag('Environment') } }).then(function(response) {
           self.ScalingSchedule = response.data;
           return response.data;
         });
       },
 
       updateLaunchConfig: function (data) {
-        return $http.put('/api/v1/asgs/' + this.AsgName + '/launch-config?account=' + this.AccountName, data);
+        return $http.put('/api/v1/asgs/' + this.AsgName + '/launch-config?environment=' + this.getTag('Environment'), data);
       },
 
       getDeploymentMapTargetName: function () {
@@ -58,8 +63,8 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
       },
     });
 
-    function getAsgDetails(asgName, account) {
-      return $http.get('/api/v1/asgs/' + asgName, { params: { account: account }}).then(function (response) {
+    function getAsgDetails(asgName, environmentName) {
+      return $http.get('/api/v1/asgs/' + asgName, { params: { environment: environmentName }}).then(function (response) {
         return getSummaryFromAsg(response.data);
       });
     };
@@ -67,8 +72,9 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
     /**
      * This will fetch AutoScalingGroup along with AMI and LaunchConfig
      */
-    AutoScalingGroup.getFullByName = function (account, environmentName, asgName) {
-      return getAsgDetails(asgName, account).then(function (asgDetails) {
+    AutoScalingGroup.getFullByName = function (environmentName, asgName) {
+      var account = accountMappingService.getAccountForEnvironment(environmentName);
+      return getAsgDetails(asgName, environmentName).then(function (asgDetails) {
         // Refresh ASG to get up to date list of instance IDs (changes after scaling)
         if (asgDetails) {
           return new AutoScalingGroup(asgDetails, account);
