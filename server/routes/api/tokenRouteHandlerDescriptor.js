@@ -3,7 +3,6 @@
 
 let route = require('modules/helpers/route');
 let adapt = require('modules/callbackAdapter');
-let noAuthorization = require('modules/authorizers/none');
 let userService = require('modules/user-service');
 let tokenConfiguration = require('modules/authentications/tokenAuthenticationConfiguration');
 
