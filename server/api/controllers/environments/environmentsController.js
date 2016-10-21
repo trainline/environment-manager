@@ -100,9 +100,10 @@ function putEnvironmentSchedule(req, res, next) {
  */
 function getEnvironmentScheduleStatus(req, res, next) {
   const environmentName = req.swagger.params.name.value;
+  const at = req.swagger.params.at.value;
 
   OpsEnvironment.getByName(environmentName).then((env) => {
-    return { Status: env.getScheduleStatus() };
+    return { Status: env.getScheduleStatus(at) };
   }).then((data) => res.json(data)).catch(next);
 }
 

@@ -250,10 +250,10 @@
 
     function ScheduleInterpreter(ScheduleTagString, datetime) {
         if (!datetime) {
-			var now = new Date();
-			var now_utc = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
-			datetime = now_utc;
-		}
+    			var now = new Date();
+    			var now_utc = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
+    			datetime = now_utc;
+    		}
         if (!ScheduleTagString) return null;
 
         var Schedule = ScheduleTagString.toUpperCase().trim().replace(';', '');
