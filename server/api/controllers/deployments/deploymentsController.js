@@ -112,11 +112,15 @@ function* postDeployment(req, res, next) {
  */
 function patchDeployment(req, res, next) {
   const body = req.swagger.params.body.value;
-  let action = body.action;
-  if (action === 'cancel') {
-
+  let status = body.Status;
+  if (status !== 'Cancelled') {
+    let error = `You can only PATCH deployment with { Status: 'Cancelled' } to cancel it.`;
+    res.send({ error });
+    res.status(400);
+    return;
   }
-  res.json({ ok: true });
+
+  next(new Error('not implemented'));
 }
 
 module.exports = {
