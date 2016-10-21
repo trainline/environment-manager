@@ -25,6 +25,7 @@ const skipReasons = {
   invalidSchedule: 'The schedule tag for this instance is not valid',
   transitioning: 'This instance is currently transitioning between states',
   asgTransitioning: 'This instance is currently transitioning between ASG lifecycle states',
+  asgLifecycleMismatches: 'The ASG has instances in different lifecycle states',
   stateIsCorrect: 'The instance is already in the correct state'
 };
 
@@ -43,6 +44,9 @@ function actionForInstance(instance, dateTime) {
 
   if (!instance.Environment)
     return skip(skipReasons.noEnvironment);
+
+  if (asgHasMismatchedInstanceLifecycles(instance.AutoScalingGroup))
+    return skip(skipReasons.asgLifecycleMismatches);
 
   let foundSchedule = getScheduleForInstance(instance);
 
@@ -141,6 +145,13 @@ function getScheduleForInstance(instance) {
   
   return { parseResult: parseEnvironmentSchedule(instance.Environment), source: sources.environment };
 
+}
+
+function asgHasMismatchedInstanceLifecycles(asg) {
+  if (!asg)
+    return false;
+    
+  return _.uniq(asg.Instances.map(i => i.LifecycleState)).length > 1;
 }
 
 function parseEnvironmentSchedule(environmentSchedule) {
