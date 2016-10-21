@@ -11,61 +11,78 @@ let SetLaunchConfiguration = require('commands/launch-config/SetLaunchConfigurat
 let SetAutoScalingGroupSize = require('commands/asg/SetAutoScalingGroupSize');
 let SetAutoScalingGroupSchedule = require('commands/asg/SetAutoScalingGroupSchedule');
 let GetAutoScalingGroupScheduledActions = require('queryHandlers/GetAutoScalingGroupScheduledActions');
-
+let Environment = require('models/Environment');
 
 /**
- * GET /asgs?account=xyz
+ * GET /asgs
  */
 function getAsgs(req, res, next) {
   const accountName = req.swagger.params.account.value;
+  const environment = req.swagger.params.environment.value;
 
-  if (accountName !== undefined) {
-    return getAccountASGs({ accountName }).then(data => res.json(data)).catch(next);
-  } else {
-    return getAllASGs().then(data => res.json(data)).catch(next);
-  }
+  return co(function* () {
+    let list;
+    if (accountName !== undefined) {
+      list = yield getAccountASGs({ accountName });
+    } else {
+      list = yield getAllASGs();
+    }
+
+    res.json(list);
+  }).catch(next);
 }
 
 /**
- * GET /asgs/{name}?account=xyz
+ * GET /asgs/{name}
  */
 function getAsgByName(req, res, next) {
   const autoScalingGroupName = req.swagger.params.name.value;
-  const accountName = req.swagger.params.account.value;
+  const environmentName = req.swagger.params.environment.value;
 
-  return getASG({ accountName, autoScalingGroupName }).then(data => res.json(data)).catch(next);
+  return co(function* () {
+    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+    return getASG({ accountName, autoScalingGroupName }).then(data => res.json(data)).catch(next);
+  });
 }
 
 /**
- * GET /asgs/{name}/ips?account=xyz
+ * GET /asgs/{name}/ips
  */
 function getAsgIps(req, res, next) {
   const key = req.swagger.params.name.value;
-  const accountName = req.swagger.params.account.value;
+  const environmentName = req.swagger.params.environment.value;
   const resource = 'asgips';
   const exposeAudit = 'version-only';
-
-  return getDynamo({ accountName, key, resource, exposeAudit }).then(data => res.json(data)).catch(next);
+  return co(function* () {
+    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+    getDynamo({ accountName, key, resource, exposeAudit }).then(data => res.json(data)).catch(next);
+  });
 }
 
 /**
- * GET /asgs/{name}/launch-config?account=xyz
+ * GET /asgs/{name}/launch-config
  */
 function getAsgLaunchConfig(req, res, next) {
-  const accountName = req.swagger.params.account.value;
+  const environmentName = req.swagger.params.environment.value;
   const autoScalingGroupName = req.swagger.params.name.value
 
-  return GetLaunchConfiguration({ accountName, autoScalingGroupName }).then(data => res.json(data)).catch(next);
+  return co(function* () {
+    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+    GetLaunchConfiguration({ accountName, autoScalingGroupName }).then(data => res.json(data)).catch(next);
+  });
 }
 
 /**
  * GET /asgs/{name}/scaling-schedule
  */
 function getScalingSchedule(req, res, next) {
-  const accountName = req.swagger.params.account.value;
+  const environmentName = req.swagger.params.environment.value;
   const autoScalingGroupName = req.swagger.params.name.value;
-  
-  GetAutoScalingGroupScheduledActions({ accountName, autoScalingGroupName }).then(data => res.json(data)).catch(next);
+
+  return co(function* () {
+    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+    GetAutoScalingGroupScheduledActions({ accountName, autoScalingGroupName }).then(data => res.json(data)).catch(next);
+  });
 }
 
 /**
@@ -73,12 +90,13 @@ function getScalingSchedule(req, res, next) {
  */
 function putScalingSchedule(req, res, next) {
   const body = req.swagger.params.body.value;
-  const accountName = req.swagger.params.account.value;
+  const environmentName = req.swagger.params.environment.value;
   const autoScalingGroupName = req.swagger.params.name.value;
 
   return co(function* () {
     let data = {};
 
+    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     if (body.UpdateSchedule !== undefined) {
       let schedule = body.UpdateSchedule.schedule;
       let propagateToInstances = body.UpdateSchedule.propagateToInstances;
@@ -94,27 +112,33 @@ function putScalingSchedule(req, res, next) {
  * PUT /asgs/{name}/size?account=xyz
  */
 function putAsgSize(req, res, next) {
-  const accountName = req.swagger.params.account.value;
+  const environmentName = req.swagger.params.environment.value;
   const autoScalingGroupName = req.swagger.params.name.value;
   const body = req.swagger.params.body.value;
   const autoScalingGroupMinSize = body.min;
   const autoScalingGroupDesiredSize = body.desired;
   const autoScalingGroupMaxSize = body.max;
 
-  SetAutoScalingGroupSize({ accountName, autoScalingGroupName,
-    autoScalingGroupMinSize, autoScalingGroupDesiredSize, autoScalingGroupMaxSize })
-    .then(data => res.json(data)).catch(next);
+  return co(function* () {
+    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+    SetAutoScalingGroupSize({ accountName, autoScalingGroupName,
+      autoScalingGroupMinSize, autoScalingGroupDesiredSize, autoScalingGroupMaxSize })
+      .then(data => res.json(data)).catch(next);
+  });
 }
 
 /**
  * PUT /asgs/{name}/launch-config?account=xyz
  */
 function putAsgLaunchConfig(req, res, next) {
-  const accountName = req.swagger.params.account.value;
+  const environmentName = req.swagger.params.environment.value;
   const data = req.swagger.params.body.value
   const autoScalingGroupName = req.swagger.params.name.value
 
-  return SetLaunchConfiguration({ accountName, autoScalingGroupName, data }).then(data => res.json(data)).catch(next);
+  return co(function* () {
+    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+    SetLaunchConfiguration({ accountName, autoScalingGroupName, data }).then(data => res.json(data)).catch(next);
+  });
 }
 
 module.exports = {
