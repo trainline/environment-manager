@@ -8,7 +8,7 @@ let packageInfo = require('package.json');
 
 function getVersion() {
   if (fs.existsSync(VERSION_INFO)) {
-    return fs.readFileSync(VERSION_INFO, 'utf-8')
+    return fs.readFileSync(VERSION_INFO, 'utf-8').trim();
   } else {
     return `${packageInfo.version}-DEV`;
   }
