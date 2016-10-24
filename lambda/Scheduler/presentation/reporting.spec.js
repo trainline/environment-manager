@@ -9,9 +9,11 @@ describe('reporting', () => {
 
   beforeEach(() => {
     actionGroups = {
-      skip: [{ action: { action: 'skip', reason: 'some reason' }, instance: { InstanceId: 'skipped' }}],
-      switchOn: [{ action: { action: 'switchOn', source: 'instance'}, instance: { InstanceId: 'switchedOn' }}],
-      switchOff: [{ action: { action: 'switchOff', reason: 'some reason', source: 'environment'}, instance: { InstanceId: 'switchedOff' }}]
+      skip: [{ action: { action: 'skip', reason: 'some reason' }, instance: { id: 'skipped' }}],
+      switchOn: [{ action: { action: 'switchOn', source: 'instance'}, instance: { id: 'switchedOn' }}],
+      switchOff: [{ action: { action: 'switchOff', reason: 'some reason', source: 'environment'}, instance: { id: 'switchedOff' }}],
+      putInService: [{ action: { action: 'putInService', source: 'instance'}, instance: { id: 'inService' }}],
+      putOutOfService: [{ action: { action: 'putOutOfService', reason: 'some reason', source: 'environment'}, instance: { id: 'standBy' }}]
     };
 
     changeResults = {
@@ -20,61 +22,19 @@ describe('reporting', () => {
       },
       switchOff: {
         success: true
+      },
+      putInService: {
+        success: true
+      },
+      putOutOfService: {
+        success: true
       }
     }
   });
 
-  it('should display a report of changes and skipped instances', () => {
-
+  it('should report success if all tasks succeeded', () => {
     let report = reporting.createReport({ actionGroups, changeResults }, true);
-
-    expect(report).to.deep.equal({
-      success: true,
-      switchOn: {
-        result: {
-          success: true
-        },
-        instances: [
-          {
-            instance: {
-              id: "switchedOn",
-              name: undefined,
-              role: undefined
-            },
-            reason: undefined,
-            source: 'instance'
-          }
-        ]
-      },
-      switchOff: {
-        result: {
-          success: true
-        },
-        instances: [
-          {
-            instance: {
-              id: "switchedOff",
-              name: undefined,
-              role: undefined
-            },
-            reason: 'some reason',
-            source: 'environment'
-          }
-        ]
-      },
-      skip: [
-        {
-          instance: {
-            id: "skipped",
-            name: undefined,
-            role: undefined
-          },
-          reason: 'some reason',
-          source: undefined
-        }
-      ]
-    });
-
+    expect(report.success).to.equal(true);
   });
 
   it('should report failure if the switch instance on task failed', () => {
@@ -85,6 +45,18 @@ describe('reporting', () => {
 
   it('should report failure if the switch instance off task failed', () => {
     changeResults.switchOff.success = false;
+    let report = reporting.createReport({ actionGroups, changeResults }, true);
+    expect(report.success).to.equal(false);
+  });
+
+  it('should report failure if the put instance in service task failed', () => {
+    changeResults.putInService.success = false;
+    let report = reporting.createReport({ actionGroups, changeResults }, true);
+    expect(report.success).to.equal(false);
+  });
+
+  it('should report failure if the put in standby task failed', () => {
+    changeResults.putOutOfService.success = false;
     let report = reporting.createReport({ actionGroups, changeResults }, true);
     expect(report.success).to.equal(false);
   });
