@@ -1,12 +1,13 @@
 {
   "name": "environmentmanager",
-  "version": "3.9.0",
+  "version": "3.11.3",
   "description": "EnvironmentManager Server",
   "main": "server.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "mocha --recursive ./test --EM_PROFILE test/test-profile.json",
+    "test-watch": "mocha --watch --recursive ./test --EM_PROFILE test/test-profile.json",
     "test-ci": "npm test -- --reporter mocha-teamcity-reporter --timeout 4000",
     "mocha": "mocha",
     "lint": "eslint . --ext .js",
@@ -38,6 +39,7 @@
     "js-joda": "^1.1.11",
     "jsondiffpatch": "^0.2.4",
     "jsonwebtoken": "^7.1.9",
+    "later": "^1.2.0",
     "lodash": "^4.16.1",
     "moment": "^2.15.1",
     "ms": "^0.7.1",
@@ -61,6 +63,7 @@
     "xpath": "0.0.23"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
     "eslint": "^3.8.0",
     "eslint-config-airbnb-base": "^9.0.0",
     "eslint-plugin-import": "^2.0.1",
