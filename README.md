@@ -6,7 +6,7 @@ Welcome to Environment Manager, an open source platform for automating and manag
 ### Requirements
 To run Environment Manager, you will need:
 - AWS
-- NodeJS 4.3.0
+- NodeJS 6.8.0
 - npm
 
 ### Installation
