@@ -30,6 +30,7 @@ function respondWithPreSignedUrl(request) {
     Bucket: config.get('PACKAGES_BUCKET'),
     Key: key(request),
     Expires: 300,
+    ContentType: 'application/zip',
   };
   return masterAccountClient.createS3Client().then(s3 =>
     new Promise((resolve, reject) => {
