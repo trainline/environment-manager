@@ -1,3 +1,4 @@
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict'
 
 const _ = require('lodash');
@@ -38,7 +39,7 @@ function createReport(details, listSkippedInstances) {
 
 function getInstanceTagValue(instance, tagName) {
   if (instance.Tags) {
-    let tag = _.first(instance.Tags.filter(tag => tag.Key.toLowerCase() == tagName.toLowerCase()));
+    let tag = _.first(instance.Tags.filter(tag => tag.Key.toLowerCase() === tagName.toLowerCase()));
     if (tag) return tag.Value;
   }
 }
