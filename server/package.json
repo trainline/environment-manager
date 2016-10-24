@@ -10,7 +10,7 @@
     "test-watch": "mocha --watch --recursive ./test --EM_PROFILE test/test-profile.json",
     "test-ci": "npm test -- --reporter mocha-teamcity-reporter --timeout 4000",
     "mocha": "mocha",
-    "lint-server": "eslint",
+    "lint": "eslint . --ext .js",
     "acceptance-tests": "mocha --recursive ./acceptance-tests --EM_PROFILE acceptance-tests/test-profile.json"
   },
   "author": {
@@ -28,7 +28,6 @@
     "bluebird": "^3.4.6",
     "body-parser": "^1.15.2",
     "co": "^4.6.0",
-    "colors": "^1.1.2",
     "compression": "^1.6.2",
     "consul": "^0.26.0",
     "cookie-parser": "^1.4.3",
@@ -60,19 +59,14 @@
     "unzip2": "^0.2.5",
     "valid-url": "^1.0.9",
     "winston": "^2.2.0",
-    "xml2js": "^0.4.17",
     "xmldom": "^0.1.22",
     "xpath": "0.0.23"
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "eslint": "^3.5.0",
-    "eslint-config-airbnb": "^11.1.0",
-    "eslint-config-angular": "^0.5.0",
-    "eslint-plugin-angular": "^1.4.1",
-    "eslint-plugin-import": "^1.15.0",
-    "eslint-plugin-jsx-a11y": "^2.2.2",
-    "eslint-plugin-react": "^6.3.0",
+    "eslint": "^3.8.0",
+    "eslint-config-airbnb-base": "^9.0.0",
+    "eslint-plugin-import": "^2.0.1",
     "gulp": "^3.9.1",
     "mocha": "^3.0.2",
     "mocha-teamcity-reporter": "^1.1.1",
@@ -81,7 +75,7 @@
     "should": "^11.1.0",
     "sinon": "^1.17.6",
     "supertest": "^2.0.0",
-    "yargs": "https://registry.npmjs.org/yargs/-/yargs-3.32.0.tgz"
+    "yargs": "^6.2.0"
   },
   "jshintConfig": {
     "esversion": 6,
