@@ -1,13 +1,15 @@
 'use strict';
 
-const AWS = require('aws-sdk');
+const masterAccountClient = require('modules/amazon-client/masterAccountClient');
 const dynamodbExpression = require('modules/awsDynamo/dynamodbExpression');
-const Promise = require('bluebird');
+const LocalDate = require('js-joda').LocalDate;
+
 const awsResourceNameProvider = require('modules/awsResourceNameProvider');
 const qname = awsResourceNameProvider.getTableName;
 const InfraChangeAudit = qname('InfraChangeAudit');
 const InfraChangeAuditIndexName = 'Date-ISOTimestamp-index';
-const LocalDate = require('js-joda').LocalDate;
+
+const dynamodbPromise = masterAccountClient.createDynamoClient();
 
 function createQuery(date, limit, options, exclusiveStartKey) {
   let expressions = {
@@ -60,7 +62,9 @@ function getLogs(params) {
     }
   }
 
-  let documentClient = Promise.promisifyAll(new AWS.DynamoDB.DocumentClient({ region: 'eu-west-1' }));
+  let documentClient = {
+    queryAsync: queryParams => dynamodbPromise.then(client => client.query(queryParams).promise()),
+  };
 
   function inQueryDomain(partitionKey) {
     return (minPartitionKey <= partitionKey && partitionKey <= maxPartitionKey);
