@@ -17,17 +17,26 @@ const serviceExistsRule = require('modules/validate/rule/serviceExists');
 const config = require('config');
 const _ = require('lodash/fp');
 
+const PACKAGES_BUCKET = config.get('PACKAGES_BUCKET');
+const PACKAGES_KEY_PREFIX = config.get('PACKAGES_KEY_PREFIX');
+
 let param = p => _.get(['params', p]);
 
 function key(req) {
   let params = ['service', 'version', 'environment'];
   let getValue = p => param(p)(req);
-  return params.map(getValue).filter(x => x !== undefined).concat(['package.zip']).join('/');
+  let dynamicParts = params.map(getValue).filter(x => x !== undefined);
+  let keyPathParts = [
+    PACKAGES_KEY_PREFIX,
+    dynamicParts,
+    `${dynamicParts.join('-')}.zip`,
+  ];
+  return _.flow(_.flatten, _.filter(x => x !== undefined), _.join('/'))(keyPathParts);
 }
 
 function respondWithPreSignedUrl(request) {
   let params = {
-    Bucket: config.get('PACKAGES_BUCKET'),
+    Bucket: PACKAGES_BUCKET,
     Key: key(request),
     Expires: 300,
     ContentType: 'application/zip',
