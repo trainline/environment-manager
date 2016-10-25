@@ -47,7 +47,7 @@ module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
       ChangedInstances: undefined,
     };
 
-    result.ChangedAutoScalingGroups = setAutoScalingGroupSchedule(
+    result.ChangedAutoScalingGroups = yield setAutoScalingGroupSchedule(
       autoScalingGroupName,
       schedule,
       scalingSchedule,
@@ -58,7 +58,7 @@ module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
       let autoScalingGroup = yield AutoScalingGroup.getByName(accountName, autoScalingGroupName);
       let instanceIds = autoScalingGroup.Instances.map(instance => instance.InstanceId);
 
-      result.ChangedInstances = setEC2InstancesScheduleTag(
+      result.ChangedInstances = yield setEC2InstancesScheduleTag(
         instanceIds,
         schedule,
         accountName
