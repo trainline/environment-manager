@@ -54,7 +54,7 @@
                     <th class="text-nowrap">Host DNS / IP</th>
                     <th class="text-nowrap">Slice</th>
                     <th class="text-nowrap">Port</th>
-                    <th>Configured State</th>
+                    <th ng-show="vm.selectedState === 'All'">Configured State</th>
                     <th class="command-header" ng-repeat="lb in vm.data[0].Value.LoadBalancerState | orderBy : 'Name'">{{lb.Name}}<br/>Active State</th>
                     <th></th>
                     <th></th>
@@ -78,7 +78,7 @@
                     <td ng-click="vm.showInstanceDetails(host)">
                       {{host.Value.Port}}
                     </td>
-                    <td ng-click="vm.showInstanceDetails(host)">
+                    <td ng-show="vm.selectedState === 'All'" ng-click="vm.showInstanceDetails(host)">
                         <span ng-if="host.Value.State=='up'" class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> Up</span>
                         <span ng-if="host.Value.State=='down'" class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span> Down</span>
                     </td>
