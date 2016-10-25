@@ -1,9 +1,9 @@
 module.exports = {
-  'extends': 'airbnb',
   'parserOptions': {
     'ecmaVersion': 6,
     'sourceType': 'script'
   },
+  "extends": "airbnb-base",
   'rules': {
     'max-len': [1, 120, 2, {ignoreComments: true}],
     'quote-props': [1, 'consistent-as-needed'],
@@ -14,6 +14,7 @@ module.exports = {
     'import/no-unresolved': 0,
     'strict': [2, 'global'],
     'prefer-const': 0,
-    'global-require': 1
+    'global-require': 1,
+    "import/no-extraneous-dependencies": 0
   }
 };

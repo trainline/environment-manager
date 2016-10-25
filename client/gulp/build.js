@@ -5,6 +5,7 @@ var path = require('path');
 var gulp = require('gulp');
 var conf = require('./conf');
 var rename = require('gulp-rename');
+var gulpif = require('gulp-if');
 
 var $ = require('gulp-load-plugins')({
   pattern: ['gulp-*', 'main-bower-files', 'uglify-save-license', 'del']
@@ -43,6 +44,7 @@ gulp.task('html', ['inject', 'partials'], function () {
   var tmpHtmlFilter = $.filter('**/' + injectedHtmlFileName, { restore: true });
   var output = conf.getTargetDirectory();
   var srcHtml = path.join('./', injectedHtmlFileName);
+  var createSourceMaps = !conf.isProductionBuild();
 
   // TODO(filip): fix this path
   // return gulp.src(path.join(conf.paths.tmp, '/serve/*.html'))
@@ -50,11 +52,11 @@ gulp.task('html', ['inject', 'partials'], function () {
     .pipe($.inject(partialsInjectFile, partialsInjectOptions))
     .pipe($.useref())
     .pipe(jsFilter)
-    .pipe($.sourcemaps.init())
+    .pipe(gulpif(createSourceMaps, $.sourcemaps.init()))
     .pipe($.ngAnnotate())
     .pipe($.uglify({ preserveComments: $.uglifySaveLicense })).on('error', conf.errorHandler('Uglify'))
     .pipe($.rev())
-    .pipe($.sourcemaps.write('maps'))
+    .pipe(gulpif(createSourceMaps, $.sourcemaps.write('maps')))
     .pipe(jsFilter.restore)
     .pipe(cssFilter)
     .pipe($.replace('../../bower_components/bootstrap-sass/assets/fonts/bootstrap/', '../fonts/'))

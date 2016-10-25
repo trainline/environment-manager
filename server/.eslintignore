@@ -1,4 +1,7 @@
-./deployment/
-node_modules/
-./public/
-./scripts/
+/acceptance-tests/**/*.*
+/deployment/**/*.*
+/node_modules/**/*.*
+/scripts/**/*.*
+/test/**/*.*
+
+
