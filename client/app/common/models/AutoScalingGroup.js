@@ -114,8 +114,8 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
       });
     };
 
-    AutoScalingGroup.resize = function (account, asgName, size) {
-      return $http.put('/api/v1/asgs/' + asgName + '/size?account=' + account, size);
+    AutoScalingGroup.resize = function (environmentName, asgName, size) {
+      return $http.put('/api/v1/asgs/' + asgName + '/size?environment=' + environmentName, size);
     };
 
     function parseAutoScalingGroupName(name) {

@@ -204,7 +204,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       var desired = vm.asgUpdate.DesiredCapacity;
       var max = vm.asgUpdate.MaxSize;
 
-      AutoScalingGroup.resize(parameters.accountName, vm.asg.AsgName, { min: min, desired: desired, max: max }).then(function () {
+      AutoScalingGroup.resize(vm.environmentName, vm.asg.AsgName, { min: min, desired: desired, max: max }).then(function () {
         modal.information({
           title: 'ASG Resized',
           message: 'ASG resize successful. You can monitor instance changes by using the Refresh Icon in the top right of the window.<br/><br/><b>Note:</b> During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection draining before termination.',
@@ -241,7 +241,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         newSchedule = vm.asgUpdate.NewSchedule;
       }
 
-      AutoScalingGroup.updateSchedule(parameters.accountName, vm.asg.AsgName, newSchedule).then(function () {
+      AutoScalingGroup.updateSchedule(vm.environmentName, vm.asg.AsgName, newSchedule).then(function () {
         resetForm();
         modal.information({
           title: 'ASG Schedule Updated',
@@ -265,7 +265,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       vm.asgUpdate.MaxSize = vm.asg.MaxSize;
     }
 
-    $scope.canSubmit = function() {
+    vm.canSubmit = function () {
       if (vm.selectedScheduleMode !== 'scaling') {
         return vm.asgUpdate.NewSchedule !== 'NOSCHEDULE';
       }
@@ -277,14 +277,15 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       return validScalingSchedule;
     }
 
-    $scope.greaterThanLowestDesiredSizeScheduled = function(minSize) {
-      var desiredSizes = vm.asg.ScalingSchedule.map(function(schedule){ return schedule.DesiredCapacity; });
+    vm.greaterThanLowestDesiredSizeScheduled = function (minSize) {
+      var desiredSizes = _.map(vm.asg.ScalingSchedule, 'DesiredCapacity');
+      console.log('MEHE', desiredSizes);
       var lowestDesiredSizeScheduled = _.min(desiredSizes);
       return minSize > lowestDesiredSizeScheduled;
     };
 
-    $scope.lessThanHighestDesiredSizeScheduled = function(maxSize) {
-      var desiredSizes = vm.asg.ScalingSchedule.map(function(schedule){ return schedule.DesiredCapacity; });
+    vm.lessThanHighestDesiredSizeScheduled = function (maxSize) {
+      var desiredSizes = _.map(vm.asg.ScalingSchedule, 'DesiredCapacity')
       var highestDesiredSizeScheduled = _.max(desiredSizes);
       return maxSize < highestDesiredSizeScheduled;
     };
