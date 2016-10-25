@@ -9,7 +9,7 @@
 		<option ng-repeat="min in options.minutes" value="{{min.value}}">{{min.label}}</option>
 	</select>
 	<div class="form-group" style="margin: 0 0 0 20px !important" ng-class="{'has-error': !selections.action.desiredCapacity && selections.action.desiredCapacity !== 0}" >
-		<input type="number" pattern="[0-9]+" min="{{min}}" max="{{max}}" step="1" required="" class="form-control" style="width: 80px" ng-model="selections.action.desiredCapacity" ng-change="updateCron()">
+		<input type="number" pattern="[0-9]+" step="1" required="" class="form-control" style="width: 80px" ng-model="selections.action.desiredCapacity" ng-change="updateCron()">
 		</input>
 	</div>
 </div>
