@@ -4,6 +4,7 @@
 angular.module('EnvironmentManager.common').controller('MainController',
   function ($rootScope, $scope, $route, $routeParams, $location, modal, cachedResources) {
 
+    $scope.appVersion = window.version;
     $scope.$route = $route; // Used by index page to determine active section
     $scope.LoggedInUser = window.user.getName(); // For display in header
     $scope.ParentEnvironmentsList = []; // For Environments selection

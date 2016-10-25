@@ -3,7 +3,6 @@
 
 var path = require('path');
 var conf = require('./gulp/conf');
-var _ = require('lodash');
 
 var pathSrcHtml = [
   path.join(conf.paths.src, '/**/*.html')

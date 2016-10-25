@@ -34,7 +34,6 @@ module.exports = {
    *  Common implementation for an error handler of a Gulp plugin
    */
   errorHandler: function(title) {
-
     return function(err) {
       console.error('[' + title + ']',  err.toString());
       this.emit('end');
@@ -47,5 +46,9 @@ module.exports = {
 
   getInjectedHTMLfileName: function() {
     return argv.p ? 'index-build-temp.html' : 'index.html';
+  },
+
+  isProductionBuild: function() {
+    return argv.p !== undefined;
   }
 };

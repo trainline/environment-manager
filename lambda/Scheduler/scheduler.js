@@ -1,3 +1,4 @@
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
 const co = require('co');
@@ -6,10 +7,9 @@ const _ = require('lodash');
 const awsFactory = require('./services/aws');
 const emFactory = require('./services/em');
 
-const scheduling = require('./scheduling');
 const reporting = require('./presentation/reporting');
 
-function createScheduler(config) {
+function createScheduler(account, config) {
 
   let em = emFactory.create(config.em);
   let ec2 = awsFactory.create(config.aws).ec2;
@@ -17,9 +17,7 @@ function createScheduler(config) {
   function doScheduling () {
     return co(function*() {
 
-      let instances = yield getInstancesWithEnvironments(config.limitToEnvironment);
-
-      let scheduledActions = scheduledActionsForInstances(instances);
+      let scheduledActions = yield getScheduledActions();
       let actionGroups = groupActionsByType(scheduledActions);
 
       let changeResults = yield performChanges(actionGroups);
@@ -47,27 +45,21 @@ function createScheduler(config) {
     return err;
   }
 
-  function getInstancesWithEnvironments(environmentFilter) {
-
-    return Promise.all([ec2.getAllInstances(), em.getAllEnvironments()]).then(data => {
-
-      let allInstances = data[0];
-      let environments = buildEnvironmentIndex(data[1]);
-
-      let instances = [];
-
-      allInstances.forEach(instance => {
-        let environmentName = getInstanceTagValue(instance, 'environment');
-
-        if (environmentMatchesFilter(environmentName, environmentFilter)) {
-          instance.Environment = findEnvironmentByName(environments, environmentName);
-          instances.push(instance);
-        }
-      });
-
-      return instances;
-
+  function getScheduledActions() {
+    return em.getScheduledInstanceActions(account).then(instanceActions => {
+      return instanceActions.filter(x => environmentMatchesFilter(x.instance.environment, config.limitToEnvironment));
     });
+  }
+
+  function groupActionsByType(instanceActions) {
+
+    let result = { switchOn: [], switchOff: [], putInService: [], putOutOfService: [], skip: [] };
+
+    instanceActions.forEach(instanceAction => {
+      result[instanceAction.action.action].push(instanceAction);
+    });
+
+    return result;
 
   }
 
@@ -81,67 +73,22 @@ function createScheduler(config) {
 
   }
 
-  function buildEnvironmentIndex(environmentData) {
-
-    let environments = {};
-
-    environmentData.forEach(env => {
-      let environment = env.Value;
-      environment.Name = env.EnvironmentName;
-      environments[env.EnvironmentName] = environment;
-    });
-
-    return environments;
-
-  }
-
-  function findEnvironmentByName(environments, name) {
-    if (name) return environments[name];
-  }
-
-  function getInstanceTagValue(instance, tagName) {
-    let tag = _.first(instance.Tags.filter(tag => tag.Key.toLowerCase() == tagName.toLowerCase()));
-    if (tag) return tag.Value;
-  }
-
-  function scheduledActionsForInstances(instances) {
-
-    let dateTime = new Date();
-
-    return instances.map(instance => {
-      let action = scheduling.actionForInstance(instance, dateTime);
-      return { action, instance };
-    });
-
-  }
-
-  function groupActionsByType(instanceActions) {
-
-    let result = {};
-    Object.keys(scheduling.actions).forEach(action => result[action] = []);
-
-    instanceActions.forEach(instanceAction => {
-      result[instanceAction.action.action].push(instanceAction);
-    });
-
-    return result;
-
-  }
-
   function performChanges(actionGroups) {
     return co(function*() {
     
       return {
-        switchOn: yield performChange(ec2.switchInstancesOn, actionGroups.switchOn, config.whatIf),
-        switchOff: yield performChange(ec2.switchInstancesOff, actionGroups.switchOff, config.whatIf)
+        switchOn: yield performChange(ec2.switchInstancesOn, actionGroups.switchOn),
+        switchOff: yield performChange(ec2.switchInstancesOff, actionGroups.switchOff),
+        putInService: yield performChange(ec2.putAsgInstancesInService, actionGroups.putInService),
+        putOutOfService: yield performChange(ec2.putAsgInstancesInStandby, actionGroups.putOutOfService)
       };
 
     });
   }
 
-  function performChange(doChange, actions, whatIf) {
+  function performChange(doChange, actions) {
 
-    if (!actions.length || whatIf) {
+    if (!actions.length || config.whatIf) {
       return Promise.resolve({ success: true });
     }
 

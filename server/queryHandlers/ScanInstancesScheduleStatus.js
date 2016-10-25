@@ -12,7 +12,9 @@ module.exports = function ScanInstancesScheduleStatusQueryHandler(query) {
   return co(function*() {
 
     let instances = yield getInstances(query);
-    let scheduledActions = scheduledActionsForInstances(instances);
+
+    let dateTime = query.dateTime ? query.dateTime : new Date();
+    let scheduledActions = scheduledActionsForInstances(instances, query.dateTime);
 
     return scheduledActions;
 
@@ -46,9 +48,7 @@ function getInstances(query) {
 
 }
 
-function scheduledActionsForInstances(instances) {
-
-  let dateTime = new Date();
+function scheduledActionsForInstances(instances, dateTime) {
 
   return instances.map(instance => {
     let action = scheduling.actionForInstance(instance, dateTime);
