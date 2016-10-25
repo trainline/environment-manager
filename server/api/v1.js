@@ -12,7 +12,6 @@ let apiSpec = yaml.safeLoad(fs.readFileSync('api/swagger.yaml', 'utf8'));
 let authorization = require('modules/authorization');
 
 const API_BASE_PATH = apiSpec.basePath;
-const TOKEN_PATH = `${API_BASE_PATH}/token`;
 
 let swaggerOptions = {
   controllers: [
@@ -43,14 +42,8 @@ function authorize(req, res, next) {
   authorization(authorizer, req, res, next);
 }
 
-function permitTokenRequest(req, res, next) {
-  req.user = 'token-request';
-  next();
-}
-
 function setup(app) {
   swaggerTools.initializeMiddleware(apiSpec, function (middleware) {
-    app.use(TOKEN_PATH, permitTokenRequest);
     app.use(API_BASE_PATH, loggedInAuthorization);
     app.use(middleware.swaggerMetadata());
     app.use(middleware.swaggerValidator());
