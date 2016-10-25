@@ -11,8 +11,6 @@ let cacheManager = require('modules/cacheManager');
 function AsgResource(client, accountName) {
   this.client = client;
 
-  let asgCache = cacheManager.get('Auto Scaling Groups');
-
   function standardifyError(error, autoScalingGroupName) {
     if (!error) return null;
     var awsError = new AwsError(error.message);
@@ -106,6 +104,7 @@ function AsgResource(client, accountName) {
       request.LaunchConfigurationName = parameters.launchConfigurationName;
     }
 
+    let asgCache = cacheManager.get('Auto Scaling Groups');
     asgCache.del(accountName);
 
     return client.updateAutoScalingGroup(request).promise().catch(function (error) {
