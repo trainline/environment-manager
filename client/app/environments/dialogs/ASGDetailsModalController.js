@@ -35,7 +35,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     },{
       type: 'scaling',
       label: 'Scheduled server scaling'
-    }]
+    }];
 
     function init() {
       resources.aws.instanceTypes.all().then(function (instanceTypes) {
@@ -55,7 +55,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       vm.asgUpdate.NewSchedule = vm.asg.Schedule;
       vm.asgUpdate.ScalingSchedule = vm.asg.ScalingSchedule;
       vm.selectedScheduleMode = vm.asg.ScalingSchedule && vm.asg.ScalingSchedule.length ? 'scaling' : 'schedule';
-    };
+    }
 
     vm.openServerRoleConfig = function () {
       $uibModal.open({
@@ -275,11 +275,10 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
       var validScalingSchedule = scalingSchedulePresent && validDesiredCapacities;
       return validScalingSchedule;
-    }
+    };
 
     vm.greaterThanLowestDesiredSizeScheduled = function (minSize) {
       var desiredSizes = _.map(vm.asg.ScalingSchedule, 'DesiredCapacity');
-      console.log('MEHE', desiredSizes);
       var lowestDesiredSizeScheduled = _.min(desiredSizes);
       return minSize > lowestDesiredSizeScheduled;
     };

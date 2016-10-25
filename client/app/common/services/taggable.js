@@ -6,7 +6,6 @@ angular.module('EnvironmentManager.common')
 
     return function(cls) {
       cls.prototype.getTag = function (key) {
-        console.log(this);
         let tag = _.find(this.Tags, { Key: key });
         if (tag === undefined) {
           throw new Error("Can't find tag");
