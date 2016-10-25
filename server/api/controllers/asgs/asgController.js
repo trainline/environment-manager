@@ -107,7 +107,7 @@ function putScalingSchedule(req, res, next) {
 }
 
 /**
- * PUT /asgs/{name}/size?account=xyz
+ * PUT /asgs/{name}/size
  */
 function putAsgSize(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
@@ -126,7 +126,7 @@ function putAsgSize(req, res, next) {
 }
 
 /**
- * PUT /asgs/{name}/launch-config?account=xyz
+ * PUT /asgs/{name}/launch-config
  */
 function putAsgLaunchConfig(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
