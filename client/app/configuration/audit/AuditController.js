@@ -80,13 +80,12 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
     }
 
     $scope.Compare = function (audit) {
-      var instance = $uibModal.open({
+      $uibModal.open({
         templateUrl: '/app/configuration/audit/audit-compare-modal.html',
         controller: 'AuditCompareModalController',
         size: 'lg',
         resolve: {
-          audit: function () {
-            return audit; },
+          audit: function () { return audit; },
         },
       });
     };
@@ -138,9 +137,8 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
      * @param obj {Object} any object
      * @returns {String} JSON representation of object 
      */
-    function diffableRepresentationOf(obj)
-    {
-      function replacer (key, value) {
+    function diffableRepresentationOf(obj) {
+      function replacer(key, value) {
         if (typeof value === 'string' && /^[\[\{]/.test(value)) {
           try {
             return JSON.parse(value);
@@ -151,25 +149,25 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
           return value;
         }
       }
-      return JSON.stringify(obj, replacer, 4)
+      return JSON.stringify(obj, replacer, 4);
     }
 
     function displayResults(data) {
-        var link = linkHeader.parseHeaders(data.headers);
-        $scope.nextPage = link !== undefined ? link.next : undefined;
-        $scope.hasNextPage = $scope.nextPage !== undefined;
-        $scope.Data = data.items.map(function addValueColumnChanges(audit) {
-          if (audit.OldValue) { // Missing for new records
-            audit.OldValueDisplay = diffableRepresentationOf(audit.OldValue);
-          }
+      var link = linkHeader.parseHeaders(data.headers);
+      $scope.nextPage = link !== undefined ? link.next : undefined;
+      $scope.hasNextPage = $scope.nextPage !== undefined;
+      $scope.Data = data.items.map(function (audit) {
+        if (audit.OldValue) { // Missing for new records
+          audit.OldValueDisplay = diffableRepresentationOf(audit.OldValue);
+        }
 
-          if (audit.NewValue) { // Missing for deleted records
-            audit.NewValueDisplay = diffableRepresentationOf(audit.NewValue);
-          }
+        if (audit.NewValue) { // Missing for deleted records
+          audit.NewValueDisplay = diffableRepresentationOf(audit.NewValue);
+        }
 
-          return audit;
-        });
-        $scope.DataLoading = false;
+        return audit;
+      });
+      $scope.DataLoading = false;
     }
 
     $scope.getPage = function (pageData){

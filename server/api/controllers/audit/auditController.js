@@ -32,14 +32,6 @@ function createAuditLogQuery(since, until, exclusiveStartKey, perPage, filter) {
   return rq;
 }
 
-function parseDate(str) {
-  if (/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(str)) {
-    return LocalDate.parse(str);
-  } else {
-    return LocalDate.ofInstant(Instant.parse(str), ZoneOffset.UTC);
-  }
-}
-
 function createFilter(query) {
   logger.debug('Audit History: Creating filter.');
   let exprs = {
@@ -65,7 +57,6 @@ function getAuditLogs(request, response, next) {
   let redirectUrl = url.parse(request.originalUrl, true);
   redirectUrl.search = null;
   let query = redirectUrl.query;
-  let now = LocalDate.now(ZoneOffset.UTC);
 
   function paramOrDefault(param, fn, defaultValue) {
     function f(x) {
@@ -80,28 +71,33 @@ function getAuditLogs(request, response, next) {
     return t;
   }
 
-  logger.debug('Audit History: Extracting parameters from request.');
-  let since = request.swagger.params.since.value || now;
-  let until = request.swagger.params.until.value || now;
-  console.log(since, until);
-  let exclusiveStartKey = paramOrDefault('exclusiveStartKey', base64.decode, undefined);
-
-  function sendResponse(auditLog) {
-    logger.debug('Audit History: Constructing navigation links');
-    query.since = since.toString();
-    query.until = until.toString();
-    if (auditLog.LastEvaluatedKey) {
-      query.exclusiveStartKey = base64.encode(auditLog.LastEvaluatedKey);
-      response.header('Link', weblink.link({ next: url.format(redirectUrl) }));
+  function convertDateOrNow(date) {
+    if (date === undefined) {
+      return LocalDate.now(ZoneOffset.UTC);
     }
-    logger.debug('Audit History: sending response');
-    return response.status(200).send(auditLog.Items);
+    return LocalDate.ofInstant(Instant.ofEpochMilli(date));
   }
+
+  logger.debug('Audit History: Extracting parameters from request.');
+  let since = convertDateOrNow(request.swagger.params.since.value);
+  let until = convertDateOrNow(request.swagger.params.until.value);
+
+  let exclusiveStartKey = paramOrDefault('exclusiveStartKey', base64.decode, undefined);
 
   let filter = createFilter(query);
   let auditLogQuery = createAuditLogQuery(since, until, exclusiveStartKey, query.per_page, filter);
   return auditLogReader.getLogs(auditLogQuery)
-    .then(sendResponse).catch(next);
+    .then(auditLog => {
+      logger.debug('Audit History: Constructing navigation links');
+      query.since = since.toString();
+      query.until = until.toString();
+      if (auditLog.LastEvaluatedKey) {
+        query.exclusiveStartKey = base64.encode(auditLog.LastEvaluatedKey);
+        response.header('Link', weblink.link({ next: url.format(redirectUrl) }));
+      }
+      logger.debug('Audit History: sending response');
+      return response.status(200).send(auditLog.Items);
+    }).catch(next);
 }
 
 /**
