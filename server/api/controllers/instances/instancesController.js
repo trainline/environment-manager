@@ -100,8 +100,8 @@ function putInstanceMaintenance(req, res, next) {
     try { 
       yield handler({ accountName, autoScalingGroupName, instanceIds });
     } catch (err) {
-      if (err.message.indexOf('is not in Standby') === -1 && err.message.indexOf('cannot be exited from standby as its LifecycleState is InService') !== -1) {
-        logger.warn(`ASG ${autoScalingGroupName} is already in desired state for ASG Standby: ${enable}`)
+      if (err.message.indexOf('is not in Standby') !== -1 || err.message.indexOf('cannot be exited from standby as its LifecycleState is InService') !== -1) {
+        logger.warn(`ASG ${autoScalingGroupName} instance ${id} is already in desired state for ASG Standby: ${enable}`)
       } else {
         throw err;
       }
