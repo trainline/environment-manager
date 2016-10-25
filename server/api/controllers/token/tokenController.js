@@ -11,15 +11,15 @@ let tokenConfiguration = require('modules/authentications/tokenAuthenticationCon
 function postAuthorization(req, res, next) {
   let body = req.swagger.params.body.value;
   let credentials = {
-      username: body.username,
-      password: body.password,
-      scope: 'api',
-    };
+    username: body.username,
+    password: body.password,
+    scope: 'api',
+  };
 
-    let duration = tokenConfiguration.getTokenDuration();
+  let duration = tokenConfiguration.getTokenDuration();
 
-    userService.authenticateUser(credentials, duration)
-      .then(value => res.json(value)).catch(next);
+  userService.authenticateUser(credentials, duration)
+    .then(value => res.json(value)).catch(next);
 }
 
 module.exports = {

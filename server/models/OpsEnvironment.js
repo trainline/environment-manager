@@ -6,6 +6,8 @@ let config = require('config');
 let cronService = require('modules/cronService')();
 let sender = require('modules/sender');
 let ScanDynamoResources = require('queryHandlers/ScanDynamoResources');
+let Environment = require('models/Environment');
+let co = require('co');
 
 class OpsEnvironment {
   
@@ -23,14 +25,23 @@ class OpsEnvironment {
     return env.ManualScheduleUp ? 'ON' : 'OFF';
   }
 
-  toAPIOutput() {
-    let ret = {
-      EnvironmentName: this.EnvironmentName,
-      Value: _.pick(this.Value, 'ManualScheduleUp', 'ScheduleAutomatically')
-    };
 
-    ret.Value.ScheduleStatus = this.getScheduleStatus();
-    return ret;
+  toAPIOutput() {
+    let self = this;
+    return co(function* () {
+      let value = _.pick(self.Value, 'ManualScheduleUp', 'ScheduleAutomatically');
+      
+      let accountName = yield Environment.getAccountNameForEnvironment(self.EnvironmentName);
+      value.AccountName = accountName;
+
+      let ret = {
+        EnvironmentName: self.EnvironmentName,
+        Value: value
+      };
+
+      ret.Value.ScheduleStatus = self.getScheduleStatus();
+      return ret;
+    });
   }
 
   static getAll(filter={}) {

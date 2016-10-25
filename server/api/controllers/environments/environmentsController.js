@@ -9,6 +9,7 @@ let Environment = require('models/Environment');
 let GetDynamoResource = require('queryHandlers/GetDynamoResource');
 let sender = require('modules/sender');
 let OpsEnvironment = require('models/OpsEnvironment');
+let Promise = require('bluebird');
 
 /**
  * GET /environments
@@ -18,7 +19,7 @@ function getEnvironments(req, res, next) {
 
   let filter = {};
   OpsEnvironment.getAll().then((list) => {
-    return list.map((env) => env.toAPIOutput())
+    return Promise.map(list, (env) => env.toAPIOutput())
   }).then((data) => res.json(data)).catch(next);
 }
 

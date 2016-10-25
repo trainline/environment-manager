@@ -6,10 +6,10 @@
 
     return {
       getAccountForEnvironment: function (environmentName) {
-        var url = '/api/environments/' + environmentName + '/accountName';
+        var url = '/api/v1/environments/' + environmentName;
 
         return $http.get(url).then(function(account) {
-          return account.data;
+          return account.data.Value.AccountName;
         }, function(error) {
           throw error.message;
         });
