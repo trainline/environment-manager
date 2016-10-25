@@ -114,12 +114,14 @@ describe('awsAcccountValidator', function() {
 
   describe('Role ARNs without the required privileges', () => {
     beforeEach(() => {
+      data.IsMaster = false;
+      data.RoleArn = 'arn:aws:iam::354233317867:role/testRole';
       childAWSclient.assumeRole = sinon.stub().throws(new Error());
     });
 
     it('should be marked as invalid', () => {
       return sut.validate(data).catch(error => {
-        assert.equal(error.message, `${data.AccountName} is not permitted to assume the required role`);
+        assert.equal(error.message, `Cannot assume role for ARN: ${data.RoleArn}`);
       });
     })
   });

@@ -31,11 +31,11 @@ function validate(account) {
       throw new Error(`The account '${masterAccount.AccountName}' is already set as the master account.`);
 
   }).then(co.wrap(function* () {
-    if (account.RoleArn !== null) {
+    if (account.RoleArn !== undefined) {
       try {
         let roleIsValid = yield childAWSclient.assumeRole(account.RoleArn);
       } catch (error) {
-        throw new Error(`${account.AccountName} is not permitted to assume the required role`);
+        throw new Error(`Cannot assume role for ARN: ${account.RoleArn}`);
       }
     }
 
