@@ -97,12 +97,10 @@ function putScalingSchedule(req, res, next) {
     let data = {};
 
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    if (body.UpdateSchedule !== undefined) {
-      let schedule = body.UpdateSchedule.schedule;
-      let propagateToInstances = body.UpdateSchedule.propagateToInstances;
+    let schedule = body.schedule;
+    let propagateToInstances = body.propagateToInstances;
 
-      data.UpdateSchedule = yield SetAutoScalingGroupSchedule({ accountName, autoScalingGroupName, schedule, propagateToInstances });
-    }
+    data = yield SetAutoScalingGroupSchedule({ accountName, autoScalingGroupName, schedule, propagateToInstances });
 
     res.json(data);
   }).catch(next);
