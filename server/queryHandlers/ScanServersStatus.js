@@ -30,6 +30,7 @@ module.exports = function ScanServersStatusQueryHandler(query) {
 	  return Promise.all(asgs.map(asg => {
       let instances = asg.Instances.map(asgInstance => {
         var instance = getInstance(allInstances, asgInstance.InstanceId);
+
         if (instance && instance.State.Name !== 'terminated') {
           var image = getImage(allImages, instance.ImageId); // TODO(filip): use Image in place of this
           return {
@@ -63,9 +64,7 @@ module.exports = function ScanServersStatusQueryHandler(query) {
         });
 
     })).then(asgResults => {
-
       let asgs = asgResults.filter(byStatus(query.filter.status));
-
       let result = {
         EnvironmentName: environment,
         Value: asgs
@@ -75,9 +74,7 @@ module.exports = function ScanServersStatusQueryHandler(query) {
       logger.debug(`server-status-query: Whole query took: ${duration}ms`);
 
       return result;
-
     });
-
   });
 };
 
@@ -130,12 +127,12 @@ function getAmi(instances) {
   let amiNames = _.uniq(amis.map(ami => ami.name));
 
   if (amiNames.length !== 1) return;
-
   let ami = amis[0];
 
   return {
     Name: ami.name,
-    OutOfDate: moment.utc().diff(moment(ami.created), 'days'),
+    Age: moment.utc().diff(moment(ami.created), 'days'),
+    IsLatestStable: ami.isLatestStable
   };
 }
 
@@ -198,9 +195,11 @@ function getImage(images, imageId) {
   if (foundImages.length === 0) return;
 
   let image = foundImages[0];
+
   return {
     name: image.Name,
     created: image.CreationDate,
+    isLatestStable: image.IsLatest && image.IsStable
   };
 }
 

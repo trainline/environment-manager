@@ -16,15 +16,6 @@
                     <span class="glyphicon glyphicon-alert warning"></span> {{view.aggregations.servers.warning.count}}
                     <span class="glyphicon glyphicon-alert error"></span> {{view.aggregations.servers.error.count}}
                 </div>
-                <!--<div class="statusGroup">
-                    <strong>Services:</strong>
-                    <span class="glyphicon glyphicon-ok-sign success"></span> {{view.aggregations.services.healthy.count}}
-                    <span class="glyphicon glyphicon-alert warning"></span> {{view.aggregations.services.warning.count}}
-                    <span class="glyphicon glyphicon-alert error"></span> {{view.aggregations.services.error.count}}
-                </div>-->
-                <!--<div class="viewToggleGroup">
-                    Table View | Grid View
-                </div>-->
             </div>
             <br />
         </div>
@@ -92,7 +83,16 @@
                         </td>
 
                         <td><a ng-click="vm.showInstanceDetails(role.asgName, 'launchConfig')">{{::role.ami.name}}</a></td>
-                        <td><a ng-click="vm.showInstanceDetails(role.asgName, 'launchConfig')">{{::role.ami.outOfDate}}</a></td>
+                        <td>
+                            <a ng-click="vm.showInstanceDetails(role.asgName, 'launchConfig')">
+                                <span data-ng-if="role.ami.isLatestStable">
+                                    <span class="glyphicon glyphicon-ok-sign ok"></span> Up to date
+                                </span>
+                                <span data-ng-if="!role.ami.isLatestStable">
+                                    <span data-ng-if="role.ami.age !== '-'" class="glyphicon glyphicon-exclamation-sign warning"></span> {{::role.ami.age}}
+                                </span>
+                            </a>
+                        </td>
                         <td>
                             <a ng-if="role.hasScalingSchedule" ng-click="vm.showInstanceDetails(role.asgName, 'schedule')">Scheduled Scaling</a>
                             <a ng-if="!role.hasScalingSchedule" ng-click="vm.showInstanceDetails(role.asgName, 'schedule')">
