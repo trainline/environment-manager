@@ -119,7 +119,7 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
             service: service,
             mode: vm.deploymentSettings.Mode,
             slice: vm.deploymentSettings.Mode === 'bg' ? vm.deploymentSettings.Slice : undefined,
-            path: vm.deploymentSettings.PackagePath,
+            packageLocation: vm.deploymentSettings.PackagePath,
           }
         }).then(function (response) {
           var data = response.data;
