@@ -9,6 +9,7 @@ let winston = require('winston');
 let fs = require('fs');
 let config = require('config/');
 let compression = require('compression');
+let expressWinston = require('express-winston');
 
 let serverFactoryConfiguration = new(require('modules/serverFactoryConfiguration'))();
 let tokenAuthentication = require('modules/authentications/tokenAuthentication');
