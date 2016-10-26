@@ -54,8 +54,8 @@
                     <th class="text-nowrap">Host DNS / IP</th>
                     <th class="text-nowrap">Slice</th>
                     <th class="text-nowrap">Port</th>
-                    <th>Configured State</th>
-                    <th class="command-header" ng-repeat="lb in vm.data[0].Value.LoadBalancerState | orderBy : 'Name'">{{lb.Name}}<br/>Active State</th>
+                    <th ng-show="vm.selectedState === 'All'">Configured State</th>
+                    <th class="text-nowrap">Active State</th>
                     <th></th>
                     <th></th>
                 </tr>
@@ -78,22 +78,12 @@
                     <td ng-click="vm.showInstanceDetails(host)">
                       {{host.Value.Port}}
                     </td>
-                    <td ng-click="vm.showInstanceDetails(host)">
+                    <td ng-show="vm.selectedState === 'All'" ng-click="vm.showInstanceDetails(host)">
                         <span ng-if="host.Value.State=='up'" class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> Up</span>
                         <span ng-if="host.Value.State=='down'" class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span> Down</span>
                     </td>
-                    <td ng-repeat="lb in host.Value.LoadBalancerState | orderBy : 'Name'" ng-click="vm.showInstanceDetails(host)">
-                        <div ng-if="lb.State.Overall == 'Up'"><span class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> Up ({{lb.State.UpCount}})</span></div>
-                        <div ng-if="lb.State.Overall == 'Down'"><span class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span> Down ({{lb.State.DownCount}})</span></div>
-                        <div ng-if="lb.State.Overall == 'Unhealthy'">
-                            <span class="status-error" title="All servers unhealthy"><span class="glyphicon glyphicon-exclamation-sign"></span> Unhealthy ({{lb.State.UnhealthyCount}})</span>
-                        </div>
-                        <div ng-if="lb.State.Overall == 'UpUnhealthy'">
-                            <span class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> Up ({{lb.State.UpCount}}) </span>
-                            <span class="status-down"><span class="glyphicon glyphicon-exclamation-sign"></span> Unhealthy ({{lb.State.UnhealthyCount}})</span>
-                        </div>
-                        <div ng-if="lb.State.Overall == 'Empty'"><span class="status-warning" title="No servers found"><span class="glyphicon glyphicon-exclamation-sign"></span> Empty</span></div>
-                        <div ng-if="lb.State.Overall == 'ConfigError'"><span class="status-error" title="Upstream has both Up and Down servers"><span class="glyphicon glyphicon-exclamation-sign"></span> Config Error</span></div>
+                    <td ng-click="vm.showInstanceDetails(host)">
+                        <lb-servers-states-cell data="host.Value.LoadBalancerState" ng-if="host.Value.LoadBalancerState"></lb-servers-states-cell>
                     </td>
                     <td class="command command-toggleUpstream"><span class="glyphicon glyphicon-random" title="Toggle upstream" ng-if="canUser('toggle')" ng-click="vm.toggleUpstream(host)"></span></td>
                     <td class="command command-viewDetails"><span class="glyphicon glyphicon-search" title="View instances" ng-click="vm.showInstanceDetails(host)"></span></td>

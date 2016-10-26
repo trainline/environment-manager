@@ -1,0 +1,13 @@
+<div class="service-cell" uib-popover popover-trigger="'mouseenter'" uib-popover-html="$ctrl.popoverHtml" popover-placement="left">
+  <div ng-if="$ctrl.data.State.Overall == 'Up'"><span class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> Up ({{$ctrl.data.State.UpCount}})</span></div>
+  <div ng-if="$ctrl.data.State.Overall == 'Down'"><span class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span> Down ({{$ctrl.data.State.DownCount}})</span></div>
+  <div ng-if="$ctrl.data.State.Overall == 'Unhealthy'">
+      <span class="status-error" title="All servers unhealthy"><span class="glyphicon glyphicon-exclamation-sign"></span> Unhealthy ({{$ctrl.data.State.UnhealthyCount}})</span>
+  </div>
+  <div ng-if="$ctrl.data.State.Overall == 'UpUnhealthy'">
+      <span class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> Up ({{$ctrl.data.State.UpCount}}) </span>
+      <span class="status-down"><span class="glyphicon glyphicon-exclamation-sign"></span> Unhealthy ({{$ctrl.data.State.UnhealthyCount}})</span>
+  </div>
+  <div ng-if="$ctrl.data.State.Overall == 'Empty'"><span class="status-warning" title="No servers found"><span class="glyphicon glyphicon-exclamation-sign"></span> Empty</span></div>
+  <div ng-if="$ctrl.data.State.Overall == 'ConfigError'"><span class="status-error" title="Upstream has both Up and Down servers"><span class="glyphicon glyphicon-exclamation-sign"></span> Config Error</span></div>
+</div>

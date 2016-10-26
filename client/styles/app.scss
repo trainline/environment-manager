@@ -411,22 +411,20 @@ json-diff-patch > pre { overflow-y: scroll; }
   }
 }
 
-.compare-page {
-  .service-cell {
-    display: inline-block;
-  }
+.service-cell {
+  display: inline-block;
+}
 
-  .service-hover-table {
-    margin: 0px;
-  }
+.service-hover-table {
+  margin: 0px;
+}
 
-  .service-hover-table th {
-    border-top: none;
-  }
+.service-hover-table th {
+  border-top: none;
+}
 
-  .popover {
-    max-width: 600px;
-  }
+.popover {
+  max-width: 600px;
 }
 
 /* OPERATION SECTION */

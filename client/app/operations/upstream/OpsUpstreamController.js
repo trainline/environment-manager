@@ -178,7 +178,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
           upstreamHost.Value.State = host.State;
           upstreamHost.Value.Slice = getSlice(host.Port, service);
           upstreamHost.Value.OwningCluster = service ? service.OwningCluster : 'Unknown';
-          upstreamHost.Value.LoadBalancerState = []; // Populated async later
+          upstreamHost.Value.LoadBalancerState = { LBs: [] }; // Populated async later
           flattenedUpstreams.push(upstreamHost);
         });
       });
@@ -214,7 +214,9 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
 
         // Clear existing data
         vm.data.forEach(function (upstreamHost) {
-          upstreamHost.Value.LoadBalancerState = [];
+          upstreamHost.Value.LoadBalancerState = {
+            LBs: []
+          };
         });
 
         // Loop LBs and read LB status data
@@ -230,11 +232,14 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
               var lbServerStatusData = getLBStatusForUpstream(upstreamHost.Value.UpstreamName, upstreamHost.Value.Port, nginxData);
               var lbData = { Name: lbName, State: getActualUpstreamState(lbServerStatusData), ServerStatus: lbServerStatusData };
 
-              upstreamHost.Value.LoadBalancerState = upstreamHost.Value.LoadBalancerState.filter(function (existingLbData) {
+              upstreamHost.Value.LoadBalancerState.LBs = upstreamHost.Value.LoadBalancerState.LBs.filter(function (existingLbData) {
                 return (existingLbData.Name != lbName);
               });
 
-              upstreamHost.Value.LoadBalancerState.push(lbData);
+              upstreamHost.Value.LoadBalancerState.LBs.push(lbData);
+
+              var allLbServerStatusData = _.flatten(upstreamHost.Value.LoadBalancerState.LBs.map(function(lb){ return lb.ServerStatus; }));
+              upstreamHost.Value.LoadBalancerState.State = getActualUpstreamState(allLbServerStatusData);
 
             });
 
