@@ -26,7 +26,7 @@ function createValidationFunction(options) {
   let validContinuation = options.validContinuation;
   let invalidContinuation = options.invalidContinuation;
   return (argument) => {
-    let errorsPromise = Promise.all(rules.map(rule => Promise.resolve(rule(argument)))).then(_.flow(_.filter(x => x !== undefined), _.flatten));
+    let errorsPromise = Promise.all(rules.map(rule => Promise.resolve().then(() => rule(argument)))).then(_.flow(_.filter(x => x !== undefined), _.flatten));
     return errorsPromise.then(errors => (errors.length === 0 ? validContinuation(argument) : invalidContinuation(errors)));
   };
 }
