@@ -118,7 +118,12 @@
   <div class="form-group" ng-class="{'has-error': form.PuppetRole.$invalid}" ng-if="vm.context ==='serverRole'">
     <label class="col-md-2 control-label text-left">Puppet Role:</label>
     <div class="col-md-4">
-      <input type="text" name="PuppetRole" class="form-control" ng-model="vm.target.ASG.LaunchConfig.PuppetRole" ng-readonly="!vm.canUser('edit')" />
+      <input type="text"
+             name="PuppetRole"
+             class="form-control"
+             pattern="[a-zA-Z0-9\-\_]+"
+             ng-model="vm.target.ASG.LaunchConfig.PuppetRole"
+             ng-readonly="!vm.canUser('edit')" />
     </div>
   </div>
 </div>

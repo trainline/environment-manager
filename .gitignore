@@ -42,4 +42,5 @@ build/
 # Build artifacts
 client/index-build-temp.html
 publish_id.txt
+version.txt
 environment-manager-*.zip

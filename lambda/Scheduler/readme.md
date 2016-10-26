@@ -1,10 +1,20 @@
 # Environment Manager Scheduler
 
-The scheduler is designed to run as a scheduled lambda function within one or more AWS accounts managed by Environment Manager. Its responsibility is to start and stop instances in the AWS account according to their schedule.
+The scheduler is designed to run as a scheduled lambda function within an AWS account managed by Environment Manager. Its responsibility is to start and stop EC2 instances in the AWS account according to their schedule.
 
-This scheduler supplements the existing scheduler by providing support for ec2 instances which are not members of auto-scaling groups (which we call stand-alone instances). In time this scheduler will support all instances and the existing scheduler will be decommissioned.
+When Environment Manager attempts to determine the schedule for a particular instance it first checks to see if a schedule has been assigned directly to the instance. Instance specific schedules are stored within the schedule tag of that instance. If no instance specific schedule is found it will then check to see if the instance is part of an Auto Scaling Group (ASG) and inherit any schedule assigned to that ASG. ASG specific schedules are similarly stored in the schedule tag for that ASG. Finally if the instance is not a member of an ASG or the ASG has no schedule, the system will take the schedule for the Environment to which the Instance is a member. Environment schedules are stored within Environment Manager's database.
 
-## Getting Started
+There are several reasons that the scheduler may not affect the EC2 instances within an account. It will not schedule instances which:
+
+- Have not been assigned an valid Environment (via the environment tag)
+- Are members of ASGs which contain instances in different lifecycle states.
+- Are not currently in the stopped or running instance states.
+- Are members of an ASG and not currently in the InService or Standby lifecycle states.
+- Have, or inherit, a schedule whose value is 'NOSCHEDULE'
+- Have, or inherit, an invalid schedule
+- Have, or inherit, a schedule which has not yet begun (future schedules)
+
+## Building and Deploying
 
 ```
 cd ./lambda/scheduler
@@ -53,7 +63,7 @@ The root of the project must contain a config.json file which contains the setti
 - **em**: The hostname (or IP) and credentials needed to access the Environment Manager service which governs this AWS account.
 - **aws**: Configuration information provided to the AWS SDK when constructing the EC2 service.
 
-### Packaging
+### Packaging and Deployment
 
 In order to execute this lambda in AWS all files must be added to a .zip package along with a suitable config.json file in the root.
 
@@ -61,9 +71,9 @@ Exceptions include:
 
 - ./local
 - ./\*\*/\*.spec.js
-- Any dev specific module dependencies (currently mocha and chai)
+- Any dev specific module dependencies (currently just mocha and chai)
 
-The package can then be uploaded to an AWS function. A task will shortly be provided for automating the construction and deployment of the lambda function.
+The package can then be uploaded to an AWS lambda function.
 
 ### IAM permissions
 
@@ -81,10 +91,11 @@ The role under which the Lambda is configured to run must have the permissions f
         "logs:PutLogEvents",
         "ec2:CreateNetworkInterface",
         "ec2:DescribeNetworkInterfaces",
-        "ec2:DescribeInstances",
         "ec2:DeleteNetworkInterface",
         "ec2:StartInstances",
-        "ec2:StopInstances"
+        "ec2:StopInstances",
+        "autoscaling:EnterStandby",
+        "autoscaling:ExitStandby"
       ],
       "Resource" : [
           "*"
@@ -93,3 +104,7 @@ The role under which the Lambda is configured to run must have the permissions f
   ]
 }
 ```
+
+## Monitoring
+
+The lambda function will exit with an error if there are any issues modifying the state of instances. CloudWatch logs will describe the specific activity that failed.

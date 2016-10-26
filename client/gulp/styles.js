@@ -6,10 +6,7 @@ var gulp = require('gulp');
 var conf = require('./conf');
 
 var browserSync = require('browser-sync');
-
 var $ = require('gulp-load-plugins')();
-
-var _ = require('lodash');
 
 gulp.task('styles-reload', ['styles'], function() {
   return buildStyles()

@@ -60,6 +60,25 @@ describe('scheduling', () => {
     });
   });
 
+  it('should be skipped when the instance has only schedules in the future', function() {
+    let dateTime = '2016-10-21T15:57:00Z';
+    scheduleTag.Value = 'stop: 27 16 21 10 * 2016';
+
+    let action = scheduling.actionForInstance(instance, dateTime);
+
+    expect(action.action).to.equal(scheduling.actions.skip);
+    expect(action.reason).to.equal(scheduling.skipReasons.stateIsCorrect);
+  });
+
+  it('should be stopped when a future stop schedule arrives', function() {
+    let dateTime = '2016-10-21T16:57:00Z';
+    scheduleTag.Value = 'stop: 27 16 21 10 * 2016';
+
+    let action = scheduling.actionForInstance(instance, dateTime);
+
+    expect(action.action).to.equal(scheduling.actions.switchOff);
+  });
+
   describe('instances in an ASG', () => {
 
     let asgInstance = { InstanceId: 'instanceId' };
@@ -69,6 +88,18 @@ describe('scheduling', () => {
         AutoScalingGroupName: 'x',
         Instances: [ asgInstance ]
       };
+    });
+
+    it('should be skipped when the ASG has instances in different lifecycle states', function() {
+      instance.AutoScalingGroup.Instances = [
+        { InstanceId: 'instanceId', LifecycleState: 'Standby' },
+        { InstanceId: 'instanceId2', LifecycleState: 'InService' }
+      ];
+
+      let action = scheduling.actionForInstance(instance);
+
+      expect(action.action).to.equal(scheduling.actions.skip);
+      expect(action.reason).to.equal(scheduling.skipReasons.asgLifecycleMismatches);
     });
 
     it('should be skipped when transitioning between lifecycle states', function() {

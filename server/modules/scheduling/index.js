@@ -25,6 +25,7 @@ const skipReasons = {
   invalidSchedule: 'The schedule tag for this instance is not valid',
   transitioning: 'This instance is currently transitioning between states',
   asgTransitioning: 'This instance is currently transitioning between ASG lifecycle states',
+  asgLifecycleMismatches: 'The ASG has instances in different lifecycle states',
   stateIsCorrect: 'The instance is already in the correct state'
 };
 
@@ -44,6 +45,9 @@ function actionForInstance(instance, dateTime) {
   if (!instance.Environment)
     return skip(skipReasons.noEnvironment);
 
+  if (asgHasMismatchedInstanceLifecycles(instance.AutoScalingGroup))
+    return skip(skipReasons.asgLifecycleMismatches);
+
   let foundSchedule = getScheduleForInstance(instance);
 
   let source = foundSchedule.source;
@@ -58,6 +62,9 @@ function actionForInstance(instance, dateTime) {
     return skip(skipReasons.explicitNoSchedule, source);
 
   let expectedState = expectedStateFromSchedule(schedule, dateTime);
+
+  if (expectedState.noSchedule)
+    return skip(skipReasons.stateIsCorrect);
 
   if (expectedState === states.on)
     return switchOn(instance, source);
@@ -143,6 +150,13 @@ function getScheduleForInstance(instance) {
 
 }
 
+function asgHasMismatchedInstanceLifecycles(asg) {
+  if (!asg)
+    return false;
+    
+  return _.uniq(asg.Instances.map(i => i.LifecycleState)).length > 1;
+}
+
 function parseEnvironmentSchedule(environmentSchedule) {
 
   if (environmentSchedule.ManualScheduleUp === false && environmentSchedule.ScheduleAutomatically === false)
@@ -167,6 +181,9 @@ function expectedStateFromSchedule(schedule, dateTime) {
   });
 
   let latest = _.maxBy(scheduleStates, scheduleState => scheduleState.dateTime);
+
+  if (latest.dateTime === 0)
+    return { noSchedule: true };
 
   return latest.state;
 }
