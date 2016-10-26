@@ -38,7 +38,7 @@ function respondWithPreSignedUrl(request) {
   let params = {
     Bucket: EM_PACKAGES_BUCKET,
     Key: key(request),
-    Expires: 300,
+    Expires: 5,
     ContentType: 'application/zip',
   };
   return masterAccountClient.createS3Client().then(s3 =>
@@ -52,6 +52,20 @@ function respondWithPreSignedUrl(request) {
         }
       });
     }));
+}
+
+function packageDoesNotExist(req) {
+  let params = {
+    Bucket: EM_PACKAGES_BUCKET,
+    Key: key(req),
+  };
+
+  return masterAccountClient.createS3Client()
+  .then(client => client.headObject(params).promise())
+  .then(
+    rsp => ({ title: 'The package already exists.', detail: `${rsp.LastModified}` }),
+    err => (err.statusCode === 404 ? undefined : Promise.reject(err))
+  );
 }
 
 function serviceExists(req) {
@@ -82,9 +96,9 @@ module.exports = [
   route.get('/package-upload-url/:service/:version/')
     .inOrderTo('Get a URL to which I can PUT a package')
     .withDocs({ description: 'Package', tags: ['Package'] })
-    .do((request, response, next) => validate([serviceExists])(request).then(send => send(response)).catch(next)),
+    .do((request, response, next) => validate([packageDoesNotExist, serviceExists])(request).then(send => send(response)).catch(next)),
   route.get('/package-upload-url/:service/:version/:environment')
     .inOrderTo('Get a URL to which I can PUT a package')
     .withDocs({ description: 'Package', tags: ['Package'] })
-    .do((request, response, next) => validate([serviceExists, environmentExists])(request).then(send => send(response)).catch(next)),
+    .do((request, response, next) => validate([packageDoesNotExist, serviceExists, environmentExists])(request).then(send => send(response)).catch(next)),
 ];
