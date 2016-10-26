@@ -8,7 +8,7 @@ function build() {
   let output = argv.o || './build';
 
   return gulp.src([
-    'api/**/*',
+    '*api/**/*',
     '*commands/**/*',
     '*config/**/*',
     '*deployment/**/*',
