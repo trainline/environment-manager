@@ -81,6 +81,12 @@ describe('ScanServersStatus', function() {
     }
   };
 
+  let Environment = {
+    getAccountNameForEnvironment: function() {
+      return Promise.resolve();
+    }
+  };
+
   let sut;
   let query = {
     environmentName: MOCK_ENVIRONMENT,
@@ -91,7 +97,11 @@ describe('ScanServersStatus', function() {
 
   beforeEach(() => {
     sut = rewire('queryHandlers/ScanServersStatus');
-    sut.__set__({ sender });
+    sut.__set__({
+      sender,
+      Environment
+    });
+
   });
 
   describe('When all ASGs are running', () => {
