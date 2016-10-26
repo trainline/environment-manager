@@ -24,10 +24,10 @@ angular.module('EnvironmentManager.common').factory('resources',
 
     var resources = {
       config: {
-        awsAccounts: remoteResourceFactory.getFullAccess({
+        accounts: remoteResourceFactory.getFullAccess({
           name: 'accounts',
           description: 'AWS Accounts',
-          section: 'aws',
+          section: 'config',
           perAccount: true,
         }),
         environments: remoteResourceFactory.getFullAccess({
@@ -37,13 +37,13 @@ angular.module('EnvironmentManager.common').factory('resources',
           perAccount: false,
         }),
         environmentTypes: remoteResourceFactory.getFullAccess({
-          name: 'environmentTypes',
+          name: 'environment-types',
           description: 'Environment Types',
           section: 'config',
           perAccount: false,
         }),
         deploymentMaps: remoteResourceFactory.getFullAccess({
-          name: 'deploymentMaps',
+          name: 'deployment-maps',
           description: 'Deployment Maps',
           section: 'config',
           perAccount: false,
@@ -61,13 +61,13 @@ angular.module('EnvironmentManager.common').factory('resources',
           perAccount: false,
         }),
         lbSettings: remoteResourceFactory.getFullAccess({
-          name: 'lbSettings',
+          name: 'lb-settings',
           description: 'Load Balancer Settings',
           section: 'config',
           perAccount: true,
         }),
         lbUpstream: remoteResourceFactory.getFullAccess({
-          name: 'lbUpstream',
+          name: 'upstreams',
           description: 'Load Balancer Upstream',
           section: 'config',
           perAccount: true,
@@ -81,19 +81,7 @@ angular.module('EnvironmentManager.common').factory('resources',
 
       },
       environment: environments,
-      ops: {
-        environments: remoteResourceFactory.getFullAccess({
-          name: 'environments',
-          description: 'Environments',
-          section: 'ops',
-          perAccount: false,
-        }),
-      },
       aws: {
-        accounts: remoteResourceFactory.getReadOnly({
-          name: 'accounts',
-          perAccount: false,
-        }),
         instances: remoteResourceFactory.getReadOnly({
           name: 'instances',
           description: 'EC2 Instances',

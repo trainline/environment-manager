@@ -156,18 +156,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
         deploymentMap.Value.DeploymentTarget.push(vm.target);
       }
 
-      // Convert back to Dynamo format for writing to the DB
-      var deploymentMapValue = deploymentMap.Value.DeploymentTarget.map(deploymentMapConverter.toDynamoSchema);
-
-      var params = {
-        key: deploymentMap.DeploymentMapName,
-        expectedVersion: deploymentMap.Version,
-        data: {
-          Value: { DeploymentTarget: deploymentMapValue },
-        },
-      };
-
-      resources.config.deploymentMaps.put(params).then(function () {
+      deploymentMap.update().then(function () {
         cachedResources.config.deploymentMaps.flush();
         $uibModalInstance.close();
       });

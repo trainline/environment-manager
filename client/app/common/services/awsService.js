@@ -1,6 +1,11 @@
 ﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
+/**
+ * DEPRECATED
+ * TODO(filip): Move this logic to middle-level abstraction, ie.:
+ * particular models / or their factories / managers, if necessary
+ */
 angular.module('EnvironmentManager.common').factory('awsService',
   function ($q, resources, cachedResources) {
 
@@ -14,65 +19,33 @@ angular.module('EnvironmentManager.common').factory('awsService',
     function AsgService() {
       var self = this;
 
-      self.GetAsgDetails = function (params) {
-
-        function getSummaryFromAsg(asg) {
-          var asgSummary = {
-            AccountName: asg.AccountName || params.account,
-            AsgName: asg.AutoScalingGroupName,
-            MinSize: asg.MinSize,
-            MaxSize: asg.MaxSize,
-            DesiredCapacity: asg.DesiredCapacity,
-            CurrentSize: asg.Instances.length,
-            LaunchConfigurationName: (asg.LaunchConfigurationName) ? asg.LaunchConfigurationName.replace('LaunchConfig_', '') : null,
-            Instances: asg.Instances,
-          };
-          asg.Tags.forEach(function (tag) {
-            asgSummary[tag.Key] = tag.Value;
-          });
-
-          return asgSummary;
-        }
-
-        var account = params.account;
-        var resourceFunction = params.AsgName ? resources.aws.asgs.get(params.AsgName) : resources.aws.asgs.all();
-        return resourceFunction.inAWSAccount(account).do().then(function (asgs) {
-          var summaryData = angular.isArray(asgs) ? asgs.map(getSummaryFromAsg) : getSummaryFromAsg(asgs);
-          return summaryData;
-        });
-      };
-
-      self.GetAsgLaunchConfig = function (asg) {
-        return resources.aws.asgs.get(asg.AsgName).inAWSAccount(asg.AccountName).launchConfiguration().do();
-      };
     }
 
     function InstanceService() {
       var self = this;
 
-      self.GetInstanceDetails = function (params) {
+      self.getSummaryFromInstance = function (instance, account) {
+        var instanceSummary = {
 
-        function getSummaryFromInstance(instance) {
-          var instanceSummary = {
-
-            AccountName: instance.AccountName || params.account,
-            Ip: instance.PrivateIpAddress, // TODO: could be an array, cope with multiple
-            InstanceId: instance.InstanceId,
-            InstanceType: instance.InstanceType,
-            AvailabilityZone: instance.Placement.AvailabilityZone,
-            Status: _.capitalize(instance.State.Name),
-            ImageId: instance.ImageId,
-            LaunchTime: instance.LaunchTime,
-          };
-          instance.Tags.forEach(function (tag) {
-            instanceSummary[tag.Key] = tag.Value;
-          });
-
-          return instanceSummary;
+          AccountName: instance.AccountName || account,
+          Ip: instance.PrivateIpAddress, // TODO: could be an array, cope with multiple
+          InstanceId: instance.InstanceId,
+          InstanceType: instance.InstanceType,
+          AvailabilityZone: instance.Placement.AvailabilityZone,
+          Status: _.capitalize(instance.State.Name),
+          ImageId: instance.ImageId,
+          LaunchTime: instance.LaunchTime,
         };
+        instance.Tags.forEach(function (tag) {
+          instanceSummary[tag.Key] = tag.Value;
+        });
 
+        return instanceSummary;
+      }
+
+      self.GetInstanceDetails = function (params) {
         return resources.aws.instances.all(params).then(function (instances) {
-          return instances.map(getSummaryFromInstance);
+          return instances.map(self.getSummaryFromInstance, params.account);
         });
       };
     };

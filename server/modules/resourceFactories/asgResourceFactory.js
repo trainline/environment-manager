@@ -13,6 +13,7 @@ cacheManager.create('Auto Scaling Groups', getAllAsgsInAccount, { stdTTL: 60 });
 
 let asgCache = cacheManager.get('Auto Scaling Groups');
 
+// TODO(Filip): undecorate .get and .all, after resolving caching
 module.exports = {
 
   canCreate: (resourceDescriptor) =>
@@ -22,7 +23,7 @@ module.exports = {
     logger.debug(`Getting ASG client for account "${parameters.accountName}"...`);
     return amazonClientFactory.createASGClient(parameters.accountName).then(
       client => {
-        let asgResource = new AsgResource(client);
+        let asgResource = new AsgResource(client, parameters.accountName);
 
         asgResource.get = (p) => {
           let cacheKey = parameters.accountName;
@@ -63,7 +64,7 @@ function getAllAsgsInAccount(cacheKey) {
   let accountName = cacheKey;
   let asgDescriptions = amazonClientFactory.createASGClient(accountName)
     .then(client => {
-      let asgResource = new AsgResource(client);
+      let asgResource = new AsgResource(client, accountName);
       return asgResource.all({});
     });
   return asgDescriptions;

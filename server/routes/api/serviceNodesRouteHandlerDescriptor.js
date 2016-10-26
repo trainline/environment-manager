@@ -24,7 +24,6 @@ let getServiceNodes = route.get('/:account/environments/:environment/services/:s
   .do((request, response) => {
     var query = {
       name: 'GetServiceNodes',
-      accountName: request.params.account,
       environment: request.params.environment,
       serviceName: request.params.service,
     };

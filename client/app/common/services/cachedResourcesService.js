@@ -4,41 +4,41 @@
 angular.module('EnvironmentManager.common').factory('cachedResources',
   function ($q, resources) {
 
-    var CachedData = [];
+    var cachedData = [];
     var cachedResources = {
       config: {
-        environments: CachedResource('environments', 'config'),
-        environmentTypes: CachedResource('environmentTypes', 'config'),
-        deploymentMaps: CachedResource('deploymentMaps', 'config'),
-        services: CachedResource('services', 'config'),
-        lbSettings: CachedResource('lbSettings', 'config', true),
-        lbUpstream: CachedResource('lbUpstream', 'config', true),
-        clusters: CachedResource('clusters', 'config'),
-        awsAccounts: CachedResource('awsAccounts', 'config'),
+        environments: cachedResource('environments', 'config'),
+        environmentTypes: cachedResource('environmentTypes', 'config'),
+        deploymentMaps: cachedResource('deploymentMaps', 'config'),
+        services: cachedResource('services', 'config'),
+        lbSettings: cachedResource('lbSettings', 'config', true),
+        lbUpstream: cachedResource('lbUpstream', 'config', true),
+        clusters: cachedResource('clusters', 'config'),
+        accounts: cachedResource('accounts', 'config'),
       },
       aws: {
-        accounts: CachedResource('accounts', 'aws'),
-        images: CachedResource('images', 'aws', true),
+        accounts: cachedResource('accounts', 'aws'),
+        images: cachedResource('images', 'aws', true),
       },
     };
 
-    function CachedResource(resourceName, section, crossAccount) {
+    function cachedResource(resourceName, section, crossAccount) {
       return {
         all: function () {
-          return GetFromCache(resourceName, resources[section][resourceName], crossAccount); },
+          return getFromCache(resourceName, resources[section][resourceName], crossAccount); },
 
         flush: function () {
-          return FlushCache(resourceName); },
+          return flushCache(resourceName); },
 
         getByName: function (nameValue, nameAttrib, data) {
-          return GetByName(nameValue, nameAttrib, data); },
+          return getByName(nameValue, nameAttrib, data); },
       };
     }
 
-    function GetFromCache(dataType, resourceFunction, crossAccount) {
+    function getFromCache(dataType, resourceFunction, crossAccount) {
       var deferred = $q.defer();
-      if (CachedData[dataType]) {
-        deferred.resolve(CachedData[dataType]);
+      if (cachedData[dataType]) {
+        deferred.resolve(cachedData[dataType]);
       } else {
         var params = {};
         if (crossAccount) {
@@ -47,7 +47,7 @@ angular.module('EnvironmentManager.common').factory('cachedResources',
 
         resourceFunction.all(params).then(function (data) {
           console.log('Cache: new data retrieved for ' + dataType);
-          CachedData[dataType] = data;
+          cachedData[dataType] = data;
           deferred.resolve(data);
         });
       }
@@ -55,34 +55,17 @@ angular.module('EnvironmentManager.common').factory('cachedResources',
       return deferred.promise;
     }
 
-    function FlushCache(dataType) {
+    function flushCache(dataType) {
       console.log('Cache: flushing ' + dataType + ' data');
-      delete CachedData[dataType];
+      delete cachedData[dataType];
     }
 
-    function GetByName(nameValue, nameAttrib, data) {
-      var matchingEntity = null;
+    function getByName(nameValue, nameAttrib, data) {
       if (data) {
-        data.forEach(function (entity) {
-          var entityName = GetEntityName(entity, nameAttrib);
-          if (entityName == nameValue) {
-            matchingEntity = entity;
-            return;
-          }
+        return _.find(data, function (entity) {
+          return _.get(entity, nameAttrib) === nameValue;
         });
       }
-
-      return matchingEntity;
-    }
-
-    function GetEntityName(entity, nameAttrib) {
-      var path = nameAttrib.split('.');
-      var obj = entity;
-      for (var i = 0; i < path.length; i++) {
-        obj = obj[path[i]];
-      }
-
-      return obj;
     }
 
     return cachedResources;

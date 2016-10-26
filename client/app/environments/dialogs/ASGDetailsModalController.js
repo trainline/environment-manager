@@ -3,8 +3,8 @@
 
 angular.module('EnvironmentManager.environments').controller('ASGDetailsModalController',
   function ($scope, $uibModal, $uibModalInstance, $q, modal, serviceDiscovery, $rootScope, Image, awsService, AutoScalingGroup, resources, cachedResources, deploymentMapConverter, parameters) {
-
     var vm = this;
+    
     vm.context = 'asg';
 
     var selectedImageVersions = null;
@@ -35,7 +35,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     },{
       type: 'scaling',
       label: 'Scheduled server scaling'
-    }]
+    }];
 
     function init() {
       resources.aws.instanceTypes.all().then(function (instanceTypes) {
@@ -55,7 +55,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       vm.asgUpdate.NewSchedule = vm.asg.Schedule;
       vm.asgUpdate.ScalingSchedule = vm.asg.ScalingSchedule;
       vm.selectedScheduleMode = vm.asg.ScalingSchedule && vm.asg.ScalingSchedule.length ? 'scaling' : 'schedule';
-    };
+    }
 
     vm.openServerRoleConfig = function () {
       $uibModal.open({
@@ -97,8 +97,8 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       vm.dataLoading = true;
 
       $q.all([
-        serviceDiscovery.getASGState(parameters.accountName, parameters.environment.EnvironmentName, parameters.groupName),
-        AutoScalingGroup.getFullByName(parameters.accountName, parameters.environment.EnvironmentName, parameters.groupName),
+        serviceDiscovery.getASGState(parameters.environment.EnvironmentName, parameters.groupName),
+        AutoScalingGroup.getFullByName(parameters.environment.EnvironmentName, parameters.groupName),
       ]).then(function (arr) {
         vm.asgState = arr[0];
         vm.asg = arr[1];
@@ -204,7 +204,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       var desired = vm.asgUpdate.DesiredCapacity;
       var max = vm.asgUpdate.MaxSize;
 
-      resources.aws.asgs.set(vm.asg.AsgName).inAWSAccount(parameters.accountName).minSize(min).desiredSize(desired).maxSize(max).do().then(function () {
+      AutoScalingGroup.resize(vm.environmentName, vm.asg.AsgName, { min: min, desired: desired, max: max }).then(function () {
         modal.information({
           title: 'ASG Resized',
           message: 'ASG resize successful. You can monitor instance changes by using the Refresh Icon in the top right of the window.<br/><br/><b>Note:</b> During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection draining before termination.',
@@ -241,8 +241,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         newSchedule = vm.asgUpdate.NewSchedule;
       }
 
-      resources.aws.asgs.set(vm.asg.AsgName).inAWSAccount(parameters.accountName).schedule(newSchedule, { propagateToInstances: true }).do().then(function () {
-        console.log('ASG Schedule updated to ' + newSchedule);
+      AutoScalingGroup.updateSchedule(vm.environmentName, vm.asg.AsgName, newSchedule).then(function () {
         resetForm();
         modal.information({
           title: 'ASG Schedule Updated',
@@ -266,7 +265,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       vm.asgUpdate.MaxSize = vm.asg.MaxSize;
     }
 
-    $scope.canSubmit = function() {
+    vm.canSubmit = function () {
       if (vm.selectedScheduleMode !== 'scaling') {
         return vm.asgUpdate.NewSchedule !== 'NOSCHEDULE';
       }
@@ -276,16 +275,16 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
       var validScalingSchedule = scalingSchedulePresent && validDesiredCapacities;
       return validScalingSchedule;
-    }
+    };
 
-    $scope.greaterThanLowestDesiredSizeScheduled = function(minSize) {
-      var desiredSizes = vm.asg.ScalingSchedule.map(function(schedule){ return schedule.DesiredCapacity; });
+    vm.greaterThanLowestDesiredSizeScheduled = function (minSize) {
+      var desiredSizes = _.map(vm.asg.ScalingSchedule, 'DesiredCapacity');
       var lowestDesiredSizeScheduled = _.min(desiredSizes);
       return minSize > lowestDesiredSizeScheduled;
     };
 
-    $scope.lessThanHighestDesiredSizeScheduled = function(maxSize) {
-      var desiredSizes = vm.asg.ScalingSchedule.map(function(schedule){ return schedule.DesiredCapacity; });
+    vm.lessThanHighestDesiredSizeScheduled = function (maxSize) {
+      var desiredSizes = _.map(vm.asg.ScalingSchedule, 'DesiredCapacity')
       var highestDesiredSizeScheduled = _.max(desiredSizes);
       return maxSize < highestDesiredSizeScheduled;
     };

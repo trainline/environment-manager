@@ -2,113 +2,70 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('MaintenanceAddServerModalController',
-  function ($scope, $uibModalInstance, $q, resources, cachedResources, awsService, defaultAccount, instancesService) {
+  function ($uibModalInstance, $http, $q, resources, cachedResources, awsService, defaultAccount, instancesService) {
+    var vm = this;
 
-    $scope.AccountsList = [];
-    $scope.SelectedAccount = '';
-    $scope.ServerSearch = '';
-    $scope.ServerDetails = {};
+    vm.accountsList = [];
+    vm.selectedAccount = '';
+    vm.serverSearch = '';
+    vm.serverDetails = {};
 
-    $scope.SearchPerformed = false;
-    $scope.DataFound = false;
+    vm.searchPerformed = false;
+    vm.dataFound = false;
 
     var SHOW_ALL_OPTION = 'All';
-    var RECORD_KEY = 'MAINTENANCE_MODE';
 
     function init() {
-      cachedResources.aws.accounts.all().then(function (accounts) {
-        $scope.AccountsList = accounts.sort();
-        $scope.SelectedAccount = (defaultAccount == SHOW_ALL_OPTION) ? accounts[0] : defaultAccount;
+      cachedResources.config.accounts.all().then(function (accounts) {
+        accounts = _.map(accounts, 'AccountName');
+        vm.accountsList = accounts.sort();
+        vm.selectedAccount = (defaultAccount == SHOW_ALL_OPTION) ? accounts[0] : defaultAccount;
       });
     }
 
-    $scope.Ok = function () {
-
-      var newServer = $scope.ServerDetails;
-
-
-      // Get IPs under Maintenance
-      var params = {
-        account: $scope.SelectedAccount,
-        key: RECORD_KEY,
-      };
-
-      resources.asgips.get(params).then(function (data) {
-
-        // Avoid to put the same IP under maintenance twice
-        var ipList = data.IPs ? JSON.parse(data.IPs) : [];
-        if (ipList.indexOf(newServer.Ip) >= 0) {
-          $uibModalInstance.close();
-          return;
-        }
-
-        ipList.push(newServer.Ip);
-
-        var tasks = [];
-
-        // Add a task to update the IP under maintenance
-        tasks.push(resources.asgips.put({
-          account: $scope.SelectedAccount,
-          key: RECORD_KEY,
-          data: { IPs: JSON.stringify(ipList) },
-        }));
-
-        // If the instance belongs to an AutoScalingGroup it creates
-        // another task to move the instance from service to standby.
-        var groupName = newServer['aws:autoscaling:groupName'];
-        if (groupName) {
-          tasks.push(resources.aws.asgs.enter(groupName)
-            .instances([newServer.InstanceId])
-            .toStandby()
-            .inAWSAccount($scope.SelectedAccount)
-            .do());
-        }
-
-        instancesService.setMaintenanceMode($scope.SelectedAccount, newServer.InstanceId, true);
-
-        $q.all(tasks).then(function () {
-          $uibModalInstance.close();
-        });
-
+    vm.ok = function () {
+      var newServer = vm.serverDetails;
+      instancesService.setMaintenanceMode(vm.selectedAccount, newServer.InstanceId, true).then(function () {
+        $uibModalInstance.close();
       });
 
     };
 
-    $scope.Cancel = function () {
+    vm.cancel = function () {
       $uibModalInstance.dismiss('cancel');
     };
 
-    $scope.Search = function () {
+    vm.search = function () {
 
-      $scope.SearchPerformed = true;
-      $scope.ServerSearch = $scope.ServerSearch.trim();
+      vm.searchPerformed = true;
+      vm.serverSearch = vm.serverSearch.trim();
 
       var filterType = '';
 
       // Allow searching by IP or instance id
-      if (IsIPv4($scope.ServerSearch)) {
-        filterType = 'private-ip-address';
-      } else if ($scope.ServerSearch.startsWith('i-')) {
-        filterType = 'instance-id';
+      if (IsIPv4(vm.serverSearch)) {
+        filterType = 'ip_address';
+      } else if (vm.serverSearch.startsWith('i-')) {
+        filterType = 'instance_id';
       } else {
-        $scope.ServerDetails = {};
-        $scope.DataFound = false;
+        vm.serverDetails = {};
+        vm.dataFound = false;
         return;
       }
 
       var params = {
-        account: $scope.SelectedAccount,
-        query: {},
+        account: vm.selectedAccount,
       };
-      params.query[filterType] = $scope.ServerSearch;
+      params[filterType] = vm.serverSearch;
 
-      awsService.instances.GetInstanceDetails(params).then(function (data) {
-        $scope.ServerDetails = data[0] || {};
-        $scope.DataFound = (data.length > 0);
+
+      $http.get('/api/v1/instances', { params: params }).then(function (response) {
+        vm.serverDetails = awsService.instances.getSummaryFromInstance(response.data[0]) || {};
+        vm.dataFound = (response.data.length > 0);
       }, function (error) {
 
-        $scope.ServerDetails = {};
-        $scope.DataFound = false;
+        vm.serverDetails = {};
+        vm.dataFound = false;
       });
 
     };

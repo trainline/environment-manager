@@ -53,7 +53,7 @@ function requestAccounts(req, res) {
 function addAccount(req, res) {
   let command = {
     name: 'AddAWSaccount',
-    data: req.body,
+    account: req.body,
     user: req.user
   };
   send.command(command, req, res);
@@ -62,7 +62,7 @@ function addAccount(req, res) {
 function updateAccount(req, res) {
   let command = {
     name: 'UpdateAWSaccount',
-    data: req.body,
+    account: req.body,
     user: req.user
   };
   send.command(command, req, res);

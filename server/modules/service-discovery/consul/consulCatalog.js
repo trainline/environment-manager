@@ -11,25 +11,28 @@ function throwHttpError(error) {
   throw new HttpRequestError(`An error has occurred contacting consul agent: ${error.message}`);
 }
 
-function getAllServices(query) {
-  let environment = query.environment;
+function getAllServices(environment) {
+  let getServiceList = consulClient => consulClient.catalog.service.list();
+  let filterByDeploymentId = list => _.pickBy(list, s => s.some(tag => tag.indexOf('deployment_id:') === 0));
 
   let promiseFactoryMethod = () =>
     createConsulClient(environment)
-      .then(consulClient => consulClient.catalog.service.list()).then(function (list) {
-        if (query.server_role !== undefined) {
-          list = _.pickBy(list, tags => _.includes(tags, `server_role:${query.server_role}`));
-        }
-        return list;
-      })
-      .then(list => _.pickBy(list, s => s.some(tag => tag.indexOf('deployment_id:') === 0)))
+      .then(getServiceList)
+      .then(filterByDeploymentId)
+      .then(formatServices)
       .catch(throwHttpError);
 
   return executeAction(promiseFactoryMethod);
 }
 
-function getService(environment, service) {
-  return executeConsul(environment, consulClient => consulClient.catalog.service.nodes(service));
+function getService(environment, serviceQuery) {
+  return executeConsul(environment, consulClient => consulClient.catalog.service.nodes(serviceQuery))
+    .then(service => {
+      if (!service.length) return service;
+      service = service[0];
+      service.ServiceTags = unravelTags(service.ServiceTags);
+      return service;
+    })
 }
 
 function getAllNodes(environment) {
@@ -47,6 +50,18 @@ function getNodeHealth(environment, nodeName) {
 function executeConsul(environment, fn) {
   let promiseFactoryMethod = () => createConsulClient(environment).then(fn).catch(throwHttpError);
   return executeAction(promiseFactoryMethod);
+}
+
+function formatServices(services) {
+  return _.mapValues(services, unravelTags);
+}
+
+function unravelTags(service) {
+  return service.reduce((val, tag) => {
+    let tagComponents = tag.split(':');
+    val[tagComponents[0]] = tagComponents[1];
+    return val;
+  }, {})
 }
 
 function executeAction(promiseFactoryMethod) {

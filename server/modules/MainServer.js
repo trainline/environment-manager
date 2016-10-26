@@ -5,17 +5,18 @@ let express = require('express');
 let bodyParser = require('body-parser');
 let cookieParser = require('cookie-parser');
 let logger = require('modules/logger');
-let expressWinston = require('express-winston');
 let winston = require('winston');
 let fs = require('fs');
 let config = require('config/');
 let compression = require('compression');
+let expressWinston = require('express-winston');
 
 let serverFactoryConfiguration = new(require('modules/serverFactoryConfiguration'))();
 let tokenAuthentication = require('modules/authentications/tokenAuthentication');
 let cookieAuthentication = require('modules/authentications/cookieAuthentication');
 let authentication = require('modules/authentication');
 let deploymentMonitorScheduler = require('modules/monitoring/DeploymentMonitorScheduler');
+let apiV1 = require('api/v1');
 
 const APP_VERSION = require('config').get('APP_VERSION');
 
@@ -54,6 +55,7 @@ module.exports = function MainServer() {
       app.use(bodyParser.json({ extended: false, limit: '50mb' }));
       app.use(cookieAuthentication.middleware);
       app.use(tokenAuthentication.middleware);
+
       /* notice how the router goes after the logger.
        * https://www.npmjs.com/package/express-winston#request-logging */
       if (config.get('IS_PRODUCTION') === true) {
@@ -67,9 +69,8 @@ module.exports = function MainServer() {
       app.get(staticPaths, authentication.allowUnknown, express.static(PUBLIC_DIR));
       app.get('/', authentication.denyUnauthorized, express.static(PUBLIC_DIR));
 
-      app.get('/docs*', authentication.denyUnauthorized, express.static(PUBLIC_DIR));
       app.get('*.js', authentication.allowUnknown, express.static('modules'));
-      
+
       // routing for API JSON Schemas
       app.use('/schema', authentication.allowUnknown, express.static(`${PUBLIC_DIR}/schema`));
 
@@ -92,6 +93,8 @@ module.exports = function MainServer() {
         app.use(expressWinston.errorLogger({ winstonInstance: logger }));
       }
 
+      apiV1.setup(app);
+
       resolve(app);
     });
   };
@@ -113,5 +116,4 @@ module.exports = function MainServer() {
     deploymentMonitorScheduler.start();
     logger.info(`EnvironmentManager v.${APP_VERSION} started!`);
   }
-
 };

@@ -12,7 +12,7 @@ angular.module('EnvironmentManager.compare').factory('comparableResources',
         var environmentNames = environments.map(function (env) { return env.EnvironmentName; });
 
         return $q.all(environmentNames.map(function (environmentName) {
-          return accountMappingService.GetAccountForEnvironment(environmentName).then(function (accountName) {
+          return accountMappingService.getAccountForEnvironment(environmentName).then(function (accountName) {
             return {
               account: accountName,
               environment: environmentName,
@@ -89,7 +89,7 @@ angular.module('EnvironmentManager.compare').factory('comparableResources',
           return env.EnvironmentName; });
 
         return $q.all(environmentNames.map(function (environmentName) {
-          return accountMappingService.GetAccountForEnvironment(environmentName);
+          return accountMappingService.getAccountForEnvironment(environmentName);
         })).then(function (accounts) {
           return _.uniq(accounts);
         }).then(function (accounts) {
@@ -139,7 +139,7 @@ angular.module('EnvironmentManager.compare').factory('comparableResources',
           return env.EnvironmentName; });
 
         return $q.all(environmentNames.map(function (environmentName) {
-          return accountMappingService.GetAccountForEnvironment(environmentName);
+          return accountMappingService.getAccountForEnvironment(environmentName);
         })).then(function (accounts) {
           return _.uniq(accounts);
         }).then(function (accounts) {

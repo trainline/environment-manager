@@ -13,138 +13,112 @@ let DynamoConditionCheckError = require('modules/errors/DynamoConditionCheckErro
 let DynamoItemAlreadyExistsError = require('modules/errors/DynamoItemAlreadyExistsError.class');
 let logger = require('modules/logger');
 
-function DynamoTableResource(config, client) {
-  let _client = client;
-  let _tableName = awsResourceNameProvider.getTableName(config.table);
-  let _keyName = config.key;
-  let _resourceName = config.resourceName;
-  let _rangeName = config.range;
-  let _auditingEnabled = config.auditingEnabled;
-  let _builder = new RequestBuilder({
-    table: _tableName,
-    key: _keyName,
-    range: _rangeName,
-    version: config.auditingEnabled ? 'Audit.Version' : null,
-    dateField: config.dateField,
-  });
+function removeEmptyStrings(data) {
+  for (let property in data) {
+    let value = data[property];
+    let type = typeof value;
 
-  this.getKeyName = () => _keyName;
+    switch (type) {
+      case 'string':
+        if (value === '') delete data[property];
+        break;
+      case 'object':
+        removeEmptyStrings(value);
+        break;
+    }
+  }
+}
 
-  this.getRangeName = () => _rangeName;
+class DynamoTableResource {
 
-  this.isAuditingEnabled = () => _auditingEnabled;
+  constructor(config, client) {
+    this.client = client;
+    this._tableName = awsResourceNameProvider.getTableName(config.table);
+    this._keyName = config.key;
+    this._resourceName = config.resourceName;
+    this._rangeName = config.range;
+    this._auditingEnabled = config.auditingEnabled;
+    this._builder = new RequestBuilder({
+      table: this._tableName,
+      key: this._keyName,
+      range: this._rangeName,
+      version: config.auditingEnabled ? 'Audit.Version' : null,
+      dateField: config.dateField,
+    });
+  }
 
-  function buildPrimaryKey(key, range) {
+  getKeyName() {
+    return this._keyName;
+  }
+
+  getRangeName() {
+    return this._rangeName;
+  }
+
+  isAuditingEnabled() {
+    return this._auditingEnabled;
+  } 
+
+  _buildPrimaryKey(key, range) {
     let primaryKey = {};
 
-    if (_keyName && key) primaryKey[_keyName] = key;
-    if (_rangeName && range) primaryKey[_rangeName] = range;
+    if (this._keyName && key) primaryKey[this._keyName] = key;
+    if (this._rangeName && range) primaryKey[this._rangeName] = range;
 
     return primaryKey;
   }
 
-  function standardifyError(error, request) {
-    let awsError = new AwsError(error.message);
-    logger.error(awsError);
-
-    switch (error.code) {
-      case 'ResourceNotFoundException':
-        return new DynamoTableNotFoundError(`DynamoDB table "${_tableName}" not found.`, awsError);
-
-      case 'ConditionalCheckFailedException':
-        return new DynamoConditionCheckError(
-          'An error has occurred handling following request:' + JSON.stringify(request, null, ''),
-          awsError
-        );
-
-      case 'ValidationException':
-        return new DynamoRequestError(
-          'An error has occurred handling following request:' + JSON.stringify(request, null, ''),
-          awsError
-        );
-
-      default:
-        return awsError;
-    }
-  }
-
-  function arrangeItem(item, formatting) {
-    if (!item) return item;
-    switch (formatting.exposeAudit) {
-      case 'full':
-        break;
-      case 'version-only':
-        // "Audit" column has designed for internal purposes but its "Version"
-        // property is useful for enabling concurrency check client-side.
-        // For this reason "Version" property is moved at root item level and
-        // "Audit" column is deleted.
-        item.Version = (item.Audit ? (item.Audit.Version || 0) : 0);
-        delete item.Audit;
-        break;
-      default:
-        delete item.Audit;
-        break;
-    }
-
-    return item;
-  }
-
-  this.get = function (params) {
-    /* params = {
-        key: 'key-value',    // mandatory
-        range: 'range-value' // optional
-    }*/
-
+  get(params) {
     let request = {
-      TableName: _tableName,
-      Key: buildPrimaryKey(params.key, params.range),
+      TableName: this._tableName,
+      Key: this._buildPrimaryKey(params.key, params.range),
     };
 
-    function tryGet(client) {
-      return client.get(request).promise().then(data => {
-        if (!data.Item) {
-          let message = !params.range ?
-            `No ${_resourceName} found for ${_keyName} equals to "${params.key}".` :
-            `No ${_resourceName} found for ${_keyName} equals to "${params.key}" and ${_rangeName} equals to "${params.range}".`;
+    return this.client.get(request).promise().then(data => {
+      if (!data.Item) {
+        let message = !params.range ?
+          `No ${this._resourceName} found for ${this._keyName} ${params.key}.` :
+          `No ${this._resourceName} found for ${this._keyName} ${params.key} and ${this._rangeName} "${params.range}".`;
 
-          throw new DynamoItemNotFoundError(message);
-        } else {
-          let result = arrangeItem(data.Item, params.formatting);
-          return result;
-        }
-      }).catch(error => {
-        throw standardifyError(error, request);
-      });
-    }
+        throw new DynamoItemNotFoundError(message);
+      } else {
+        let result = arrangeItem(data.Item, params.formatting);
+        return result;
+      }
+    }).catch(error => {
+      throw standardifyError(error, request, params.suppressError);
+    });
+  }
 
-    return tryGet(_client);
-  };
-
-  this.all = function (params) {
-    let request = _builder.scan().filterBy(params.filter).limitTo(params.limit).buildRequest();
+  all(params) {
+    let self = this;
+    let request = this._builder.scan().filterBy(params.filter).limitTo(params.limit).buildRequest();
     let items = [];
 
-    function scan(client) {
-      return client.scan(request).promise().then(data => {
+    function scan() {
+      return self.client.scan(request).promise().then(data => {
         items = items.concat(data.Items.map(item => arrangeItem(item, params.formatting)));
         if (request.Limit || !data.LastEvaluatedKey) return items;
 
         // Scan from next index
         request.ExclusiveStartKey = data.LastEvaluatedKey;
-        return scan(client);
+        return scan();
       }).catch(error => {
-        throw standardifyError(error, request);
+        throw standardifyError(error, request, params.suppressError);
       });
     }
 
-    return scan(_client);
-  };
+    return scan();
+  }
 
-  this.put = function (params) {
+  put(params) {
+    let self = this;
     let item = params.item;
-    let key = (!!_keyName) ? item[_keyName] : null;
-    let range = (!!_rangeName) ? item[_rangeName] : null;
+    let key = (!!this._keyName) ? item[this._keyName] : null;
+    let range = (!!this._rangeName) ? item[this._rangeName] : null;
     let expectedVersion = params.expectedVersion;
+
+    removeEmptyStrings(item);
 
     function hasNotExpectedVersion(data) {
       if (!expectedVersion) return false;
@@ -153,17 +127,17 @@ function DynamoTableResource(config, client) {
       return data.Item.Audit.Version !== expectedVersion;
     }
 
-    function investigateOnErrorOccurred(client) {
+    function investigateOnErrorOccurred() {
       let request = {
-        TableName: _tableName,
-        Key: buildPrimaryKey(key, range),
+        TableName: self._tableName,
+        Key: self._buildPrimaryKey(key, range),
       };
 
-      return client.get(request).promise().then(data => {
+      return self.client.get(request).promise().then(data => {
         if (!data.Item) {
           let message = !params.range ?
-            `No ${_resourceName} found for ${_keyName} equals to "${key}."` :
-            `No ${_resourceName} found for ${_keyName} equals to "${key}" and ${_rangeName} equals to "${range}".`;
+            `No ${this._resourceName} found for ${this._keyName} ${key}.` :
+            `No ${this._resourceName} found for ${this._keyName} ${key} and ${this._rangeName} ${range}.`;
 
           // Expected item to update not found
           throw new DynamoItemNotFoundError(message);
@@ -182,43 +156,42 @@ function DynamoTableResource(config, client) {
       });
     }
 
-    function tryUpdate(client) {
-      let request = !!_auditingEnabled ?
-        _builder.update().item(item).atVersion(expectedVersion).buildRequest() :
-        _builder.update().item(item).buildRequest();
+    let request = !!this._auditingEnabled ?
+      this._builder.update().item(item).atVersion(expectedVersion).buildRequest() :
+      this._builder.update().item(item).buildRequest();
 
-      return client.update(request).promise().then(function (data) {
-        // Existing item succesfully updated
-        return data.Attributes;
-      }).catch(error => {
-        // Something went wrong...
-        let managedError = standardifyError(error, request);
+    return this.client.update(request).promise().then(function (data) {
+      // Existing item succesfully updated
+      return data.Attributes;
+    }).catch(error => {
+      // Something went wrong...
+      let managedError = standardifyError(error, request);
 
-        // I cannot furhter investigate on this error
-        if (managedError.name !== 'DynamoConditionCheckError') {
-          throw standardifyError(error, request);
-        }
+      // I cannot furhter investigate on this error
+      if (managedError.name !== 'DynamoConditionCheckError') {
+        throw standardifyError(error, request);
+      }
 
-        // I can further investigate...
-        return investigateOnErrorOccurred(client);
-      });
-    }
+      // I can further investigate...
+      return investigateOnErrorOccurred();
+    });
+  }
 
-    return tryUpdate(_client);
-  };
-
-  this.post = function (params) {
+  post(params) {
+    let self = this;
     let item = params.item;
-    let key = (!!_keyName) ? item[_keyName] : null;
-    let range = (!!_rangeName) ? item[_rangeName] : null;
+    let key = (!!this._keyName) ? item[this._keyName] : null;
+    let range = (!!this._rangeName) ? item[this._rangeName] : null;
 
-    function investigateOnErrorOccurred(client) {
+    removeEmptyStrings(item);
+
+    function investigateOnErrorOccurred() {
       let request = {
-        TableName: _tableName,
-        Key: buildPrimaryKey(key, range),
+        TableName: self._tableName,
+        Key: self._buildPrimaryKey(key, range),
       };
 
-      return client.get(request).promise().then(data => {
+      return self.client.get(request).promise().then(data => {
         if (data.Item) { // Found an item with the same key
           let message = 'Item cannot be created as an item with the same key already exists.';
           throw new DynamoItemAlreadyExistsError(message);
@@ -231,8 +204,8 @@ function DynamoTableResource(config, client) {
       });
     }
 
-    let request = _builder.insert().item(item).buildRequest();
-    return client.put(request).promise().then(data => data.Attributes)
+    let request = this._builder.insert().item(item).buildRequest();
+    return this.client.put(request).promise().then(data => data.Attributes)
       .catch(error => {
 
         // Something went wrong...
@@ -240,30 +213,77 @@ function DynamoTableResource(config, client) {
 
         // I cannot furhter investigate on this error
         if (managedError.name !== 'DynamoConditionCheckError') {
-          throw standardifyError(error, request);
+          throw standardifyError(error, request, true);
         }
 
         // I can furhter investigate...
-        return investigateOnErrorOccurred(client);
+        return investigateOnErrorOccurred();
       });
-  };
+  }
 
-  this.delete = function (params) {
-    /* params = {
-        key: 'key-value',    // mandatory
-        range: 'range-value' // optional
-    }*/
-
+  delete(params) {
     let request = {
-      TableName: _tableName,
-      Key: buildPrimaryKey(params.key, params.range),
+      TableName: this._tableName,
+      Key: this._buildPrimaryKey(params.key, params.range),
     };
 
-    return client.delete(request).promise().then(data => {})
+    return this.client.delete(request).promise().then(data => {})
       .catch(error => {
         throw standardifyError(error, request);
       });
-  };
+  }
+}
+
+function standardifyError(error, request, suppressError) {
+  let awsError = new AwsError(error.message);
+  if (suppressError !== true) {
+    logger.error(awsError);
+  }
+
+  switch (error.code) {
+    case 'ResourceNotFoundException':
+      return new DynamoTableNotFoundError(`DynamoDB table "${this._tableName}" not found.`, awsError);
+
+    case 'ConditionalCheckFailedException':
+      return new DynamoConditionCheckError(
+        `An error has occurred handling following request: ${parseRequest(request)}`,
+        awsError
+      );
+
+    case 'ValidationException':
+      return new DynamoRequestError(
+        `An error has occurred handling following request: ${parseRequest(request)}`,
+        awsError
+      );
+
+    default:
+      return awsError;
+  }
+}
+
+function parseRequest(request) {
+  return util.inspect(request).replace('\n', '');
+}
+
+function arrangeItem(item, formatting) {
+  if (!item) return item;
+  switch (formatting.exposeAudit) {
+    case 'full':
+      break;
+    case 'version-only':
+      // "Audit" column has designed for internal purposes but its "Version"
+      // property is useful for enabling concurrency check client-side.
+      // For this reason "Version" property is moved at root item level and
+      // "Audit" column is deleted.
+      item.Version = (item.Audit ? (item.Audit.Version || 0) : 0);
+      delete item.Audit;
+      break;
+    default:
+      delete item.Audit;
+      break;
+  }
+
+  return item;
 }
 
 module.exports = DynamoTableResource;

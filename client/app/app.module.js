@@ -17,7 +17,7 @@ app.config(function ($routeProvider) {
   $routeProvider
     .when('/', {
       templateUrl: '/app/environments/summary/env-summary.html',
-      controller: 'EnvironmentsSummaryController',
+      controller: 'EnvironmentsSummaryController as vm',
       menusection: '',
     })
     .when('/login', {

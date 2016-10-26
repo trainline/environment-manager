@@ -6,7 +6,7 @@ module.exports = {
   type: 'account',
   queryable: true,
   docs: {
-      description: 'Account',
-      tags: ['Accounts']
-  }
+    description: 'Account',
+    tags: ['Accounts'],
+  },
 };

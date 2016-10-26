@@ -5,7 +5,7 @@ angular.module('EnvironmentManager.configuration').controller('AccountController
   function ($rootScope, $location, $routeParams, $http, cachedResources) {
     var vm = this;
     var accountName = $routeParams['accountName'];
-    var awsAccounts = cachedResources.config.awsAccounts;
+    var awsAccounts = cachedResources.config.accounts;
 
     function findAccount(accounts) {
       return awsAccounts.getByName(accountName, 'AccountName', accounts);

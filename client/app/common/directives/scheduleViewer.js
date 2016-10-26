@@ -2,45 +2,45 @@
 'use strict';
 
 angular.module('EnvironmentManager.common')
-  .directive('scheduleViewer', function () {
-    return {
-      restrict: 'E',
-      scope: {
-        schedule: '=',
-        showOnlyCronSchedules: '=',
-      },
-      templateUrl: '/app/common/directives/scheduleViewer.html',
-      controller: function ($scope) {
+  .component('scheduleViewer', {
+    restrict: 'E',
+    bindings: {
+      schedule: '=',
+      showOnlyCronSchedules: '=',
+    },
+    templateUrl: '/app/common/directives/scheduleViewer.html',
+    controllerAs: 'vm',
+    controller: function ($scope) {
+      var vm = this;
 
-        var update = function (schedule) {
-          if (!schedule) {
-            $scope.simpleOption = 'Environment Default';
-            delete $scope.crons;
-          } else if (schedule.indexOf(':') === -1) {
-            if (schedule === '247') {
-              $scope.simpleOption = 'Always On';
-            } else if (schedule === 'OFF') {
-              $scope.simpleOption = 'Off';
-            } else {
-              $scope.simpleOption = schedule;
-            }
-
-            delete $scope.crons;
+      function update(schedule) {
+        if (!schedule) {
+          vm.simpleOption = 'Environment Default';
+          delete vm.crons;
+        } else if (schedule.indexOf(':') === -1) {
+          if (schedule === '247') {
+            vm.simpleOption = 'Always On';
+          } else if (schedule === 'OFF') {
+            vm.simpleOption = 'Off';
           } else {
-            $scope.crons = $scope.schedule.split(';').map(function (cronString) {
-              if (cronString) {
-                var parts = cronString.split(':');
-                var action = parts[0].trim() + 's ';
-                var englishCron = prettyCron.toString(parts[1].trim());
-                return { cron: action + englishCron };
-              }
-            });
+            vm.simpleOption = schedule;
           }
-        };
 
-        $scope.$watch('schedule', update);
-        update();
+          delete vm.crons;
+        } else {
+          vm.crons = vm.schedule.split(';').map(function (cronString) {
+            if (cronString) {
+              var parts = cronString.split(':');
+              var action = parts[0].trim() + 's ';
+              var englishCron = prettyCron.toString(parts[1].trim());
+              return { cron: action + englishCron };
+            }
+          });
+        }
+      };
 
-      },
-    };
+      $scope.$watch('vm.schedule', update);
+      update();
+
+    },
   });

@@ -9,7 +9,7 @@ function getAwsAccounts(query) {
   let sender = require('modules/sender');
   let dynamoQuery = {
     name: 'ScanDynamoResources',
-    resource: 'config/awsAccounts',
+    resource: 'config/accounts',
     accountName: masterAccountName
   };
   let childQuery = { query:dynamoQuery, parent:query };

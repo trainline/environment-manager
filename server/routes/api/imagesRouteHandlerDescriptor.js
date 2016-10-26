@@ -8,33 +8,37 @@ let utilities = require('modules/utilities');
 module.exports = [
 
   route.get('/all/images').withPriority(10)
-  .withDocs({
-    description: 'Image',
-    verb: 'crossScan',
-    tags: ['Images (AMIs)'],
-  }).do((request, response) => {
-    var query = {
-      name: 'ScanCrossAccountImages',
-      filter: utilities.extractQuery(request),
-    };
+    .withDocs({
+      description: 'Image',
+      verb: 'crossScan',
+      tags: ['Images (AMIs)'],
+    }).do((request, response) => {
+      let query = {
+        name: 'ScanCrossAccountImages',
+        filter: utilities.extractQuery(request),
+      };
 
-    send.query(query, request, response);
-  }),
+      send.query(query, request, response);
+    }),
 
   route.get('/:account/images')
-  .withDocs({
-    description: 'Image',
-    verb: 'scan',
-    perAccount: true,
-    tags: ['Images (AMIs)'],
-  }).do((request, response) => {
-    var query = {
-      name: 'ScanImages',
-      accountName: request.params.account,
-      filter: utilities.extractQuery(request),
-    };
+    .withDocs({
+      description: 'Image',
+      verb: 'scan',
+      perAccount: true,
+      tags: ['Images (AMIs)'],
+    }).do((request, response, next) => {
+      if (request.params.account === 'v1') {
+        return next();
+      }
 
-    send.query(query, request, response);
-  }),
+      let query = {
+        name: 'ScanImages',
+        accountName: request.params.account,
+        filter: utilities.extractQuery(request),
+      };
+
+      send.query(query, request, response);
+    }),
 
 ];

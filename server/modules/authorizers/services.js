@@ -2,18 +2,17 @@
 'use strict';
 
 exports.getRules = request => {
+  // TODO(filip): once we move to v1, need only swagger param
+  let cluster = request.params.range || request.params.cluster || request.params.body.OwningCluster;
 
-    var cluster = request.params.range;
-
-    return Promise.resolve([{
-        resource: request.url.replace(/\/+$/, ''),
-        access: request.method,
-        clusters: [cluster.toLowerCase()]
-    }]);
-
+  return Promise.resolve([{
+    resource: request.url.replace(/\/+$/, ''),
+    access: request.method,
+    clusters: [cluster.toLowerCase()],
+  },]);
 };
 
 exports.docs = {
-    requiresClusterPermissions: true,
-    requiresEnvironmentTypePermissions: false
+  requiresClusterPermissions: true,
+  requiresEnvironmentTypePermissions: false,
 };

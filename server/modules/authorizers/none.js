@@ -2,10 +2,10 @@
 'use strict';
 
 exports.getRules = request => {
-    return Promise.resolve([]);
+  return Promise.resolve([]);
 };
 
 exports.docs = {
-    requiresClusterPermissions: false,
-    requiresEnvironmentTypePermissions: false
+  requiresClusterPermissions: false,
+  requiresEnvironmentTypePermissions: false
 };

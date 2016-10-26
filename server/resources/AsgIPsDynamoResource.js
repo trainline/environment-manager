@@ -11,7 +11,7 @@ module.exports = {
   perAccount: true,
   editable: true,
   docs: {
-      description: 'Auto Scaling Group IPs',
-      tags: ['Auto Scaling Groups']
-  }
+    description: 'Auto Scaling Group IPs',
+    tags: ['Auto Scaling Groups'],
+  },
 };

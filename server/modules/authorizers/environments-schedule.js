@@ -27,7 +27,8 @@ function* getRules(request) {
     access: request.method
   };
 
-  let environmentName = request.params.key;
+  // Need to check 'name' because of swagger
+  let environmentName = request.params.key || request.params.name;
   let user = request.user;
   let environment = yield getCurrentEnvironment(environmentName, user);
   let environmentTypeName = environment.Value.EnvironmentType.toLowerCase();

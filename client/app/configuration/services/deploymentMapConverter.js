@@ -91,7 +91,7 @@ angular.module('EnvironmentManager.configuration').factory('deploymentMapConvert
             Name: 'Data',
             Size: target.ASG.LaunchConfig.Volumes[1].Size || 10,
             Type: target.ASG.LaunchConfig.Volumes[1].Type || 'Disk',
-          },],
+          }],
           PuppetRole: target.ASG.LaunchConfig.PuppetRole,
           RoleTag: target.ASG.Tags.Role,
           ScheduleTag: target.ASG.Tags.Schedule,

@@ -13,7 +13,7 @@ module.exports = {
   exportable: true,
   importable: true,
   docs: {
-      description: 'Permission Set',
-      tags: ['Security and Permissions']
+    description: 'Permission Set',
+    tags: ['Security and Permissions']
   }
 };

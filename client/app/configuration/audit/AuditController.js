@@ -1,25 +1,27 @@
 ﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
-angular.module('EnvironmentManager.configuration').controller('AuditController',
-  function ($scope, $routeParams, $location, $q, $http, $uibModal, resources, arrayItemHashDetector, modal, enums, linkHeader) {
 
-    /* Audit Table Structure:
-    •   AuditID [GUID Key]
-    •   TransactionID (GUID)
-    •   Entity
-    •       Type
-    •       Key
-    •       Range (optional)
-    •       Version (int)
-    •   ChangeType
-    •   OldValue
-    •   NewValue
-    •   ChangedBy
-    •   Timestamp
-    •   Environment      (TODO: Future change. Where we know it anyway – useful for filter)
-    •   Owning Cluster   (TODO: Future change. Where we know it anyway – useful for filter)
-    */
+/* Audit Table Structure:
+ *   AuditID [GUID Key]
+ *   TransactionID (GUID)
+ *   Entity
+ *       Type
+ *       Key
+ *       Range (optional)
+ *       Version (int)
+ *   ChangeType
+ *   OldValue
+ *   NewValue
+ *   ChangedBy
+ *   Timestamp
+ *   Environment      (TODO: Future change. Where we know it anyway – useful for filter)
+ *   Owning Cluster   (TODO: Future change. Where we know it anyway – useful for filter)
+ */
+angular.module('EnvironmentManager.configuration').controller('AuditController',
+  function ($scope, $routeParams, $location, $q, $http, $uibModal, resources, arrayItemHashDetector, modal, enums, linkHeader, QuerySync) {
+    var vm = this;
+
     var SHOW_ALL_OPTION = 'Any';
 
     $scope.Data = [];
@@ -73,23 +75,22 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
           $scope.ChangeTypesList = [SHOW_ALL_OPTION].concat(changeTypes).sort();
         }),
       ]).then(function () {
-        $scope.Refresh();
+        vm.refresh();
       });
     }
 
     $scope.Compare = function (audit) {
-      var instance = $uibModal.open({
+      $uibModal.open({
         templateUrl: '/app/configuration/audit/audit-compare-modal.html',
         controller: 'AuditCompareModalController',
         size: 'lg',
         resolve: {
-          audit: function () {
-            return audit; },
+          audit: function () { return audit; },
         },
       });
     };
 
-    $scope.Refresh = function () {
+    vm.refresh = function () {
 
       $scope.DataLoading = true;
       $scope.SearchPerformed = true;
@@ -115,7 +116,7 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
       if (Number.isInteger($scope.SelectedDateRangeValue)) {
         var dateNow = new Date().getTime();
         dateNow -= ($scope.SelectedDateRangeValue);
-        query['minDate'] = new Date(dateNow).toISOString();
+        query.since = new Date(dateNow).toISOString();
       }
 
       var params = {
@@ -136,9 +137,8 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
      * @param obj {Object} any object
      * @returns {String} JSON representation of object 
      */
-    function diffableRepresentationOf(obj)
-    {
-      function replacer (key, value) {
+    function diffableRepresentationOf(obj) {
+      function replacer(key, value) {
         if (typeof value === 'string' && /^[\[\{]/.test(value)) {
           try {
             return JSON.parse(value);
@@ -149,25 +149,25 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
           return value;
         }
       }
-      return JSON.stringify(obj, replacer, 4)
+      return JSON.stringify(obj, replacer, 4);
     }
 
     function displayResults(data) {
-        var link = linkHeader.parseHeaders(data.headers);
-        $scope.nextPage = link !== undefined ? link.next : undefined;
-        $scope.hasNextPage = $scope.nextPage !== undefined;
-        $scope.Data = data.items.map(function addValueColumnChanges(audit) {
-          if (audit.OldValue) { // Missing for new records
-            audit.OldValueDisplay = diffableRepresentationOf(audit.OldValue);
-          }
+      var link = linkHeader.parseHeaders(data.headers);
+      $scope.nextPage = link !== undefined ? link.next : undefined;
+      $scope.hasNextPage = $scope.nextPage !== undefined;
+      $scope.Data = data.items.map(function (audit) {
+        if (audit.OldValue) { // Missing for new records
+          audit.OldValueDisplay = diffableRepresentationOf(audit.OldValue);
+        }
 
-          if (audit.NewValue) { // Missing for deleted records
-            audit.NewValueDisplay = diffableRepresentationOf(audit.NewValue);
-          }
+        if (audit.NewValue) { // Missing for deleted records
+          audit.NewValueDisplay = diffableRepresentationOf(audit.NewValue);
+        }
 
-          return audit;
-        });
-        $scope.DataLoading = false;
+        return audit;
+      });
+      $scope.DataLoading = false;
     }
 
     $scope.getPage = function (pageData){
@@ -199,7 +199,7 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
           items: audit.NewValue,
         };
         resource.merge(params).then(function () {
-          $scope.Refresh();
+          vm.refresh();
         });
       });
     };

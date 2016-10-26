@@ -6,7 +6,7 @@ angular.module('EnvironmentManager.configuration').controller('EnvironmentTypeCo
   function ($scope, $routeParams, $location, $q, $log, $window, resources, cachedResources, schemaValidatorService) {
     var vm = $scope;
     var RETURN_PATH = '/config/environmenttypes';
-    var accountsResource = cachedResources.config.awsAccounts;
+    var accountsResource = cachedResources.config.accounts;
 
     vm.EnvironmentType = {};
     vm.EditMode = false;

@@ -7,7 +7,7 @@ module.exports = {
   perAccount: true,
   queryable: true,
   docs: {
-      description: 'Instance',
-      tags: ['Instances']
-  }
+    description: 'Instance',
+    tags: ['Instances'],
+  },
 };

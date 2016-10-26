@@ -45,8 +45,8 @@ describe('SetAutoScalingGroupScheduleCommandHandler:', () => {
       ],
     };
 
-    var senderMock = {
-      sendQuery: sinon.stub().returns(Promise.resolve(expectedAutoScalingGroup)),
+    var AutoScalingGroupMock = {
+      getByName: sinon.stub().returns(Promise.resolve(expectedAutoScalingGroup)),
     };
 
     describe('and I send a command to set its schedule tag to "247" without affecting its instances too', () => {
@@ -66,7 +66,7 @@ describe('SetAutoScalingGroupScheduleCommandHandler:', () => {
         };
         Target.__set__({
           ec2InstanceClientFactory: ec2InstanceClientFactoryMock,
-          sender: senderMock,
+          AutoScalingGroup: AutoScalingGroupMock,
           autoScalingGroupClientFactory: autoScalingGroupClientFactoryMock,
         });
         
@@ -149,7 +149,7 @@ describe('SetAutoScalingGroupScheduleCommandHandler:', () => {
         };
         Target.__set__({
           ec2InstanceClientFactory: ec2InstanceClientFactoryMock,
-          sender: senderMock,
+          AutoScalingGroup: AutoScalingGroupMock,
           autoScalingGroupClientFactory: autoScalingGroupClientFactoryMock,
         });
         
@@ -221,7 +221,7 @@ describe('SetAutoScalingGroupScheduleCommandHandler:', () => {
         };
         Target.__set__({
           ec2InstanceClientFactory: ec2InstanceClientFactoryMock,
-          sender: senderMock,
+          AutoScalingGroup: AutoScalingGroupMock,
           autoScalingGroupClientFactory: autoScalingGroupClientFactoryMock,
         });
         
@@ -274,7 +274,7 @@ describe('SetAutoScalingGroupScheduleCommandHandler:', () => {
         };
         Target.__set__({
           ec2InstanceClientFactory: ec2InstanceClientFactoryMock,
-          sender: senderMock,
+          AutoScalingGroup: AutoScalingGroupMock,
           autoScalingGroupClientFactory: autoScalingGroupClientFactoryMock,
         });
         

@@ -23,21 +23,25 @@ function mapDeployment(deployment, account) {
   });
 }
 
-function queryDeployment(query) {
-  let queryName = 'GetDynamoResource';
+function queryDeployment({ key, accountName }) {
+  let queryName = 'ScanCrossAccountDynamoResources';
+
+  let filter = {
+    DeploymentID: key
+  };
 
   let currentDeploymentsQuery = {
     name: queryName,
     resource: 'deployments/history',
-    key: query.key,
-    accountName: query.account,
+    filter,
+    suppressError: true,
   };
 
   let completedDeploymentsQuery = {
     name: queryName,
     resource: 'deployments/completed',
-    key: query.key,
-    accountName: query.account,
+    filter,
+    suppressError: true,
   };
 
   return Promise.all([
@@ -45,12 +49,13 @@ function queryDeployment(query) {
     sender.sendQuery({ query: completedDeploymentsQuery }).catch(err => null),
   ]).then(results => {
     let result = results[0] || results[1];
+    result = result[0];
 
     if (!result) {
-      throw new ResourceNotFoundError(`Deployment ${query.key} not found`);
+      throw new ResourceNotFoundError(`Deployment ${key} not found`);
     }
 
-    result.AccountName = query.account;
+    result.AccountName = accountName;
 
     return result;
   });
@@ -59,18 +64,27 @@ function queryDeployment(query) {
 function queryDeployments(query) {
   let queryName = 'ScanCrossAccountDynamoResources';
 
+  let filter = {
+    'Value.EnvironmentName': query.environment,
+    'Value.Status': query.status,
+    'Value.OwningCluster': query.cluster,
+    '$date_from': query.since,
+  }
+
+  filter = _.omitBy(filter, _.isUndefined);
+
   let currentDeploymentsQuery = {
     name: queryName,
     resource: 'deployments/history',
-    filter: query.filter,
-    accountName: query.account,
+    filter: filter,
+    suppressError: true,
   };
 
   let completedDeploymentsQuery = {
     name: queryName,
     resource: 'deployments/completed',
-    filter: query.filter,
-    accountName: query.account,
+    filter: filter,
+    suppressError: true,
   };
 
   return Promise.all([
@@ -82,12 +96,12 @@ function queryDeployments(query) {
 
 }
 
-function queryDeploymentNodeStates(environment, key, account) {
+function queryDeploymentNodeStates(environment, key, accountName) {
   let consulQuery = {
     name: 'GetTargetState',
     key: `deployments/${key}/nodes`,
-    accountName: account,
-    environment: environment,
+    accountName,
+    environment,
     recurse: true,
   };
 
@@ -98,6 +112,7 @@ module.exports = {
 
   get: query => {
     return queryDeployment(query).then(deployment => {
+      console.log(deployment);
       return mapDeployment(deployment, query.account);
     });
   },
