@@ -17,7 +17,9 @@ function createScheduler(account, config) {
   function doScheduling () {
     return co(function*() {
 
-      let scheduledActions = yield getScheduledActions();
+      let allScheduledActions = yield getScheduledActions();
+      let scheduledActions = maybeFilterActionsForASGInstances(allScheduledActions);
+
       let actionGroups = groupActionsByType(scheduledActions);
 
       let changeResults = yield performChanges(actionGroups);
@@ -32,6 +34,13 @@ function createScheduler(account, config) {
       };
 
     });
+  }
+
+  function maybeFilterActionsForASGInstances(instanceActions) {
+    if (!config.ignoreASGInstances)
+      return instanceActions;
+
+    return instanceActions.filter(instanceAction => !instanceAction.instance.asg);
   }
 
   function printableError(err) {
