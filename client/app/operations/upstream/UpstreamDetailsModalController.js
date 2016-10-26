@@ -32,7 +32,7 @@ angular.module('EnvironmentManager.operations').controller('UpstreamDetailsModal
         // Merge in NGINX status info
         servers.forEach(function (server) {
           server.LoadBalancerServerState = [];
-          upstream.Value.LoadBalancerState.forEach(function (lb) {
+          upstream.Value.LoadBalancerState.LBs.forEach(function (lb) {
             var lbServerState = { Name: lb.Name, State: GetLBServerState(server.Ip, lb) };
             server.LoadBalancerServerState.push(lbServerState);
           });
@@ -51,7 +51,7 @@ angular.module('EnvironmentManager.operations').controller('UpstreamDetailsModal
     // Get list of unique IPs being used by all Load Balancers in relation to this upstream (should all have the same, but might be slight variation during change events)
     function GetUniqueIPs() {
       var uniqueIPs = [];
-      upstream.Value.LoadBalancerState.forEach(function (lb) {
+      upstream.Value.LoadBalancerState.LBs.forEach(function (lb) {
         if (lb.ServerStatus) {
           lb.ServerStatus.forEach(function (serverState) {
             var ip = serverState.server.split(':')[0]; // Truncate port

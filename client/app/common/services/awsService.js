@@ -82,7 +82,7 @@ angular.module('EnvironmentManager.common').factory('awsService',
             if (latestStableVersion) {
               instance.LatestAmi = angular.copy(latestStableVersion);
               instance.UsingLatestAmi = (instance.Ami.AmiVersion == latestStableVersion.AmiVersion);
-              instance.DaysOutOfDate = new Date(latestStableVersion.CreationDate).getDaysBetweenDates(instance.Ami.CreationDate);
+              instance.DaysOutOfDate = new Date().getDaysBetweenDates(instance.Ami.CreationDate);
             }
           }
 

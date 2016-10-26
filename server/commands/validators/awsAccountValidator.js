@@ -2,6 +2,9 @@
 'use strict';
 
 let awsAccounts = require('modules/awsAccounts');
+let childAWSclient = require('modules/amazon-client/childAccountClient');
+let logger = require('modules/logger');
+let co = require('co');
 
 function validate(account) {
   return awsAccounts.getMasterAccount().then(masterAccount => {
@@ -25,12 +28,21 @@ function validate(account) {
 
     validateAccountNumber(account.AccountNumber);
 
-    if (account.IsMaster && masterAccount !== undefined && account.AccountNumber !== masterAccount.AccountNumber) {
+    if (account.IsMaster && masterAccount !== undefined && account.AccountNumber !== masterAccount.AccountNumber)
       throw new Error(`The account '${masterAccount.AccountName}' is already set as the master account.`);
+
+  }).then(co.wrap(function* () {
+    if (account.RoleArn !== undefined) {
+      try {
+        let roleIsValid = yield childAWSclient.assumeRole(account.RoleArn);
+      } catch (error) {
+        logger.error(`Rejected attempt to add account ${account.AccountName} with role ARN ${account.RoleArn}`);
+        throw new Error(`Cannot assume role for ARN: ${account.RoleArn}`);
+      }
     }
 
     return true;
-  })
+  }));
 }
 
 function validateAccountNumber(accountNumber) {

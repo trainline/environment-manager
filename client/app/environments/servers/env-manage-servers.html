@@ -81,9 +81,17 @@
             <td style="text-align: center" current-desired-title="{{role.size}}">
               <a ng-click="vm.showInstanceDetails(role.asgName, 'instances')">{{::role.size}}</a>
             </td>
-
             <td><a ng-click="vm.showInstanceDetails(role.asgName, 'launchConfig')">{{::role.ami.name}}</a></td>
-            <td><a ng-click="vm.showInstanceDetails(role.asgName, 'launchConfig')">{{::role.ami.outOfDate}}</a></td>
+            <td>
+                <a ng-click="vm.showInstanceDetails(role.asgName, 'launchConfig')">
+                    <span data-ng-if="role.ami.isLatestStable">
+                        <span class="glyphicon glyphicon-ok-sign ok"></span> Up to date
+                    </span>
+                    <span data-ng-if="!role.ami.isLatestStable">
+                        <span data-ng-if="role.ami.age !== '-'" class="glyphicon glyphicon-exclamation-sign warning"></span> {{::role.ami.age}}
+                    </span>
+                </a>
+            </td>
             <td>
               <a ng-if="role.hasScalingSchedule" ng-click="vm.showInstanceDetails(role.asgName, 'schedule')">Scheduled Scaling</a>
               <a ng-if="!role.hasScalingSchedule" ng-click="vm.showInstanceDetails(role.asgName, 'schedule')">

@@ -11,7 +11,6 @@ angular.module('EnvironmentManager.environments').factory('serversView',
     };
 
     function serversView(data, selections) {
-
       var roles = data.Value;
 
       var roleViews = data.Value
@@ -41,11 +40,9 @@ angular.module('EnvironmentManager.environments').factory('serversView',
         allServerRoles: allServerRoles,
         allServiceNames: allServiceNames,
       };
-
     }
 
     function toRoleView(role) {
-
       return {
         asgName: role.Name,
         serverRole: {
@@ -65,7 +62,6 @@ angular.module('EnvironmentManager.environments').factory('serversView',
         ami: toAmiView(role.Ami),
         schedule: role.Schedule,
       };
-
     }
 
     function toServiceView(service) {
@@ -77,7 +73,6 @@ angular.module('EnvironmentManager.environments').factory('serversView',
 
     function rolesMatchingSelections(selected) {
       return function (role) {
-
         var selectedStatus = selected.status.toLowerCase();
         var selectedCluster = selected.cluster.toLowerCase();
 
@@ -89,7 +84,6 @@ angular.module('EnvironmentManager.environments').factory('serversView',
         });
 
         return statusMatches && clusterMatches && roleNameMatches && serviceNameMatches;
-
       };
     }
 
@@ -109,9 +103,6 @@ angular.module('EnvironmentManager.environments').factory('serversView',
 
       roles.forEach(function (role) {
         result.servers[role.Status.Status.toLowerCase()].count += 1;
-        /*role.services.forEach(function(service) {
-            result.services[service.status.status.toLowerCase()].count += 1;
-        });*/
       });
 
       return result;
@@ -131,13 +122,14 @@ angular.module('EnvironmentManager.environments').factory('serversView',
       if (ami) {
         return {
           name: ami.Name,
-          outOfDate: ami.OutOfDate + ' day(s)',
+          age: ami.Age + ' day(s)',
+          isLatestStable: ami.IsLatestStable
         };
       }
 
       return {
         name: '-',
-        outOfDate: '-',
+        age: '-',
       };
     }
 
@@ -149,5 +141,4 @@ angular.module('EnvironmentManager.environments').factory('serversView',
     }
 
     return serversView;
-
   });
