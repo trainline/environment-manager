@@ -1821,6 +1821,8 @@ definitions:
             enum:
               - Success
               - Failed
+              - In Progress
+              - Cancelled
           User:
             type: string
   PostDeployment:
