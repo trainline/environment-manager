@@ -29,9 +29,6 @@ let routeHandlerDescriptors = [
   require('routes/api/dynamo/exportRouteHandlerDescriptor'),
   require('routes/api/dynamo/importRouteHandlerDescriptor'),
 
-  // Packages
-  require('routes/api/packages/getPackageUploadUrlRouteHandlerDescriptor'),
-
   // Deployments
   require('routes/api/deployments/deploymentStatusRouteHandlerDescriptor'),
   require('routes/api/deployments/nodeDeploymentLogRouteHandlerDescriptor'),

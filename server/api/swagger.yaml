@@ -1726,9 +1726,7 @@ paths:
     get:
       operationId: getPackageUploadUrlByServiceVersionEnvironment
       summary: Upload an environment-specific package.
-      consumes:
-        - multipart/form-data
-      x-authorizer: packages
+      x-authorizer: package-upload-url
       tags:
         - Package
       parameters:
@@ -1736,7 +1734,6 @@ paths:
         - $ref: '#/parameters/package-version'
         - $ref: '#/parameters/package-environment'
         - $ref: '#/parameters/package-slice'
-        - $ref: '#/parameters/package-content'
       responses:
         201:
           $ref: '#/responses/package-created'
@@ -1749,15 +1746,12 @@ paths:
     get:
       operationId: getPackageUploadUrlByServiceVersion
       summary: Upload an environment-independent package.
-      consumes:
-        - multipart/form-data
-      x-authorizer: packages
+      x-authorizer: package-upload-url
       tags:
         - Package
       parameters:
         - $ref: '#/parameters/package-id'
         - $ref: '#/parameters/package-version'
-        - $ref: '#/parameters/package-content'
       responses:
         201:
           $ref: '#/responses/package-created'
