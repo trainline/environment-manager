@@ -27,6 +27,6 @@ exports.handler = (event, context, callback) => {
 };
 
 function logError(err, details) {
-  console.error({ err, details });
+  console.error(JSON.stringify({ err, details }, null, 2));
   return `ERROR: ${err}. See logs for more details.`;
 }
