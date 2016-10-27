@@ -264,7 +264,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/Deployment'
     post:
       operationId: postDeployment
       summary: Create a new deployment. This will provision any required infrastructure and update the required target-state.
@@ -276,7 +276,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/Deployment'
+            $ref: '#/definitions/PostDeployment'
       responses:
         202:
           description: The deployment ID
@@ -296,7 +296,7 @@ paths:
         200:
           description: The deployment
           schema:
-            type: object
+            $ref: '#/definitions/Deployment'
     patch:
       operationId: patchDeployment
       summary: Cancel an in-progress deployment.
@@ -1775,6 +1775,55 @@ definitions:
       ADMembershipGroup:
         type: string
   Deployment:
+    type: object
+    properties:
+      DeploymentID:
+        type: string
+      Value:
+        type: object
+        properties:
+          DeploymentType:
+            type: string
+          EndTimestamp:
+            type: string
+          EnvironmentName:
+            type: string
+          EnvironmentType:
+            type: string
+          ErrorReason:
+            type: string
+          ExecutionLog:
+            type: string
+          Nodes:
+            type: array
+            items:
+              type: object
+          OwningCluster:
+            type: string
+          SchemaVersion:
+            type: integer
+          ServerRoleName:
+            type: string
+          ServiceName:
+            type: string
+          ServiceSlice:
+            type: string
+            enum:
+              - blue
+              - green
+              - none
+          ServiceVersion:
+            type: string
+          StartTimestamp:
+            type: string
+          Status:
+            type: string
+            enum:
+              - Success
+              - Failed
+          User:
+            type: string
+  PostDeployment:
     type: object
     required:
       - environment
