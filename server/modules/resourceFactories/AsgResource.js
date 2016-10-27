@@ -6,7 +6,9 @@ let AwsError = require('modules/errors/AwsError.class');
 let AutoScalingGroupNotFoundError = require('modules/errors/AutoScalingGroupNotFoundError.class');
 let AutoScalingGroupAlreadyExistsError = require('modules/errors/AutoScalingGroupAlreadyExistsError.class');
 
-function AsgResource(client) {
+let cacheManager = require('modules/cacheManager');
+
+function AsgResource(client, accountName) {
   this.client = client;
 
   function standardifyError(error, autoScalingGroupName) {
@@ -74,7 +76,7 @@ function AsgResource(client) {
         ResourceId: parameters.name,
         ResourceType: 'auto-scaling-group',
         Value: parameters.tagValue,
-      },],
+      }],
     };
     return client.createOrUpdateTags(request).promise().catch(function (error) {
       throw standardifyError(error, parameters.name);
@@ -101,6 +103,9 @@ function AsgResource(client) {
     if (parameters.launchConfigurationName) {
       request.LaunchConfigurationName = parameters.launchConfigurationName;
     }
+
+    let asgCache = cacheManager.get('Auto Scaling Groups');
+    asgCache.del(accountName);
 
     return client.updateAutoScalingGroup(request).promise().catch(function (error) {
       throw standardifyError(error, parameters.name);

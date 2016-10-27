@@ -1,13 +1,13 @@
 <div class="row page-title">
     <div class="col-md-12">
-        <h2 ng-if="!EditMode">New User Or Group Permissions</h2>
-        <h2 ng-if="EditMode">Edit Permissions {{member.Name}}</h2>
+        <h2 ng-if="!vm.editMode">New User Or Group Permissions</h2>
+        <h2 ng-if="vm.editMode">Edit Permissions {{vm.member.Name}}</h2>
     </div>
 </div>
 
-<div ng-show="EditMode && !DataFound">No data found.</div>
+<div ng-show="vm.editMode && !vm.dataFound">No data found.</div>
 
-<form name="form" class="form-horizontal" ng-show="DataFound || !EditMode">
+<form name="form" class="form-horizontal" ng-show="vm.dataFound || !vm.editMode">
 
     <div class="form-group" ng-class="{'has-error': form.MemberName.$invalid}">
         <label class="col-md-2 control-label text-left">User / Group Name:</label>
@@ -15,9 +15,9 @@
             <input type="text"
                    name="MemberName"
                    class="form-control"
-                   ng-model="member.Name"
+                   ng-model="vm.member.Name"
                    ng-required="true"
-                   ng-readonly="EditMode" />
+                   ng-readonly="vm.editMode" />
         </div>
         <span class="help-block" ng-if="form.MemberName.$dirty && form.MemberName.$error.required">User name is mandatory.</span>
     </div>
@@ -29,9 +29,9 @@
                  ui-ace="{ mode: 'json' }"
                  name="Value"
                  required="true"
-                 valid-json="ValidateJson"
-                 ng-readonly="!canUser('edit')"
-                 ng-model="permissions"
+                 valid-json="vm.validateJson"
+                 ng-readonly="!vm.canUser('edit')"
+                 ng-model="vm.permissions"
                  ng-model-options="{ debounce: 100 }">
             </div>
         </div>
@@ -47,14 +47,14 @@
         <div class="col-md-offset-2 col-md-3">
             <button type="button"
                     class="btn btn-default"
-                    ng-click="Cancel()">
+                    ng-click="vm.cancel()">
                 Cancel
             </button>
             <button type="button"
                     class="btn btn-default"
-                    ng-if="canUser('edit')"
+                    ng-if="vm.canUser('edit')"
                     ng-disabled="!form.$valid"
-                    ng-click="Save()">Save</button>
+                    ng-click="vm.save()">Save</button>
         </div>
     </div>
 

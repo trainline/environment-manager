@@ -2,7 +2,9 @@
 'use strict';
 
 angular.module('EnvironmentManager.common').factory('Deployment',
-  function ($q, resources, $log, awsService) {
+  function ($q, resources, $log, awsService, $http) {
+
+    var baseUrl = '/api/v1/deployments'
 
     function Deployment(data) {
       _.assign(this, data);
@@ -34,6 +36,15 @@ angular.module('EnvironmentManager.common').factory('Deployment',
       }
 
     });
+
+    Deployment.getAll = function (params) {
+      return $http({
+        url: baseUrl,
+        params: params
+      }).then(function (response) {
+        return response.data;
+      });
+    };
 
     Deployment.getById = function (accountName, deploymentId) {
       return resources.deployments.get({ account: accountName, key: deploymentId }).then(function (data) {

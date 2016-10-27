@@ -1,7 +1,7 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
-let awsMasterClient = require('modules/amazon-client/masterAccountClient');
+let masterAccountClient = require('modules/amazon-client/masterAccountClient');
 let config = require('config');
 
 const S3_BUCKET = config.get('EM_AWS_S3_BUCKET');
@@ -14,7 +14,7 @@ module.exports = function S3ConfigurationProvider() {
       Key: S3_KEY,
     };
 
-    return awsMasterClient
+    return masterAccountClient
       .createS3Client()
       .then(client => client.getObject(parameters).promise())
       .then(object => JSON.parse(object.Body.toString('utf8')));

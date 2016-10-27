@@ -7,11 +7,11 @@ let sender = require('modules/sender');
 module.exports = {
   query: function (query, req, res) {
     let callback = adapt.callbackToExpress(req, res);
-    sender.sendQuery({ query: query, user: req.user }, callback);
+    sender.sendQuery({ query, user: req.user }, callback);
   },
 
   command: function (command, req, res) {
     let callback = adapt.callbackToExpress(req, res);
-    sender.sendCommand({ command: command, user: req.user }, callback);
+    sender.sendCommand({ command, user: req.user }, callback);
   },
 };

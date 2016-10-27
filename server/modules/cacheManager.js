@@ -59,8 +59,8 @@ const cacheManager = {
 function createCache(name, cache, fn, pending, logger, logHits) {
 
   return {
-    get: get,
-    del: del,
+    get,
+    del,
     mget: cache.mget.bind(cache),
     keys: cache.keys.bind(cache),
     set: setInCache,

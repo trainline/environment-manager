@@ -3,17 +3,19 @@
 
 angular.module('EnvironmentManager.configuration').controller('ExportController',
   function ($scope, $location, resources, cachedResources, FileSaver, Blob) {
+    var vm = this;
 
-    $scope.Resources = [];
-    $scope.SelectedResource = '';
-    $scope.AccountsList = [];
-    $scope.SelectedAccount = '';
-    $scope.ExportData = '';
-    $scope.DataLoading = false;
+    vm.resources = [];
+    vm.selectedResource = '';
+    vm.accountsList = [];
+    vm.selectedAccount = '';
+    vm.exportData = '';
+    vm.dataLoading = false;
 
     function init() {
-      cachedResources.aws.accounts.all().then(function (accounts) {
-        $scope.AccountsList = accounts.sort();
+      cachedResources.config.accounts.all().then(function (accounts) {
+        accounts = _.map(accounts, 'AccountName');
+        vm.accountsList = accounts.sort();
       }).then(function () {
         var asResourceDescriptor = function (resource) {
           return {
@@ -22,44 +24,44 @@ angular.module('EnvironmentManager.configuration').controller('ExportController'
           };
         };
 
-        $scope.Resources = Enumerable.From(resources.config).Select(asResourceDescriptor).ToArray();
-        $scope.SelectedResource = $scope.Resources[0].name;
-        $scope.SelectedAccount = $scope.AccountsList[0];
+        vm.resources = Enumerable.From(resources.config).Select(asResourceDescriptor).ToArray();
+        vm.selectedResource = vm.resources[0].name;
+        vm.selectedAccount = vm.accountsList[0];
       });
     }
 
-    $scope.Export = function () {
+    vm.export = function () {
       var params = {};
-      if ($scope.IsSelectedResourceCrossAccount()) {
-        params['account'] = $scope.SelectedAccount;
+      if (vm.isSelectedResourceCrossAccount()) {
+        params['account'] = vm.selectedAccount;
       }
 
-      $scope.DataLoading = true;
-      var resource = resources.config[$scope.SelectedResource];
+      vm.dataLoading = true;
+      var resource = resources.config[vm.selectedResource];
       resource.export(params).then(function (data) {
-        $scope.ExportData = JSON.stringify(data, null, 4);
+        vm.exportData = JSON.stringify(data, null, 4);
       }).finally(function () {
-        $scope.DataLoading = false;
+        vm.dataLoading = false;
       });
     };
 
-    $scope.Download = function () {
+    vm.download = function () {
       var params = {};
-      if ($scope.IsSelectedResourceCrossAccount()) {
-        params['account'] = $scope.SelectedAccount;
+      if (vm.isSelectedResourceCrossAccount()) {
+        params['account'] = vm.selectedAccount;
       }
 
-      var resource = resources.config[$scope.SelectedResource];
+      var resource = resources.config[vm.selectedResource];
       resource.export(params).then(function (data) {
         var json = JSON.stringify(data, null, 4);
         var data = new Blob([json], { type: 'application/json;charset=utf-8' });
         var timestamp = new Date().toLocaleDateString().replace('/', '-');
-        FileSaver.saveAs(data, $scope.SelectedResource + '-' + timestamp + '.json');
+        FileSaver.saveAs(data, vm.selectedResource + '-' + timestamp + '.json');
       });
     };
 
-    $scope.IsSelectedResourceCrossAccount = function () {
-      return ($scope.SelectedResource == 'lbSettings' || $scope.SelectedResource == 'lbUpstream');
+    vm.isSelectedResourceCrossAccount = function () {
+      return (vm.selectedResource == 'lbSettings' || vm.selectedResource == 'lbUpstream');
     };
 
     init();

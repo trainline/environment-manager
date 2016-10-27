@@ -6,7 +6,7 @@ angular.module('EnvironmentManager.common')
 
     return {
       get: function(accountName, environmentName) {
-        var url = '/api/' + accountName + '/environments/' + environmentName + '/roles/';
+        var url = '/api/v1/target-state/' + environmentName;
         return $http.get(url).then(function(response) {
           return response.data;
         });

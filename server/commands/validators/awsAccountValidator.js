@@ -15,13 +15,13 @@ function validate(account) {
     if (!account.IsMaster || account.RoleArn === null) required.push('RoleArn');
 
     Object.keys(account).forEach(k => {
-      if (required.indexOf(k) < 0) throw new Error(`'${k}' is not a valid attribute.`)});
+      if (required.indexOf(k) < 0) throw new Error(`'${k}' is not a valid attribute.`); });
 
     required.forEach(p => {
-      if (!account.hasOwnProperty(p)) throw new Error(`Missing required attribute: ${p}`)});
+      if (!account.hasOwnProperty(p)) throw new Error(`Missing required attribute: ${p}`); });
 
     flags.forEach(f => {
-      if (typeof account[f] !== 'boolean') throw new Error(`Attribute ${f} must be boolean`)});
+      if (typeof account[f] !== 'boolean') throw new Error(`Attribute ${f} must be boolean`); });
 
     if (account.IsMaster && account.hasOwnProperty('RoleArn') && account.RoleArn !== null)
       throw new Error('Role ARN values can only be specified for child accounts');
@@ -42,12 +42,13 @@ function validate(account) {
     }
 
     return true;
-  }))
+  }));
 }
 
 function validateAccountNumber(accountNumber) {
-  if (!Number.isInteger(accountNumber) || String(accountNumber).length !== 12)
+  if (!Number.isInteger(accountNumber) || String(accountNumber).length !== 12) {
     throw new Error('AccountNumber must be a 12 digit integer');
+  }
 }
 
 module.exports = { validate, validateAccountNumber };

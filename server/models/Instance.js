@@ -3,11 +3,23 @@
 
 let _ = require('lodash');
 let taggable = require('./taggable');
+let ScanCrossAccountInstances = require('queryHandlers/ScanCrossAccountInstances');
 
 class Instance {
 
   constructor(data) {
     _.assign(this, data);
+  }
+
+  getAutoScalingGroupName() {
+    return this.getTag('aws:autoscaling:groupName');
+  }
+
+  static getById(instanceId) {
+    let filter = { 'instance-id': instanceId };
+    return ScanCrossAccountInstances({ filter }).then(list => {
+      return new Instance(list[0]);
+    });
   }
 
 }

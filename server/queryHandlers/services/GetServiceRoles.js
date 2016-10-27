@@ -27,7 +27,6 @@ function* GetServiceRolesQueryHandler(query) {
   let results = yield serviceTargets.getTargetState(query.environmentName, { key, recurse });
 
   return {
-    AccountName: query.accountName,
     EnvironmentName: query.environmentName,
     Value: toRoleGroups(results),
   };

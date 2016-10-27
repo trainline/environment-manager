@@ -2,22 +2,23 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('EnvironmentsSummaryController',
-  function ($scope, $routeParams, $location, $uibModal, $q, resources, cachedResources, configValidation, cron) {
+  function ($scope, $routeParams, $location, $uibModal, $q, resources, cachedResources, configValidation, cron, Environment) {
+    var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
 
-    $scope.Data = [];
+    vm.data = [];
 
-    $scope.OwningClustersList = [];
-    $scope.EnvironmentTypesList = [];
-    $scope.SelectedEnvironmentType = SHOW_ALL_OPTION;
-    $scope.SelectedOwningCluster = SHOW_ALL_OPTION;
+    vm.owningClustersList = [];
+    vm.environmentTypesList = [];
+    vm.selectedEnvironmentType = SHOW_ALL_OPTION;
+    vm.selectedOwningCluster = SHOW_ALL_OPTION;
 
-    $scope.EnvironmentConfigValid = {};
+    vm.environmentConfigValid = {};
 
-    $scope.DataLoading = false;
+    vm.dataLoading = false;
 
-    $scope.gridOptions = {
+    vm.gridOptions = {
       data: 'Data',
       columnDefs: [{
         name: 'statusIcon',
@@ -35,54 +36,50 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
       }],
     };
 
-    $scope.whatIsRow = function (grid, row) {
-      console.log(row);
-    };
-
     function init() {
 
-      $scope.userHasPermission = user.hasPermission({ access: 'POST', resource: '/config/environments/*' });
+      vm.userHasPermission = user.hasPermission({ access: 'POST', resource: '/config/environments/*' });
 
       $q.all([
         cachedResources.config.clusters.all().then(function (clusters) {
-          $scope.OwningClustersList = [SHOW_ALL_OPTION].concat(_.map(clusters, 'ClusterName')).sort();
+          vm.owningClustersList = [SHOW_ALL_OPTION].concat(_.map(clusters, 'ClusterName')).sort();
         }),
 
         cachedResources.config.environmentTypes.all().then(function (environmentTypes) {
-          $scope.EnvironmentTypesList = [SHOW_ALL_OPTION].concat(_.map(environmentTypes, 'EnvironmentType').sort());
+          vm.environmentTypesList = [SHOW_ALL_OPTION].concat(_.map(environmentTypes, 'EnvironmentType').sort());
         }),
       ]).then(function () {
-        $scope.SelectedEnvironmentType = $routeParams.environmentType || SHOW_ALL_OPTION;
-        $scope.SelectedOwningCluster = $routeParams.cluster || SHOW_ALL_OPTION;
+        vm.selectedEnvironmentType = $routeParams.environmentType || SHOW_ALL_OPTION;
+        vm.selectedOwningCluster = $routeParams.cluster || SHOW_ALL_OPTION;
 
-        $scope.Refresh();
+        vm.refresh();
       });
     }
 
-    $scope.Refresh = function () {
-      $scope.DataLoading = true;
+    vm.refresh = function () {
+      vm.dataLoading = true;
       $location.search({
-        environmentType: $scope.SelectedEnvironmentType,
-        cluster: $scope.SelectedOwningCluster,
+        environmentType: vm.selectedEnvironmentType,
+        cluster: vm.selectedOwningCluster,
       });
 
       var query = {};
-      if ($scope.SelectedEnvironmentType != SHOW_ALL_OPTION) {
-        query['Value.EnvironmentType'] = $scope.SelectedEnvironmentType;
+      if (vm.selectedEnvironmentType != SHOW_ALL_OPTION) {
+        query.environmentType = vm.selectedEnvironmentType;
       }
 
-      if ($scope.SelectedOwningCluster != SHOW_ALL_OPTION) {
-        query['Value.OwningCluster'] = $scope.SelectedOwningCluster;
+      if (vm.selectedOwningCluster != SHOW_ALL_OPTION) {
+        query.cluster = vm.selectedOwningCluster;
       }
 
       $q.all([
-        resources.config.environments.all({ query: query }),
-        resources.ops.environments.all(),
+        Environment.all({ query: query }),
+        Environment.getAllOps(),
       ]).then(function (results) {
         var configEnvironments = results[0];
         var opsEnvironments = results[1];
 
-        $scope.Data = configEnvironments.merge(opsEnvironments,
+        vm.data = configEnvironments.merge(opsEnvironments,
           function (source, target) {
             return source.EnvironmentName === target.EnvironmentName;
           },
@@ -96,78 +93,63 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
               Operation: target.Value || {},
             };
 
-            var scheduleAction = GetScheduleAction(result.Operation);
-            result.Operation.getScheduleAction = function () {
-              return scheduleAction; };
+            var scheduleAction = target.Value.ScheduleStatus;
+            result.Operation.getScheduleAction = function () { return scheduleAction; };
 
             return result;
           });
 
-        $scope.DataLoading = false;
-        setTimeout(ValidateEnvironments, 5000); // Don't call unless user is waiting on page to prevent excessive dynamo load
+        vm.dataLoading = false;
+        setTimeout(validateEnvironments, 5000); // Don't call unless user is waiting on page to prevent excessive dynamo load
       });
     };
 
-    $scope.canUser = function () {
-      return $scope.userHasPermission;
+    vm.canUser = function () {
+      return vm.userHasPermission;
     };
 
-    $scope.ViewEnvironment = function (environment) {
+    vm.viewEnvironment = function (environment) {
       $location.path('/environments/' + environment.EnvironmentName);
     };
 
-    $scope.NewEnvironment = function () {
+    vm.newEnvironment = function () {
       var instance = $uibModal.open({
         templateUrl: '/app/environments/dialogs/env-create-environment-modal.html',
         controller: 'CreateEnvironmentController',
       });
       instance.result.then(function () {
-        $scope.Refresh();
+        vm.refresh();
       });
     };
 
-    $scope.ViewDeployments = function (env) {
+    vm.viewDeployments = function (env) {
       $location.search('environment', env.EnvironmentName);
       $location.path('/operations/deployments/');
     };
 
-    $scope.ViewHistory = function (environment) {
+    vm.viewHistory = function (environment) {
       $scope.ViewAuditHistory('Environment', environment.EnvironmentName);
     };
 
-    function ValidateEnvironments() {
+    function validateEnvironments() {
       $q.all([
         // Make sure cache populated to avoid async multiple hits
-        cachedResources.config.environments.all(),
+        Environment.all(),
         cachedResources.config.services.all(),
         cachedResources.config.lbUpstream.all(),
         cachedResources.config.deploymentMaps.all(),
         cachedResources.config.lbSettings.all(),
       ]).then(function () {
-        $scope.Data.forEach(function (env) { ValidateEnvironment(env); });
+        vm.data.forEach(function (env) { validateEnvironment(env); });
       });
     }
 
-    function ValidateEnvironment(environment) {
-      if (!$scope.EnvironmentConfigValid[environment.EnvironmentName]) {
+    function validateEnvironment(environment) {
+      if (!vm.environmentConfigValid[environment.EnvironmentName]) {
         configValidation.ValidateEnvironment(environment.EnvironmentName).then(function (node) {
-          $scope.EnvironmentConfigValid[environment.EnvironmentName] = node;
+          vm.environmentConfigValid[environment.EnvironmentName] = node;
         });
       }
-    }
-
-    function GetScheduleAction(data) {
-      function GetCurrentSchedule() {
-        if (data.ScheduleAutomatically === false) {
-          if (data.ManualScheduleUp === true) return '247';
-          if (data.ManualScheduleUp === false) return 'OFF';
-        }
-
-        return data.DefaultSchedule;
-      }
-
-      var schedule = GetCurrentSchedule();
-      return cron.getActionBySchedule(schedule);
     }
 
     init();

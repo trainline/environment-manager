@@ -10,6 +10,7 @@ let sender = require('modules/sender');
 let SCHEDULE_PATTERN = /^(NOSCHEDULE\s+)?((247|OFF|on|on6)|(((Start|Stop): [\d\,\-\*\\]+ [\d\,\-\*\\]+ [\d\,\-\*\\\w]+ [\d\,\-\*\\\w]+ [\d\,\-\*\\\w]+\s?[\d\,\-\*]*)(\s*\;?\s+|$))+)?(\s*NOSCHEDULE)?$/i;
 let InvalidOperationError = require('modules/errors/InvalidOperationError.class');
 let ec2InstanceClientFactory = require('modules/clientFactories/ec2InstanceClientFactory');
+let AutoScalingGroup = require('models/AutoScalingGroup');
 
 module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
   assertContract(command, 'command', {
@@ -21,12 +22,12 @@ module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
   });
 
   return co(function* () {
-    var schedule = command.schedule;
-    var accountName = command.accountName;
-    var autoScalingGroupName = command.autoScalingGroupName;
-    var propagateToInstances = command.propagateToInstances;
+    let schedule = command.schedule;
+    let accountName = command.accountName;
+    let autoScalingGroupName = command.autoScalingGroupName;
+    let propagateToInstances = command.propagateToInstances;
 
-    var schedule, scalingSchedule;
+    let scalingSchedule;
     if (_.isArray(command.schedule)) {
       scalingSchedule = command.schedule;
       schedule = 'NOSCHEDULE';
@@ -41,12 +42,12 @@ module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
       ));
     }
 
-    var result = {
+    let result = {
       ChangedAutoScalingGroups: undefined,
       ChangedInstances: undefined,
     };
 
-    result.ChangedAutoScalingGroups = setAutoScalingGroupSchedule(
+    result.ChangedAutoScalingGroups = yield setAutoScalingGroupSchedule(
       autoScalingGroupName,
       schedule,
       scalingSchedule,
@@ -54,35 +55,25 @@ module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
     );
 
     if (propagateToInstances) {
-      var autoScalingGroup = yield getAutoScalingGroupByName(autoScalingGroupName, accountName);
-      var instanceIds = autoScalingGroup.Instances.map(instance => instance.InstanceId);
+      let autoScalingGroup = yield AutoScalingGroup.getByName(accountName, autoScalingGroupName);
+      let instanceIds = autoScalingGroup.Instances.map(instance => instance.InstanceId);
 
-      result.ChangedInstances = setEC2InstancesScheduleTag(
+      result.ChangedInstances = yield setEC2InstancesScheduleTag(
         instanceIds,
         schedule,
         accountName
       );
     }
 
-    return yield result;
+    return result;
   });
 };
-
-function getAutoScalingGroupByName(autoScalingGroupName, accountName) {
-  var query = {
-    name: 'GetAutoScalingGroup',
-    accountName: accountName,
-    autoScalingGroupName: autoScalingGroupName,
-  };
-
-  return sender.sendQuery({ query: query });
-}
 
 function setAutoScalingGroupSchedule(autoScalingGroupName, schedule, scalingSchedule, accountName) {
   return autoScalingGroupClientFactory.create({ accountName }).then(client => {
 
-    var setScheduleTask = setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, scalingSchedule, accountName);
-    var setTagsTask = setAutoScalingGroupScheduleTag(client, autoScalingGroupName, schedule, accountName);
+    let setScheduleTask = setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, scalingSchedule, accountName);
+    let setTagsTask = setAutoScalingGroupScheduleTag(client, autoScalingGroupName, schedule, accountName);
 
     return Promise
       .all([setScheduleTask, setTagsTask])
@@ -92,7 +83,7 @@ function setAutoScalingGroupSchedule(autoScalingGroupName, schedule, scalingSche
 }
 
 function setAutoScalingGroupScheduleTag(client, autoScalingGroupName, schedule, accountName) {
-  var parameters = {
+  let parameters = {
     name: autoScalingGroupName,
     tagKey: 'Schedule',
     tagValue: schedule,
@@ -105,7 +96,7 @@ function setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, newSch
 
   return co(function* () {
     
-    var existingScheduledActions = yield getScheduledActions(client, autoScalingGroupName);
+    let existingScheduledActions = yield getScheduledActions(client, autoScalingGroupName);
     yield existingScheduledActions.map(action => {
       return deleteScheduledAction(client, action);
     });
@@ -113,7 +104,7 @@ function setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, newSch
     if (!(newScheduledActions instanceof Array)) return Promise.resolve();
 
     return newScheduledActions.map((action, index) => {
-      var namedAction = {
+      let namedAction = {
         AutoScalingGroupName: autoScalingGroupName,
         ScheduledActionName: `EM-Scheduled-Action-${++index}`,
         MinSize: action.MinSize,
@@ -121,7 +112,7 @@ function setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, newSch
         DesiredCapacity: action.DesiredCapacity,
         Recurrence: action.Recurrence
       };
-      return createScheduledAction(client, namedAction);
+      return client.createScheduledAction(namedAction);
     });
 
   });
@@ -142,11 +133,6 @@ function deleteScheduledAction(client, action) {
   };
   return client.deleteScheduledAction(parameters);
 }
-
-function createScheduledAction(client, action) {
-  return client.createScheduledAction(action);
-}
-
 
 function setEC2InstancesScheduleTag(instanceIds, schedule, accountName) {
   if (!instanceIds.length) return Promise.resolve();

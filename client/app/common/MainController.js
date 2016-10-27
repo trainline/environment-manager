@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.common').controller('MainController',
-  function ($rootScope, $scope, $route, $routeParams, $location, modal, cachedResources) {
+  function ($rootScope, $scope, $route, $routeParams, $location, modal, Environment) {
 
     $scope.appVersion = window.version;
     $scope.$route = $route; // Used by index page to determine active section
@@ -11,7 +11,7 @@ angular.module('EnvironmentManager.common').controller('MainController',
     $rootScope.WorkingEnvironment = { EnvironmentName: '' }; // For Environments section only, selected Environment from Sidebar drop-down
 
     function init() {
-      cachedResources.config.environments.all().then(function (environments) {
+      Environment.all().then(function (environments) {
         $scope.ParentEnvironmentsList = _.map(environments, 'EnvironmentName').sort();
       }).then(function () {
         if (!$rootScope.WorkingEnvironment.EnvironmentName) $rootScope.WorkingEnvironment.EnvironmentName = $scope.ParentEnvironmentsList[0];
@@ -119,27 +119,22 @@ angular.module('EnvironmentManager.common').controller('MainController',
       return !(!!value);
     }
 
-    // TODO: remove once no longer editing JSON in UI
-    $scope.tryParseJSON = function (jsonString) {
-      try {
-        var o = JSON.parse(jsonString);
-        if (o && typeof o === 'object' && o !== null) {
-          return o;
-        }
-      } catch (e) {}
-
-      return null;
-    };
-
     $scope.ShowSchemaHelp = function () {
       var DYNAMO_SCHEMA_WIKI_URL = window.links.DYNAMO_CONFIG;
       window.open(DYNAMO_SCHEMA_WIKI_URL, '_blank');
     };
 
-    $rootScope.$on('error', function (event, data) {
+    $rootScope.$on('error', function (event, response) {
+      var errorMessage;
+      if (_.isString(response.data)) {
+        errorMessage = response.data;
+      } else {
+        errorMessage = response.data.error;
+      }
+
       modal.information({
         title: 'Error',
-        message: data.data,
+        message: errorMessage,
         severity: 'Danger',
       });
     });

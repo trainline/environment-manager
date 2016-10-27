@@ -13,9 +13,9 @@ function RemoveAWSAccount(command) {
     let accountNumber = +command.accountNumber;
     accountValidator.validateAccountNumber(accountNumber);
     
-    var dynamoCommand = {
+    let dynamoCommand = {
       name: 'DeleteDynamoResource',
-      resource: 'config/awsAccounts',
+      resource: 'config/accounts',
       key: accountNumber,
       accountName: masterAccountName,
     };

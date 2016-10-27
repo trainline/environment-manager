@@ -4,12 +4,14 @@
 let co = require('co');
 let resourceProvider = require('modules/resourceProvider');
 let imageSummary = require('modules/machineImage/imageSummary');
+let assert = require('assert');
 
 /**
  * Get all the EC2 images ordered by AMI Type (lexicographical, ascending) then by
  * AMI version (semver, descending).
  */
 function* handler(query) {
+  assert(query.accountName);
   let parameters = { accountName: query.accountName };
   let resource = yield resourceProvider.getInstanceByName('images', parameters);
 

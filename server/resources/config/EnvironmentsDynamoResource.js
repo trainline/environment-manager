@@ -15,7 +15,7 @@ module.exports = {
   exportable: true,
   importable: true,
   docs: {
-      description: 'Environment',
-      tags: ['Environments']
+    description: 'Environment',
+    tags: ['Environments']
   }
 };

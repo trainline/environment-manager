@@ -3,7 +3,7 @@
 
 // Manage specific Upstream
 angular.module('EnvironmentManager.configuration').controller('LBUpstreamController',
-  function ($scope, $routeParams, $location, $q, resources, cachedResources, modal, accountMappingService) {
+  function ($scope, $routeParams, $location, $q, resources, cachedResources, modal, accountMappingService, $http, UpstreamConfig) {
 
     $scope.LBUpstream = {};
     $scope.NewHostDefault = { DnsName: '', Port: null, FailTimeout: '30s', MaxFails: null, State: 'down', Weight: 1 };
@@ -12,7 +12,6 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
     $scope.PageError = '';
     $scope.PageMode = 'Edit'; // Edit, New, Copy
     $scope.DataFound = false;
-    $scope.Version = 0;
 
     $scope.AddingHost = false;
     $scope.ServicesList = [];
@@ -48,13 +47,8 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
             $scope.DataFound = false;
           } else {
 
-            accountMappingService.GetAccountForEnvironment(env).then(function (accountName) {
-              var params = {
-                account: accountName,
-                key: key,
-              };
-
-              resources.config.lbUpstream.get(params).then(function (data) {
+            accountMappingService.getAccountForEnvironment(env).then(function (accountName) {
+              UpstreamConfig.getByKey(key, accountName).then(function (data) {
                 $scope.LBUpstream = data;
                 updateSelectedService();
 
@@ -69,7 +63,6 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
                   return a.DnsName.localeCompare(b.DnsName);
                 });
 
-                $scope.Version = data.Version;
                 $scope.DataFound = true;
 
                 if ($scope.PageMode == 'Edit') {
@@ -83,18 +76,7 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
 
           }
         } else {
-
-          // New Upstream, set defaults
-          $scope.LBUpstream = {
-            Value: {
-              SchemaVersion: 1,
-              EnvironmentName: env,
-              ZoneSize: '128k',
-              LoadBalancingMethod: 'least_conn',
-              Hosts: [],
-            },
-          };
-
+          $scope.LBUpstream = UpstreamConfig.createWithDefaults(env);
           $scope.userHasPermission = user.hasPermission({ access: 'POST', resource: '/*/config/lbupstream/**' });
         }
 
@@ -115,7 +97,6 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
 
     $scope.Save = function () {
 
-      var saveMethod = $scope.PageMode == 'Edit' ? resources.config.lbUpstream.put : resources.config.lbUpstream.post;
       var upstreamValue = $scope.LBUpstream.Value;
 
       if ($scope.PageMode != 'Edit' && !upstreamValue.UpstreamName.startsWith(upstreamValue.EnvironmentName + '-')) {
@@ -129,35 +110,33 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
         key = '/' + upstreamValue.EnvironmentName + '_' + upstreamValue.UpstreamName + '/config';
       }
 
-      accountMappingService.GetAccountForEnvironment(upstreamValue.EnvironmentName).then(function (accountName) {
+      accountMappingService.getAccountForEnvironment(upstreamValue.EnvironmentName).then(function (accountName) {
 
-        var params = {
-          account: accountName,
-          key: key,
-          expectedVersion: $scope.Version,
-          data: {
-            Value: upstreamValue,
-          },
-        };
+        var saveMethod;
+        var data;
 
         var activeHosts = GetActiveHostCount();
-        if (activeHosts == 0) {
-          modal.confirmation({
+        var promise;
+        if (activeHosts === 0) {
+          promise = modal.confirmation({
             title: 'No Active Upstream Hosts',
             message: 'Are you sure you want to save this upstream with no active hosts?',
             action: 'Save',
-          }).then(function () {
-            saveMethod(params).then(function () {
-              cachedResources.config.lbUpstream.flush();
-              BackToSummary(upstreamValue.EnvironmentName);
-            });
           });
         } else {
-          saveMethod(params).then(function () {
-            cachedResources.config.lbUpstream.flush();
-            BackToSummary(upstreamValue.EnvironmentName);
-          });
+          promise = $q.when();
         }
+
+        promise.then(function () {
+          if ($scope.PageMode === 'Edit') {
+            return $scope.LBUpstream.update(key);
+          } else {
+            return $scope.LBupstream.save(key);
+          }
+        }).then(function () {
+          cachedResources.config.lbUpstream.flush();
+          BackToSummary(upstreamValue.EnvironmentName);
+        });
 
       });
     };

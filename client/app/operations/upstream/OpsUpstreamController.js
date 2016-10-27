@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsUpstreamController',
-  function ($scope, $routeParams, $location, $uibModal, $q, resources, QuerySync, cachedResources, accountMappingService, modal) {
+  function ($scope, $routeParams, $location, $uibModal, $q, $http, resources, QuerySync, cachedResources, accountMappingService, modal) {
     var vm = this;
     var querySync;
     var SHOW_ALL_OPTION = 'Any';
@@ -145,12 +145,12 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
         details: ['Note: In most cases it is better to use <b>Toggle Service</b> instead when doing Blue/Green cutovers as this performs additional validation and copes with multiple upstreams.'],
         action: 'Toggle Upstream',
       }).then(function () {
-        accountMappingService.GetAccountForEnvironment(environmentName).then(function (awsAccount) {
-          resources.environment(environmentName)
-            .inAWSAccount(awsAccount)
-            .toggleSlices()
-            .byUpstream(upstreamName)
-            .do(function (result) { vm.refresh(); });
+        $http({
+          method: 'put',
+          url: '/api/v1/upstreams/' + upstreamName + '/slices/toggle?environment=' + environmentName,
+          data: {}
+        }).then(function() {
+          vm.refresh();
         });
       });
     };
@@ -202,15 +202,15 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     }
 
     function getSlice(port, service) {
-      if (service && service.Value && service.Value.BluePort == port) return 'Blue';
-      if (service && service.Value && service.Value.GreenPort == port) return 'Green';
+      if (_.get(service, 'Value.BluePort') === port) return 'Blue';
+      if (_.get(service, 'Value.GreenPort') === port) return 'Green';
       return 'Unknown';
     }
 
     function updateLBStatus() {
 
       // Read LBs for this environment
-      accountMappingService.GetEnvironmentLoadBalancers(vm.selectedEnvironment).then(function (lbs) {
+      accountMappingService.getEnvironmentLoadBalancers(vm.selectedEnvironment).then(function (lbs) {
 
         // Clear existing data
         vm.data.forEach(function (upstreamHost) {
@@ -246,8 +246,6 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
           }, function error(err) {
             var message = 'Unable to retrieve data for ' + lb + ': <br/><br/>' + err.data;
             $scope.$emit('error', { data: message });
-
-            console.log(message);
           });
 
         });

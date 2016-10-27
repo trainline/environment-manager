@@ -80,7 +80,7 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
         $scope.PageMode = mode ? mode : 'Edit';
         if ($scope.PageMode == 'Edit' || $scope.PageMode == 'Copy') {
 
-          accountMappingService.GetAccountForEnvironment(environment).then(function (accountName) {
+          accountMappingService.getAccountForEnvironment(environment).then(function (accountName) {
 
             var params = {
               account: accountName,
@@ -122,7 +122,7 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
     $scope.Save = function () {
       var saveMethod = $scope.PageMode == 'Edit' ? resources.config.lbSettings.put : resources.config.lbSettings.post;
 
-      accountMappingService.GetAccountForEnvironment($scope.LBSetting.EnvironmentName).then(function (accountName) {
+      accountMappingService.getAccountForEnvironment($scope.LBSetting.EnvironmentName).then(function (accountName) {
 
         var params = {
           account: accountName,

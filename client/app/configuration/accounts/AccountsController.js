@@ -35,13 +35,13 @@ angular.module('EnvironmentManager.configuration').controller('AccountsControlle
     };
 
     vm.loadData = function () {
-      cachedResources.config.awsAccounts.all().then(function (data) {
+      cachedResources.config.accounts.all().then(function (data) {
         updateAccounts(data)
       });
     };
 
     vm.refreshData = function () {
-      cachedResources.config.awsAccounts.flush();
+      cachedResources.config.accounts.flush();
       vm.loadData();
     };
 

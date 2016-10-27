@@ -1,40 +1,40 @@
 <div class="row">
-    <div class="col-md-12"><h2>AMI Versions and Uptime</h2></div>
-    <div id="RefreshData">
-        <span class="glyphicon glyphicon-refresh" ng-click="Refresh()" title="Refresh data"></span>
-    </div>
+  <div class="col-md-12"><h2>AMI Versions and Uptime</h2></div>
+  <div id="RefreshData">
+    <span class="glyphicon glyphicon-refresh" ng-click="Refresh()" title="Refresh data"></span>
+  </div>
 </div>
 <form id="SearchFilter" class="form-inline">
-    <div class="form-group">
-        <label class="control-label text-left">Environment:</label>
-    </div>
-    <div class="form-group">
-        <select class="form-control" ng-model="SelectedEnvironment" ng-change="Refresh()">
-            <option ng-repeat="(environmentName, environment) in EnvironmentsList"
-                    ng-selected="{{environmentName == SelectedEnvironment}}" 
-                    value="{{environmentName}}">{{environmentName}}</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label class="control-label text-left">Owning Cluster:</label>
-    </div>
-    <div class="form-group">
-        <select class="form-control" ng-model="SelectedOwningCluster" ng-change="Refresh()">
-            <option ng-repeat="c in OwningClustersList" ng-selected="{{c == SelectedOwningCluster}}" value="{{c}}">{{c}}</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label class="control-label text-left">Server Role:</label>
-    </div>
-    <div class="form-group">
-        <input type="search" name="ServerRole" class="form-control" ng-model="SelectedServerRole" ng-change="UpdateFilter()" />
-    </div>
-    <div class="form-group">
-        <label class="control-label text-left">Current AMI:</label>
-    </div>
-    <div class="form-group">
-        <input type="search" name="CurrentAMI" class="form-control" ng-model="SelectedAmi" ng-change="UpdateFilter()" />
-    </div>
+  <div class="form-group">
+    <label class="control-label text-left">Environment:</label>
+  </div>
+  <div class="form-group">
+    <select class="form-control" ng-model="SelectedEnvironment" ng-change="Refresh()">
+      <option ng-repeat="(environmentName, environment) in EnvironmentsList"
+      ng-selected="{{environmentName == SelectedEnvironment}}" 
+      value="{{environmentName}}">{{environmentName}}</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="control-label text-left">Owning Cluster:</label>
+  </div>
+  <div class="form-group">
+    <select class="form-control" ng-model="SelectedOwningCluster" ng-change="Refresh()">
+      <option ng-repeat="c in OwningClustersList" ng-selected="{{c == SelectedOwningCluster}}" value="{{c}}">{{c}}</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="control-label text-left">Server Role:</label>
+  </div>
+  <div class="form-group">
+    <input type="search" name="ServerRole" class="form-control" ng-model="SelectedServerRole" ng-change="UpdateFilter()" />
+  </div>
+  <div class="form-group">
+    <label class="control-label text-left">Current AMI:</label>
+  </div>
+  <div class="form-group">
+    <input type="search" name="CurrentAMI" class="form-control" ng-model="SelectedAmi" ng-change="UpdateFilter()" />
+  </div>
 </form>
 
 <hr />
@@ -42,71 +42,71 @@
 <spinner ng-show="DataLoading"></spinner>
 
 <div class="row" ng-show="!DataLoading">
-    <div class="col-md-12" ng-if="Data.length == 0">
-        <p>No matching servers found</p>
-    </div>
-    <div class="col-md-12" ng-if="Data.length > 0">
-        <!-- TODO: UI Grid control -->
-        <table class="table">
-            <thead>
-                <tr>
-                    <th class="text-nowrap" ng-if="SelectedOwningCluster == 'Any'">Owning Cluster</th>
-                    <th class="text-nowrap">Instance</th>
-                    <th class="text-nowrap">Role</th>
-                    <th class="text-nowrap">Launch Date</th>
-                    <th class="text-nowrap">Status</th>
-                    <th class="text-nowrap">Current AMI</th>
-                    <th class="text-nowrap">Latest Stable AMI</th>
-                    <th class="text-nowrap">Age</th>
-                    <th class="command-header"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="server in Data | orderBy : ['DaysOutOfDate', 'Role', 'Status']">
-                    <td ng-if="SelectedOwningCluster == 'Any'">{{server.OwningCluster || '-'}}</td>
-                    <td>
-                        {{server.Name || '-'}}<br/>
-                        {{server.InstanceId || '-'}}<br/>
-                        {{server.InstanceType}}
-                    </td>
-                    <td>{{server.Role}}</td>
-                    <td><span am-time-ago="server.LaunchTime"></span><br />{{server.LaunchTime | amDateFormat:'DD/MM/YYYY HH:mm:ss'}}</td>
-                    <td>{{server.Status}}</td>
-                    <td>
-                        <span ng-if="server.Ami.Name">
-                        {{server.Ami.AmiType}} {{server.Ami.AmiVersion}}<br />
-                        {{server.Ami.CreationDate | amDateFormat:'DD/MM/YYYY HH:mm:ss'}}<br />
-                        ({{server.ImageId}})
-                        </span>
-                        <span ng-if="!server.Ami.Name">{{server.ImageId}}</span>
-                    </td>
-                    <td>
-                        <span ng-if="server.LatestAmi">
-                        {{server.LatestAmi.AmiType}} {{server.LatestAmi.AmiVersion}}<br />
-                        {{server.LatestAmi.CreationDate | amDateFormat:'DD/MM/YYYY HH:mm:ss'}}<br />
-                        ({{server.LatestAmi.ImageId}})
-                        </span>
-                        <span ng-if="!server.LatestAmi">-</span>
-                    </td>
-                    <td>
-                        <div ng-if="server.LatestAmi && server.UsingLatestAmi">
-                            <span class="glyphicon glyphicon-ok-sign ok"></span> Up to date
-                        </div>
+  <div class="col-md-12" ng-if="Data.length == 0">
+    <p>No matching servers found</p>
+  </div>
+  <div class="col-md-12" ng-if="Data.length > 0">
+    <!-- TODO: UI Grid control -->
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="text-nowrap" ng-if="SelectedOwningCluster == 'Any'">Owning Cluster</th>
+          <th class="text-nowrap">Instance</th>
+          <th class="text-nowrap">Role</th>
+          <th class="text-nowrap">Launch Date</th>
+          <th class="text-nowrap">Status</th>
+          <th class="text-nowrap">Current AMI</th>
+          <th class="text-nowrap">Latest Stable AMI</th>
+          <th class="text-nowrap">Age</th>
+          <th class="command-header"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="server in Data | orderBy : ['DaysOutOfDate', 'Role', 'Status']">
+          <td ng-if="SelectedOwningCluster == 'Any'">{{server.OwningCluster || '-'}}</td>
+          <td>
+            {{server.Name || '-'}}<br/>
+            {{server.InstanceId || '-'}}<br/>
+            {{server.InstanceType}}
+          </td>
+          <td>{{server.Role}}</td>
+          <td><span am-time-ago="server.LaunchTime"></span><br />{{server.LaunchTime | amDateFormat:'DD/MM/YYYY HH:mm:ss'}}</td>
+          <td>{{server.Status}}</td>
+          <td>
+            <span ng-if="server.Ami.Name">
+              {{server.Ami.AmiType}} {{server.Ami.AmiVersion}}<br />
+              {{server.Ami.CreationDate | amDateFormat:'DD/MM/YYYY HH:mm:ss'}}<br />
+              ({{server.ImageId}})
+            </span>
+            <span ng-if="!server.Ami.Name">{{server.ImageId}}</span>
+          </td>
+          <td>
+            <span ng-if="server.LatestAmi">
+              {{server.LatestAmi.AmiType}} {{server.LatestAmi.AmiVersion}}<br />
+              {{server.LatestAmi.CreationDate | amDateFormat:'DD/MM/YYYY HH:mm:ss'}}<br />
+              ({{server.LatestAmi.ImageId}})
+            </span>
+            <span ng-if="!server.LatestAmi">-</span>
+          </td>
+          <td>
+            <div ng-if="server.LatestAmi && server.UsingLatestAmi">
+              <span class="glyphicon glyphicon-ok-sign ok"></span> Up to date
+            </div>
 
-                        <div ng-if="server.LatestAmi && !server.UsingLatestAmi">
-                            <span class="glyphicon glyphicon-exclamation-sign warning"></span> {{server.DaysOutOfDate}} Days
-                        </div>
+            <div ng-if="server.LatestAmi && !server.UsingLatestAmi">
+              <span class="glyphicon glyphicon-exclamation-sign warning"></span> {{server.DaysOutOfDate}} Days
+            </div>
 
-                        <div ng-if="!server.LatestAmi">
-                            <span>-</span>
-                        </div>
-                    </td>
-                    <td class="command command-patchServer">
-                        <span class="glyphicon glyphicon-cog" title="View/Patch ASG" ng-click="EditAutoScalingGroup(server['aws:autoscaling:groupName'])"></span> 
-                        <a href="" ng-click="EditAutoScalingGroup(server['aws:autoscaling:groupName'])">Update ASG</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+            <div ng-if="!server.LatestAmi">
+              <span>-</span>
+            </div>
+          </td>
+          <td class="command command-patchServer">
+            <span class="glyphicon glyphicon-cog" title="View/Patch ASG" ng-click="EditAutoScalingGroup(server['aws:autoscaling:groupName'])"></span> 
+            <a href="" ng-click="EditAutoScalingGroup(server['aws:autoscaling:groupName'])">Update ASG</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

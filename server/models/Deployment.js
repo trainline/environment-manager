@@ -3,6 +3,7 @@
 
 let _ = require('lodash');
 let assertContract = require('modules/assertContract');
+let deploymentsHelper = require('modules/queryHandlersUtil/deployments-helper');
 
 class Deployment {
 
@@ -24,6 +25,10 @@ class Deployment {
     });
 
     _.assign(this, data);
+  }
+
+  getById(key, account) {
+    return deploymentsHelper.get({ key, account })
   }
   
 }

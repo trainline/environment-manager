@@ -16,7 +16,7 @@ module.exports = {
   exportable: true,
   importable: true,
   docs: {
-      description: 'Service',
-      tags: ['Services']
+    description: 'Service',
+    tags: ['Services']
   }
 };

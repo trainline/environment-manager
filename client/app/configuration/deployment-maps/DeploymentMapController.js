@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('DeploymentMapController',
-  function ($scope, $routeParams, $location, $q, $uibModal, resources, cachedResources, modal, deploymentMapConverter) {
+  function ($scope, $routeParams, $location, $q, $uibModal, QuerySync, resources, cachedResources, modal, deploymentMapConverter, DeploymentMap) {
 
     var vm = this;
 
@@ -19,13 +19,30 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
 
     vm.dataFound = false;
     vm.dataLoading = true;
-    var version = 0;
+
+    var deploymentMapName = $routeParams['deploymentmap'];
+
+    var querySync = new QuerySync(vm, {
+      cluster: {
+        property: 'selectedOwningCluster',
+        default: SHOW_ALL_OPTION,
+      },
+      service: {
+        property: 'serviceName',
+        default: '',
+      },
+      server: {
+        property: 'serverRole',
+        default: '',
+      },
+      open_server: {
+        property: 'openServerRoleName',
+        default: null,
+      }
+    });
 
     function init() {
-      var deploymentMapName = $routeParams['deploymentmap'];
-      var cluster = $routeParams['cluster'];
-      var service = $routeParams['service'];
-      var server = $routeParams['server'];
+      querySync.init();
 
       userHasPermission = user.hasPermission({ access: 'PUT', resource: '/config/deploymentmaps/' + deploymentMapName });
 
@@ -34,13 +51,13 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
           vm.owningClustersList = [SHOW_ALL_OPTION].concat(_.map(clusters, 'ClusterName')).sort();
         }),
       ]).then(function () {
-        if (deploymentMapName) {
-          vm.selectedOwningCluster = cluster || SHOW_ALL_OPTION;
-          vm.serverRole = server || '';
-          vm.serviceName = service || '';
-          readDeploymentMap(deploymentMapName);
-        }
-      });
+        return readDeploymentMap(deploymentMapName);
+      }).then(function() {
+        if (vm.openServerRoleName !== null) {
+          var target = _.find(vm.deploymentTargets, { ServerRoleName: vm.openServerRoleName });
+          showTargetDialog(target, 'Edit');
+        }  
+      })
     }
 
     vm.canUser = function () {
@@ -49,9 +66,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
 
     vm.search = function () {
 
-      $location.search('cluster', vm.selectedOwningCluster);
-      $location.search('service', vm.serviceName || null);
-      $location.search('server', vm.serverRole || null);
+      querySync.updateQuery();
 
       // Client side filter of Server Roles/targets based on user selections
       vm.deploymentTargets = vm.deploymentMap.Value.DeploymentTarget.filter(function (target) {
@@ -175,12 +190,22 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
           },
         },
       });
+
+      if (target !== null) {
+        vm.openServerRoleName = target.ServerRoleName;
+        querySync.updateQuery();
+      }
+
+      instance.result['finally'](function() {
+        vm.openServerRoleName = null;
+        querySync.updateQuery();
+      });
       return instance;
     }
 
     function readDeploymentMap(mapName) {
       vm.dataLoading = true;
-      resources.config.deploymentMaps.get({ key: mapName }).then(function (deploymentMap) {
+      return DeploymentMap.getByName(mapName).then(function (deploymentMap) {
         deploymentMap.Value.DeploymentTarget = deploymentMap.Value.DeploymentTarget.map(deploymentMapConverter.toDeploymentTarget);
         vm.deploymentMap = deploymentMap;
         vm.deploymentTargets = deploymentMap.Value.DeploymentTarget;
@@ -192,7 +217,6 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
           });
         });
 
-        version = deploymentMap.Version;
         vm.dataFound = true;
         vm.search();
       }, function () {

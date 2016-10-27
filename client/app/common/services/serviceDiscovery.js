@@ -2,23 +2,18 @@
 'use strict';
 
 angular.module('EnvironmentManager.common')
-  .factory('serviceDiscovery', function($rootScope, $q, $http, $httpParamSerializer) {
+  .factory('serviceDiscovery', function($rootScope, $q, $http) {
 
     function defaultFailure(error) {
       $rootScope.$broadcast('error', error);
     }
 
-    function get(url, params) {
-      url = url + '?' + $httpParamSerializer(params);
-      return $http.get(url).then(function(response) {
-        return response.data;
-      }, defaultFailure);
-    }
-    
     return {
-      getASGState: function (accountName, environmentName, asgName) {
-        var path = ['api', 'environments', environmentName, 'servers', asgName];
-        return get(path.join('/'), { account: accountName });
+      getASGState: function (environmentName, asgName) {
+        var path = ['api', 'v1', 'environments', environmentName, 'servers', asgName];
+        return $http.get(path.join('/')).then(function (response) {
+          return response.data;
+        }, defaultFailure);
       }
     };
 

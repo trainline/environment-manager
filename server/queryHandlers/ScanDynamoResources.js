@@ -16,6 +16,7 @@ function* handler(query) {
     formatting: {
       exposeAudit: query.exposeAudit,
     },
+    suppressError: query.suppressError
   };
 
   return resource.all(params);

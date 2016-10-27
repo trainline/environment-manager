@@ -16,7 +16,7 @@ module.exports = {
   exportable: true,
   importable: true,
   docs: {
-      description: 'Upstream',
-      tags: ['Upstreams']
+    description: 'Upstream',
+    tags: ['Upstreams']
   }
 };

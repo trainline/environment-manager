@@ -2,95 +2,87 @@
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('DeploymentMapsController',
-  function ($scope, $routeParams, $location, $uibModal, $q, modal, resources, cachedResources) {
+  function ($scope, $routeParams, $location, $uibModal, $q, modal, resources, cachedResources, DeploymentMap) {
+    var vm = this;
 
-    $scope.Data = [];
+    vm.data = [];
 
     function init() {
-      $scope.dataLoading = true
-      $scope.canPost = user.hasPermission({ access: 'POST', resource: '/config/deploymentmaps/*' });
-      $scope.Refresh();
+      vm.dataLoading = true
+      vm.canPost = user.hasPermission({ access: 'POST', resource: '/config/deploymentmaps/*' });
+      vm.refresh();
     }
 
-    $scope.Refresh = function () {
-      $scope.dataLoading = true;
+    vm.refresh = function () {
+      vm.dataLoading = true;
       var environments = [];
       $q.all([
-        resources.config.deploymentMaps.all().then(function (deploymentMaps) {
-          $scope.Data = deploymentMaps.map(function (deploymentMap) {
+        DeploymentMap.getAll().then(function (deploymentMaps) {
+          vm.data = deploymentMaps.map(function (deploymentMap) {
             deploymentMap.UsedBy = [];
             return deploymentMap;
           });
 
-          for (var i in deploymentMaps) {
-            var deploymentMap = deploymentMaps[i];
-            var canDelete = user.hasPermission({ access: 'DELETE', resource: '/config/deploymentmaps/' + deploymentMap.DeploymentMapName });
-            if (canDelete) {
-              $scope.canDelete = true;
-              break;
-            }
-          };
+          vm.canDelete = _.some(deploymentMaps, function (deploymentMap) {
+            return user.hasPermission({ access: 'DELETE', resource: '/config/deploymentmaps/' + deploymentMap.DeploymentMapName });
+          });
         }),
 
         cachedResources.config.environments.all().then(function (envData) {
           environments = envData;
         }),
-      ]).then(function addUsedByEnvironmentsInfo() {
+      ]).then(function () {
         environments.forEach(function (env) {
-          var map = getDeploymentMapByName(env.Value.DeploymentMap);
-          if (map) {
+          var map = _.find(vm.data, { DeploymentMapName: env.Value.DeploymentMap });
+          if (map !== undefined) {
             map.UsedBy.push(env.EnvironmentName);
           }
         });
-        $scope.dataLoading = false;
+        vm.dataLoading = false;
       });
     };
 
-    $scope.canUser = function (action) {
-      if (action == 'post') return $scope.canPost;
-      if (action == 'delete') return $scope.canDelete;
+    vm.canUser = function (action) {
+      if (action == 'post') return vm.canPost;
+      if (action == 'delete') return vm.canDelete;
     };
 
-    $scope.NewItem = function () {
+    vm.newItem = function () {
       var instance = $uibModal.open({
         templateUrl: '/app/configuration/deployment-maps/deployment-maps-create-modal.html',
-        controller: 'DeploymentMapCreateController',
+        controller: 'DeploymentMapCreateController as vm',
       });
       instance.result.then(function () {
-        $scope.Refresh();
+        vm.refresh();
       });
     };
 
-    $scope.Delete = function (map) {
-      var name = map.DeploymentMapName;
+    vm.delete = function (deploymentMap) {
+      var name = deploymentMap.DeploymentMapName;
       modal.confirmation({
         title: 'Deleting a Deployment Map',
         message: 'Are you sure you want to delete the <strong>' + name + '</strong> Deployment Map?',
         action: 'Delete',
         severity: 'Danger',
       }).then(function () {
-        resources.config.deploymentMaps.delete({ key: name }).then(function () {
+        DeploymentMap.deleteByName(name).then(function () {
           cachedResources.config.deploymentMaps.flush();
-          $scope.Refresh();
+          vm.refresh();
         });
       });
     };
 
-    $scope.Compare = function (map) {
-      // TODO compare
-    };
-
-    $scope.ViewHistory = function (map) {
+    vm.viewHistory = function (map) {
       $scope.ViewAuditHistory('Deployment Map', map.DeploymentMapName);
     };
 
-    $scope.CountServices = function (map) {
+    vm.countServices = function (map) {
       return Enumerable.From(map.Value.DeploymentTarget).Sum(function (target) {
         return target.Services.length;
       });
     };
 
-    $scope.UsedBy = function (map) {
+    vm.usedBy = function (map) {
       var maxEnvironmentsToDisplay = 5;
       var displayUsedBy = angular.copy(map.UsedBy).sort();
       if (displayUsedBy.length > maxEnvironmentsToDisplay) {
@@ -104,14 +96,6 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapsCon
 
       return displayUsedBy.join(', ');
     };
-
-    function getDeploymentMapByName(mapName) {
-      for (var i = 0; i < $scope.Data.length; i++) {
-        if ($scope.Data[i].DeploymentMapName == mapName) {
-          return $scope.Data[i];
-        }
-      }
-    }
 
     init();
   });

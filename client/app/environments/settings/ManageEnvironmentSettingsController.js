@@ -2,35 +2,36 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ManageEnvironmentSettingsController',
-  function ($rootScope, $scope, $routeParams, $location, $q, modal, resources, cachedResources, configValidation, cron) {
+  function ($rootScope, $routeParams, $location, $q, modal, resources, cachedResources, configValidation, cron, Environment) {
+    var vm = this;
 
-    $scope.Environment = {};
-    $scope.EnvironmentVersion = 0;
-    $scope.Operations = {};
-    $scope.OperationsVersion = 0;
-    $scope.DataFound = false;
-    $scope.DataLoading = true;
-    $scope.OwningClustersList = [];
-    $scope.DeploymentMapsList = [];
+    vm.environment = {};
+    vm.environmentVersion = 0;
+    vm.operations = {};
+    vm.operationsVersion = 0;
+    vm.dataFound = false;
+    vm.dataLoading = true;
+    vm.owningClustersList = [];
+    vm.deploymentMapsList = [];
 
-    $scope.EnvironmentValidationNode = {};
-    $scope.ValidationModes = [{ Name: 'Validation errors only', Value: false }, { Name: 'All dependencies', Value: true }];
-    $scope.SelectedValidationMode = { Mode: false };
+    vm.environmentValidationNode = {};
+    vm.validationModes = [{ Name: 'Validation errors only', Value: false }, { Name: 'All dependencies', Value: true }];
+    vm.selectedValidationMode = { Mode: false };
 
-    $scope.DependentServices = [];
-    $scope.DependentLBSettings = [];
+    vm.dependentServices = [];
+    vm.dependentLBSettings = [];
 
-    $scope.ValidationTabActive = false;
-    $scope.ScheduleTabActive = false;
+    vm.validationTabActive = false;
+    vm.scheduleTabActive = false;
 
-    $scope.NewEnvironment = {
+    vm.newEnvironment = {
       OwningCluster: '',
       DeploymentMap: '',
       CodeDeployBucket: '',
       Description: '',
     };
 
-    $scope.NewSchedule = {
+    vm.newSchedule = {
       Type: '',
       DefaultSchedule: '',
     };
@@ -39,54 +40,53 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
 
       var defaultTab = $routeParams['tab'];
       var environmentName = GetActiveEnvironment();
-      $scope.Environment.EnvironmentName = environmentName;
+      vm.environment.EnvironmentName = environmentName;
 
-      $scope.userHasPermission = user.hasPermission({ access: 'PUT', resource: '/config/environments/' + environmentName });
+      vm.userHasPermission = user.hasPermission({ access: 'PUT', resource: '/config/environments/' + environmentName });
 
-      if (defaultTab && defaultTab == 'validation') $scope.ValidationTabActive = true;
-      if (defaultTab && defaultTab == 'schedule') $scope.ScheduleTabActive = true;
+      if (defaultTab && defaultTab == 'validation') vm.validationTabActive = true;
+      if (defaultTab && defaultTab == 'schedule') vm.scheduleTabActive = true;
 
       $q.all([
         cachedResources.config.clusters.all().then(function (clusters) {
-          $scope.OwningClustersList = _.map(clusters, 'ClusterName').sort();
+          vm.owningClustersList = _.map(clusters, 'ClusterName').sort();
         }),
 
         cachedResources.config.deploymentMaps.all().then(function (deploymentMaps) {
-          $scope.DeploymentMapsList = _.map(deploymentMaps, 'DeploymentMapName');
+          vm.deploymentMapsList = _.map(deploymentMaps, 'DeploymentMapName');
         }),
       ]).then(function () {
-        $scope.Refresh();
+        vm.refresh();
       });
     }
 
-    $scope.canUser = function () {
-      return $scope.userHasPermission;
+    vm.canUser = function () {
+      return vm.userHasPermission;
     };
 
-    $scope.Refresh = function () {
+    vm.refresh = function () {
 
-      $scope.DataLoading = true;
+      vm.dataLoading = true;
 
       function assignToTheScope(configuration, operations) {
 
-        $scope.Environment = configuration;
-        $scope.EnvironmentVersion = configuration.Version;
+        vm.environment = configuration;
+        vm.environmentVersion = configuration.Version;
 
-        $scope.Operations = operations;
-        $scope.OperationsVersion = operations.Version;
+        vm.operations = operations;
+        vm.operationsVersion = operations.Version;
 
         var scheduleAction = GetScheduleAction(operations.Value);
-        $scope.Operations.getScheduleAction = function () {
-          return scheduleAction; };
+        vm.operations.getScheduleAction = function () { return scheduleAction; };
 
-        $scope.NewEnvironment = {
+        vm.newEnvironment = {
           OwningCluster: configuration.Value.OwningCluster,
           DeploymentMap: configuration.Value.DeploymentMap,
           CodeDeployBucket: configuration.Value.CodeDeployBucket,
           Description: configuration.Value.Description,
         };
 
-        $scope.NewSchedule = {
+        vm.newSchedule = {
           DefaultSchedule: operations.Value.DefaultSchedule,
           Type: operations.Value.ScheduleAutomatically ? 'Automatic' : operations.Value.ManualScheduleUp ? 'On' : 'Off',
         };
@@ -94,70 +94,68 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       };
 
       // TODO: only do validation if tab active and on tab change. Will speed up page load a lot
-      configValidation.ValidateEnvironmentSetupCache($scope.Environment.EnvironmentName).then(function (validationNode) {
-        $scope.EnvironmentValidationNode = validationNode;
-        $scope.RefreshDependencies();
+      configValidation.ValidateEnvironmentSetupCache(vm.environment.EnvironmentName).then(function (validationNode) {
+        vm.environmentValidationNode = validationNode;
+        vm.refreshDependencies();
       }).then(function () {
 
         $q.all([
-          resources.config.environments.get({ key: $scope.Environment.EnvironmentName }),
-          resources.ops.environments.get({ key: $scope.Environment.EnvironmentName }),
+          resources.config.environments.get({ key: vm.environment.EnvironmentName }),
+          Environment.getSchedule(vm.environment.EnvironmentName),
         ]).then(function (results) {
           var configuration = results[0];
           var operations = results[1];
           assignToTheScope(configuration, operations);
 
-          $scope.DataFound = true;
+          vm.dataFound = true;
         }, function () {
 
-          $scope.DataFound = false;
+          vm.dataFound = false;
         }).finally(function () {
-          $scope.DataLoading = false;
+          vm.dataLoading = false;
         });
 
       });
     };
 
-    $scope.UseSpecificClicked = function () {
-      if (!$scope.NewSchedule.DefaultSchedule || $scope.NewSchedule.DefaultSchedule.indexOf(':') == -1) {
-        $scope.NewSchedule.DefaultSchedule = 'Start: 0 8 * * 1,2,3,4,5; Stop: 0 19 * * 1,2,3,4,5';
-        $scope.editing = true;
+    vm.useSpecificClicked = function () {
+      if (!vm.newSchedule.DefaultSchedule || vm.newSchedule.DefaultSchedule.indexOf(':') == -1) {
+        vm.newSchedule.DefaultSchedule = 'Start: 0 8 * * 1,2,3,4,5; Stop: 0 19 * * 1,2,3,4,5';
+        vm.editing = true;
       }
     };
 
-    $scope.NonSpecificClicked = function () {
-      $scope.editing = false;
+    vm.nonSpecificClicked = function () {
+      vm.editing = false;
     };
 
-    $scope.DoneClicked = function () {
-      $scope.editing = false;
-      if ($scope.NewSchedule.DefaultSchedule.indexOf(':') == -1) {
-        $scope.NewSchedule.Type = 'On';
+    vm.doneClicked = function () {
+      vm.editing = false;
+      if (vm.newSchedule.DefaultSchedule.indexOf(':') == -1) {
+        vm.newSchedule.Type = 'On';
       }
     };
 
-    $scope.ShouldShowEditor = function () {
-      return $scope.NewSchedule.Type == 'Automatic' && $scope.editing == true;
+    vm.shouldShowEditor = function () {
+      return vm.newSchedule.Type == 'Automatic' && vm.editing == true;
     };
 
-    $scope.EditClicked = function () {
-      $scope.editing = true;
+    vm.editClicked = function () {
+      vm.editing = true;
     };
 
-    $scope.Save = function () {
+    vm.save = function () {
 
       // Update Environment with form values
-      $scope.Environment.Value.OwningCluster = $scope.NewEnvironment.OwningCluster;
-      $scope.Environment.Value.DeploymentMap = $scope.NewEnvironment.DeploymentMap;
-      $scope.Environment.Value.CodeDeployBucket = $scope.NewEnvironment.CodeDeployBucket;
-      $scope.Environment.Value.Description = $scope.NewEnvironment.Description;
+      vm.environment.Value.OwningCluster = vm.newEnvironment.OwningCluster;
+      vm.environment.Value.DeploymentMap = vm.newEnvironment.DeploymentMap;
+      vm.environment.Value.CodeDeployBucket = vm.newEnvironment.CodeDeployBucket;
+      vm.environment.Value.Description = vm.newEnvironment.Description;
 
       var params = {
-        key: $scope.Environment.EnvironmentName,
-        expectedVersion: $scope.EnvironmentVersion,
-        data: {
-          Value: $scope.Environment.Value,
-        },
+        key: vm.environment.EnvironmentName,
+        expectedVersion: vm.environmentVersion,
+        data: vm.environment.Value,
       };
       resources.config.environments.put(params).then(function () {
         cachedResources.config.environments.flush();
@@ -165,23 +163,23 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
           title: 'Environment Settings Saved',
           message: 'Environment settings saved successfully.',
         }).then(function () {
-          $scope.Refresh();
+          vm.refresh();
         });
       });
     };
 
-    $scope.ApplySchedule = function () {
+    vm.applySchedule = function () {
 
       // Update Environment with form values
-      $scope.Operations.Value.ScheduleAutomatically = $scope.NewSchedule.Type == 'Automatic';
-      $scope.Operations.Value.ManualScheduleUp = $scope.NewSchedule.Type == 'On';
-      $scope.Operations.Value.DefaultSchedule = $scope.NewSchedule.DefaultSchedule;
+      vm.operations.Value.ScheduleAutomatically = vm.newSchedule.Type == 'Automatic';
+      vm.operations.Value.ManualScheduleUp = vm.newSchedule.Type == 'On';
+      vm.operations.Value.DefaultSchedule = vm.newSchedule.DefaultSchedule;
 
       var params = {
-        key: $scope.Operations.EnvironmentName,
-        expectedVersion: $scope.OperationsVersion,
+        key: vm.operations.EnvironmentName,
+        expectedVersion: vm.operationsVersion,
         data: {
-          Value: $scope.Operations.Value,
+          Value: vm.operations.Value,
         },
       };
       resources.ops.environments.put(params).then(function () {
@@ -190,14 +188,14 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
           title: 'Environment Schedule Updated',
           message: 'Environment schedule saved successfully.<br/><br/>Note: It may take up to 10 minutes for schedule changes to result in servers being turned on or off.',
         }).then(function () {
-          $scope.Refresh();
+          vm.refresh();
         });
       });
     };
 
-    $scope.Delete = function () {
+    vm.delete = function () {
       // TODO: Need proper dialog to clear up resources, uninstall etc. show progress, send alert etc. This just added for basic CRUD support
-      var name = $scope.Environment.EnvironmentName;
+      var name = vm.environment.EnvironmentName;
       modal.confirmation({
         title: 'Deleting an Environment',
         message: 'Are you sure you want to delete the <strong>' + name + '</strong> Environment?',
@@ -212,12 +210,12 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       });
     };
 
-    $scope.RefreshDependencies = function () {
-      $scope.DependentServices = GetDependentServices();
-      $scope.DependentLBSettings = GetDependentLBs();
+    vm.refreshDependencies = function () {
+      vm.dependentServices = GetDependentServices();
+      vm.dependentLBSettings = GetDependentLBs();
     };
 
-    $scope.BrowseToUpstream = function (upstreamNode) {
+    vm.browseToUpstream = function (upstreamNode) {
       cachedResources.config.lbUpstream.all().then(function (upstreams) {
         var upstream = upstreams.filter(function (up) {
           return up.Value.UpstreamName == upstreamNode.EntityName;
@@ -235,12 +233,12 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
     };
 
     function GetDependentServices() {
-      var nodes = $scope.EnvironmentValidationNode.Children;
+      var nodes = vm.environmentValidationNode.Children;
       var serviceNodes = [];
       if (nodes) {
         var deploymentMap = GetNodes(nodes, 'DeploymentMap', true)[0];
         if (deploymentMap && deploymentMap.Children) {
-          serviceNodes = GetNodes(deploymentMap.Children, 'Service', $scope.SelectedValidationMode.Mode);
+          serviceNodes = GetNodes(deploymentMap.Children, 'Service', vm.selectedValidationMode.Mode);
         }
       }
 
@@ -248,10 +246,10 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
     }
 
     function GetDependentLBs() {
-      var nodes = $scope.EnvironmentValidationNode.Children;
+      var nodes = vm.environmentValidationNode.Children;
       var lbNodes = [];
       if (nodes) {
-        lbNodes = GetNodes(nodes, 'LBSetting', $scope.SelectedValidationMode.Mode);
+        lbNodes = GetNodes(nodes, 'LBSetting', vm.selectedValidationMode.Mode);
       }
 
       return lbNodes;

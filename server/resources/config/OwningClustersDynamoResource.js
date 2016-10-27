@@ -12,7 +12,7 @@ module.exports = {
   exportable: true,
   importable: true,
   docs: {
-      description: 'Cluster',
-      tags: ['Clusters']
+    description: 'Cluster',
+    tags: ['Clusters']
   }
 };

@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ManageEnvironmentScheduleController',
-  function ($rootScope, $routeParams, $location, $q, modal, resources, cachedResources, configValidation, cron) {
+  function ($rootScope, $routeParams, $location, $q, modal, resources, cachedResources, configValidation, cron, Environment) {
 
     var PROTECTED_ACTION = 'SCHEDULE_ENVIRONMENT';
 
@@ -38,8 +38,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
         vm.OperationsVersion = operations.Version;
 
         var scheduleAction = GetScheduleAction(operations.Value);
-        vm.Operations.getScheduleAction = function () {
-          return scheduleAction; };
+        vm.Operations.getScheduleAction = function () { return scheduleAction; };
 
         vm.NewSchedule = {
           DefaultSchedule: operations.Value.DefaultSchedule,
@@ -47,7 +46,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
         };
       };
 
-      resources.ops.environments.get({ key: vm.Environment.EnvironmentName })
+      Environment.getSchedule(vm.Environment.EnvironmentName)
         .then(function (operations) {
           assignToTheScope(operations);
           vm.DataFound = true;
