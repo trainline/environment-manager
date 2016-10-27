@@ -34,7 +34,9 @@ function getInstances(query) {
 
     allInstances.forEach(instance => {
       let environmentName = getInstanceTagValue(instance, 'environment');
-      instance.Environment = findInIndex(environments, environmentName);
+
+      if (environmentName)
+        instance.Environment = findInIndex(environments, environmentName.toLowerCase());
 
       let asgName = getInstanceTagValue(instance, 'aws:autoscaling:groupName');
       instance.AutoScalingGroup = findInIndex(asgs, asgName);
@@ -73,8 +75,8 @@ function buildEnvironmentIndex(environmentData) {
 
   environmentData.forEach(env => {
     let environment = env.Value;
-    environment.Name = env.EnvironmentName;
-    environments[env.EnvironmentName] = environment;
+    environment.Name = env.EnvironmentName.toLowerCase();
+    environments[environment.Name] = environment;
   });
 
   return environments;
