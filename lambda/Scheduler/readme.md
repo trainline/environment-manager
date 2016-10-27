@@ -45,6 +45,7 @@ The root of the project must contain a config.json file which contains the setti
   "limitToEnvironment": "xxx",
   "whatIf": true,
   "listSkippedInstances": true,
+  "ignoreASGInstances": false,
   "em": {
     "host": "environment-manager-domain-name",
     "credentials": {
@@ -59,7 +60,8 @@ The root of the project must contain a config.json file which contains the setti
 ```
 
 - **limitToEnvironment**: An optional regular expression which, if provided, will cause the scheduler to limit processing to those instances with a matching 'environment' tag.
-- **whatIf**: If set to true this flag will prevent destructive operations such as starting and stopping instances from running. Successful responses will be simulated.
+- **ignoreASGInstances**: If set to true this flag will prevent destructive operations on instances inside ASGs. These instances will not be listed in the output.
+- **whatIf**: If set to true this flag will prevent all destructive operations from running. Successful responses will be simulated.
 - **em**: The hostname (or IP) and credentials needed to access the Environment Manager service which governs this AWS account.
 - **aws**: Configuration information provided to the AWS SDK when constructing the EC2 service.
 
