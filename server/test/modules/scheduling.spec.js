@@ -47,6 +47,15 @@ describe('scheduling', () => {
     expect(action.reason).to.equal(scheduling.skipReasons.explicitNoSchedule);
   });
 
+  it('should skip instances in maintenance mode', function() {
+    instance.Tags.push({ Key: 'MAINTENANCE', Value: 'TRUE' });
+
+    let action = scheduling.actionForInstance(instance);
+
+    expect(action.action).to.equal(scheduling.actions.skip);
+    expect(action.reason).to.equal(scheduling.skipReasons.maintenanceMode);
+  });
+
   let invalidCrons = ['rubbish', 'rubbish:* * * * *', ':', 'start:;', 'start:*;gah:']
 
   invalidCrons.forEach(cron => {
