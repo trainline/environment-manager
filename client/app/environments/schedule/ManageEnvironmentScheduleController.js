@@ -91,14 +91,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       vm.Operations.Value.ManualScheduleUp = vm.NewSchedule.Type == 'On';
       vm.Operations.Value.DefaultSchedule = vm.NewSchedule.DefaultSchedule;
 
-      var params = {
-        key: vm.Operations.EnvironmentName,
-        expectedVersion: vm.OperationsVersion,
-        data: {
-          Value: vm.Operations.Value,
-        },
-      };
-      resources.ops.environments.put(params).then(function () {
+      Environment.putSchedule(vm.Operations.EnvironmentName, vm.OperationsVersion, vm.Operations.Value).then(function () {
         cachedResources.config.environments.flush();
         modal.information({
           title: 'Environment Schedule Updated',
