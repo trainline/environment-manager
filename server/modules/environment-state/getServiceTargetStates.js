@@ -9,8 +9,8 @@ let targetStates = require('modules/service-targets');
 
 const HEALTH_GOOD = Enums.HEALTH_STATUS.Healthy;
 const HEALTH_BAD = Enums.HEALTH_STATUS.Error;
-const SERVICE_ACTION = Enums.serviceAction.NAME;
-const SERVICE_INSTALL = Enums.serviceAction.INSTALL;
+const SERVICE_ACTION = Enums.ServiceAction.NAME;
+const SERVICE_INSTALL = Enums.ServiceAction.INSTALL;
 
 /**
  * Generate service health info (with checks list and pass / fail)

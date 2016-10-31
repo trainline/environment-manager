@@ -31,7 +31,7 @@ function* ScanServersStatusQueryHandler(query) {
       asgs = _.filter(asgs, (asg) => asg.getTag('OwningCluster') === query.filter.cluster);
     }
  
-	  return Promise.all(asgs.map(asg => {
+    return Promise.all(asgs.map(asg => {
       let instances = asg.Instances.map(asgInstance => {
         var instance = getInstance(allInstances, asgInstance.InstanceId);
 

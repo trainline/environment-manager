@@ -5,9 +5,9 @@ let co = require('co');
 let serviceTargets = require('modules/service-targets');
 let Enums = require('Enums');
 
-const SERVICE_ACTION = Enums.serviceAction.NAME;
-const SERVICE_INSTALL = Enums.serviceAction.INSTALL;
-const SERVICE_IGNORE = Enums.serviceAction.IGNORE;
+const SERVICE_ACTION = Enums.ServiceAction.NAME;
+const SERVICE_INSTALL = Enums.ServiceAction.INSTALL;
+const SERVICE_IGNORE = Enums.ServiceAction.IGNORE;
 
 function* ToggleTargetStatus(command) {
   let environment = command.environment;
@@ -23,7 +23,7 @@ function* ToggleTargetStatus(command) {
   service[SERVICE_ACTION] = enabled ? SERVICE_INSTALL : SERVICE_IGNORE;
 
   try {
-    let result = yield serviceTargets.setTargetState(environment, { key, value:service });
+    let result = yield serviceTargets.setTargetState(environment, { key, value: service });
     return service;
   } catch (error) {
     throw new Error(
