@@ -104,6 +104,8 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
 
         return match;
       });
+
+      updateLBStatus();
     };
 
     vm.showInstanceDetails = function (upstreamData) {
@@ -155,13 +157,6 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
       });
     };
 
-    $scope.vm = vm;
-
-    $scope.$watch('vm.data', function (newVal, oldVal) {
-      if (newVal) {
-        updateLBStatus();
-      }
-    });
 
     // Convert to flat hosts array. Match port numbers to Blue/Green slice for corresponding service. Add NGINX status
     function restructureUpstreams(upstreams) {
