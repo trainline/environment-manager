@@ -26,6 +26,7 @@ const skipReasons = {
   transitioning: 'This instance is currently transitioning between states',
   asgTransitioning: 'This instance is currently transitioning between ASG lifecycle states',
   asgLifecycleMismatches: 'The ASG has instances in different lifecycle states',
+  maintenanceMode: 'This instance is currently in Maintenance Mode',
   stateIsCorrect: 'The instance is already in the correct state'
 };
 
@@ -45,8 +46,8 @@ function actionForInstance(instance, dateTime) {
   if (!instance.Environment)
     return skip(skipReasons.noEnvironment);
 
-  if (asgHasMismatchedInstanceLifecycles(instance.AutoScalingGroup))
-    return skip(skipReasons.asgLifecycleMismatches);
+  if (isInMaintenanceMode(instance))
+    return skip(skipReasons.maintenanceMode);
 
   let foundSchedule = getScheduleForInstance(instance);
 
@@ -125,6 +126,11 @@ function switchOff(instance, source) {
   
 }
 
+function isInMaintenanceMode(instance) {
+  let maintenanceModeTagValue = getTagValue(instance, 'maintenance');
+  return maintenanceModeTagValue && maintenanceModeTagValue.toLowerCase() === 'true';
+}
+
 function getAsgInstanceLifeCycleState(instance) {
   let asgInstanceEntry = _.first(instance.AutoScalingGroup.Instances.filter(i => i.InstanceId.toLowerCase() == instance.InstanceId.toLowerCase()));
   
@@ -148,13 +154,6 @@ function getScheduleForInstance(instance) {
   
   return { parseResult: parseEnvironmentSchedule(instance.Environment), source: sources.environment };
 
-}
-
-function asgHasMismatchedInstanceLifecycles(asg) {
-  if (!asg)
-    return false;
-    
-  return _.uniq(asg.Instances.map(i => i.LifecycleState)).length > 1;
 }
 
 function parseEnvironmentSchedule(environmentSchedule) {

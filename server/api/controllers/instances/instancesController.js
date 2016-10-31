@@ -34,9 +34,7 @@ function getInstances(req, res, next) {
       filter['tag:Environment'] = environment;
     }
     if (maintenance === true) {
-      let entry = yield asgIpsDynamo.getByKey('MAINTENANCE_MODE', { accountName });
-      let ips = JSON.parse(entry.IPs);
-      filter['private-ip-address'] = ips;
+      filter['tag:Maintenance'] = 'true';
     }
     if (ipAddress !== undefined) {
       filter['private-ip-address'] = ipAddress;
@@ -106,6 +104,8 @@ function putInstanceMaintenance(req, res, next) {
         throw err;
       }
     }
+
+    yield instance.persistTag({ key: 'Maintenance', value: enable.toString() });
 
     /**
      * Now switch Maintenance mode (previously done in separate end point)

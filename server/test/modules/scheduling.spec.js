@@ -47,6 +47,15 @@ describe('scheduling', () => {
     expect(action.reason).to.equal(scheduling.skipReasons.explicitNoSchedule);
   });
 
+  it('should skip instances in maintenance mode', function() {
+    instance.Tags.push({ Key: 'MAINTENANCE', Value: 'TRUE' });
+
+    let action = scheduling.actionForInstance(instance);
+
+    expect(action.action).to.equal(scheduling.actions.skip);
+    expect(action.reason).to.equal(scheduling.skipReasons.maintenanceMode);
+  });
+
   let invalidCrons = ['rubbish', 'rubbish:* * * * *', ':', 'start:;', 'start:*;gah:']
 
   invalidCrons.forEach(cron => {
@@ -88,18 +97,6 @@ describe('scheduling', () => {
         AutoScalingGroupName: 'x',
         Instances: [ asgInstance ]
       };
-    });
-
-    it('should be skipped when the ASG has instances in different lifecycle states', function() {
-      instance.AutoScalingGroup.Instances = [
-        { InstanceId: 'instanceId', LifecycleState: 'Standby' },
-        { InstanceId: 'instanceId2', LifecycleState: 'InService' }
-      ];
-
-      let action = scheduling.actionForInstance(instance);
-
-      expect(action.action).to.equal(scheduling.actions.skip);
-      expect(action.reason).to.equal(scheduling.skipReasons.asgLifecycleMismatches);
     });
 
     it('should be skipped when transitioning between lifecycle states', function() {
