@@ -46,9 +46,6 @@ function actionForInstance(instance, dateTime) {
   if (!instance.Environment)
     return skip(skipReasons.noEnvironment);
 
-  if (asgHasMismatchedInstanceLifecycles(instance.AutoScalingGroup))
-    return skip(skipReasons.asgLifecycleMismatches);
-
   if (isInMaintenanceMode(instance))
     return skip(skipReasons.maintenanceMode);
 
@@ -157,13 +154,6 @@ function getScheduleForInstance(instance) {
   
   return { parseResult: parseEnvironmentSchedule(instance.Environment), source: sources.environment };
 
-}
-
-function asgHasMismatchedInstanceLifecycles(asg) {
-  if (!asg)
-    return false;
-    
-  return _.uniq(asg.Instances.map(i => i.LifecycleState)).length > 1;
 }
 
 function parseEnvironmentSchedule(environmentSchedule) {

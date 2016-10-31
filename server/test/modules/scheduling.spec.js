@@ -4,7 +4,7 @@ const expect = require('chai').expect;
 const _ = require('lodash');
 const scheduling = require('modules/scheduling');
 
-describe('scheduling', () => {
+describe.only('scheduling', () => {
 
   let instance, scheduleTag;
 
@@ -97,18 +97,6 @@ describe('scheduling', () => {
         AutoScalingGroupName: 'x',
         Instances: [ asgInstance ]
       };
-    });
-
-    it('should be skipped when the ASG has instances in different lifecycle states', function() {
-      instance.AutoScalingGroup.Instances = [
-        { InstanceId: 'instanceId', LifecycleState: 'Standby' },
-        { InstanceId: 'instanceId2', LifecycleState: 'InService' }
-      ];
-
-      let action = scheduling.actionForInstance(instance);
-
-      expect(action.action).to.equal(scheduling.actions.skip);
-      expect(action.reason).to.equal(scheduling.skipReasons.asgLifecycleMismatches);
     });
 
     it('should be skipped when transitioning between lifecycle states', function() {
