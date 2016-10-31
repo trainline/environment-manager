@@ -8,7 +8,7 @@ let dynamoHelper = new (require('api/api-utils/DynamoHelper'))(RESOURCE);
  * GET /config/upstreams
  */
 function getUpstreamsConfig(req, res, next) {
-  return dynamoHelper.getAll().then(data => res.json(data)).catch(next);
+  return dynamoHelper.getAllCrossAccount().then(data => res.json(data)).catch(next);
 }
 
 /**

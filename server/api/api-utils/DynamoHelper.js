@@ -6,6 +6,7 @@ const accountName = require('config').getUserValue('masterAccountName');
 const exposeAudit = 'version-only';
 
 let getAllValues = require('queryHandlers/ScanDynamoResources');
+let scanCrossAccount = require('queryHandlers/ScanCrossAccountDynamoResources');
 let getValue = require('queryHandlers/GetDynamoResource');
 let updateValue = require('commands/resources/UpdateDynamoResource');
 let createValue = require('commands/resources/CreateDynamoResource');
@@ -17,6 +18,10 @@ class DynamoHelper {
 
   constructor(resource) {
     this.resource = resource;
+  }
+
+  getAllCrossAccount(filter) {
+    return scanCrossAccount({ resource: this.resource, exposeAudit, filter })
   }
 
   /**
