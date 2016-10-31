@@ -4,6 +4,7 @@
 let _ = require('lodash');
 let taggable = require('./taggable');
 let ScanCrossAccountInstances = require('queryHandlers/ScanCrossAccountInstances');
+let ec2InstanceClientFactory = require('modules/clientFactories/ec2InstanceClientFactory');
 
 class Instance {
 
@@ -13,6 +14,18 @@ class Instance {
 
   getAutoScalingGroupName() {
     return this.getTag('aws:autoscaling:groupName');
+  }
+
+  persistTag(tag) {
+    return ec2InstanceClientFactory.create({ accountName: this.AccountName }).then(client => {
+      let parameters = {
+        instanceIds: [this.InstanceId],
+        tagKey: tag.key,
+        tagValue: tag.value,
+      };
+
+      return client.setTag(parameters);
+    });
   }
 
   static getById(instanceId) {
