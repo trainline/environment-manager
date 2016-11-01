@@ -10,14 +10,14 @@ let dynamoHelper = new (require('api/api-utils/DynamoHelper'))(RESOURCE);
 /**
  * GET /config/lb-settings
  */
-function getLBsettingsConfig(req, res, next) {
+function getLBSettingsConfig(req, res, next) {
   return dynamoHelper.getAll().then(data => res.json(data)).catch(next);
 }
 
 /**
  * GET /config/lb-settings/{environment}/{vHostName}
  */
-function getLBsettingConfigByName(req, res, next) {
+function getLBSettingConfigByName(req, res, next) {
   const key = req.swagger.params.environment.value;
   const range = req.swagger.params.vHostName.value;
   return dynamoHelper.getBySortKey(key, range).then(data => res.json(data)).catch(next);
@@ -26,7 +26,7 @@ function getLBsettingConfigByName(req, res, next) {
 /**
  * POST /config/lb-settings
  */
-function postLBsettingsConfig(req, res, next) {
+function postLBSettingsConfig(req, res, next) {
   const value = req.swagger.params.body.value;
   const pKey = value[PARTITION_KEY];
   const sKey = value[SORT_KEY];
@@ -40,7 +40,7 @@ function postLBsettingsConfig(req, res, next) {
 /**
  * PUT /config/lb-settings/{environment}/{vHostName}
  */
-function putLBsettingConfigByName(req, res, next) {
+function putLBSettingConfigByName(req, res, next) {
   const value = req.swagger.params.body.value;
   const pKey = req.swagger.params.environment.value;
   const sKey = req.swagger.params.vHostName.value;
@@ -56,7 +56,7 @@ function putLBsettingConfigByName(req, res, next) {
 /**
  * DELETE /config/lb-settings/{environment}/{vHostName}
  */
-function deleteLBsettingConfigByName(req, res, next) {
+function deleteLBSettingConfigByName(req, res, next) {
   const pKey = req.swagger.params.environment.value;
   const sKey = req.swagger.params.vHostName.value;
   const user = req.user;
@@ -67,9 +67,9 @@ function deleteLBsettingConfigByName(req, res, next) {
 }
 
 module.exports = {
-  getLBsettingsConfig,
-  getLBsettingConfigByName,
-  postLBsettingsConfig,
-  putLBsettingConfigByName,
-  deleteLBsettingConfigByName
+  getLBSettingsConfig,
+  getLBSettingConfigByName,
+  postLBSettingsConfig,
+  putLBSettingConfigByName,
+  deleteLBSettingConfigByName
 };
