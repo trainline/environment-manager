@@ -33,8 +33,7 @@ function postLBSettingsConfig(req, res, next) {
   const user = req.user;
 
   return dynamoHelper.createWithSortKey(pKey, sKey, { Value: value }, user)
-    .then(_ => res.status(201).end())
-    .catch(next);
+    .then(_ => res.status(201).end()).catch(next);
 }
 
 /**
@@ -47,10 +46,8 @@ function putLBSettingConfigByName(req, res, next) {
   const expectedVersion = req.swagger.params['expected-version'].value;
   const user = req.user;
 
-  return dynamoHelper
-    .updateWithSortKey(pKey, sKey, value, expectedVersion, user)
-    .then(_ => res.status(200).end())
-    .catch(next);
+  return dynamoHelper.updateWithSortKey(pKey, sKey, value, expectedVersion, user)
+    .then(_ => res.status(200).end()).catch(next);
 }
 
 /**
@@ -62,8 +59,7 @@ function deleteLBSettingConfigByName(req, res, next) {
   const user = req.user;
 
   return dynamoHelper.deleteWithSortKey(pKey, sKey, user)
-    .then(_ => res.status(200).end())
-    .catch(next);
+    .then(_ => res.status(200).end()).catch(next);
 }
 
 module.exports = {
