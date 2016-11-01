@@ -3,6 +3,8 @@
 
 const RESOURCE = 'config/lbupstream';
 let dynamoHelper = new (require('api/api-utils/DynamoHelper'))(RESOURCE);
+let Environment = require('models/Environment');
+let co = require('co');
 
 /**
  * GET /config/upstreams
@@ -19,7 +21,6 @@ function getUpstreamConfigByName(req, res, next) {
   return dynamoHelper.getByKey(key).then(data => res.json(data)).catch(next);
 }
 
-
 /**
  * POST /config/upstreams
  */
@@ -27,8 +28,12 @@ function postUpstreamsConfig(req, res, next) {
   let body = req.swagger.params.body.value;
   let user = req.user;
   let key = body.key;
+  let environmentName = body.Value.EnvironmentName;
 
-  return dynamoHelper.create(key, { Value: body.Value }, user).then(data => res.json(data)).catch(next);
+  co(function* () {
+    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+    dynamoHelper.create(key, { Value: body.Value }, user, { accountName }).then(data => res.json(data)).catch(next);
+  });
 }
 
 /**
@@ -39,8 +44,12 @@ function putUpstreamConfigByName(req, res, next) {
   let key = req.swagger.params.name.value
   let expectedVersion = req.swagger.params['expected-version'].value;
   let user = req.user;
+  let environmentName = body.EnvironmentName;
 
-  return dynamoHelper.update(key, { Value: body }, expectedVersion, user).then(data => res.json(data)).catch(next);
+  co(function* () {
+    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+    dynamoHelper.update(key, { Value: body }, expectedVersion, user).then(data => res.json(data)).catch(next);
+  });
 }
 
 /**

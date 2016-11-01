@@ -5,13 +5,15 @@ const RESOURCE = 'config/lbsettings';
 const PARTITION_KEY = 'EnvironmentName';
 const SORT_KEY = 'VHostName';
 
+let co = require('co');
 let dynamoHelper = new (require('api/api-utils/DynamoHelper'))(RESOURCE);
+let Environment = require('models/Environment');
 
 /**
  * GET /config/lb-settings
  */
 function getLBSettingsConfig(req, res, next) {
-  return dynamoHelper.getAll().then(data => res.json(data)).catch(next);
+  return dynamoHelper.getAllCrossAccount().then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -20,7 +22,10 @@ function getLBSettingsConfig(req, res, next) {
 function getLBSettingConfigByName(req, res, next) {
   const key = req.swagger.params.environment.value;
   const range = req.swagger.params.vHostName.value;
-  return dynamoHelper.getBySortKey(key, range).then(data => res.json(data)).catch(next);
+  co(function* () {
+    let accountName = yield Environment.getAccountNameForEnvironment(key);
+    return dynamoHelper.getBySortKey(key, range, { accountName })
+  }).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -28,12 +33,15 @@ function getLBSettingConfigByName(req, res, next) {
  */
 function postLBSettingsConfig(req, res, next) {
   const value = req.swagger.params.body.value;
-  const pKey = value[PARTITION_KEY];
-  const sKey = value[SORT_KEY];
+  const environmentName = value[PARTITION_KEY];
+  const vHostName = value[SORT_KEY];
   const user = req.user;
 
-  return dynamoHelper.createWithSortKey(pKey, sKey, { Value: value }, user)
-    .then(_ => res.status(201).end()).catch(next);
+  co(function* () {
+    let environmentName = value.EnvironmentName;
+    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+    return dynamoHelper.createWithSortKey(environmentName, vHostName, { Value: value }, user, { accountName });
+  }).then(_ => res.status(201).end()).catch(next);
 }
 
 /**
@@ -41,25 +49,29 @@ function postLBSettingsConfig(req, res, next) {
  */
 function putLBSettingConfigByName(req, res, next) {
   const value = req.swagger.params.body.value;
-  const pKey = req.swagger.params.environment.value;
-  const sKey = req.swagger.params.vHostName.value;
+  const environmentName = req.swagger.params.environment.value;
+  const vHostName = req.swagger.params.vHostName.value;
   const expectedVersion = req.swagger.params['expected-version'].value;
   const user = req.user;
 
-  return dynamoHelper.updateWithSortKey(pKey, sKey, value, expectedVersion, user)
-    .then(_ => res.status(200).end()).catch(next);
+  co(function* () {
+    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+    return dynamoHelper.updateWithSortKey(environmentName, vHostName, value, expectedVersion, user, { accountName });
+  }).then(_ => res.status(200).end()).catch(next);
 }
 
 /**
  * DELETE /config/lb-settings/{environment}/{vHostName}
  */
 function deleteLBSettingConfigByName(req, res, next) {
-  const pKey = req.swagger.params.environment.value;
-  const sKey = req.swagger.params.vHostName.value;
+  const environmentName = req.swagger.params.environment.value;
+  const vHostName = req.swagger.params.vHostName.value;
   const user = req.user;
 
-  return dynamoHelper.deleteWithSortKey(pKey, sKey, user)
-    .then(_ => res.status(200).end()).catch(next);
+  co(function* () {
+    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+    return dynamoHelper.deleteWithSortKey(environmentName, vHostName, user , { accountName });
+  }).then(_ => res.status(200).end()).catch(next);
 }
 
 module.exports = {

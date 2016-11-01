@@ -3,80 +3,88 @@
 
 let _ = require('lodash');
 let config = require('config');
+let co = require('co');
+let Environment = require('models/Environment');
 
-function getUpstream(accountName, upstreamName, user) {
-  const masterAccountName = config.getUserValue('masterAccountName');
-  var sender = require('modules/sender');
+function getUpstream(accountName, upstreamName) {
+  let sender = require('modules/sender');
 
-  var query = {
+  let query = {
     name: 'GetDynamoResource',
     key: upstreamName,
     resource: 'config/lbupstream',
-    accountName: accountName
+    accountName
   };
 
-  return sender.sendQuery({ query: query, user: user });
+  return sender.sendQuery({ query });
 }
 
-function getEnvironment(name, user) {
+function getEnvironment(name) {
   const masterAccountName = config.getUserValue('masterAccountName');
-  var sender = require('modules/sender');
-  var query = {
+  let sender = require('modules/sender');
+  let query = {
     name: 'GetDynamoResource',
     key: name,
     resource: 'config/environments',
     accountName: masterAccountName,
   };
 
-  return sender.sendQuery({ query: query, user: user });
+  return sender.sendQuery({ query });
 }
 
-function getModifyPermissionsForEnvironment(environmentName, user) {
-  return getEnvironment(environmentName, user).then(environment => {
-    if (environment) {
-      return {
-        cluster: environment.Value.OwningCluster.toLowerCase(),
-        environmentType: environment.Value.EnvironmentType.toLowerCase()
-      };
-    }
-    throw `Could not find environment: ${environmentName}`;
+function getModifyPermissionsForEnvironment(environmentName) {
+  return getEnvironment(environmentName).then((environment) => {
+    return {
+      cluster: environment.Value.OwningCluster.toLowerCase(),
+      environmentType: environment.Value.EnvironmentType.toLowerCase()
+    };
   });
 }
 
-function getEnvironmentPermissionsPromise(request) {
-  var user = request.user;
-  if (request.method === 'POST') {
-    return getModifyPermissionsForEnvironment(request.body.Value.EnvironmentName, user);
+function getEnvironmentPermissionsPromise(upstreamName, environmentName, accountName, method) {
+  if (method === 'POST') {
+    return getModifyPermissionsForEnvironment(environmentName);
   }
 
-  var upstreamName = request.params.key;
-  var accountName = request.params.account;
+  return getUpstream(accountName, upstreamName)
+    .then((upstream) => {
 
-  return getUpstream(accountName, upstreamName, request.user)
-  .then(upstream => {
+      if (upstream) {
+        let environmentName = upstream.Value.EnvironmentName;
+        return getModifyPermissionsForEnvironment(environmentName);
+      }
 
-    if (upstream) {
-      var environmentName = upstream.Value.EnvironmentName;
-      return getModifyPermissionsForEnvironment(environmentName, user);
-    }
-
-    throw `Could not find upstream: ${upstreamName}`;
-  });
+      throw `Could not find upstream: ${upstreamName}`;
+    });
 }
 
-exports.getRules = request => {
-  var r = /^\/(.*)\/config$/;
-  var match = r.exec(request.params.key);
-  var path = `/${request.params.account}/config/lbUpstream/${match[1]}`;
-  var getEnvironmentPermissions = getEnvironmentPermissionsPromise(request);
+exports.getRules = (request) => {
+  let r = /^\/(.*)\/config$/;
+  // TODO(Filip): remove this after switching all to V1 API
+  let upstreamName = request.params.key || request.params.name || request.params.body.key;
+  let accountName = request.params.account;
 
-  return getEnvironmentPermissions.then(envPermissions => {
-    return [{
-      resource: path,
-      access: request.method,
-      clusters: [envPermissions.cluster],
-      environmentTypes: [envPermissions.environmentType]
-    }];
+  return co(function* () {
+    let body = request.params.body;
+    let environmentName = body.EnvironmentName || body.Value.EnvironmentName;
+
+    if (accountName === undefined) {
+      accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+    }
+
+    let match = r.exec(upstreamName);
+    let path = `/${request.params.account}/config/lbUpstream/${match[1]}`;
+    let getEnvironmentPermissions = getEnvironmentPermissionsPromise(upstreamName, environmentName, accountName, request.method);
+
+    return getEnvironmentPermissions.then(envPermissions => {
+      return [{
+        resource: path,
+        access: request.method,
+        clusters: [ envPermissions.cluster ],
+        environmentTypes: [ envPermissions.environmentType ]
+      }];
+    });
+
   });
 };
 
