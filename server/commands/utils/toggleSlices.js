@@ -112,10 +112,10 @@ function UpstreamProvider(sender, toggleCommand, resourceName) {
       let upstreams = yield sender.sendQuery({ query, parent: toggleCommand });
       let filteredUpstreams = _.filter(upstreams, (upstream) => upstream.Value.EnvironmentName === toggleCommand.environmentName);
       if (toggleCommand.serviceName) {
-        filteredUpstreams = _.filter(upstreams, (upstream) => upstream.Value.ServiceName === toggleCommand.serviceName);
+        filteredUpstreams = _.filter(filteredUpstreams, (upstream) => upstream.Value.ServiceName === toggleCommand.serviceName);
       }
       if (toggleCommand.upstreamName) {
-        filteredUpstreams = _.filter(upstreams, (upstream) => upstream.Value.UpstreamName === toggleCommand.upstreamName);
+        filteredUpstreams = _.filter(filteredUpstreams, (upstream) => upstream.Value.UpstreamName === toggleCommand.upstreamName);
       }
 
       if (filteredUpstreams.length) return filteredUpstreams;
