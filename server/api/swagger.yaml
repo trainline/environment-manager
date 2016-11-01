@@ -1631,6 +1631,10 @@ paths:
           in: path
           type: string
           required: true
+        - name: account
+          in: query
+          type: string
+          required: true
       responses:
         200:
           description: The upstream config
@@ -1645,6 +1649,10 @@ paths:
       parameters:
         - name: name
           in: path
+          type: string
+          required: true
+        - name: account
+          in: query
           type: string
           required: true
       responses:

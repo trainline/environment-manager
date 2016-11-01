@@ -18,7 +18,8 @@ function getUpstreamsConfig(req, res, next) {
  */
 function getUpstreamConfigByName(req, res, next) {
   let key = req.swagger.params.name.value;
-  return dynamoHelper.getByKey(key).then(data => res.json(data)).catch(next);
+  let accountName = req.swagger.params.account.value;
+  return dynamoHelper.getByKey(key, { accountName }).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -32,8 +33,8 @@ function postUpstreamsConfig(req, res, next) {
 
   co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    dynamoHelper.create(key, { Value: body.Value }, user, { accountName }).then(data => res.json(data)).catch(next);
-  });
+    return dynamoHelper.create(key, { Value: body.Value }, user, { accountName });
+  }).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -48,8 +49,8 @@ function putUpstreamConfigByName(req, res, next) {
 
   co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    dynamoHelper.update(key, { Value: body }, expectedVersion, user).then(data => res.json(data)).catch(next);
-  });
+    return dynamoHelper.update(key, { Value: body }, expectedVersion, user)
+  }).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -58,7 +59,8 @@ function putUpstreamConfigByName(req, res, next) {
 function deleteUpstreamConfigByName(req, res, next) {
   let key = req.swagger.params.name.value
   let user = req.user;
-  return dynamoHelper.delete(key, user).then(data => res.json(data)).catch(next);
+  let accountName = req.swagger.params.account.value;
+  return dynamoHelper.delete(key, user, { accountName }).then(data => res.json(data)).catch(next);
 }
 
 module.exports = {
