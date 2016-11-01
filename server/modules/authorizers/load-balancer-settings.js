@@ -16,7 +16,7 @@ function getEnvironment(name, user) {
     accountName: masterAccountName,
   };
 
-  return sender.sendQuery({ query: query, user: user });
+  return sender.sendQuery({ query, user });
 }
 
 function getModifyPermissionsForEnvironment(environmentName, user) {
@@ -32,8 +32,10 @@ function getModifyPermissionsForEnvironment(environmentName, user) {
   });
 }
 
-exports.getRules = request => {
-  return getModifyPermissionsForEnvironment(request.params.key, request.user).then(envPermissions => {
+exports.getRules = (request) => {
+  // TODO(Filip): remove after removing old API
+  let environmentName = request.params.key || request.params.environment;
+  return getModifyPermissionsForEnvironment(environmentName, request.user).then(envPermissions => {
     return [{
       resource: request.url.replace(/\/+$/, ''),
       access: request.method,
