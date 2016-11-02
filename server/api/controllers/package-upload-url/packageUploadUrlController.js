@@ -64,24 +64,26 @@ function packageDoesNotExist(req) {
   return masterAccountClient.createS3Client()
   .then(client => client.headObject(params).promise())
   .then(
-    rsp => ({ title: 'The package already exists.', detail: `${rsp.LastModified}` }),
+    rsp => ({ title: 'The package already exists.', detail: `${rsp.LastModified}`, status: '409' }),
     err => (err.statusCode === 404 ? undefined : Promise.reject(err))
   );
 }
 
 function serviceExists(req) {
   let service = param('service')(req);
-  return serviceExistsRule(service);
+  return serviceExistsRule(service).then(e => Object.assign(e, { status: '422' }));
 }
 
 function environmentExists(req) {
   let environment = param('environment')(req);
-  return environmentExistsRule(environment);
+  return environmentExistsRule(environment).then(e => Object.assign(e, { status: '422' }));
 }
 
 function respondWithErrors(errors) {
   // Error format:  http://jsonapi.org/format/#errors
-  return response => response.status(422).json({ errors });
+  let statuses = _.flow(_.map(_.get('status')), _.uniq)(errors);
+  let status = (statuses.length === 1) ? statuses[0] : '422';
+  return response => response.status(status).json({ errors });
 }
 
 function validate(validationRules) {
