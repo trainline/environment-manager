@@ -197,8 +197,8 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     }
 
     function getSlice(port, service) {
-      if (_.get(service, 'Value.BluePort') === port) return 'Blue';
-      if (_.get(service, 'Value.GreenPort') === port) return 'Green';
+      if (_.toInteger(_.get(service, 'Value.BluePort')) === port) return 'Blue';
+      if (_.toInteger(_.get(service, 'Value.GreenPort')) === port) return 'Green';
       return 'Unknown';
     }
 
