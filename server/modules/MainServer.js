@@ -65,7 +65,7 @@ module.exports = function MainServer() {
       const PUBLIC_DIR = config.get('PUBLIC_DIR');
       logger.info(`Serving static files from "${PUBLIC_DIR}"`);
 
-      let staticPaths = ['*.js', '*.css', '*.html', '*.ico', '*.gif', '*.woff2', '*.ttf', '*.woff', '*.svg', '*.eot', '*.jpg', '*.png'];
+      let staticPaths = ['*.js', '*.css', '*.html', '*.ico', '*.gif', '*.woff2', '*.ttf', '*.woff', '*.svg', '*.eot', '*.jpg', '*.png', '*.map'];
       app.get(staticPaths, authentication.allowUnknown, express.static(PUBLIC_DIR));
       app.get('/', authentication.denyUnauthorized, express.static(PUBLIC_DIR));
 
