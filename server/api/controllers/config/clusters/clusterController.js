@@ -39,8 +39,7 @@ function putClusterConfigByName(req, res, next) {
   const cluster = req.swagger.params.cluster.value;
   const user = req.user;
 
-  return dynamoHelper
-    .update(key, { Value: cluster }, expectedVersion, user)
+  return dynamoHelper.update(key, { Value: cluster }, expectedVersion, user)
     .then(_ => res.status(200).end())
     .catch(next);
 }

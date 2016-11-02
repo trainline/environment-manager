@@ -3,12 +3,14 @@
 
 const RESOURCE = 'config/lbupstream';
 let dynamoHelper = new (require('api/api-utils/DynamoHelper'))(RESOURCE);
+let Environment = require('models/Environment');
+let co = require('co');
 
 /**
  * GET /config/upstreams
  */
 function getUpstreamsConfig(req, res, next) {
-  return dynamoHelper.getAll().then(data => res.json(data)).catch(next);
+  return dynamoHelper.getAllCrossAccount().then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -16,9 +18,9 @@ function getUpstreamsConfig(req, res, next) {
  */
 function getUpstreamConfigByName(req, res, next) {
   let key = req.swagger.params.name.value;
-  return dynamoHelper.getByKey(key).then(data => res.json(data)).catch(next);
+  let accountName = req.swagger.params.account.value;
+  return dynamoHelper.getByKey(key, { accountName }).then(data => res.json(data)).catch(next);
 }
-
 
 /**
  * POST /config/upstreams
@@ -27,8 +29,12 @@ function postUpstreamsConfig(req, res, next) {
   let body = req.swagger.params.body.value;
   let user = req.user;
   let key = body.key;
+  let environmentName = body.Value.EnvironmentName;
 
-  return dynamoHelper.create(key, { Value: body.Value }, user).then(data => res.json(data)).catch(next);
+  co(function* () {
+    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+    return dynamoHelper.create(key, { Value: body.Value }, user, { accountName });
+  }).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -39,8 +45,12 @@ function putUpstreamConfigByName(req, res, next) {
   let key = req.swagger.params.name.value
   let expectedVersion = req.swagger.params['expected-version'].value;
   let user = req.user;
+  let environmentName = body.EnvironmentName;
 
-  return dynamoHelper.update(key, { Value: body }, expectedVersion, user).then(data => res.json(data)).catch(next);
+  co(function* () {
+    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+    return dynamoHelper.update(key, { Value: body }, expectedVersion, user)
+  }).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -49,7 +59,8 @@ function putUpstreamConfigByName(req, res, next) {
 function deleteUpstreamConfigByName(req, res, next) {
   let key = req.swagger.params.name.value
   let user = req.user;
-  return dynamoHelper.delete(key, user).then(data => res.json(data)).catch(next);
+  let accountName = req.swagger.params.account.value;
+  return dynamoHelper.delete(key, user, { accountName }).then(data => res.json(data)).catch(next);
 }
 
 module.exports = {

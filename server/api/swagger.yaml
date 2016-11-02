@@ -1304,7 +1304,7 @@ paths:
   /config/lb-settings:
     x-swagger-router-controller: config/lb-settings/lbSettingsController
     get:
-      operationId: getLBsettingsConfig
+      operationId: getLBSettingsConfig
       summary: List all load balancer settings.
       tags:
         - Load Balancers
@@ -1316,7 +1316,7 @@ paths:
             items:
               type: object
     post:
-      operationId: postLBsettingsConfig
+      operationId: postLBSettingsConfig
       summary: Create a load balancer setting.
       tags:
         - Load Balancers
@@ -1333,7 +1333,7 @@ paths:
   /config/lb-settings/{environment}/{vHostName}:
     x-swagger-router-controller: config/lb-settings/lbSettingsController
     get:
-      operationId: getLBsettingConfigByName
+      operationId: getLBSettingConfigByName
       summary: Get a specific load balancer setting.
       tags:
         - Load Balancers
@@ -1352,7 +1352,7 @@ paths:
           schema:
             type: object
     put:
-      operationId: putLBsettingConfigByName
+      operationId: putLBSettingConfigByName
       summary: Update a load balancer setting.
       tags:
         - Load Balancers
@@ -1376,7 +1376,7 @@ paths:
         200:
           description: OK
     delete:
-      operationId: deleteLBsettingConfigByName
+      operationId: deleteLBSettingConfigByName
       summary: Delete an load balancer setting.
       tags:
         - Load Balancers
@@ -1631,6 +1631,10 @@ paths:
           in: path
           type: string
           required: true
+        - name: account
+          in: query
+          type: string
+          required: true
       responses:
         200:
           description: The upstream config
@@ -1645,6 +1649,10 @@ paths:
       parameters:
         - name: name
           in: path
+          type: string
+          required: true
+        - name: account
+          in: query
           type: string
           required: true
       responses:

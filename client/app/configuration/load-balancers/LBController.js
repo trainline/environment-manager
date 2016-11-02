@@ -3,7 +3,7 @@
 
 // Manage specific LoadBalancer Setting
 angular.module('EnvironmentManager.configuration').controller('LBController',
-  function ($scope, $routeParams, $location, $q, resources, cachedResources, modal, accountMappingService) {
+  function ($scope, $routeParams, $location, $q, $http, resources, cachedResources, modal, accountMappingService) {
 
     $scope.LBSetting = {};
     $scope.LBUpstreamData = [];
@@ -120,20 +120,35 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
     };
 
     $scope.Save = function () {
-      var saveMethod = $scope.PageMode == 'Edit' ? resources.config.lbSettings.put : resources.config.lbSettings.post;
 
       accountMappingService.getAccountForEnvironment($scope.LBSetting.EnvironmentName).then(function (accountName) {
 
-        var params = {
-          account: accountName,
-          key: $scope.LBSetting.EnvironmentName,
-          range: $scope.LBSetting.VHostName,
-          expectedVersion: $scope.Version,
-          data: {
-            Value: JSON.parse($scope.LBSetting.Value),
-          },
-        };
-        saveMethod(params).then(function () {
+        var key = $scope.LBSetting.EnvironmentName;
+        var range = $scope.LBSetting.VHostName;
+        var value = JSON.parse($scope.LBSetting.Value);
+
+        var promise;
+        if ($scope.PageMode == 'Edit') {
+          promise = $http({
+            method: 'put',
+            url: '/api/v1/config/lb-settings/' + key + '/' + range,
+            data: value,
+            headers: { 'expected-version': $scope.Version }
+          });
+        } else {
+          promise = $http({
+            method: 'post',
+            url: '/api/v1/config/lb-settings',
+            data: {
+              EnvironmentName: $scope.LBSetting.EnvironmentName,
+              VHostName: $scope.LBSetting.VHostName,
+              Value: value
+            },
+            headers: { 'expected-version': $scope.Version }
+          });
+        }
+
+        promise.then(function () {
           cachedResources.config.lbSettings.flush();
           BackToSummary($scope.LBSetting.EnvironmentName);
         });

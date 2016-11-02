@@ -40,8 +40,7 @@ function putEnvironmentTypeConfigByName(req, res, next) {
   const envType = req.swagger.params.body.value;
   const user = req.user;
 
-  return dynamoHelper
-    .update(key, { Value: envType }, expectedVersion, user)
+  return dynamoHelper.update(key, { Value: envType }, expectedVersion, user)
     .then(_ => res.status(200).end())
     .catch(next);
 }

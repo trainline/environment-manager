@@ -23,7 +23,7 @@ angular.module('EnvironmentManager.common').factory('UpstreamConfig',
     }
 
     UpstreamConfig.deleteByKey = function (key, account) {
-      return $http.delete(baseUrl + '/' + encodeURIComponent(key), { params: { account: account } });
+      return $http.delete(baseUrl + '/' + encodeURIComponent(key) + '?account=' + account, { params: { account: account } });
     };
 
     UpstreamConfig.createWithDefaults = function (environmentName) {

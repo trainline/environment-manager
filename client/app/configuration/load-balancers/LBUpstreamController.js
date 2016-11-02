@@ -131,7 +131,7 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
           if ($scope.PageMode === 'Edit') {
             return $scope.LBUpstream.update(key);
           } else {
-            return $scope.LBupstream.save(key);
+            return $scope.LBUpstream.save(key);
           }
         }).then(function () {
           cachedResources.config.lbUpstream.flush();

@@ -9,7 +9,7 @@ let EnterAutoScalingGroupInstancesToStandby = require('commands/asg/EnterAutoSca
 let ExitAutoScalingGroupInstancesFromStandby = require('commands/asg/ExitAutoScalingGroupInstancesFromStandby');
 let DynamoHelper = require('api/api-utils/DynamoHelper');
 let Instance = require('models/Instance');
-let asgIpsDynamo = new DynamoHelper('asgips');
+let dynamoHelper = new DynamoHelper('asgips');
 let serviceTargets = require('modules/service-targets');
 let logger = require('modules/logger');
 
@@ -81,7 +81,7 @@ function putInstanceMaintenance(req, res, next) {
      *
      * TODO(filip): handle case when MAINTENANCE_MODE entry doesn't exist - need to create entry
      */
-    let entry = yield asgIpsDynamo.getByKey('MAINTENANCE_MODE', { accountName });
+    let entry = yield dynamoHelper.getByKey('MAINTENANCE_MODE', { accountName });
     let ips = JSON.parse(entry.IPs);
     if (enable === true) {
       ips.push(instance.PrivateIpAddress)
@@ -89,7 +89,7 @@ function putInstanceMaintenance(req, res, next) {
     } else {
       _.pull(ips, instance.PrivateIpAddress);
     }
-    yield asgIpsDynamo.update('MAINTENANCE_MODE', { IPs: JSON.stringify(ips) }, entry.Version, req.user, { accountName });
+    yield dynamoHelper.update('MAINTENANCE_MODE', { IPs: JSON.stringify(ips) }, entry.Version, req.user, { accountName });
     
     /**
      * Put instance to standby on AWS
