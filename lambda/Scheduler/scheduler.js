@@ -101,7 +101,7 @@ function createScheduler(account, config) {
       return Promise.resolve({ success: true });
     }
 
-    let instances = actions.map(action => action.instance.InstanceId);
+    let instances = actions.map(action => action.instance);
 
     return doChange(instances)
       .then(() => { return { success: true }; })
