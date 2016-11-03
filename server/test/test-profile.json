@@ -1,5 +1,6 @@
 {
   "EM_AWS_REGION": "eu-west-1",
   "EM_AWS_RESOURCE_PREFIX": "EnvironmentManagerTests-",
-  "EM_LOG_LEVEL": "Silent"
+  "EM_LOG_LEVEL": "Silent",
+  "EM_PACKAGES_BUCKET": "EM_PACKAGES_BUCKET"
 }
