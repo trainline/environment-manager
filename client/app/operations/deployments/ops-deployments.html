@@ -86,32 +86,32 @@
             </span>
           </td>
           <td>
-            <a ng-href='#/environment/servers/?environment={{deployment.environment.name}}'>{{deployment.environment.name}}<br />
-              <small>({{deployment.environment.type}})</small></a>
-            </td>
-            <td>
-              {{deployment.service.name}} <span ng-if="deployment.service.version">({{deployment.service.version}})</span>
-            </td>
-            <td>
-              {{deployment.user}}<br/>
-              <small>({{deployment.cluster}})</small>
-            </td>
-            <td>
-              <ul ng-if="deployment.nodes.length > 0" class="node-list">
-                <li ng-repeat="node in deployment.nodes" class="{{node.status.class}}">
-                  <span ng-if="node.status.status.toLowerCase()=='in progress'" class="glyphicon glyphicon-refresh"></span>
-                  <span ng-if="node.status.status.toLowerCase()=='success'" class="glyphicon glyphicon-ok"></span>
-                  <span ng-if="node.status.status.toLowerCase()=='failed'" class="glyphicon glyphicon-remove"></span>
-                  {{node.instanceId}}
-                </li>
-              </ul>
-              <span ng-if="deployment.nodes.length == 0">-</span>
-            </td>
-            <td>
-              <button class="btn btn-default" ng-click="vm.showDetails(deployment.data)">View Details...</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+            <a ng-href='#/environment/servers/?environment={{deployment.environment.name}}'>{{deployment.environment.name}}<br>
+            <small>({{deployment.environment.type}})</small></a>
+          </td>
+          <td>
+            {{deployment.service.name}} <span ng-if="deployment.service.version">({{deployment.service.version}})</span>
+          </td>
+          <td>
+            {{deployment.user}}<br/>
+            <small>({{deployment.cluster}})</small>
+          </td>
+          <td>
+            <ul ng-if="deployment.nodes.length > 0" class="node-list">
+              <li ng-repeat="node in deployment.nodes" class="{{node.status.class}}">
+                <span ng-if="node.status.status.toLowerCase()=='in progress'" class="glyphicon glyphicon-refresh"></span>
+                <span ng-if="node.status.status.toLowerCase()=='success'" class="glyphicon glyphicon-ok"></span>
+                <span ng-if="node.status.status.toLowerCase()=='failed'" class="glyphicon glyphicon-remove"></span>
+                {{node.instanceId}}
+              </li>
+            </ul>
+            <span ng-if="deployment.nodes.length == 0">-</span>
+          </td>
+          <td>
+            <button class="btn btn-default" ng-click="vm.showDetails(deployment.data)">View Details...</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
+</div>
