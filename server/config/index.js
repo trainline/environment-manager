@@ -4,8 +4,8 @@
 let nconf = require('nconf');
 let fs = require('fs');
 
-const REQUIRED_VALUES = ['EM_AWS_REGION'];
-const LOGGED_VALUES = ['EM_AWS_REGION', 'EM_AWS_RESOURCE_PREFIX', 'EM_AWS_S3_BUCKET'];
+const REQUIRED_VALUES = ['EM_AWS_REGION', 'EM_PACKAGES_BUCKET'];
+const LOGGED_VALUES = ['EM_AWS_REGION', 'EM_AWS_RESOURCE_PREFIX', 'EM_AWS_S3_BUCKET', 'EM_PACKAGES_BUCKET', 'EM_PACKAGES_KEY_PREFIX'];
 const APP_VERSION = require('./version').getVersion();
 
 /**
@@ -32,7 +32,8 @@ nconf.defaults({
   'EM_AWS_RESOURCE_PREFIX': '',
   'EM_LOG_LEVEL': 'Debug',
   'EM_AWS_S3_BUCKET': 'S3 Bucket value not set',
-  'EM_AWS_S3_KEY': 'S3 Key value not set'
+  'EM_AWS_S3_KEY': 'S3 Key value not set',
+  'EM_PACKAGES_KEY_PREFIX': 'PACKAGES',
 });
 
 /**
