@@ -83,7 +83,7 @@
                         <span ng-if="host.Value.State=='down'" class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span> Down</span>
                     </td>
                     <td ng-click="vm.showInstanceDetails(host)">
-                        <lb-servers-states-cell data="host.Value.LoadBalancerState" ng-if="host.Value.LoadBalancerState"></lb-servers-states-cell>
+                        <lb-servers-states-cell ng-if="host.Value.LoadBalancerState.LBs.length" data="host.Value.LoadBalancerState"></lb-servers-states-cell>
                     </td>
                     <td class="command command-toggleUpstream"><span class="glyphicon glyphicon-random" title="Toggle upstream" ng-if="canUser('toggle')" ng-click="vm.toggleUpstream(host)"></span></td>
                     <td class="command command-viewDetails"><span class="glyphicon glyphicon-search" title="View instances" ng-click="vm.showInstanceDetails(host)"></span></td>
