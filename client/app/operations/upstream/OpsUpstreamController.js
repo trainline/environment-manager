@@ -1,4 +1,4 @@
-﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsUpstreamController',
@@ -63,8 +63,10 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
       var params = { account: 'all' };
       resources.config.lbUpstream.all(params).then(function (data) {
         vm.fullUpstreamData = restructureUpstreams(data);
-        vm.dataFound = true;
-        return vm.updateFilter();
+        return updateLBStatus().then(function(){
+          vm.updateFilter();
+          vm.dataFound = true;
+        });
       }).finally(function () {
         vm.dataLoading = false;
       });
@@ -105,7 +107,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
         return match;
       });
 
-      return updateLBStatus();
+      
     };
 
     vm.showInstanceDetails = function (upstreamData) {
@@ -208,7 +210,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
       return accountMappingService.getEnvironmentLoadBalancers(vm.selectedEnvironment).then(function (lbs) {
 
         // Clear existing data
-        vm.data.forEach(function (upstreamHost) {
+        vm.fullUpstreamData.forEach(function (upstreamHost) {
           upstreamHost.Value.LoadBalancerState.LBs = [];
         });
 
@@ -220,7 +222,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
             var lbName = lb.split('.')[0]; // Drop .prod/nonprod.local from name
 
             // Loop upstream hosts and associate LB status with each record
-            vm.data.forEach(function (upstreamHost) {
+            vm.fullUpstreamData.forEach(function (upstreamHost) {
 
               var lbServerStatusData = getLBStatusForUpstream(upstreamHost.Value.UpstreamName, upstreamHost.Value.Port, nginxData);
               var lbData = { Name: lbName, State: getActualUpstreamState(lbServerStatusData), ServerStatus: lbServerStatusData };
@@ -274,11 +276,11 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
 
       if (lbServerStatusData && lbServerStatusData.length > 0) {
         lbServerStatusData.forEach(function (server) {
-          if (server.state == 'up') { upCount++; }
-
-          if (server.state == 'down') { downCount++; }
-
-          if (server.state == 'unhealthy') { unhealthyCount++; }
+          if (server) {
+            if (server.state == 'up') { upCount++; }
+            if (server.state == 'down') { downCount++; }
+            if (server.state == 'unhealthy') { unhealthyCount++; }
+          }
         });
 
         if (upCount == lbServerStatusData.length) {
