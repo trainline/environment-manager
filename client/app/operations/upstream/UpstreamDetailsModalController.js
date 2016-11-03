@@ -74,11 +74,11 @@ angular.module('EnvironmentManager.operations').controller('UpstreamDetailsModal
           var params = {
             account: accountName,
             query: {
-              'private-ip-address': [],
+              'ip_address': [],
             },
           };
           uniqueIPs.forEach(function (ip) {
-            params.query['private-ip-address'].push(ip);
+            params.query['ip_address'].push(ip);
           });
 
           awsService.instances.GetInstanceDetails(params).then(function (data) {
