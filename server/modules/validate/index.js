@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 /**
@@ -14,7 +15,7 @@
  * @returns {Array<Any>} errors - validation errors.
  */
 
-const _ = require('lodash/fp');
+let _ = require('lodash/fp');
 
 /**
  * Create a validation function.

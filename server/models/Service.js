@@ -1,9 +1,10 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-const _ = require('lodash');
-const config = require('config');
-const sender = require('modules/sender');
+let _ = require('lodash');
+let config = require('config');
+let sender = require('modules/sender');
 
 const masterAccountName = config.getUserValue('masterAccountName');
 

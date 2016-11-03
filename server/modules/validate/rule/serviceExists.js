@@ -1,11 +1,13 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 /* eslint-disable import/no-extraneous-dependencies */
-const log = require('modules/logger'); // eslint-disable import/no-extraneous-dependencies
-const sender = require('modules/sender');
+let log = require('modules/logger'); // eslint-disable import/no-extraneous-dependencies
+let sender = require('modules/sender');
 /* eslint-enable import/no-extraneous-dependencies */
-const config = require('config');
+let config = require('config');
+
 const masterAccountName = config.getUserValue('masterAccountName');
 
 /* Returns an error in the format specified at http://jsonapi.org/format/#errors

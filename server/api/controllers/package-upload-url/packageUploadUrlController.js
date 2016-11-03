@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 /* Defines an Express route handler that accepts a request for a package upload URL for a combination of service, version and (optionally) environment.
@@ -6,16 +7,16 @@
  */
 
 /* eslint-disable import/no-extraneous-dependencies */
-const environmentExistsRule = require('modules/validate/rule/environmentExists');
-const log = require('modules/logger'); // eslint-disable import/no-extraneous-dependencies
-const makeValidationFunction = require('modules/validate');
-const masterAccountClient = require('modules/amazon-client/masterAccountClient'); // eslint-disable-line import/no-extraneous-dependencies
-const route = require('modules/helpers/route'); // eslint-disable-line import/no-extraneous-dependencies
-const serviceExistsRule = require('modules/validate/rule/serviceExists');
+let environmentExistsRule = require('modules/validate/rule/environmentExists');
+let log = require('modules/logger'); // eslint-disable import/no-extraneous-dependencies
+let makeValidationFunction = require('modules/validate');
+let masterAccountClient = require('modules/amazon-client/masterAccountClient'); // eslint-disable-line import/no-extraneous-dependencies
+let route = require('modules/helpers/route'); // eslint-disable-line import/no-extraneous-dependencies
+let serviceExistsRule = require('modules/validate/rule/serviceExists');
 /* eslint-enable import/no-extraneous-dependencies */
 
-const config = require('config');
-const _ = require('lodash/fp');
+let config = require('config');
+let _ = require('lodash/fp');
 
 const EM_PACKAGES_BUCKET = config.get('EM_PACKAGES_BUCKET');
 const EM_PACKAGES_KEY_PREFIX = config.get('EM_PACKAGES_KEY_PREFIX');
