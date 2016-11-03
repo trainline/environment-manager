@@ -83,7 +83,7 @@ function isEnvironmentTypePermission(permission) {
 
 function isLimitedResourcePermission(permission) {
   return isClusterLimitedResourcePermission(permission) ||
-    isEnvironmentTypeLimitedResourcePermission(permission)
+    isEnvironmentTypeLimitedResourcePermission(permission);
 }
 
 function isClusterLimitedResourcePermission(permission) {
