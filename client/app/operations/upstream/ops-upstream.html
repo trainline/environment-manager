@@ -41,7 +41,7 @@
 </form>
 <hr />
 <spinner ng-show="vm.dataLoading"></spinner>
-<div class="row" ng-show="vm.dataFound && !vm.dataLoading">
+<div class="row" ng-if="vm.dataFound && !vm.dataLoading">
     <div class="col-md-12" ng-if="vm.data.length == 0">
         <p>No matching upstreams found for selected environment.</p>
     </div>
