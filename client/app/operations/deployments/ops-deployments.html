@@ -16,7 +16,7 @@
     <label class="control-label text-left">Environment:</label>
   </div>
   <div class="form-group">
-    <select class="form-control" ng-model="SelectedEnvironment" ng-change="vm.refresh()">
+    <select class="form-control" ng-model="vm.selectedEnvironment" ng-change="vm.refresh()">
       <option ng-repeat="env in vm.environmentsList" ng-selected="{{env == vm.selectedEnvironment}}" value="{{env}}">{{env}}</option>
     </select>
   </div>
