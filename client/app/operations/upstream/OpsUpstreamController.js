@@ -64,7 +64,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
       resources.config.lbUpstream.all(params).then(function (data) {
         vm.fullUpstreamData = restructureUpstreams(data);
         vm.dataFound = true;
-        vm.updateFilter();
+        return vm.updateFilter();
       }).finally(function () {
         vm.dataLoading = false;
       });
@@ -105,7 +105,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
         return match;
       });
 
-      updateLBStatus();
+      return updateLBStatus();
     };
 
     vm.showInstanceDetails = function (upstreamData) {
@@ -205,17 +205,15 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     function updateLBStatus() {
 
       // Read LBs for this environment
-      accountMappingService.getEnvironmentLoadBalancers(vm.selectedEnvironment).then(function (lbs) {
+      return accountMappingService.getEnvironmentLoadBalancers(vm.selectedEnvironment).then(function (lbs) {
 
         // Clear existing data
         vm.data.forEach(function (upstreamHost) {
-          upstreamHost.Value.LoadBalancerState = {
-            LBs: []
-          };
+          upstreamHost.Value.LoadBalancerState.LBs = [];
         });
 
         // Loop LBs and read LB status data
-        lbs.forEach(function (lb) {
+        var promises = lbs.map(function (lb) {
 
           resources.nginx.all({ instance: lb }).then(function success(nginxData) {
 
@@ -244,7 +242,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
           });
 
         });
-
+        return $q.all(promises);
       });
     }
 
