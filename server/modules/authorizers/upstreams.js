@@ -66,9 +66,8 @@ exports.getRules = (request) => {
   let accountName = request.params.account;
 
   return co(function* () {
-    let body = request.params.body;
+    let body = request.params.body || request.body;
     logger.debug(`Upstreams authorizer`, { body, url: request.url });
-
     let environmentName = body.EnvironmentName || body.Value.EnvironmentName;
 
     if (accountName === undefined) {

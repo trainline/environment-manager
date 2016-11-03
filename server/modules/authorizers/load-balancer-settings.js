@@ -37,7 +37,8 @@ exports.getRules = (request) => {
   let environmentName = request.params.key || request.params.environment;
   if (environmentName === undefined) {
     // Environment is in the body
-    environmentName = request.params.body.EnvironmentName || request.params.body.Value.EnvironmentName
+    let body = request.params.body || request.body;
+    environmentName = body.EnvironmentName || body.Value.EnvironmentName
   }
   return getModifyPermissionsForEnvironment(environmentName, request.user).then(envPermissions => {
     return [{
