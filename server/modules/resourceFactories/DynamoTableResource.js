@@ -69,6 +69,7 @@ class DynamoTableResource {
   }
 
   get(params) {
+    let self = this;
     let request = {
       TableName: this._tableName,
       Key: this._buildPrimaryKey(params.key, params.range),
@@ -77,8 +78,8 @@ class DynamoTableResource {
     return this.client.get(request).promise().then(data => {
       if (!data.Item) {
         let message = !params.range ?
-          `No ${this._resourceName} found for ${this._keyName} ${params.key}.` :
-          `No ${this._resourceName} found for ${this._keyName} ${params.key} and ${this._rangeName} "${params.range}".`;
+          `No ${self._resourceName} found for ${self._keyName} ${params.key}.` :
+          `No ${self._resourceName} found for ${self._keyName} ${params.key} and ${self._rangeName} "${params.range}".`;
 
         throw new DynamoItemNotFoundError(message);
       } else {
@@ -136,8 +137,8 @@ class DynamoTableResource {
       return self.client.get(request).promise().then(data => {
         if (!data.Item) {
           let message = !params.range ?
-            `No ${this._resourceName} found for ${this._keyName} ${key}.` :
-            `No ${this._resourceName} found for ${this._keyName} ${key} and ${this._rangeName} ${range}.`;
+            `No ${self._resourceName} found for ${self._keyName} ${key}.` :
+            `No ${self._resourceName} found for ${self._keyName} ${key} and ${self._rangeName} ${range}.`;
 
           // Expected item to update not found
           throw new DynamoItemNotFoundError(message);
