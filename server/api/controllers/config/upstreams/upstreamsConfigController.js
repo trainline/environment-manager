@@ -49,7 +49,7 @@ function putUpstreamConfigByName(req, res, next) {
 
   co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    return dynamoHelper.update(key, { Value: body }, expectedVersion, user)
+    return dynamoHelper.update(key, { Value: body }, expectedVersion, user, { accountName })
   }).then(data => res.json(data)).catch(next);
 }
 

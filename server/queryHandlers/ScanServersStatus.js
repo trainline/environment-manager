@@ -54,7 +54,7 @@ function* ScanServersStatusQueryHandler(query) {
         .then(services => {
           return {
             Name: asg.AutoScalingGroupName,
-            Role: asg.getServerRoleName(),
+            Role: asg.getRuntimeServerRoleName(),
             Status: status,
             Cluster: getTagValue(asg, 'OwningCluster'),
             Schedule: getTagValue(asg, 'Schedule'),
