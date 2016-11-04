@@ -926,7 +926,7 @@ paths:
       tags:
         - Cluster
       parameters:
-        - name: cluster
+        - name: body
           in: body
           required: true
           schema:
@@ -961,11 +961,11 @@ paths:
           in: path
           type: string
           required: true
-        - name: cluster
+        - name: body
           in: body
           required: true
           schema:
-            $ref: '#/definitions/ClusterConfigUpdate'
+            $ref: '#/definitions/ClusterConfigValue'
         - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
@@ -1308,6 +1308,15 @@ paths:
       summary: List all load balancer settings.
       tags:
         - Load Balancers
+      parameters:
+        - name: environment
+          in: query
+          required: false
+          type: string
+        - name: frontend
+          in: query
+          required: false
+          type: string
       responses:
         200:
           description: The list of load balancer settings
@@ -1722,20 +1731,13 @@ definitions:
     type: object
     required:
       - ClusterName
-      - ShortName
-      - SchemaVersion
+      - Value
     properties:
       ClusterName:
         type: string
-      ShortName:
-        type: string
-      SchemaVersion:
-        type: integer
-      GroupEmailAddress:
-        type: string
-      ADMembershipGroup:
-        type: string
-  ClusterConfigUpdate:
+      Value:
+        $ref: '#/definitions/ClusterConfigValue'
+  ClusterConfigValue:
     type: object
     required:
       - ShortName

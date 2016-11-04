@@ -3,7 +3,7 @@
 
 // Manage specific owning cluster
 angular.module('EnvironmentManager.configuration').controller('ClusterController',
-  function ($scope, $routeParams, $location, $q, resources, cachedResources) {
+  function ($scope, $routeParams, $location, $q, $http, resources, cachedResources) {
 
     var RETURN_PATH = '/config/clusters';
     var userHasPermission;
@@ -48,15 +48,28 @@ angular.module('EnvironmentManager.configuration').controller('ClusterController
     };
 
     $scope.Save = function () {
-      var saveMethod = $scope.EditMode ? resources.config.clusters.put : resources.config.clusters.post;
-      var params = {
-        key: $scope.Cluster.ClusterName,
-        expectedVersion: $scope.Version,
-        data: {
-          Value: $scope.Cluster.Value,
-        },
-      };
-      saveMethod(params).then(function () {
+      var promise;
+      var clusterName = $scope.Cluster.ClusterName;
+      if ($scope.EditMode) {
+        promise = $http({
+          method: 'put',
+          url: '/api/v1/config/clusters/' + clusterName,
+          data: $scope.Cluster.Value,
+          headers: { 'expected-version': $scope.Version }
+        });
+      } else {
+        promise = $http({
+          method: 'post',
+          url: '/api/v1/config/clusters',
+          data: {
+            ClusterName: clusterName,
+            Value: $scope.Cluster.Value,
+          },
+          headers: { 'expected-version': $scope.Version }
+        });
+      }
+      
+      promise.then(function () {
         cachedResources.config.clusters.flush();
         navigateToList();
       });
