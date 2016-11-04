@@ -62,12 +62,12 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
         var params = {
           account: accountName,
           query: {
-            EnvironmentName: $scope.SelectedEnvironment,
+            environment: $scope.SelectedEnvironment,
           },
         };
 
         if ($scope.SelectedSettingType != SHOW_ALL_OPTION) {
-          params.query['Value.FrontEnd'] = $scope.SelectedSettingType == 'Front End' ? true : false;
+          params.query.frontend = $scope.SelectedSettingType == 'Front End' ? true : false;
         }
 
         resources.config.lbSettings.all(params).then(function (data) {

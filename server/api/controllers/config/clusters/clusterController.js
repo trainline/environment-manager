@@ -25,9 +25,9 @@ function getClusterConfigByName(req, res, next) {
  * POST /config/clusters
  */
 function postClustersConfig(req, res, next) {
-  const cluster = req.swagger.params.cluster.value;
+  const body = req.swagger.params.body.value;
   const user = req.user;
-  return dynamoHelper.create(cluster[KEY_NAME], { Value: cluster.Value }, user).then(_ => res.status(201).end()).catch(next);
+  return dynamoHelper.create(body[KEY_NAME], { Value: body.Value }, user).then(_ => res.status(201).end()).catch(next);
 }
 
 /**
@@ -36,10 +36,10 @@ function postClustersConfig(req, res, next) {
 function putClusterConfigByName(req, res, next) {
   const key = req.swagger.params.name.value;
   const expectedVersion = req.swagger.params['expected-version'].value;
-  const cluster = req.swagger.params.cluster.value;
+  const body = req.swagger.params.body.value;
   const user = req.user;
 
-  return dynamoHelper.update(key, { Value: cluster }, expectedVersion, user)
+  return dynamoHelper.update(key, { Value: body }, expectedVersion, user)
     .then(_ => res.status(200).end())
     .catch(next);
 }
