@@ -1308,6 +1308,15 @@ paths:
       summary: List all load balancer settings.
       tags:
         - Load Balancers
+      parameters:
+        - name: environment
+          in: query
+          required: false
+          type: string
+        - name: frontend
+          in: query
+          required: false
+          type: string
       responses:
         200:
           description: The list of load balancer settings

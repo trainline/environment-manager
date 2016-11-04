@@ -13,7 +13,16 @@ let Environment = require('models/Environment');
  * GET /config/lb-settings
  */
 function getLBSettingsConfig(req, res, next) {
-  return dynamoHelper.getAllCrossAccount().then(data => res.json(data)).catch(next);
+  const environmentName = req.swagger.params.environment.value;
+  const frontend = req.swagger.params.frontend.value;
+  let filter = {};
+  if (environmentName !== undefined) {
+    filter.EnvironmentName = environmentName;
+  }
+  if (frontend !== undefined) {
+    filter['Value.FrontEnd'] = frontend;
+  }
+  return dynamoHelper.getAllCrossAccount(filter).then(data => res.json(data)).catch(next);
 }
 
 /**
