@@ -235,13 +235,15 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
             if (location.ProxyPass) {
               var proxyUpstreamName = location.ProxyPass.replace('http://', '').replace('https://', '');
 
-              if ($scope.LBUpstreamData && $scope.LBUpstreamData.length > 0) {
-                var matchFound = $scope.LBUpstreamData.some(function upstreamIsProxy(upstream) {
-                  return upstream.Value.UpstreamName === proxyUpstreamName;
-                });
+              if (!_.includes(proxyUpstreamName, '.')) {
+                if ($scope.LBUpstreamData && $scope.LBUpstreamData.length > 0) {
+                  var matchFound = $scope.LBUpstreamData.some(function upstreamIsProxy(upstream) {
+                    return upstream.Value.UpstreamName === proxyUpstreamName;
+                  });
 
-                if (!matchFound) {
-                  errors.push('Locations[' + i + '] - Upstream name in Proxy Pass not found. Please check spelling and capitalisation');
+                  if (!matchFound) {
+                    errors.push('Locations[' + i + '] - Upstream name in Proxy Pass not found. Please check spelling and capitalisation');
+                  }
                 }
               }
             }
