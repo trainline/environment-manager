@@ -112,7 +112,6 @@ module.exports = {
 
   get: query => {
     return queryDeployment(query).then(deployment => {
-      console.log(deployment);
       return mapDeployment(deployment, query.account);
     });
   },
