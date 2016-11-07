@@ -42,6 +42,7 @@ describe('ScanServersStatus', function() {
   let mockAsg = {
     getTag: sinon.stub().returns(MOCK_ENVIRONMENT),
     getServerRoleName: sinon.stub(),
+    getRuntimeServerRoleName: sinon.stub(),
     Instances:[mockInstance_1, mockInstance_2]
   };
 

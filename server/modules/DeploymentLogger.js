@@ -10,11 +10,10 @@ let logger = require('modules/logger');
 
 module.exports = {
   started: function (deployment, accountName) {
-    const masterAccountName = require('config').getUserValue('masterAccountName');
     var command = {
       name: 'CreateDynamoResource',
       resource: 'deployments/history',
-      accountName: masterAccountName,
+      accountName: accountName,
       key: deployment.id,
       item: {
         Value: {
