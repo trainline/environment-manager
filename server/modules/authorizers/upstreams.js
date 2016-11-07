@@ -70,7 +70,6 @@ exports.getRules = (request) => {
     logger.debug(`Upstreams authorizer`, { body, url: request.url });
     // TODO(Filip): remove this hack after we move all upstreams data into one account
     let environmentName = upstreamName.substr(1, upstreamName.indexOf('_'));
-    console.log(environmentName);
     
     if (accountName === undefined) {
       accountName = yield Environment.getAccountNameForEnvironment(environmentName);
