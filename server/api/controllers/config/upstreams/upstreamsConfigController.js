@@ -19,10 +19,7 @@ function getUpstreamsConfig(req, res, next) {
 function getUpstreamConfigByName(req, res, next) {
   let key = req.swagger.params.name.value;
   let accountName = req.swagger.params.account.value;
-  return dynamoHelper.getByKey(key, { accountName }).then(data => {
-    data.Value.UpStreamKeepalives = 32;
-    res.json(data);
-  }).catch(next);
+  return dynamoHelper.getByKey(key, { accountName }).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -34,13 +31,10 @@ function postUpstreamsConfig(req, res, next) {
   let key = body.key;
   let environmentName = body.Value.EnvironmentName;
 
-  body.UpStreamKeepalives = 32;
-
   co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     return dynamoHelper.create(key, { Value: body.Value }, user, { accountName });
   }).then(data => res.json(data)).catch(next);
-
 }
 
 /**
@@ -53,13 +47,10 @@ function putUpstreamConfigByName(req, res, next) {
   let user = req.user;
   let environmentName = body.EnvironmentName;
 
-  body.UpStreamKeepalives = 32;
-
   co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     return dynamoHelper.update(key, { Value: body }, expectedVersion, user)
   }).then(data => res.json(data)).catch(next);
-
 }
 
 /**
