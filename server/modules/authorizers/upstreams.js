@@ -68,8 +68,10 @@ exports.getRules = (request) => {
   return co(function* () {
     let body = request.params.body || request.body;
     logger.debug(`Upstreams authorizer`, { body, url: request.url });
-    let environmentName = body.EnvironmentName || body.Value.EnvironmentName;
-
+    // TODO(Filip): remove this hack after we move all upstreams data into one account
+    let environmentName = upstreamName.substr(1, upstreamName.indexOf('_'));
+    console.log(environmentName);
+    
     if (accountName === undefined) {
       accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     }
