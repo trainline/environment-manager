@@ -64,9 +64,9 @@ function getInstances(req, res, next) {
       list = yield _.map(list, (instance) => {
         let instanceEnvironment = instance.getTag('Environment');
 
+        instance.appendTagsToObject();
 
         let instanceName = instance.getTag('Name', null);
-        instance.Name = instanceName;
         if (instanceName === null) {
           return instance;
         }

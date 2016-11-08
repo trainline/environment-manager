@@ -28,4 +28,10 @@ module.exports = function (cls) {
     }
   }
 
+  cls.prototype.appendTagsToObject = function () {
+    _.each(this.Tags, (tag) => {
+      this[tag.Key] = tag.Value;
+    });
+  };
+
 };
