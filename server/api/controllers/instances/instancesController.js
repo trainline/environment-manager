@@ -12,17 +12,21 @@ let Instance = require('models/Instance');
 let dynamoHelper = new DynamoHelper('asgips');
 let serviceTargets = require('modules/service-targets');
 let logger = require('modules/logger');
+let getInstanceState = require('modules/environment-state/getInstanceState');
+let Environment = require('models/Environment');
 
 /**
  * GET /instances
  */
 function getInstances(req, res, next) {
-  const accountName = req.swagger.params.account.value;
+  let accountName = req.swagger.params.account.value;
   const cluster = req.swagger.params.cluster.value;
-  const environment = req.swagger.params.environment.value;
+  const environmentName = req.swagger.params.environment.value;
   const maintenance = req.swagger.params.maintenance.value;
   const ipAddress = req.swagger.params.ip_address.value;
   const instanceId = req.swagger.params.instance_id.value;
+  const since = req.swagger.params.since.value;
+  const includeServices = req.swagger.params.include_services.value;
 
   co(function* () {
     let filter = {};
@@ -30,8 +34,11 @@ function getInstances(req, res, next) {
     if (cluster !== undefined) {
       filter['tag:OwningCluster'] = cluster;
     }
-    if (environment !== undefined) {
-      filter['tag:Environment'] = environment;
+    if (environmentName !== undefined) {
+      filter['tag:Environment'] = environmentName;
+      if (accountName === undefined) {
+        accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+      }
     }
     if (maintenance === true) {
       filter['tag:Maintenance'] = 'true';
@@ -42,13 +49,41 @@ function getInstances(req, res, next) {
     if (instanceId !== undefined) {
       filter['instance-id'] = instanceId;
     }
-
+    if (since !== undefined) {
+      filter['launch-time'] = Instance.createLaunchTimeArraySince(since);
+    }
+    
     if (_.isEmpty(filter)) {
       filter = null;
     }
 
     let handler = accountName !== undefined ? ScanInstances : ScanCrossAccountInstances;
-    handler({ accountName, filter }).then((data) => res.json(data))
+    let list = yield handler({ accountName, filter });
+
+    if (includeServices === true) {
+      list = yield _.map(list, (instance) => {
+        let instanceEnvironment = instance.getTag('Environment');
+
+
+        let instanceName = instance.getTag('Name', null);
+        instance.Name = instanceName;
+        if (instanceName === null) {
+          return instance;
+        }
+
+        return Environment.getAccountNameForEnvironment(instanceEnvironment).then((accountName) => {
+          return getInstanceState(accountName, instanceEnvironment, instanceName, instance.InstanceId)
+            .then((state) => {
+              _.assign(instance, state);
+              return instance;
+            });
+        });
+      });
+      list = _.sortBy(list, function (value) { return new Date(value.LaunchTime); }).reverse();
+      res.json(list);
+    } else {
+      res.json(list);
+    }
   }).catch(next);
 }
 
