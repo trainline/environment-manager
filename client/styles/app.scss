@@ -568,6 +568,18 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
 
 /* Deployment History */
 
+.deployments-instances {
+  .table .table {
+    tr:first-child td {
+      border-top: none;
+    }
+    
+    td {
+      padding: 2px;
+    }
+  }
+}
+
 .loading {
   position: absolute;
   right: 20px;
