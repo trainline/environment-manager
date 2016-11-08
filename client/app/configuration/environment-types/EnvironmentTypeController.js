@@ -74,15 +74,29 @@ angular.module('EnvironmentManager.configuration').controller('EnvironmentTypeCo
     };
 
     vm.Save = function () {
-      var saveMethod = vm.EditMode ? resources.config.environmentTypes.put : resources.config.environmentTypes.post;
-      var params = {
-        key: vm.EnvironmentType.EnvironmentType,
-        expectedVersion: vm.Version,
-        data: {
-          Value: angular.fromJson(vm.EnvironmentType.Value),
-        },
-      };
-      saveMethod(params).then(function () {
+      var promise;
+      var environmentTypeName = vm.EnvironmentType.EnvironmentType;
+      var value = angular.fromJson(vm.EnvironmentType.Value);
+      if (vm.EditMode) {
+        promise = $http({
+          method: 'put',
+          url: '/api/v1/config/environment-types/' + environmentTypeName,
+          data: value,
+          headers: { 'expected-version': vm.Version }
+        });
+      } else {
+        promise = $http({
+          method: 'post',
+          url: '/api/v1/config/clusters',
+          data: {
+            EnvironmentType: environmentTypeName,
+            Value: value,
+          },
+          headers: { 'expected-version': vm.Version }
+        });
+      }
+      
+      promise.then(function () {
         cachedResources.config.environmentTypes.flush();
         navigateToList();
       });

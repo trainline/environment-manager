@@ -351,6 +351,10 @@ paths:
       tags:
         - Deployment
       parameters:
+        - name: account
+          in: query
+          type: string
+          required: true
         - name: instance
           in: query
           type: string
