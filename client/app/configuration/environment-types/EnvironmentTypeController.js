@@ -3,7 +3,7 @@
 
 // Manage specific environment type
 angular.module('EnvironmentManager.configuration').controller('EnvironmentTypeController',
-  function ($scope, $routeParams, $location, $q, $log, $window, resources, cachedResources, schemaValidatorService) {
+  function ($scope, $routeParams, $location, $q, $http, $log, $window, resources, cachedResources, schemaValidatorService) {
     var vm = $scope;
     var RETURN_PATH = '/config/environmenttypes';
     var accountsResource = cachedResources.config.accounts;
