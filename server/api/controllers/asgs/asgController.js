@@ -10,6 +10,7 @@ let GetLaunchConfiguration = require('queryHandlers/GetLaunchConfiguration');
 let SetLaunchConfiguration = require('commands/launch-config/SetLaunchConfiguration');
 let SetAutoScalingGroupSize = require('commands/asg/SetAutoScalingGroupSize');
 let SetAutoScalingGroupSchedule = require('commands/asg/SetAutoScalingGroupSchedule');
+let UpdateAutoScalingGroup = require('commands/asg/UpdateAutoScalingGroup');
 let GetAutoScalingGroupScheduledActions = require('queryHandlers/GetAutoScalingGroupScheduledActions');
 let Environment = require('models/Environment');
 
@@ -86,6 +87,21 @@ function getScalingSchedule(req, res, next) {
 }
 
 /**
+ * PUT /asgs/{name}
+ */
+function putAsg(req, res, next) {
+  const environmentName = req.swagger.params.environment.value;
+  const autoScalingGroupName = req.swagger.params.name.value;
+
+  const body = req.swagger.params.body.value;
+  const size = body.size;
+  const az = body.az;
+
+  UpdateAutoScalingGroup({ environmentName, autoScalingGroupName, size, az })
+    .then(data => res.json(data)).catch(next);
+}
+
+/**
  * PUT /asgs/{name}/scaling-schedule
  */
 function putScalingSchedule(req, res, next) {
@@ -146,6 +162,7 @@ module.exports = {
   getAsgLaunchConfig,
   putScalingSchedule,
   getScalingSchedule,
+  putAsg,
   putAsgSize,
   putAsgLaunchConfig
 };

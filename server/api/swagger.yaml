@@ -56,6 +56,29 @@ paths:
           description: The matching ASG
           schema:
             type: object
+    put:
+      operationId: putAsg
+      summary: Update properties of an ASG.
+      tags:
+        - ASG
+      x-authorizer: asgs
+      parameters:
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+      responses:
+        200:
+          description: Ok
   /asgs/{name}/ips:
     x-swagger-router-controller: asgs/asgController
     get:

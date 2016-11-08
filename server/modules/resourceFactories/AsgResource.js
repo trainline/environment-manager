@@ -104,6 +104,10 @@ function AsgResource(client, accountName) {
       request.LaunchConfigurationName = parameters.launchConfigurationName;
     }
 
+    if (!_.isNil(parameters.subnets)) {
+      request.VPCZoneIdentifier = parameters.subnets.join(',');
+    }
+
     let asgCache = cacheManager.get('Auto Scaling Groups');
     asgCache.del(accountName);
 
