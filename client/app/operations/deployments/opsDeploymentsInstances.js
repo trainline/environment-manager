@@ -4,12 +4,9 @@
 angular.module('EnvironmentManager.operations').component('opsDeploymentsInstances', {
   templateUrl: '/app/operations/deployments/opsDeploymentsInstances.html',
   bindings: {
-    dataLoading: '<loading',
-    dataFound: '<found',
-    deployments: '<'
   },
   controllerAs: 'vm',
-  controller: function ($http) {
+  controller: function ($scope, $http) {
     var vm = this;
 
     function updateInstanceDeploymentStatus(instance) {
@@ -20,15 +17,33 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsInstanc
       instance.deploymentStatus = allHealthy ? 'Success' : 'Failed';
     }
 
-    $http.get('/api/v1/instances/?environment=c50&cluster=Infra&include_services=true').then(function (response) {
-      var instances = response.data;
-      vm.instances = instances;
-      _.each(instances, function (instance) {
-        instance.asgLink = '#/environment/servers/?environment=' + instance.Environment + '&asg_name=' + instance['aws:autoscaling:groupName'];
-        instance.status = _.capitalize(instance.State.Name);
+    vm.refresh = function () {
+      vm.dataLoading = true;
+      $http.get('/api/v1/instances/?environment=c50&cluster=Infra', {
+        params: {
+          cluster: 'Infra',
+          include_services: true
+        }
+      }).then(function (response) {
+        var instances = response.data;
+        vm.instances = instances;
+        _.each(instances, function (instance) {
+          instance.asgLink = '#/environment/servers/?environment=' + instance.Environment + '&asg_name=' + instance['aws:autoscaling:groupName'];
+          instance.status = _.capitalize(instance.State.Name);
 
-        updateInstanceDeploymentStatus(instance);
+          updateInstanceDeploymentStatus(instance);
+        });
+
+        vm.dataLoading = false;
+        vm.dataFound = true;
       });
+    };
+
+    vm.refresh();
+
+    $scope.$on('refresh', function () {
+      vm.refresh();
     });
+
   }
 });

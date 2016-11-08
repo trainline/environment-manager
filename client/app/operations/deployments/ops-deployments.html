@@ -46,5 +46,12 @@
 
 <hr />
 
+<uib-tabset>
+  <uib-tab heading="Deployments">
+    <ops-deployments-instances loading="vm.dataLoading" data-found="vm.dataFound" deployments="vm.deployments"></ops-deployments-list>
+  </uib-tab>
+  <uib-tab heading="Instances">
+  </uib-tab>
+</uib-tabset>
+
 <!-- <ops-deployments-list loading="vm.dataLoading" data-found="vm.dataFound" deployments="vm.deployments"></ops-deployments-list> -->
-<ops-deployments-instances loading="vm.dataLoading" data-found="vm.dataFound" deployments="vm.deployments"></ops-deployments-list>
