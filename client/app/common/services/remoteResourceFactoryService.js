@@ -42,7 +42,7 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
       }
 
       function getExpectedVersionHeader(expectedVersion) {
-        if (!expectedVersion) return {};
+        if (expectedVersion === undefined) return {};
         return {
           headers: {
             'expected-version': expectedVersion,

@@ -25,10 +25,10 @@ function getEnvironmentTypeConfigByName(req, res, next) {
  * POST /config/environment-types
  */
 function postEnvironmentTypesConfig(req, res, next) {
-  const envType = req.swagger.params.body.value;
+  const body = req.swagger.params.body.value;
   const user = req.user;
 
-  return dynamoHelper.create(envType[KEY_NAME], { Value: envType.Value }, user).then(_ => res.status(201).end()).catch(next);
+  return dynamoHelper.create(body[KEY_NAME], { Value: body.Value }, user).then(_ => res.status(201).end()).catch(next);
 }
 
 /**
@@ -37,10 +37,10 @@ function postEnvironmentTypesConfig(req, res, next) {
 function putEnvironmentTypeConfigByName(req, res, next) {
   const key = req.swagger.params.name.value;
   const expectedVersion = req.swagger.params['expected-version'].value;
-  const envType = req.swagger.params.body.value;
+  const body = req.swagger.params.body.value;
   const user = req.user;
 
-  return dynamoHelper.update(key, { Value: envType }, expectedVersion, user)
+  return dynamoHelper.update(key, { Value: body }, expectedVersion, user)
     .then(_ => res.status(200).end())
     .catch(next);
 }
