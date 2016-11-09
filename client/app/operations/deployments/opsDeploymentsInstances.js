@@ -4,6 +4,7 @@
 angular.module('EnvironmentManager.operations').component('opsDeploymentsInstances', {
   templateUrl: '/app/operations/deployments/opsDeploymentsInstances.html',
   bindings: {
+    
   },
   controllerAs: 'vm',
   controller: function ($scope, $http) {
@@ -17,7 +18,7 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsInstanc
       instance.deploymentStatus = allHealthy ? 'Success' : 'Failed';
     }
 
-    vm.refresh = function () {
+    function refresh() {
       vm.dataLoading = true;
       $http.get('/api/v1/instances/?environment=c50&cluster=Infra', {
         params: {
@@ -37,13 +38,10 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsInstanc
         vm.dataLoading = false;
         vm.dataFound = true;
       });
-    };
+    }
 
-    vm.refresh();
-
-    $scope.$on('refresh', function () {
-      vm.refresh();
-    });
+    refresh();
+    $scope.$on('refresh', refresh);
 
   }
 });

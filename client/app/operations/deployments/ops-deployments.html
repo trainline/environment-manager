@@ -46,12 +46,11 @@
 
 <hr />
 
-<uib-tabset>
+<uib-tabset active="0">
   <uib-tab heading="Deployments">
-    <ops-deployments-instances loading="vm.dataLoading" data-found="vm.dataFound" deployments="vm.deployments"></ops-deployments-list>
+    <ops-deployments-list query="vm.query"></ops-deployments-list>
   </uib-tab>
   <uib-tab heading="Instances">
+    <ops-deployments-instances query="vm.query"></ops-deployments-instances>
   </uib-tab>
 </uib-tabset>
-
-<!-- <ops-deployments-list loading="vm.dataLoading" data-found="vm.dataFound" deployments="vm.deployments"></ops-deployments-list> -->

@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsDeploymentsController',
-  function ($routeParams, $uibModal, $q, resources, cachedResources, enums, QuerySync, Deployment) {
+  function ($routeParams, $uibModal, $scope, $q, resources, cachedResources, enums, QuerySync, Deployment) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -11,8 +11,6 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
     vm.environmentsList = [];
     vm.owningClustersList = [];
     vm.statusList = [];
-    vm.dataFound = false;
-    vm.dataLoading = false;
     vm.selectedDeploymentId = null;
 
     var dateRangeList = vm.dateRangeList = [
@@ -88,9 +86,6 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
 
     vm.refresh = function () {
       querySync.updateQuery();
-
-      vm.dataLoading = true;
-
       var query = {};
 
       if (vm.selectedEnvironment !== SHOW_ALL_OPTION) {
@@ -111,14 +106,9 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
         query.since = new Date(dateNow).toISOString();
       }
 
-      Deployment.getAll(query).then(function (data) {
-        vm.deployments = data.map(Deployment.convertToListView);
+      vm.query = query;
 
-        vm.uniqueServices = _.uniq(data.map(function (d) { return d.Value.ServiceName; }));
-
-        vm.dataLoading = false;
-        vm.dataFound = true;
-      });
+      $scope.$broadcast('refresh');
     };
 
     vm.foundServicesFilter = function (deployment) {
@@ -128,31 +118,6 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
       return deployment.service.name.toLowerCase().indexOf(vm.serviceName.toLowerCase()) >= 0;
     };
 
-    vm.showDetails = function (deployment) {
-      vm.selectedDeploymentId = deployment.DeploymentID;
-      vm.selectedDeploymentAccount = deployment.AccountName;
-
-      querySync.updateQuery();
-
-      var modal = $uibModal.open({
-        templateUrl: '/app/operations/deployments/ops-deployment-details-modal.html',
-        windowClass: 'deployment-summary',
-        controller: 'DeploymentDetailsModalController',
-        size: 'lg',
-        resolve: {
-          deployment: function () {
-            return deployment;
-          },
-        },
-      });
-
-      modal.result['finally'](function() {
-        vm.selectedDeploymentId = null;
-        vm.selectedDeploymentAccount = null;
-
-        querySync.updateQuery();
-      });
-    };
 
 
     init();

@@ -4,12 +4,50 @@
 angular.module('EnvironmentManager.operations').component('opsDeploymentsList', {
   templateUrl: '/app/operations/deployments/opsDeploymentsList.html',
   bindings: {
-    dataLoading: '<loading',
-    dataFound: '<found',
-    deployments: '<'
+    query: '<'
   },
   controllerAs: 'vm',
-  controller: function () {
+  controller: function ($scope, Deployment) {
     var vm = this;
+
+    function refresh() {
+      vm.dataLoading = true;
+      Deployment.getAll(vm.query).then(function (data) {
+        vm.deployments = data.map(Deployment.convertToListView);
+
+        vm.uniqueServices = _.uniq(data.map(function (d) { return d.Value.ServiceName; }));
+
+        vm.dataLoading = false;
+        vm.dataFound = true;
+      });  
+    }
+
+    vm.showDetails = function (deployment) {
+      vm.selectedDeploymentId = deployment.DeploymentID;
+      vm.selectedDeploymentAccount = deployment.AccountName;
+
+      querySync.updateQuery();
+
+      var modal = $uibModal.open({
+        templateUrl: '/app/operations/deployments/ops-deployment-details-modal.html',
+        windowClass: 'deployment-summary',
+        controller: 'DeploymentDetailsModalController',
+        size: 'lg',
+        resolve: {
+          deployment: function () {
+            return deployment;
+          },
+        },
+      });
+
+      modal.result['finally'](function() {
+        vm.selectedDeploymentId = null;
+        vm.selectedDeploymentAccount = null;
+
+        querySync.updateQuery();
+      });
+    };
+
+    $scope.$on('refresh', refresh);
   }
 });
