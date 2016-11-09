@@ -93,11 +93,9 @@ function putAsg(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
   const autoScalingGroupName = req.swagger.params.name.value;
 
-  const body = req.swagger.params.body.value;
-  const size = body.size;
-  const az = body.az;
+  const parameters = req.swagger.params.body.value;
 
-  UpdateAutoScalingGroup({ environmentName, autoScalingGroupName, size, az })
+  UpdateAutoScalingGroup({ environmentName, autoScalingGroupName, parameters })
     .then(data => res.json(data)).catch(next);
 }
 
