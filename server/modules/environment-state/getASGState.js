@@ -4,7 +4,7 @@
 let _ = require('lodash');
 let co = require('co');
 let getInstanceState = require('./getInstanceState');
-let getServiceTargetStates = require('./getServiceTargetStates');
+let getServicesState = require('./getServicesState');
 let AutoScalingGroup = require('models/AutoScalingGroup');
 let resourceProvider = require('modules/resourceProvider');
 let logger = require('modules/logger');
@@ -64,7 +64,7 @@ module.exports = function getASGState(environmentName, asgName) {
 
     let response = {
       Instances: instances,
-      Services: yield getServiceTargetStates(environmentName, asg.getRuntimeServerRoleName(), instances)
+      Services: yield getServicesState(environmentName, asg.getRuntimeServerRoleName(), instances)
     };
     return response;
   });

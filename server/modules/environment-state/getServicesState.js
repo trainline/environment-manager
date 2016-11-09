@@ -35,7 +35,7 @@ function getServiceOverallHealth(healthChecks) {
   };
 }
 
-function* getServicesTargetState(environmentName, runtimeServerRoleName, instances) {
+function* getServicesState(environmentName, runtimeServerRoleName, instances) {
   let targetServiceStates = yield targetStates.getAllServiceTargets(environmentName, runtimeServerRoleName);
   let allServiceObjects = _.flatMap(instances, instance => instance.Services);
 
@@ -55,6 +55,7 @@ function* getServicesTargetState(environmentName, runtimeServerRoleName, instanc
     let instancesHealthCount = healthyNodes.length + '/' + serviceInstances.length;
     let serviceHealthChecks = getServiceChecksInfo(serviceObjects);
     let serviceAction = service.Action || SERVICE_INSTALL;
+
 
     return {
       Name: service.Name,
@@ -78,4 +79,4 @@ function checkServiceProperties(svcA, svcB, prop) {
   }
 }
 
-module.exports = co.wrap(getServicesTargetState);
+module.exports = co.wrap(getServicesState);
