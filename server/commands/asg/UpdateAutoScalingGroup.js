@@ -108,7 +108,7 @@ function unMapSubnetType(subnetTypeName, subnetType) {
     availabilityZones: azs,
     secure: !!subnetType.Secure,
     hasSubnet: subnet => {
-      return !!_.some(azs, az => az.subnet === subnet);
+      return _.some(azs, az => az.subnet === subnet);
     }
   };
 }
