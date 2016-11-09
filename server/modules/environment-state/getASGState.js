@@ -46,7 +46,7 @@ module.exports = function getASGState(environmentName, asgName) {
     let instancesStates = yield _.map(instances, (instance) => {
       // Fresh instances might not have initialised tags yet - don't merge state when that happens
       if (instance.Name !== undefined) {
-        return getInstanceState(accountName, environmentName, instance.Name, instance.InstanceId)
+        return getInstanceState(accountName, environmentName, instance.Name, instance.InstanceId, instance.Role);
       } else {
         logger.warn(`Instance ${instance.InstanceId} name tag is undefined`);
         return {};
