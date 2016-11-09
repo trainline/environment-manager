@@ -54,7 +54,7 @@ function* getServicesTargetState(environmentName, runtimeServerRoleName, instanc
     let healthyNodes = _.filter(serviceInstances, (instance) => instance.OverallHealth.Status === Enums.HEALTH_STATUS.Healthy);
     let instancesHealthCount = healthyNodes.length + '/' + serviceInstances.length;
     let serviceHealthChecks = getServiceChecksInfo(serviceObjects);
-    let serviceAction = service.hasOwnProperty(SERVICE_ACTION) ? service[SERVICE_ACTION] : SERVICE_INSTALL;
+    let serviceAction = service.Action || SERVICE_INSTALL;
 
     return {
       Name: service.Name,
@@ -65,7 +65,7 @@ function* getServicesTargetState(environmentName, runtimeServerRoleName, instanc
       InstancesHealthCount: instancesHealthCount,
       OverallHealth: getServiceOverallHealth(serviceHealthChecks, serviceInstances),
       HealthChecks: serviceHealthChecks,
-      [SERVICE_ACTION]: serviceAction,
+      Action: serviceAction,
     };
   });
 }
