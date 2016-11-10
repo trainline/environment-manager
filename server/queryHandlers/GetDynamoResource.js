@@ -19,7 +19,8 @@ function* GetDynamoResourceQueryHandler(query) {
     formatting: {
       exposeAudit: query.exposeAudit,
     },
-    suppressError: query.suppressError
+    suppressError: query.suppressError,
+    NoItemNotFoundError: query.NoItemNotFoundError,
   };
 
   return resource.get(params);
