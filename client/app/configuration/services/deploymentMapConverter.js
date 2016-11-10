@@ -19,7 +19,6 @@ angular.module('EnvironmentManager.configuration').factory('deploymentMapConvert
     return {
       toDeploymentTarget: function (data) {
 
-
         // Adjust schema to reflect preferred model
         var deploymentTarget = {
           ServerRoleName: data.ServerRoleName,
