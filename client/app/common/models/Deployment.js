@@ -19,7 +19,7 @@ angular.module('EnvironmentManager.common').factory('Deployment',
         var params = {
           account: this.AccountName,
           query: {
-            'instance-id': instanceIds,
+            'instance_id': instanceIds,
           },
         };
         return awsService.instances.GetInstanceDetails(params).then(function (instances) {
