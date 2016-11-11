@@ -62,7 +62,6 @@ function getSimpleServiceName(name) {
 }
 
 module.exports = function getInstanceState(accountName, environmentName, nodeName, instanceId, runtimeServerRoleName) {
-  console.log(runtimeServerRoleName);
   return co(function* () {
     let response = yield {
       checks: serviceDiscovery.getNodeHealth(environmentName, nodeName),

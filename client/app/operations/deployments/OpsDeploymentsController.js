@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsDeploymentsController',
-  function ($routeParams, $uibModal, $scope, $q, resources, cachedResources, enums, QuerySync, Deployment) {
+  function ($routeParams, $uibModal, $scope, $q, $timeout, resources, cachedResources, enums, QuerySync, Deployment) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -77,10 +77,8 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
           vm.statusList = [SHOW_ALL_OPTION].concat(deploymentStatuses);
         }),
       ]).then(function () {
-
         // Show default results
         vm.refresh();
-
       });
     }
 
@@ -108,7 +106,9 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
 
       vm.query = query;
 
-      $scope.$broadcast('refresh');
+      $timeout(function () {
+        $scope.$broadcast('refresh');
+      });
     };
 
     vm.foundServicesFilter = function (deployment) {
@@ -117,8 +117,6 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
       if (!deployment.service.name) return false;
       return deployment.service.name.toLowerCase().indexOf(vm.serviceName.toLowerCase()) >= 0;
     };
-
-
 
     init();
   });

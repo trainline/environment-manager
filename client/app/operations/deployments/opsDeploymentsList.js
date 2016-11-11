@@ -48,6 +48,7 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsList', 
       });
     };
 
+    refresh();
     $scope.$on('refresh', refresh);
   }
 });
