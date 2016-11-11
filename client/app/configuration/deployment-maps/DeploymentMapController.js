@@ -154,9 +154,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
         var params = {
           key: vm.deploymentMap.DeploymentMapName,
           expectedVersion: vm.deploymentMap.Version,
-          data: {
-            Value: { DeploymentTarget: deploymentMapValue },
-          },
+          data: { DeploymentTarget: deploymentMapValue },
         };
 
         resources.config.deploymentMaps.put(params).then(function () {
