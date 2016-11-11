@@ -20,7 +20,7 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsList', 
 
         vm.dataLoading = false;
         vm.dataFound = true;
-      });  
+      });
     }
 
     $scope.$on('refresh', refresh);
