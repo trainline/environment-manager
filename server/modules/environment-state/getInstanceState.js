@@ -103,6 +103,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
           Slice: targetService.Slice,
           DeploymentId: targetService.DeploymentId,
           Action: targetService.Action,
+          HealthChecks: [],
           DiffWithTargetState: 'Missing',
           Issues: { Warnings: [], Errors: [] }
         };
