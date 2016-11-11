@@ -71,12 +71,12 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
         var params = {
           account: accountName,
           query: {
-            'tag:Environment': $scope.SelectedEnvironment,
+            'environment': $scope.SelectedEnvironment,
           },
         };
 
         if ($scope.SelectedOwningCluster != SHOW_ALL_OPTION) {
-          params.query['tag:OwningCluster'] = $scope.SelectedOwningCluster;
+          params.query['cluster'] = $scope.SelectedOwningCluster;
         }
 
         awsService.instances.GetInstanceDetails(params).then(function (instanceData) {
