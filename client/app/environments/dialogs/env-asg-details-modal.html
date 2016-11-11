@@ -14,8 +14,18 @@
     <uib-tabset active="vm.asgUpdate.SelectedAction">
       <uib-tab heading="Instances" index="'instances'">
         <form name="form" class="form-horizontal">
-          <div ng-include="'/app/environments/dialogs/asg/runtime-asg-size.html'"></div>
           <asg-instances asg="vm.asg" asg-state="vm.asgState" ng-if="vm.asgState"></asg-instances>
+        </form>
+      </uib-tab>
+      <uib-tab heading="ASG Settings" index="'runtime-asg'">
+        <form name="form" class="form-horizontal">
+          <div ng-include="'/app/environments/dialogs/asg/runtime-asg.html'"></div>
+          <div class="form-group">
+            <label class="col-md-1 control-label text-left" style="width: 180px"></label>
+            <div class="col-md-8">
+              <button class="btn btn-default" type="button" ng-click="vm.updateLaunchConfig()" ng-if="vm.canUser('edit')" ng-disabled="!vm.formIsValid(form)">Update Auto Scaling Group</button>
+            </div>
+          </div>
         </form>
       </uib-tab>
       <uib-tab heading="Launch Configuration" index="'launchConfig'">
