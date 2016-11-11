@@ -245,6 +245,7 @@ paths:
         - name: since
           in: query
           type: string
+          format: date-time
           required: false
         - name: environment
           in: query

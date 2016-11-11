@@ -48,7 +48,7 @@
 
 <uib-tabset>
   <uib-tab heading="Deployments">
-    <ops-deployments-list query="vm.query" ng-if="$parent.tabset.active === 0"></ops-deployments-list>
+    <ops-deployments-list query="vm.query" query-sync="vm.querySync" ng-if="$parent.tabset.active === 0"></ops-deployments-list>
   </uib-tab>
   <uib-tab heading="Instances">
     <ops-deployments-instances query="vm.query" ng-if="$parent.tabset.active == 1"></ops-deployments-instances>

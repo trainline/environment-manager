@@ -23,7 +23,7 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
       { name: 'Last 60 days', value: 60 * enums.MILLISECONDS.PerDay },
     ];
 
-    var querySync = new QuerySync(vm, {
+    var querySync = vm.querySync = new QuerySync(vm, {
       date_range: {
         property: 'selectedDateRangeValue',
         default: dateRangeList[0].value,

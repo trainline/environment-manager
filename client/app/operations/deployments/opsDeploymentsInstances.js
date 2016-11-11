@@ -4,7 +4,7 @@
 angular.module('EnvironmentManager.operations').component('opsDeploymentsInstances', {
   templateUrl: '/app/operations/deployments/opsDeploymentsInstances.html',
   bindings: {
-    
+    query: '<'
   },
   controllerAs: 'vm',
   controller: function ($scope, $http) {
@@ -20,12 +20,10 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsInstanc
 
     function refresh() {
       vm.dataLoading = true;
-      $http.get('/api/v1/instances/?environment=c50&cluster=Infra', {
-        params: {
-          cluster: 'Infra',
-          include_services: true
-        }
-      }).then(function (response) {
+      var params = _.clone(vm.query);
+      params.include_services = true;
+
+      $http.get('/api/v1/instances', { params: params }).then(function (response) {
         var instances = response.data;
         vm.instances = instances;
         _.each(instances, function (instance) {

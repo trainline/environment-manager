@@ -4,10 +4,11 @@
 angular.module('EnvironmentManager.operations').component('opsDeploymentsList', {
   templateUrl: '/app/operations/deployments/opsDeploymentsList.html',
   bindings: {
-    query: '<'
+    query: '<',
+    querySync: '<'
   },
   controllerAs: 'vm',
-  controller: function ($scope, Deployment) {
+  controller: function ($scope, Deployment, $uibModal) {
     var vm = this;
 
     function refresh() {
@@ -26,7 +27,7 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsList', 
       vm.selectedDeploymentId = deployment.DeploymentID;
       vm.selectedDeploymentAccount = deployment.AccountName;
 
-      querySync.updateQuery();
+      vm.querySync.updateQuery();
 
       var modal = $uibModal.open({
         templateUrl: '/app/operations/deployments/ops-deployment-details-modal.html',
@@ -44,7 +45,7 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsList', 
         vm.selectedDeploymentId = null;
         vm.selectedDeploymentAccount = null;
 
-        querySync.updateQuery();
+        vm.querySync.updateQuery();
       });
     };
 
