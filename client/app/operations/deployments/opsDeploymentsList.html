@@ -61,7 +61,7 @@
             <span ng-if="deployment.nodes.length == 0">-</span>
           </td>
           <td>
-            <button class="btn btn-default" ng-click="vm.showDetails(deployment.data)">View Details...</button>
+            <button class="btn btn-default" ng-click="vm.showDetails()(deployment.data)">View Details...</button>
           </td>
         </tr>
       </tbody>

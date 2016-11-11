@@ -5,7 +5,7 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsList', 
   templateUrl: '/app/operations/deployments/opsDeploymentsList.html',
   bindings: {
     query: '<',
-    querySync: '<'
+    showDetails: '&'
   },
   controllerAs: 'vm',
   controller: function ($scope, Deployment, $uibModal) {
@@ -23,33 +23,6 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsList', 
       });  
     }
 
-    vm.showDetails = function (deployment) {
-      vm.selectedDeploymentId = deployment.DeploymentID;
-      vm.selectedDeploymentAccount = deployment.AccountName;
-
-      vm.querySync.updateQuery();
-
-      var modal = $uibModal.open({
-        templateUrl: '/app/operations/deployments/ops-deployment-details-modal.html',
-        windowClass: 'deployment-summary',
-        controller: 'DeploymentDetailsModalController',
-        size: 'lg',
-        resolve: {
-          deployment: function () {
-            return deployment;
-          },
-        },
-      });
-
-      modal.result['finally'](function() {
-        vm.selectedDeploymentId = null;
-        vm.selectedDeploymentAccount = null;
-
-        vm.querySync.updateQuery();
-      });
-    };
-
-    refresh();
     $scope.$on('refresh', refresh);
   }
 });

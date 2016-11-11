@@ -82,6 +82,32 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
       });
     }
 
+    vm.showDetails = function (deployment) {
+      vm.selectedDeploymentId = deployment.DeploymentID;
+      vm.selectedDeploymentAccount = deployment.AccountName;
+
+      querySync.updateQuery();
+
+      var modal = $uibModal.open({
+        templateUrl: '/app/operations/deployments/ops-deployment-details-modal.html',
+        windowClass: 'deployment-summary',
+        controller: 'DeploymentDetailsModalController',
+        size: 'lg',
+        resolve: {
+          deployment: function () {
+            return deployment;
+          },
+        },
+      });
+
+      modal.result['finally'](function() {
+        vm.selectedDeploymentId = null;
+        vm.selectedDeploymentAccount = null;
+
+        querySync.updateQuery();
+      });
+    };
+
     vm.refresh = function () {
       querySync.updateQuery();
       var query = {};
