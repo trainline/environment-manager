@@ -48,7 +48,7 @@ function queryDeployment({ key, accountName }) {
     sender.sendQuery({ query: currentDeploymentsQuery }).catch(err => null),
     sender.sendQuery({ query: completedDeploymentsQuery }).catch(err => null),
   ]).then(results => {
-    let result = results[0] || results[1];
+    let result = _.concat(results[0], results[1]);
     result = result[0];
 
     if (!result) {
