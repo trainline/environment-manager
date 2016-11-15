@@ -59,7 +59,7 @@ angular.module('EnvironmentManager.common').factory('DeploymentMap',
           url: baseUrl,
           data: {
             DeploymentMapName: this.DeploymentMapName,
-            Value: this._getValueWithConvertedServerRoles()
+            Value: _.clone(this.Value)
           },
           headers: { 'expected-version': this.Version }
         });

@@ -30,6 +30,20 @@ app.config(function ($routeProvider) {
     });
 });
 
+// Set up error pop up on HTTP errors
+app.config(function ($httpProvider) {
+  $httpProvider.interceptors.push(function ($q, $rootScope) {
+    return {
+      responseError: function(response) {
+        if (response.status >= 400) {
+          $rootScope.$broadcast('error', response);
+        }
+        return $q.reject(response);
+      }
+    };
+  });
+});
+
 app.run(function ($rootScope, $timeout) {
   $rootScope.canUser = function () {
     return true;
