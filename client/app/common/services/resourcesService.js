@@ -20,6 +20,8 @@ angular.module('EnvironmentManager.common').factory('resources',
       { Name: 'LB Upstream', Value: 'ConfigLBUpstream' },
       { Name: 'Service', Value: 'ConfigServices' },
       { Name: 'Cluster', Value: 'InfraConfigClusters' },
+      { Name: 'Permissions', Value: 'InfraConfigPermissions' },
+      { Name: 'Accounts', Value: 'InfraConfigAccounts' },
     ];
 
     var resources = {

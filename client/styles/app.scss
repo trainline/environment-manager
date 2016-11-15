@@ -384,7 +384,7 @@ form#Cluster label { width: 180px; }
 
 /* Audit Compare */
 json-diff-patch > pre { overflow-y: scroll; }
-.compare-overview > pre { max-height: 150px; }
+.compare-overview > pre { max-height: 150px; width: 500px }
 .compare-detail > pre { max-height: 550px; }
 
 

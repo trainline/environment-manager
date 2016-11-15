@@ -1,4 +1,4 @@
-﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
 
@@ -184,25 +184,37 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
         message: 'Are you sure you want to restore <strong>' + audit.Entity.Type + '</strong> data?',
         action: 'Restore',
         severity: 'Warning',
-        details: ['<pre style="height:450px; overflow-y:scroll">' + audit.NewValueDisplay + '</pre>'],
+        details: ['<pre style="height:450px; overflow-y:scroll">' + audit.OldValueDisplay + '</pre>'],
       };
       modal.confirmation(modalParameters).then(function () {
-        var resource = null;
-        for (var property in resources.config) {
-          if (property.toLowerCase() === audit.Entity.Type) {
-            resource = resources.config[property];
-          }
-        }
 
-        var params = {
-          account: audit.AccountName,
-          items: audit.NewValue,
-        };
-        resource.merge(params).then(function () {
-          vm.refresh();
-        });
+        $scope.DataLoading = true;
+        var type = $scope.EntityTypeFromTable(audit.Entity.Type).toLowerCase();
+
+        $http({
+          url: '/api/v1/config/import/' + type,
+          method: 'put',
+          data: audit.OldValue,
+          params: {
+            account: audit.AccountName,
+            mode: 'merge'
+          },
+        }).then(function () {
+          return delay(1000);
+        }).finally(vm.refresh);
+
       });
     };
+
+    $scope.EntityTypeFromTable = function (tableName) {
+      return tableName.substring(tableName.indexOf('Config') + 6);
+    }
+
+    function delay(ms) {
+        var deferred = $q.defer();
+        setTimeout(deferred.resolve, ms);
+        return deferred.promise;
+    }
 
     $scope.SelectedEntityHasRange = function () {
       return ($scope.SelectedEntityType == 'LBSettings' || $scope.SelectedEntityType == 'LBUpstream');

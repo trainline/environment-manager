@@ -43,8 +43,8 @@ function getInstanceServiceOverallHealth(checks) {
   }
 }
 
-function getInstanceServiceHealthChecks(checks, serviceName) {
-  checks = _.filter(checks, { ServiceName: serviceName });
+function getInstanceServiceHealthChecks(checks) {
+  checks = _.filter(checks, (check) => check.CheckID !== 'serfHealth' && check.CheckID !== 'disk_rw');
   return _.map(checks, (check) => {
     return {
       CheckId: check.CheckID,
@@ -73,7 +73,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
 
     services = yield _.map(services, co.wrap(function* (service, key) {
       service.Tags = mapConsulTags(service.Tags);
-      let instanceServiceHealthChecks = getInstanceServiceHealthChecks(checks, service.Service);
+      let instanceServiceHealthChecks = getInstanceServiceHealthChecks(checks);
       return {
         Name: getSimpleServiceName(service.Service),
         Version: service.Tags.version,
