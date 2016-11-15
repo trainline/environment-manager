@@ -9,12 +9,15 @@ var io = require('./deployment-map-io');
 var through = require('through2');
 var z = require('./zip-merge');
 
+const HEALTHCHECK_DIR_REGEX = /^healthchecks[\\/]/;
+
 function getCodeDeployEntries(deploymentMap, inputPackages, options, logger) {
-  let isMain = pack => pack.id === deploymentMap.id && pack.version == deploymentMap.version;
+  let isMain = pack => pack.id === deploymentMap.id && pack.version === deploymentMap.version;
+  let isHealthcheck = entry => HEALTHCHECK_DIR_REGEX.test(entry);
   let entryStreams = (function *() {
     yield getCodeDeploySpecialEntries(deploymentMap, options);
     for (let pack of inputPackages) {
-      let mapPath = x => path.join(isMain(pack) ? 'DM' : pack.id, x);
+      let mapPath = isMain(pack) ? (entry => isHealthcheck(entry) ? path.normalize(entry) : path.join('DM', entry)) : entry => path.join(pack.id, entry);
       let result = z.createEntryStream(pack.contentStream, filterOutNugetJunk, logger).pipe(z.mapS(entry => {
         let transformedPath = mapPath(entry.path);
         entry.path = transformedPath;
