@@ -9,6 +9,14 @@
     <input class="form-control inline" name="MaxInstances" type="number" min="0" max="100" step="1" required="" ng-model="vm.target.ASG.MaxCapacity" ng-readonly="!vm.canUser('edit')" />
   </div>
 </div>
+<div>
+  <div class="col-md-8 col-md-offset-2">
+    <div class="infrastructure-warning" ng-if="vm.target.ASG.MinCapacity > 0">
+      Note: The recommended Min Size is 0.<br />
+      The Scheduler will not switch off instances when an ASG reaches its minimum size.
+    </div>
+  </div>
+</div>
 <div class="form-group" ng-if="form.MinInstances.$invalid || form.NumberOfInstances.$invalid || form.MaxInstances.$invalid" ng-class="{'has-error': form.MinInstances.$invalid || form.NumberOfInstances.$invalid || form.MaxInstances.$invalid }">
   <div class="col-md-offset-2 col-md-10">
     <span class="help-block" ng-if="form.MinInstances.$dirty && form.MinInstances.$error.required">Min instances is mandatory.</span>

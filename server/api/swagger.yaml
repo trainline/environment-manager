@@ -1671,6 +1671,44 @@ paths:
       responses:
         200:
           description: Empty
+  /package-upload-url/{service}/{version}/{environment}:
+    x-swagger-router-controller: package-upload-url/packageUploadUrlController
+    get:
+      operationId: getPackageUploadUrlByServiceVersionEnvironment
+      summary: Upload an environment-specific package.
+      x-authorizer: package-upload-url
+      tags:
+        - Package
+      parameters:
+        - $ref: '#/parameters/package-id'
+        - $ref: '#/parameters/package-version'
+        - $ref: '#/parameters/package-environment'
+        - $ref: '#/parameters/package-slice'
+      responses:
+        201:
+          $ref: '#/responses/package-created'
+        409:
+          $ref: '#/responses/package-already-exists'
+        422:
+          $ref: '#/responses/package-bad-ref'
+  /package-upload-url/{service}/{version}:
+    x-swagger-router-controller: package-upload-url/packageUploadUrlController
+    get:
+      operationId: getPackageUploadUrlByServiceVersion
+      summary: Upload an environment-independent package.
+      x-authorizer: package-upload-url
+      tags:
+        - Package
+      parameters:
+        - $ref: '#/parameters/package-id'
+        - $ref: '#/parameters/package-version'
+      responses:
+        201:
+          $ref: '#/responses/package-created'
+        409:
+          $ref: '#/responses/package-already-exists'
+        422:
+          $ref: '#/responses/package-bad-ref'
 definitions:
   AccountConfig:
     type: object
@@ -1746,10 +1784,66 @@ definitions:
         type: string
       serverRole:
         type: string
+  Error:
+    type: object
+    readOnly: true
+    properties:
+      title:
+        type: string
+        description: A short, human readable title of the error.
+      description:
+        type: string
+        description: A long, human readable description of the error.
 parameters:
   ExpectedVersionHeader:
     name: expected-version
     in: header
     required: true
     type: integer
-
+  package-id:
+    name: service
+    description: The name of the service implemented by the package.
+    in: path
+    type: string
+    pattern: ^[A-Za-z0-9_\-\.]+$
+    required: true
+  package-version:
+    name: version
+    description: The version of the package (semver).
+    in: path
+    required: true
+    type: string
+    pattern: (0|[1-9]\d*)(\.(0|[1-9]\d*)){2}(-[\da-zA-Z\-]+(\.[\da-zA-Z\-]+)*)?(\+[\da-zA-Z\-]+(\.[\da-zA-Z\-]+)*)?
+  package-environment:
+    name: environment
+    description: The name of the environment targeted by this package.
+    in: path
+    type: string
+    pattern: ^[A-Za-z0-9]+$
+    required: true
+  package-slice:
+    name: slice
+    description: The name of the slice targeted by this package.
+    in: formData
+    type: string
+    enum:
+      - blue
+      - green
+    required: false
+  package-content:
+    name: package
+    description: The package file.
+    in: formData
+    type: file
+    required: true
+responses:
+  package-created:
+    description: The package was uploaded successfully.
+  package-already-exists:
+    description: The package already exists.
+    schema:
+      $ref: '#/definitions/Error'
+  package-bad-ref:
+    description: The package refers to a service or environment that does not exist.
+    schema:
+      $ref: '#/definitions/Error'
