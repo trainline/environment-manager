@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('PermissionController',
-  function ($routeParams, $http, $location, $q, resources, cachedResources, modal, permissionsValidation) {
+  function ($scope, $routeParams, $http, $location, $q, resources, cachedResources, modal, permissionsValidation) {
     var vm = this;
 
     var RETURN_PATH = '/config/permissions';
@@ -24,7 +24,7 @@ angular.module('EnvironmentManager.configuration').controller('PermissionControl
 
     }
 
-    vm.validateJson = permissionsValidation;
+    $scope.validateJson = permissionsValidation;
 
     vm.canUser = function () {
       return vm.userHasPermission;
