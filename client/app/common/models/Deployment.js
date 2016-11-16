@@ -14,6 +14,9 @@ angular.module('EnvironmentManager.common').factory('Deployment',
 
       fetchNodesIps: function() {
         var self = this;
+        if (self.Value.Nodes === undefined || self.Value.Nodes.length === 0) {
+          return self;
+        }
         var instanceIds = _.map(self.Value.Nodes, 'InstanceId');
 
         var params = {
@@ -22,6 +25,7 @@ angular.module('EnvironmentManager.common').factory('Deployment',
             'instance_id': instanceIds,
           },
         };
+
         return awsService.instances.GetInstanceDetails(params).then(function (instances) {
           instances.forEach(function (node) {
             var tmp = _.find(self.Value.Nodes, {InstanceId: node.InstanceId});
