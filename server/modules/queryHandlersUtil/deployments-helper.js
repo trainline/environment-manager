@@ -5,12 +5,12 @@ let _ = require('lodash');
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
 let sender = require('modules/sender');
 
-function mapDeployment(deployment, account) {
+function mapDeployment(deployment) {
   if (deployment.Value.Status.toLowerCase() !== 'in progress') {
     return deployment;
   }
 
-  return queryDeploymentNodeStates(deployment.Value.EnvironmentName, deployment.DeploymentID, account).then(nodes => {
+  return queryDeploymentNodeStates(deployment.Value.EnvironmentName, deployment.DeploymentID, deployment.AccountName).then(nodes => {
     deployment.Value.Nodes = nodes.map(node => {
       let resultNode = node.value;
 
@@ -23,7 +23,7 @@ function mapDeployment(deployment, account) {
   });
 }
 
-function queryDeployment({ key, accountName }) {
+function queryDeployment({ key }) {
   let queryName = 'ScanCrossAccountDynamoResources';
 
   let filter = {
@@ -54,8 +54,6 @@ function queryDeployment({ key, accountName }) {
     if (!result) {
       throw new ResourceNotFoundError(`Deployment ${key} not found`);
     }
-
-    result.AccountName = accountName;
 
     return result;
   });
@@ -110,18 +108,13 @@ function queryDeploymentNodeStates(environment, key, accountName) {
 
 module.exports = {
 
-  get: query => {
-    return queryDeployment(query).then(deployment => {
-      return mapDeployment(deployment, query.account);
-    });
+  get: (query) => {
+    return queryDeployment(query).then(mapDeployment);
   },
 
-  scan: query => {
+  scan: (query) => {
     return queryDeployments(query).then(deployments => {
-      let deploymentsWithNodes = deployments.map(deployment => {
-        return mapDeployment(deployment, deployment.AccountName);
-      });
-
+      let deploymentsWithNodes = deployments.map(mapDeployment);
       return Promise.all(deploymentsWithNodes);
     });
   },
