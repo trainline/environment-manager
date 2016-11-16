@@ -76,7 +76,7 @@ class DynamoTableResource {
     };
 
     return this.client.get(request).promise().then(data => {
-      if (params.NoItemNotFoundError !== true && !data.Item) {
+      if (!data.Item) {
         let message = !params.range ?
           `No ${self._resourceName} found for ${self._keyName} ${params.key}.` :
           `No ${self._resourceName} found for ${self._keyName} ${params.key} and ${self._rangeName} "${params.range}".`;
