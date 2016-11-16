@@ -4,12 +4,19 @@
 
 let _ = require('lodash');
 let awsAccounts = require('modules/awsAccounts');
-let config = require('config');
-let DynamoItemNotFoundError = require('modules/errors/DynamoItemNotFoundError.class');
+let awsResourceNameProvider = require('modules/awsResourceNameProvider');
+let childAccountClient = require('modules/amazon-client/childAccountClient');
+let configurationCache = require('modules/configurationCache');
 let fp = require('lodash/fp');
 let logger = require('modules/logger');
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
 let sender = require('modules/sender');
+
+function getTargetAccountName(deployment) {
+  return configurationCache.getEnvironmentTypeByName(fp.get(['Value', 'EnvironmentType'])(deployment))
+    .then(fp.get(['AWSAccountName']))
+    .catch((e) => { logger.warn(e); return ''; });
+}
 
 function mapDeployment(deployment, account) {
   if (deployment.Value.Status.toLowerCase() !== 'in progress') {
@@ -33,39 +40,36 @@ function cross(a, b) {
   return a.reduce((acc, x) => acc.concat(b.map(y => [x, y])), []);
 }
 
-function queryDeployment({ key, accountName }) {
+function queryDeployment({ key }) {
   return awsAccounts.all().then((all) => {
-    let accounts = fp.flow(fp.sortBy(x => !x.IsMaster), fp.map(x => x.AccountName))(all);
-    let tables = ['deployments/history', 'deployments/completed'];
+    let accounts = fp.flow(fp.sortBy(x => !x.IsMaster), fp.map(x => x.AccountName), fp.uniq())(all);
+    let tables = ['ConfigDeploymentExecutionStatus', 'ConfigCompletedDeployments'];
 
-    let query = (account, table) => ({
-      name: 'GetDynamoResource',
-      resource: table,
-      accountName: account,
-      key,
-      NoItemNotFoundError: true,
-    });
+    let queries = cross(accounts, tables).map(
+      ([account, table]) => ({
+        accountName: account,
+        query: {
+          TableName: awsResourceNameProvider.getTableName(table),
+          Key: { DeploymentID: key },
+        },
+      }));
 
-    let queries = cross(accounts, tables).map(x => query(...x));
-
-    function handleError(error) {
-      if (error instanceof DynamoItemNotFoundError) {
-        return null;
-      } else {
-        logger.warn(error);
-        return null;
-      }
+    function executeQuery(params) {
+      return childAccountClient.createDynamoClient(params.accountName)
+        .then(dynamo => dynamo.get(params.query).promise());
     }
 
     return Promise.all(
-      queries.map(q => sender.sendQuery({ query: q }).catch(handleError))
+      queries.map(q => executeQuery(q).catch((e) => { logger.warn(e); return {}; }))
     ).then((results) => {
-      let result = results.find(x => x);
+      let result = results.map(x => x.Item).find(x => x);
       if (result === undefined) {
         throw new ResourceNotFoundError(`Deployment ${key} not found`);
       } else {
-        result.AccountName = accountName;
-        return result;
+        return getTargetAccountName(result).then((accountName) => {
+          result.AccountName = accountName;
+          return result;
+        });
       }
     });
   });

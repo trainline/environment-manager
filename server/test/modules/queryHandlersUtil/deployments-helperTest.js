@@ -1,8 +1,7 @@
 'use strict';
 
-let fp = require('lodash/fp');
+require('should');
 let proxyquire = require('proxyquire').noCallThru();
-let should = require('should');
 let sinon = require('sinon');
 
 let accounts = [
@@ -10,95 +9,121 @@ let accounts = [
   { AccountName: 'child-account', IsMaster: false },
 ];
 
+let accountNames = ['master-account', 'child-account'];
+let tableNames = ['ConfigDeploymentExecutionStatus', 'ConfigCompletedDeployments'];
+
+function stubGet(value) {
+  return { promise: () => Promise.resolve(value || {}) };
+}
+
+function commonStubs() {
+  return {
+    'modules/awsAccounts': {
+      all: () => Promise.resolve(accounts),
+    },
+    'modules/awsResourceNameProvider': {
+      getTableName: str => str,
+    },
+    'modules/amazon-client/childAccountClient': {},
+    'modules/configurationCache': {},
+    'modules/logger': {
+      warn: () => { },
+    },
+    'modules/sender': {},
+  };
+}
+
 describe('deployments-helper', () => {
   describe('when I get a single deployment by ID', () => {
     describe('queries are submitted to DynamoDB', () => {
       let allQueriesSubmitted;
       before(() => {
-        let sendQuery = sinon.spy(query => Promise.resolve(null));
-        let sut = proxyquire('modules/queryHandlersUtil/deployments-helper', {
-          'modules/awsAccounts': {
-            all: () => Promise.resolve(accounts),
+        let dynamoGet = {
+          'child-account': sinon.spy(query => stubGet()),
+          'master-account': sinon.spy(query => stubGet()),
+        };
+        let createDynamoClient = sinon.spy(accountName => Promise.resolve({
+          get: dynamoGet[accountName],
+        }));
+        let sut = proxyquire('modules/queryHandlersUtil/deployments-helper', Object.assign(commonStubs(), {
+          'modules/amazon-client/childAccountClient': {
+            createDynamoClient,
           },
-          'modules/sender': {
-            sendQuery,
-          },
+        }));
+        allQueriesSubmitted = sut.get({ key: 'deployment-id' }).catch(() => dynamoGet);
+      });
+      accountNames.forEach((account) => {
+        tableNames.forEach((table) => {
+          it(`a query is executed against the "${table}" table in the "${account}" account`, () =>
+            allQueriesSubmitted.then(dynamo => sinon.assert.calledWith(dynamo[account], sinon.match({ TableName: table })))
+          );
         });
-        allQueriesSubmitted = sut.get({ key: 'deployment-id' }).catch(() => sendQuery);
-      });
-      let expectedQueries = [
-        { resource: 'deployments/history', accountName: 'master-account' },
-        { resource: 'deployments/completed', accountName: 'master-account' },
-        { resource: 'deployments/history', accountName: 'child-account' },
-        { resource: 'deployments/completed', accountName: 'child-account' },
-      ];
-      it('a query is submitted for each combination of account and completed/running table', () => {
-        return allQueriesSubmitted.then(receiver => sinon.assert.callCount(receiver, expectedQueries.length));
-      });
-      it('all queries are get dynamodb item requests', () => {
-        return allQueriesSubmitted.then(receiver => sinon.assert.alwaysCalledWith(receiver, sinon.match({ query: { name: 'GetDynamoResource' } })));
-      });
-      it('all queries are for the correct key', () => {
-        return allQueriesSubmitted.then(receiver => sinon.assert.alwaysCalledWith(receiver, sinon.match({ query: { key: 'deployment-id' } })));
-      });
-      it('no query throws an error if a matching item is not found', () => {
-        return allQueriesSubmitted.then(receiver => sinon.assert.alwaysCalledWith(receiver, sinon.match({ query: { NoItemNotFoundError: true } })));
-      });
-      expectedQueries.forEach((x) => {
-        it(`a query is submitted for resource ${x.resource} in account ${x.accountName}`, () => {
-          return allQueriesSubmitted.then(receiver => sinon.assert.calledWith(receiver, sinon.match({ query: x })));
-        });
+        it(`all queries executed in "${account}" are for the correct key`, () =>
+          allQueriesSubmitted.then(receiver => sinon.assert.alwaysCalledWith(receiver[account], sinon.match({ Key: { DeploymentID: 'deployment-id' } })))
+        );
       });
     });
 
+    it('dynamo queries use prefixed table names', () => {
+      let get = sinon.spy(() => stubGet());
+      let sut = proxyquire('modules/queryHandlersUtil/deployments-helper', Object.assign(commonStubs(), {
+        'modules/awsResourceNameProvider': {
+          getTableName: str => `my-prefix-${str}`,
+        },
+        'modules/amazon-client/childAccountClient': {
+          createDynamoClient: () => Promise.resolve({ get }),
+        },
+      }));
+      return sut.get({ key: 'deployment-id' }).catch(() => sinon.assert.calledWith(get, sinon.match({ TableName: 'my-prefix-ConfigDeploymentExecutionStatus' })));
+    });
+
     it('if there is no such deployment I get an error', () => {
-      let sut = proxyquire('modules/queryHandlersUtil/deployments-helper', {
-        'modules/awsAccounts': {
-          all: () => Promise.resolve(accounts),
+      let sut = proxyquire('modules/queryHandlersUtil/deployments-helper', Object.assign(commonStubs(), {
+        'modules/amazon-client/childAccountClient': {
+          createDynamoClient: {
+            get: () => stubGet(),
+          },
         },
-        'modules/sender': {
-          sendQuery: query => Promise.resolve(null),
-        },
-      });
+      }));
       return sut.get({ key: 'deployment-id' }).should.be.rejected();
     });
 
     it('if there is such a deployment I get it', () => {
-      let sendQuery = sinon.stub();
-      sendQuery.onCall(0).returns(Promise.reject(new Error('oops')));
-      sendQuery.onCall(1).returns(Promise.resolve(null));
-      sendQuery.onCall(2).returns(Promise.resolve(null));
-      sendQuery.onCall(3).returns(Promise.resolve({ Value: { Status: 'success' } }));
-      let sut = proxyquire('modules/queryHandlersUtil/deployments-helper', {
-        'modules/awsAccounts': {
-          all: () => Promise.resolve(accounts),
+      let expected = {
+        Value: { Status: 'success' },
+        AccountName: 'master-account',
+      };
+      let get = sinon.stub();
+      get.onCall(0).returns({ promise: () => Promise.reject(new Error('oops')) });
+      get.onCall(1).returns(stubGet());
+      get.onCall(2).returns(stubGet());
+      get.onCall(3).returns(stubGet({ Item: { Value: { Status: 'success' } } }));
+      let sut = proxyquire('modules/queryHandlersUtil/deployments-helper', Object.assign(commonStubs(), {
+        'modules/amazon-client/childAccountClient': {
+          createDynamoClient: () => Promise.resolve({ get }),
         },
-        'modules/logger': { warn: () => {} },
-        'modules/sender': {
-          sendQuery,
+        'modules/configurationCache': {
+          getEnvironmentTypeByName: envType => Promise.resolve({ AWSAccountName: 'master-account' }),
         },
-      });
-      return sut.get({ key: 'deployment-id' }).should.be.fulfilled();
+      }));
+      return sut.get({ key: 'deployment-id' }).should.finally.be.eql(expected);
     });
 
     it('if a query throws an error it is logged', () => {
       let expectedError = new Error('oops');
-      let sendQuery = sinon.stub();
-      sendQuery.onCall(0).returns(Promise.reject(expectedError));
-      sendQuery.onCall(1).returns(Promise.resolve({ Value: { Status: 'success' } }));
-      sendQuery.onCall(2).returns(Promise.resolve(null));
-      sendQuery.onCall(3).returns(Promise.resolve(null));
-      let warn = sinon.spy(() => {});
-      let sut = proxyquire('modules/queryHandlersUtil/deployments-helper', {
-        'modules/awsAccounts': {
-          all: () => Promise.resolve(accounts),
-        },
+      let get = sinon.stub();
+      get.onCall(0).returns({ promise: () => Promise.reject(expectedError) });
+      get.onCall(1).returns(stubGet());
+      get.onCall(2).returns(stubGet());
+      get.onCall(3).returns(stubGet());
+      let warn = sinon.spy(() => { });
+      let sut = proxyquire('modules/queryHandlersUtil/deployments-helper', Object.assign(commonStubs(), {
         'modules/logger': { warn },
-        'modules/sender': {
-          sendQuery,
+        'modules/amazon-client/childAccountClient': {
+          createDynamoClient: () => Promise.resolve({ get }),
         },
-      });
-      return sut.get({ key: 'deployment-id' }).then(() => sinon.assert.calledWith(warn, sinon.match(expectedError)));
+      }));
+      return sut.get({ key: 'deployment-id' }).catch(() => sinon.assert.calledWith(warn, sinon.match(expectedError)));
     });
   });
 });
