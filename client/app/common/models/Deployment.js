@@ -4,7 +4,7 @@
 angular.module('EnvironmentManager.common').factory('Deployment',
   function ($q, resources, $log, awsService, $http) {
 
-    var baseUrl = '/api/v1/deployments'
+    var baseUrl = '/api/v1/deployments';
 
     function Deployment(data) {
       _.assign(this, data);
