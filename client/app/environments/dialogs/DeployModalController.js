@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('DeployModalController',
-  function ($scope, $http, $uibModal, $uibModalInstance, $q, modal, awsService, accountMappingService, resources, cachedResources, parameters) {
+  function ($scope, $http, $uibModal, $uibModalInstance, $q, Deployment, modal, awsService, accountMappingService, resources, cachedResources, parameters) {
     var vm = this;
 
     vm.environment = parameters.Environment;
@@ -130,23 +130,7 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
             size: 'lg',
             resolve: {
               deployment: function () {
-                return {
-                  DeploymentID: data.id,
-                  Value: {
-                    DeploymentType: "",
-                    EnvironmentName: data.environmentName,
-                    EnvironmentType: data.environmentTypeName,
-                    ExecutionLog: "Deployment starting...",
-                    OwningCluster: data.clusterName,
-                    ServiceName: data.serviceName,
-                    ServiceSlice: data.serviceSlice,
-                    ServiceVersion: data.serviceVersion,
-                    StartTimestamp: moment.utc().format(),
-                    Status: "In progress",
-                    User: data.username
-                  },
-                  AccountName: data.accountName
-                };
+                return Deployment.getById(data.accountName, data.id);
               },
             },
           });

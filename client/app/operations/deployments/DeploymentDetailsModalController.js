@@ -164,10 +164,7 @@ angular
       var params = { account: account, key: id };
       Deployment.getById(account, id).then(function (deployment) {
         return deployment.fetchNodesIps();
-      }).then(function (data) {
-        data.AccountName = account;
-        updateView(data);
-      });
+      }).then(updateView);
     }
     
     function updateView(data) {
