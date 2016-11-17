@@ -25,15 +25,6 @@ let swaggerOptions = {
   ]
 };
 
-function loggedInAuthorization(req, res, next) {
-  if (req.user === undefined) {
-    res.status(401);
-    next({ message: 'Not authorized' })
-  } else {
-    next();
-  }
-}
-
 function authorize(req, res, next) {
   if (req.swagger === undefined) return next();
   let authorizerName = req.swagger.operation['x-authorizer'] || 'simple';
@@ -44,13 +35,16 @@ function authorize(req, res, next) {
   _.each(req.swagger.params, (param, key) => {
     req.params[key] = param.value;
   });
-  
-  authorization(authorizer, req, res, next);
+
+  if (req.url !== '/token') {
+    authorization(authorizer, req, res, next);
+  } else {
+    next();
+  }
 }
 
 function setup(app) {
   swaggerTools.initializeMiddleware(apiSpec, function (middleware) {
-    app.use(API_BASE_PATH, loggedInAuthorization);
     app.use(middleware.swaggerMetadata());
     app.use(middleware.swaggerValidator());
     app.use(API_BASE_PATH, authorize);
