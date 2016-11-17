@@ -19,17 +19,35 @@ const _ = require('lodash/fp');
  * @returns {S3Location|undefined} The parsed S3 location.
  */
 function parse(url) {
-  let regex = /^(https:\/\/s3[^\/\.]+\.amazonaws\.com)\/([^\/]+)\/([^\?]+)(?:\?versionId=([^&]+))?$/;
-  let t = regex.exec(url);
-  if (t === null) {
-    return undefined;
+  function parseBucketInPath() {
+    let regex = /^(https?:\/\/s3[^\/\.]+\.amazonaws\.com)\/([^\/]+)\/([^\?]+)(?:\?versionId=([^&]+))?$/;
+    let t = regex.exec(url);
+    if (t === null) {
+      return undefined;
+    }
+    return {
+      endpoint: t[1],
+      Bucket: t[2],
+      Key: t[3],
+      VersionId: t[4],
+    };
   }
-  return {
-    endpoint: t[1],
-    Bucket: t[2],
-    Key: t[3],
-    VersionId: t[4],
-  };
+
+  function parseBucketInHostname() {
+    let regex = /^(https?:\/\/)([^\.]+)\.(s3[^\/\.]+\.amazonaws\.com)\/([^\?]+)(?:\?versionId=([^&]+))?$/;
+    let t = regex.exec(url);
+    if (t === null) {
+      return undefined;
+    }
+    return {
+      endpoint: t[1] + t[3],
+      Bucket: t[2],
+      Key: t[4],
+      VersionId: t[5],
+    };
+  }
+
+  return parseBucketInPath() || parseBucketInHostname();
 }
 
 /**
