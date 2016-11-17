@@ -49,6 +49,7 @@ function getServiceAndSlice(obj) {
 function* getServicesState(environmentName, runtimeServerRoleName, instances) {
   let targetServiceStates = yield serviceTargets.getAllServiceTargets(environmentName, runtimeServerRoleName);
   let allServiceObjects = _.flatMap(instances, instance => instance.Services);
+  allServiceObjects = _.compact(allServiceObjects);
 
   // Find all objects representing particular service for all nodes
   let servicesGrouped = _.groupBy(allServiceObjects, (obj) => getServiceAndSlice(obj));
