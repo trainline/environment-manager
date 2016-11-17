@@ -10,6 +10,7 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
       var asgSummary = {
         AccountName: asg.AccountName,
         AsgName: asg.AutoScalingGroupName,
+        AvailabilityZones: asg.AvailabilityZones,
         MinSize: asg.MinSize,
         MaxSize: asg.MaxSize,
         DesiredCapacity: asg.DesiredCapacity,
@@ -55,6 +56,10 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
 
       updateLaunchConfig: function (data) {
         return $http.put('/api/v1/asgs/' + this.AsgName + '/launch-config?environment=' + this.getTag('Environment'), data);
+      },
+
+      updateAutoScalingGroup: function (data) {
+        return $http.put('/api/v1/asgs/' + this.AsgName + '?environment=' + this.getTag('Environment'), data);
       },
 
       getDeploymentMapTargetName: function () {

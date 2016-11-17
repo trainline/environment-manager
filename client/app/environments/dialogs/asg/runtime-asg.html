@@ -1,44 +1,41 @@
 <div class="form-group" ng-class="{'has-error': form.MinInstances.$invalid || form.NumberOfInstances.$invalid || form.MaxInstances.$invalid }">
-    <label class="col-md-1 control-label text-left" style="position: relative; left: 15px;">Size:</label>
-    <div style="float: left; display: inline-block;">
-        <label class="control-label text-left nonbold">Min:</label>
+    <label class="col-md-2 control-label text-left nowrap">Size:</label>
+    <div class="col-md-8">
+        <label class="control-label text-left nonbold inline">Min:</label>
         <input class="form-control inline"
-               type="number"
-               name="MinInstances"
-               min="0"
-               max="100"
-               step="1"
-               required=""
-               ng-model="vm.asgUpdate.MinSize"
-               ng-readonly="!canUser('edit')" />
-        <label class="control-label text-left nonbold">Desired:</label>
+            type="number"
+            name="MinInstances"
+            min="0"
+            max="100"
+            step="1"
+            required=""
+            ng-model="vm.asgUpdate.MinSize"
+            ng-readonly="!canUser('edit')" />
+        <label class="control-label text-left nonbold inline">Desired:</label>
         <input class="form-control inline"
-               name="NumberOfInstances"
-               type="number"
-               min="0"
-               max="100"
-               step="1"
-               required=""
-               ng-model="vm.asgUpdate.DesiredCapacity"
-               ng-readonly="!canUser('edit')" />
-        <label class="control-label text-left nonbold">Max:</label>
+            name="NumberOfInstances"
+            type="number"
+            min="0"
+            max="100"
+            step="1"
+            required=""
+            ng-model="vm.asgUpdate.DesiredCapacity"
+            ng-readonly="!canUser('edit')" />
+        <label class="control-label text-left nonbold inline">Max:</label>
         <input class="form-control inline"
-               name="MaxInstances"
-               type="number"
-               min="0"
-               max="100"
-               step="1"
-               required=""
-               ng-model="vm.asgUpdate.MaxSize"
-               ng-readonly="!canUser('edit')" />
-    </div>
-    <div class="col-md-1">
-      <button class="btn btn-default" type="button" ng-click="vm.resize()" ng-disabled="form.$invalid || !vm.canResize()">Resize Now</button>
+            name="MaxInstances"
+            type="number"
+            min="0"
+            max="100"
+            step="1"
+            required=""
+            ng-model="vm.asgUpdate.MaxSize"
+            ng-readonly="!canUser('edit')" />
     </div>
 </div>
-<div class="form-group has-error">
-  <div class="col-md-8 col-md-offset-1">
-    <div class="help-block" ng-if="vm.asgUpdate.MinSize > 0">
+<div class="form-group has-error" ng-if="vm.asgUpdate.MinSize > 0">
+  <div class="col-md-8 col-md-offset-2">
+    <div class="help-block">
       Note: The recommended Min Size is 0.<br />
       The Scheduler will not switch off instances when an ASG reaches its minimum size.
     </div>
@@ -66,7 +63,13 @@
     </div>
 </div>
 <div class="form-group" ng-if="vm.asgUpdate.DesiredCapacity < vm.asg.DesiredCapacity && vm.canResize()">
-    <div class="col-md-offset-1 col-md-8">
+    <div class="col-md-offset-2 col-md-8">
         <p>Note: During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection draining before termination.</p>
+    </div>
+</div>
+<div class="form-group">
+    <label class="col-md-2 control-label text-left nowrap">Availability Zone(s):</label>
+    <div class="col-md-4">
+        <select class="form-control" name="AvailabilityZone" ng-model="vm.asgUpdate.AvailabilityZone" ng-disabled="!vm.canUser('edit')" ng-options="az.Value as az.Name for az in vm.deploymentAzsList"></select>
     </div>
 </div>
