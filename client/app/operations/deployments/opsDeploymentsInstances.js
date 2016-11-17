@@ -38,8 +38,8 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsInstanc
       });
     }
 
-    refresh();
-    $scope.$on('refresh', refresh);
-
+    $scope.$watch('vm.query', function () {
+      refresh();
+    });
   }
 });

@@ -140,10 +140,6 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
       }
 
       vm.query = query;
-
-      $timeout(function () {
-        $scope.$broadcast('refresh');
-      });
     };
 
     vm.foundServicesFilter = function (deployment) {

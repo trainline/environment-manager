@@ -23,6 +23,8 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsList', 
       });
     }
 
-    $scope.$on('refresh', refresh);
+    $scope.$watch('vm.query', function () {
+      refresh();
+    });
   }
 });
