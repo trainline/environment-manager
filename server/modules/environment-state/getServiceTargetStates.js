@@ -35,16 +35,20 @@ function getServiceOverallHealth(healthChecks) {
   };
 }
 
+function getServiceAndSlice(obj) {
+  return obj.Name + (obj.Slice ? '-' + obj.Slice : '');
+}
+
 function* getServicesTargetState(environmentName, runtimeServerRoleName, instances) {
   let targetServiceStates = yield targetStates.getAllServiceTargets(environmentName, runtimeServerRoleName);
   let allServiceObjects = _.flatMap(instances, instance => instance.Services);
 
   // Find all objects representing particular service for all nodes
-  let servicesGrouped = _.groupBy(allServiceObjects, 'Name');
+  let servicesGrouped = _.groupBy(allServiceObjects, (obj) => getServiceAndSlice(obj));
 
   return _.map(targetServiceStates, (service) => {
     // serviceObjects now has all 'Name' service descriptors in instances
-    let serviceObjects = servicesGrouped[service.Name];
+    let serviceObjects = servicesGrouped[getServiceAndSlice(service)];
     _.each(serviceObjects, (obj) => {
       checkServiceProperties(obj, service, 'Version');
       checkServiceProperties(obj, service, 'DeploymentId');
