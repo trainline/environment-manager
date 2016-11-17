@@ -18,12 +18,12 @@ function getTargetAccountName(deployment) {
     .catch((e) => { logger.warn(e); return ''; });
 }
 
-function mapDeployment(deployment, account) {
+function mapDeployment(deployment) {
   if (deployment.Value.Status.toLowerCase() !== 'in progress') {
     return deployment;
   }
 
-  return queryDeploymentNodeStates(deployment.Value.EnvironmentName, deployment.DeploymentID, account).then((nodes) => {
+  return queryDeploymentNodeStates(deployment.Value.EnvironmentName, deployment.DeploymentID, deployment.AccountName).then((nodes) => {
     deployment.Value.Nodes = nodes.map((node) => {
       let resultNode = node.value;
 
@@ -104,9 +104,7 @@ function queryDeployments(query) {
   return Promise.all([
     sender.sendQuery({ query: currentDeploymentsQuery }),
     sender.sendQuery({ query: completedDeploymentsQuery }),
-  ]).then(results =>
-    _.flatten(results).filter(x => !!x)
-    );
+  ]).then(results => _.flatten(results).filter(x => !!x));
 }
 
 function queryDeploymentNodeStates(environment, key, accountName) {
@@ -123,18 +121,11 @@ function queryDeploymentNodeStates(environment, key, accountName) {
 
 module.exports = {
 
-  get: query =>
-    queryDeployment(query).then(deployment =>
-      mapDeployment(deployment, query.account)
-    ),
+  get: query => queryDeployment(query).then(mapDeployment),
 
-  scan: query =>
-    queryDeployments(query).then((deployments) => {
-      let deploymentsWithNodes = deployments.map(deployment =>
-        mapDeployment(deployment, deployment.AccountName)
-      );
-
+  scan: query => queryDeployments(query)
+    .then((deployments) => {
+      let deploymentsWithNodes = deployments.map(mapDeployment);
       return Promise.all(deploymentsWithNodes);
-    })
-  ,
+    }),
 };
