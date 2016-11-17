@@ -51,6 +51,17 @@ function parse(url) {
 }
 
 /**
+ * Format an object as an S3 URL.
+ * @param {string} s3location - an object with string properties Bucket, Key and (optionally) VersionId.
+ * @returns {string} the URL that refers to the S3 object.
+ */
+function format(s3location, region) {
+  let s3 = new AWS.S3({ region });
+  let versionId = x => (x.VersionId ? `?versionId=${x.VersionId}` : '');
+  return `${s3.endpoint.href}${s3location.Bucket}/${s3location.Key}${versionId(s3location)}`;
+}
+
+/**
  * Get the object at the S3 URL.
  * @param {string} url - the URL that refers to the S3 object.
  * @param {Object} options - additional options to the AWS.S3 constructor.
@@ -68,6 +79,7 @@ function getObject(url, options) {
 }
 
 module.exports = {
+  format,
   getObject,
   parse,
 };
