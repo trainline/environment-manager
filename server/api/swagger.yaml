@@ -2,10 +2,9 @@ swagger: "2.0"
 info:
   version: "1.0.0"
   title: Environment Manager API
-host: localhost:8080
+host: environmentmanager.corp.local
 basePath: /api/v1
 schemes:
-  - http
   - https
 consumes:
   - application/json

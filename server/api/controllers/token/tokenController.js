@@ -19,7 +19,7 @@ function postAuthorization(req, res, next) {
   let duration = tokenConfiguration.getTokenDuration();
 
   userService.authenticateUser(credentials, duration)
-    .then(value => res.json(value)).catch(next);
+    .then(value => res.send(value)).catch(next);
 }
 
 module.exports = {
