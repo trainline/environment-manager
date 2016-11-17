@@ -26,7 +26,7 @@ let swaggerOptions = {
 };
 
 function loggedInAuthorization(req, res, next) {
-  if (req.user === undefined) {
+  if (req.user === undefined && req.url !== '/token') {
     res.status(401);
     next({ message: 'Not authorized' })
   } else {
