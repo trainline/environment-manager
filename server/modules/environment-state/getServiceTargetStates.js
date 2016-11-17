@@ -50,7 +50,7 @@ function* getServicesTargetState(environmentName, runtimeServerRoleName, instanc
       checkServiceProperties(obj, service, 'DeploymentId');
     });
 
-    let serviceInstances = _.filter(instances, instance => _.some(instance.Services, { Name: service.Name }));
+    let serviceInstances = _.filter(instances, instance => _.some(instance.Services, { Name: service.Name, Slice: service.Slice }));
     let healthyNodes = _.filter(serviceInstances, (instance) => instance.OverallHealth.Status === Enums.HEALTH_STATUS.Healthy);
     let instancesHealthCount = healthyNodes.length + '/' + serviceInstances.length;
     let serviceHealthChecks = getServiceChecksInfo(serviceObjects);
