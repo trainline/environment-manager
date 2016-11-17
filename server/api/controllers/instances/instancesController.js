@@ -49,9 +49,10 @@ function getInstances(req, res, next) {
     if (instanceId !== undefined) {
       filter['instance-id'] = instanceId;
     }
-    if (since !== undefined) {
-      filter['launch-time'] = Instance.createLaunchTimeArraySince(since);
-    }
+    // TODO(Filip): consider adding filter on launch-time for improved performance
+    // if (since !== undefined) {
+    //   filter['launch-time'] = Instance.createLaunchTimeArraySince(since);
+    // }
     
     if (_.isEmpty(filter)) {
       filter = null;
@@ -60,15 +61,24 @@ function getInstances(req, res, next) {
     let handler = accountName !== undefined ? ScanInstances : ScanCrossAccountInstances;
     let list = yield handler({ accountName, filter });
 
+    // Note: be wary of performance - this filters instances AFTER fetching all from AWS
+    if (since !== undefined) {
+      let sinceDate = new Date(since);
+      list = _.filter(list, (instance) => {
+        return sinceDate.getTime() < new Date(instance.LaunchTime).getTime();
+      })
+    }
+
     if (includeServices === true) {
       list = yield _.map(list, (instance) => {
-        let instanceEnvironment = instance.getTag('Environment');
-
+        let instanceEnvironment = instance.getTag('Environment', null);
+        
         instance.appendTagsToObject();
 
         let instanceName = instance.getTag('Name', null);
-        if (instanceName === null) {
-          return instance;
+        if (instanceName === null || instanceEnvironment === null) {
+          // This instance won't be returned
+          return false;
         }
 
         return Environment.getAccountNameForEnvironment(instanceEnvironment).then((accountName) => {
@@ -79,7 +89,10 @@ function getInstances(req, res, next) {
             });
         });
       });
-      list = _.sortBy(list, function (value) { return new Date(value.LaunchTime); }).reverse();
+
+      // Remove instances without Environment tag
+      list = _.compact(list);
+      list = _.sortBy(list, (value) => new Date(value.LaunchTime)).reverse();
       res.json(list);
     } else {
       res.json(list);
