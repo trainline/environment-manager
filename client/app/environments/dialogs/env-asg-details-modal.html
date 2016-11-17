@@ -45,7 +45,7 @@
                 <p style="margin-left: 15px">No corresponding configuration found for this ASG in deployment map "{{ vm.deploymentMap.DeploymentMapName }}".<br/>Expecting to find Server Role "{{ vm.asg.getDeploymentMapTargetName() }}" owned by {{vm.asg.OwningCluster}}.</p>
             </div>
 
-            <div ng-if="vm.deploymentMapTarget" class="col-md-2" style="position: relative; left: 180px">
+            <div ng-if="vm.deploymentMapTarget" class="col-md-8" style="position: relative; left: 180px">
               <a href="" ng-click="vm.openServerRoleConfig()" ng-if="canUser('edit')">View Deployment Map Settings</a>
             </div>
           </div>

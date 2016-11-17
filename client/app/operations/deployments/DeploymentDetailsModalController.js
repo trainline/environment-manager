@@ -122,7 +122,7 @@ function deploymentView(deploymentRecord, clusters) {
   var cluster = _.find(clusters, { ClusterName: deployment.OwningCluster });
   var clusterShort = cluster.Value.ShortName.toLowerCase();
 
-  var asgName = deployment.EnvironmentName + '-' + clusterShort + '-' + deployment.ServerRoleName + (deployment.ServiceSlice === 'none' ? '' : '-' + deployment.ServiceSlice);
+  var asgName = deployment.EnvironmentName + '-' + clusterShort + '-' + deployment.ServerRoleName;
   // TODO(filip): rather than linking to separate page, open modal inside current page
   var asgLink = '#/environment/servers/?environment=' + deployment.EnvironmentName + '&asg_name=' + asgName;
 
@@ -164,10 +164,7 @@ angular
       var params = { account: account, key: id };
       Deployment.getById(account, id).then(function (deployment) {
         return deployment.fetchNodesIps();
-      }).then(function (data) {
-        data.AccountName = account;
-        updateView(data);
-      });
+      }).then(updateView);
     }
     
     function updateView(data) {

@@ -35,7 +35,7 @@ app.config(function ($httpProvider) {
   $httpProvider.interceptors.push(function ($q, $rootScope) {
     return {
       responseError: function(response) {
-        if (response.status >= 400) {
+        if (response.status >= 400 && response.status !== 404) {
           $rootScope.$broadcast('error', response);
         }
         return $q.reject(response);

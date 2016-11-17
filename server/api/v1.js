@@ -10,8 +10,14 @@ let fs = require('fs');
 let defaultErrorHandler = require('./error-handler/defaultErrorHandler');
 let apiSpec = yaml.safeLoad(fs.readFileSync('api/swagger.yaml', 'utf8'));
 let authorization = require('modules/authorization');
+let config = require('config');
 
 const API_BASE_PATH = apiSpec.basePath;
+
+if (config.get('IS_PRODUCTION') === false) {
+  apiSpec.host = 'localhost:8080';
+  apiSpec.schemes = ['http'];
+}
 
 let swaggerOptions = {
   controllers: [
@@ -20,7 +26,7 @@ let swaggerOptions = {
 };
 
 function loggedInAuthorization(req, res, next) {
-  if (req.user === undefined) {
+  if (req.user === undefined && req.url !== '/token') {
     res.status(401);
     next({ message: 'Not authorized' })
   } else {
