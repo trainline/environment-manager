@@ -46,11 +46,11 @@
 
 <hr />
 
-<uib-tabset>
-  <uib-tab heading="Deployments">
+<uib-tabset active="vm.selectedTab">
+  <uib-tab heading="Deployments" ng-click="vm.chooseTab(0)">
     <ops-deployments-list query="vm.query" show-details="vm.showDetails" ng-if="$parent.tabset.active === 0"></ops-deployments-list>
   </uib-tab>
-  <uib-tab heading="Instances">
+  <uib-tab heading="Instances" ng-click="vm.chooseTab(1)">
     <ops-deployments-instances query="vm.query" ng-if="$parent.tabset.active == 1"></ops-deployments-instances>
   </uib-tab>
 </uib-tabset>

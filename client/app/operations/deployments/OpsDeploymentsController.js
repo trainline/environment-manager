@@ -53,6 +53,11 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
         property: 'selectedDeploymentAccount',
         default: null,
       },
+      selected_tab: {
+        property: 'selectedTab',
+        default: 0,
+        castToInteger: true
+      }
     });
 
     function init() {
@@ -106,6 +111,10 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
 
         querySync.updateQuery();
       });
+    };
+
+    vm.chooseTab = function (index) {
+      querySync.updateQuery();
     };
 
     vm.refresh = function () {
