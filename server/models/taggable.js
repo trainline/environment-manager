@@ -9,7 +9,7 @@ module.exports = function (cls) {
     let tag = _.find(this.Tags, { Key: key });
     if (tag === undefined) {
       if (arguments.length <= 1) {
-        throw new Error(`Can't find tag`)
+        throw new Error(`Can't find tag "${key}"`)
       } else return defaultValue;
     }
     return tag.Value;
