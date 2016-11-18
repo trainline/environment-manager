@@ -4,11 +4,11 @@
 
 <div class="modal-body launch-config-confirm-dialog">
 
-    <p>Launch Configuration updated successfully.</p>
+    <p style="text-align: center">Launch Configuration updated successfully.</p>
 
     <div ng-if="vm.numInstances">
 
-      <p><b>PLEASE NOTE:</b> This change does not affect the existing instances.</p>
+      <p style="text-align: center; color: red">Your instances have not been changed. Settings will apply to <b>new</b> instances.</p>
       
       <p>
         To roll out this change you need to scale up to <b>{{vm.requiredInstancesForScalingRefresh}} instances</b>.
@@ -18,7 +18,7 @@
         Once the new instances are healthy, manually scale back down to <b>{{vm.numInstances}} instances</b> again.
       </p>
 
-      <p>
+      <p style="text-align: center">
         <button class="btn btn-default" type="button" ng-click="vm.close()">Scale manually later</button>
         <button class="btn btn-default" type="button" ng-click="vm.doScalingRefresh()">Scale to {{vm.requiredInstancesForScalingRefresh}} instances now</button>
       </p>
