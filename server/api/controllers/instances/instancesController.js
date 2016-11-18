@@ -53,7 +53,7 @@ function getInstances(req, res, next) {
     // if (since !== undefined) {
     //   filter['launch-time'] = Instance.createLaunchTimeArraySince(since);
     // }
-    
+
     if (_.isEmpty(filter)) {
       filter = null;
     }
@@ -72,7 +72,7 @@ function getInstances(req, res, next) {
     if (includeServices === true) {
       list = yield _.map(list, (instance) => {
         let instanceEnvironment = instance.getTag('Environment', null);
-        
+
         instance.appendTagsToObject();
 
         let instanceName = instance.getTag('Name', null);
@@ -81,13 +81,11 @@ function getInstances(req, res, next) {
           return false;
         }
 
-        return Environment.getAccountNameForEnvironment(instanceEnvironment).then((accountName) => {
-          return getInstanceState(accountName, instanceEnvironment, instanceName, instance.InstanceId)
-            .then((state) => {
-              _.assign(instance, state);
-              return instance;
-            });
-        });
+        return getInstanceState(instance.AccountName || accountName, instanceEnvironment, instanceName, instance.InstanceId)
+          .then((state) => {
+            _.assign(instance, state);
+            return instance;
+          });
       });
 
       // Remove instances without Environment tag
@@ -138,12 +136,12 @@ function putInstanceMaintenance(req, res, next) {
       _.pull(ips, instance.PrivateIpAddress);
     }
     yield dynamoHelper.update('MAINTENANCE_MODE', { IPs: JSON.stringify(ips) }, entry.Version, req.user, { accountName });
-    
+
     /**
      * Put instance to standby on AWS
      */
     let handler = enable ? EnterAutoScalingGroupInstancesToStandby : ExitAutoScalingGroupInstancesFromStandby;
-    try { 
+    try {
       yield handler({ accountName, autoScalingGroupName, instanceIds });
     } catch (err) {
       if (err.message.indexOf('is not in Standby') !== -1 || err.message.indexOf('cannot be exited from standby as its LifecycleState is InService') !== -1) {
@@ -160,7 +158,7 @@ function putInstanceMaintenance(req, res, next) {
      */
     serviceTargets.setInstanceMaintenanceMode(accountName, instance.PrivateIpAddress, environmentName, enable);
 
-    res.send({ok: true});
+    res.send({ ok: true });
   }).catch(next);
 }
 
