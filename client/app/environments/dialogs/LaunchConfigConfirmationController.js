@@ -5,6 +5,7 @@ angular.module('EnvironmentManager.environments').controller('LaunchConfigConfir
   function ($scope, $http, $uibModal, $uibModalInstance, $q, parameters) {
 
     var vm = this;
+    vm.scalingExplanationLink = window.links.SCALING_EXPLANATION;
 
     var numInstances = parameters.asg.Instances.length;
     var numAZs = parameters.asg.AvailabilityZones.length;
