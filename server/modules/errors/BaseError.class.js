@@ -1,4 +1,5 @@
-"use strict";
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+'use strict';
 
 var stringifyError = function (error, detailed) {
   return detailed ? error.stack + "/n" : `${error.name}: ${error.message}`;
