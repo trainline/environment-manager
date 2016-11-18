@@ -57,7 +57,7 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
 
     vm.setDeploymentStatus = function (service) {
       var enableService = service.installationEnabled;
-      targetStateService.changeDeploymentStatus(enableService, service, vm.role, vm.environment).then(function(result) {
+      targetStateService.changeDeploymentAction(service.DeploymentId, enableService).then(function(result) {
         service.Action = result.Action;
       });
     };
