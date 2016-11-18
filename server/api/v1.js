@@ -10,23 +10,20 @@ let fs = require('fs');
 let defaultErrorHandler = require('./error-handler/defaultErrorHandler');
 let apiSpec = yaml.safeLoad(fs.readFileSync('api/swagger.yaml', 'utf8'));
 let authorization = require('modules/authorization');
+let config = require('config');
 
 const API_BASE_PATH = apiSpec.basePath;
+
+if (config.get('IS_PRODUCTION') === false) {
+  apiSpec.host = 'localhost:8080';
+  apiSpec.schemes = ['http'];
+}
 
 let swaggerOptions = {
   controllers: [
     require('path').resolve('api/controllers')
   ]
 };
-
-function loggedInAuthorization(req, res, next) {
-  if (req.user === undefined) {
-    res.status(401);
-    next({ message: 'Not authorized' })
-  } else {
-    next();
-  }
-}
 
 function authorize(req, res, next) {
   if (req.swagger === undefined) return next();
@@ -38,13 +35,16 @@ function authorize(req, res, next) {
   _.each(req.swagger.params, (param, key) => {
     req.params[key] = param.value;
   });
-  
-  authorization(authorizer, req, res, next);
+
+  if (req.url !== '/token') {
+    authorization(authorizer, req, res, next);
+  } else {
+    next();
+  }
 }
 
 function setup(app) {
   swaggerTools.initializeMiddleware(apiSpec, function (middleware) {
-    app.use(API_BASE_PATH, loggedInAuthorization);
     app.use(middleware.swaggerMetadata());
     app.use(middleware.swaggerValidator());
     app.use(API_BASE_PATH, authorize);

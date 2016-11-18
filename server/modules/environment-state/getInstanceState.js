@@ -95,7 +95,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
     // Now make a diff with target state of Instance services
     let targetServiceStates = yield serviceTargets.getAllServiceTargets(environmentName, runtimeServerRoleName);
 
-    // First find any services that are in target state, but not on instance
+    // Primo, find any services that are in target state, but not on instance
     _.each(targetServiceStates, (targetService) => {
       if (_.find(services, { Name: targetService.Name }) === undefined && targetService.Action === Enums.ServiceAction.INSTALL) {
         let missingService = {
@@ -113,7 +113,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
       }
     });
 
-    // Second find any services that are on instance, but not in target state
+    // Secondo, find any services that are present on instance, but not in target state
     _.each(services, (instanceService) => {
       if (_.find(targetServiceStates, { Name: instanceService.Name }) === undefined) {
         instanceService.Issues.Warnings.push(`Service not found in target state for server role that instance belongs to: "${runtimeServerRoleName}"`);
