@@ -63,6 +63,8 @@
   <script src="app/operations/upstream/OpsUpstreamController.js"></script>
   <script src="app/operations/maintenance/OpsMaintenanceController.js"></script>
   <script src="app/operations/maintenance/MainteinanceAddServerModalController.js"></script>
+  <script src="app/operations/deployments/opsDeploymentsList.js"></script>
+  <script src="app/operations/deployments/opsDeploymentsInstances.js"></script>
   <script src="app/operations/deployments/OpsDeploymentsController.js"></script>
   <script src="app/operations/deployments/DeploymentDetailsModalController.js"></script>
   <script src="app/operations/amis/OpsAMIsController.js"></script>
@@ -73,10 +75,10 @@
   <script src="app/environments/schedule/ManageEnvironmentScheduleController.js"></script>
   <script src="app/environments/directives/healthChecks.js"></script>
   <script src="app/environments/directives/currentDesiredTitle.js"></script>
+  <script src="app/environments/dialogs/LaunchConfigConfirmationController.js"></script>
   <script src="app/environments/dialogs/DeployModalController.js"></script>
   <script src="app/environments/dialogs/CreateEnvironmentController.js"></script>
   <script src="app/environments/dialogs/ASGDetailsModalController.js"></script>
-  <script src="app/environments/dialogs/LaunchConfigConfirmationController.js"></script>
   <script src="app/configuration/configuration.module.js"></script>
   <script src="app/configuration/services/permissionsValidationService.js"></script>
   <script src="app/configuration/services/lbBulkOperationService.js"></script>
@@ -137,6 +139,12 @@
   <script src="app/common/services/awsService.js"></script>
   <script src="app/common/services/autoScalingGroupResourceFactory.js"></script>
   <script src="app/common/services/accountMappingService.js"></script>
+  <script src="app/common/models/UpstreamConfig.js"></script>
+  <script src="app/common/models/Image.js"></script>
+  <script src="app/common/models/Environment.js"></script>
+  <script src="app/common/models/DeploymentMap.js"></script>
+  <script src="app/common/models/Deployment.js"></script>
+  <script src="app/common/models/AutoScalingGroup.js"></script>
   <script src="app/common/directives/validJsonDirective.js"></script>
   <script src="app/common/directives/uniqueAmongDirective.js"></script>
   <script src="app/common/directives/spinner.js"></script>
@@ -148,12 +156,6 @@
   <script src="app/common/directives/healthStatus.js"></script>
   <script src="app/common/directives/defaultIfEmptyDirective.js"></script>
   <script src="app/common/directives/cronEditor.js"></script>
-  <script src="app/common/models/UpstreamConfig.js"></script>
-  <script src="app/common/models/Image.js"></script>
-  <script src="app/common/models/Environment.js"></script>
-  <script src="app/common/models/DeploymentMap.js"></script>
-  <script src="app/common/models/Deployment.js"></script>
-  <script src="app/common/models/AutoScalingGroup.js"></script>
   <script src="app/common/common-modal/CommonModalController.js"></script>
   <script src="app/operations/ToggleServiceModalController.js"></script>
   <script src="app/compare/CompareController.js"></script>

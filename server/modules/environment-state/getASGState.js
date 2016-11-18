@@ -4,7 +4,7 @@
 let _ = require('lodash');
 let co = require('co');
 let getInstanceState = require('./getInstanceState');
-let getServiceTargetStates = require('./getServiceTargetStates');
+let getServicesState = require('./getServicesState');
 let AutoScalingGroup = require('models/AutoScalingGroup');
 let resourceProvider = require('modules/resourceProvider');
 let logger = require('modules/logger');
@@ -46,7 +46,7 @@ module.exports = function getASGState(environmentName, asgName) {
     let instancesStates = yield _.map(instances, (instance) => {
       // Fresh instances might not have initialised tags yet - don't merge state when that happens
       if (instance.Name !== undefined) {
-        return getInstanceState(accountName, environmentName, instance.Name, instance.InstanceId)
+        return getInstanceState(accountName, environmentName, instance.Name, instance.InstanceId, instance.Role);
       } else {
         logger.warn(`Instance ${instance.InstanceId} name tag is undefined`);
         return {};
@@ -64,7 +64,7 @@ module.exports = function getASGState(environmentName, asgName) {
 
     let response = {
       Instances: instances,
-      Services: yield getServiceTargetStates(environmentName, asg.getRuntimeServerRoleName(), instances)
+      Services: yield getServicesState(environmentName, asg.getRuntimeServerRoleName(), instances)
     };
     return response;
   });

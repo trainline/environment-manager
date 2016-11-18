@@ -267,6 +267,7 @@ paths:
         - name: since
           in: query
           type: string
+          format: date-time
           required: false
         - name: environment
           in: query
@@ -578,6 +579,15 @@ paths:
         - name: instance_id
           in: query
           type: string
+          required: false
+        - name: since
+          in: query
+          type: string
+          format: date-time
+          required: false
+        - name: include_services
+          in: query
+          type: boolean
           required: false
       responses:
         200:

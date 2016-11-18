@@ -62,7 +62,7 @@ function getSimpleServiceName(name) {
   return name.split('-')[1];
 }
 
-module.exports = function getInstanceState(accountName, environmentName, nodeName, instanceId) {
+module.exports = function getInstanceState(accountName, environmentName, nodeName, instanceId, runtimeServerRoleName) {
   return co(function* () {
     let response = yield {
       checks: serviceDiscovery.getNodeHealth(environmentName, nodeName),
@@ -90,7 +90,36 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
       };
     }));
     // If undefined, it's not EM deployed service        
-    services = _.filter(services, service => service.DeploymentId !== undefined);
+    services = _.filter(services, (service) => service.DeploymentId !== undefined);
+
+    // Now make a diff with target state of Instance services
+    let targetServiceStates = yield serviceTargets.getAllServiceTargets(environmentName, runtimeServerRoleName);
+
+    // Primo, find any services that are in target state, but not on instance
+    _.each(targetServiceStates, (targetService) => {
+      if (_.find(services, { Name: targetService.Name }) === undefined && targetService.Action === Enums.ServiceAction.INSTALL) {
+        let missingService = {
+          Name: targetService.Name,
+          Version: targetService.Version,
+          Slice: targetService.Slice,
+          DeploymentId: targetService.DeploymentId,
+          Action: targetService.Action,
+          HealthChecks: [],
+          DiffWithTargetState: 'Missing',
+          Issues: { Warnings: [], Errors: [] }
+        };
+        missingService.Issues.Warnings.push(`Service that is in target state is missing`);
+        services.push(missingService);
+      }
+    });
+
+    // Secondo, find any services that are present on instance, but not in target state
+    _.each(services, (instanceService) => {
+      if (_.find(targetServiceStates, { Name: instanceService.Name }) === undefined) {
+        instanceService.Issues.Warnings.push(`Service not found in target state for server role that instance belongs to: "${runtimeServerRoleName}"`);
+        instanceService.DiffWithTargetState = 'Extra'
+      }
+    });
 
     return {
       OverallHealth: getOverallHealth(checks),

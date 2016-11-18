@@ -169,9 +169,9 @@ td.actions-button a { color: inherit; }
 /* CONFIG SECTION */
 
 /* Deployment status page */
-.status-success { color: green; }
+.status-success, .status-Success { color: green; }
 .status-in-progress { color: blue; }
-.status-failed { color: rgb(169, 68, 66); }
+.status-failed, .status-Failed { color: rgb(169, 68, 66); }
 .error-description { max-height: 200px; }
 
 /* Config Deployment Maps page */
@@ -567,6 +567,18 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
 }
 
 /* Deployment History */
+
+.deployments-instances {
+  .table .table {
+    tr:first-child td {
+      border-top: none;
+    }
+
+    td {
+      padding: 2px;
+    }
+  }
+}
 
 .loading {
   position: absolute;
