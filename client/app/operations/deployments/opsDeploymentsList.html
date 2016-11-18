@@ -1,0 +1,70 @@
+
+<spinner ng-show="vm.dataLoading"></spinner>
+
+<div class="row" ng-show="vm.dataFound && !vm.dataLoading">
+  <div class="col-md-12" ng-if="vm.deployments.length == 0">
+    <p>No deployments found<span ng-if="vm.selectedDateRangeValue > 0"> within selected date range</span>.</p>
+  </div>
+  <div class="col-md-12" ng-if="vm.deployments.length > 0">
+    <table class="table" id="DeploymentHistory">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Environment</th>
+          <th>Service</th>
+          <th>User</th>
+          <th>Nodes</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="deployment in vm.deployments | filter: vm.foundServicesFilter | orderBy: '-timestamp'">
+          <td>
+            <span am-time-ago="deployment.timestamp"></span><br />
+            <small>{{deployment.timestamp | amDateFormat:'DD/MM/YYYY HH:mm:ss'}}</small>
+          </td>
+          <td class="status-{{deployment.normalisedStatus}}">
+            <span ng-if="deployment.normalisedStatus=='in-progress'">
+              <span class="glyphicon glyphicon-refresh"></span>
+              <span>In progress</span>
+            </span>
+            <span ng-if="deployment.normalisedStatus=='success'">
+              <span class="glyphicon glyphicon-ok"></span>
+              <span>Success</span>
+            </span>
+            <span ng-if="deployment.normalisedStatus=='failed'">
+              <span class="glyphicon glyphicon-remove"></span>
+              <span>Failed</span>
+            </span>
+          </td>
+          <td>
+            <a ng-href='#/environment/servers/?environment={{deployment.environment.name}}'>{{deployment.environment.name}}<br>
+            <small>({{deployment.environment.type}})</small></a>
+          </td>
+          <td>
+            {{deployment.service.name}} <span ng-if="deployment.service.version">({{deployment.service.version}})</span>
+          </td>
+          <td>
+            {{deployment.user}}<br/>
+            <small>({{deployment.cluster}})</small>
+          </td>
+          <td>
+            <ul ng-if="deployment.nodes.length > 0" class="node-list">
+              <li ng-repeat="node in deployment.nodes" class="{{node.status.class}}">
+                <span ng-if="node.status.status.toLowerCase()=='in progress'" class="glyphicon glyphicon-refresh"></span>
+                <span ng-if="node.status.status.toLowerCase()=='success'" class="glyphicon glyphicon-ok"></span>
+                <span ng-if="node.status.status.toLowerCase()=='failed'" class="glyphicon glyphicon-remove"></span>
+                {{node.instanceId}}
+              </li>
+            </ul>
+            <span ng-if="deployment.nodes.length == 0">-</span>
+          </td>
+          <td>
+            <button class="btn btn-default" ng-click="vm.showDetails()(deployment.data)">View Details...</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
