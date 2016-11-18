@@ -13,7 +13,7 @@
       <p>
         To roll out this change you need to scale up to <b>{{vm.requiredInstancesForScalingRefresh}} instances</b>.
         This will guarantee that when you scale back down, only updated servers will remain
-        (<a href="https://github.thetrainline.com/gist/MerlinT/c5b52c69c2228b6b518a4f75ed4977ea" target="_blank">see explanation</a>).<br /><br />
+        (<a href="{{vm.scalingExplanationLink}}" target="_blank">see explanation</a>).<br /><br />
       
         Once the new instances are healthy, manually scale back down to <b>{{vm.numInstances}} instances</b> again.
       </p>
