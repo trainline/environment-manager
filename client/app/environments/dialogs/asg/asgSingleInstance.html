@@ -14,12 +14,28 @@
         <tbody>
           <tr ng-repeat="service in vm.instance.Services">
             <td><health-status status='service.OverallHealth.Status'></health-status> {{ service.Name }}
-             <span ng-if="service.DiffWithTargetState === 'Missing'"><strong>[MISSING]</strong></span>
-             <span ng-if="service.DiffWithTargetState === 'Extra'"><strong>[UNEXPECTED]</strong></span>
+             <span ng-if="service.DiffWithTargetState === 'Missing'"><strong>[MISSING]</strong>
+              <span data-uib-popover
+                     data-popover-trigger="'mouseenter'"
+                     uib-popover-template="'app/environments/dialogs/asg/popovers/help-service-missing.html'"
+                     data-popover-placement="top"
+                     class="glyphicon glyphicon-question-sign help-icon"
+                     aria-hidden="true">
+              </span>
+             </span>
+             <span ng-if="service.DiffWithTargetState === 'Extra'"><strong>[UNEXPECTED]</strong> 
+               <span data-uib-popover
+                     data-popover-trigger="'mouseenter'"
+                     uib-popover-template="'app/environments/dialogs/asg/popovers/help-service-unexpected.html'"
+                     data-popover-placement="top"
+                     class="glyphicon glyphicon-question-sign help-icon"
+                     aria-hidden="true">
+               </span>
+             </span>
             </td>
             <td><health-checks list="service.HealthChecks" ></health-checks></td>
             <!-- <td>{{ service.DeploymentCause }}</td> -->
-            <td><a ng-href="{{ service.LogLink }}" target="_blank">View Log</a></td>
+            <td><a ng-if="service.DiffWithTargetState !== 'Missing'" ng-href="{{ service.LogLink }}" target="_blank">View Log</a></td>
           </tr>
         </tbody>
       </table>

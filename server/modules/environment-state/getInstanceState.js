@@ -120,7 +120,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
     _.each(services, (instanceService) => {
       if (_.find(targetServiceStates, { Name: instanceService.Name }) === undefined) {
         instanceService.Issues.Warnings.push(`Service not found in target state for server role that instance belongs to: "${runtimeServerRoleName}"`);
-        instanceService.DiffWithTargetState = 'Extra'
+        instanceService.DiffWithTargetState = 'Extra';
       }
     });
 
