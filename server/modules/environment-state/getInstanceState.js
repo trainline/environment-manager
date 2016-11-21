@@ -105,6 +105,9 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
           DeploymentId: targetService.DeploymentId,
           Action: targetService.Action,
           HealthChecks: [],
+          OverallHealth: {
+            Status: Enums.HEALTH_STATUS.Missing
+          },
           DiffWithTargetState: 'Missing',
           Issues: { Warnings: [], Errors: [] }
         };
