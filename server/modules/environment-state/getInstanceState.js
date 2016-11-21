@@ -90,6 +90,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
         LogLink: `/api/v1/deployments/${service.Tags.deployment_id}/log?account=${accountName}&instance=${instanceId}`,
         OverallHealth: getInstanceServiceOverallHealth(instanceServiceHealthChecks),
         HealthChecks: instanceServiceHealthChecks,
+        DiffWithTargetState: null,
         Issues: { Warnings: [], Errors: [] },
       };
     }));
@@ -101,7 +102,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
 
     // Primo, find any services that are in target state, but not on instance
     _.each(targetServiceStates, (targetService) => {
-      if (_.find(services, { Name: targetService.Name, Slice: targetService.Slice }) === undefined && targetService.Action === Enums.ServiceAction.INSTALL) {
+      if (_.find(services, { Name: targetService.Name, Slice: targetService.Slice }) === undefined) {
         let missingService = {
           Name: targetService.Name,
           Version: targetService.Version,
@@ -112,16 +113,22 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
           OverallHealth: {
             Status: Enums.HEALTH_STATUS.Missing
           },
-          DiffWithTargetState: 'Missing',
+          DiffWithTargetState: (targetService.Action === Enums.ServiceAction.INSTALL ? 'Missing' : 'Ignored'),
           Issues: { Warnings: [], Errors: [] }
         };
-        missingService.Issues.Warnings.push(`Service that is in target state is missing`);
+        if (targetService.Action === Enums.ServiceAction.INSTALL) {
+          missingService.Issues.Warnings.push(`Service that is in target state is missing`);
+        }
         services.push(missingService);
       }
     });
 
     // Secondo, find any services that are present on instance, but not in target state
     _.each(services, (instanceService) => {
+      // If DiffWithTargetState is present, it's a placeholder - it's not present on instance
+      if (instanceService.DiffWithTargetState !== null) {
+        return;
+      }
       let targetState = _.find(targetServiceStates, { Name: instanceService.Name, Slice: instanceService.Slice });
       if (targetState === undefined) {
         instanceService.Issues.Warnings.push(`Service not found in target state for server role that instance belongs to: "${runtimeServerRoleName}"`);

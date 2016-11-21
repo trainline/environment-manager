@@ -14,6 +14,15 @@
         <tbody>
           <tr ng-repeat="instance in vm.instances">
             <td><health-status status='instance.OverallHealth.Status'></health-status> {{ instance.InstanceId }} ({{ instance.PrivateIpAddress }})
+              <span ng-if="instance.serviceObject.DiffWithTargetState === 'Ignored'"><strong>[IGNORED]</strong>
+                <span data-uib-popover
+                       data-popover-trigger="'mouseenter'"
+                       uib-popover-template="'app/environments/dialogs/asg/popovers/help-service-ignored.html'"
+                       data-popover-placement="top"
+                       class="glyphicon glyphicon-question-sign help-icon"
+                       aria-hidden="true">
+                </span>
+              </span>
               <span ng-if="instance.serviceObject.DiffWithTargetState === 'Missing'"><strong>[MISSING]</strong>
                 <span data-uib-popover
                        data-popover-trigger="'mouseenter'"
@@ -22,8 +31,8 @@
                        class="glyphicon glyphicon-question-sign help-icon"
                        aria-hidden="true">
                 </span>
-               </span>
-               <span ng-if="instance.serviceObject.DiffWithTargetState === 'Extra'"><strong>[UNEXPECTED]</strong> 
+              </span>
+              <span ng-if="instance.serviceObject.DiffWithTargetState === 'Extra'"><strong>[UNEXPECTED]</strong> 
                  <span data-uib-popover
                        data-popover-trigger="'mouseenter'"
                        uib-popover-template="'app/environments/dialogs/asg/popovers/help-service-unexpected.html'"
@@ -31,7 +40,7 @@
                        class="glyphicon glyphicon-question-sign help-icon"
                        aria-hidden="true">
                  </span>
-               </span>
+              </span>
             </td>
             <td><health-checks list="instance.serviceObject.HealthChecks"></health-checks></td>
             <!-- <td>{{ instance.serviceObject.DeploymentCause }}</td> -->

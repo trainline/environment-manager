@@ -78,7 +78,7 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
       });
 
       if (service.Action === 'Ignore') {
-        service.DiffWithTargetState = 'Extra';
+        service.DiffWithTargetState = 'Ignored';
       }
     }
 

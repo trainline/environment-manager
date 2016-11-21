@@ -56,8 +56,20 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
 
     vm.setDeploymentStatus = function (service) {
       var enableService = service.installationEnabled;
-      targetStateService.changeDeploymentAction(service.DeploymentId, enableService).then(function(result) {
+      targetStateService.changeDeploymentAction(service.DeploymentId, enableService).then(function (result) {
         service.Action = result.Action;
+        if (service.Action === 'Ignore') {
+          modal.information({
+            title: 'Service deployment disabled',
+            message: 'This will prevent service <strong>' + service.Name + (service.Slice === 'none' ? '' : service.Slice) +
+              ' version ' + service.Version + '</strong> from ' +
+              'being deployed to new instances from now on. It will NOT affect any existing machines.' +
+              'You can use this option to effectively uninstall this service by scaling the ASG to create a new set of servers.' +
+              'Are you sure you want to continue?',
+            severity: 'Info',
+          });
+        }
+        
       });
     };
   }
