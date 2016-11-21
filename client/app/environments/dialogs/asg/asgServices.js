@@ -47,8 +47,8 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
           asgState: function() {
             return vm.asgState;
           },
-          serviceName: function () {
-            return service.Name;
+          service: function () {
+            return service;
           },
         },
       });

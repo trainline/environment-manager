@@ -1,7 +1,7 @@
 <div class="modal-content">
   <div class="modal-body" style="padding: 5px 15px">
     <div>
-      <h3>Service: {{ vm.service.Name }}</h3>
+      <h3>Service: {{ vm.service.Name }}<span ng-if="vm.service.Slice !== 'none'">-{{ vm.service.Slice }}</span></h3>
       <table class="table">
         <thead>
           <tr>
@@ -35,7 +35,7 @@
             </td>
             <td><health-checks list="instance.serviceObject.HealthChecks"></health-checks></td>
             <!-- <td>{{ instance.serviceObject.DeploymentCause }}</td> -->
-            <td><a ng-href="{{ instance.serviceObject.LogLink }}" target="_blank">View Log</a></td>
+            <td><a ng-if="instance.serviceObject.DiffWithTargetState !== 'Missing'" ng-href="{{ instance.serviceObject.LogLink }}" target="_blank">View Log</a></td>
           </tr>
         </tbody>
       </table>

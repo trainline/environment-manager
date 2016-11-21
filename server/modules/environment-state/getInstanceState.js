@@ -62,6 +62,10 @@ function getSimpleServiceName(name) {
   return name.split('-')[1];
 }
 
+function getServiceAndSlice(obj) {
+  return obj.Name + (obj.Slice !== 'none' ? '-' + obj.Slice : '');
+}
+
 module.exports = function getInstanceState(accountName, environmentName, nodeName, instanceId, runtimeServerRoleName) {
   return co(function* () {
     let response = yield {
@@ -97,7 +101,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
 
     // Primo, find any services that are in target state, but not on instance
     _.each(targetServiceStates, (targetService) => {
-      if (_.find(services, { Name: targetService.Name }) === undefined && targetService.Action === Enums.ServiceAction.INSTALL) {
+      if (_.find(services, { Name: targetService.Name, Slice: targetService.Slice }) === undefined && targetService.Action === Enums.ServiceAction.INSTALL) {
         let missingService = {
           Name: targetService.Name,
           Version: targetService.Version,
@@ -118,8 +122,12 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
 
     // Secondo, find any services that are present on instance, but not in target state
     _.each(services, (instanceService) => {
-      if (_.find(targetServiceStates, { Name: instanceService.Name }) === undefined) {
+      let targetState = _.find(targetServiceStates, { Name: instanceService.Name, Slice: instanceService.Slice });
+      if (targetState === undefined) {
         instanceService.Issues.Warnings.push(`Service not found in target state for server role that instance belongs to: "${runtimeServerRoleName}"`);
+        instanceService.DiffWithTargetState = 'Extra';
+      } else if (targetState.Action !== Enums.ServiceAction.INSTALL) {
+        instanceService.Issues.Warnings.push(`Service found in target state for server role that instance belongs to: "${runtimeServerRoleName}", but with Action different from "Install": ${targetState.Action}`);
         instanceService.DiffWithTargetState = 'Extra';
       }
     });

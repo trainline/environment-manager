@@ -76,6 +76,10 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
         checkServiceProperties(obj, service, 'Version');
         checkServiceProperties(obj, service, 'DeploymentId');
       });
+
+      if (service.Action === 'Ignore') {
+        service.DiffWithTargetState = 'Extra';
+      }
     }
 
     let serviceInstances = _.filter(instances, (instance) => _.some(instance.Services, { Name: service.Name, Slice: service.Slice }));
