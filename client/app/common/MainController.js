@@ -136,8 +136,8 @@ angular.module('EnvironmentManager.common').controller('MainController',
           title = errors[0].title || title;
           errorMessage = errors[0].detail;
         } else {
-          title = 'Errors'
-          errorMessage = _.join(_.map(errors, e => "<h2>" +  e.title + "</h2>" + "<p>" + e.detail), "<hr>");
+          title = 'Errors';
+          errorMessage = _.join(_.map(errors, function (e) { return "<h2>" + e.title + "</h2><p>" + e.detail; }), "<hr>");
         }
       }
       else {
