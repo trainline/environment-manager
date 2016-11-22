@@ -7,7 +7,8 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
     asg: '<',
     asgState: '<',
     environment: '<',
-    role: '<'
+    role: '<',
+    refresh: '&'
   },
   controllerAs: 'vm',
   controller: function (roles, $uibModal, modal, Deployment, targetStateService) {
@@ -69,7 +70,9 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
             severity: 'Info',
           });
         }
-        
+
+        vm.refresh();
+
       });
     };
   }
