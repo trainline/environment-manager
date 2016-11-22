@@ -2,9 +2,11 @@
 'use strict';
 
 let sender = require('modules/sender');
+let _ = require('lodash');
 
 function getImages(req, res, next) {
   const accountName = req.swagger.params.account.value;
+  const stable = req.swagger.params.stable.value;
   let query;
 
   if (accountName === undefined) {
@@ -21,7 +23,12 @@ function getImages(req, res, next) {
     };
   }
   
-  sender.sendQuery({ query }).then((data) => res.json(data)).catch(next);
+  sender.sendQuery({ query }).then((data) => {
+    if (stable !== undefined) {
+      data = _.filter(data, { IsStable: stable });
+    }
+    res.json(data);
+  }).catch(next);
 }
 
 module.exports = {
