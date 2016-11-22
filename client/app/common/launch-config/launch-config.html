@@ -99,7 +99,7 @@
     <label class="col-md-2 control-label text-left">User Data:</label>
     <div class="col-md-5">
       <div ng-if="!vm.editUserData" class="control-label"><a ng-click="vm.editUserData = true">Edit User Data</a></div>
-      <textarea ng-if="vm.editUserData" name="UserData" style="resize:both;" rows="7" res class="form-control" ng-model="vm.target.ASG.LaunchConfig.UserData" ng-readonly="!vm.canUser('edit')" />
+      <textarea ng-if="vm.editUserData" name="UserData" style="resize:both;" rows="7" res class="form-control" ng-model="vm.target.ASG.LaunchConfig.UserData" ng-readonly="!vm.canUser('edit')"></textarea>
     </div>
   </div>
 
