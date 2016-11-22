@@ -110,6 +110,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
           DeploymentId: targetService.DeploymentId,
           Action: targetService.Action,
           HealthChecks: [],
+          LogLink: `/api/v1/deployments/${targetService.DeploymentId}/log?account=${accountName}&instance=${instanceId}`,
           OverallHealth: {
             Status: Enums.HEALTH_STATUS.Missing
           },

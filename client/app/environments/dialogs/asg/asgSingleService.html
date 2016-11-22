@@ -44,7 +44,7 @@
             </td>
             <td><health-checks list="instance.serviceObject.HealthChecks"></health-checks></td>
             <!-- <td>{{ instance.serviceObject.DeploymentCause }}</td> -->
-            <td><a ng-if="instance.serviceObject.DiffWithTargetState !== 'Missing'" ng-href="{{ instance.serviceObject.LogLink }}" target="_blank">View Log</a></td>
+            <td><a ng-href="{{ instance.serviceObject.LogLink }}" target="_blank">View Log</a></td>
           </tr>
         </tbody>
       </table>
