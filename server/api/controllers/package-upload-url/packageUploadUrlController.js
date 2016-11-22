@@ -11,38 +11,31 @@ let environmentExistsRule = require('modules/validate/rule/environmentExists');
 let log = require('modules/logger'); // eslint-disable import/no-extraneous-dependencies
 let makeValidationFunction = require('modules/validate');
 let masterAccountClient = require('modules/amazon-client/masterAccountClient'); // eslint-disable-line import/no-extraneous-dependencies
-let route = require('modules/helpers/route'); // eslint-disable-line import/no-extraneous-dependencies
+let s3PackageLocator = require('modules/s3PackageLocator');
 let serviceExistsRule = require('modules/validate/rule/serviceExists');
 /* eslint-enable import/no-extraneous-dependencies */
 
 let config = require('config');
 let _ = require('lodash/fp');
 
-const EM_PACKAGES_BUCKET = config.get('EM_PACKAGES_BUCKET');
-const EM_PACKAGES_KEY_PREFIX = config.get('EM_PACKAGES_KEY_PREFIX');
 const EM_PACKAGE_UPLOAD_TIMEOUT = config.get('EM_PACKAGES_UPLOAD_TIMEOUT') || 600;
 
 let param = p => _.get(['swagger', 'params', p, 'value']);
 
-function key(req) {
+function s3location(req) {
   let params = ['service', 'version', 'environment'];
-  let getValue = p => param(p)(req);
-  let dynamicParts = params.map(getValue).filter(x => x !== undefined);
-  let keyPathParts = [
-    EM_PACKAGES_KEY_PREFIX,
-    dynamicParts,
-    `${dynamicParts.join('-')}.zip`,
-  ];
-  return _.flow(_.flatten, _.filter(x => x !== undefined), _.join('/'))(keyPathParts);
+  let extractParameterNameValuePair = name => [name, param(name)(req)];
+  return _.flow(
+  _.map(extractParameterNameValuePair),
+  _.fromPairs,
+  s3PackageLocator.s3PutLocation)(params);
 }
 
 function respondWithPreSignedUrl(request) {
-  let params = {
-    Bucket: EM_PACKAGES_BUCKET,
-    Key: key(request),
+  let params = _.assign(s3location(request))({
     Expires: EM_PACKAGE_UPLOAD_TIMEOUT,
     ContentType: 'application/zip',
-  };
+  });
   return masterAccountClient.createS3Client().then(s3 =>
     new Promise((resolve, reject) => {
       s3.getSignedUrl('putObject', params, (err, url) => {
@@ -57,10 +50,7 @@ function respondWithPreSignedUrl(request) {
 }
 
 function packageDoesNotExist(req) {
-  let params = {
-    Bucket: EM_PACKAGES_BUCKET,
-    Key: key(req),
-  };
+  let params = s3location(req);
 
   return masterAccountClient.createS3Client()
   .then(client => client.headObject(params).promise())

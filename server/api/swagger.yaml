@@ -547,6 +547,10 @@ paths:
           type: string
           in: query
           required: false
+        - name: stable
+          type: boolean
+          in: query
+          required: false
       responses:
         200:
           description: The list of AMI images
@@ -589,6 +593,7 @@ paths:
         - name: since
           in: query
           type: string
+          format: date-time
           required: false
         - name: include_services
           in: query
@@ -1798,7 +1803,6 @@ definitions:
       - environment
       - service
       - version
-      - packageLocation
     properties:
       environment:
         type: string

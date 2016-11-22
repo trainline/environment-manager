@@ -126,14 +126,26 @@ angular.module('EnvironmentManager.common').controller('MainController',
 
     $rootScope.$on('error', function (event, response) {
       var errorMessage;
+      var title = 'Error'
+      var errors = _.get(response, ['data', 'errors']);
       if (_.isString(response.data)) {
         errorMessage = response.data;
-      } else {
+      } else if (_.isArray(errors)) {
+        // Handle errors returned in JSON API format: http://jsonapi.org/format/#errors
+        if (errors.length === 1) {
+          title = errors[0].title || title;
+          errorMessage = errors[0].detail;
+        } else {
+          title = 'Errors';
+          errorMessage = _.join(_.map(errors, function (e) { return "<h2>" + e.title + "</h2><p>" + e.detail; }), "<hr>");
+        }
+      }
+      else {
         errorMessage = response.data.error;
       }
 
       modal.information({
-        title: 'Error',
+        title: title,
         message: errorMessage,
         severity: 'Danger',
       });
