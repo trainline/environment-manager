@@ -76,18 +76,24 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
     let node = response.node;
     let services = node ? node.Services : [];
 
+    let targetServiceStates = yield serviceTargets.getAllServiceTargets(environmentName, runtimeServerRoleName);
+
     services = yield _.map(services, co.wrap(function* (service, key) {
       service.Tags = mapConsulTags(service.Tags);
       let instanceServiceHealthChecks = getInstanceServiceHealthChecks(checks, service.ID);
+      let targetService = _.find(targetServiceStates, { Name: getSimpleServiceName(service.Service), Slice: service.Tags.slice });
+
+      // Note: we use DeploymentId from targetService, because DeploymentId from catalog might be old - in case
+      // last deployment was unsuccessful
       return {
         Name: getSimpleServiceName(service.Service),
         Version: service.Tags.version,
         Slice: service.Tags.slice,
         Cluster: service.Tags.owning_cluster,
         ServerRole: service.Tags.server_role,
-        DeploymentId: service.Tags.deployment_id,
-        DeploymentCause: yield serviceTargets.getServiceDeploymentCause(environmentName, service.Tags.deployment_id, instanceId),
-        LogLink: `/api/v1/deployments/${service.Tags.deployment_id}/log?account=${accountName}&instance=${instanceId}`,
+        DeploymentId: targetService.DeploymentId,
+        DeploymentCause: yield serviceTargets.getServiceDeploymentCause(environmentName, targetService.DeploymentId, instanceId),
+        LogLink: `/api/v1/deployments/${targetService.DeploymentId}/log?account=${accountName}&instance=${instanceId}`,
         OverallHealth: getInstanceServiceOverallHealth(instanceServiceHealthChecks),
         HealthChecks: instanceServiceHealthChecks,
         DiffWithTargetState: null,
@@ -98,8 +104,6 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
     services = _.filter(services, (service) => service.DeploymentId !== undefined);
 
     // Now make a diff with target state of Instance services
-    let targetServiceStates = yield serviceTargets.getAllServiceTargets(environmentName, runtimeServerRoleName);
-
     // Primo, find any services that are in target state, but not on instance
     _.each(targetServiceStates, (targetService) => {
       if (_.find(services, { Name: targetService.Name, Slice: targetService.Slice }) === undefined) {
