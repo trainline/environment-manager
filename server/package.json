@@ -55,7 +55,7 @@
     "retry": "^0.10.0",
     "s3-streams": "^0.3.0",
     "semver": "^5.1.0",
-    "swagger-tools": "git+ssh://git@github.com:apigee-127/swagger-tools.git#ff52925523499fd01d16533e5e84ebed9066876e",
+    "swagger-tools": "0.10.1",
     "through2": "^2.0.1",
     "through2-map": "^2.0.0",
     "unzip2": "^0.2.5",
