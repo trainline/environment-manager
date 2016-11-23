@@ -35,6 +35,8 @@ module.exports = function DeployServiceCommandHandler(command) {
     let destination = yield packagePathProvider.getS3Path(deployment);
     let sourcePackage = getSourcePackageByCommand(command);
     deploy(deployment, destination, sourcePackage, command);
+    let accountName = deployment.accountName;
+    yield deploymentLogger.started(deployment, accountName);
     return deployment;
   });
 };
@@ -70,7 +72,6 @@ function validateCommandAndCreateDeployment(command) {
 function deploy(deployment, destination, sourcePackage, command) {
   return co(function* () {
     var accountName = deployment.accountName;
-    yield deploymentLogger.started(deployment, accountName);
     yield provideInfrastructure(accountName, deployment, command);
     yield preparePackage(accountName, destination, sourcePackage, command);
     yield pushDeployment(accountName, deployment, destination, command);
