@@ -15,12 +15,11 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
     vm.owningClustersList = [];
     vm.securityZonesList = [];
     vm.awsInstanceTypesList = [];
-    vm.deploymentAzsList = [
-      { Name: 'Span all active AZs (recommended)', Value: '' },
-      { Name: 'AZ A Only', Value: 'A' },
-      { Name: 'AZ B Only', Value: 'B' },
-      { Name: 'AZ C Only', Value: 'C' }
+    vm.AZOptions = [
+      { Name: 'Span all active AZs (recommended)', Value: 'all' },
+      { Name: 'Span specific AZs..', Value: 'some' }
     ];
+    vm.deploymentAzsList = ['A', 'B', 'C'];
     vm.availableServices = []; // Filtered to services able to be added to this target
     vm.deploymentMethodsList = [];
     vm.serverRoleNames = getAllServerRoleNames();
@@ -74,6 +73,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
               DesiredCapacity: 1,
               MaxCapacity: 1,
               SubnetTypeName: 'PrivateApp',
+              AvailabilityZoneSelection: 'all',
               AvailabilityZone: '',
               LaunchConfig: {
                 InstanceType: 'm3.medium',
@@ -99,6 +99,14 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
           };
           vm.target = newTarget;
         } else {
+
+          if (vm.target.ASG.AvailabilityZone) {
+            vm.target.ASG.AvailabilityZoneSelection = 'some';
+            vm.target.ASG.AvailabilityZone = _.toArray(vm.target.ASG.AvailabilityZone);
+          } else {
+            vm.target.ASG.AvailabilityZoneSelection = 'all';
+          }
+
           Image.getByName(vm.target.ASG.LaunchConfig.AMI).then(function (ami) {
             var currentSize = vm.target.ASG.LaunchConfig.Volumes[0].Size;
             vm.requiredImageSize = ami === undefined ? currentSize : ami.RootVolumeSize;
@@ -107,6 +115,21 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
 
         updateAvailableServices();
       });
+    }
+
+    vm.isAZChecked = function(az) {
+        return _.includes(vm.target.ASG.AvailabilityZone, az);
+    }
+
+    vm.toggleAZSelection = function(az) {
+        if (!_.isArray(vm.target.ASG.AvailabilityZone))
+            vm.target.ASG.AvailabilityZone = [];
+            
+        if (_.includes(vm.target.ASG.AvailabilityZone, az)) {
+            _.remove(vm.target.ASG.AvailabilityZone, function(item) { return item === az; })
+        } else {
+            vm.target.ASG.AvailabilityZone.push(az);
+        }
     }
 
     vm.linkTo = function (docName) {
@@ -130,6 +153,10 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
     };
 
     vm.ok = function () {
+
+      if (vm.target.ASG.AvailabilityZoneSelection === 'all') {
+          vm.target.ASG.AvailabilityZone = '';
+      }
 
       vm.target.ASG.Tags.Schedule = '';
       vm.target.ASG.Tags.Role = vm.target.ServerRoleName;
