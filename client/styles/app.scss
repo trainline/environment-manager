@@ -586,6 +586,10 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
   top: 15px;
 }
 
+.glyphicon-refresh {
+  cursor: pointer;
+}
+
 .deployment-summary {
   ul {
     list-style: none;
@@ -621,10 +625,6 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
 
   .summary {
     margin-bottom: 20px;
-  }
-
-  .glyphicon-refresh {
-    cursor: pointer;
   }
 
   thead tr th {
