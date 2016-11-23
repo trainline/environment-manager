@@ -718,3 +718,49 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
   margin-top: 5px;
   margin-bottom: 10px;
 }
+
+.region-visualisation {
+
+  overflow: auto;
+  display: flex;
+
+  .az {
+
+    float: left;
+    border: 1px solid #337ab7;
+    border-top: 4px solid #337ab7; 
+    border-radius: 4px;
+    margin-right: 10px;
+    width: 120px;
+
+    .az-name {
+      background-color: #337ab7;
+      color: white;
+      text-align: center;
+      font-weight: bold;
+      padding-bottom: 4px;
+    }
+
+    .nodes {
+
+      padding: 10px 10px 5px 10px;
+
+      .node {
+
+        border: 1px solid #ccc;
+        border-top: 3px solid #ccc; 
+        border-radius: 4px;
+        padding: 5px;
+        margin-bottom: 10px;
+
+        p {
+          margin: 0px;
+        }
+
+      }
+
+    }
+
+  }
+
+}

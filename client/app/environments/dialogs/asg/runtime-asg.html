@@ -73,3 +73,18 @@
         <select class="form-control" name="AvailabilityZone" ng-model="vm.asgUpdate.AvailabilityZone" ng-disabled="!vm.canUser('edit')" ng-options="az.Value as az.Name for az in vm.deploymentAzsList"></select>
     </div>
 </div>
+<div class="form-group">
+    <label class="col-md-2 control-label text-left nowrap">Current Distribution:</label>
+    <div class="col-md-8">
+        <div class="region-visualisation">
+            <div class="az" ng-repeat="az in vm.currentDistribution.azs">
+                <div class="az-name">{{az.name}}</div>
+                <div class="nodes">
+                    <div class="node" ng-repeat="node in az.nodes">
+                        <p>{{ node.id }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
