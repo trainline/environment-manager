@@ -7,16 +7,16 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
     asg: '<',
     asgState: '<',
     environment: '<',
-    role: '<'
+    role: '<',
+    refresh: '&'
   },
   controllerAs: 'vm',
   controller: function (roles, $uibModal, modal, Deployment, targetStateService) {
     var vm = this;
     vm.servicesList = vm.asgState.Services;
-    vm.helpTextTemplate = 'app/environments/dialogs/asg/popovers/help-disable-service.html';
     vm.allowServiceDisabling = window.FEATURE_DISABLE_SERVICE;
 
-    vm.servicesList = vm.servicesList.map(function(service) {
+    vm.servicesList = vm.servicesList.map(function (service) {
       service.installationEnabled = service.Action !== 'Ignore';
       return service;
     });
@@ -48,8 +48,8 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
           asgState: function() {
             return vm.asgState;
           },
-          serviceName: function () {
-            return service.Name;
+          service: function () {
+            return service;
           },
         },
       });
@@ -57,8 +57,22 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
 
     vm.setDeploymentStatus = function (service) {
       var enableService = service.installationEnabled;
-      targetStateService.changeDeploymentStatus(enableService, service, vm.role, vm.environment).then(function(result) {
+      targetStateService.changeDeploymentAction(service.DeploymentId, enableService).then(function (result) {
         service.Action = result.Action;
+        if (service.Action === 'Ignore') {
+          modal.information({
+            title: 'Service deployment disabled',
+            message: 'This will prevent service <strong>' + service.Name + (service.Slice === 'none' ? '' : service.Slice) +
+              ' version ' + service.Version + '</strong> from ' +
+              'being deployed to new instances from now on. It will NOT affect any existing machines.' +
+              'You can use this option to effectively uninstall this service by scaling the ASG to create a new set of servers.' +
+              'Are you sure you want to continue?',
+            severity: 'Info',
+          });
+        }
+
+        vm.refresh();
+
       });
     };
   }

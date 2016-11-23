@@ -43,7 +43,7 @@ function checkServiceProperties(svcA, svcB, prop) {
 }
 
 function getServiceAndSlice(obj) {
-  return obj.Name + (obj.Slice ? '-' + obj.Slice : '');
+  return obj.Name + (obj.Slice !== 'none' ? '-' + obj.Slice : '');
 }
 
 function* getServicesState(environmentName, runtimeServerRoleName, instances) {
@@ -52,19 +52,48 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
   allServiceObjects = _.compact(allServiceObjects);
 
   // Find all objects representing particular service for all nodes
-  let servicesGrouped = _.groupBy(allServiceObjects, (obj) => getServiceAndSlice(obj));
+  let instanceServicesGrouped = _.groupBy(allServiceObjects, (obj) => getServiceAndSlice(obj));
 
-  let servicesList = _.map(targetServiceStates, (service) => {
-    // serviceObjects now has all 'Name' service descriptors in instances
-    let serviceObjects = servicesGrouped[getServiceAndSlice(service)];
-    _.each(serviceObjects, (obj) => {
-      checkServiceProperties(obj, service, 'Version');
-      checkServiceProperties(obj, service, 'DeploymentId');
+  let servicesList = _.map(instanceServicesGrouped, (serviceObjects, key) => {
+    
+    let service = _.find(targetServiceStates, (targetService) => {
+      return getServiceAndSlice(targetService) === getServiceAndSlice(serviceObjects[0]);
     });
 
+    // That is a service that is not in a target state, but on at least one of instances
+    if (service === undefined) {
+      // Create fake "target state" object to generate metadata
+      service = {
+        Name: serviceObjects[0].Name,
+        Version: serviceObjects[0].Version,
+        Slice: serviceObjects[0].Slice,
+        DiffWithTargetState: 'Extra',
+      };
+    } else {
+      // Check instance serviceObjects for inconsistencies with target state
+      // TODO(Filip): add error / warnings to API output when inconsistencies detected
+      _.each(serviceObjects, (obj) => {
+        checkServiceProperties(obj, service, 'Version');
+        checkServiceProperties(obj, service, 'DeploymentId');
+      });
+
+      if (service.Action === 'Ignore') {
+        service.DiffWithTargetState = 'Ignored';
+      }
+    }
+
     let serviceInstances = _.filter(instances, (instance) => _.some(instance.Services, { Name: service.Name, Slice: service.Slice }));
-    let healthyNodes = _.filter(serviceInstances, (instance) => instance.OverallHealth.Status === Enums.HEALTH_STATUS.Healthy);
-    let instancesHealthCount = healthyNodes.length + '/' + serviceInstances.length;
+
+    // Healthy nodes are these where service is present AND service's status is healthy
+    let healthyNodes = _.filter(serviceInstances, (instance) => {
+      let serviceOnInstance = _.find(instance.Services, { Name: service.Name, Slice: service.Slice });
+      if (serviceOnInstance !== undefined) {
+        return serviceOnInstance.OverallHealth.Status === 'Healthy';
+      }
+      return false;
+    });
+    let instancesHealthCount = healthyNodes.length + '/' + instances.length;
+
     let serviceHealthChecks = getServiceChecksInfo(serviceObjects);
     let serviceAction = service.Action || SERVICE_INSTALL;
 
@@ -72,6 +101,7 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
       Name: service.Name,
       Version: service.Version,
       Slice: service.Slice,
+      DiffWithTargetState: service.DiffWithTargetState,
       DeploymentId: service.DeploymentId,
       InstancesNames: _.map(serviceInstances, 'Name'),
       InstancesHealthCount: instancesHealthCount,
@@ -80,7 +110,6 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
       Action: serviceAction
     };
   });
-
 
   return servicesList;
 }

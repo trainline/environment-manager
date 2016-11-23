@@ -22,6 +22,7 @@ module.exports = {
     Warning: 'Warning',
     Error: 'Error',
     NoData: 'NoData',
+    Missing: 'Missing'
   },
 
   NodeDeploymentStatus: {

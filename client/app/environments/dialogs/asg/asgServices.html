@@ -20,7 +20,7 @@
           <th class="text-nowrap" data-ng-if="vm.allowServiceDisabling">Installation
             <span data-uib-popover
                   data-popover-trigger="'mouseenter'"
-                  uib-popover-template="vm.helpTextTemplate"
+                  uib-popover-template="'app/environments/dialogs/asg/popovers/help-disable-service.html'"
                   data-popover-placement="top"
                   class="glyphicon glyphicon-question-sign help-icon"
                   aria-hidden="true">
@@ -30,11 +30,30 @@
       </thead>
       <tbody>
         <tr ng-repeat="service in vm.servicesList | orderBy : ['Name', 'Version']" class="vertical-center">
-          <td><health-status status='service.OverallHealth.Status'></health-status> {{ service.Name }}</td>
+          <td><health-status status='service.OverallHealth.Status'></health-status> {{ service.Name }}
+            <span ng-if="service.DiffWithTargetState === 'Extra'"><strong>[UNEXPECTED]</strong> 
+              <span data-uib-popover
+                    data-popover-trigger="'mouseenter'"
+                    uib-popover-template="'app/environments/dialogs/asg/popovers/help-service-unexpected.html'"
+                    data-popover-placement="top"
+                    class="glyphicon glyphicon-question-sign help-icon"
+                    aria-hidden="true">
+              </span>
+            </span>
+            <span ng-if="service.DiffWithTargetState === 'Ignored'"><strong>[IGNORED]</strong> 
+              <span data-uib-popover
+                    data-popover-trigger="'mouseenter'"
+                    uib-popover-template="'app/environments/dialogs/asg/popovers/help-service-ignored.html'"
+                    data-popover-placement="top"
+                    class="glyphicon glyphicon-question-sign help-icon"
+                    aria-hidden="true">
+              </span>
+            </span>
+          </td>
           <td>{{ service.Version }}</td>
           <td><span class="slice-symbol" ng-class="service.Slice"></span>{{ service.Slice }}</td>
           <td><health-checks list="service.HealthChecks"></health-checks></td>
-          <td><a ng-click="vm.showAsgSingleService(service)" ng-if="service.InstancesNames.length > 0">{{ service.InstancesHealthCount }}</a><span ng-if="service.InstancesNames.length === 0">No instances</span></td>
+          <td><a ng-click="vm.showAsgSingleService(service)">{{ service.InstancesHealthCount }}</a></td>
           <td><a ng-click="vm.showDeploymentLog(service)">Show Deployment</a></td>
           <td data-ng-if="vm.allowServiceDisabling">
             <div class="onoffswitch enabled-toggle">

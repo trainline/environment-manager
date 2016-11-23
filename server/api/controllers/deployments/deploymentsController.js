@@ -127,19 +127,47 @@ function* postDeployment(req, res, next) {
 }
 
 /**
- * PATCH /deployments
+ * PATCH /deployments/{key}
  */
 function patchDeployment(req, res, next) {
   const body = req.swagger.params.body.value;
+  const key = req.swagger.params.id.value;
   let status = body.Status;
-  if (status !== 'Cancelled') {
+  let action = body.Action;
+  
+  if (status !== undefined && status !== 'Cancelled') {
     let error = `You can only PATCH deployment with { Status: 'Cancelled' } to cancel it.`;
     res.send({ error });
     res.status(400);
     return;
   }
 
-  next(new Error('not implemented'));
+  if (status === 'Cancelled') {
+    return next(new Error('cancelling deployment not implemented'));
+  }
+
+  if (action !== undefined) {
+    let enable;
+    if (action === 'Ignore') {
+      enable = false;
+    } else if (action === 'Install') {
+      enable = true;
+    } else {
+      throw new Error(`Invalid Action: "${action}", only "Install" and "Ignore" are allowed.`);
+    }
+
+    deploymentsHelper.get({ key }).then((deployment) => {
+      let serverRole = deployment.Value.ServerRoleName;
+      let environment = deployment.Value.EnvironmentName;
+      let slice = deployment.Value.ServiceSlice;
+      let service = deployment.Value.ServiceName;
+
+      let command = { name: 'ToggleTargetStatus', service, environment, slice, serverRole, enable };
+
+      sender.sendCommand({ user: req.user, command })
+        .then((data) => res.json(data)).catch(next);
+    });
+  }
 }
 
 module.exports = {

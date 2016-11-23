@@ -322,7 +322,7 @@ paths:
             type: object
     patch:
       operationId: patchDeployment
-      summary: Cancel an in-progress deployment.
+      summary: Modify deployment - cancel in-progress, or modify Action.
       tags:
         - Deployment
       parameters:
@@ -335,11 +335,17 @@ paths:
           required: true
           schema:
             type: object
-            required:
-              - Status
             properties:
               Status:
                 type: string
+                enum:
+                  - Cancelled
+              Action:
+                type: string
+                enum:
+                  - Install
+                  - Ignore
+
       responses:
         200:
           description: OK
