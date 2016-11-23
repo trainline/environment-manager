@@ -29,12 +29,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       NewAmi: null,
       NewSchedule: null,
     };
-    vm.deploymentAzsList = [
-      { Name: 'Span all active AZs (recommended)', Value: '' },
-      { Name: 'AZ A Only', Value: 'A' },
-      { Name: 'AZ B Only', Value: 'B' },
-      { Name: 'AZ C Only', Value: 'C' }
-    ];
+    vm.deploymentAzsList = ['A', 'B', 'C'];
 
     vm.scheduleModes = [{
       type: 'schedule',
@@ -65,12 +60,20 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       vm.selectedScheduleMode = vm.asg.ScalingSchedule && vm.asg.ScalingSchedule.length ? 'scaling' : 'schedule';
     }
 
+    vm.isAZChecked = function(az) {
+        return _.includes(vm.asgUpdate.AvailabilityZone, az);
+    }
+
+    vm.toggleAZSelection = function(az) {
+        if (_.includes(vm.asgUpdate.AvailabilityZone, az)) {
+            _.remove(vm.asgUpdate.AvailabilityZone, function(item) { return item === az; })
+        } else {
+            vm.asgUpdate.AvailabilityZone.push(az);
+        }
+    }
+
     function deriveAvailabilityZoneFriendlyName(azs) {
-      if (azs.length > 1)
-        return '';
-      
-      if (azs.length === 1)
-        return azs[0].substring(azs[0].length - 1).toUpperCase();
+      return azs.map(function(az){ return az.substring(azs[0].length - 1).toUpperCase(); });
     }
 
     vm.openServerRoleConfig = function () {
