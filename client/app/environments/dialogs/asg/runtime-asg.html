@@ -86,10 +86,12 @@
     <div class="col-md-8">
         <div class="region-visualisation">
             <div class="az" ng-repeat="az in vm.currentDistribution.azs">
-                <div class="az-name">{{az.name}}</div>
-                <div class="nodes">
-                    <div class="node" ng-repeat="node in az.nodes">
-                        <p>{{ node.id }}</p>
+                <div class="az-content" ng-class="{ active: az.active }">
+                    <div class="az-name">{{az.name}}</div>
+                    <div class="nodes">
+                        <div class="node" ng-repeat="node in az.nodes">
+                            <p>{{ node.id }}</p>
+                        </div>
                     </div>
                 </div>
             </div>

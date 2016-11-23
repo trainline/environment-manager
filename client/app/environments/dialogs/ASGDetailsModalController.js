@@ -164,7 +164,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
             vm.asgUpdate.NewAmi = selectedImageVersions[0];
           }
 
-          vm.currentDistribution = AsgDistributionService.calcDistribution(vm.asg);
+          vm.currentDistribution = AsgDistributionService.calcDistribution(vm.deploymentAzsList, vm.asg);
 
           vm.dataLoading = false;
         }).then(function () {

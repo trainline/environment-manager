@@ -7,13 +7,15 @@ angular.module('EnvironmentManager.environments').factory('AsgDistributionServic
     return az.substring(az.length - 1).toUpperCase();
   }
 
-  function calcDistribution (asg, numDesiredNodes) {
-    var azs = asg.AvailabilityZones.sort().map(function(az){
+  function calcDistribution (allAZs, asg, numDesiredNodes) {
+    var azs = allAZs.map(function(az){
       var instances = asg.Instances.filter(function(instance) {
-        return instance.AvailabilityZone === az;
+        return az == friendlyAZName(instance.AvailabilityZone);
       });
+      var active = asg.AvailabilityZones.some(function(usedAZ){ return az === friendlyAZName(usedAZ); });
       return {
-        name: friendlyAZName(az),
+        name: az,
+        active: active,
         projectedChanges: 0,
         nodes: instances.map(function(instance){
           return {
