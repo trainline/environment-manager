@@ -51,12 +51,13 @@ function getSubnetsByAvailabilityZone(subnetTypeName, configuration) {
   var subnets = [];
 
   if (availabilityZoneName === '*') {
-    subnets = [subnetType.AvailabilityZoneA, subnetType.AvailabilityZoneB];
+    subnets = [subnetType.AvailabilityZoneA, subnetType.AvailabilityZoneB, subnetType.AvailabilityZoneC,
+               subnetType.AvailabilityZoneD, subnetType.AvailabilityZoneE, subnetType.AvailabilityZoneF];
   } else {
     let azs = _.toArray(availabilityZoneName);
     azs.forEach(az => {
       let name = az.toUpperCase();
-      switch (availabilityZoneName.toUpperCase()) {
+      switch (name) {
         case 'A':
           subnets.push(subnetType.AvailabilityZoneA);
           break;
