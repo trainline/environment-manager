@@ -117,14 +117,18 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
       });
     }
 
-    vm.isAZChecked = function(az) {
-        return _.includes(vm.target.ASG.AvailabilityZone, az);
+    vm.azSelectionIsValid = function () {
+        return vm.target.ASG.AvailabilityZoneSelection === 'all' || !!vm.target.ASG.AvailabilityZone.length;
     }
 
-    vm.toggleAZSelection = function(az) {
-        if (!_.isArray(vm.target.ASG.AvailabilityZone))
-            vm.target.ASG.AvailabilityZone = [];
-            
+    vm.isAZChecked = function(az) {
+      if (!_.isArray(vm.target.ASG.AvailabilityZone))
+         vm.target.ASG.AvailabilityZone = _.clone(vm.deploymentAzsList);
+      
+      return _.includes(vm.target.ASG.AvailabilityZone, az);
+    }
+
+    vm.toggleAZSelection = function(az) {            
         if (_.includes(vm.target.ASG.AvailabilityZone, az)) {
             _.remove(vm.target.ASG.AvailabilityZone, function(item) { return item === az; })
         } else {
