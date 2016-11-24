@@ -86,7 +86,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
 
       // Note: we use DeploymentId from targetService, because DeploymentId from catalog might be old - in case
       // last deployment was unsuccessful
-      let ret = {
+      return {
         Name: getSimpleServiceName(service.Service),
         Version: service.Tags.version,
         Slice: service.Tags.slice,
@@ -100,8 +100,6 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
         DiffWithTargetState: null,
         Issues: { Warnings: [], Errors: [] },
       };
-      ret.NameAndSlice = getServiceAndSlice(ret);
-      return ret;
     }));
     // If undefined, it's not EM deployed service        
     services = _.filter(services, (service) => service.DeploymentId !== null);
@@ -145,6 +143,11 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
         instanceService.Issues.Warnings.push(`Service found in target state for server role that instance belongs to: "${runtimeServerRoleName}", but with Action different from "Install": ${targetState.Action}`);
         instanceService.DiffWithTargetState = 'Extra';
       }
+    });
+
+    _.map(services, (service) => {
+      service.NameAndSlice = getServiceAndSlice(service);
+      return service;
     });
 
     return {
