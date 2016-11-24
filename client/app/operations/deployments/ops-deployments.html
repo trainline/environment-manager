@@ -20,10 +20,10 @@
       <option ng-repeat="env in vm.environmentsList" ng-selected="{{env == vm.selectedEnvironment}}" value="{{env}}">{{env}}</option>
     </select>
   </div>
-  <div class="form-group">
+  <div class="form-group" ng-show="vm.selectedTab !== 1">
     <label class="control-label text-left">Status:</label>
   </div>
-  <div class="form-group">
+  <div class="form-group" ng-show="vm.selectedTab !== 1">
     <select class="form-control" ng-model="vm.selectedStatus" ng-change="vm.refresh()">
       <option ng-repeat="s in vm.statusList" ng-selected="{{s == vm.selectedStatus}}" value="{{s}}">{{s}}</option>
     </select>
