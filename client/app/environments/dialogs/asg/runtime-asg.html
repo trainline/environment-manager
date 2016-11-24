@@ -69,15 +69,18 @@
 </div>
 <div class="form-group">
     <label class="col-md-2 control-label text-left nowrap">Availability Zone(s):</label>
-    <div class="col-md-4">
-        <div style="float: left; margin-right: 10px; margin-top: 6px;" ng-disabled="!vm.canUser('edit')" ng-repeat="az in vm.deploymentAzsList">
-        <input
-          type="checkbox"
-          name="{{az}}-checkbox"
-          value="{{az}}"
-          ng-checked="vm.isAZChecked(az)"
-          ng-click="vm.toggleAZSelection(az)"
-        > {{az}}
+    <div class="col-md-6">
+      <div style="margin-top: 6px;">
+          <div style="float: left; margin-right: 10px;" ng-disabled="!vm.canUser('edit')" ng-repeat="az in vm.deploymentAzsList">
+            <input
+              type="checkbox"
+              name="{{az}}-checkbox"
+              value="{{az}}"
+              ng-checked="vm.isAZChecked(az)"
+              ng-click="vm.toggleAZSelection(az)"
+            > {{az}}
+          </div>
+          <span class="error" ng-if="!vm.asgUpdate.AvailabilityZone.length">At least one zone must be selected.</span>
       </div>
     </div>
 </div>
@@ -86,10 +89,13 @@
     <div class="col-md-8">
         <div class="region-visualisation">
             <div class="az" ng-repeat="az in vm.currentDistribution.azs">
-                <div class="az-content" ng-class="{ active: az.active }">
+                <div class="az-container" ng-class="{ active: az.active }">
                     <div class="az-name">{{az.name}}</div>
-                    <div class="nodes">
-                        <div class="node" ng-repeat="node in az.nodes" ng-class="{ old: node.isOld, protected: node.isProtected }">
+                    <div class="az-content">
+                        <div ng-if="!az.active" class="az-not-in-use">
+                            This AZ is not currently in use
+                        </div>
+                        <div ng-if="az.active" class="node" ng-repeat="node in az.nodes" ng-class="{ old: node.isOld, protected: node.isProtected }">
                             {{ node.id }}
                             <span
                                 ng-if="node.isOld"

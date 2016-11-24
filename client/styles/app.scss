@@ -729,7 +729,7 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
 
     display: flex;
 
-    .az-content {
+    .az-container {
 
       float: left;
       border: 1px solid;
@@ -755,9 +755,14 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
         background-color: #337ab7;
       }
 
-      .nodes {
+      .az-content {
 
         padding: 10px 10px 5px 10px;
+
+        .az-not-in-use {
+          text-align: center;
+          color: #ccc;
+        }
 
         .node {
 

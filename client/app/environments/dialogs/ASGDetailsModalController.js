@@ -66,7 +66,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
     vm.toggleAZSelection = function(az) {
         if (_.includes(vm.asgUpdate.AvailabilityZone, az)) {
-            _.remove(vm.asgUpdate.AvailabilityZone, function(item) { return item === az; })
+            _.remove(vm.asgUpdate.AvailabilityZone, function(item) { return item === az; });
         } else {
             vm.asgUpdate.AvailabilityZone.push(az);
         }
@@ -102,6 +102,10 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     vm.canUser = function () {
       return true; // TODO(filip): add perms - none were used here so far
     };
+
+    vm.updateASGFormIsValid = function () {
+        return !!vm.asgUpdate.AvailabilityZone.length;
+    }
 
     vm.formIsValid = function (form) {
       // TODO: Workaround for bug in uniqueAmong directive, returns false positive for disabled control. Can remove this once fixed.
