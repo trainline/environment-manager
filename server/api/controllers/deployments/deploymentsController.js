@@ -157,6 +157,11 @@ function patchDeployment(req, res, next) {
     }
 
     deploymentsHelper.get({ key }).then((deployment) => {
+
+      // Old deployments don't have 'ServerRoleName' field
+      if (deployment.Value.ServerRoleName === undefined) {
+        throw new Error('This operation is unsuppored for old Deployments');
+      }
       let serverRole = deployment.Value.ServerRoleName;
       let environment = deployment.Value.EnvironmentName;
       let slice = deployment.Value.ServiceSlice;
@@ -165,8 +170,8 @@ function patchDeployment(req, res, next) {
       let command = { name: 'ToggleTargetStatus', service, environment, slice, serverRole, enable };
 
       sender.sendCommand({ user: req.user, command })
-        .then((data) => res.json(data)).catch(next);
-    });
+        .then((data) => res.json(data));
+    }).catch(next);
   }
 }
 
