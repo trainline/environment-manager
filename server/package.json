@@ -88,6 +88,15 @@
     "supertest": "^2.0.0",
     "yargs": "^6.2.0"
   },
+  "engines": {
+    "node": ">=6.7.0",
+    "npm": ">=3.10.3"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
   "jshintConfig": {
     "esversion": 6,
     "globals": {
