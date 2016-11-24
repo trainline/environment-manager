@@ -766,18 +766,18 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
           padding: 5px;
           margin-bottom: 10px;
 
-          &.old {
-            color: #cc9977;
-            border-color: #cc9977;
-          }
-
           &.protected {
             color: #555;
             border-color: #555;
           }
 
+          &.old {
+            color: #aa5533;
+            border-color: #aa5533;
+          }
+
           .glyphicon-warning-sign {
-            color: #cc9977;
+            color: #aa5533;
             margin-right: 2px;
           }
 
