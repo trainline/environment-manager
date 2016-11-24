@@ -82,6 +82,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
       service.Tags = mapConsulTags(service.Tags);
       let instanceServiceHealthChecks = getInstanceServiceHealthChecks(checks, service.ID);
       let targetService = _.find(targetServiceStates, { Name: getSimpleServiceName(service.Service), Slice: service.Tags.slice });
+      let deploymentId = _.get(targetService, 'DeploymentId') || null;
 
       // Note: we use DeploymentId from targetService, because DeploymentId from catalog might be old - in case
       // last deployment was unsuccessful
@@ -91,9 +92,9 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
         Slice: service.Tags.slice,
         Cluster: service.Tags.owning_cluster,
         ServerRole: service.Tags.server_role,
-        DeploymentId: targetService.DeploymentId,
-        DeploymentCause: yield serviceTargets.getServiceDeploymentCause(environmentName, targetService.DeploymentId, instanceId),
-        LogLink: `/api/v1/deployments/${targetService.DeploymentId}/log?account=${accountName}&instance=${instanceId}`,
+        DeploymentId: deploymentId,
+        DeploymentCause: yield serviceTargets.getServiceDeploymentCause(environmentName, deploymentId, instanceId),
+        LogLink: `/api/v1/deployments/${deploymentId}/log?account=${accountName}&instance=${instanceId}`,
         OverallHealth: getInstanceServiceOverallHealth(instanceServiceHealthChecks),
         HealthChecks: instanceServiceHealthChecks,
         DiffWithTargetState: null,
@@ -101,7 +102,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
       };
     }));
     // If undefined, it's not EM deployed service        
-    services = _.filter(services, (service) => service.DeploymentId !== undefined);
+    services = _.filter(services, (service) => service.DeploymentId !== null);
 
     // Now make a diff with target state of Instance services
     // Primo, find any services that are in target state, but not on instance
