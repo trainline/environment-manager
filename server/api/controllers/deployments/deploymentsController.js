@@ -160,7 +160,7 @@ function patchDeployment(req, res, next) {
 
       // Old deployments don't have 'ServerRoleName' field
       if (deployment.Value.ServerRoleName === undefined) {
-        throw new Error('This operation is unsuppored for old Deployments');
+        throw new Error('This operation is unsupported for old Deployments');
       }
       let serverRole = deployment.Value.ServerRoleName;
       let environment = deployment.Value.EnvironmentName;
