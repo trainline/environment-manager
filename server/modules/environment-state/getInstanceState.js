@@ -86,7 +86,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
 
       // Note: we use DeploymentId from targetService, because DeploymentId from catalog might be old - in case
       // last deployment was unsuccessful
-      return {
+      let ret = {
         Name: getSimpleServiceName(service.Service),
         Version: service.Tags.version,
         Slice: service.Tags.slice,
@@ -100,6 +100,8 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
         DiffWithTargetState: null,
         Issues: { Warnings: [], Errors: [] },
       };
+      ret.NameAndSlice = getServiceAndSlice(ret);
+      return ret;
     }));
     // If undefined, it's not EM deployed service        
     services = _.filter(services, (service) => service.DeploymentId !== null);
