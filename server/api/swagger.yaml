@@ -12,7 +12,7 @@ produces:
   - application/json
 paths:
   /asgs:
-    x-swagger-router-controller: asgs/asgController
+    x-swagger-router-controller: asgController
     get:
       operationId: getAsgs
       summary: List ASGS matching the given criteria. By default returns all ASGs across all accounts.
@@ -35,7 +35,7 @@ paths:
             items:
               type: object
   /asgs/{name}:
-    x-swagger-router-controller: asgs/asgController
+    x-swagger-router-controller: asgController
     get:
       operationId: getAsgByName
       summary: Get a single ASG for the given environment.
@@ -79,7 +79,7 @@ paths:
         200:
           description: Ok
   /asgs/{name}/ips:
-    x-swagger-router-controller: asgs/asgController
+    x-swagger-router-controller: asgController
     get:
       operationId: getAsgIps
       summary: Get IPs associated with an ASG under the given account.
@@ -102,7 +102,7 @@ paths:
             items:
               type: object
   /asgs/{name}/scaling-schedule:
-    x-swagger-router-controller: asgs/asgController
+    x-swagger-router-controller: asgController
     get:
       operationId: getScalingSchedule
       summary: Get scaling schedule actions for given ASG.
@@ -145,7 +145,7 @@ paths:
         200:
           description: Ok
   /asgs/{name}/size:
-    x-swagger-router-controller: asgs/asgController
+    x-swagger-router-controller: asgController
     put:
       operationId: putAsgSize
       summary: Resize an ASG under the given account.
@@ -170,7 +170,7 @@ paths:
         200:
           description: Ok
   /asgs/{name}/launch-config:
-    x-swagger-router-controller: asgs/asgController
+    x-swagger-router-controller: asgController
     get:
       operationId: getAsgLaunchConfig
       summary: Get the launch config associated with an ASG under the given account.
@@ -215,7 +215,7 @@ paths:
         200:
           description: ASG launch config.
   /audit:
-    x-swagger-router-controller: audit/auditController
+    x-swagger-router-controller: auditController
     get:
       operationId: getAuditLogs
       summary: Get Audit Logs for a given time period. Default values are 'since yesterday' and 'until now'.
@@ -240,7 +240,7 @@ paths:
             items:
               type: object
   /audit/{key}:
-    x-swagger-router-controller: audit/auditController
+    x-swagger-router-controller: auditController
     get:
       operationId: getAuditLogByKey
       summary: Get a specific audit log.
@@ -257,7 +257,7 @@ paths:
           schema:
             type: object
   /deployments:
-    x-swagger-router-controller: deployments/deploymentsController
+    x-swagger-router-controller: deploymentsController
     get:
       operationId: getDeployments
       summary: List all deployments matching the given criteria. If no parameters are provided, the default is 'since yesterday'.
@@ -304,7 +304,7 @@ paths:
         202:
           description: The deployment ID
   /deployments/{id}:
-    x-swagger-router-controller: deployments/deploymentsController
+    x-swagger-router-controller: deploymentsController
     get:
       operationId: getDeploymentById
       summary: Get information for a deployment.
@@ -350,7 +350,7 @@ paths:
         200:
           description: OK
   /deployments/{id}/log:
-    x-swagger-router-controller: deployments/deploymentsController
+    x-swagger-router-controller: deploymentsController
     get:
       operationId: getDeploymentLog
       summary: Retrieve logs for a particular deployment.
@@ -375,7 +375,7 @@ paths:
           schema:
             type: object
   /diagnostics/healthcheck:
-    x-swagger-router-controller: diagnostics/diagnosticsController
+    x-swagger-router-controller: diagnosticsController
     get:
       operationId: getHealthcheck
       summary: Get version and status information.
@@ -387,7 +387,7 @@ paths:
           schema:
             type: object
   /environments:
-    x-swagger-router-controller: environments/environmentsController
+    x-swagger-router-controller: environmentsController
     get:
       operationId: getEnvironments
       summary: Get all environments
@@ -401,7 +401,7 @@ paths:
             items:
               type: object
   /environments/{name}:
-    x-swagger-router-controller: environments/environmentsController
+    x-swagger-router-controller: environmentsController
     get:
       operationId: getEnvironmentByName
       summary: Get an environment.
@@ -418,7 +418,7 @@ paths:
           schema:
             type: object
   /environments/{name}/servers:
-    x-swagger-router-controller: environments/environmentsController
+    x-swagger-router-controller: environmentsController
     get:
       operationId: getEnvironmentServers
       summary: Get the list of servers in an environment.
@@ -437,7 +437,7 @@ paths:
             items:
               type: object
   /environments/{name}/servers/{asgName}:
-    x-swagger-router-controller: environments/environmentsController
+    x-swagger-router-controller: environmentsController
     get:
       operationId: getEnvironmentServerByName
       summary: Get a specific server in a given environment
@@ -458,7 +458,7 @@ paths:
           schema:
             type: object
   /environments/{name}/schedule:
-    x-swagger-router-controller: environments/environmentsController
+    x-swagger-router-controller: environmentsController
     put:
       operationId: putEnvironmentSchedule
       summary: Set the schedule for an environment.
@@ -496,7 +496,7 @@ paths:
           schema:
             type: object
   /environments/{name}/accountName:
-    x-swagger-router-controller: environments/environmentsController
+    x-swagger-router-controller: environmentsController
     get:
       operationId: getEnvironmentAccountName
       summary: Get account name for given environment.
@@ -513,7 +513,7 @@ paths:
           schema:
             type: string
   /environments/{name}/schedule-status:
-    x-swagger-router-controller: environments/environmentsController
+    x-swagger-router-controller: environmentsController
     get:
       operationId: getEnvironmentScheduleStatus
       summary: Get the schedule status for a given environment at a given time. If no 'at' parameter is provided,
@@ -536,7 +536,7 @@ paths:
           schema:
             type: object
   /images:
-    x-swagger-router-controller: images/imagesController
+    x-swagger-router-controller: imagesController
     get:
       operationId: getImages
       summary: Get the list of available AMI images. Only those that are privately published under associated accounts are included.
@@ -559,7 +559,7 @@ paths:
             items:
               type: object
   /instances:
-    x-swagger-router-controller: instances/instancesController
+    x-swagger-router-controller: instancesController
     get:
       operationId: getInstances
       summary: Get all instances matching the given criteria.
@@ -607,7 +607,7 @@ paths:
             items:
               type: object
   /instances/{id}:
-    x-swagger-router-controller: instances/instancesController
+    x-swagger-router-controller: instancesController
     get:
       operationId: getInstanceById
       summary: Get a specific instance.
@@ -624,7 +624,7 @@ paths:
           schema:
             type: object
   /instances/{id}/maintenance:
-    x-swagger-router-controller: instances/instancesController
+    x-swagger-router-controller: instancesController
     put:
       operationId: putInstanceMaintenance
       summary: Update the ASG standby-state of a given instance.
@@ -644,7 +644,7 @@ paths:
         200:
           description: OK
   /services:
-    x-swagger-router-controller: services/servicesController
+    x-swagger-router-controller: servicesController
     get:
       operationId: getServices
       summary: Get the list of currently deployed services.
@@ -668,7 +668,7 @@ paths:
             items:
               type: object
   /services/{service}:
-    x-swagger-router-controller: services/servicesController
+    x-swagger-router-controller: servicesController
     get:
       operationId: getServiceById
       summary: Get a currently deployed service.
@@ -692,7 +692,7 @@ paths:
           schema:
             type: object
   /services/{service}/slices:
-    x-swagger-router-controller: services/servicesController
+    x-swagger-router-controller: servicesController
     get:
       operationId: getServiceSlices
       summary: Get slices for a deployed service.
@@ -719,7 +719,7 @@ paths:
             items:
               type: object
   /services/{service}/slices/toggle:
-    x-swagger-router-controller: services/servicesController
+    x-swagger-router-controller: servicesController
     put:
       operationId: putServiceSlicesToggle
       summary: Toggle the slices for a deployed service.
@@ -738,7 +738,7 @@ paths:
         200:
           description: OK
   /target-state/{environment}:
-    x-swagger-router-controller: target-state/targetStateController
+    x-swagger-router-controller: targetStateController
     get:
       operationId: getTargetState
       summary: Get the target state for a given environment
@@ -776,7 +776,7 @@ paths:
         200:
           description: OK
   /target-state/{environment}/{service}:
-    x-swagger-router-controller: target-state/targetStateController
+    x-swagger-router-controller: targetStateController
     delete:
       operationId: deleteTargetStateByService
       summary: Remove the target state for all versions of a service.
@@ -795,7 +795,7 @@ paths:
         200:
           description: OK
   /target-state/{environment}/{service}/{version}:
-    x-swagger-router-controller: target-state/targetStateController
+    x-swagger-router-controller: targetStateController
     delete:
       operationId: deleteTargetStateByServiceVersion
       summary: Remove the target state for a specific version of a service.
@@ -818,7 +818,7 @@ paths:
         200:
           description: OK
   /token:
-    x-swagger-router-controller: token/tokenController
+    x-swagger-router-controller: tokenController
     post:
       operationId: postAuthorization
       summary: Get an authorization token
@@ -846,7 +846,7 @@ paths:
           schema:
             type: string
   /upstreams/{name}/slices:
-    x-swagger-router-controller: upstreams/upstreamsController
+    x-swagger-router-controller: upstreamsController
     get:
       operationId: getUpstreamSlices
       summary: Get slices for a given upstream.
@@ -873,7 +873,7 @@ paths:
             items:
               type: object
   /upstreams/{name}/slices/toggle:
-    x-swagger-router-controller: upstreams/upstreamsController
+    x-swagger-router-controller: upstreamsController
     put:
       operationId: putUpstreamSlicesToggle
       summary: Toggle the slices for a given upstream
@@ -892,7 +892,7 @@ paths:
         200:
           description: OK
   /config/accounts:
-    x-swagger-router-controller: config/accounts/accountsController
+    x-swagger-router-controller: accountsController
     get:
       operationId: getAccountsConfig
       summary: List the AWS Accounts that associated with Environment Manager.
@@ -920,7 +920,7 @@ paths:
         201:
           description: OK
   /config/accounts/{accountNumber}:
-    x-swagger-router-controller: config/accounts/accountsController
+    x-swagger-router-controller: accountsController
     put:
       operationId: putAccountConfigByName
       summary: Update an associated AWS Account.
@@ -953,7 +953,7 @@ paths:
         200:
           description: OK
   /config/clusters:
-    x-swagger-router-controller: config/clusters/clusterController
+    x-swagger-router-controller: clusterController
     get:
       operationId: getClustersConfig
       summary: Get all Cluster configurations.
@@ -981,7 +981,7 @@ paths:
         201:
           description: OK
   /config/clusters/{name}:
-    x-swagger-router-controller: config/clusters/clusterController
+    x-swagger-router-controller: clusterController
     get:
       operationId: getClusterConfigByName
       summary: Get a specific Cluster configuration.
@@ -1030,7 +1030,7 @@ paths:
         200:
           description: OK
   /config/deployment-maps:
-    x-swagger-router-controller: config/deployment-maps/deploymentMapController
+    x-swagger-router-controller: deploymentMapController
     get:
       operationId: getDeploymentMapsConfig
       summary: Get all deployment map configurations.
@@ -1058,7 +1058,7 @@ paths:
         201:
           description: OK
   /config/deployment-maps/{name}:
-    x-swagger-router-controller: config/deployment-maps/deploymentMapController
+    x-swagger-router-controller: deploymentMapController
     put:
       operationId: putDeploymentMapConfigByName
       summary: Update a deployment map configuration.
@@ -1107,7 +1107,7 @@ paths:
         200:
           description: OK
   /config/environments:
-    x-swagger-router-controller: config/environments/environmentsConfigController
+    x-swagger-router-controller: environmentsConfigController
     get:
       operationId: getEnvironmentsConfig
       summary: Get all environment configurations.
@@ -1145,7 +1145,7 @@ paths:
         201:
           description: OK
   /config/environments/{name}:
-    x-swagger-router-controller: config/environments/environmentsConfigController
+    x-swagger-router-controller: environmentsConfigController
     get:
       operationId: getEnvironmentConfigByName
       summary: Get a specific environment configuration.
@@ -1196,7 +1196,7 @@ paths:
         200:
           description: OK
   /config/environment-types:
-    x-swagger-router-controller: config/environment-types/environmentTypeController
+    x-swagger-router-controller: environmentTypeController
     get:
       operationId: getEnvironmentTypesConfig
       summary: Get all environment type configurations.
@@ -1224,7 +1224,7 @@ paths:
         201:
           description: OK
   /config/environment-types/{name}:
-    x-swagger-router-controller: config/environment-types/environmentTypeController
+    x-swagger-router-controller: environmentTypeController
     get:
       operationId: getEnvironmentTypeConfigByName
       summary: Get an specific environment type configuration.
@@ -1273,7 +1273,7 @@ paths:
         200:
           description: OK
   /config/export/{resource}:
-    x-swagger-router-controller: config/export/exportController
+    x-swagger-router-controller: exportController
     get:
       operationId: getResourceExport
       summary: Export a configuration resources dynamo table.
@@ -1307,7 +1307,7 @@ paths:
             items:
               type: object
   /config/import/{resource}:
-    x-swagger-router-controller: config/import/importController
+    x-swagger-router-controller: importController
     put:
       operationId: putResourceImport
       summary: Import a configuration resources dynamo table.
@@ -1348,7 +1348,7 @@ paths:
         200:
           description: OK
   /config/lb-settings:
-    x-swagger-router-controller: config/lb-settings/lbSettingsController
+    x-swagger-router-controller: lbSettingsController
     get:
       operationId: getLBSettingsConfig
       summary: List all load balancer settings.
@@ -1386,7 +1386,7 @@ paths:
         201:
           description: OK
   /config/lb-settings/{environment}/{vHostName}:
-    x-swagger-router-controller: config/lb-settings/lbSettingsController
+    x-swagger-router-controller: lbSettingsController
     get:
       operationId: getLBSettingConfigByName
       summary: Get a specific load balancer setting.
@@ -1449,7 +1449,7 @@ paths:
         200:
           description: OK
   /config/permissions:
-    x-swagger-router-controller: config/permissions/permissionsController
+    x-swagger-router-controller: permissionsController
     get:
       operationId: getPermissionsConfig
       summary: Get all permission configurations.
@@ -1477,7 +1477,7 @@ paths:
         201:
           description: OK
   /config/permissions/{name}:
-    x-swagger-router-controller: config/permissions/permissionsController
+    x-swagger-router-controller: permissionsController
     get:
       operationId: getPermissionConfigByName
       summary: Get a specific permission configuration.
@@ -1529,7 +1529,7 @@ paths:
         200:
           description: OK
   /config/services:
-    x-swagger-router-controller: config/services/servicesConfigController
+    x-swagger-router-controller: servicesConfigController
     get:
       operationId: getServicesConfig
       summary: Get all service configurations.
@@ -1563,7 +1563,7 @@ paths:
         201:
           description: OK
   /config/services/{name}/{cluster}:
-    x-swagger-router-controller: config/services/servicesConfigController
+    x-swagger-router-controller: servicesConfigController
     get:
       operationId: getServiceConfigByName
       summary: Get a specific service configuration.
@@ -1626,7 +1626,7 @@ paths:
         200:
           description: OK
   /config/upstreams:
-    x-swagger-router-controller: config/upstreams/upstreamsConfigController
+    x-swagger-router-controller: upstreamsConfigController
     get:
       operationId: getUpstreamsConfig
       summary: Get all upstream configurations.
@@ -1655,7 +1655,7 @@ paths:
         201:
           description: OK
   /config/upstreams/{name}:
-    x-swagger-router-controller: config/upstreams/upstreamsConfigController
+    x-swagger-router-controller: upstreamsConfigController
     put:
       operationId: putUpstreamConfigByName
       summary: Update an upstream configuration.
@@ -1714,7 +1714,7 @@ paths:
         200:
           description: Empty
   /package-upload-url/{service}/{version}/{environment}:
-    x-swagger-router-controller: package-upload-url/packageUploadUrlController
+    x-swagger-router-controller: packageUploadUrlController
     get:
       operationId: getPackageUploadUrlByServiceVersionEnvironment
       summary: Upload an environment-specific package.
@@ -1734,7 +1734,7 @@ paths:
         422:
           $ref: '#/responses/package-bad-ref'
   /package-upload-url/{service}/{version}:
-    x-swagger-router-controller: package-upload-url/packageUploadUrlController
+    x-swagger-router-controller: packageUploadUrlController
     get:
       operationId: getPackageUploadUrlByServiceVersion
       summary: Upload an environment-independent package.
