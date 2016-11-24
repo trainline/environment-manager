@@ -43,7 +43,7 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
       },
       service: {
         property: 'serviceName',
-        default: null,
+        default: '',
       },
       deployment_id: {
         property: 'selectedDeploymentId',
@@ -140,6 +140,13 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
       }
 
       vm.query = query;
+    };
+
+    vm.instancesFilter = function (instance) {
+      if (vm.selectedStatus !== 'Any' && instance.deploymentStatus !== vm.selectedStatus) {
+        return false;
+      }
+      return _.some(_.map(instance.Services, function (s) { return s.Name.toLowerCase() }), function (name) { return name.indexOf(vm.serviceName.toLowerCase()) >= 0; });
     };
 
     vm.foundServicesFilter = function (deployment) {

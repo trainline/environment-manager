@@ -4,7 +4,8 @@
 angular.module('EnvironmentManager.operations').component('opsDeploymentsInstances', {
   templateUrl: '/app/operations/deployments/opsDeploymentsInstances.html',
   bindings: {
-    query: '<'
+    query: '<',
+    instancesFilter: '&'
   },
   controllerAs: 'vm',
   controller: function ($scope, $http) {

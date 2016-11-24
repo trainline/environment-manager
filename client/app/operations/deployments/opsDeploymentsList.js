@@ -5,7 +5,8 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsList', 
   templateUrl: '/app/operations/deployments/opsDeploymentsList.html',
   bindings: {
     query: '<',
-    showDetails: '&'
+    showDetails: '&',
+    foundServicesFilter: '&'
   },
   controllerAs: 'vm',
   controller: function ($scope, Deployment, $uibModal) {

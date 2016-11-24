@@ -19,7 +19,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="deployment in vm.deployments | filter: vm.foundServicesFilter | orderBy: '-timestamp'">
+        <tr ng-repeat="deployment in vm.deployments | filter: vm.foundServicesFilter() | orderBy: '-timestamp'">
           <td>
             <span am-time-ago="deployment.timestamp"></span><br />
             <small>{{deployment.timestamp | amDateFormat:'DD/MM/YYYY HH:mm:ss'}}</small>

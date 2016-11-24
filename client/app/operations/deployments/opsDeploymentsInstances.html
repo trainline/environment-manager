@@ -17,7 +17,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="instance in vm.instances | filter: vm.foundServicesFilter | orderBy: '-timestamp'">
+        <tr ng-repeat="instance in vm.instances | filter: vm.instancesFilter() | orderBy: '-timestamp'">
           <td>
             <span am-time-ago="instance.LaunchTime"></span><br />
             <small>{{instance.LaunchTime | amDateFormat:'DD/MM/YYYY HH:mm:ss'}}</small>
