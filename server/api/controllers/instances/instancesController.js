@@ -82,7 +82,7 @@ function getInstances(req, res, next) {
         }
 
         // If instances were fetched by cross scan, instance.AccountName is available, otherwise, for simple scan use accountName
-        return getInstanceState(instance.AccountName || accountName, instanceEnvironment, instanceName, instance.InstanceId)
+        return getInstanceState(instance.AccountName || accountName, instanceEnvironment, instanceName, instance.InstanceId, instance.getTag('Role'))
           .then((state) => {
             _.assign(instance, state);
             return instance;
