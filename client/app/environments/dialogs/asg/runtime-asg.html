@@ -89,8 +89,18 @@
                 <div class="az-content" ng-class="{ active: az.active }">
                     <div class="az-name">{{az.name}}</div>
                     <div class="nodes">
-                        <div class="node" ng-repeat="node in az.nodes">
-                            <p>{{ node.id }}</p>
+                        <div class="node" ng-repeat="node in az.nodes" ng-class="{ old: node.isOld, protected: node.isProtected }">
+                            {{ node.id }}
+                            <span
+                                ng-if="node.isOld"
+                                class="glyphicon glyphicon-warning-sign"
+                                title="This instance does not use the latest launch config">
+                            </span>
+                            <span
+                                ng-if="node.isProtected"
+                                class="glyphicon glyphicon-lock"
+                                title="This instance is protected from scale-in">
+                            </span>
                         </div>
                     </div>
                 </div>

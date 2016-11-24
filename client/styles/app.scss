@@ -723,6 +723,7 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
 
   overflow: auto;
   display: flex;
+  padding-top: 3px;
 
   .az {
 
@@ -735,7 +736,7 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
       border-top: 4px solid; 
       border-radius: 4px;
       margin-right: 10px;
-      width: 120px;
+      width: 150px;
       border-color: #ccc;
 
       &.active {
@@ -761,13 +762,23 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
         .node {
 
           border: 1px solid #ccc;
-          border-top: 3px solid #ccc; 
-          border-radius: 4px;
+          text-align: center;
           padding: 5px;
           margin-bottom: 10px;
 
-          p {
-            margin: 0px;
+          &.old {
+            color: #cc9977;
+            border-color: #cc9977;
+          }
+
+          &.protected {
+            color: #555;
+            border-color: #555;
+          }
+
+          .glyphicon-warning-sign {
+            color: #cc9977;
+            margin-right: 2px;
           }
 
         }

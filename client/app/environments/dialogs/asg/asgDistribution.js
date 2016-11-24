@@ -7,7 +7,7 @@ angular.module('EnvironmentManager.environments').factory('AsgDistributionServic
     return az.substring(az.length - 1).toUpperCase();
   }
 
-  function calcDistribution (allAZs, asg, numDesiredNodes) {
+  function calcDistribution (allAZs, asg) {
     var azs = allAZs.map(function(az){
       var instances = asg.Instances.filter(function(instance) {
         return az == friendlyAZName(instance.AvailabilityZone);
@@ -20,13 +20,12 @@ angular.module('EnvironmentManager.environments').factory('AsgDistributionServic
         nodes: instances.map(function(instance){
           return {
             id: instance.InstanceId,
-            isOld: !instance.LaunchConfigurationName
+            isOld: !instance.LaunchConfigurationName,
+            isProtected: instance.ProtectedFromScaleIn
           };
         })
       };
     });
-
-    // updateProjectedChanges(azs, numDesiredNodes);
 
     var distribution = {
       azs: azs
@@ -34,30 +33,6 @@ angular.module('EnvironmentManager.environments').factory('AsgDistributionServic
 
     return distribution;
   }
-
-  /*function updateProjectedChanges (azs, desiredNodes) {
-    var numCurrentNodes = _.sum(azs.map(function(az){ return nodes.length; }));
-
-    if (numCurrentNodes === desiredNodes)
-      return;
-
-    if (numCurrentNodes < desiredNodes)
-      return scaleOut(azs, desiredNodes - numCurrentNodes);
-
-    return scaleIn(azs, numCurrentNodes - desiredNodes);
-  }
-
-  function scaleIn(azs, numNodesToRemove) {
-    _.times(numNodesToRemove, function() {
-      decrementNodesCount(azs);
-    });
-  }
-
-  function decrementNodesCount(azs) {
-    var maxNodes = _.maxBy(azs, function(az){ return az.nodes.length; });
-    var selectedAZs = azs.filter(function(az){ return az.nodes.length === maxNodes; });
-    selectedAZs[0].projectedNodes
-  }*/
 
   return {
     calcDistribution: calcDistribution
