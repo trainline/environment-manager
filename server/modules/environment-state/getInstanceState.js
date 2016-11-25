@@ -32,13 +32,13 @@ function getOverallHealth(checks) {
 }
 
 function getInstanceServiceOverallHealth(checks) {
-  if (_.some(checks, { Status: 'critical' })) {
+  if (_.every(checks, { Status: 'passing' })) {
     return {
-      Status: Enums.HEALTH_STATUS.Error,
+      Status: Enums.HEALTH_STATUS.Healthy,
     };
   } else {
     return {
-      Status: Enums.HEALTH_STATUS.Healthy,
+      Status: Enums.HEALTH_STATUS.Error,
     };
   }
 }
