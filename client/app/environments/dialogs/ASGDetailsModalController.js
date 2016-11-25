@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ASGDetailsModalController',
-  function ($scope, $uibModal, $uibModalInstance, $q, modal, serviceDiscovery, $rootScope, Image, awsService, AutoScalingGroup, resources, cachedResources, deploymentMapConverter, parameters) {
+  function ($scope, $uibModal, $uibModalInstance, $q, modal, serviceDiscovery, $rootScope, Image, awsService, AutoScalingGroup, resources, cachedResources, deploymentMapConverter, asgDistributionService, parameters) {
     var vm = this;
     
     vm.context = 'asg';
@@ -66,7 +66,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
     vm.toggleAZSelection = function(az) {
         if (_.includes(vm.asgUpdate.AvailabilityZone, az)) {
-            _.remove(vm.asgUpdate.AvailabilityZone, function(item) { return item === az; })
+            _.remove(vm.asgUpdate.AvailabilityZone, function(item) { return item === az; });
         } else {
             vm.asgUpdate.AvailabilityZone.push(az);
         }
@@ -102,6 +102,10 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     vm.canUser = function () {
       return true; // TODO(filip): add perms - none were used here so far
     };
+
+    vm.updateASGFormIsValid = function () {
+        return !!vm.asgUpdate.AvailabilityZone.length;
+    }
 
     vm.formIsValid = function (form) {
       // TODO: Workaround for bug in uniqueAmong directive, returns false positive for disabled control. Can remove this once fixed.
@@ -163,6 +167,8 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
             vm.asgUpdate.NewAmi = selectedImageVersions[0];
           }
+
+          vm.currentDistribution = asgDistributionService.calcDistribution(vm.deploymentAzsList, vm.asg);
 
           vm.dataLoading = false;
         }).then(function () {
@@ -243,8 +249,8 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     };
 
     function confirmAZChange() {
-      var originalAvailabilityZone = deriveAvailabilityZoneFriendlyName(vm.asg.AvailabilityZones);
-      if (originalAvailabilityZone === vm.asgUpdate.AvailabilityZone) {
+      var originalAvailabilityZone = deriveAvailabilityZoneFriendlyName(vm.asg.AvailabilityZones).sort();
+      if (_.isEqual(originalAvailabilityZone, vm.asgUpdate.AvailabilityZone.sort())) {
         return Promise.resolve(true);
       }
       
