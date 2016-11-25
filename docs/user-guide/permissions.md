@@ -106,11 +106,11 @@ Although you can assign permissions directly to a user, this isn't particularly 
 
 Groups can also be members of other groups, and inherit those groups permissions, as do members of that group.
 
-Group membership is controlled by Active Directory, while permissions - which are specific to Environment Manager - are controlled by Environment Manager.
+Group membership is controlled by LDAP, while permissions - which are specific to Environment Manager - are controlled by Environment Manager.
 
 ### Managing Permissions
 
-Let's demonstrate how to assign or modify permissions for an Active Directory user or group.
+Let's demonstrate how to assign or modify permissions for an LDAP user or group.
 
 First you should understand that permissions are a secured resource like any other. In order to work with permission sets in Environment Manager, you must already have permission to '/config/permissions/*' resources. If you do not, you will not see the appropriate create, edit and delete controls in the Environment Manager UI.
 
@@ -120,7 +120,7 @@ First use the menu to navigate to Configuration > Users & Groups. You should see
 
 ### Deleting
 
-You can delete a set of permissions by clicking the delete button on this screen. This does not delete the user or group from Active Directory. It merely removes all permissions assigned to that user in Environment Manager.
+You can delete a set of permissions by clicking the delete button on this screen. This does not delete the user or group from LDAP. It merely removes all permissions assigned to that user in Environment Manager.
 
 ### Creating and Modifying
 
@@ -128,6 +128,6 @@ In order to create a new set of permissions click the "Create New..." button at 
 
 ![Create new User Screen](/environment-manager/assets/images/create-new-user.png)
 
-When creating a new set of permissions, you will need to supply a name, and that name will need to match the name of a user or group within Active Directory. When editing an existing set, you will not be able to change the name. Instead, create a new set.
+When creating a new set of permissions, you will need to supply a name, and that name will need to match the name of a user or group within LDAP. When editing an existing set, you will not be able to change the name. Instead, create a new set.
 
 When creating or editing a permission set you must supply a properly formatted JSON array of permissions. The UI will not allow you to save a set until it is valid.

@@ -12,7 +12,7 @@ To call any API, it is first necessary to obtain a security token that can be us
 
 ### Getting a Token
 
-Tokens are issued by calling the /api/token endpoint and passing appropriate Active Directory credentials.
+Tokens are issued by calling the /api/v1/token endpoint and passing appropriate LDAP credentials.
 Post the following parameters in url-encoded format:
 
 -	grant_type: Only currently supported is password.
@@ -22,20 +22,20 @@ Post the following parameters in url-encoded format:
 For example:
 
 ```
-curl -Uri https://environmentmanager.your.local.domain/api/token 
+curl -Uri https://environmentmanager.your.local.domain/api/v1/token 
      -Method POST 
      -Body "grant_type=password&username={your.local.domain\user_name}&password={user_password}"
 ```
 
-This API returns a plain text bearer token that contains encrypted user and permission data based on Active Directory group membership.
+This API returns a plain text bearer token that contains encrypted user and permission data based on LDAP group membership.
 
 Note: Tokens automatically expire after 5 minutes so should be obtained immediately before calling Environment Manager APIs.
 
 ### Using the Token
 
-Apart from /api/token, all other APIs expect a token to be passed as an Authorization header. For example:
+Apart from /api/v1/token, all other APIs expect a token to be passed as an Authorization header. For example:
 
 ```
-curl -Uri https://environmentmanager.your.local.domain/api/accounts
+curl -Uri https://environmentmanager.your.local.domain/api/v1/config/accounts
      -Headers @{"Authorization" = "Bearer {issued_token}"}
 ```

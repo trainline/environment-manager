@@ -8,7 +8,6 @@ Here are the top 5 features and code improvements we have planned for the next f
 
 **Features:**
 
-  -	Uninstall for deployments
   -	SNS notifications for config changes/environment events
   -	ECS container and AWS Lambda deployment support
   -	Improved Canary deployments
@@ -16,9 +15,8 @@ Here are the top 5 features and code improvements we have planned for the next f
 
 **Code enhancements:**
 
-  -	Updated API
-  -	Improved caching
   -	Remove Artifactory dependency
+  - Simplified deployment
   -	Remove cross-account Dynamo tables (simplified setup)
   -	Dynamo schema and performance improvements
 

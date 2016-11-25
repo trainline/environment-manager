@@ -26,7 +26,7 @@ This section sets out the master AWS account pre-requisites:
         •	TCP 443 from your internal network - to allow other systems to call the EM APIs and browse the website
         •	TCP 1025-65535 0.0.0.0/0 – to allow return packets from AWS services such as S3
       -	Outgoing
-        •	Active Directory ports to where your AD servers are hosted: http://blogs.msmvps.com/acefekay/2011/11/01/active-directory-firewall-ports-let-s-try-to-make-this-simple/
+        •	Ports to where your LDAP servers are hosted: http://blogs.msmvps.com/acefekay/2011/11/01/active-directory-firewall-ports-let-s-try-to-make-this-simple/
         •	TCP 8500 to all destinations in your AWS network that will fall under EM control. This allows access for Consul.
         •	TCP 443 to your NGINX servers in all environments
         •	AWS Services such as S3:
@@ -41,7 +41,7 @@ Environment Manager makes use of S3 in the master account for three different re
 -	To hold its application configuration file
 -	To securely store credentials and access keys referenced by the configuration file. For example:
     -	Consul security tokens – for allowing access to alter Consul’s key-value store
-    -	Active Directory service account – used for user authorisation
+    -	LDAP service account – used for user authorisation
 -	To store nightly backups of the EM configuration database. For each of these purposes, you will need to create or identify an S3 bucket/path that can be used to hold each type of data. These could all be under a single bucket using folders but we would recommend at least separating the secure data into its own bucket that has more specific access controls.
 
 Notes

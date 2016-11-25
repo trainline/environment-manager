@@ -54,11 +54,11 @@ Here is a sample config file you can use to get started..
 
 ### Active Directory
 
-This section describes the settings Environment Manager needs to connect to your Active Directory server.
+This section describes the settings Environment Manager needs to connect to your LDAP server.
 
 ### Authentication
 
-The main part of the authentication section to be aware of is the 'defaultAdmin' setting. This setting represents the name of an Active Directory user or group. If the permissions table is empty, Environment Manager will create a permissions set for this identity to allow the first user to log in to the system. This user will have complete access to all resources and operations. If this value is not present when Environment Manager first starts, the system will throw an error and not be able to start.
+The main part of the authentication section to be aware of is the 'defaultAdmin' setting. This setting represents the name of a user or group. If the permissions table is empty, Environment Manager will create a permissions set for this identity to allow the first user to log in to the system. This user will have complete access to all resources and operations. If this value is not present when Environment Manager first starts, the system will throw an error and not be able to start.
 
 ### Server Settings
 

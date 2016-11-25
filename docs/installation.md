@@ -21,7 +21,7 @@ Installing Environment Manager requires setup and configuration of the following
     - Master AWS Account
     - Child AWS Account(s)
 -	Consul
--	Active Directory
+-	LDAP
 -	Environment Manager application
 -	Machine images ( [AMIs](/environment-manager/docs/concepts#amis) )
 -	Configuration Management tooling

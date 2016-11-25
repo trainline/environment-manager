@@ -174,4 +174,4 @@ The steps below create a test Instance Profile that can be used for testing depl
         - Role Type: AWS Service Roles\Amazon EC2
         - Policy: select the “CommonInstanceProfile” created above
 
-[Next (Active Directory) >](/environment-manager/docs/setup/active-directory)
+[Next (LDAP) >](/environment-manager/docs/setup/ldap)
