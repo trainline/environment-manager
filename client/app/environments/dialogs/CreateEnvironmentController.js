@@ -73,9 +73,9 @@ angular.module('EnvironmentManager.environments').controller('CreateEnvironmentC
 
     $scope.Ok = function () {
       var params = {
-        key: $scope.Environment.EnvironmentName,
         expectedVersion: 0,
         data: {
+          EnvironmentName: $scope.Environment.EnvironmentName,
           Value: $scope.Environment.Value,
         },
       };
