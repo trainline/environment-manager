@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ASGDetailsModalController',
-  function ($scope, $uibModal, $uibModalInstance, $q, modal, serviceDiscovery, $rootScope, Image, awsService, AutoScalingGroup, resources, cachedResources, deploymentMapConverter, AsgDistributionService, parameters) {
+  function ($scope, $uibModal, $uibModalInstance, $q, modal, serviceDiscovery, $rootScope, Image, awsService, AutoScalingGroup, resources, cachedResources, deploymentMapConverter, asgDistributionService, parameters) {
     var vm = this;
     
     vm.context = 'asg';
@@ -168,7 +168,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
             vm.asgUpdate.NewAmi = selectedImageVersions[0];
           }
 
-          vm.currentDistribution = AsgDistributionService.calcDistribution(vm.deploymentAzsList, vm.asg);
+          vm.currentDistribution = asgDistributionService.calcDistribution(vm.deploymentAzsList, vm.asg);
 
           vm.dataLoading = false;
         }).then(function () {
