@@ -718,3 +718,80 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
   margin-top: 5px;
   margin-bottom: 10px;
 }
+
+.region-visualisation {
+
+  overflow: auto;
+  display: flex;
+  padding-top: 3px;
+
+  .az {
+
+    display: flex;
+
+    .az-container {
+
+      float: left;
+      border: 1px solid;
+      border-top: 4px solid; 
+      border-radius: 4px;
+      margin-right: 10px;
+      width: 150px;
+      border-color: #ccc;
+
+      &.active {
+        border-color: #337ab7;
+      }
+
+      .az-name {
+        color: white;
+        text-align: center;
+        font-weight: bold;
+        padding-bottom: 4px;
+        background-color: #ccc;
+      }
+
+      &.active > .az-name {
+        background-color: #337ab7;
+      }
+
+      .az-content {
+
+        padding: 10px 10px 5px 10px;
+
+        .az-not-in-use {
+          text-align: center;
+          color: #ccc;
+        }
+
+        .node {
+
+          border: 1px solid #ccc;
+          text-align: center;
+          padding: 5px;
+          margin-bottom: 10px;
+
+          &.protected {
+            color: #555;
+            border-color: #555;
+          }
+
+          &.old {
+            color: #aa5533;
+            border-color: #aa5533;
+          }
+
+          .glyphicon-warning-sign {
+            color: #aa5533;
+            margin-right: 2px;
+          }
+
+        }
+
+      }
+
+    }
+
+  }
+
+}
