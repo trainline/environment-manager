@@ -249,8 +249,8 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     };
 
     function confirmAZChange() {
-      var originalAvailabilityZone = deriveAvailabilityZoneFriendlyName(vm.asg.AvailabilityZones);
-      if (originalAvailabilityZone === vm.asgUpdate.AvailabilityZone) {
+      var originalAvailabilityZone = deriveAvailabilityZoneFriendlyName(vm.asg.AvailabilityZones).sort();
+      if (_.isEqual(originalAvailabilityZone, vm.asgUpdate.AvailabilityZone.sort())) {
         return Promise.resolve(true);
       }
       
