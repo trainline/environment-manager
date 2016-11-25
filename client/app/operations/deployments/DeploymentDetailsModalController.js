@@ -144,9 +144,10 @@ function deploymentView(deploymentRecord, clusters) {
   };
 }
 
-angular
-  .module('EnvironmentManager.operations')
-  .controller('DeploymentDetailsModalController', function ($scope, $uibModalInstance, resources, $timeout, deployment, awsService, Deployment, cachedResources) {
+angular.module('EnvironmentManager.operations')
+  .controller('DeploymentDetailsModalController', function ($scope, $uibModalInstance, resources, $timeout, deployment, awsService, Deployment, modal, cachedResources) {
+    var vm = this;
+
     var id = deployment.DeploymentID;
     var account = deployment.AccountName;
     var refreshTimer;
@@ -186,6 +187,18 @@ angular
 
     $scope.ok = function () {
       $uibModalInstance.dismiss('cancel');
+    };
+
+    vm.cancelDeployment = function () {
+      modal.confirmation({
+        title: 'Cancel Deployment',
+        message: 'Are you sure you want to cancel this deployment?<br /><br />' +
+          'This will mark Deployment as "Cancelled", and disable any further deployments on new instances.',
+        action: 'Delete',
+        severity: 'Danger'
+      }).then(function () {
+        Deployment.cancelDeployment(id)
+      });
     };
 
     init();
