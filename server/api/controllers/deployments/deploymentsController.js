@@ -9,6 +9,8 @@ let validUrl = require('valid-url');
 let Enums = require('Enums');
 let Environment = require('models/Environment');
 let s3PackageLocator = require('modules/s3PackageLocator');
+let activeDeploymentsStatusProvider = require('modules/monitoring/activeDeploymentsStatusProvider');
+let deploymentLogger = require('modules/DeploymentLogger');
 
 /**
  * GET /deployments
@@ -130,49 +132,64 @@ function* postDeployment(req, res, next) {
  * PATCH /deployments/{key}
  */
 function patchDeployment(req, res, next) {
-  const body = req.swagger.params.body.value;
-  const key = req.swagger.params.id.value;
-  let status = body.Status;
-  let action = body.Action;
-  
-  if (status !== undefined && status !== 'Cancelled') {
-    let error = `You can only PATCH deployment with { Status: 'Cancelled' } to cancel it.`;
-    res.send({ error });
-    res.status(400);
-    return;
-  }
-
-  if (status === 'Cancelled') {
-    return next(new Error('cancelling deployment not implemented'));
-  }
-
-  if (action !== undefined) {
-    let enable;
-    if (action === 'Ignore') {
-      enable = false;
-    } else if (action === 'Install') {
-      enable = true;
-    } else {
-      throw new Error(`Invalid Action: "${action}", only "Install" and "Ignore" are allowed.`);
+  return co(function *() {
+    const body = req.swagger.params.body.value;
+    const key = req.swagger.params.id.value;
+    let status = body.Status;
+    let action = body.Action;
+    
+    if (status !== undefined && status !== Enums.DEPLOYMENT_STATUS.Cancelled) {
+      let error = `You can only PATCH deployment with { Status: '${Enums.DEPLOYMENT_STATUS.Cancelled}' } to cancel it.`;
+      res.send({ error });
+      res.status(400);
+      return;
     }
 
-    deploymentsHelper.get({ key }).then((deployment) => {
+    if (status === Enums.DEPLOYMENT_STATUS.Cancelled) {
+      let deployment = yield deploymentsHelper.get({ key })
+      // if (deployment.Value.Status !== 'In Progress') {
+      //   throw new Error(`You can only cancel deployments that are In Progress`);
+      // }
 
-      // Old deployments don't have 'ServerRoleName' field
-      if (deployment.Value.ServerRoleName === undefined) {
-        throw new Error('This operation is unsupported for Deployments started before 09.2016. If you would like to use this feature, please redeploy your service, or contact Platform Dev team.');
+      let newStatus = {
+        name: Enums.DEPLOYMENT_STATUS.Cancelled,
+        reason: 'The deployment was cancelled',
+      };
+      let deploymentStatuses = yield activeDeploymentsStatusProvider.getActiveDeploymentsFullStatus([deployment]);
+      let deploymentStatus = deploymentStatuses[0];
+      let result = yield deploymentLogger.updateStatus(deploymentStatus, newStatus);
+      console.log(result);
+      return switchDeployment(key, false, req.user);
+    } else if (action !== undefined) {
+      let enable;
+      if (action === 'Ignore') {
+        enable = false;
+      } else if (action === 'Install') {
+        enable = true;
+      } else {
+        throw new Error(`Invalid Action: "${action}", only "Install" and "Ignore" are allowed.`);
       }
-      let serverRole = deployment.Value.ServerRoleName;
-      let environment = deployment.Value.EnvironmentName;
-      let slice = deployment.Value.ServiceSlice;
-      let service = deployment.Value.ServiceName;
+      return switchDeployment(key, enable, req.user);
+    }
+  }).then((data) => res.json(data)).catch(next);
+}
 
-      let command = { name: 'ToggleTargetStatus', service, environment, slice, serverRole, enable };
+function switchDeployment(key, enable, user) {
+  return deploymentsHelper.get({ key }).then((deployment) => {
 
-      sender.sendCommand({ user: req.user, command })
-        .then((data) => res.json(data));
-    }).catch(next);
-  }
+    // Old deployments don't have 'ServerRoleName' field
+    if (deployment.Value.ServerRoleName === undefined) {
+      throw new Error('This operation is unsupported for Deployments started before 09.2016. If you would like to use this feature, please redeploy your service, or contact Platform Dev team.');
+    }
+    let serverRole = deployment.Value.ServerRoleName;
+    let environment = deployment.Value.EnvironmentName;
+    let slice = deployment.Value.ServiceSlice;
+    let service = deployment.Value.ServiceName;
+
+    let command = { name: 'ToggleTargetStatus', service, environment, slice, serverRole, enable };
+
+    return sender.sendCommand({ user, command });
+  });
 }
 
 module.exports = {

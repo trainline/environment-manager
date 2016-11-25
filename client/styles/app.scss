@@ -237,7 +237,6 @@ input[type=number].form-control.inline { width: 90px; }
 #InfrastructureSettingsTab label { width: 180px; }
 #InfrastructureSettingsTab label.inline { width: auto; }
 
-
 /* Config Upstreams page */
 #upstreams {
   .hostSummary { width: 100%; }
@@ -588,6 +587,13 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
 
 .glyphicon-refresh {
   cursor: pointer;
+}
+
+.cancel-deployment.btn {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  color: #d43f3a;
 }
 
 .deployment-summary {

@@ -164,12 +164,13 @@ angular.module('EnvironmentManager.operations')
       spinRefreshIcon();
       var params = { account: account, key: id };
       Deployment.getById(account, id).then(function (deployment) {
+        vm.deployment = deployment;
         return deployment.fetchNodesIps();
       }).then(updateView);
     }
     
     function updateView(data) {
-      $scope.view = deploymentView(data, clusters);
+      vm.view = deploymentView(data, clusters);
 
       if (refreshTimer) $timeout.cancel(refreshTimer);
 
@@ -179,14 +180,22 @@ angular.module('EnvironmentManager.operations')
     }
 
     function spinRefreshIcon() {
-      $scope.spin = true;
-      $timeout(function () { $scope.spin = false; }, 600);
+      vm.spin = true;
+      $timeout(function () { vm.spin = false; }, 600);
     }
 
-    $scope.Refresh = refreshData;
+    vm.refresh = refreshData;
 
-    $scope.ok = function () {
+    vm.ok = function () {
       $uibModalInstance.dismiss('cancel');
+    };
+
+    vm.allowCancel = function () {
+      return true;
+      if (vm.deployment.Value.Status !== 'In Progress') {
+        return false;
+      }
+      return false;
     };
 
     vm.cancelDeployment = function () {
