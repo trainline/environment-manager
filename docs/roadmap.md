@@ -4,7 +4,7 @@ layout: docs
 weight: 40
 ---
 
-Here are the top 5 features and code improvements we have planned for the next few weeks:
+Here are some of the features and code improvements we have planned for the next few weeks:
 
 **Features:**
 
