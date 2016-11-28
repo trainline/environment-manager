@@ -82,7 +82,6 @@ angular.module('EnvironmentManager.common').factory('Deployment',
         user: data.Value.User,
         cluster: data.Value.OwningCluster,
         status: data.Value.Status,
-        normalisedStatus: normalizeStatus(data.Value.Status),
         timestamp: data.Value.EndTimestamp || data.Value.StartTimestamp,
         log: data.Value.ExecutionLog,
         environment: {
