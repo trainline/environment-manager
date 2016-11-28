@@ -60,7 +60,7 @@ function queryDeployment({ key }) {
     }
 
     return Promise.all(
-      queries.map(q => executeQuery(q).catch((e) => { return false; }))
+      queries.map(q => executeQuery(q).catch((e) => { logger.warn(e); return false; }))
     ).then((results) => {
       let result = results.map(x => x.Item).find(x => x);
       if (result === undefined) {
