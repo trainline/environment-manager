@@ -193,11 +193,10 @@ angular.module('EnvironmentManager.operations')
     };
 
     vm.allowCancel = function () {
-      return true;
       if (vm.deployment.Value.Status !== 'In Progress') {
         return false;
       }
-      return false;
+      return true;
     };
 
     vm.cancelDeployment = function () {
@@ -205,7 +204,7 @@ angular.module('EnvironmentManager.operations')
         title: 'Cancel Deployment',
         message: 'Are you sure you want to cancel this deployment?<br /><br />' +
           'This will mark Deployment as "Cancelled", and disable any further deployments on new instances.',
-        action: 'Delete',
+        action: 'Cancel',
         severity: 'Danger'
       }).then(function () {
         Deployment.cancelDeployment(id).then(function () {

@@ -169,8 +169,8 @@ td.actions-button a { color: inherit; }
 /* CONFIG SECTION */
 
 /* Deployment status page */
-.status-success, .status-Success { color: green; }
-.status-In-Progress { color: blue; }
+.status-success { color: green; }
+.status-in-progress { color: blue; }
 .status-failed, .status-Failed { color: rgb(169, 68, 66); }
 .error-description { max-height: 200px; }
 
@@ -658,7 +658,7 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
   color: green
 }
 
-.status-failed, .status-Cancelled {
+.status-failed, .status-cancelled {
   color: rgb(169, 68, 66);
 }
 
