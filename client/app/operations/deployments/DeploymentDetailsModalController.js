@@ -148,6 +148,8 @@ angular.module('EnvironmentManager.operations')
   .controller('DeploymentDetailsModalController', function ($scope, $uibModalInstance, resources, $timeout, deployment, awsService, Deployment, modal, cachedResources) {
     var vm = this;
 
+    vm.deployment = deployment;
+
     var id = deployment.DeploymentID;
     var account = deployment.AccountName;
     var refreshTimer;
@@ -206,7 +208,9 @@ angular.module('EnvironmentManager.operations')
         action: 'Delete',
         severity: 'Danger'
       }).then(function () {
-        Deployment.cancelDeployment(id)
+        Deployment.cancelDeployment(id).then(function () {
+          refreshData();
+        });
       });
     };
 

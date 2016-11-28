@@ -147,9 +147,9 @@ function patchDeployment(req, res, next) {
 
     if (status === Enums.DEPLOYMENT_STATUS.Cancelled) {
       let deployment = yield deploymentsHelper.get({ key })
-      // if (deployment.Value.Status !== 'In Progress') {
-      //   throw new Error(`You can only cancel deployments that are In Progress`);
-      // }
+      if (deployment.Value.Status !== 'In Progress') {
+        throw new Error(`You can only cancel deployments that are In Progress`);
+      }
 
       let newStatus = {
         name: Enums.DEPLOYMENT_STATUS.Cancelled,
@@ -157,8 +157,8 @@ function patchDeployment(req, res, next) {
       };
       let deploymentStatuses = yield activeDeploymentsStatusProvider.getActiveDeploymentsFullStatus([deployment]);
       let deploymentStatus = deploymentStatuses[0];
+      deploymentStatus.AccountName = deployment.AccountName;
       let result = yield deploymentLogger.updateStatus(deploymentStatus, newStatus);
-      console.log(result);
       return switchDeployment(key, false, req.user);
     } else if (action !== undefined) {
       let enable;

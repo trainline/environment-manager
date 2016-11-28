@@ -14,8 +14,7 @@ let sender = require('modules/sender');
 
 function getTargetAccountName(deployment) {
   return configurationCache.getEnvironmentTypeByName(fp.get(['Value', 'EnvironmentType'])(deployment))
-    .then(fp.get(['AWSAccountName']))
-    .catch((e) => { logger.warn(e); return ''; });
+    .then(fp.get(['AWSAccountName']));
 }
 
 function mapDeployment(deployment) {
@@ -42,7 +41,7 @@ function cross(a, b) {
 
 function queryDeployment({ key }) {
   return awsAccounts.all().then((all) => {
-    let accounts = fp.flow(fp.sortBy(x => !x.IsMaster), fp.map(x => x.AccountName), fp.uniq())(all);
+    let accounts = _(all).sortBy(x => !x.IsMaster).map('AccountName').uniq().value();
     let tables = ['ConfigDeploymentExecutionStatus', 'ConfigCompletedDeployments'];
 
     let queries = cross(accounts, tables).map(
@@ -60,7 +59,7 @@ function queryDeployment({ key }) {
     }
 
     return Promise.all(
-      queries.map(q => executeQuery(q).catch((e) => { logger.warn(e); return {}; }))
+      queries.map(q => executeQuery(q).catch((e) => { return false; }))
     ).then((results) => {
       let result = results.map(x => x.Item).find(x => x);
       if (result === undefined) {
@@ -121,9 +120,9 @@ function queryDeploymentNodeStates(environment, key, accountName) {
 
 module.exports = {
 
-  get: query => queryDeployment(query).then(mapDeployment),
+  get: (query) => queryDeployment(query).then(mapDeployment),
 
-  scan: query => queryDeployments(query)
+  scan: (query) => queryDeployments(query)
     .then((deployments) => {
       let deploymentsWithNodes = deployments.map(mapDeployment);
       return Promise.all(deploymentsWithNodes);
