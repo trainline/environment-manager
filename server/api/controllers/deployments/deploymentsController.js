@@ -157,7 +157,6 @@ function patchDeployment(req, res, next) {
       };
       let deploymentStatuses = yield activeDeploymentsStatusProvider.getActiveDeploymentsFullStatus([deployment]);
       let deploymentStatus = deploymentStatuses[0];
-      deploymentStatus.AccountName = deployment.AccountName;
       let result = yield deploymentLogger.updateStatus(deploymentStatus, newStatus);
       return switchDeployment(key, false, req.user);
     } else if (action !== undefined) {
