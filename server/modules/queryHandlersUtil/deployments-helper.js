@@ -18,8 +18,9 @@ function getTargetAccountName(deployment) {
 }
 
 function mapDeployment(deployment) {
+  let Deployment = require('models/Deployment');
   if (deployment.Value.Status.toLowerCase() !== 'in progress') {
-    return deployment;
+    return new Deployment(deployment);
   }
 
   return queryDeploymentNodeStates(deployment.Value.EnvironmentName, deployment.DeploymentID, deployment.AccountName).then((nodes) => {
@@ -31,7 +32,7 @@ function mapDeployment(deployment) {
 
       return resultNode;
     });
-    return deployment;
+    return new Deployment(deployment);
   });
 }
 
