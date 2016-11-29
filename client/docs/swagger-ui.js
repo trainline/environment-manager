@@ -24648,17 +24648,17 @@ window.SwaggerUi = Backbone.Router.extend({
       delete options.dom_id;
     }
 
-    if (!options.supportedSubmitMethods){
+    // if (!options.supportedSubmitMethods){
       options.supportedSubmitMethods = [
         'get',
-        'put',
-        'post',
-        'delete',
-        'head',
-        'options',
-        'patch'
+        // 'put',
+        // 'post',
+        // 'delete',
+        // 'head',
+        // 'options',
+        // 'patch'
       ];
-    }
+    // }
 
     if (typeof options.oauth2RedirectUrl === 'string') {
       window.oAuthRedirectUrl = options.redirectUrl;

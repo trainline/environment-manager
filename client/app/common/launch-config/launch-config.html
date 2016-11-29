@@ -65,16 +65,19 @@
 
   <div class="form-group" ng-if="vm.context ==='serverRole'">
     <label class="col-md-2 control-label text-left nowrap">Availability Zone(s):</label>
-    <div class="col-md-4">
-      <select class="form-control" name="AvailabilityZone" ng-model="vm.target.ASG.AvailabilityZoneSelection" ng-disabled="!vm.canUser('edit')" ng-options="az.Value as az.Name for az in vm.AZOptions"></select><br />
-      <div ng-if="vm.target.ASG.AvailabilityZoneSelection === 'some'" style="float: left; margin-right: 10px" ng-disabled="!vm.canUser('edit')" ng-repeat="az in vm.deploymentAzsList">
-        <input
-          type="checkbox"
-          name="{{az}}-checkbox"
-          value="{{az}}"
-          ng-checked="vm.isAZChecked(az)"
-          ng-click="vm.toggleAZSelection(az)"
-        > {{az}}
+    <div class="col-md-6">
+      <select class="form-control" name="AvailabilityZone" ng-model="vm.target.ASG.AvailabilityZoneSelection" ng-disabled="!vm.canUser('edit')" ng-options="az.Value as az.Name for az in vm.AZOptions"></select>
+      <div ng-if="vm.target.ASG.AvailabilityZoneSelection === 'some'" style="position: relative; margin-top: 10px;">
+        <div style="float: left; margin-right: 10px;" ng-disabled="!vm.canUser('edit')" ng-repeat="az in vm.deploymentAzsList">
+          <input
+            type="checkbox"
+            name="{{az}}-checkbox"
+            value="{{az}}"
+            ng-checked="vm.isAZChecked(az)"
+            ng-click="vm.toggleAZSelection(az)"
+          > {{az}}
+        </div>
+        <span class="error" ng-if="!vm.target.ASG.AvailabilityZone.length">At least one zone must be selected.</span>
       </div>
     </div>
   </div>
