@@ -1,16 +1,16 @@
 'use strict';
 
-function reduce(functions, expr) {
-  if (Array.isArray(expr)) {
-    let fname = expr[0];
-    let fn = functions[fname];
-    if (fn === undefined) {
-      throw new Error(`Function undeclared: ${fname}.`);
+function reduce(reducer, expression) {
+  function loop(parens, expr) {
+    if (Array.isArray(expr)) {
+      let fname = expr[0];
+      let fn = reducer(fname);
+      return parens(fn(fname, expr.slice(1).map(loop.bind(null, x => `(${x})`))));
+    } else {
+      return expr;
     }
-    return fn(expr.slice(1).map(reduce.bind(null, functions)));
-  } else {
-    return expr;
   }
+  return loop(x => x, expression);
 }
 
 function expressionScope() {
@@ -21,7 +21,8 @@ function expressionScope() {
   let i = 0;
 
   function nameExpressionAttributeValue(value) {
-    let t = valName(i++);
+    let t = valName(i);
+    i += 1;
     expressionAttributeValues[t] = value;
     return t;
   }
@@ -41,14 +42,25 @@ function expressionScope() {
 }
 
 function compileOne(expr, scope) {
-  let functions = {
-    'and': exprs => exprs.map(x => `(${x})`).join(' and '),
-    '=': exprs => exprs.map(x => `(${x})`).join(' = '),
-    'attr': exprs => exprs.map(name => scope.nameExpressionAttributeName(name)).join('.'),
-    'val': exprs => exprs.map(value => scope.nameExpressionAttributeValue(value)).join(', ')
+  let infix = (fname, args) => args.map(x => `${x}`).join(` ${fname} `);
+  let prefix = (fname, args) => `${fname}(${args.map(x => `${x}`).join(', ')})`;
+  let attr = (_, exprs) => exprs.map(name => scope.nameExpressionAttributeName(name)).join('.');
+  let val = (_, exprs) => exprs.map(value => scope.nameExpressionAttributeValue(value)).join(', ');
+  let reducers = {
+    '=': infix,
+    '+': infix,
+    '-': infix,
+    '/': infix,
+    '*': infix,
+    'and': infix,
+    'at': attr,
+    'attr': attr,
+    'or': infix,
+    'val': val,
   };
+  let reducerFromFunction = fname => reducers[fname] || prefix;
 
-  let expression = reduce(functions, expr);
+  let expression = reduce(reducerFromFunction, expr);
   return expression;
 }
 
@@ -58,12 +70,17 @@ function compile(expressions) {
     return compile({ Expression: expressions }, scope);
   }
   let result = {};
-  for (let key of Object.keys(expressions)) {
+  Object.keys(expressions).forEach((key) => {
     result[key] = compileOne(expressions[key], scope);
-  }
-  result.ExpressionAttributeNames = scope.ExpressionAttributeNames;
-  result.ExpressionAttributeValues = scope.ExpressionAttributeValues;
-  return result;
+  });
+  ['ExpressionAttributeNames', 'ExpressionAttributeValues'].forEach(
+    (key) => {
+      if (Object.keys(scope[key]).length > 0) {
+        result[key] = scope[key];
+      }
+    }
+  );
+  return Object.freeze(result);
 }
 
 module.exports = {
