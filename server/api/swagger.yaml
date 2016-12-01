@@ -724,6 +724,27 @@ paths:
           description: The service
           schema:
             type: object
+  /services/{service}/health:
+    x-swagger-router-controller: servicesController
+    get:
+      operationId: getServiceHealthById
+      summary: Get a currently deployed service.
+      tags:
+        - Service
+      parameters:
+        - name: service
+          in: path
+          type: string
+          required: true
+        - name: environment
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: The service
+          schema:
+            type: object
   /services/{service}/slices:
     x-swagger-router-controller: servicesController
     get:
