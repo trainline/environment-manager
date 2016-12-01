@@ -1,6 +1,8 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
+let _ = require('lodash');
+let Enums = require('Enums');
 let co = require('co');
 let getAllASGs = require('queryHandlers/ScanCrossAccountAutoScalingGroups');
 let getAccountASGs = require('queryHandlers/ScanAutoScalingGroups');
@@ -45,6 +47,34 @@ function getAsgByName(req, res, next) {
     return getASG({ accountName, autoScalingGroupName }).then(data => res.json(data)).catch(next);
   });
 }
+
+
+/**
+ * GET /asgs/{name}/ready
+ */
+function getAsgReadyByName(req, res, next) {
+  const autoScalingGroupName = req.swagger.params.name.value;
+  const environmentName = req.swagger.params.environment.value;
+
+  return co(function* () {
+    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+    return getASG({ accountName, autoScalingGroupName }).then((data) => {
+
+      let instances = data.Instances;
+      let instancesInService = _.filter(instances, { LifecycleState: Enums.ASGLifecycleState.IN_SERVICE });
+      let instancesByLifecycleState = _(instances).groupBy('LifecycleState').mapValues((list) => list.length).value();
+
+      let response = {
+        ReadyToDeploy: instancesInService.length > 0,
+        InstancesByLifecycleState: instancesByLifecycleState,
+        InstancesTotal: instances.length
+      };
+
+      res.json(response);
+    }).catch(next);
+  });
+}
+
 
 /**
  * GET /asgs/{name}/ips
@@ -156,6 +186,7 @@ function putAsgLaunchConfig(req, res, next) {
 module.exports = {
   getAsgs,
   getAsgByName,
+  getAsgReadyByName,
   getAsgIps,
   getAsgLaunchConfig,
   putScalingSchedule,

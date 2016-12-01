@@ -25,6 +25,10 @@ module.exports = {
     Missing: 'Missing'
   },
 
+  ASGLifecycleState: {
+    IN_SERVICE: 'InService'
+  },
+
   NodeDeploymentStatus: {
     NotStarted: 'Not Started',
     InProgress: 'In Progress',

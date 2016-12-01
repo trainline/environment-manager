@@ -78,6 +78,39 @@ paths:
       responses:
         200:
           description: Ok
+  /asgs/{name}/ready:
+    x-swagger-router-controller: asgController
+    get:
+      operationId: getAsgReadyByName
+      summary: Get a single ASG status for the given environment.
+      tags:
+        - ASG
+      parameters:
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The matching ASG
+          schema:
+            type: object
+            properties:
+              ReadyToDeploy:
+                type: boolean
+              InstancesByLifecycleState:
+                type: object
+                properties:
+                  InService:
+                    type: integer
+                  Standby:
+                    type: integer
+              InstancesTotal:
+                type: integer
   /asgs/{name}/ips:
     x-swagger-router-controller: asgController
     get:
