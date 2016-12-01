@@ -2,12 +2,14 @@
 'use strict';
 
 let _ = require('lodash');
+let moment = require('moment');
 let co = require('co');
 let sender = require('modules/sender');
 let launchConfigurationClientFactory = require('modules/clientFactories/launchConfigurationClientFactory');
 let EnvironmentType = require('models/EnvironmentType');
 let Environment = require('models/Environment');
 let taggable = require('./taggable');
+let logger = require('modules/logger');
 
 function parseName(name) {
   let segments = name.split('-');
@@ -64,6 +66,25 @@ class AutoScalingGroup {
       data.$accountName = accountName;
       data.$autoScalingGroupName = autoScalingGroupName;
       return data;
+    });
+  }
+
+  static getAllByEnvironment(environmentName) {
+    return co(function* () {
+      let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+      let startTime = moment.utc();
+
+      return sender.sendQuery({
+        query: {
+          name: 'ScanAutoScalingGroups',
+          accountName: accountName,
+        },
+      }).then(result => {
+        let duration = moment.duration(moment.utc().diff(startTime)).asMilliseconds();
+        logger.debug(`server-status-query: AllAsgsQuery took ${duration}ms`);
+        result = _.filter(result, (asg) => asg.getTag('Environment') === environmentName);
+        return result;
+      });
     });
   }
 

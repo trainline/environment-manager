@@ -7,6 +7,7 @@ let moment = require('moment');
 let logger = require('modules/logger');
 let sender = require('modules/sender');
 let Environment = require('models/Environment');
+let AutoScalingGroup = require('models/AutoScalingGroup');
 
 module.exports = co.wrap(ScanServersStatusQueryHandler);
 
@@ -17,16 +18,16 @@ function* ScanServersStatusQueryHandler(query) {
   let allStartTime = moment.utc();
 
   return Promise.all([
-    getAllAsgs(accountName),
+    AutoScalingGroup.getAllByEnvironment(environmentName),
     getAllInstances(environmentName),
     getAllImages()
   ]).then(results => {
 
-    let allAsgs = results[0];
+    let asgs = results[0];
     let allInstances = results[1];
     let allImages = results[2];
 
-    let asgs = _.filter(allAsgs, (asg) => asg.getTag('Environment') === environmentName);
+    // let asgs = _.filter(allAsgs, (asg) => asg.getTag('Environment') === environmentName);
     if (query.filter.cluster) {
       asgs = _.filter(asgs, (asg) => asg.getTag('OwningCluster') === query.filter.cluster);
     }
@@ -222,21 +223,6 @@ function byTag(key, value) {
         tag.Value.toLowerCase() === value.toLowerCase();
     });
   };
-}
-
-function getAllAsgs(accountName) {
-  let startTime = moment.utc();
-
-  return sender.sendQuery({
-    query: {
-      name: 'ScanAutoScalingGroups',
-      accountName: accountName,
-    },
-  }).then(result => {
-    let duration = moment.duration(moment.utc().diff(startTime)).asMilliseconds();
-    logger.debug(`server-status-query: AllAsgsQuery took ${duration}ms`);
-    return result;
-  });
 }
 
 function getAllInstances(environment) {
