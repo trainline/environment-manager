@@ -1,0 +1,63 @@
+<spinner ng-show="vm.dataLoading"></spinner>
+
+<div class="row deployments-instances" ng-show="vm.dataFound && !vm.dataLoading">
+  <div class="col-md-12" ng-if="vm.instances.length == 0">
+    <p>No instances found<span ng-if="vm.selectedDateRangeValue > 0"> within selected date range</span>.</p>
+  </div>
+  <div class="col-md-12" ng-if="vm.instances.length > 0">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Instance</th>
+          <th>Status</th>
+          <th>Environment</th>
+          <th>Auto Scaling Group</th>
+          <th>Services</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="instance in vm.instances | filter: vm.instancesFilter() | orderBy: '-timestamp'">
+          <td>
+            <span am-time-ago="instance.LaunchTime"></span><br />
+            <small>{{instance.LaunchTime | amDateFormat:'DD/MM/YYYY HH:mm:ss'}}</small>
+          </td>
+          <td>
+            <health-status status='instance.OverallHealth.Status'></health-status> 
+           {{ instance.Name || '-'}} <small>({{ instance.InstanceId || '-'}})</small>
+            <br /><small>IP: {{ instance.PrivateIpAddress }}</small>
+          </td>
+          <td class="status-{{instance.deploymentStatus }}">
+            <span ng-if="instance.deploymentStatus == 'Success'">
+              <span class="glyphicon glyphicon-ok"></span>
+              <span>Success</span>
+            </span>
+            <span ng-if="instance.deploymentStatus == 'Failed'">
+              <span class="glyphicon glyphicon-remove"></span>
+              <span>Failed</span>
+            </span>
+          </td>
+          <td>
+            <a ng-href='#/environment/servers/?environment={{instance.Environment}}'>{{instance.Environment}}<br>
+            <small>({{instance.EnvironmentType}})</small></a>
+          </td>
+          <td>
+            <a ng-href="{{ instance.asgLink }}">
+              {{ instance['aws:autoscaling:groupName'] }}
+            </a>
+          </td>
+          <td>
+            <table class="table">
+              <tbody>
+                <tr ng-repeat="service in instance.Services">
+                  <td><health-status status='service.OverallHealth.Status'></health-status> {{ service.NameAndSlice }} <span class="slice-symbol" ng-class="service.Slice"></span> {{ service.Version }}</td>
+                  <td ><a ng-href="{{ service.LogLink }}" target="_blank">Show log</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

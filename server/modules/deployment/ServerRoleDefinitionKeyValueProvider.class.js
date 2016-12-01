@@ -3,6 +3,7 @@
 
 let assertContract = require('modules/assertContract');
 let DeploymentContract = require('modules/deployment/DeploymentContract');
+let Enums = require('Enums');
 
 module.exports = function ServerRoleDefinitionKeyValueProvider() {
   this.get = function (deployment) {
@@ -27,6 +28,7 @@ module.exports = function ServerRoleDefinitionKeyValueProvider() {
         Slice: serviceSlice || 'none',
         DeploymentId: deploymentId,
         InstanceIds: [],
+        Action: Enums.ServiceAction.INSTALL
       },
     };
 

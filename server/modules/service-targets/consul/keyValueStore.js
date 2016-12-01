@@ -9,6 +9,7 @@ let consulClient = require('modules/consul-client');
 let logger = require('modules/logger');
 let retry = require('retry');
 let _ = require('lodash');
+let Enums = require('Enums');
 
 function encodeValue(value) {
   if (!value) return null;
@@ -53,7 +54,16 @@ function getTargetState(environment, parameters) {
 
 function getAllServiceTargets(environmentName, runtimeServerRole) {
   let key = `environments/${environmentName}/roles/${runtimeServerRole}/services`;
-  return getTargetState(environmentName, { key, recurse: true }).then(data => _.map(data, 'value'));
+  return getTargetState(environmentName, { key, recurse: true }).then(data => _.map(data, 'value'))
+    .then((data) => {
+      // Note: this is for backwards compatibility. Once all server role services have "Action" attribute, we can remove that
+      _.each(data, (service) => {
+        if (service.Action === undefined) {
+          service.Action = 'Install';
+        }
+      });
+      return data;
+    });
 }
 
 function getServiceDeploymentCause(environmentName, deploymentId, instanceId) {

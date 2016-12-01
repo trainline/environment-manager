@@ -8,6 +8,7 @@ let sender = require('modules/sender');
 let validUrl = require('valid-url');
 let Enums = require('Enums');
 let Environment = require('models/Environment');
+let s3PackageLocator = require('modules/s3PackageLocator');
 
 /**
  * GET /deployments
@@ -41,7 +42,7 @@ function getDeploymentLog(req, res, next) {
     const key = req.swagger.params.id.value;
     const account = req.swagger.params.account.value;
     const node = req.swagger.params.instance.value;
-    
+
     let deployment = yield deploymentsHelper.get({ key, account });
     let environment = deployment.Value.EnvironmentName;
 
@@ -53,7 +54,7 @@ function getDeploymentLog(req, res, next) {
     };
 
     return GetNodeDeploymentLog(query).then(data => {
-      res.send(data.replace(/\n/g,  '<br />'));
+      res.send(data.replace(/\n/g, '<br />'));
     });
   }).catch(next);
 }
@@ -63,11 +64,29 @@ function getDeploymentLog(req, res, next) {
  */
 function* postDeployment(req, res, next) {
   // These are required
-  const body = req.swagger.params.body.value; 
+  const body = req.swagger.params.body.value;
   const environmentName = body.environment;
   const serviceName = body.service;
   const serviceVersion = body.version;
-  const packagePath = body.packageLocation;
+  let packagePath = body.packageLocation;
+
+  if (!packagePath) {
+    packagePath = yield s3PackageLocator.findDownloadUrl({
+      environment: environmentName,
+      service: serviceName,
+      version: serviceVersion,
+    });
+  }
+
+  if (!packagePath) {
+    let error = {
+      title: 'The deployment package was not found.',
+      detail: 'Upload the package then try again or specify the location of the package in this request.',
+      status: '400',
+    };
+    res.status(400).json({ errors: [error] });
+    return;
+  }
 
   // These are optional
   const mode = body.mode || 'overwrite';
@@ -108,19 +127,52 @@ function* postDeployment(req, res, next) {
 }
 
 /**
- * PATCH /deployments
+ * PATCH /deployments/{key}
  */
 function patchDeployment(req, res, next) {
   const body = req.swagger.params.body.value;
+  const key = req.swagger.params.id.value;
   let status = body.Status;
-  if (status !== 'Cancelled') {
+  let action = body.Action;
+  
+  if (status !== undefined && status !== 'Cancelled') {
     let error = `You can only PATCH deployment with { Status: 'Cancelled' } to cancel it.`;
     res.send({ error });
     res.status(400);
     return;
   }
 
-  next(new Error('not implemented'));
+  if (status === 'Cancelled') {
+    return next(new Error('cancelling deployment not implemented'));
+  }
+
+  if (action !== undefined) {
+    let enable;
+    if (action === 'Ignore') {
+      enable = false;
+    } else if (action === 'Install') {
+      enable = true;
+    } else {
+      throw new Error(`Invalid Action: "${action}", only "Install" and "Ignore" are allowed.`);
+    }
+
+    deploymentsHelper.get({ key }).then((deployment) => {
+
+      // Old deployments don't have 'ServerRoleName' field
+      if (deployment.Value.ServerRoleName === undefined) {
+        throw new Error('This operation is unsupported for Deployments started before 09.2016. If you would like to use this feature, please redeploy your service, or contact Platform Dev team.');
+      }
+      let serverRole = deployment.Value.ServerRoleName;
+      let environment = deployment.Value.EnvironmentName;
+      let slice = deployment.Value.ServiceSlice;
+      let service = deployment.Value.ServiceName;
+
+      let command = { name: 'ToggleTargetStatus', service, environment, slice, serverRole, enable };
+
+      sender.sendCommand({ user: req.user, command })
+        .then((data) => res.json(data));
+    }).catch(next);
+  }
 }
 
 module.exports = {

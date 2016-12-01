@@ -4,21 +4,17 @@
 angular.module('EnvironmentManager.common').factory('targetStateService', function($rootScope, $q, $http) {
 
  return {
-   changeDeploymentStatus: function(enable, service, role, environment) {
-     var action = enable ? 'enable' : 'disable';
-     var url = '/api/services/'+ action + '/' + service.Name;
+   changeDeploymentAction: function(deploymentId, enable) {
+     var action = enable ? 'Install' : 'Ignore';
+     var url = '/api/v1/deployments/' + deploymentId;
      var data = {
-       slice: service.Slice,
-       environment: environment,
-       serverRole: role
+       Action: action
      };
 
-     return $http.post(url, data)
-      .then(function(result) {
+     return $http.patch(url, data)
+      .then(function (result) {
          return result.data;
-       },
-        $rootScope.$broadcast.bind($rootScope, 'error')
-      );
+       }, $rootScope.$broadcast.bind($rootScope, 'error'));
    }
  };
 });
