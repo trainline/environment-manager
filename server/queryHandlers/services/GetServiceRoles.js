@@ -21,7 +21,7 @@ function getRole(service) {
   return matches[1];
 }
 
-function* GetServiceRolesQueryHandler({ environmentName }) {
+function* GetServerRoles({ environmentName }) {
   let recurse = true;
   let key = `environments/${environmentName.toLowerCase()}/roles`;
   let results = yield serviceTargets.getTargetState(environmentName, { key, recurse });
@@ -32,4 +32,4 @@ function* GetServiceRolesQueryHandler({ environmentName }) {
   };
 };
 
-module.exports = co.wrap(GetServiceRolesQueryHandler);
+module.exports = co.wrap(GetServerRoles);
