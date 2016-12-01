@@ -65,7 +65,7 @@ function getAsgReadyByName(req, res, next) {
       let instancesByLifecycleState = _(instances).groupBy('LifecycleState').mapValues((list) => list.length).value();
 
       let response = {
-        ReadyToDeploy: instancesInService.length > 0,
+        ReadyToDeploy: instancesInService.length === instances.length,
         InstancesByLifecycleState: instancesByLifecycleState,
         InstancesTotal: instances.length
       };
