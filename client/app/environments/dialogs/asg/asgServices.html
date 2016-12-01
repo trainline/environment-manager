@@ -53,7 +53,7 @@
           <td>{{ service.Version }}</td>
           <td><span class="slice-symbol" ng-class="service.Slice"></span>{{ service.Slice }}</td>
           <td><health-checks list="service.HealthChecks"></health-checks></td>
-          <td><a ng-click="vm.showAsgSingleService(service)">{{ service.InstancesHealthCount }}</a></td>
+          <td><a ng-click="vm.showAsgSingleService(service)">{{ service.InstancesCount.Healthy }}/{{ service.InstancesCount.Total }}</a></td>
           <td><a ng-click="vm.showDeploymentLog(service)">Show Deployment</a></td>
           <td data-ng-if="vm.allowServiceDisabling">
             <div class="onoffswitch enabled-toggle">

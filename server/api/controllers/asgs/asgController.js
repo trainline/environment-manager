@@ -67,7 +67,7 @@ function getAsgReadyByName(req, res, next) {
       let response = {
         ReadyToDeploy: instancesInService.length === instances.length,
         InstancesByLifecycleState: instancesByLifecycleState,
-        InstancesTotal: instances.length
+        InstancesTotalCount: instances.length
       };
 
       res.json(response);

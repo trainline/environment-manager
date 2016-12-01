@@ -70,6 +70,8 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
         DiffWithTargetState: 'Extra',
       };
     } else {
+      service.DiffWithTargetState = null;
+
       // Check instance serviceObjects for inconsistencies with target state
       // TODO(Filip): add error / warnings to API output when inconsistencies detected
       _.each(serviceObjects, (obj) => {
@@ -87,7 +89,11 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
     // Healthy nodes are these where service is present AND service's status is healthy
     let healthyNodes = _.filter(serviceInstances, (instance) => {
       let serviceOnInstance = _.find(instance.Services, { Name: service.Name, Slice: service.Slice });
+
       if (serviceOnInstance !== undefined) {
+        if (serviceOnInstance.DiffWithTargetState === 'Missing') {
+          service.DiffWithTargetState = 'Missing';
+        }
         return serviceOnInstance.OverallHealth.Status === 'Healthy';
       }
       return false;
@@ -104,6 +110,10 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
       DiffWithTargetState: service.DiffWithTargetState,
       DeploymentId: service.DeploymentId,
       InstancesNames: _.map(serviceInstances, 'Name'),
+      InstancesCount: {
+        Healthy: healthyNodes.length,
+        Total: instances.length
+      },
       InstancesHealthCount: instancesHealthCount,
       OverallHealth: getServiceOverallHealth(serviceHealthChecks, serviceInstances),
       HealthChecks: serviceHealthChecks,
