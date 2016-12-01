@@ -2,12 +2,11 @@
 'use strict';
 
 let serviceDiscovery = require('modules/service-discovery');
-let getService = require('queryHandlers/services/GetService');
 let getSlices = require('queryHandlers/slices/GetSlicesByService');
 let toggleSlices = require('commands/slices/ToggleSlicesByService');
 
 /**
- * GET /services?environment=a,b,c
+ * GET /services
  */
 function getServices(req, res, next) {
   const environment = req.swagger.params.environment.value;
@@ -16,17 +15,20 @@ function getServices(req, res, next) {
 }
 
 /**
- * GET /services/{service}?environment=a,b,c
+ * GET /services/{service}
  */
 function getServiceById(req, res, next) {
   const environment = req.swagger.params.environment.value;
   const serviceName = req.swagger.params.service.value;
 
+  return serviceDiscovery.getService(environment, serviceName).then(data => res.json(data)).catch(next);
+}
+
   return getService({ environment, serviceName }).then(data => res.json(data)).catch(next);
 }
 
 /**
- * GET /services/{service}/slices?environment=a&active=true
+ * GET /services/{service}/slices
  */
 function getServiceSlices(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
