@@ -27,7 +27,6 @@ function* ScanServersStatusQueryHandler(query) {
     let allInstances = results[1];
     let allImages = results[2];
 
-    // let asgs = _.filter(allAsgs, (asg) => asg.getTag('Environment') === environmentName);
     if (query.filter.cluster) {
       asgs = _.filter(asgs, (asg) => asg.getTag('OwningCluster') === query.filter.cluster);
     }

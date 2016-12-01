@@ -21,13 +21,13 @@ function getRole(service) {
   return matches[1];
 }
 
-function* GetServiceRolesQueryHandler(query) {
+function* GetServiceRolesQueryHandler({ environmentName }) {
   let recurse = true;
-  let key = `environments/${query.environmentName.toLowerCase()}/roles`;
-  let results = yield serviceTargets.getTargetState(query.environmentName, { key, recurse });
+  let key = `environments/${environmentName.toLowerCase()}/roles`;
+  let results = yield serviceTargets.getTargetState(environmentName, { key, recurse });
 
   return {
-    EnvironmentName: query.environmentName,
+    EnvironmentName: environmentName,
     Value: toRoleGroups(results),
   };
 };
