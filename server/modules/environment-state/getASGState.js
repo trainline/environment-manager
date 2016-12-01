@@ -5,8 +5,9 @@ let _ = require('lodash');
 let co = require('co');
 let getInstanceState = require('./getInstanceState');
 let getServicesState = require('./getServicesState');
+let getAWSInstances = require('./getAWSInstances');
+
 let AutoScalingGroup = require('models/AutoScalingGroup');
-let resourceProvider = require('modules/resourceProvider');
 let logger = require('modules/logger');
 let Environment = require('models/Environment');
 
@@ -41,7 +42,7 @@ module.exports = function getASGState(environmentName, asgName) {
     let asg = yield AutoScalingGroup.getByName(accountName, asgName);
 
     let instancesIds = _.map(asg.Instances, 'InstanceId');
-    let instances = yield co(getAWSInstances(accountName, instancesIds));
+    let instances = yield getAWSInstances(accountName, instancesIds);
 
     let instancesStates = yield _.map(instances, (instance) => {
       // Fresh instances might not have initialised tags yet - don't merge state when that happens

@@ -17,12 +17,18 @@ module.exports = {
     Green: 'green'
   },
 
+  DIFF_STATE: {
+    Ignored: 'Ignored',
+    Missing: 'Missing',
+    Extra: 'Extra'
+  },
+
   HEALTH_STATUS: {
     Healthy: 'Healthy',
     Warning: 'Warning',
     Error: 'Error',
     NoData: 'NoData',
-    Missing: 'Missing'
+    Missing: 'Missing',
   },
 
   ASGLifecycleState: {

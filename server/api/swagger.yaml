@@ -109,7 +109,7 @@ paths:
                     type: integer
                   Standby:
                     type: integer
-              InstancesTotal:
+              InstancesTotalCount:
                 type: integer
   /asgs/{name}/ips:
     x-swagger-router-controller: asgController
