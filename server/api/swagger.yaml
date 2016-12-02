@@ -385,7 +385,7 @@ paths:
         200:
           description: The current status
           schema:
-            type: object
+            $ref: '#/definitions/DiagnosticsHealthcheck'
   /environments:
     x-swagger-router-controller: environmentsController
     get:
@@ -399,7 +399,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/OpsEnvironment'
   /environments/{name}:
     x-swagger-router-controller: environmentsController
     get:
@@ -416,7 +416,7 @@ paths:
         200:
           description: The environment
           schema:
-            type: object
+            $ref: '#/definitions/OpsEnvironment'
   /environments/{name}/servers:
     x-swagger-router-controller: environmentsController
     get:
@@ -454,9 +454,7 @@ paths:
           required: true
       responses:
         200:
-          description: The server
-          schema:
-            type: object
+          $ref: '#/responses/asg-servers-state'          
   /environments/{name}/schedule:
     x-swagger-router-controller: environmentsController
     put:
@@ -474,7 +472,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/EnvironmentScheduleValue'
         - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
@@ -489,12 +487,11 @@ paths:
           in: path
           type: string
           required: true
-
       responses:
         200:
           description: The schedule status
           schema:
-            type: object
+            $ref: '#/definitions/EnvironmentSchedule'
   /environments/{name}/accountName:
     x-swagger-router-controller: environmentsController
     get:
@@ -535,6 +532,9 @@ paths:
           description: The schedule status
           schema:
             type: object
+            properties:
+              Status:
+                type: string
   /images:
     x-swagger-router-controller: imagesController
     get:
@@ -557,7 +557,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/Image'
   /instances:
     x-swagger-router-controller: instancesController
     get:
@@ -1208,7 +1208,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/EnvironmentTypeConfig'
     post:
       operationId: postEnvironmentTypesConfig
       summary: Create an Environment Type configuration.
@@ -1219,7 +1219,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/EnvironmentTypeConfig'
       responses:
         201:
           description: OK
@@ -1254,7 +1254,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/EnvironmentTypeConfigValue'
         - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
@@ -1546,7 +1546,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/ServiceConfig'
     post:
       operationId: postServicesConfig
       summary: Create a service configuration
@@ -1558,7 +1558,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/ServiceConfig'
       responses:
         201:
           description: OK
@@ -1582,7 +1582,7 @@ paths:
         200:
           description: The service config
           schema:
-            type: object
+            $ref: '#/definitions/ServiceConfig'
     delete:
       operationId: deleteServiceConfigByName
       summary: Delete a service configuration.
@@ -1620,7 +1620,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/ServiceConfigValue'
         - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
@@ -1638,7 +1638,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/UpstreamConfig'
     post:
       operationId: postUpstreamsConfig
       summary: Create an upsteram configuration.
@@ -1671,7 +1671,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/UpstreamConfigValue'
         - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
@@ -1694,7 +1694,7 @@ paths:
         200:
           description: The upstream config
           schema:
-            type: object
+            $ref: '#/definitions/UpstreamConfig'
     delete:
       operationId: deleteUpstreamConfigByName
       summary: Delete an upstream configuration.
@@ -1874,6 +1874,25 @@ definitions:
         type: string
       ScheduleStatus:
         type: string
+  EnvironmentSchedule:
+    type: object
+    required:
+      - EnvironmentName
+      - Value
+    properties:
+      EnvironmentName:
+        type: string
+      Value:
+        $ref: '#/definitions/EnvironmentScheduleValue'
+  EnvironmentScheduleValue:
+    type: object
+    properties:
+      ManualScheduleUp:
+        type: boolean
+      ScheduleAutomatically:
+        type: boolean
+      DefaultSchedule:
+        type: string
   EnvironmentConfig:
     type: object
     required:
@@ -1901,6 +1920,84 @@ definitions:
         type: string
   EnvironmentTypeConfig:
     type: object
+    required:
+      - EnvironmentType
+      - Value
+    properties:
+      EnvironmentType:
+        type: string
+      Value:
+        $ref: '#/definitions/EnvironmentTypeConfigValue'
+  EnvironmentTypeConfigValue:
+    type: object
+    properties:
+      AWSAccountName:
+        type: string
+      AWSAccountNumber:
+        type: string
+      Consul:
+        type: object
+        properties:
+          DataCenter:
+            type: string
+          Port:
+            type: integer
+          SecurityTokenPath:
+            type: object
+            properties:
+              Bucket:
+                type: string
+              Key:
+                type: string
+          Servers:
+            type: array
+            items:
+              type: string
+      DeploymentBucket:
+        type: string
+      LoadBalancers:
+        type: array
+        items:
+          type: string
+      SchemaVersion:
+        type: integer
+      Subnets:
+        type: object
+      VpcId:
+        type: string
+  Image:
+    type: object
+    properties:
+      ImageId:
+        type: string
+      CreationDate:
+        type: string
+      Platform:
+        type: string
+      Name:
+        type: string
+      Description:
+        type: string
+      AmiType:
+        type: string
+      AmiVersion:
+        type: string
+      IsCompatibleImage:
+        type: boolean
+      IsStable:
+        type: boolean
+      Encrypted:
+        type: boolean
+      RootVolumeSize:
+        type: integer
+      Rank:
+        type: integer
+      IsLatest:
+        type: boolean
+      IsLatestStable:
+        type: boolean
+      AccountName:
+        type: string
   LBSetting:
     type: object
     required:
@@ -2028,6 +2125,28 @@ definitions:
           type: string
         Resource:
           type: string
+  ServiceConfig:
+    type: object
+    required:
+      - OwningCluster
+      - ServiceName
+      - Value
+    properties:
+      OwningCluster:
+        type: string
+      ServiceName:
+        type: string
+      Value:
+        $ref: '#/definitions/ServiceConfigValue'
+      Version:
+        type: integer
+  ServiceConfigValue:
+    type: object
+    properties:
+      PackageType:
+        type: string
+      SchemaVersion:
+        type: integer
   Deployment:
     type: object
     properties:
@@ -2107,6 +2226,22 @@ definitions:
         type: string
       serverRole:
         type: string
+  SimpleServiceObject:
+    type: object
+    properties:
+      Name:
+        type: string
+      Slice:
+        type: string
+      Version:
+        type: string
+  DiagnosticsHealthcheck:
+    type: object
+    properties:
+      OK:
+        type: boolean
+      Version:
+        type: string
   Error:
     type: object
     readOnly: true
@@ -2160,6 +2295,36 @@ parameters:
     type: file
     required: true
 responses:
+  asg-servers-state:
+    description: Instances and services state
+    schema:
+      type: object
+      properties:
+        AllServicesPresent:
+          type: boolean
+        AllServicesPresentAndHealthy:
+          type: boolean
+        ServicesCount:
+          type: object
+          properties:
+            Present:
+              type: integer
+            PresentWithUnexpected:
+              type: integer
+            PresentAndHealthy:
+              type: integer
+            Ignored:
+              type: integer
+            Total:
+              type: integer
+        PresentServices:
+          type: array
+          items:
+            $ref: '#/definitions/SimpleServiceObject'
+        MissingServices:
+          type: array
+          items:
+            $ref: '#/definitions/SimpleServiceObject'
   package-created:
     description: The package was uploaded successfully.
   package-already-exists:
