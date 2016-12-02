@@ -14,7 +14,7 @@ let SetAutoScalingGroupSize = require('commands/asg/SetAutoScalingGroupSize');
 let SetAutoScalingGroupSchedule = require('commands/asg/SetAutoScalingGroupSchedule');
 let UpdateAutoScalingGroup = require('commands/asg/UpdateAutoScalingGroup');
 let GetAutoScalingGroupScheduledActions = require('queryHandlers/GetAutoScalingGroupScheduledActions');
-let Environment = require('models/Environment');
+let getASGReady = require('modules/environment-state/getASGReady');
 
 /**
  * GET /asgs
@@ -56,22 +56,8 @@ function getAsgReadyByName(req, res, next) {
   const autoScalingGroupName = req.swagger.params.name.value;
   const environmentName = req.swagger.params.environment.value;
 
-  return co(function* () {
-    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    return getASG({ accountName, autoScalingGroupName }).then((data) => {
-
-      let instances = data.Instances;
-      let instancesInService = _.filter(instances, { LifecycleState: Enums.ASGLifecycleState.IN_SERVICE });
-      let instancesByLifecycleState = _(instances).groupBy('LifecycleState').mapValues((list) => list.length).value();
-
-      let response = {
-        ReadyToDeploy: instancesInService.length === instances.length,
-        InstancesByLifecycleState: instancesByLifecycleState,
-        InstancesTotalCount: instances.length
-      };
-
-      res.json(response);
-    }).catch(next);
+  return getASGReady({ autoScalingGroupName, environmentName})
+    .then((data) => res.json(data)).catch(next);
   });
 }
 
