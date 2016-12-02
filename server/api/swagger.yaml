@@ -1042,7 +1042,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/DeploymentMap'
     post:
       operationId: postDeploymentMapsConfig
       summary: Create a deployment map configuration
@@ -1053,7 +1053,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/DeploymentMap'
       responses:
         201:
           description: OK
@@ -1073,7 +1073,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/DeploymentMapValue'
         - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
@@ -1092,7 +1092,7 @@ paths:
         200:
           description: The deployment map config
           schema:
-            type: object
+            $ref: '#/definitions/DeploymentMap'
     delete:
       operationId: deleteDeploymentMapConfigByName
       summary: Delete a deployment map configuration.
@@ -1128,7 +1128,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/EnvironmentConfig'
     post:
       operationId: postEnvironmentsConfig
       summary: Create a new environment configuration.
@@ -1140,7 +1140,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/EnvironmentConfig'
       responses:
         201:
           description: OK
@@ -1176,7 +1176,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/EnvironmentConfigValue'
         - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
@@ -1369,7 +1369,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/LBSetting'
     post:
       operationId: postLBSettingsConfig
       summary: Create a load balancer setting.
@@ -1381,7 +1381,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/LBSetting'
       responses:
         201:
           description: OK
@@ -1405,7 +1405,7 @@ paths:
         200:
           description: The load balancer setting
           schema:
-            type: object
+            $ref: '#/definitions/LBSetting'
     put:
       operationId: putLBSettingConfigByName
       summary: Update a load balancer setting.
@@ -1425,7 +1425,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/LBSetting'
         - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
@@ -1461,7 +1461,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/Permissions'
     post:
       operationId: postPermissionsConfig
       summary: Create a new permission configuration.
@@ -1472,7 +1472,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/Permissions'
       responses:
         201:
           description: OK
@@ -1492,7 +1492,7 @@ paths:
         200:
           description: The permission config
           schema:
-            type: object
+            $ref: '#/definitions/Permissions'
     put:
       operationId: putPermissionConfigByName
       summary: Update a permission configuration.
@@ -1509,7 +1509,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/PermissionsList'
         - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
@@ -1797,6 +1797,237 @@ definitions:
         type: string
       ADMembershipGroup:
         type: string
+  DeploymentMap:
+    type: object
+    required:
+      - DeploymentMapName
+      - Value
+    properties:
+      DeploymentMapName:
+        type: string
+      Value:
+        $ref: '#/definitions/DeploymentMapValue'
+  DeploymentMapValue:
+    type: object
+    properties:
+      DeploymentTarget:
+        type: array
+        items:
+          $ref: '#/definitions/DeploymentTarget'
+      SchemaVersion:
+        type: integer
+  DeploymentTarget:
+    type: object
+    properties:
+      AMI:
+        type: string
+      AutoScalingSettings:
+        type: string
+      ContactEmailTag:
+        type: string
+      FleetPerSlice:
+        type: boolean
+      InstanceType:
+        type: string
+      OwningCluster:
+        type: string
+      RoleTag:
+        type: string
+      SecurityZone:
+        type: string
+      ServerRoleName:
+        type: string
+      Services:
+        type: array
+        items:
+          type: object
+          properties:
+            ServiceName:
+              type: string
+      SubnetTypeName:
+        type: string
+      Volumes:
+        type: array
+        items:
+          type: object
+          properties:
+            Name:
+              type: string
+            Size:
+              type: string
+            Type:
+              type: string
+  OpsEnvironment:
+    type: object
+    required:
+      - EnvironmentName
+      - Value
+    properties:
+      EnvironmentName:
+        type: string
+      Value:
+        $ref: '#/definitions/OpsEnvironmentValue'
+  OpsEnvironmentValue:
+    type: object
+    properties:
+      AccountName:
+        type: string
+      ScheduleStatus:
+        type: string
+  EnvironmentConfig:
+    type: object
+    required:
+      - EnvironmentName
+      - Value
+    properties:
+      EnvironmentName:
+        type: string
+      Value:
+        $ref: '#/definitions/EnvironmentConfigValue'
+  EnvironmentConfigValue:
+    type: object
+    properties:
+      OwningCluster:
+        type: string
+      Description:
+        type: string
+      EnvironmentType:
+        type: string
+      SchemaVersion:
+        type: integer
+      DeploymentMap:
+        type: string
+      CodeDeployBucket:
+        type: string
+  EnvironmentTypeConfig:
+    type: object
+  LBSetting:
+    type: object
+    required:
+      - AccountName
+      - EnvironmentName
+      - VHostName
+      - Value
+    properties:
+      AccountName:
+        type: string    
+      EnvironmentName:
+        type: string
+      VHostName:
+        type: string
+      Value:
+        $ref: '#/definitions/LBSettingValue'
+      Version:
+        type: integer
+  LBSettingValue:
+    type: object
+    properties:
+      EnvironmentName:
+        type: string
+      FrontEnd:
+        type: boolean
+      Listen:
+        type: array
+        items:
+          type: object
+          properties:
+            Port:
+              type: integer
+            SSL:
+              type: boolean
+            IP:
+              type: string
+      Locations:
+        type: array
+        items:
+          type: object
+          properties:
+            Path:
+              type: string
+            ProxyHttpVersion:
+              type: string
+            ProxyPass:
+              type: string
+            ProxySetHeaders:
+              type: array
+              items:
+                type: string
+      SSLCertificate:
+        type: string
+      SSLKey:
+        type: string
+      ServerName:
+        type: array
+        items:
+          type: string
+      VHostName:
+        type: string
+  UpstreamConfig:
+    type: object
+    required:
+      - AccountName
+      - key
+    properties:
+      AccountName:
+        type: string
+      key:
+        type: string
+      Value:
+        $ref: '#/definitions/UpstreamConfigValue'
+  UpstreamConfigValue:
+    type: object
+    properties:
+      EnvironmentName:
+        type: string
+      Hosts:
+        type: array
+        items:
+          type: object
+          properties:
+            DnsName:
+              type: string
+            FailTimeout:
+              type: string
+            MaxFails:
+              type: string
+            Port:
+              type: integer
+            State:
+              type: string
+            Weight:
+              type: integer
+
+      LoadBalancingMethod:
+        type: string
+      SchemaVersion:
+        type: integer
+      ServiceName:
+        type: string
+      UpstreamName:
+        type: string
+      ZoneSize:
+        type: string
+  Permissions:
+    type: object
+    required:
+      - Name
+      - Permissions
+    properties:
+      Name:
+        type: string
+      Permissions:
+        $ref: '#/definitions/PermissionsList'
+      Version:
+        type: integer
+  PermissionsList:
+    type: array
+    items:
+      type: object
+      properties:
+        Access:
+          type: string
+        Resource:
+          type: string
   Deployment:
     type: object
     properties:
