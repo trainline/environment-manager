@@ -4,6 +4,7 @@
 let serviceDiscovery = require('modules/service-discovery');
 let getSlices = require('queryHandlers/slices/GetSlicesByService');
 let toggleSlices = require('commands/slices/ToggleSlicesByService');
+let getServiceHealth = require('modules/environment-state/getServiceHealth');
 
 /**
  * GET /services
@@ -24,7 +25,14 @@ function getServiceById(req, res, next) {
   return serviceDiscovery.getService(environment, serviceName).then(data => res.json(data)).catch(next);
 }
 
-  return getService({ environment, serviceName }).then(data => res.json(data)).catch(next);
+/**
+ * GET /services/{service}/health
+ */
+function getServiceHealthById(req, res, next) {
+  const environmentName = req.swagger.params.environment.value;
+  const serviceName = req.swagger.params.service.value;
+
+  return getServiceHealth({ environmentName, serviceName }).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -52,6 +60,7 @@ function putServiceSlicesToggle(req, res, next) {
 module.exports = {
   getServices,
   getServiceById,
+  getServiceHealthById,
   getServiceSlices,
   putServiceSlicesToggle
 };
