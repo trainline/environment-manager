@@ -7,10 +7,7 @@ let co = require('co');
 let getASG = require('queryHandlers/GetAutoScalingGroup');
 let Environment = require('models/Environment');
 
-function* getAsgReadyByName({ autoScalingGroupName, environmentName }) {
-  const autoScalingGroupName = req.swagger.params.name.value;
-  const environmentName = req.swagger.params.environment.value;
-
+function* getASGReady({ autoScalingGroupName, environmentName }) {
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     return getASG({ accountName, autoScalingGroupName }).then((data) => {

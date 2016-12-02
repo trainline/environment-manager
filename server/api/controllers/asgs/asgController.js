@@ -58,7 +58,6 @@ function getAsgReadyByName(req, res, next) {
 
   return getASGReady({ autoScalingGroupName, environmentName})
     .then((data) => res.json(data)).catch(next);
-  });
 }
 
 
