@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('ToggleServiceModalController',
-  function ($scope, $q, $uibModalInstance, environmentName, resources, accountMappingService, cachedResources) {
+  function ($scope, $q, $http, $uibModalInstance, environmentName, resources, accountMappingService, cachedResources) {
 
     $scope.EnvironmentNames = [];
     $scope.ServiceNames = [];
@@ -22,36 +22,27 @@ angular.module('EnvironmentManager.operations').controller('ToggleServiceModalCo
       $scope.ErrorMessage = null;
 
       accountMappingService.getAccountForEnvironment($scope.EnvironmentName).then(function (awsAccount) {
-        resources.environment($scope.EnvironmentName)
-          .inAWSAccount(awsAccount)
-          .toggleSlices()
-          .byService($scope.ServiceName)
-          .do(function (result) {
-            $scope.ToggledUpstreams = result.data.ToggledUpstreams;
-            $scope.UpstreamChanged = true;
-          }, function (error) {
-
-            $scope.ErrorMessage = error.data;
-          });
+        $http({
+          method: 'put',
+          url: '/api/v1/services/' + $scope.ServiceName + '/slices/toggle?environment=' + $scope.EnvironmentName,
+          data: {}
+        }).then(function (response) {
+          $scope.ToggledUpstreams = response.data.ToggledUpstreams;
+          $scope.UpstreamChanged = true;
+        }, function (error) {
+          $scope.ErrorMessage = error.data;
+        })
       });
     };
 
     function init() {
-
-      function environmentName(environment) {
-        return environment.EnvironmentName; }
-
-      function serviceName(service) {
-        return service.ServiceName; }
-
       $q.all([
         cachedResources.config.environments.all(),
         cachedResources.config.services.all(),
       ]).then(function (results) {
-        $scope.EnvironmentNames = results[0].map(environmentName).sort();
-        $scope.ServiceNames = results[1].map(serviceName).sort();
+        $scope.EnvironmentNames = _.map(results[0], 'EnvironmentName').sort();
+        $scope.ServiceNames = _.map(results[1], 'ServiceName').sort();
       });
-
     };
 
     init();

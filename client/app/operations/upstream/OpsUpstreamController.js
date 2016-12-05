@@ -113,7 +113,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     vm.showInstanceDetails = function (upstreamData) {
       var instance = $uibModal.open({
         templateUrl: '/app/operations/upstream/ops-upstream-details-modal.html',
-        controller: 'UpstreamDetailsModalController',
+        controller: 'UpstreamDetailsModalController as vm',
         size: 'lg',
         windowClass: 'LBStatus',
         resolve: {
@@ -127,7 +127,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     vm.toggleService = function () {
       $uibModal.open({
         templateUrl: '/app/operations/ops-toggle-service-modal.html',
-        controller: 'ToggleServiceModalController',
+        controller: 'ToggleServiceModalController as vm',
         resolve: {
           environmentName: function () {
             return vm.selectedEnvironment;

@@ -5,6 +5,7 @@ let serviceDiscovery = require('modules/service-discovery');
 let getService = require('queryHandlers/services/GetService');
 let getSlices = require('queryHandlers/slices/GetSlicesByService');
 let toggleSlices = require('commands/slices/ToggleSlicesByService');
+let metadata = require('commands/utils/metadata');
 
 /**
  * GET /services?environment=a,b,c
@@ -44,7 +45,7 @@ function putServiceSlicesToggle(req, res, next) {
   const serviceName = req.swagger.params.service.value;
   const user = req.user;
 
-  return toggleSlices({ environmentName, serviceName, user }).then(data => res.json(data)).catch(next);
+  return toggleSlices(metadata.addMetadata({ environmentName, serviceName, user })).then(data => res.json(data)).catch(next);
 }
 
 module.exports = {

@@ -101,13 +101,6 @@ angular.module('EnvironmentManager.common').factory('environments',
         TogglableResource($this);
         return $this;
       };
-
-      $this.isProtectedAgainstAction = function(actionName) {
-        var url = 'api/environments/' + $this.environmentName + '/protected?action=' + actionName;
-        return $http.get(url).then(function(result) {
-          return result.data.isProtected;
-        })
-      }
     };
 
     return function (environmentName) {
