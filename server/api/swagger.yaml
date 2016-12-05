@@ -1840,7 +1840,6 @@ definitions:
         type: string
       ADMembershipGroup:
         type: string
-<<<<<<< HEAD
   LoadBalancerUpstream:
     type: object
     required:
@@ -1850,7 +1849,23 @@ definitions:
       name:
         type: string
       hosts:
-=======
+        type: array
+        items:
+          type: object
+          properties:
+            health_checks:
+              type: object
+              properties:
+                checks:
+                  type: integer
+                fails:
+                  type: integer
+                unhealthy:
+                  type: integer
+            server:
+              type: string
+            state:
+              type: string
   DeploymentMap:
     type: object
     required:
@@ -2131,26 +2146,10 @@ definitions:
       EnvironmentName:
         type: string
       Hosts:
->>>>>>> origin/feature/swagger-schemas
         type: array
         items:
           type: object
           properties:
-<<<<<<< HEAD
-            health_checks:
-              type: object
-              properties:
-                checks:
-                  type: integer
-                fails:
-                  type: integer
-                unhealthy:
-                  type: integer
-            server:
-              type: string
-            state:
-              type: string
-=======
             DnsName:
               type: string
             FailTimeout:
@@ -2217,7 +2216,6 @@ definitions:
         type: string
       SchemaVersion:
         type: integer
->>>>>>> origin/feature/swagger-schemas
   Deployment:
     type: object
     properties:
