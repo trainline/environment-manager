@@ -3,7 +3,7 @@
 
 // Manage specific Upstream
 angular.module('EnvironmentManager.configuration').controller('LBUpstreamController',
-  function ($scope, $routeParams, $location, $q, resources, cachedResources, modal, accountMappingService, $http, UpstreamConfig) {
+  function ($scope, $routeParams, $location, $q, resources, cachedResources, modal, accountMappingService, UpstreamConfig) {
 
     $scope.LBUpstream = {};
     $scope.NewHostDefault = { DnsName: '', Port: null, FailTimeout: '30s', MaxFails: null, State: 'down', Weight: 1 };

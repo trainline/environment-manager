@@ -9,7 +9,7 @@ angular.module('EnvironmentManager.environments').component('asgSingleService', 
     dismiss: '&'
   },
   controllerAs: 'vm',
-  controller: function (roles, Deployment, $http) {
+  controller: function (roles, Deployment) {
     var vm = this;
 
     this.$onInit = function () {
