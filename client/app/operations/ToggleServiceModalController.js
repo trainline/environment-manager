@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('ToggleServiceModalController',
-  function ($q, $http, $uibModalInstance, environmentName, resources, accountMappingService, cachedResources) {
+  function ($q, $http, $uibModalInstance, environmentName, resources, cachedResources) {
     var vm = this;
 
     vm.environmentNames = [];
@@ -22,18 +22,16 @@ angular.module('EnvironmentManager.operations').controller('ToggleServiceModalCo
       vm.toggledUpstreams = [];
       vm.errorMessage = null;
 
-      accountMappingService.getAccountForEnvironment(vm.environmentName).then(function (awsAccount) {
-        $http({
-          method: 'put',
-          url: '/api/v1/services/' + vm.serviceName + '/slices/toggle?environment=' + vm.environmentName,
-          data: {}
-        }).then(function (response) {
-          vm.toggledUpstreams = response.data.ToggledUpstreams;
-          vm.upstreamChanged = true;
-        }, function (error) {
-          vm.errorMessage = error.data;
-        })
-      });
+      $http({
+        method: 'put',
+        url: '/api/v1/services/' + vm.serviceName + '/slices/toggle?environment=' + vm.environmentName,
+        data: {}
+      }).then(function (response) {
+        vm.toggledUpstreams = response.data.ToggledUpstreams;
+        vm.upstreamChanged = true;
+      }, function (error) {
+        vm.errorMessage = error.data;
+      })
     };
 
     function init() {
@@ -47,5 +45,4 @@ angular.module('EnvironmentManager.operations').controller('ToggleServiceModalCo
     };
 
     init();
-
   });

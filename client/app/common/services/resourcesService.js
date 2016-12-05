@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.common').factory('resources',
-  function (localResourceFactory, remoteResourceFactory, environments, roles) {
+  function (localResourceFactory, remoteResourceFactory, roles) {
 
     var securityZones = ['Other', 'Public', 'Sensitive', 'Management', 'Secure'];
     var deploymentMethods = [
@@ -82,7 +82,6 @@ angular.module('EnvironmentManager.common').factory('resources',
         }),
 
       },
-      environment: environments,
       aws: {
         instances: remoteResourceFactory.getReadOnly({
           name: 'instances',
