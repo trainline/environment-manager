@@ -50,62 +50,6 @@ angular.module('EnvironmentManager.common').factory('environments',
       };
     }
 
-    function DeployableResource($this, params) {
-      /* Params
-            Service
-            Version
-            Mode: overwrite | bg
-            Slice: blue | green
-            PackagePath
-      */
-
-      $this.params = params;
-
-      var getUrl = function () {
-        var segments = [
-          'api',
-          $this.awsAccount,
-          'environments',
-          $this.environmentName,
-          'services',
-          $this.params.Service,
-          $this.params.Version,
-          'deploy',
-        ];
-
-        var mode = $this.params.Mode;
-        var queryOptions = {};
-        if (mode == 'bg') {
-          queryOptions['mode'] = $this.params.Mode;
-          queryOptions['slice'] = $this.params.Slice;
-        }
-
-        var query = '';
-        for (var name in queryOptions) {
-          var value = queryOptions[name];
-          if (!value) continue;
-          query += (query.length ? '&' : '?') + name + '=' + value;
-        }
-
-        var url = segments.join('/') + query;
-
-        return url;
-      };
-
-      var getValue = function () {
-        return {
-          packagePath: $this.params.PackagePath,
-        };
-      };
-
-      $this.do = function (success, failure) {
-        var url = getUrl();
-        var value = getValue();
-
-        return $http.post(url, value).then(success, failure || defaultFailure);
-      };
-    }
-
     function DeployedNodesQueryResource($this, serviceName) {
       $this.serviceName = serviceName;
 
@@ -156,11 +100,6 @@ angular.module('EnvironmentManager.common').factory('environments',
       $this.toggleSlices = function () {
         TogglableResource($this);
         return $this;
-      };
-
-      $this.deploy = function (params) {
-        DeployableResource($this, params);
-        return $this.do();
       };
 
       $this.isProtectedAgainstAction = function(actionName) {
