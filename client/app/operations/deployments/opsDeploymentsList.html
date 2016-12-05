@@ -24,18 +24,22 @@
             <span am-time-ago="deployment.timestamp"></span><br />
             <small>{{deployment.timestamp | amDateFormat:'DD/MM/YYYY HH:mm:ss'}}</small>
           </td>
-          <td class="status-{{deployment.normalisedStatus}}">
-            <span ng-if="deployment.normalisedStatus=='in-progress'">
+          <td class="status-{{deployment.status.toLowerCase().replace(' ', '-')}}">
+            <span ng-if="deployment.status == 'In Progress'">
               <span class="glyphicon glyphicon-refresh"></span>
               <span>In progress</span>
             </span>
-            <span ng-if="deployment.normalisedStatus=='success'">
+            <span ng-if="deployment.status == 'Success'">
               <span class="glyphicon glyphicon-ok"></span>
               <span>Success</span>
             </span>
-            <span ng-if="deployment.normalisedStatus=='failed'">
+            <span ng-if="deployment.status == 'Failed'">
               <span class="glyphicon glyphicon-remove"></span>
               <span>Failed</span>
+            </span>
+            <span ng-if="deployment.status == 'Cancelled'">
+              <span class="glyphicon glyphicon-remove"></span>
+              <span>Cancelled</span>
             </span>
           </td>
           <td>

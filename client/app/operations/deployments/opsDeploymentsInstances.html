@@ -36,6 +36,10 @@
               <span class="glyphicon glyphicon-remove"></span>
               <span>Failed</span>
             </span>
+            <span ng-if="instance.deploymentStatus ==' Cancelled'">
+              <span class="glyphicon glyphicon-remove"></span>
+              <span>Cancelled</span>
+            </span>
           </td>
           <td>
             <a ng-href='#/environment/servers/?environment={{instance.Environment}}'>{{instance.Environment}}<br>
