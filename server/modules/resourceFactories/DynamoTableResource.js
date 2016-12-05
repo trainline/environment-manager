@@ -91,6 +91,28 @@ class DynamoTableResource {
     });
   }
 
+  query(params) {
+    let self = this;
+    let request = {
+      TableName: this._tableName,
+      KeyConditionExpression: `${this._keyName} = :key`,
+      ExpressionAttributeValues: {
+        ":key": params.key
+      }
+    };
+
+    return this.client.query(request).promise().then(data => {
+      if (!data.Items) {
+        let message = `No ${self._resourceName} items found for ${self._keyName} ${params.key}.`;
+        throw new DynamoItemNotFoundError(message);
+      } else {
+        return data.Items;
+      }
+    }).catch(error => {
+      throw standardifyError(error, request, params.suppressError);
+    });
+  }
+
   all(params) {
     let self = this;
     let request = this._builder.scan().filterBy(params.filter).limitTo(params.limit).buildRequest();
