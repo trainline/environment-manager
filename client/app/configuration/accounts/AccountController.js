@@ -47,8 +47,14 @@ angular.module('EnvironmentManager.configuration').controller('AccountController
           newAccount.RoleArn = null;
         }
 
-        var operation = vm.isBeingEdited ? 'put' : 'post';
-        $http[operation]('/api/aws/account', newAccount).then(function() {
+        var promise;
+        if (vm.isBeingEdited) {
+          promise = $http.put('/api/v1/config/accounts/' + accountNumber, newAccount);
+        } else {
+          promise = $http.post('/api/v1/config/accounts', newAccount);
+        }
+
+        promise.then(function() {
           awsAccounts.flush();
           $location.path('/config/accounts');
         }).catch(function(error) {

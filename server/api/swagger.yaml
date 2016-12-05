@@ -1772,7 +1772,7 @@ definitions:
       Impersonate:
         type: boolean
       RoleArn:
-        type: string
+        type: [string, "null"]
   ClusterConfig:
     type: object
     required:
