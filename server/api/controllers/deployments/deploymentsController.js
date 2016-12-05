@@ -153,7 +153,7 @@ function patchDeployment(req, res, next) {
 
       let newStatus = {
         name: Enums.DEPLOYMENT_STATUS.Cancelled,
-        reason: 'The deployment was cancelled',
+        reason: `The deployment was cancelled manually by user: ${req.user.getName()}`,
       };
       let deploymentStatuses = yield activeDeploymentsStatusProvider.getActiveDeploymentsFullStatus([deployment]);
       let deploymentStatus = deploymentStatuses[0];

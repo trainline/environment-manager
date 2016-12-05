@@ -200,17 +200,17 @@ angular.module('EnvironmentManager.operations')
     };
 
     vm.cancelDeployment = function () {
-      console.log('HEH!!!!!');
       modal.confirmation({
         title: 'Cancel Deployment',
         message: 'Are you sure you want to cancel this deployment?<br /><br />' +
-          'This will mark Deployment as "Cancelled", and disable any further deployments on new instances.',
+          'This will mark the deployment as "Cancelled", and disable any further deployments on new instances. Any installations that are already in progress will be completed.',
         action: 'Yes',
         cancelLabel: 'No',
         severity: 'Danger'
       }).then(function () {
         Deployment.cancelDeployment(id).then(function () {
-          refreshData();
+          // Timeout to give backend time to flush the deployment log
+          $timeout(function () { refreshData(); }, 2000);
         });
       });
     };

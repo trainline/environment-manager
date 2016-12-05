@@ -23,7 +23,7 @@
             </ul>
         </div>
 
-        <button class="btn btn-default cancel-deployment" type="button" ng-disabled="vm.allowCancel() == false" ng-click="vm.cancelDeployment()">Cancel Deployment</button>
+        <button class="btn btn-default cancel-deployment" type="button" ng-if="vm.allowCancel()" ng-click="vm.cancelDeployment()">Cancel Deployment...</button>
 
     </div>
 
