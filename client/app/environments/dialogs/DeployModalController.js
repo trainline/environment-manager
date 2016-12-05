@@ -59,39 +59,20 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
 
         vm.selectedServiceActiveSliceMessage = 'Loading...';
         vm.selectedServiceActiveSlices = [];
-        resources.environment(env).inAWSAccount(vm.accountName).getSliceInfoForService(newVal).then(function (result) {
-            var slices = result.data;
-            if (slices && slices.length > 0) {
-              vm.selectedServiceActiveSliceMessage = null;
-              vm.selectedServiceActiveSlices = slices.map(function(slice){
-                return 'Upstream: ' + slice.UpstreamName + ' Slice: ' + slice.Name + ' (' + slice.State + ')';
-              });
-            }
+        $http.get('/api/v1/services/' + newVal + '/slices', { params: { environment: env } }).then(function (response) {
+          var slices = response.data;
+          if (slices && slices.length > 0) {
+            vm.selectedServiceActiveSliceMessage = null;
+            vm.selectedServiceActiveSlices = slices.map(function(slice){
+              return 'Upstream: ' + slice.UpstreamName + ' Slice: ' + slice.Name + ' (' + slice.State + ')';
+            });
+          }
         }).catch(function(err){
-            vm.selectedServiceActiveSliceMessage = (err.status === 404) ? 'None' : 'Unknown';
+          vm.selectedServiceActiveSliceMessage = (err.status === 404) ? 'None' : 'Unknown';
         });
 
-        vm.selectedServiceDeployInfoMessage = 'Loading...';
+        vm.selectedServiceDeployInfoMessage = 'Unknown';
         vm.selectedServiceDeployInfo = [];
-        resources.environment(env).inAWSAccount(vm.accountName).getDeployedNodesInfoForService(newVal).then(function (result) {
-            var nodes = result.data;
-            if (nodes && nodes.length > 0) {
-              vm.selectedServiceDeployInfoMessage = '';
-              var nodeDescriptions = nodes.map(function(node){
-                var slice = 'v' + node.ServiceTags.version;
-                if (node.ServiceTags.slice && node.ServiceTags.slice != 'none') {
-                  slice += ' (' + node.ServiceTags.slice + ')';
-                }
-                return slice;
-              });
-              vm.selectedServiceDeployInfo = _.uniqWith(nodeDescriptions, _.isEqual);
-            } else {
-              vm.selectedServiceDeployInfoMessage = 'Not deployed';
-            }
-        }).catch(function(err){
-            vm.selectedServiceDeployInfoMessage = 'Unknown';
-        });
-
       }
     });
 
