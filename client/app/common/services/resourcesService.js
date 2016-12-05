@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.common').factory('resources',
-  function (localResourceFactory, remoteResourceFactory, nginxResourceFactory, environments, roles) {
+  function (localResourceFactory, remoteResourceFactory, environments, roles) {
 
     var securityZones = ['Other', 'Public', 'Sensitive', 'Management', 'Secure'];
     var deploymentMethods = [
@@ -117,10 +117,6 @@ angular.module('EnvironmentManager.common').factory('resources',
         methods: localResourceFactory(deploymentMethods),
         statuses: localResourceFactory(deploymentStatus),
       },
-      nginx: nginxResourceFactory.get({
-        name: 'nginx',
-        description: 'Nginx upstreams',
-      }),
       securityZones: localResourceFactory(securityZones),
       roles: roles
     };
