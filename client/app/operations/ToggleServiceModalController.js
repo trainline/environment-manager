@@ -2,35 +2,36 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('ToggleServiceModalController',
-  function ($scope, $q, $http, $uibModalInstance, environmentName, resources, accountMappingService, cachedResources) {
+  function ($q, $http, $uibModalInstance, environmentName, resources, accountMappingService, cachedResources) {
+    var vm = this;
 
-    $scope.EnvironmentNames = [];
-    $scope.ServiceNames = [];
-    $scope.ToggledUpstreams = [];
-    $scope.ErrorMessage = null;
-    $scope.UpstreamChanged = false;
+    vm.environmentNames = [];
+    vm.serviceNames = [];
+    vm.toggledUpstreams = [];
+    vm.errorMessage = null;
+    vm.upstreamChanged = false;
 
-    $scope.EnvironmentName = environmentName;
-    $scope.ServiceName = null;
+    vm.environmentName = environmentName;
+    vm.serviceName = null;
 
-    $scope.close = function () {
-      $uibModalInstance.close($scope.UpstreamChanged);
+    vm.close = function () {
+      $uibModalInstance.close(vm.upstreamChanged);
     };
 
-    $scope.toggle = function () {
-      $scope.ToggledUpstreams = [];
-      $scope.ErrorMessage = null;
+    vm.toggle = function () {
+      vm.toggledUpstreams = [];
+      vm.errorMessage = null;
 
-      accountMappingService.getAccountForEnvironment($scope.EnvironmentName).then(function (awsAccount) {
+      accountMappingService.getAccountForEnvironment(vm.environmentName).then(function (awsAccount) {
         $http({
           method: 'put',
-          url: '/api/v1/services/' + $scope.ServiceName + '/slices/toggle?environment=' + $scope.EnvironmentName,
+          url: '/api/v1/services/' + vm.serviceName + '/slices/toggle?environment=' + vm.environmentName,
           data: {}
         }).then(function (response) {
-          $scope.ToggledUpstreams = response.data.ToggledUpstreams;
-          $scope.UpstreamChanged = true;
+          vm.toggledUpstreams = response.data.ToggledUpstreams;
+          vm.upstreamChanged = true;
         }, function (error) {
-          $scope.ErrorMessage = error.data;
+          vm.errorMessage = error.data;
         })
       });
     };
@@ -40,8 +41,8 @@ angular.module('EnvironmentManager.operations').controller('ToggleServiceModalCo
         cachedResources.config.environments.all(),
         cachedResources.config.services.all(),
       ]).then(function (results) {
-        $scope.EnvironmentNames = _.map(results[0], 'EnvironmentName').sort();
-        $scope.ServiceNames = _.map(results[1], 'ServiceName').sort();
+        vm.environmentNames = _.map(results[0], 'EnvironmentName').sort();
+        vm.serviceNames = _.map(results[1], 'ServiceName').sort();
       });
     };
 
