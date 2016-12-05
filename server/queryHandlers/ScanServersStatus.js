@@ -33,7 +33,7 @@ function* ScanServersStatusQueryHandler(query) {
  
     return Promise.all(asgs.map(asg => {
       let instances = asg.Instances.map(asgInstance => {
-        var instance = getInstance(allInstances, asgInstance.InstanceId);
+        var instance = _.find(allInstances, { InstanceId: asgInstance.InstanceId });
 
         if (instance && instance.State.Name !== 'terminated') {
           var image = getImage(allImages, instance.ImageId); // TODO(filip): use Image in place of this
@@ -205,12 +205,6 @@ function getImage(images, imageId) {
     created: image.CreationDate,
     isLatestStable: image.IsLatest && image.IsStable
   };
-}
-
-function getInstance(instances, instanceId) {
-  return instances.filter(instance => {
-    return instance.InstanceId === instanceId;
-  })[0];
 }
 
 function byStatus(status) {

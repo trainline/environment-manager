@@ -1,4 +1,5 @@
-"use strict";
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+'use strict';
 
 let assert = require("assert");
 const LINUX_USER_DATA_TEMPLATE = "linux-user-data";

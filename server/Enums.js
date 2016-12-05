@@ -22,6 +22,7 @@ module.exports = {
     Warning: 'Warning',
     Error: 'Error',
     NoData: 'NoData',
+    Missing: 'Missing'
   },
 
   NodeDeploymentStatus: {
@@ -55,7 +56,6 @@ module.exports = {
   },
 
   ServiceAction: {
-    NAME: 'Action',
     INSTALL: 'Install',
     IGNORE: 'Ignore'
   }

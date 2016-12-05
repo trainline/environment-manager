@@ -1,7 +1,7 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
-let getAllServices = require('queryHandlers/services/GetAllServices');
+let serviceDiscovery = require('modules/service-discovery');
 let getService = require('queryHandlers/services/GetService');
 let getSlices = require('queryHandlers/slices/GetSlicesByService');
 let toggleSlices = require('commands/slices/ToggleSlicesByService');
@@ -12,7 +12,7 @@ let toggleSlices = require('commands/slices/ToggleSlicesByService');
 function getServices(req, res, next) {
   const environment = req.swagger.params.environment.value;
 
-  return getAllServices({ environment }).then(data => res.json(data)).catch(next);
+  return serviceDiscovery.getAllServices(environment).then(data => res.json(data)).catch(next);
 }
 
 /**

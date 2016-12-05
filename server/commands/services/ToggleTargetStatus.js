@@ -5,7 +5,6 @@ let co = require('co');
 let serviceTargets = require('modules/service-targets');
 let Enums = require('Enums');
 
-const SERVICE_ACTION = Enums.ServiceAction.NAME;
 const SERVICE_INSTALL = Enums.ServiceAction.INSTALL;
 const SERVICE_IGNORE = Enums.ServiceAction.IGNORE;
 
@@ -18,9 +17,9 @@ function* ToggleTargetStatus(command) {
   let key = `environments/${environment}/roles/${serverRole}/services/${serviceName}/${slice}`;
   let state = yield serviceTargets.getTargetState(environment, { key });
   let service = state.value;
-  let previousStatus = service.hasOwnProperty(SERVICE_ACTION) ? service[SERVICE_ACTION] : SERVICE_INSTALL;
+  let previousStatus = service['Action'] || SERVICE_INSTALL;
 
-  service[SERVICE_ACTION] = enabled ? SERVICE_INSTALL : SERVICE_IGNORE;
+  service['Action'] = enabled ? SERVICE_INSTALL : SERVICE_IGNORE;
 
   try {
     let result = yield serviceTargets.setTargetState(environment, { key, value: service });

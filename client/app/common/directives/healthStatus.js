@@ -15,6 +15,9 @@ angular.module('EnvironmentManager.common')
           Error: 'error',
           Warning: 'warning',
           NoData: 'noData',
+          Missing: 'error',
+          passing: 'healthy',
+          critical: 'error'
         };
         
         var classes = {
