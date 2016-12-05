@@ -96,16 +96,6 @@ function deploymentView(deploymentRecord, clusters) {
     return newLogLines.join('\n');
   }
 
-  function getOverallStatus(deployment) {
-    var errorNodes = _.some(deployment.Nodes, function (node) {
-      return node.Status.toLowerCase() == 'failed';
-    });
-
-    if (errorNodes) return 'Failed';
-
-    return deployment.Status;
-  }
-
   var deployment = deploymentRecord.Value;
 
   var service = deployment.ServiceName + ' (' + deployment.ServiceVersion + ')';
@@ -116,7 +106,7 @@ function deploymentView(deploymentRecord, clusters) {
   var duration = getDuration();
   var error = getError();
 
-  var statusClass = getStatusClass(getOverallStatus(deployment));
+  var statusClass = getStatusClass(deployment.Status);
   var nodes = getViewableNodes(deploymentRecord);
 
   var cluster = _.find(clusters, { ClusterName: deployment.OwningCluster });
