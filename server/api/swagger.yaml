@@ -417,6 +417,30 @@ paths:
           description: The environment
           schema:
             type: object
+  /environments/{name}/protected:
+    x-swagger-router-controller: environmentsController
+    get:
+      operationId: isEnvironmentProtectedFromAction
+      summary: Find if environment is protected from action
+      tags:
+        - Environment
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: action
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: The environment
+          schema:
+            type: object
+            properties:
+              isProtected:
+                type: boolean
   /environments/{name}/servers:
     x-swagger-router-controller: environmentsController
     get:
