@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsUpstreamController',
-  function ($scope, $routeParams, $location, $uibModal, $q, $http, resources, QuerySync, cachedResources, accountMappingService, modal) {
+  function ($routeParams, $location, $uibModal, $q, $http, resources, QuerySync, cachedResources, accountMappingService, modal) {
     var vm = this;
     var querySync;
     var SHOW_ALL_OPTION = 'Any';
@@ -218,13 +218,11 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
         var promises = lbs.map(function (lb) {
           var url = ['api', 'v1', 'load-balancer', lb].join('/');
 
-          return $http.get(url).then(function success(nginxData) {
-
+          return $http.get(url).then(function (nginxData) {
             var lbName = lb.split('.')[0]; // Drop .prod/nonprod.local from name
 
             // Loop upstream hosts and associate LB status with each record
             vm.fullUpstreamData.forEach(function (upstreamHost) {
-
               var lbServerStatusData = getLBStatusForUpstream(upstreamHost.Value.UpstreamName, upstreamHost.Value.Port, nginxData);
               var lbData = { Name: lbName, State: getActualUpstreamState(lbServerStatusData), ServerStatus: lbServerStatusData };
 
@@ -236,15 +234,11 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
 
               var allLbServerStatusData = _.flatten(upstreamHost.Value.LoadBalancerState.LBs.map(function(lb){ return lb.ServerStatus; }));
               upstreamHost.Value.LoadBalancerState.State = getActualUpstreamState(allLbServerStatusData);
-
             });
 
-          }, function error(err) {
-            var message = 'Unable to retrieve data for ' + lb + ': <br/><br/>' + err.data;
-            $scope.$emit('error', { data: message });
           });
-
         });
+        
         return $q.all(promises);
       });
     }
