@@ -169,7 +169,7 @@ td.actions-button a { color: inherit; }
 /* CONFIG SECTION */
 
 /* Deployment status page */
-.status-success, .status-Success { color: green; }
+.status-success { color: green; }
 .status-in-progress { color: blue; }
 .status-failed, .status-Failed { color: rgb(169, 68, 66); }
 .error-description { max-height: 200px; }
@@ -236,7 +236,6 @@ input[type=number].form-control.inline { width: 90px; }
 
 #InfrastructureSettingsTab label { width: 180px; }
 #InfrastructureSettingsTab label.inline { width: auto; }
-
 
 /* Config Upstreams page */
 #upstreams {
@@ -590,6 +589,13 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
   cursor: pointer;
 }
 
+.cancel-deployment.btn {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  color: #d43f3a;
+}
+
 .deployment-summary {
   ul {
     list-style: none;
@@ -652,7 +658,7 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
   color: green
 }
 
-.status-failed {
+.status-failed, .status-cancelled {
   color: rgb(169, 68, 66);
 }
 

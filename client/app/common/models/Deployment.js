@@ -56,6 +56,18 @@ angular.module('EnvironmentManager.common').factory('Deployment',
       });
     };
 
+    Deployment.cancelDeployment = function (deploymentId) {
+      return $http({
+        method: 'patch',
+        url: '/api/v1/deployments/' + deploymentId,
+        data: {
+          Status: 'Cancelled'
+        }
+      }).then(function (response) {
+        return response.data;
+      });
+    };
+
     Deployment.convertToListView = function (data) {
       function normalizeStatus(status) {
         return status.toLowerCase().replace(' ', '-');
@@ -70,7 +82,6 @@ angular.module('EnvironmentManager.common').factory('Deployment',
         user: data.Value.User,
         cluster: data.Value.OwningCluster,
         status: data.Value.Status,
-        normalisedStatus: normalizeStatus(data.Value.Status),
         timestamp: data.Value.EndTimestamp || data.Value.StartTimestamp,
         log: data.Value.ExecutionLog,
         environment: {

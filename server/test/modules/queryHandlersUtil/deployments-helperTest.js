@@ -89,10 +89,11 @@ describe('deployments-helper', () => {
     });
 
     it('if there is such a deployment I get it', () => {
-      let expected = {
+      let Deployment = require('models/Deployment');
+      let expected = new Deployment({
         Value: { Status: 'success' },
         AccountName: 'master-account',
-      };
+      });
       let get = sinon.stub();
       get.onCall(0).returns({ promise: () => Promise.reject(new Error('oops')) });
       get.onCall(1).returns(stubGet());

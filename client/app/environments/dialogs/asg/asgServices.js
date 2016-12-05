@@ -26,7 +26,7 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
         $uibModal.open({
           templateUrl: '/app/operations/deployments/ops-deployment-details-modal.html',
           windowClass: 'deployment-summary',
-          controller: 'DeploymentDetailsModalController',
+          controller: 'DeploymentDetailsModalController as vm',
           size: 'lg',
           resolve: {
             deployment: function () {
