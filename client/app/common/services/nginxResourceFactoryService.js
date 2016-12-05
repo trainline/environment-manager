@@ -9,7 +9,7 @@ angular.module('EnvironmentManager.common').factory('nginxResourceFactory',
       this.description = params.description;
 
       this.all = function (params) {
-        var url = ['api', 'nginx', params.instance].join('/');
+        var url = ['api', 'v1', 'load-balancer', params.instance].join('/');
         return $http.get(url).then(function (response) {
           return response.data;
         });

@@ -643,6 +643,25 @@ paths:
       responses:
         200:
           description: OK
+  /load-balancer/{id}:
+    x-swagger-router-controller: loadBalancerController
+    get:
+      operationId: getLoadBalancer
+      summary: Get load balancer data.
+      tags:
+        - Load Balancers
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/LoadBalancerUpstream'
   /services:
     x-swagger-router-controller: servicesController
     get:
@@ -1797,6 +1816,32 @@ definitions:
         type: string
       ADMembershipGroup:
         type: string
+  LoadBalancerUpstream:
+    type: object
+    required:
+      - name
+      - hosts
+    properties:
+      name:
+        type: string
+      hosts:
+        type: array
+        items:
+          type: object
+          properties:
+            health_checks:
+              type: object
+              properties:
+                checks:
+                  type: integer
+                fails:
+                  type: integer
+                unhealthy:
+                  type: integer
+            server:
+              type: string
+            state:
+              type: string
   Deployment:
     type: object
     properties:
