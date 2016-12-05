@@ -85,10 +85,6 @@ module.exports = function MainServer() {
       app.get('/api/initial-data', authentication.denyUnauthorized, routes.initialData);
       app.use('/api', routeInstaller());
 
-      app.get('/version', authentication.allowUnknown, function (req, res) {
-        res.send(APP_VERSION);
-      });
-
       if (config.get('IS_PRODUCTION') === true) {
         app.use(expressWinston.errorLogger({ winstonInstance: logger }));
       }
