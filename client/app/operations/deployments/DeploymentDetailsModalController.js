@@ -96,16 +96,6 @@ function deploymentView(deploymentRecord, clusters) {
     return newLogLines.join('\n');
   }
 
-  function getOverallStatus(deployment) {
-    var errorNodes = _.some(deployment.Nodes, function (node) {
-      return node.Status.toLowerCase() == 'failed';
-    });
-
-    if (errorNodes) return 'Failed';
-
-    return deployment.Status;
-  }
-
   var deployment = deploymentRecord.Value;
 
   var service = deployment.ServiceName + ' (' + deployment.ServiceVersion + ')';
@@ -116,7 +106,7 @@ function deploymentView(deploymentRecord, clusters) {
   var duration = getDuration();
   var error = getError();
 
-  var statusClass = getStatusClass(getOverallStatus(deployment));
+  var statusClass = getStatusClass(deployment.Status);
   var nodes = getViewableNodes(deploymentRecord);
 
   var cluster = _.find(clusters, { ClusterName: deployment.OwningCluster });
@@ -144,9 +134,12 @@ function deploymentView(deploymentRecord, clusters) {
   };
 }
 
-angular
-  .module('EnvironmentManager.operations')
-  .controller('DeploymentDetailsModalController', function ($scope, $uibModalInstance, resources, $timeout, deployment, awsService, Deployment, cachedResources) {
+angular.module('EnvironmentManager.operations')
+  .controller('DeploymentDetailsModalController', function ($scope, $uibModalInstance, resources, $timeout, deployment, awsService, Deployment, modal, cachedResources) {
+    var vm = this;
+
+    vm.deployment = deployment;
+
     var id = deployment.DeploymentID;
     var account = deployment.AccountName;
     var refreshTimer;
@@ -163,12 +156,13 @@ angular
       spinRefreshIcon();
       var params = { account: account, key: id };
       Deployment.getById(account, id).then(function (deployment) {
+        vm.deployment = deployment;
         return deployment.fetchNodesIps();
       }).then(updateView);
     }
     
     function updateView(data) {
-      $scope.view = deploymentView(data, clusters);
+      vm.view = deploymentView(data, clusters);
 
       if (refreshTimer) $timeout.cancel(refreshTimer);
 
@@ -178,14 +172,37 @@ angular
     }
 
     function spinRefreshIcon() {
-      $scope.spin = true;
-      $timeout(function () { $scope.spin = false; }, 600);
+      vm.spin = true;
+      $timeout(function () { vm.spin = false; }, 600);
     }
 
-    $scope.Refresh = refreshData;
+    vm.refresh = refreshData;
 
-    $scope.ok = function () {
+    vm.ok = function () {
       $uibModalInstance.dismiss('cancel');
+    };
+
+    vm.allowCancel = function () {
+      if (vm.deployment.Value.Status !== 'In Progress') {
+        return false;
+      }
+      return true;
+    };
+
+    vm.cancelDeployment = function () {
+      modal.confirmation({
+        title: 'Cancel Deployment',
+        message: 'Are you sure you want to cancel this deployment?<br /><br />' +
+          'This will mark the deployment as "Cancelled", and disable any further deployments on new instances. Any installations that are already in progress will be completed.',
+        action: 'Yes',
+        cancelLabel: 'No',
+        severity: 'Danger'
+      }).then(function () {
+        Deployment.cancelDeployment(id).then(function () {
+          // Timeout to give backend time to flush the deployment log
+          $timeout(function () { refreshData(); }, 2000);
+        });
+      });
     };
 
     init();
