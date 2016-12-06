@@ -13,6 +13,7 @@ module.exports = {
       EnvironmentType: configuration.environmentTypeName,
       Environment: configuration.environmentName,
       OwningCluster: configuration.cluster.Name,
+      OwningClusterShortName: configuration.cluster.ShortName,
       Role: roleName,
       SecurityZone: configuration.serverRole.SecurityZone,
       Schedule: configuration.serverRole.ScheduleTag || '',
