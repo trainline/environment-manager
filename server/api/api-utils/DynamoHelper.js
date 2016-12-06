@@ -8,6 +8,7 @@ const exposeAudit = 'version-only';
 let getAllValues = require('queryHandlers/ScanDynamoResources');
 let scanCrossAccount = require('queryHandlers/ScanCrossAccountDynamoResources');
 let getValue = require('queryHandlers/GetDynamoResource');
+let queryRange = require('queryHandlers/QueryDynamoResource');
 let updateValue = require('commands/resources/UpdateDynamoResource');
 let createValue = require('commands/resources/CreateDynamoResource');
 let deleteValue = require('commands/resources/DeleteDynamoResource');
@@ -28,8 +29,8 @@ class DynamoHelper {
   /**
    * Get all resources in a Dynamo table
    */
-  getAll(filter) {
-    let accountName = masterAccountName;
+  getAll(filter, options = {}) {
+    let accountName = options.accountName || masterAccountName;
     return getAllValues({ resource: this.resource, exposeAudit, accountName, filter });
   }
 
@@ -47,6 +48,14 @@ class DynamoHelper {
   getBySortKey(partitionKey, sortKey, options = {}) {
     let accountName = options.accountName || masterAccountName;
     return getValue({ key: partitionKey, range: sortKey, resource: this.resource, exposeAudit, accountName });
+  }
+
+  /**
+   * Query resources from a Dynamo table with partition key
+   */
+  queryRangeByKey(partitionKey, options = {}) {
+    let accountName = options.accountName || masterAccountName;
+    return queryRange({ key: partitionKey, resource: this.resource, exposeAudit, accountName });
   }
 
   /**
