@@ -33,7 +33,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/AWSAutoScalingGroup'
   /asgs/{name}:
     x-swagger-router-controller: asgController
     get:
@@ -54,7 +54,7 @@ paths:
         200:
           description: The matching ASG
           schema:
-            type: object
+            $ref: '#/definitions/AWSAutoScalingGroup'
     put:
       operationId: putAsg
       summary: Update properties of an ASG.
@@ -74,7 +74,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/AWSAutoScalingGroup'
       responses:
         200:
           description: Ok
@@ -169,6 +169,15 @@ paths:
       responses:
         200:
           description: Ok
+          schema:
+            type: object
+            properties:
+              min:
+                type: integer
+              desired:
+                type: integer
+              max:
+                type: integer
   /asgs/{name}/launch-config:
     x-swagger-router-controller: asgController
     get:
@@ -190,7 +199,7 @@ paths:
         200:
           description: The launch config
           schema:
-            type: object
+            $ref: '#/definitions/AWSLaunchConfig'
     put:
       operationId: putAsgLaunchConfig
       summary: Update the launch config associated with an ASG under the given account.
@@ -210,7 +219,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/AWSLaunchConfig'
       responses:
         200:
           description: ASG launch config.
@@ -238,7 +247,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/AuditEntry'
   /audit/{key}:
     x-swagger-router-controller: auditController
     get:
@@ -255,7 +264,7 @@ paths:
         200:
           description: The audit log
           schema:
-            type: object
+            $ref: '#/definitions/AuditEntry'
   /deployments:
     x-swagger-router-controller: deploymentsController
     get:
@@ -373,7 +382,7 @@ paths:
         200:
           description: The deployment log
           schema:
-            type: object
+            type: string
   /diagnostics/healthcheck:
     x-swagger-router-controller: diagnosticsController
     get:
@@ -435,7 +444,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/EnvironmentServers'
   /environments/{name}/servers/{asgName}:
     x-swagger-router-controller: environmentsController
     get:
@@ -605,7 +614,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/Instance'
   /instances/{id}:
     x-swagger-router-controller: instancesController
     get:
@@ -622,7 +631,7 @@ paths:
         200:
           description: The instance
           schema:
-            type: object
+            $ref: '#/definitions/Instance'
   /instances/{id}/maintenance:
     x-swagger-router-controller: instancesController
     put:
@@ -1752,6 +1761,142 @@ paths:
         422:
           $ref: '#/responses/package-bad-ref'
 definitions:
+  AuditEntry:
+    type: object
+    properties:
+      AuditID:
+        type: string
+      ChangeType:
+        type: string
+      ChangedBy:
+        type: string
+      Date:
+        type: string
+      Entity:
+        type: object
+        properties:
+          Key:
+            type: string
+          Type:
+            type: string
+          Version:
+            type: integer
+      ISOTimestamp:
+        type: string
+        format: date-time
+      NewValue:
+        type: object
+      OldValue:
+        type: object
+      Source:
+        type: string
+      Timestamp:
+        type: integer
+      TransactionID:
+        type: string
+  AWSAutoScalingGroup:
+    type: object
+    properties:
+      AutoScalingGroupName:
+        type: string
+        example: myenv-in-EnvironmentManager
+      AutoScalingGroupARN:
+        type: string
+      LaunchConfigurationName:
+        type: string
+      MinSize:
+        type: integer
+      MaxSize:
+        type: integer
+      DesiredCapacity:
+        type: integer
+      DefaultCooldown:
+        type: integer
+      AvailabilityZones:
+        type: array
+        items:
+          type: string
+      LoadBalancerNames:
+        type: array
+        items:
+          type: string
+      HealthCheckType:
+        type: string
+      HealthCheckGracePeriod:
+        type: integer
+      Instances:
+        type: array
+        items:
+          type: object
+          properties:
+            InstanceId:
+              type: string
+            AvailabilityZone:
+              type: string
+            LifecycleState:
+              type: string
+            HealthStatus:
+              type: string
+            LaunchConfigurationName:
+              type: string
+            ProtectedFromScaleIn:
+              type: boolean
+      CreatedTime:
+        type: string
+        format: date-time
+      VPCZoneIdentifier:
+        type: string
+      Tags:
+        type: array
+        items:
+          type: object
+          properties:
+            ResourceId:
+              type: string
+            ResourceType:
+              type: string
+            Key:
+              type: string
+            Value:
+              type: string
+            PropagateAtLaunch:
+              type: boolean
+      TerminationPolicies:
+        type: array
+        items:
+          type: string
+      NewInstancesProtectedFromScaleIn:
+        type: boolean
+  AWSScalingSchedule:
+    type: object
+  AWSLaunchConfig:
+    type: object
+    properties:
+      AMI:
+        type: string
+      ImageId:
+        type: string
+      InstanceProfileName:
+        type: string
+      InstanceType:
+        type: string
+      SecurityGroups:
+        type: array
+        items:
+          type: string
+      UserData:
+        type: string
+      Volumes:
+        type: array
+        items:
+          type: object
+          properties:
+            Name:
+              type: string
+            Size:
+              type: integer
+            Type:
+              type: string
   AccountConfig:
     type: object
     required:
@@ -1884,6 +2029,54 @@ definitions:
         type: string
       Value:
         $ref: '#/definitions/EnvironmentScheduleValue'
+  EnvironmentServers:
+    properties:
+      EnvironmentName:
+        type: string
+      Value:
+        type: object
+        properties:
+          Ami:
+            type: object
+            properties:
+              Age:
+                type: integer
+              IsLatestStable:
+                type: boolean
+              Name:
+                type: string
+          Cluster:
+            type: string
+          Name:
+            type: string
+          Role:
+            type: string
+          Schedule:
+            type: string
+          Services:
+            type: array
+            items:
+              type: object
+              properties:
+                FriendlyName:
+                  type: string
+                Name:
+                  type: string
+                Slice:
+                  type: string
+                Version:
+                  type: string
+          Size:
+            type: object
+            properties:
+              Current:
+                type: integer
+              Desired:
+                type: integer
+          Status:
+            type: object
+            Status:
+              type: string
   EnvironmentScheduleValue:
     type: object
     properties:
@@ -1893,6 +2086,7 @@ definitions:
         type: boolean
       DefaultSchedule:
         type: string
+        example: 'start: 0 8 * * 1,2,3,4,5; Stop: 0 19 * * 1,2,3,4,5'
   EnvironmentConfig:
     type: object
     required:
