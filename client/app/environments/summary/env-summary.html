@@ -23,7 +23,7 @@
     </select>
   </div>
   <div class="form-group">
-    <button type="button" class="btn btn-default right" ng-if="vm.canUser('post')" ng-click="vm.newEnvironment()">Create New Environment...</button>
+    <button type="button" class="btn btn-default right" ng-if="vm.userHasCreatePermission" ng-click="vm.newEnvironment()">Create New Environment...</button>
   </div>
 </form>
 
@@ -47,6 +47,7 @@
           <th class="text-nowrap">Status</th>
           <th class="text-nowrap command-header">View Deployments</th>
           <th class="text-nowrap command-header">View History</th>
+          <th ng-if="vm.userHasDeletePermission" class="text-nowrap command-header">Delete</th>
           <!--<th></th>-->
         </tr>
       </thead>
@@ -76,7 +77,9 @@
             <!-- TODO: show last config info summary for ease of ref? -->
             <span class="glyphicon glyphicon-time" ng-click="vm.viewHistory(env)" title="View History"></span>
           </td>
-                
+          <td ng-if="vm.userHasDeletePermission" class="command command-delete">
+            <span class="glyphicon glyphicon-remove" ng-click="vm.deleteEnvironment(env)" title="Delete"></span>
+          </td>
         </tr>
       </tbody>
     </table>
