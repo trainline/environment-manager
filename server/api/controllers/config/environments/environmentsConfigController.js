@@ -1,11 +1,19 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
-const RESOURCE = 'config/environments';
 const KEY_NAME = 'EnvironmentName';
 
 let _ = require('lodash');
-let dynamoHelper = new (require('api/api-utils/DynamoHelper'))(RESOURCE);
+let co = require('co');
+
+let DynamoHelper = require('api/api-utils/DynamoHelper');
+
+let environmentTable = new DynamoHelper('config/environments');
+let opsEnvironmentTable = new DynamoHelper('ops/environments');
+let lbSettingsTable = new DynamoHelper('config/lbsettings');
+let lbUpstreamsTable = new DynamoHelper('config/lbupstream');
+
+let Environment = require('models/Environment');
 
 /**
  * GET /config/environments
@@ -20,7 +28,7 @@ function getEnvironmentsConfig(req, res, next) {
   };
   filter = _.omitBy(filter, _.isUndefined);
 
-  return dynamoHelper.getAll(filter).then(data => res.json(data)).catch(next);
+  return environmentTable.getAll(filter).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -28,7 +36,7 @@ function getEnvironmentsConfig(req, res, next) {
  */
 function getEnvironmentConfigByName(req, res, next) {
   const key = req.swagger.params.name.value;
-  return dynamoHelper.getByKey(key).then(data => res.json(data)).catch(next);
+  return environmentTable.getByKey(key).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -38,7 +46,7 @@ function postEnvironmentsConfig(req, res, next) {
   const body = req.swagger.params.body.value;
   const user = req.user;
 
-  return dynamoHelper.create(body[KEY_NAME], { Value: body.Value }, user).then(_ => res.status(201).end()).catch(next);
+  return environmentTable.create(body[KEY_NAME], { Value: body.Value }, user).then(_ => res.status(201).end()).catch(next);
 }
 
 /**
@@ -50,7 +58,7 @@ function putEnvironmentConfigByName(req, res, next) {
   const body = req.swagger.params.body.value;
   const user = req.user;
 
-  return dynamoHelper.update(key, { Value: body }, expectedVersion, user)
+  return environmentTable.update(key, { Value: body }, expectedVersion, user)
     .then(_ => res.status(200).end())
     .catch(next);
 }
@@ -59,9 +67,49 @@ function putEnvironmentConfigByName(req, res, next) {
  * DELETE /config/environments/{name}
  */
 function deleteEnvironmentConfigByName(req, res, next) {
-  const key = req.swagger.params.name.value;
+  const environmentName = req.swagger.params.name.value;
   const user = req.user;
-  return dynamoHelper.delete(key, user).then(_ => res.status(200).end()).catch(next);
+  
+  return co(function* () {
+    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+
+    yield [
+      deleteLBSettingsForEnvironment(environmentName, accountName, user),
+      deleteLBUpstreamsForEnvironment(environmentName, accountName, user)
+    ];
+
+    yield deleteEnvironment(environmentName, accountName, user);
+    res.status(200).end();
+  }).catch(next);
+}
+
+function deleteLBSettingsForEnvironment(environmentName, accountName, user) {
+  return co(function*(){
+    let lbSettingsList = yield lbSettingsTable.queryRangeByKey(environmentName);
+    return lbSettingsList.map(lbSettings => {
+      return lbSettingsTable.deleteWithSortKey(environmentName, lbSettings.VHostName, user, { accountName });
+    });
+  });
+}
+
+function deleteLBUpstreamsForEnvironment(environmentName, accountName, user) {
+  return co(function*(){
+    let allLBUpstreams = yield lbUpstreamsTable.getAll(null, { accountName });
+    let lbUpstreams = allLBUpstreams.filter(lbUpstream => {
+      return lbUpstream.Value.EnvironmentName.toLowerCase() === environmentName.toLowerCase();
+    });
+
+    return lbUpstreams.map(lbUpstream => {
+      return lbUpstreamsTable.delete(lbUpstream.key, user, { accountName });
+    });
+  });
+}
+
+function deleteEnvironment(environmentName, accountName, user) {
+  return co(function*(){
+    yield opsEnvironmentTable.delete(environmentName, user);
+    yield environmentTable.delete(environmentName, user);
+  });
 }
 
 module.exports = {
