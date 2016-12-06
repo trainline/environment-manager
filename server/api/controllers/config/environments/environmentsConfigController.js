@@ -6,10 +6,12 @@ const KEY_NAME = 'EnvironmentName';
 let _ = require('lodash');
 let co = require('co');
 
-let environmentTable = new (require('api/api-utils/DynamoHelper'))('config/environments');
-let opsEnvironmentTable = new (require('api/api-utils/DynamoHelper'))('ops/environments');
-let lbSettingsTable = new (require('api/api-utils/DynamoHelper'))('config/lbsettings');
-let lbUpstreamsTable = new (require('api/api-utils/DynamoHelper'))('config/lbupstream');
+let DynamoHelper = require('api/api-utils/DynamoHelper');
+
+let environmentTable = new DynamoHelper('config/environments');
+let opsEnvironmentTable = new DynamoHelper('ops/environments');
+let lbSettingsTable = new DynamoHelper('config/lbsettings');
+let lbUpstreamsTable = new DynamoHelper('config/lbupstream');
 
 let Environment = require('models/Environment');
 
