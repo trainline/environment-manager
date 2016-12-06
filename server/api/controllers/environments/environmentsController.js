@@ -10,6 +10,7 @@ let GetDynamoResource = require('queryHandlers/GetDynamoResource');
 let sender = require('modules/sender');
 let OpsEnvironment = require('models/OpsEnvironment');
 let Promise = require('bluebird');
+let environmentProtection = require('modules/authorizers/environmentProtection');
 
 /**
  * GET /environments
@@ -31,6 +32,17 @@ function getEnvironmentByName(req, res, next) {
 
   OpsEnvironment.getByName(environmentName).then((env) => env.toAPIOutput())
     .then((data) => res.json(data)).catch(next);
+}
+
+/**
+ * GET /environments/{name}/protected
+ */
+function isEnvironmentProtectedFromAction(req, res, next) {
+  const environmentName = req.swagger.params.name.value;
+  const action = req.swagger.params.action.value;
+
+  environmentProtection.isActionProtected(environmentName, action)
+    .then(isProtected => res.json({ isProtected }));
 }
 
 /**
@@ -117,4 +129,5 @@ module.exports = {
   getEnvironmentScheduleStatus,
   putEnvironmentSchedule,
   getEnvironmentSchedule,
+  isEnvironmentProtectedFromAction
 };

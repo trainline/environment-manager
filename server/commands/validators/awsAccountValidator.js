@@ -32,7 +32,7 @@ function validate(account) {
       throw new Error(`The account '${masterAccount.AccountName}' is already set as the master account.`);
 
   }).then(co.wrap(function* () {
-    if (account.RoleArn !== undefined) {
+    if (account.RoleArn !== undefined && account.RoleArn !== null) {
       try {
         let roleIsValid = yield childAWSclient.assumeRole(account.RoleArn);
       } catch (error) {

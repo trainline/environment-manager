@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.common').factory('resources',
-  function (localResourceFactory, remoteResourceFactory, nginxResourceFactory, autoScalingGroupResourceFactory, environments, roles, servers) {
+  function (localResourceFactory, remoteResourceFactory, roles) {
 
     var securityZones = ['Other', 'Public', 'Sensitive', 'Management', 'Secure'];
     var deploymentMethods = [
@@ -82,7 +82,6 @@ angular.module('EnvironmentManager.common').factory('resources',
         }),
 
       },
-      environment: environments,
       aws: {
         instances: remoteResourceFactory.getReadOnly({
           name: 'instances',
@@ -94,7 +93,6 @@ angular.module('EnvironmentManager.common').factory('resources',
           description: 'AWS Images',
           perAccount: true,
         }),
-        asgs: autoScalingGroupResourceFactory,
         instanceTypes: localResourceFactory(awsInstanceTypes),
       },
       asgips: remoteResourceFactory.getFullAccess({
@@ -118,13 +116,8 @@ angular.module('EnvironmentManager.common').factory('resources',
         methods: localResourceFactory(deploymentMethods),
         statuses: localResourceFactory(deploymentStatus),
       },
-      nginx: nginxResourceFactory.get({
-        name: 'nginx',
-        description: 'Nginx upstreams',
-      }),
       securityZones: localResourceFactory(securityZones),
-      roles: roles,
-      servers: servers,
+      roles: roles
     };
 
     return resources;
