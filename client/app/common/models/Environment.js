@@ -10,7 +10,8 @@ angular.module('EnvironmentManager.common').factory('Environment',
 
     Environment.all = function (params) {
       var query = params && params.query;
-      return $http.get('/api/v1/config/environments', { params: query, cache: true }).then(function (response) {
+      var useCache = !params || (params.useCache !== false);
+      return $http.get('/api/v1/config/environments', { params: query, cache: useCache }).then(function (response) {
         return response.data;
       });
     };
