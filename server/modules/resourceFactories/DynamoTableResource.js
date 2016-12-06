@@ -102,7 +102,7 @@ class DynamoTableResource {
     };
 
     return this.client.query(request).promise().then(data => {
-      if (!data.Items) {
+      if (!_.isArray(data.Items) || data.Items.length === 0) {
         let message = `No ${self._resourceName} items found for ${self._keyName} ${params.key}.`;
         throw new DynamoItemNotFoundError(message);
       } else {
