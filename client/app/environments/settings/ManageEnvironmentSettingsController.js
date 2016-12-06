@@ -193,23 +193,6 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       });
     };
 
-    vm.delete = function () {
-      // TODO: Need proper dialog to clear up resources, uninstall etc. show progress, send alert etc. This just added for basic CRUD support
-      var name = vm.environment.EnvironmentName;
-      modal.confirmation({
-        title: 'Deleting an Environment',
-        message: 'Are you sure you want to delete the <strong>' + name + '</strong> Environment?',
-        action: 'Delete',
-        severity: 'Danger',
-        details: ['NOTE: This will not delete any AWS resources associated with this environment or any Load Balancer rules. Clean up of these needs to be done manually.'], // TODO: tool needs to handle all clean up, give options
-      }).then(function () {
-        resources.config.environments.delete({ key: name }).then(function () {
-          cachedResources.config.environments.flush();
-          BackToSummary();
-        });
-      });
-    };
-
     vm.refreshDependencies = function () {
       vm.dependentServices = GetDependentServices();
       vm.dependentLBSettings = GetDependentLBs();
