@@ -1867,8 +1867,6 @@ definitions:
           type: string
       NewInstancesProtectedFromScaleIn:
         type: boolean
-  AWSScalingSchedule:
-    type: object
   AWSLaunchConfig:
     type: object
     properties:
@@ -2075,8 +2073,9 @@ definitions:
                 type: integer
           Status:
             type: object
-            Status:
-              type: string
+            properties:
+              Status:
+                type: string
   EnvironmentScheduleValue:
     type: object
     properties:
@@ -2191,6 +2190,148 @@ definitions:
       IsLatestStable:
         type: boolean
       AccountName:
+        type: string
+  Instance:
+    type: object
+    properties:
+      AccountName:
+        type: string
+      AmiLaunchIndex:
+        type: integer
+      Architecture:
+        type: string
+      BlockDeviceMappings:
+        type: array
+        items:
+          type: object
+          properties:
+            DeviceName:
+              type: string
+            Ebs:
+              type: object
+              properties:
+                AttachTime:
+                  type: string
+                  format: date-time
+                DeleteOnTermination:
+                  type: boolean
+                Status:
+                  type: string
+                VolumeId:
+                  type: string
+      ClientToken:
+        type: string
+      ContactEmail:
+        type: string
+      EbsOptimized:
+        type: boolean
+      EnaSupport:
+        type: boolean
+      Environment:
+        type: string
+      EnvironmentType:
+        type: string
+      Hypervisor:
+        type: string
+      IamInstanceProfile:
+        type: object
+        properties:
+          Arn:
+            type: string
+          Id:
+            type: string
+      ImageId:
+        type: string
+      InstanceId:
+        type: string
+      InstanceType:
+        type: string
+      KeyName:
+        type: string
+      LaunchTime:
+        type: string
+        format: date-time
+      Monitoring:
+        type: object
+        properties:
+          Status:
+            type: string
+      Name:
+        type: string
+      NetworkInterfaces:
+        type: array
+        items:
+          type: object
+      OverallHealth:
+        type: object
+        properties:
+          Status:
+            type: string
+      OwningCluster:
+        type: string
+      Placement:
+        type: object
+        properties:
+          AvailabilityZone:
+            type: string
+          GroupName:
+            type: string
+          Tenancy:
+            type: string
+      Platform:
+        type: string
+      PrivateDnsName:
+        type: string
+      PrivateIpAddress:
+        type: string
+      PublicDnsName:
+        type: string
+      Role:
+        type: string
+      RootDeviceName:
+        type: string
+      RootDeviceType:
+        type: string
+      Schedule:
+        type: string
+      SecurityGroups:
+        type: array
+        items:
+          type: object
+          properties:
+            GroupId:
+              type: string
+            GroupName:
+              type: string
+      SecurityZone:
+        type: string
+      SourceDestCheck:
+        type: boolean
+      State:
+        type: object
+        properties:
+          Code:
+            type: integer
+          Name:
+            type: string
+      StateTransitionReason:
+        type: string
+      SubnetId:
+        type: string
+      Tags:
+        type: array
+        items:
+          type: object
+          properties:
+            Key:
+              type: string
+            Value:
+              type: string
+      VirtualizationType:
+        type: string
+      VpcId:
+        type: string
+      'aws:autoscaling:groupName':
         type: string
   LBSetting:
     type: object
