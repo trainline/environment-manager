@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('EnvironmentsSummaryController',
-  function ($scope, $routeParams, $location, $uibModal, $q, resources, cachedResources, configValidation, cron, Environment) {
+  function ($scope, $routeParams, $location, $uibModal, $http, $q, modal, resources, cachedResources, configValidation, cron, Environment) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -38,7 +38,8 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
 
     function init() {
 
-      vm.userHasPermission = user.hasPermission({ access: 'POST', resource: '/config/environments/*' });
+      vm.userHasCreatePermission = user.hasPermission({ access: 'POST', resource: '/config/environments/**' });
+      vm.userHasDeletePermission = user.hasPermission({ access: 'DELETE', resource: '/config/environments/**' });
 
       $q.all([
         cachedResources.config.clusters.all().then(function (clusters) {
@@ -73,7 +74,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
       }
 
       $q.all([
-        Environment.all({ query: query }),
+        Environment.all({ query: query, useCache: false }),
         Environment.getAllOps(),
       ]).then(function (results) {
         var configEnvironments = results[0];
@@ -104,8 +105,26 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
       });
     };
 
-    vm.canUser = function () {
-      return vm.userHasPermission;
+    vm.deleteEnvironment = function (environment) {
+      modal.confirmation({
+        title: 'Delete Environment',
+        message:
+        'Are you sure you want to delete the environment <strong>' + environment.EnvironmentName + '</strong>?<br /><br />' +
+        'This will permanently delete the environment as well as any associated load balancer settings and upstreams.' +
+        'It will not delete any associated AWS resources',
+        action: 'Delete',
+        severity: 'Danger'
+      }).then(function () {
+        return $http.delete('/api/v1/config/environments/' + environment.EnvironmentName);
+      }).then(function () {
+        return modal.information({
+          title: 'Environment Deleted',
+          message: 'Environment ' + environment.EnvironmentName + ' was deleted successfully.',
+        });
+      }).then(function () {
+        cachedResources.config.environments.flush();
+        vm.refresh();
+      });
     };
 
     vm.viewEnvironment = function (environment) {
@@ -118,6 +137,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
         controller: 'CreateEnvironmentController',
       });
       instance.result.then(function () {
+        cachedResources.config.environments.flush();
         vm.refresh();
       });
     };
