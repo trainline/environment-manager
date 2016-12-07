@@ -22,7 +22,7 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsInstanc
     function refresh() {
       vm.dataLoading = true;
       var params = _.clone(vm.query);
-      params.include_services = true;
+      params.include_deployments_status = true;
 
       $http.get('/api/v1/instances', { params: params }).then(function (response) {
         var instances = response.data;

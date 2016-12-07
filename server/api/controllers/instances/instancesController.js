@@ -26,7 +26,7 @@ function getInstances(req, res, next) {
   const ipAddress = req.swagger.params.ip_address.value;
   const instanceId = req.swagger.params.instance_id.value;
   const since = req.swagger.params.since.value;
-  const includeServices = req.swagger.params.include_services.value;
+  const includeDeploymentsStatus = req.swagger.params.include_deployments_status.value;
 
   co(function* () {
     let filter = {};
@@ -69,7 +69,7 @@ function getInstances(req, res, next) {
       })
     }
 
-    if (includeServices === true) {
+    if (includeDeploymentsStatus === true) {
       list = yield _.map(list, (instance) => {
         let instanceEnvironment = instance.getTag('Environment', null);
 

@@ -619,7 +619,7 @@ paths:
           type: string
           format: date-time
           required: false
-        - name: include_services
+        - name: include_deployments_status
           in: query
           type: boolean
           required: false
