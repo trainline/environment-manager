@@ -726,7 +726,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/UpstreamSlice'
   /services/{service}/slices/toggle:
     x-swagger-router-controller: servicesController
     put:
@@ -1659,7 +1659,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/UpstreamConfig'
       responses:
         201:
           description: OK
@@ -2393,6 +2393,27 @@ definitions:
         items:
           type: string
       VHostName:
+        type: string
+  UpstreamSlice:
+    type: object
+    properties:
+      Key:
+        type: string
+      EnvironmentName:
+        type: string
+      ServiceName:
+        type: string
+      UpstreamName:
+        type: string
+      DnsName:
+        type: string
+      Port:
+        type: integer
+      OwningCluster:
+        type: string
+      Name:
+        type: string
+      State:
         type: string
   UpstreamConfig:
     type: object
