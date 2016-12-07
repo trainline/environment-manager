@@ -418,7 +418,7 @@ paths:
         200:
           description: The current status
           schema:
-            type: object
+            $ref: '#/definitions/DiagnosticsHealthcheck'
   /environments:
     x-swagger-router-controller: environmentsController
     get:
@@ -432,7 +432,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/OpsEnvironment'
   /environments/{name}:
     x-swagger-router-controller: environmentsController
     get:
@@ -449,7 +449,31 @@ paths:
         200:
           description: The environment
           schema:
+            $ref: '#/definitions/OpsEnvironment'
+  /environments/{name}/protected:
+    x-swagger-router-controller: environmentsController
+    get:
+      operationId: isEnvironmentProtectedFromAction
+      summary: Find if environment is protected from action
+      tags:
+        - Environment
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: action
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: The environment
+          schema:
             type: object
+            properties:
+              isProtected:
+                type: boolean
   /environments/{name}/servers:
     x-swagger-router-controller: environmentsController
     get:
@@ -487,9 +511,7 @@ paths:
           required: true
       responses:
         200:
-          description: The server
-          schema:
-            type: object
+          $ref: '#/responses/asg-servers-state'          
   /environments/{name}/schedule:
     x-swagger-router-controller: environmentsController
     put:
@@ -507,7 +529,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/EnvironmentScheduleValue'
         - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
@@ -522,12 +544,11 @@ paths:
           in: path
           type: string
           required: true
-
       responses:
         200:
           description: The schedule status
           schema:
-            type: object
+            $ref: '#/definitions/EnvironmentSchedule'
   /environments/{name}/accountName:
     x-swagger-router-controller: environmentsController
     get:
@@ -568,6 +589,9 @@ paths:
           description: The schedule status
           schema:
             type: object
+            properties:
+              Status:
+                type: string
   /images:
     x-swagger-router-controller: imagesController
     get:
@@ -590,7 +614,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/Image'
   /instances:
     x-swagger-router-controller: instancesController
     get:
@@ -676,6 +700,25 @@ paths:
       responses:
         200:
           description: OK
+  /load-balancer/{id}:
+    x-swagger-router-controller: loadBalancerController
+    get:
+      operationId: getLoadBalancer
+      summary: Get load balancer data.
+      tags:
+        - Load Balancers
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/LoadBalancerUpstream'
   /services:
     x-swagger-router-controller: servicesController
     get:
@@ -1096,7 +1139,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/DeploymentMap'
     post:
       operationId: postDeploymentMapsConfig
       summary: Create a deployment map configuration
@@ -1107,7 +1150,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/DeploymentMap'
       responses:
         201:
           description: OK
@@ -1127,7 +1170,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/DeploymentMapValue'
         - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
@@ -1146,7 +1189,7 @@ paths:
         200:
           description: The deployment map config
           schema:
-            type: object
+            $ref: '#/definitions/DeploymentMap'
     delete:
       operationId: deleteDeploymentMapConfigByName
       summary: Delete a deployment map configuration.
@@ -1182,7 +1225,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/EnvironmentConfig'
     post:
       operationId: postEnvironmentsConfig
       summary: Create a new environment configuration.
@@ -1194,7 +1237,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/EnvironmentConfig'
       responses:
         201:
           description: OK
@@ -1230,7 +1273,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/EnvironmentConfigValue'
         - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
@@ -1262,7 +1305,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/EnvironmentTypeConfig'
     post:
       operationId: postEnvironmentTypesConfig
       summary: Create an Environment Type configuration.
@@ -1273,7 +1316,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/EnvironmentTypeConfig'
       responses:
         201:
           description: OK
@@ -1308,7 +1351,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/EnvironmentTypeConfigValue'
         - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
@@ -1423,7 +1466,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/LBSetting'
     post:
       operationId: postLBSettingsConfig
       summary: Create a load balancer setting.
@@ -1435,7 +1478,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/LBSetting'
       responses:
         201:
           description: OK
@@ -1459,7 +1502,7 @@ paths:
         200:
           description: The load balancer setting
           schema:
-            type: object
+            $ref: '#/definitions/LBSetting'
     put:
       operationId: putLBSettingConfigByName
       summary: Update a load balancer setting.
@@ -1479,7 +1522,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/LBSetting'
         - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
@@ -1515,7 +1558,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/Permissions'
     post:
       operationId: postPermissionsConfig
       summary: Create a new permission configuration.
@@ -1526,7 +1569,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/Permissions'
       responses:
         201:
           description: OK
@@ -1546,7 +1589,7 @@ paths:
         200:
           description: The permission config
           schema:
-            type: object
+            $ref: '#/definitions/Permissions'
     put:
       operationId: putPermissionConfigByName
       summary: Update a permission configuration.
@@ -1563,7 +1606,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/PermissionsList'
         - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
@@ -1600,7 +1643,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/ServiceConfig'
     post:
       operationId: postServicesConfig
       summary: Create a service configuration
@@ -1612,7 +1655,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/ServiceConfig'
       responses:
         201:
           description: OK
@@ -1636,7 +1679,7 @@ paths:
         200:
           description: The service config
           schema:
-            type: object
+            $ref: '#/definitions/ServiceConfig'
     delete:
       operationId: deleteServiceConfigByName
       summary: Delete a service configuration.
@@ -1674,7 +1717,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/ServiceConfigValue'
         - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
@@ -1692,7 +1735,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/UpstreamConfig'
     post:
       operationId: postUpstreamsConfig
       summary: Create an upsteram configuration.
@@ -1725,7 +1768,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/UpstreamConfigValue'
         - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
@@ -1748,7 +1791,7 @@ paths:
         200:
           description: The upstream config
           schema:
-            type: object
+            $ref: '#/definitions/UpstreamConfig'
     delete:
       operationId: deleteUpstreamConfigByName
       summary: Delete an upstream configuration.
@@ -1826,7 +1869,7 @@ definitions:
       Impersonate:
         type: boolean
       RoleArn:
-        type: string
+        type: [string, "null"]
   ClusterConfig:
     type: object
     required:
@@ -1851,6 +1894,382 @@ definitions:
         type: string
       ADMembershipGroup:
         type: string
+  LoadBalancerUpstream:
+    type: object
+    required:
+      - name
+      - hosts
+    properties:
+      name:
+        type: string
+      hosts:
+        type: array
+        items:
+          type: object
+          properties:
+            health_checks:
+              type: object
+              properties:
+                checks:
+                  type: integer
+                fails:
+                  type: integer
+                unhealthy:
+                  type: integer
+            server:
+              type: string
+            state:
+              type: string
+  DeploymentMap:
+    type: object
+    required:
+      - DeploymentMapName
+      - Value
+    properties:
+      DeploymentMapName:
+        type: string
+      Value:
+        $ref: '#/definitions/DeploymentMapValue'
+  DeploymentMapValue:
+    type: object
+    properties:
+      DeploymentTarget:
+        type: array
+        items:
+          $ref: '#/definitions/DeploymentTarget'
+      SchemaVersion:
+        type: integer
+  DeploymentTarget:
+    type: object
+    properties:
+      AMI:
+        type: string
+      AutoScalingSettings:
+        type: string
+      ContactEmailTag:
+        type: string
+      FleetPerSlice:
+        type: boolean
+      InstanceType:
+        type: string
+      OwningCluster:
+        type: string
+      RoleTag:
+        type: string
+      SecurityZone:
+        type: string
+      ServerRoleName:
+        type: string
+      Services:
+        type: array
+        items:
+          type: object
+          properties:
+            ServiceName:
+              type: string
+      SubnetTypeName:
+        type: string
+      Volumes:
+        type: array
+        items:
+          type: object
+          properties:
+            Name:
+              type: string
+            Size:
+              type: string
+            Type:
+              type: string
+  OpsEnvironment:
+    type: object
+    required:
+      - EnvironmentName
+      - Value
+    properties:
+      EnvironmentName:
+        type: string
+      Value:
+        $ref: '#/definitions/OpsEnvironmentValue'
+  OpsEnvironmentValue:
+    type: object
+    properties:
+      AccountName:
+        type: string
+      ScheduleStatus:
+        type: string
+  EnvironmentSchedule:
+    type: object
+    required:
+      - EnvironmentName
+      - Value
+    properties:
+      EnvironmentName:
+        type: string
+      Value:
+        $ref: '#/definitions/EnvironmentScheduleValue'
+  EnvironmentScheduleValue:
+    type: object
+    properties:
+      ManualScheduleUp:
+        type: boolean
+      ScheduleAutomatically:
+        type: boolean
+      DefaultSchedule:
+        type: string
+  EnvironmentConfig:
+    type: object
+    required:
+      - EnvironmentName
+      - Value
+    properties:
+      EnvironmentName:
+        type: string
+      Value:
+        $ref: '#/definitions/EnvironmentConfigValue'
+  EnvironmentConfigValue:
+    type: object
+    properties:
+      OwningCluster:
+        type: string
+      Description:
+        type: string
+      EnvironmentType:
+        type: string
+      SchemaVersion:
+        type: integer
+      DeploymentMap:
+        type: string
+      CodeDeployBucket:
+        type: string
+  EnvironmentTypeConfig:
+    type: object
+    required:
+      - EnvironmentType
+      - Value
+    properties:
+      EnvironmentType:
+        type: string
+      Value:
+        $ref: '#/definitions/EnvironmentTypeConfigValue'
+  EnvironmentTypeConfigValue:
+    type: object
+    properties:
+      AWSAccountName:
+        type: string
+      AWSAccountNumber:
+        type: string
+      Consul:
+        type: object
+        properties:
+          DataCenter:
+            type: string
+          Port:
+            type: integer
+          SecurityTokenPath:
+            type: object
+            properties:
+              Bucket:
+                type: string
+              Key:
+                type: string
+          Servers:
+            type: array
+            items:
+              type: string
+      DeploymentBucket:
+        type: string
+      LoadBalancers:
+        type: array
+        items:
+          type: string
+      SchemaVersion:
+        type: integer
+      Subnets:
+        type: object
+      VpcId:
+        type: string
+  Image:
+    type: object
+    properties:
+      ImageId:
+        type: string
+      CreationDate:
+        type: string
+      Platform:
+        type: string
+      Name:
+        type: string
+      Description:
+        type: string
+      AmiType:
+        type: string
+      AmiVersion:
+        type: string
+      IsCompatibleImage:
+        type: boolean
+      IsStable:
+        type: boolean
+      Encrypted:
+        type: boolean
+      RootVolumeSize:
+        type: integer
+      Rank:
+        type: integer
+      IsLatest:
+        type: boolean
+      IsLatestStable:
+        type: boolean
+      AccountName:
+        type: string
+  LBSetting:
+    type: object
+    required:
+      - AccountName
+      - EnvironmentName
+      - VHostName
+      - Value
+    properties:
+      AccountName:
+        type: string    
+      EnvironmentName:
+        type: string
+      VHostName:
+        type: string
+      Value:
+        $ref: '#/definitions/LBSettingValue'
+      Version:
+        type: integer
+  LBSettingValue:
+    type: object
+    properties:
+      EnvironmentName:
+        type: string
+      FrontEnd:
+        type: boolean
+      Listen:
+        type: array
+        items:
+          type: object
+          properties:
+            Port:
+              type: integer
+            SSL:
+              type: boolean
+            IP:
+              type: string
+      Locations:
+        type: array
+        items:
+          type: object
+          properties:
+            Path:
+              type: string
+            ProxyHttpVersion:
+              type: string
+            ProxyPass:
+              type: string
+            ProxySetHeaders:
+              type: array
+              items:
+                type: string
+      SSLCertificate:
+        type: string
+      SSLKey:
+        type: string
+      ServerName:
+        type: array
+        items:
+          type: string
+      VHostName:
+        type: string
+  UpstreamConfig:
+    type: object
+    required:
+      - AccountName
+      - key
+    properties:
+      AccountName:
+        type: string
+      key:
+        type: string
+      Value:
+        $ref: '#/definitions/UpstreamConfigValue'
+  UpstreamConfigValue:
+    type: object
+    properties:
+      EnvironmentName:
+        type: string
+      Hosts:
+        type: array
+        items:
+          type: object
+          properties:
+            DnsName:
+              type: string
+            FailTimeout:
+              type: string
+            MaxFails:
+              type: string
+            Port:
+              type: integer
+            State:
+              type: string
+            Weight:
+              type: integer
+
+      LoadBalancingMethod:
+        type: string
+      SchemaVersion:
+        type: integer
+      ServiceName:
+        type: string
+      UpstreamName:
+        type: string
+      ZoneSize:
+        type: string
+  Permissions:
+    type: object
+    required:
+      - Name
+      - Permissions
+    properties:
+      Name:
+        type: string
+      Permissions:
+        $ref: '#/definitions/PermissionsList'
+      Version:
+        type: integer
+  PermissionsList:
+    type: array
+    items:
+      type: object
+      properties:
+        Access:
+          type: string
+        Resource:
+          type: string
+  ServiceConfig:
+    type: object
+    required:
+      - OwningCluster
+      - ServiceName
+      - Value
+    properties:
+      OwningCluster:
+        type: string
+      ServiceName:
+        type: string
+      Value:
+        $ref: '#/definitions/ServiceConfigValue'
+      Version:
+        type: integer
+  ServiceConfigValue:
+    type: object
+    properties:
+      PackageType:
+        type: string
+      SchemaVersion:
+        type: integer
   Deployment:
     type: object
     properties:
@@ -1930,6 +2349,22 @@ definitions:
         type: string
       serverRole:
         type: string
+  SimpleServiceObject:
+    type: object
+    properties:
+      Name:
+        type: string
+      Slice:
+        type: string
+      Version:
+        type: string
+  DiagnosticsHealthcheck:
+    type: object
+    properties:
+      OK:
+        type: boolean
+      Version:
+        type: string
   Error:
     type: object
     readOnly: true
@@ -1983,6 +2418,36 @@ parameters:
     type: file
     required: true
 responses:
+  asg-servers-state:
+    description: Instances and services state
+    schema:
+      type: object
+      properties:
+        AllServicesPresent:
+          type: boolean
+        AllServicesPresentAndHealthy:
+          type: boolean
+        ServicesCount:
+          type: object
+          properties:
+            Present:
+              type: integer
+            PresentWithUnexpected:
+              type: integer
+            PresentAndHealthy:
+              type: integer
+            Ignored:
+              type: integer
+            Total:
+              type: integer
+        PresentServices:
+          type: array
+          items:
+            $ref: '#/definitions/SimpleServiceObject'
+        MissingServices:
+          type: array
+          items:
+            $ref: '#/definitions/SimpleServiceObject'
   package-created:
     description: The package was uploaded successfully.
   package-already-exists:

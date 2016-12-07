@@ -18,7 +18,6 @@ angular.module('EnvironmentManager.common').factory('awsService',
 
     function AsgService() {
       var self = this;
-
     }
 
     function InstanceService() {

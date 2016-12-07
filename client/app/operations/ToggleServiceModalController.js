@@ -2,58 +2,47 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('ToggleServiceModalController',
-  function ($scope, $q, $uibModalInstance, environmentName, resources, accountMappingService, cachedResources) {
+  function ($q, $http, $uibModalInstance, environmentName, resources, cachedResources) {
+    var vm = this;
 
-    $scope.EnvironmentNames = [];
-    $scope.ServiceNames = [];
-    $scope.ToggledUpstreams = [];
-    $scope.ErrorMessage = null;
-    $scope.UpstreamChanged = false;
+    vm.environmentNames = [];
+    vm.serviceNames = [];
+    vm.toggledUpstreams = [];
+    vm.errorMessage = null;
+    vm.upstreamChanged = false;
 
-    $scope.EnvironmentName = environmentName;
-    $scope.ServiceName = null;
+    vm.environmentName = environmentName;
+    vm.serviceName = null;
 
-    $scope.close = function () {
-      $uibModalInstance.close($scope.UpstreamChanged);
+    vm.close = function () {
+      $uibModalInstance.close(vm.upstreamChanged);
     };
 
-    $scope.toggle = function () {
-      $scope.ToggledUpstreams = [];
-      $scope.ErrorMessage = null;
+    vm.toggle = function () {
+      vm.toggledUpstreams = [];
+      vm.errorMessage = null;
 
-      accountMappingService.getAccountForEnvironment($scope.EnvironmentName).then(function (awsAccount) {
-        resources.environment($scope.EnvironmentName)
-          .inAWSAccount(awsAccount)
-          .toggleSlices()
-          .byService($scope.ServiceName)
-          .do(function (result) {
-            $scope.ToggledUpstreams = result.data.ToggledUpstreams;
-            $scope.UpstreamChanged = true;
-          }, function (error) {
-
-            $scope.ErrorMessage = error.data;
-          });
-      });
+      $http({
+        method: 'put',
+        url: '/api/v1/services/' + vm.serviceName + '/slices/toggle?environment=' + vm.environmentName,
+        data: {}
+      }).then(function (response) {
+        vm.toggledUpstreams = response.data.ToggledUpstreams;
+        vm.upstreamChanged = true;
+      }, function (error) {
+        vm.errorMessage = error.data;
+      })
     };
 
     function init() {
-
-      function environmentName(environment) {
-        return environment.EnvironmentName; }
-
-      function serviceName(service) {
-        return service.ServiceName; }
-
       $q.all([
         cachedResources.config.environments.all(),
         cachedResources.config.services.all(),
       ]).then(function (results) {
-        $scope.EnvironmentNames = results[0].map(environmentName).sort();
-        $scope.ServiceNames = results[1].map(serviceName).sort();
+        vm.environmentNames = _.map(results[0], 'EnvironmentName').sort();
+        vm.serviceNames = _.map(results[1], 'ServiceName').sort();
       });
-
     };
 
     init();
-
   });

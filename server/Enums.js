@@ -45,7 +45,8 @@ module.exports = {
   DEPLOYMENT_STATUS: {
     InProgress: 'In Progress',
     Success: 'Success',
-    Failed: 'Failed'
+    Failed: 'Failed',
+    Cancelled: 'Cancelled'
   },
 
   AutoScalingNotificationType: {

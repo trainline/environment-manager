@@ -1,16 +1,16 @@
 <div class="modal-header">
-    <h2 class="text-{{Severity}}">{{Title}}</h2>
+    <h2 class="text-{{vm.severity}}">{{vm.title}}</h2>
 </div>
 
 <div class="modal-body">
-    <p ng-bind-html="Message"></p>
-    <small ng-if="!InfoMode" ng-repeat="detail in Details" ng-bind-html="detail"></small>
-    <ul ng-if="InfoMode">
-        <li ng-repeat="detail in Details" ng-bind-html="detail"></li>
+    <p ng-bind-html="vm.message"></p>
+    <small ng-if="!vm.infoMode" ng-repeat="detail in vm.details" ng-bind-html="detail"></small>
+    <ul ng-if="vm.infoMode">
+        <li ng-repeat="detail in vm.details" ng-bind-html="detail"></li>
     </ul>
 </div>
 
 <div class="modal-footer">
-    <button ng-if="!InfoMode" class="btn btn-default" type="button" ng-click="Cancel()">Cancel</button>
-    <button class="btn btn-{{Severity}}" type="button" ng-click="Ok()">{{Action}}</button>
+    <button ng-if="!vm.infoMode" class="btn btn-default" type="button" ng-click="vm.cancel()">{{vm.cancelLabel}}</button>
+    <button class="btn btn-{{vm.severity}}" type="button" ng-click="vm.ok()">{{vm.action}}</button>
 </div>

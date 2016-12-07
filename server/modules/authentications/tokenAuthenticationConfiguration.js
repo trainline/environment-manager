@@ -18,6 +18,6 @@ function loadConfiguration() {
 module.exports = {
   getTokenDuration: () => {
     let configuration = loadConfiguration();
-    configuration.tokenDuration;
+    return configuration.tokenDuration;
   }
 };

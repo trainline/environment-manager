@@ -62,7 +62,7 @@ angular.module('EnvironmentManager.configuration').controller('AccountsControlle
     }
 
     function removeAccount(account) {
-      $http.delete('/api/aws/account', { params: {accountNumber: account.AccountNumber} }).then(function () {
+      $http.delete('/api/v1/config/accounts/' + account.AccountNumber).then(function () {
         vm.refreshData();
       });
     }

@@ -2,14 +2,14 @@
 'use strict';
 
 angular.module('EnvironmentManager.common').factory('resources',
-  function (localResourceFactory, remoteResourceFactory, nginxResourceFactory, autoScalingGroupResourceFactory, environments, roles, servers) {
+  function (localResourceFactory, remoteResourceFactory, roles) {
 
     var securityZones = ['Other', 'Public', 'Sensitive', 'Management', 'Secure'];
     var deploymentMethods = [
       { Name: 'Overwrite', Value: 'overwrite' },
       { Name: 'Blue/Green', Value: 'bg' },
     ];
-    var deploymentStatus = ['In Progress', 'Success', 'Failed'];
+    var deploymentStatus = ['In Progress', 'Success', 'Failed', 'Cancelled'];
     var awsInstanceTypes = ['t2.nano', 't2.micro', 't2.small', 't2.medium', 't2.large', 'm4.large', 'm4.xlarge', 'm4.2xlarge', 'm4.4xlarge', 'm3.medium', 'm3.large', 'm3.xlarge', 'm3.2xlarge', 'c4.large', 'c4.xlarge', 'c4.2xlarge', 'c4.4xlarge', 'c4.8xlarge', 'c3.large', 'c3.xlarge', 'c3.2xlarge', 'c3.4xlarge', 'c3.8xlarge', 'r3.large', 'r3.xlarge', 'r3.2xlarge', 'r3.4xlarge', 'r3.8xlarge', 'i2.xlarge', 'i2.2xlarge', 'i2.4xlarge', 'i2.8xlarge', 'd2.xlarge', 'd2.2xlarge', 'd2.4xlarge', 'd2.8xlarge'].sort();
     var auditChangeTypes = ['Created', 'Deleted', 'Updated', 'Renamed'];
     var auditEntityTypes = [
@@ -82,7 +82,6 @@ angular.module('EnvironmentManager.common').factory('resources',
         }),
 
       },
-      environment: environments,
       aws: {
         instances: remoteResourceFactory.getReadOnly({
           name: 'instances',
@@ -94,7 +93,6 @@ angular.module('EnvironmentManager.common').factory('resources',
           description: 'AWS Images',
           perAccount: true,
         }),
-        asgs: autoScalingGroupResourceFactory,
         instanceTypes: localResourceFactory(awsInstanceTypes),
       },
       asgips: remoteResourceFactory.getFullAccess({
@@ -118,13 +116,8 @@ angular.module('EnvironmentManager.common').factory('resources',
         methods: localResourceFactory(deploymentMethods),
         statuses: localResourceFactory(deploymentStatus),
       },
-      nginx: nginxResourceFactory.get({
-        name: 'nginx',
-        description: 'Nginx upstreams',
-      }),
       securityZones: localResourceFactory(securityZones),
-      roles: roles,
-      servers: servers,
+      roles: roles
     };
 
     return resources;

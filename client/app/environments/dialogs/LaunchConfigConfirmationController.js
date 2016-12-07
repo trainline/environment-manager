@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('LaunchConfigConfirmationController',
-  function ($scope, $http, $uibModal, $uibModalInstance, $q, parameters) {
+  function ($scope, $uibModal, $uibModalInstance, $q, parameters) {
 
     var vm = this;
     vm.scalingExplanationLink = window.links.SCALING_EXPLANATION;

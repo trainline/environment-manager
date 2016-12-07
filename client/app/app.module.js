@@ -30,8 +30,11 @@ app.config(function ($routeProvider) {
     });
 });
 
-// Set up error pop up on HTTP errors
 app.config(function ($httpProvider) {
+  // Set default put request content type to JSON
+  $httpProvider.defaults.headers.put['Content-Type'] = 'application/json;charset=utf-8';
+
+  // Set up error pop up on HTTP errors
   $httpProvider.interceptors.push(function ($q, $rootScope) {
     return {
       responseError: function(response) {
