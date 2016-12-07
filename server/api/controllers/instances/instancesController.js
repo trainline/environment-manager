@@ -76,7 +76,7 @@ function getInstances(req, res, next) {
         instance.appendTagsToObject();
 
         let instanceName = instance.getTag('Name', null);
-        if (instanceName === null || instanceEnvironment === null) {
+        if (instanceName === null || instanceName === '' || instanceEnvironment === null) {
           // This instance won't be returned
           return false;
         }
