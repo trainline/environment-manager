@@ -1434,7 +1434,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/LBSetting'
+            $ref: '#/definitions/LBSettingValue'
         - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
@@ -2375,7 +2375,7 @@ definitions:
             SSL:
               type: boolean
             IP:
-              type: string
+              type: [string, "null"]
       Locations:
         type: array
         items:
@@ -2392,9 +2392,9 @@ definitions:
               items:
                 type: string
       SSLCertificate:
-        type: string
+        type: [string, "null"]
       SSLKey:
-        type: string
+        type: [string, "null"]
       ServerName:
         type: array
         items:
@@ -2448,15 +2448,12 @@ definitions:
               type: string
             FailTimeout:
               type: string
-            MaxFails:
-              type: string
             Port:
               type: integer
             State:
               type: string
             Weight:
               type: integer
-
       LoadBalancingMethod:
         type: string
       SchemaVersion:
