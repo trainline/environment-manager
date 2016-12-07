@@ -1965,7 +1965,14 @@ definitions:
       AMI:
         type: string
       AutoScalingSettings:
-        type: string
+        type: object
+        properties:
+          DesiredCapacity:
+            type: integer
+          MaxCapacity:
+            type: integer
+          MinCapacity:
+            type: integer
       ContactEmailTag:
         type: string
       FleetPerSlice:
@@ -1997,7 +2004,7 @@ definitions:
             Name:
               type: string
             Size:
-              type: string
+              type: integer
             Type:
               type: string
   OpsEnvironment:
