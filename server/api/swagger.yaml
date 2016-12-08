@@ -1900,14 +1900,14 @@ definitions:
       - name
       - hosts
     properties:
-      name:
+      Name:
         type: string
-      hosts:
+      Hosts:
         type: array
         items:
           type: object
           properties:
-            health_checks:
+            HealthChecks:
               type: object
               properties:
                 checks:
@@ -1916,9 +1916,9 @@ definitions:
                   type: integer
                 unhealthy:
                   type: integer
-            server:
+            Server:
               type: string
-            state:
+            State:
               type: string
   DeploymentMap:
     type: object
