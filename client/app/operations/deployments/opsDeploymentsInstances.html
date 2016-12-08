@@ -27,7 +27,7 @@
            {{ instance.Name || '-'}} <small>({{ instance.InstanceId || '-'}})</small>
             <br /><small>IP: {{ instance.PrivateIpAddress }}</small>
           </td>
-          <td class="status-{{instance.deploymentStatus }}">
+          <td class="status-{{instance.deploymentStatus.toLowerCase() }}">
             <span ng-if="instance.deploymentStatus == 'Success'">
               <span class="glyphicon glyphicon-ok"></span>
               <span>Success</span>
@@ -36,7 +36,7 @@
               <span class="glyphicon glyphicon-remove"></span>
               <span>Failed</span>
             </span>
-            <span ng-if="instance.deploymentStatus ==' Cancelled'">
+            <span ng-if="instance.deploymentStatus == 'Cancelled'">
               <span class="glyphicon glyphicon-remove"></span>
               <span>Cancelled</span>
             </span>
