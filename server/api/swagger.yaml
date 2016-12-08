@@ -82,7 +82,7 @@ paths:
     x-swagger-router-controller: asgController
     get:
       operationId: getAsgReadyByName
-      summary: Get a single ASG status for the given environment.
+      summary: Determine if an ASG is ready to deploy to, eg. at least one instance is present and all are "InService"
       tags:
         - ASG
       parameters:
