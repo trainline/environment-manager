@@ -1896,9 +1896,6 @@ definitions:
         type: string
   LoadBalancerUpstream:
     type: object
-    required:
-      - name
-      - hosts
     properties:
       Name:
         type: string
