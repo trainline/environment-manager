@@ -36,6 +36,8 @@ angular.module('EnvironmentManager.configuration').controller('PickAmiController
           var amiVersion = awsService.images.GetAmiVersionFromName(currentAmi);
           $scope.SelectedImageType = GetAmiByName(amiType, images);
           $scope.Version.UseLatest = !amiVersion;
+        } else {
+          $scope.Version.UseLatest = false;
         }
 
         if ($scope.SelectedImageType == null) {
@@ -76,15 +78,23 @@ angular.module('EnvironmentManager.configuration').controller('PickAmiController
       if (!$scope.DataLoading && !$scope.InitialVersionSet) {
         var amiVersion = awsService.images.GetAmiVersionFromName(currentAmi);
         var initialAmiVersion = GetAmiByVersion(amiVersion, $scope.SelectedImageType.Versions);
-        initialAmiVersion = initialAmiVersion || $scope.SelectedImageType.Versions[0];
+        initialAmiVersion = initialAmiVersion ||
+          firstStable($scope.SelectedImageType.Versions) ||
+          $scope.SelectedImageType.Versions[0];
         $scope.Version.SelectedVersion = initialAmiVersion;
         $scope.InitialVersionSet = true;
       } else {
         if ($scope.SelectedImageType && $scope.SelectedImageType.Versions) {
-          $scope.Version.SelectedVersion = $scope.SelectedImageType.Versions[0];
+          $scope.Version.SelectedVersion = firstStable($scope.SelectedImageType.Versions) || $scope.SelectedImageType.Versions[0];
         }
       }
     });
+
+    function firstStable(versions) {
+      return _.find(versions, function (version){
+        return version.IsStable === true;
+      });
+    }
 
     function GetAmiByName(amiName, images) {
       for (var i = 0; i < images.length; i++) {

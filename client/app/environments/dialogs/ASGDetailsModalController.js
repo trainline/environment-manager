@@ -138,7 +138,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
         Image.getByName(vm.target.ASG.LaunchConfig.AMI).then(function (ami) {
           var currentSize = vm.target.ASG.LaunchConfig.Volumes[0].Size;
-          vm.requiredImageSize = ami === undefined ? currentSize : ami.RootVolumeSize;
+          vm.requiredImageSize = !_.isObject(ami) ? currentSize : ami.RootVolumeSize;
         });
 
         // Refresh deployment map data to pick up any config changes
