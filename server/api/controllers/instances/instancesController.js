@@ -76,13 +76,14 @@ function getInstances(req, res, next) {
         instance.appendTagsToObject();
 
         let instanceName = instance.getTag('Name', null);
-        if (instanceName === null || instanceEnvironment === null) {
+        let instanceRoleTag = instance.getTag('Role', null);
+        if (instanceName === null || instanceEnvironment === null || instanceRoleTag === null) {
           // This instance won't be returned
           return false;
         }
 
         // If instances were fetched by cross scan, instance.AccountName is available, otherwise, for simple scan use accountName
-        return getInstanceState(instance.AccountName || accountName, instanceEnvironment, instanceName, instance.InstanceId, instance.getTag('Role'))
+        return getInstanceState(instance.AccountName || accountName, instanceEnvironment, instanceName, instance.InstanceId, instanceRoleTag)
           .then((state) => {
             _.assign(instance, state);
             return instance;

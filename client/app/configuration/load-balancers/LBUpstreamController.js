@@ -99,7 +99,7 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
 
       var upstreamValue = $scope.LBUpstream.Value;
 
-      if ($scope.PageMode != 'Edit' && !upstreamValue.UpstreamName.startsWith(upstreamValue.EnvironmentName + '-')) {
+      if ($scope.PageMode != 'Edit' && !_.startsWith(upstreamValue.UpstreamName, upstreamValue.EnvironmentName + '-')) {
         $scope.PageError = 'Upstream Name must begin with the selected Environment and a dash';
         return;
       }
