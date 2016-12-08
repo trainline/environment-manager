@@ -2154,8 +2154,6 @@ definitions:
               type: string
             FailTimeout:
               type: string
-            MaxFails:
-              type: string
             Port:
               type: integer
             State:
