@@ -42,7 +42,7 @@ var User = function(data) {
   };
 
   this.hasPermission = function (requiredPermission) {
-      for (var userPermission of _data.permissions) {
+      return _data.permissions.some(function(userPermission) {
         if (userPermission.Resource && userPermission.Access) {
           var matchingResources = globIntersection(requiredPermission.resource.toLowerCase(), userPermission.Resource.toLowerCase());
           var matchingAccess = (userPermission.Access.toLowerCase() == requiredPermission.access.toLowerCase()) || userPermission.Access == 'ADMIN';
@@ -51,8 +51,7 @@ var User = function(data) {
               return true;
           }
         }
-      }
-      return false;
+      });
   };
 
   this.getGroups = function () {

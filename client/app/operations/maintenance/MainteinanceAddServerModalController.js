@@ -45,7 +45,7 @@ angular.module('EnvironmentManager.operations').controller('MaintenanceAddServer
       // Allow searching by IP or instance id
       if (IsIPv4(vm.serverSearch)) {
         filterType = 'ip_address';
-      } else if (vm.serverSearch.startsWith('i-')) {
+      } else if (_.startsWith(vm.serverSearch, 'i-')) {
         filterType = 'instance_id';
       } else {
         vm.serverDetails = {};
