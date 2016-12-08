@@ -15,6 +15,7 @@ let SetAutoScalingGroupSchedule = require('commands/asg/SetAutoScalingGroupSched
 let UpdateAutoScalingGroup = require('commands/asg/UpdateAutoScalingGroup');
 let GetAutoScalingGroupScheduledActions = require('queryHandlers/GetAutoScalingGroupScheduledActions');
 let getASGReady = require('modules/environment-state/getASGReady');
+let Environment = require('models/Environment');
 
 /**
  * GET /asgs
