@@ -10,7 +10,14 @@
         <tr>
           <th>Date</th>
           <th>Instance</th>
-          <th>Status</th>
+          <th>Status <span data-uib-popover
+                  data-popover-trigger="'mouseenter'"
+                  uib-popover-template="'app/operations/popovers/instance-deployment-status.html'"
+                  data-popover-placement="top"
+                  class="glyphicon glyphicon-question-sign help-icon"
+                  aria-hidden="true">
+            </span>
+          </th>
           <th>Environment</th>
           <th>Auto Scaling Group</th>
           <th>Services</th>
@@ -59,10 +66,12 @@
               <tbody>
                 <tr ng-repeat="service in instance.Services">
                   <td><health-status status='service.OverallHealth.Status'></health-status> {{ service.NameAndSlice }} <span class="slice-symbol" ng-class="service.Slice"></span> {{ service.Version }}</td>
-                  <td ><a ng-href="{{ service.LogLink }}" target="_blank">Show log</a></td>
                 </tr>
               </tbody>
             </table>
+          </td>
+          <td>
+            <button class="btn btn-default" type="button" ng-click="vm.showDetails(instances)">Show details</button>
           </td>
         </tr>
       </tbody>
