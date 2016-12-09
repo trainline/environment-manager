@@ -146,7 +146,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
         // Give service 60 minutes as 'missing' before concluding that service won't get installed on instance for whatever reasons
         let deploymentStatus;
         let timeoutDateMs = new Date(instanceLaunchTime).getTime() + (60*60*1000);
-        if (timeoutDateMs < new Date().getTime()) {
+        if (timeoutDateMs > new Date().getTime()) {
           deploymentStatus = DEPLOYMENT_STATUS.InProgress;
         } else {
           deploymentStatus = DEPLOYMENT_STATUS.Failed;
