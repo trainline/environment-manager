@@ -99,7 +99,6 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
       }
       return false;
     });
-    let instancesHealthCount = healthyNodes.length + '/' + instances.length;
 
     let serviceHealthChecks = getServiceChecksInfo(serviceObjects);
     let serviceAction = service.Action || SERVICE_INSTALL;
@@ -115,7 +114,6 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
         Healthy: healthyNodes.length,
         Total: instances.length
       },
-      InstancesHealthCount: instancesHealthCount,
       OverallHealth: getServiceOverallHealth(serviceHealthChecks, serviceInstances),
       HealthChecks: serviceHealthChecks,
       Action: serviceAction
