@@ -2232,7 +2232,107 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/SimpleServiceObject'
-
+      Services:
+        type: array
+        items:
+          type: object
+          properties:
+            Name:
+              type: string
+            Version:
+              type: string
+            Slice:
+              type: string
+            DiffWithTargetState:
+              type: [string, 'null']
+            DeploymentId:
+              type: string
+            InstancesNames:
+              type: array
+              items:
+                type: string
+            InstancesCount:
+              type: object
+              properties:
+                Healthy:
+                  type: integer
+                Total:
+                  type: integer
+            OverallHealth:
+              type: object
+              properties:
+                Status:
+                  type: string
+            HealthChecks:
+              type: array
+              items:
+                type: object
+                properties:
+                  Name:
+                    type: string
+                  Status:
+                    type: string
+            Action:
+              type: string
+              enum:
+                - Install
+                - Ignore
+      Instances:
+        type: array
+        items:
+          type: object
+        properties:
+          Name:
+            type: string
+          OverallHealth:
+            type: object
+            properties:
+              Status:
+                type: string
+          LifecycleState:
+            type: string
+          ContactEmail:
+            type: string
+          Services:
+            type: object
+            properties:
+              Name:
+                type: string
+              Version:
+                type: string
+              Slice:
+                type: string
+              NameAndSlice:
+                type: string
+              OverallHealth:
+                type: object
+                properties:
+                  Status:
+                    type: string
+              HealthChecks:
+                type: object
+                properties:
+                  CheckId:
+                    type: string
+                  Name:
+                    type: string
+                  Notes:
+                    type: string
+                  Status:
+                    type: string
+              DiffWithTargetState:
+                type: [string, 'null']
+              Issues:
+                type: object
+                properties:
+                  Warnings:
+                    type: array
+                    items:
+                      type: string
+                  Errors:
+                    type: array
+                    items:
+                      type: string
   EnvironmentScheduleValue:
     type: object
     properties:
