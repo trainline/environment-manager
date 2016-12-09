@@ -34,7 +34,7 @@ function postPermissionsConfig(req, res, next) {
  * PUT /config/permissions/{name}
  */
 function putPermissionConfigByName(req, res, next) {
-  let body = req.body; // Swagger bug? when req.body = [ 'a' ], req.swagger.params.body = [ [ 'a '] ]
+  let body = req.swagger.params.body.value;
   let key = req.swagger.params.name.value
   let expectedVersion = req.swagger.params['expected-version'].value;
   let user = req.user;
