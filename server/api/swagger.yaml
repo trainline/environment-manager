@@ -488,7 +488,9 @@ paths:
           required: true
       responses:
         200:
-          $ref: '#/responses/asg-servers-state'          
+          description: ASG servers state - Instances and services state
+          schema:
+            $ref: '#/definitions/ASGServersState'
   /environments/{name}/schedule:
     x-swagger-router-controller: environmentsController
     put:
@@ -2682,6 +2684,34 @@ definitions:
       description:
         type: string
         description: A long, human readable description of the error.
+  ASGServersState:
+    type: object
+    properties:
+      AllServicesPresent:
+        type: boolean
+      AllServicesPresentAndHealthy:
+        type: boolean
+      ServicesCount:
+        type: object
+        properties:
+          Present:
+            type: integer
+          PresentWithUnexpected:
+            type: integer
+          PresentAndHealthy:
+            type: integer
+          Ignored:
+            type: integer
+          Total:
+            type: integer
+      PresentServices:
+        type: array
+        items:
+          $ref: '#/definitions/SimpleServiceObject'
+      MissingServices:
+        type: array
+        items:
+          $ref: '#/definitions/SimpleServiceObject'
 parameters:
   ExpectedVersionHeader:
     name: expected-version
@@ -2725,36 +2755,6 @@ parameters:
     type: file
     required: true
 responses:
-  asg-servers-state:
-    description: Instances and services state
-    schema:
-      type: object
-      properties:
-        AllServicesPresent:
-          type: boolean
-        AllServicesPresentAndHealthy:
-          type: boolean
-        ServicesCount:
-          type: object
-          properties:
-            Present:
-              type: integer
-            PresentWithUnexpected:
-              type: integer
-            PresentAndHealthy:
-              type: integer
-            Ignored:
-              type: integer
-            Total:
-              type: integer
-        PresentServices:
-          type: array
-          items:
-            $ref: '#/definitions/SimpleServiceObject'
-        MissingServices:
-          type: array
-          items:
-            $ref: '#/definitions/SimpleServiceObject'
   package-created:
     description: The package was uploaded successfully.
   package-already-exists:
