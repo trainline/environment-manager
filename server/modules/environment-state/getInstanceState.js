@@ -6,6 +6,8 @@ let serviceTargets = require('modules/service-targets');
 let _ = require('lodash');
 let co = require('co');
 let Enums = require('Enums');
+let DEPLOYMENT_STATUS = Enums.DEPLOYMENT_STATUS;
+let logger = require('modules/logger');
 
 function mapConsulTags(tags) {
   return _.reduce(tags, function (result, tag) {
@@ -55,6 +57,26 @@ function getInstanceServiceHealthChecks(checks, serviceId) {
   });
 }
 
+function getInstanceDeploymentStatus(services) {
+  let instanceDeploymentStatus;
+  let expectedServices = _.filter(services, (service) => {
+    return service.DiffWithTargetState !== 'Extra';
+  });
+
+  if (_.some(expectedServices, (service) => {
+    // If any service deployment is unsuccessful, instance deployment status is also unsuccessful
+    return service.DeploymentStatus === DEPLOYMENT_STATUS.Failed;
+  })) {
+    return DEPLOYMENT_STATUS.Failed;
+  } else if(_.every(services, { DeploymentStatus: DEPLOYMENT_STATUS.Success })) {
+    return DEPLOYMENT_STATUS.Success;
+  } else {
+    // This should happen if there's no "Failed" and at least one "In Progress" deployment
+    return DEPLOYMENT_STATUS.InProgress;
+  }
+
+}
+
 /**
  * Service in Consul is prefixed with env, ie. "c50-ServiceName", we need to drop environment
  */
@@ -66,7 +88,7 @@ function getServiceAndSlice(obj) {
   return obj.Name + (obj.Slice !== 'none' ? '-' + obj.Slice : '');
 }
 
-module.exports = function getInstanceState(accountName, environmentName, nodeName, instanceId, runtimeServerRoleName) {
+module.exports = function getInstanceState(accountName, environmentName, nodeName, instanceId, runtimeServerRoleName, instanceLaunchTime) {
   return co(function* () {
     let response = yield {
       checks: serviceDiscovery.getNodeHealth(environmentName, nodeName),
@@ -82,7 +104,18 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
       service.Tags = mapConsulTags(service.Tags);
       let instanceServiceHealthChecks = getInstanceServiceHealthChecks(checks, service.ID);
       let targetService = _.find(targetServiceStates, { Name: getSimpleServiceName(service.Service), Slice: service.Tags.slice });
+      if (targetService === undefined) {
+        // It's not EM deployed service
+        return false;
+      }
       let deploymentId = _.get(targetService, 'DeploymentId') || null;
+      let instanceDeploymentInfo = yield serviceTargets.getInstanceServiceDeploymentInfo(environmentName, deploymentId, instanceId);
+      if (instanceDeploymentInfo === undefined) {
+        logger.warn(`No deployment info found in Consul Key value store for ${service.Service}, ${environmentName}, ${deploymentId}, ${instanceId}`);
+        return false;
+      }
+      let deploymentStatus = instanceDeploymentInfo.Status;
+
 
       // Note: we use DeploymentId from targetService, because DeploymentId from catalog might be old - in case
       // last deployment was unsuccessful
@@ -93,6 +126,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
         Cluster: service.Tags.owning_cluster,
         ServerRole: service.Tags.server_role,
         DeploymentId: deploymentId,
+        DeploymentStatus: deploymentStatus,
         DeploymentCause: yield serviceTargets.getServiceDeploymentCause(environmentName, deploymentId, instanceId),
         LogLink: `/api/v1/deployments/${deploymentId}/log?account=${accountName}&instance=${instanceId}`,
         OverallHealth: getInstanceServiceOverallHealth(instanceServiceHealthChecks),
@@ -101,18 +135,29 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
         Issues: { Warnings: [], Errors: [] },
       };
     }));
-    // If undefined, it's not EM deployed service        
-    services = _.filter(services, (service) => service.DeploymentId !== null);
+    // If false, it's not EM deployed service        
+    services = _.compact(services);
 
     // Now make a diff with target state of Instance services
     // Primo, find any services that are in target state, but not on instance
     _.each(targetServiceStates, (targetService) => {
       if (_.find(services, { Name: targetService.Name, Slice: targetService.Slice }) === undefined) {
+
+        // Give service 60 minutes as 'missing' before concluding that service won't get installed on instance for whatever reasons
+        let deploymentStatus;
+        let timeoutDateMs = new Date(instanceLaunchTime).getTime() + (60*60*1000);
+        if (timeoutDateMs < new Date().getTime()) {
+          deploymentStatus = DEPLOYMENT_STATUS.InProgress;
+        } else {
+          deploymentStatus = DEPLOYMENT_STATUS.Failed;
+        }
+
         let missingService = {
           Name: targetService.Name,
           Version: targetService.Version,
           Slice: targetService.Slice,
           DeploymentId: targetService.DeploymentId,
+          DeploymentStatus: deploymentStatus,
           Action: targetService.Action,
           HealthChecks: [],
           LogLink: `/api/v1/deployments/${targetService.DeploymentId}/log?account=${accountName}&instance=${instanceId}`,
@@ -150,8 +195,10 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
       return service;
     });
 
+
     return {
       OverallHealth: getOverallHealth(checks),
+      DeploymentStatus: getInstanceDeploymentStatus(services),
       Services: services,
     };
   });

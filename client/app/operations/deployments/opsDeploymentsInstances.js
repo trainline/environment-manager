@@ -11,14 +11,6 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsInstanc
   controller: function ($scope, $http) {
     var vm = this;
 
-    function updateInstanceDeploymentStatus(instance) {
-      var allHealthy = _.every(instance.Services, function (service) {
-        var status = _.get(service, 'OverallHealth.Status');
-        return status === undefined || status === 'Healthy';
-      });
-      instance.deploymentStatus = allHealthy ? 'Success' : 'Failed';
-    }
-
     function refresh() {
       vm.dataLoading = true;
       var params = _.clone(vm.query);
@@ -30,8 +22,6 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsInstanc
         _.each(instances, function (instance) {
           instance.asgLink = '#/environment/servers/?environment=' + instance.Environment + '&asg_name=' + instance['aws:autoscaling:groupName'];
           instance.status = _.capitalize(instance.State.Name);
-
-          updateInstanceDeploymentStatus(instance);
         });
 
         vm.dataLoading = false;
