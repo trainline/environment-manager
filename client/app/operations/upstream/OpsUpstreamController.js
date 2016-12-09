@@ -218,7 +218,8 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
         var promises = lbs.map(function (lb) {
           var url = ['api', 'v1', 'load-balancer', lb].join('/');
 
-          return $http.get(url).then(function (nginxData) {
+          return $http.get(url).then(function (response) {
+            var nginxData = response.data;
             var lbName = lb.split('.')[0]; // Drop .prod/nonprod.local from name
 
             // Loop upstream hosts and associate LB status with each record

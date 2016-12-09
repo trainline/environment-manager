@@ -33,7 +33,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/AWSAutoScalingGroup'
   /asgs/{name}:
     x-swagger-router-controller: asgController
     get:
@@ -54,7 +54,7 @@ paths:
         200:
           description: The matching ASG
           schema:
-            type: object
+            $ref: '#/definitions/AWSAutoScalingGroup'
     put:
       operationId: putAsg
       summary: Update properties of an ASG.
@@ -74,7 +74,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/AWSAutoScalingGroup'
       responses:
         200:
           description: Ok
@@ -202,6 +202,15 @@ paths:
       responses:
         200:
           description: Ok
+          schema:
+            type: object
+            properties:
+              min:
+                type: integer
+              desired:
+                type: integer
+              max:
+                type: integer
   /asgs/{name}/launch-config:
     x-swagger-router-controller: asgController
     get:
@@ -223,7 +232,7 @@ paths:
         200:
           description: The launch config
           schema:
-            type: object
+            $ref: '#/definitions/AWSLaunchConfig'
     put:
       operationId: putAsgLaunchConfig
       summary: Update the launch config associated with an ASG under the given account.
@@ -243,7 +252,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/AWSLaunchConfig'
       responses:
         200:
           description: ASG launch config.
@@ -271,7 +280,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/AuditEntry'
   /audit/{key}:
     x-swagger-router-controller: auditController
     get:
@@ -288,7 +297,7 @@ paths:
         200:
           description: The audit log
           schema:
-            type: object
+            $ref: '#/definitions/AuditEntry'
   /deployments:
     x-swagger-router-controller: deploymentsController
     get:
@@ -358,6 +367,7 @@ paths:
       summary: Modify deployment - cancel in-progress, or modify Action.
       tags:
         - Deployment
+      x-authorizer: deployments
       parameters:
         - name: id
           in: path
@@ -406,7 +416,7 @@ paths:
         200:
           description: The deployment log
           schema:
-            type: object
+            type: string
   /diagnostics/healthcheck:
     x-swagger-router-controller: diagnosticsController
     get:
@@ -492,7 +502,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/EnvironmentServers'
   /environments/{name}/servers/{asgName}:
     x-swagger-router-controller: environmentsController
     get:
@@ -511,7 +521,9 @@ paths:
           required: true
       responses:
         200:
-          $ref: '#/responses/asg-servers-state'          
+          description: ASG servers state - Instances and services state
+          schema:
+            $ref: '#/definitions/ASGServersState'
   /environments/{name}/schedule:
     x-swagger-router-controller: environmentsController
     put:
@@ -662,7 +674,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/Instance'
   /instances/{id}:
     x-swagger-router-controller: instancesController
     get:
@@ -679,7 +691,7 @@ paths:
         200:
           description: The instance
           schema:
-            type: object
+            $ref: '#/definitions/Instance'
   /instances/{id}/maintenance:
     x-swagger-router-controller: instancesController
     put:
@@ -814,7 +826,7 @@ paths:
           schema:
             type: array
             items:
-              type: object
+              $ref: '#/definitions/UpstreamSlice'
   /services/{service}/slices/toggle:
     x-swagger-router-controller: servicesController
     put:
@@ -1522,7 +1534,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/LBSetting'
+            $ref: '#/definitions/LBSettingValue'
         - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
@@ -1747,7 +1759,7 @@ paths:
           in: body
           required: true
           schema:
-            type: object
+            $ref: '#/definitions/UpstreamConfig'
       responses:
         201:
           description: OK
@@ -1849,6 +1861,140 @@ paths:
         422:
           $ref: '#/responses/package-bad-ref'
 definitions:
+  AuditEntry:
+    type: object
+    properties:
+      AuditID:
+        type: string
+      ChangeType:
+        type: string
+      ChangedBy:
+        type: string
+      Date:
+        type: string
+      Entity:
+        type: object
+        properties:
+          Key:
+            type: string
+          Type:
+            type: string
+          Version:
+            type: integer
+      ISOTimestamp:
+        type: string
+        format: date-time
+      NewValue:
+        type: object
+      OldValue:
+        type: object
+      Source:
+        type: string
+      Timestamp:
+        type: integer
+      TransactionID:
+        type: string
+  AWSAutoScalingGroup:
+    type: object
+    properties:
+      AutoScalingGroupName:
+        type: string
+        example: myenv-in-EnvironmentManager
+      AutoScalingGroupARN:
+        type: string
+      LaunchConfigurationName:
+        type: string
+      MinSize:
+        type: integer
+      MaxSize:
+        type: integer
+      DesiredCapacity:
+        type: integer
+      DefaultCooldown:
+        type: integer
+      AvailabilityZones:
+        type: array
+        items:
+          type: string
+      LoadBalancerNames:
+        type: array
+        items:
+          type: string
+      HealthCheckType:
+        type: string
+      HealthCheckGracePeriod:
+        type: integer
+      Instances:
+        type: array
+        items:
+          type: object
+          properties:
+            InstanceId:
+              type: string
+            AvailabilityZone:
+              type: string
+            LifecycleState:
+              type: string
+            HealthStatus:
+              type: string
+            LaunchConfigurationName:
+              type: string
+            ProtectedFromScaleIn:
+              type: boolean
+      CreatedTime:
+        type: string
+        format: date-time
+      VPCZoneIdentifier:
+        type: string
+      Tags:
+        type: array
+        items:
+          type: object
+          properties:
+            ResourceId:
+              type: string
+            ResourceType:
+              type: string
+            Key:
+              type: string
+            Value:
+              type: string
+            PropagateAtLaunch:
+              type: boolean
+      TerminationPolicies:
+        type: array
+        items:
+          type: string
+      NewInstancesProtectedFromScaleIn:
+        type: boolean
+  AWSLaunchConfig:
+    type: object
+    properties:
+      AMI:
+        type: string
+      ImageId:
+        type: string
+      InstanceProfileName:
+        type: string
+      InstanceType:
+        type: string
+      SecurityGroups:
+        type: array
+        items:
+          type: string
+      UserData:
+        type: string
+      Volumes:
+        type: array
+        items:
+          type: object
+          properties:
+            Name:
+              type: string
+            Size:
+              type: integer
+            Type:
+              type: string
   AccountConfig:
     type: object
     required:
@@ -1942,7 +2088,14 @@ definitions:
       AMI:
         type: string
       AutoScalingSettings:
-        type: string
+        type: object
+        properties:
+          DesiredCapacity:
+            type: integer
+          MaxCapacity:
+            type: integer
+          MinCapacity:
+            type: integer
       ContactEmailTag:
         type: string
       FleetPerSlice:
@@ -1974,7 +2127,7 @@ definitions:
             Name:
               type: string
             Size:
-              type: string
+              type: integer
             Type:
               type: string
   OpsEnvironment:
@@ -2004,6 +2157,55 @@ definitions:
         type: string
       Value:
         $ref: '#/definitions/EnvironmentScheduleValue'
+  EnvironmentServers:
+    properties:
+      EnvironmentName:
+        type: string
+      Value:
+        type: object
+        properties:
+          Ami:
+            type: object
+            properties:
+              Age:
+                type: integer
+              IsLatestStable:
+                type: boolean
+              Name:
+                type: string
+          Cluster:
+            type: string
+          Name:
+            type: string
+          Role:
+            type: string
+          Schedule:
+            type: string
+          Services:
+            type: array
+            items:
+              type: object
+              properties:
+                FriendlyName:
+                  type: string
+                Name:
+                  type: string
+                Slice:
+                  type: string
+                Version:
+                  type: string
+          Size:
+            type: object
+            properties:
+              Current:
+                type: integer
+              Desired:
+                type: integer
+          Status:
+            type: object
+            properties:
+              Status:
+                type: string
   EnvironmentScheduleValue:
     type: object
     properties:
@@ -2013,6 +2215,7 @@ definitions:
         type: boolean
       DefaultSchedule:
         type: string
+        example: 'start: 0 8 * * 1,2,3,4,5; Stop: 0 19 * * 1,2,3,4,5'
   EnvironmentConfig:
     type: object
     required:
@@ -2118,6 +2321,148 @@ definitions:
         type: boolean
       AccountName:
         type: string
+  Instance:
+    type: object
+    properties:
+      AccountName:
+        type: string
+      AmiLaunchIndex:
+        type: integer
+      Architecture:
+        type: string
+      BlockDeviceMappings:
+        type: array
+        items:
+          type: object
+          properties:
+            DeviceName:
+              type: string
+            Ebs:
+              type: object
+              properties:
+                AttachTime:
+                  type: string
+                  format: date-time
+                DeleteOnTermination:
+                  type: boolean
+                Status:
+                  type: string
+                VolumeId:
+                  type: string
+      ClientToken:
+        type: string
+      ContactEmail:
+        type: string
+      EbsOptimized:
+        type: boolean
+      EnaSupport:
+        type: boolean
+      Environment:
+        type: string
+      EnvironmentType:
+        type: string
+      Hypervisor:
+        type: string
+      IamInstanceProfile:
+        type: object
+        properties:
+          Arn:
+            type: string
+          Id:
+            type: string
+      ImageId:
+        type: string
+      InstanceId:
+        type: string
+      InstanceType:
+        type: string
+      KeyName:
+        type: string
+      LaunchTime:
+        type: string
+        format: date-time
+      Monitoring:
+        type: object
+        properties:
+          Status:
+            type: string
+      Name:
+        type: string
+      NetworkInterfaces:
+        type: array
+        items:
+          type: object
+      OverallHealth:
+        type: object
+        properties:
+          Status:
+            type: string
+      OwningCluster:
+        type: string
+      Placement:
+        type: object
+        properties:
+          AvailabilityZone:
+            type: string
+          GroupName:
+            type: string
+          Tenancy:
+            type: string
+      Platform:
+        type: string
+      PrivateDnsName:
+        type: string
+      PrivateIpAddress:
+        type: string
+      PublicDnsName:
+        type: string
+      Role:
+        type: string
+      RootDeviceName:
+        type: string
+      RootDeviceType:
+        type: string
+      Schedule:
+        type: string
+      SecurityGroups:
+        type: array
+        items:
+          type: object
+          properties:
+            GroupId:
+              type: string
+            GroupName:
+              type: string
+      SecurityZone:
+        type: string
+      SourceDestCheck:
+        type: boolean
+      State:
+        type: object
+        properties:
+          Code:
+            type: integer
+          Name:
+            type: string
+      StateTransitionReason:
+        type: string
+      SubnetId:
+        type: string
+      Tags:
+        type: array
+        items:
+          type: object
+          properties:
+            Key:
+              type: string
+            Value:
+              type: string
+      VirtualizationType:
+        type: string
+      VpcId:
+        type: string
+      'aws:autoscaling:groupName':
+        type: string
   LBSetting:
     type: object
     required:
@@ -2153,7 +2498,7 @@ definitions:
             SSL:
               type: boolean
             IP:
-              type: string
+              type: [string, "null"]
       Locations:
         type: array
         items:
@@ -2170,14 +2515,35 @@ definitions:
               items:
                 type: string
       SSLCertificate:
-        type: string
+        type: [string, "null"]
       SSLKey:
-        type: string
+        type: [string, "null"]
       ServerName:
         type: array
         items:
           type: string
       VHostName:
+        type: string
+  UpstreamSlice:
+    type: object
+    properties:
+      Key:
+        type: string
+      EnvironmentName:
+        type: string
+      ServiceName:
+        type: string
+      UpstreamName:
+        type: string
+      DnsName:
+        type: string
+      Port:
+        type: integer
+      OwningCluster:
+        type: string
+      Name:
+        type: string
+      State:
         type: string
   UpstreamConfig:
     type: object
@@ -2205,15 +2571,12 @@ definitions:
               type: string
             FailTimeout:
               type: string
-            MaxFails:
-              type: string
             Port:
               type: integer
             State:
               type: string
             Weight:
               type: integer
-
       LoadBalancingMethod:
         type: string
       SchemaVersion:
@@ -2372,6 +2735,34 @@ definitions:
       description:
         type: string
         description: A long, human readable description of the error.
+  ASGServersState:
+    type: object
+    properties:
+      AllServicesPresent:
+        type: boolean
+      AllServicesPresentAndHealthy:
+        type: boolean
+      ServicesCount:
+        type: object
+        properties:
+          Present:
+            type: integer
+          PresentWithUnexpected:
+            type: integer
+          PresentAndHealthy:
+            type: integer
+          Ignored:
+            type: integer
+          Total:
+            type: integer
+      PresentServices:
+        type: array
+        items:
+          $ref: '#/definitions/SimpleServiceObject'
+      MissingServices:
+        type: array
+        items:
+          $ref: '#/definitions/SimpleServiceObject'
 parameters:
   ExpectedVersionHeader:
     name: expected-version
@@ -2415,36 +2806,6 @@ parameters:
     type: file
     required: true
 responses:
-  asg-servers-state:
-    description: Instances and services state
-    schema:
-      type: object
-      properties:
-        AllServicesPresent:
-          type: boolean
-        AllServicesPresentAndHealthy:
-          type: boolean
-        ServicesCount:
-          type: object
-          properties:
-            Present:
-              type: integer
-            PresentWithUnexpected:
-              type: integer
-            PresentAndHealthy:
-              type: integer
-            Ignored:
-              type: integer
-            Total:
-              type: integer
-        PresentServices:
-          type: array
-          items:
-            $ref: '#/definitions/SimpleServiceObject'
-        MissingServices:
-          type: array
-          items:
-            $ref: '#/definitions/SimpleServiceObject'
   package-created:
     description: The package was uploaded successfully.
   package-already-exists:

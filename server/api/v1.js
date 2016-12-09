@@ -82,7 +82,7 @@ function authorize(req, res, next) {
 function setup(app) {
   swaggerTools.initializeMiddleware(apiSpec, function (middleware) {
     app.use(middleware.swaggerMetadata());
-    app.use(middleware.swaggerValidator());
+    // app.use(middleware.swaggerValidator());
     app.use(API_BASE_PATH, authorize);
     app.use(middleware.swaggerRouter(swaggerOptions));
     app.use(middleware.swaggerUi());
