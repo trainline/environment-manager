@@ -17,39 +17,31 @@ let DIFF_STATE = Enums.DIFF_STATE;
 let HEALTH_STATUS = Enums.HEALTH_STATUS;
 
 
+// Services with 'Extra' diff state are present on some instances, but not in target state, typically because they're Ignored
 function getServicesSummary(services) {
-  let present = _.filter(services, (service) => {
-    let diff = service.DiffWithTargetState;
-    return diff !== DIFF_STATE.Missing && diff !== DIFF_STATE.Extra && diff !== DIFF_STATE.Ignored;
-  });
-
-  let presentWithUnexpected = _.filter(services, (service) => {
-    let diff = service.DiffWithTargetState;
-    return diff !== DIFF_STATE.Missing && diff !== DIFF_STATE.Ignored;
-  });
-
-  let total = _.filter(services, (service) => {
-    // Services with 'Extra' diff state are present on some instances, but not in target state, typically because they're Ignored
+  let expected = _.filter(services, (service) => {
     let diff = service.DiffWithTargetState;
     return diff !== DIFF_STATE.Extra && diff !== DIFF_STATE.Ignored;
   });
 
-  let presentAndHealthy = _.filter(present, (s) => s.OverallHealth.Status === HEALTH_STATUS.Healthy);
+  let healthy = _.filter(services, (s) => s.OverallHealth.Status === HEALTH_STATUS.Healthy);
+  let expectedAndHealthy = _.filter(expected, (s) => s.OverallHealth.Status === HEALTH_STATUS.Healthy);
 
+
+  let unexpected = _.filter(services, { DiffWithTargetState: DIFF_STATE.Extra });
   let missing = _.filter(services, { DiffWithTargetState: DIFF_STATE.Missing });
   let ignored = _.filter(services, { DiffWithTargetState: DIFF_STATE.Ignored });
 
   return {
-    AllServicesPresent: present.length === total.length,
-    AllServicesPresentAndHealthy: presentAndHealthy.length === total.length,
+    AllExpectedServicesPresent: missing.length === 0,
+    AllExpectedServicesHealthy: expectedAndHealthy.length === expected.length,
     ServicesCount: {
-      Present: present.length,
-      PresentWithUnexpected: presentWithUnexpected.length,
-      PresentAndHealthy: presentAndHealthy.length,
-      Ignored: ignored.length,
-      Total: total.length
+      Expected: expected.length,
+      Unexpected: unexpected.length,
+      Missing: missing.length,
+      Ignored: ignored.length
     },
-    PresentServices: fp.map(fp.pick(['Name', 'Slice', 'Version']), present),
+    ExpectedServices: fp.map(fp.pick(['Name', 'Slice', 'Version']), expected),
     MissingServices: fp.map(fp.pick(['Name', 'Slice', 'Version']), missing)
   };
 }

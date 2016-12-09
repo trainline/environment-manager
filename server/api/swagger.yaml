@@ -2206,6 +2206,33 @@ definitions:
             properties:
               Status:
                 type: string
+  ASGServersState:
+    type: object
+    properties:
+      AllExpectedServicesPresent:
+        type: boolean
+      AllExpectedServicesHealthy:
+        type: boolean
+      ServicesCount:
+        type: object
+        properties:
+          Expected:
+            type: integer
+          Unexpected:
+            type: integer
+          Missing:
+            type: integer
+          Ignored:
+            type: integer
+      ExpectedServices:
+        type: array
+        items:
+          $ref: '#/definitions/SimpleServiceObject'
+      MissingServices:
+        type: array
+        items:
+          $ref: '#/definitions/SimpleServiceObject'
+
   EnvironmentScheduleValue:
     type: object
     properties:
@@ -2735,34 +2762,6 @@ definitions:
       description:
         type: string
         description: A long, human readable description of the error.
-  ASGServersState:
-    type: object
-    properties:
-      AllServicesPresent:
-        type: boolean
-      AllServicesPresentAndHealthy:
-        type: boolean
-      ServicesCount:
-        type: object
-        properties:
-          Present:
-            type: integer
-          PresentWithUnexpected:
-            type: integer
-          PresentAndHealthy:
-            type: integer
-          Ignored:
-            type: integer
-          Total:
-            type: integer
-      PresentServices:
-        type: array
-        items:
-          $ref: '#/definitions/SimpleServiceObject'
-      MissingServices:
-        type: array
-        items:
-          $ref: '#/definitions/SimpleServiceObject'
 parameters:
   ExpectedVersionHeader:
     name: expected-version

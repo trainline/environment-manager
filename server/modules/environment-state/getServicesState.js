@@ -91,6 +91,7 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
       let serviceOnInstance = _.find(instance.Services, { Name: service.Name, Slice: service.Slice });
 
       if (serviceOnInstance !== undefined) {
+        // If at least one instance has state "Missing", overall service state will also be "Missing"
         if (serviceOnInstance.DiffWithTargetState === 'Missing') {
           service.DiffWithTargetState = 'Missing';
         }
