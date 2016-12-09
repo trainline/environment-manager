@@ -141,51 +141,22 @@ describe('getASGState', () => {
 
         let result = getServicesSummary(testData);
 
-        let expected = {
-            AllServicesPresent: false,
-            AllServicesPresentAndHealthy: false,
-            ServicesCount: {
-                Present: 4,
-                PresentWithUnexpected: 4,
-                PresentAndHealthy: 2,
-                Ignored: 1,
-                Total: 7
-            },
-            "MissingServices": [
-              {
-                "Name": "BasketService",
-                "Slice": "blue",
-                "Version": "0.4.0.7-alpha1",
-              },
-              {
-                "Name": "TestService0",
-                "Slice": "blue",
-                "Version": "ver-1-blue"
-              },
-              {
-                "Name": "TestService2",
-                "Slice": "none",
-                "Version": "test-new2"
-              }
-            ],
-            PresentServices: [{
-                "Name": "TestService0",
-                "Slice": "green",
-                "Version": "ver2-green"
-            }, {
-                "Name": "TestService13",
-                "Slice": "none",
-                "Version": "ver-1"
-            }, {
-                "Name": "TestService3",
-                "Slice": "none",
-                "Version": "vtest-new2"
-            }, {
-                "Name": "TestService4",
-                "Slice": "none",
-                "Version": "0.0.123"
-            }]
-        };
+        let expected = { AllExpectedServicesPresent: false,
+          AllExpectedServicesHealthy: false,
+          ServicesCount: { Expected: 7, Unexpected: 0, Missing: 3, Ignored: 1 },
+          ExpectedServices: 
+           [ { Name: 'TestService0', Slice: 'green', Version: 'ver2-green' },
+             { Name: 'TestService13', Slice: 'none', Version: 'ver-1' }, 
+             { Name: 'TestService3', Slice: 'none', Version: 'vtest-new2' }, 
+             { Name: 'TestService4', Slice: 'none', Version: '0.0.123' }, 
+             { Name: 'BasketService', Slice: 'blue', Version: '0.4.0.7-alpha1'}, 
+             { Name: 'TestService0', Slice: 'blue', Version: 'ver-1-blue' }, { Name: 'TestService2', Slice: 'none', Version: 'test-new2' }],
+          MissingServices: 
+           [ { Name: 'BasketService',
+               Slice: 'blue',
+               Version: '0.4.0.7-alpha1' },
+             { Name: 'TestService0', Slice: 'blue', Version: 'ver-1-blue' },
+             { Name: 'TestService2', Slice: 'none', Version: 'test-new2' } ] };
 
         result.should.be.eql(expected);
     });
@@ -197,52 +168,22 @@ describe('getASGState', () => {
         });
 
         let result = getServicesSummary(testData);
+        console.log(result);
 
-        let expected = {
-            AllServicesPresent: true,
-            AllServicesPresentAndHealthy: false,
-            ServicesCount: {
-                Present: 7,
-                PresentWithUnexpected: 7,
-                PresentAndHealthy: 5,
-                Ignored: 1,
-                Total: 7
-            },
-            "MissingServices": [
-              
-            ],
-            PresentServices: [{
-                "Name": "TestService0",
-                "Slice": "green",
-                "Version": "ver2-green"
-            }, {
-                "Name": "TestService13",
-                "Slice": "none",
-                "Version": "ver-1"
-            }, {
-                "Name": "TestService3",
-                "Slice": "none",
-                "Version": "vtest-new2"
-            }, {
-                "Name": "TestService4",
-                "Slice": "none",
-                "Version": "0.0.123"
-            }, {
-              "Name": "BasketService",
-              "Slice": "blue",
-              "Version": "0.4.0.7-alpha1",
-            },
-            {
-              "Name": "TestService0",
-              "Slice": "blue",
-              "Version": "ver-1-blue"
-            },
-            {
-              "Name": "TestService2",
-              "Slice": "none",
-              "Version": "test-new2"
-            }]
-        };
+        let expected = { AllExpectedServicesPresent: true,
+            AllExpectedServicesHealthy: false,
+            ServicesCount: { Expected: 7, Unexpected: 0, Missing: 0, Ignored: 1 },
+            ExpectedServices: 
+            [ { Name: 'TestService0', Slice: 'green', Version: 'ver2-green' },
+             { Name: 'TestService13', Slice: 'none', Version: 'ver-1' },
+             { Name: 'TestService3', Slice: 'none', Version: 'vtest-new2' },
+             { Name: 'TestService4', Slice: 'none', Version: '0.0.123' },
+             { Name: 'BasketService',
+               Slice: 'blue',
+               Version: '0.4.0.7-alpha1' },
+             { Name: 'TestService0', Slice: 'blue', Version: 'ver-1-blue' },
+             { Name: 'TestService2', Slice: 'none', Version: 'test-new2' } ],
+                MissingServices: [] };
 
         result.should.be.eql(expected);
     });
