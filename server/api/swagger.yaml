@@ -325,6 +325,7 @@ paths:
       summary: Modify deployment - cancel in-progress, or modify Action.
       tags:
         - Deployment
+      x-authorizer: deployments
       parameters:
         - name: id
           in: path
