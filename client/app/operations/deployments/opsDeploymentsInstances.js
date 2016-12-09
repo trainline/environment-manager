@@ -8,7 +8,7 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsInstanc
     instancesFilter: '&'
   },
   controllerAs: 'vm',
-  controller: function ($scope, $http) {
+  controller: function ($scope, $http, $uibModal) {
     var vm = this;
 
     function refresh() {
@@ -28,6 +28,19 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsInstanc
         vm.dataFound = true;
       });
     }
+
+    vm.showDetails = function (instance) {
+      console.log(instance);
+      $uibModal.open({
+        component: 'asgSingleInstance',
+        size: 'lg',
+        resolve: {
+          instance: function () {
+            return instance;
+          },
+        },
+      });
+    };
 
     $scope.$watch('vm.query', function () {
       refresh();

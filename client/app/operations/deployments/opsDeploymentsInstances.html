@@ -65,13 +65,13 @@
             <table class="table">
               <tbody>
                 <tr ng-repeat="service in instance.Services">
-                  <td><health-status status='service.OverallHealth.Status'></health-status> {{ service.NameAndSlice }} <span class="slice-symbol" ng-class="service.Slice"></span> {{ service.Version }}</td>
+                  <td><health-status status='service.OverallHealth.Status'></health-status> {{ service.NameAndSlice }}
                 </tr>
               </tbody>
             </table>
           </td>
           <td>
-            <button class="btn btn-default" type="button" ng-click="vm.showDetails(instances)">Show details</button>
+            <button class="btn btn-default" type="button" ng-click="vm.showDetails(instance)">Show details</button>
           </td>
         </tr>
       </tbody>

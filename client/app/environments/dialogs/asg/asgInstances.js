@@ -17,9 +17,6 @@ angular.module('EnvironmentManager.environments').component('asgInstances', {
         component: 'asgSingleInstance',
         size: 'lg',
         resolve: {
-          asg: function () {
-            return vm.asg;
-          },
           instance: function () {
             return instance;
           },
