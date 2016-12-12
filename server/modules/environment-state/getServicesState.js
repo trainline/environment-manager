@@ -29,9 +29,7 @@ function getServiceChecksInfo(serviceObjects) {
 }
 
 function getServiceOverallHealth(healthChecks) {
-  return {
-    Status: _.some(healthChecks, { Status: HEALTH_BAD }) ? HEALTH_BAD : HEALTH_GOOD
-  };
+  return _.some(healthChecks, { Status: HEALTH_BAD }) ? HEALTH_BAD : HEALTH_GOOD
 }
 
 function checkServiceProperties(svcA, svcB, prop) {
@@ -97,7 +95,7 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
         if (serviceOnInstance.DiffWithTargetState === 'Missing') {
           service.DiffWithTargetState = 'Missing';
         }
-        return serviceOnInstance.OverallHealth.Status === 'Healthy';
+        return serviceOnInstance.OverallHealth === 'Healthy';
       }
       return false;
     });

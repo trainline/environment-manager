@@ -24,8 +24,8 @@ function getServicesSummary(services) {
     return diff !== DIFF_STATE.Extra && diff !== DIFF_STATE.Ignored;
   });
 
-  let healthy = _.filter(services, (s) => s.OverallHealth.Status === HEALTH_STATUS.Healthy);
-  let expectedAndHealthy = _.filter(expected, (s) => s.OverallHealth.Status === HEALTH_STATUS.Healthy);
+  let healthy = _.filter(services, (s) => s.OverallHealth === HEALTH_STATUS.Healthy);
+  let expectedAndHealthy = _.filter(expected, (s) => s.OverallHealth === HEALTH_STATUS.Healthy);
 
 
   let unexpected = _.filter(services, { DiffWithTargetState: DIFF_STATE.Extra });

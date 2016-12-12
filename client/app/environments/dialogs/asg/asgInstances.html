@@ -23,7 +23,7 @@
       </thead>
       <tbody>
         <tr ng-repeat="instance in vm.asgState.Instances | orderBy : ['Name', 'LifecycleState', 'Status', 'Ip']">
-          <td><health-status status='instance.OverallHealth.Status'></health-status> 
+          <td><health-status status='instance.OverallHealth'></health-status> 
             Name: {{ instance.Name || '-'}}
             <br />&nbsp; &nbsp; &nbsp;ID: {{ instance.InstanceId || '-'}}
           </td>

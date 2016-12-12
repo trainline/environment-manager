@@ -2257,10 +2257,7 @@ definitions:
                 Total:
                   type: integer
             OverallHealth:
-              type: object
-              properties:
-                Status:
-                  type: string
+              type: string
             HealthChecks:
               type: array
               items:
@@ -2283,10 +2280,7 @@ definitions:
           Name:
             type: string
           OverallHealth:
-            type: object
-            properties:
-              Status:
-                type: string
+            type: string
           LifecycleState:
             type: string
           ContactEmail:
@@ -2303,10 +2297,7 @@ definitions:
               NameAndSlice:
                 type: string
               OverallHealth:
-                type: object
-                properties:
-                  Status:
-                    type: string
+                type: string
               HealthChecks:
                 type: object
                 properties:
@@ -2518,10 +2509,7 @@ definitions:
         items:
           type: object
       OverallHealth:
-        type: object
-        properties:
-          Status:
-            type: string
+        type: string
       OwningCluster:
         type: string
       Placement:
