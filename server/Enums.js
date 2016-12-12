@@ -36,7 +36,8 @@ module.exports = {
     InProgress: 'In Progress',
     Success: 'Success',
     Failed: 'Failed',
-    Cancelled: 'Cancelled'
+    Cancelled: 'Cancelled',
+    Unknown: 'Unknown'
   },
 
   AutoScalingNotificationType: {

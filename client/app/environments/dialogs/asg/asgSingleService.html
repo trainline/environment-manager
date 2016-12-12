@@ -1,11 +1,12 @@
 <div class="modal-content">
   <div class="modal-body" style="padding: 5px 15px">
     <div>
-      <h3>Service: {{ vm.service.Name }}<span ng-if="vm.service.Slice !== 'none'">-{{ vm.service.Slice }}</span></h3>
+      <h3>Service: {{ vm.service.Name }}<span ng-if="vm.service.Slice !== 'none'">-{{ vm.service.Slice }}</span> {{ vm.service.Version }}</h3>
       <table class="table">
         <thead>
           <tr>
             <th class="text-nowrap">Instance</th>
+            <th class="text-nowrap">Installed</th>
             <th class="text-nowrap">Health Checks</th>
             <!-- <th class="text-nowrap">Deploy Reason</th> -->
             <th class="text-nowrap">Deploy Log</th>
@@ -14,7 +15,11 @@
         <tbody>
           <tr ng-repeat="instance in vm.instances">
             <td><health-status status='instance.OverallHealth.Status'></health-status> {{ instance.InstanceId }} ({{ instance.PrivateIpAddress }})
-              <span ng-if="instance.serviceObject.DiffWithTargetState === 'Ignored'"><strong>[IGNORED]</strong>
+            </td>
+            <td>
+              <span style="display: inline-block; padding-left: 25%; zoom: 120%" ng-if="instance.serviceObject.DiffWithTargetState === null" class="health-status glyphicon glyphicon-ok-sign healthy"></span>
+
+              <span ng-if="instance.serviceObject.DiffWithTargetState === 'Ignored'"><strong>Ignored</strong>
                 <span data-uib-popover
                        data-popover-trigger="'mouseenter'"
                        uib-popover-template="'app/environments/dialogs/asg/popovers/help-service-ignored.html'"
@@ -23,7 +28,7 @@
                        aria-hidden="true">
                 </span>
               </span>
-              <span ng-if="instance.serviceObject.DiffWithTargetState === 'Missing'"><strong>[MISSING]</strong>
+              <span ng-if="instance.serviceObject.DiffWithTargetState === 'Missing'"><strong>Missing</strong>
                 <span data-uib-popover
                        data-popover-trigger="'mouseenter'"
                        uib-popover-template="'app/environments/dialogs/asg/popovers/help-service-missing.html'"
@@ -32,7 +37,7 @@
                        aria-hidden="true">
                 </span>
               </span>
-              <span ng-if="instance.serviceObject.DiffWithTargetState === 'Extra'"><strong>[UNEXPECTED]</strong> 
+              <span ng-if="instance.serviceObject.DiffWithTargetState === 'Extra'"><strong>Unexpected</strong> 
                  <span data-uib-popover
                        data-popover-trigger="'mouseenter'"
                        uib-popover-template="'app/environments/dialogs/asg/popovers/help-service-unexpected.html'"

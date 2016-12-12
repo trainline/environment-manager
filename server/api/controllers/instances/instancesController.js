@@ -14,6 +14,8 @@ let serviceTargets = require('modules/service-targets');
 let logger = require('modules/logger');
 let getInstanceState = require('modules/environment-state/getInstanceState');
 let Environment = require('models/Environment');
+let Enums = require('Enums');
+let DEPLOYMENT_STATUS = Enums.DEPLOYMENT_STATUS;
 
 /**
  * GET /instances
@@ -26,7 +28,7 @@ function getInstances(req, res, next) {
   const ipAddress = req.swagger.params.ip_address.value;
   const instanceId = req.swagger.params.instance_id.value;
   const since = req.swagger.params.since.value;
-  const includeServices = req.swagger.params.include_services.value;
+  const includeDeploymentsStatus = req.swagger.params.include_deployments_status.value;
 
   co(function* () {
     let filter = {};
@@ -69,7 +71,7 @@ function getInstances(req, res, next) {
       })
     }
 
-    if (includeServices === true) {
+    if (includeDeploymentsStatus === true) {
       list = yield _.map(list, (instance) => {
         let instanceEnvironment = instance.getTag('Environment', null);
 
@@ -77,13 +79,14 @@ function getInstances(req, res, next) {
 
         let instanceName = instance.getTag('Name', null);
         let instanceRoleTag = instance.getTag('Role', null);
-        if (instanceName === null || instanceEnvironment === null || instanceRoleTag === null) {
+
+        if (instanceName === null || instanceName === '' || instanceEnvironment === null || instanceRoleTag === null) {
           // This instance won't be returned
           return false;
         }
 
         // If instances were fetched by cross scan, instance.AccountName is available, otherwise, for simple scan use accountName
-        return getInstanceState(instance.AccountName || accountName, instanceEnvironment, instanceName, instance.InstanceId, instanceRoleTag)
+        return getInstanceState(instance.AccountName || accountName, instanceEnvironment, instanceName, instance.InstanceId, instanceRoleTag, instance.LaunchTime)
           .then((state) => {
             _.assign(instance, state);
             return instance;
@@ -92,7 +95,7 @@ function getInstances(req, res, next) {
 
       // Remove instances without Environment tag
       list = _.compact(list);
-      list = _.sortBy(list, (value) => new Date(value.LaunchTime)).reverse();
+      list = _.sortBy(list, (instance) => new Date(instance.LaunchTime)).reverse();
       res.json(list);
     } else {
       res.json(list);
