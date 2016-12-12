@@ -10,7 +10,7 @@ module.exports = route.get('/:account/environments/:environment/roles/')
   .do((request, response) => {
 
     var query = {
-      name: 'GetServiceRoles',
+      name: 'GetServerRoles',
       accountName: request.params.account,
       environmentName: request.params.environment,
     };

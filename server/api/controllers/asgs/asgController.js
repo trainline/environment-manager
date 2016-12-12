@@ -1,6 +1,8 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
+let _ = require('lodash');
+let Enums = require('Enums');
 let co = require('co');
 let getAllASGs = require('queryHandlers/ScanCrossAccountAutoScalingGroups');
 let getAccountASGs = require('queryHandlers/ScanAutoScalingGroups');
@@ -12,6 +14,7 @@ let SetAutoScalingGroupSize = require('commands/asg/SetAutoScalingGroupSize');
 let SetAutoScalingGroupSchedule = require('commands/asg/SetAutoScalingGroupSchedule');
 let UpdateAutoScalingGroup = require('commands/asg/UpdateAutoScalingGroup');
 let GetAutoScalingGroupScheduledActions = require('queryHandlers/GetAutoScalingGroupScheduledActions');
+let getASGReady = require('modules/environment-state/getASGReady');
 let Environment = require('models/Environment');
 
 /**
@@ -45,6 +48,19 @@ function getAsgByName(req, res, next) {
     return getASG({ accountName, autoScalingGroupName }).then(data => res.json(data)).catch(next);
   });
 }
+
+
+/**
+ * GET /asgs/{name}/ready
+ */
+function getAsgReadyByName(req, res, next) {
+  const autoScalingGroupName = req.swagger.params.name.value;
+  const environmentName = req.swagger.params.environment.value;
+
+  return getASGReady({ autoScalingGroupName, environmentName})
+    .then((data) => res.json(data)).catch(next);
+}
+
 
 /**
  * GET /asgs/{name}/ips
@@ -156,6 +172,7 @@ function putAsgLaunchConfig(req, res, next) {
 module.exports = {
   getAsgs,
   getAsgByName,
+  getAsgReadyByName,
   getAsgIps,
   getAsgLaunchConfig,
   putScalingSchedule,
