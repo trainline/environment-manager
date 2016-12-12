@@ -24,8 +24,8 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       var environmentName = GetActiveEnvironment();
       vm.Environment.EnvironmentName = environmentName;
 
-      $http.get('/api/v1/environments/' + environmentName + '/protected', { params: { action: PROTECTED_ACTION } }).then(function(isProtected) {
-        vm.schedulingProtected = isProtected;
+      $http.get('/api/v1/environments/' + environmentName + '/protected', { params: { action: PROTECTED_ACTION } }).then(function(result) {
+        vm.schedulingProtected = result.data.isProtected;
         vm.Refresh();
       });
     }
