@@ -6,10 +6,7 @@ let HttpRequestError = require('modules/errors/HttpRequestError.class');
 let consulClient = require('modules/consul-client');
 let logger = require('modules/logger');
 let _ = require('lodash');
-
-function throwHttpError(error) {
-  throw new HttpRequestError(`An error has occurred contacting consul agent: ${error.message}`);
-}
+let assert = require('assert');
 
 function getAllServices(environment) {
   let getServiceList = consulClient => consulClient.catalog.service.list();
@@ -19,8 +16,7 @@ function getAllServices(environment) {
     createConsulClient(environment)
       .then(getServiceList)
       .then(filterByDeploymentId)
-      .then(formatServices)
-      .catch(throwHttpError);
+      .then(formatServices);
 
   return executeAction(promiseFactoryMethod);
 }
@@ -41,15 +37,17 @@ function getAllNodes(environment) {
 }
 
 function getNode(environment, nodeName) {
+  assert(nodeName, 'nodeName is required');
   return executeConsul(environment, consulClient => consulClient.catalog.node.services(nodeName));
 }
 
 function getNodeHealth(environment, nodeName) {
+  assert(nodeName, 'nodeName is required');
   return executeConsul(environment, consulClient => consulClient.health.node(nodeName));
 }
 
 function executeConsul(environment, fn) {
-  let promiseFactoryMethod = () => createConsulClient(environment).then(fn).catch(throwHttpError);
+  let promiseFactoryMethod = () => createConsulClient(environment).then(fn);
   return executeAction(promiseFactoryMethod);
 }
 

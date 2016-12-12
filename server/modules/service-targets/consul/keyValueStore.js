@@ -66,6 +66,11 @@ function getAllServiceTargets(environmentName, runtimeServerRole) {
     });
 }
 
+function getInstanceServiceDeploymentInfo(environmentName, deploymentId, instanceId) {
+  let key = `deployments/${deploymentId}/nodes/${instanceId}`;
+  return getTargetState(environmentName, { key, recurse: true }).then(data => _.get(data, '[0].value'));
+}
+
 function getServiceDeploymentCause(environmentName, deploymentId, instanceId) {
   let key = `deployments/${deploymentId}/nodes/${instanceId}`;
   let value = '[0].value.Cause';
@@ -159,5 +164,6 @@ module.exports = {
   setTargetState,
   removeTargetState,
   getAllServiceTargets,
-  getServiceDeploymentCause
+  getServiceDeploymentCause,
+  getInstanceServiceDeploymentInfo
 };
