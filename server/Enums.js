@@ -28,6 +28,7 @@ module.exports = {
     Warning: 'Warning',
     Error: 'Error',
     NoData: 'NoData',
+    Unknown: 'Unknown',
     Missing: 'Missing',
   },
 

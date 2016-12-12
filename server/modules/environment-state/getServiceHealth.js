@@ -3,6 +3,7 @@
 
 let _ = require('lodash');
 let Enums = require('Enums');
+let HEALTH_STATUS = Enums.HEALTH_STATUS;
 let co = require('co');
 let serviceDiscovery = require('modules/service-discovery');
 let GetServerRoles = require('queryHandlers/services/GetServerRoles');
@@ -51,7 +52,28 @@ function* getServiceHealth({ environmentName, serviceName }) {
     }
   }
 
-  return list;
+  function aggregateHealth(list) {
+    if (_.every(list, { OverallHealth: HEALTH_STATUS.Healthy })) {
+      return HEALTH_STATUS.Healthy;
+    } else if (_.some(list, { OverallHealth: HEALTH_STATUS.Missing })) {
+      return HEALTH_STATUS.Missing;
+    } else if (_.some(list, { OverallHealth: HEALTH_STATUS.Error })) {
+      return HEALTH_STATUS.Error;
+    } else if (_.some(list, { OverallHealth: HEALTH_STATUS.Warning })) {
+      return HEALTH_STATUS.Warning;
+    } else {
+      return HEALTH_STATUS.Unknown;
+    }
+  }
+
+  _.each(list, (asg) => {
+    asg.OverallHealth = aggregateHealth(asg.Services);
+  });
+
+  return {
+    OverallHealth: aggregateHealth(list),
+    AutoScalingGroups: list
+  };
 }
 
 module.exports = co.wrap(getServiceHealth);
