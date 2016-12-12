@@ -54,6 +54,13 @@ class AutoScalingGroup {
     return name;
   }
 
+  static getAllByServerRoleName(environmentName, serverRoleName) {
+    return AutoScalingGroup.getAllByEnvironment(environmentName)
+      .then((asgs) => {
+        return _.filter(asgs, (asg) => asg.getTag('Role') === serverRoleName);
+      });
+  }
+
   static getByName(accountName, autoScalingGroupName) {
     return co(function* () {
       let query = {
