@@ -659,6 +659,21 @@ paths:
           description: The instance
           schema:
             $ref: '#/definitions/Instance'
+  /instances/{id}/connect:
+    x-swagger-router-controller: instancesController
+    get:
+      operationId: connectToInstance
+      summary: Connect to the instance via remote desktop.
+      tags:
+        - Instance
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Remote desktop connection
   /instances/{id}/maintenance:
     x-swagger-router-controller: instancesController
     put:
