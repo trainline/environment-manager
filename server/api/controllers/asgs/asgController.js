@@ -5,6 +5,7 @@ let co = require('co');
 let getAllASGs = require('queryHandlers/ScanCrossAccountAutoScalingGroups');
 let getAccountASGs = require('queryHandlers/ScanAutoScalingGroups');
 let getASG = require('queryHandlers/GetAutoScalingGroup');
+let AutoScalingGroup = require('models/AutoScalingGroup');
 let getDynamo = require('queryHandlers/GetDynamoResource');
 let GetLaunchConfiguration = require('queryHandlers/GetLaunchConfiguration');
 let SetLaunchConfiguration = require('commands/launch-config/SetLaunchConfiguration');
@@ -108,8 +109,8 @@ function deleteAsg(req, res, next) {
   
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    getASG({ accountName, autoScalingGroupName })
-      .then((asg) => asg.delete())
+    AutoScalingGroup.getByName(accountName, autoScalingGroupName)
+      .then((asg) => asg.deleteASG())
       .then((status) => {
         res.json({
           Ok: status
@@ -179,6 +180,7 @@ module.exports = {
   getAsgLaunchConfig,
   putScalingSchedule,
   getScalingSchedule,
+  deleteAsg,
   putAsg,
   putAsgSize,
   putAsgLaunchConfig

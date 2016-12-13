@@ -35,6 +35,11 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
 
     _.assign(AutoScalingGroup.prototype, {
 
+      delete: function () {
+        var segments = ['api', 'v1', 'asgs', this.AsgName];
+        return $http.delete(segments.join('/'), { params: { environment: this.getTag('Environment')}});
+      },
+
       getLaunchConfig: function () {
         var self = this;
         return $http.get('/api/v1/asgs/' + this.AsgName + '/launch-config', { params: { environment: this.getTag('Environment') }}).then(function(response) {

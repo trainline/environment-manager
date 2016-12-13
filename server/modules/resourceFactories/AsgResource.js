@@ -84,7 +84,7 @@ function AsgResource(client, accountName) {
   };
 
   this.delete = function ({ name, force }) {
-    return client.deleteAutoScalingGroup({ AutoScalingGroupName: auto, ForceDelete: force }).promise();
+    return client.deleteAutoScalingGroup({ AutoScalingGroupName: name, ForceDelete: force }).promise();
   };
 
   this.put = function (parameters) {

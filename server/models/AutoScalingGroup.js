@@ -8,6 +8,7 @@ let EnvironmentType = require('models/EnvironmentType');
 let Environment = require('models/Environment');
 let taggable = require('./taggable');
 let serviceTargets = require('modules/service-targets');
+let resourceProvider = require('modules/resourceProvider');
 
 class AutoScalingGroup {
 
@@ -32,16 +33,17 @@ class AutoScalingGroup {
     return this.getTag('Role');
   }
 
-  delete() {
+  deleteASG() {
     let environmentName = this.getTag('Environment');
+    let self = this;
     return co(function* () {
+      let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
       let asgResource = yield resourceProvider.getInstanceByName('asgs', { accountName });
       let launchConfigResource = yield resourceProvider.getInstanceByName('launchconfig', { accountName });
+      yield asgResource.delete({ name: self.AutoScalingGroupName, force: true });
+      yield launchConfigResource.delete({ name: self.LaunchConfigurationName });
 
-      yield asgResource.delete({ name: this.AutoScalingGroupName, force: true });
-      yield launchConfigResource.delete({ name: this.LaunchConfigurationName });
-
-      yield serviceTargets.removeRuntimeServerRoleTargetState(environmentName, this.getRuntimeServerRoleName());
+      yield serviceTargets.removeRuntimeServerRoleTargetState(environmentName, self.getRuntimeServerRoleName());
 
       return true;
     });
