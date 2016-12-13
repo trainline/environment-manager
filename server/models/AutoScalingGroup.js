@@ -9,22 +9,10 @@ let EnvironmentType = require('models/EnvironmentType');
 let Environment = require('models/Environment');
 let taggable = require('./taggable');
 
-function parseName(name) {
-  let segments = name.split('-');
-
-  return {
-    environment: segments[0],
-    clusterCode: segments[1],
-    serverRole: segments[2],
-    slice: segments[3] || null,
-  };
-}
-
 class AutoScalingGroup {
 
   constructor(data) {
     _.assign(this, data);
-    this.$nameSegments = parseName(this.AutoScalingGroupName);
   }
 
   getLaunchConfiguration() {
@@ -40,16 +28,10 @@ class AutoScalingGroup {
     return EnvironmentType.getByName(this.getTag('EnvironmentType'));
   }
 
-  getServerRoleName() {
-    return this.$nameSegments.serverRole;
+  getRuntimeServerRoleName() {
+    return this.getTag('Role');
   }
 
-  getRuntimeServerRoleName() {
-    let name = this.$nameSegments.serverRole;
-    if (this.$nameSegments.slice !== null) {
-      name += '-' + this.$nameSegments.slice;
-    }
-    return name;
   }
 
   static getByName(accountName, autoScalingGroupName) {
