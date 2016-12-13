@@ -63,9 +63,6 @@ describe('ScanServersStatus', function() {
     sendQuery: function(value) {
       let query = value.query;
       switch(query.name) {
-        case 'ScanAutoScalingGroups':
-          return Promise.resolve([mockAsg]);
-          break;
         case 'ScanCrossAccountInstances':
           return Promise.resolve([mockInstance_1, mockInstance_2]);
           break;
@@ -83,8 +80,14 @@ describe('ScanServersStatus', function() {
   };
 
   let Environment = {
-    getAccountNameForEnvironment: function() {
+    getAccountNameForEnvironment: function () {
       return Promise.resolve();
+    }
+  };
+
+  let AutoScalingGroupMock = {
+    getAllByEnvironment: function () {
+      return [mockAsg];
     }
   };
 
@@ -100,7 +103,8 @@ describe('ScanServersStatus', function() {
     sut = rewire('queryHandlers/ScanServersStatus');
     sut.__set__({
       sender,
-      Environment
+      Environment,
+      AutoScalingGroup: AutoScalingGroupMock
     });
 
   });
@@ -123,7 +127,7 @@ describe('ScanServersStatus', function() {
         assert.equal(services.length, 1);
         assert.equal(services[0].Name, RUNNING_INSTANCE_SERVICE);
       });
-    })
+    });
   });
 
   describe('ASGs with the latest but unstable images', () => {

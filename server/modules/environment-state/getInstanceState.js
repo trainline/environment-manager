@@ -19,29 +19,20 @@ function mapConsulTags(tags) {
 
 function getOverallHealth(checks) {
   let check = _.find(checks, { CheckID: 'serfHealth' });
-  let status;
   if (check === undefined) {
-    status = Enums.HEALTH_STATUS.NoData;
+    return Enums.HEALTH_STATUS.NoData;
   } else if (check.Status === 'passing') {
-    status = Enums.HEALTH_STATUS.Healthy;
+    return Enums.HEALTH_STATUS.Healthy;
   } else {
-    status = Enums.HEALTH_STATUS.Error;
+    return Enums.HEALTH_STATUS.Error;
   }
-  
-  return {
-    Status: status
-  };
 }
 
 function getInstanceServiceOverallHealth(checks) {
   if (_.every(checks, { Status: 'passing' })) {
-    return {
-      Status: Enums.HEALTH_STATUS.Healthy,
-    };
+    return Enums.HEALTH_STATUS.Healthy;
   } else {
-    return {
-      Status: Enums.HEALTH_STATUS.Error,
-    };
+    return Enums.HEALTH_STATUS.Error;
   }
 }
 
@@ -161,9 +152,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
           Action: targetService.Action,
           HealthChecks: [],
           LogLink: `/api/v1/deployments/${targetService.DeploymentId}/log?account=${accountName}&instance=${instanceId}`,
-          OverallHealth: {
-            Status: Enums.HEALTH_STATUS.Missing
-          },
+          OverallHealth: Enums.HEALTH_STATUS.Missing,
           DiffWithTargetState: (targetService.Action === Enums.ServiceAction.INSTALL ? 'Missing' : 'Ignored'),
           Issues: { Warnings: [], Errors: [] }
         };

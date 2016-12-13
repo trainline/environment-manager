@@ -22,6 +22,7 @@ function getAllServices(environment) {
 }
 
 function getService(environment, serviceQuery) {
+  serviceQuery = `${environment}-${serviceQuery}`;
   return executeConsul(environment, consulClient => consulClient.catalog.service.nodes(serviceQuery))
     .then(service => {
       if (!service.length) return service;
