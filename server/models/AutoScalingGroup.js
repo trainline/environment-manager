@@ -4,10 +4,10 @@
 let _ = require('lodash');
 let co = require('co');
 let sender = require('modules/sender');
-let launchConfigurationClientFactory = require('modules/clientFactories/launchConfigurationClientFactory');
 let EnvironmentType = require('models/EnvironmentType');
 let Environment = require('models/Environment');
 let taggable = require('./taggable');
+let serviceTargets = require('modules/service-targets');
 
 class AutoScalingGroup {
 
@@ -19,7 +19,7 @@ class AutoScalingGroup {
     let self = this;
     return co(function* () {
       let name = self.LaunchConfigurationName;
-      let client = yield launchConfigurationClientFactory.create({ accountName: self.$accountName });
+      let client = yield resourceProvider.getInstanceByName('launchconfig', { accountName: self.$accountName });
       return client.get({ name });
     });
   }
@@ -32,6 +32,19 @@ class AutoScalingGroup {
     return this.getTag('Role');
   }
 
+  delete() {
+    let environmentName = this.getTag('Environment');
+    return co(function* () {
+      let asgResource = yield resourceProvider.getInstanceByName('asgs', { accountName });
+      let launchConfigResource = yield resourceProvider.getInstanceByName('launchconfig', { accountName });
+
+      yield asgResource.delete({ name: this.AutoScalingGroupName, force: true });
+      yield launchConfigResource.delete({ name: this.LaunchConfigurationName });
+
+      yield serviceTargets.removeRuntimeServerRoleTargetState(environmentName, this.getRuntimeServerRoleName());
+
+      return true;
+    });
   }
 
   static getByName(accountName, autoScalingGroupName) {

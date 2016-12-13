@@ -100,6 +100,25 @@ function putAsg(req, res, next) {
 }
 
 /**
+ * PUT /asgs/{name}
+ */
+function deleteAsg(req, res, next) {
+  const environmentName = req.swagger.params.environment.value;
+  const autoScalingGroupName = req.swagger.params.name.value;
+  
+  return co(function* () {
+    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+    getASG({ accountName, autoScalingGroupName })
+      .then((asg) => asg.delete())
+      .then((status) => {
+        res.json({
+          Ok: status
+        });
+      }).catch(next);
+  });
+}
+
+/**
  * PUT /asgs/{name}/scaling-schedule
  */
 function putScalingSchedule(req, res, next) {

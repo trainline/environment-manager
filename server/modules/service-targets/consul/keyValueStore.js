@@ -111,6 +111,13 @@ function setTargetState(environment, parameters) {
   return executeAction(promiseFactoryMethod);
 }
 
+function removeRuntimeServerRoleTargetState(environmentName, runtimeServerRoleName) {
+  return removeTargetState(environment, {
+    key: `environments/${environmentName}/roles/${runtimeServerRoleName}`,
+    recurse: true
+  });
+}
+
 function removeTargetState(environment, parameters) {
   assert(parameters, 'Expected "parameters" not to be null or empty.');
   let promiseFactoryMethod = () => new Promise((resolve, reject) => {
@@ -163,6 +170,7 @@ module.exports = {
   getTargetState,
   setTargetState,
   removeTargetState,
+  removeRuntimeServerRoleTargetState,
   getAllServiceTargets,
   getServiceDeploymentCause,
   getInstanceServiceDeploymentInfo

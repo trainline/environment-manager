@@ -9,6 +9,7 @@ let {
   getTargetState,
   setTargetState,
   removeTargetState,
+  removeRuntimeServerRoleTargetState,
   getAllServiceTargets,
   getServiceDeploymentCause,
   getInstanceServiceDeploymentInfo
@@ -18,6 +19,7 @@ module.exports = {
   getTargetState,
   setTargetState,
   removeTargetState,
+  removeRuntimeServerRoleTargetState,
   setInstanceMaintenanceMode,
   getAllServiceTargets,
   getServiceDeploymentCause,
