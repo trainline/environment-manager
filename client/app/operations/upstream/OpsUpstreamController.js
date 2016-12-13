@@ -76,8 +76,9 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
       querySync.updateQuery();
       
       vm.data = vm.fullUpstreamData.filter(function (upstream) {
-        var match = true;
-        match = match && upstream.Value.EnvironmentName == vm.selectedEnvironment;
+        if (upstream.Value.EnvironmentName !== vm.selectedEnvironment) {
+          return false;
+        }
 
         if (vm.selectedService) {
           var serviceName = angular.lowercase(upstream.Value.ServiceName);
@@ -93,18 +94,20 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
             upstreamMatch = upstreamName.indexOf(angular.lowercase(vm.selectedService)) != -1;
           }
 
-          match = match && (serviceMatch || upstreamMatch);
+          if (!(serviceMatch || upstreamMatch)) {
+            return false;
+          }
         }
 
-        if (vm.selectedState != 'All') {
-          match = match && upstream.Value.State == angular.lowercase(vm.selectedState);
+        if (vm.selectedState !== 'All' && upstream.Value.State !== angular.lowercase(vm.selectedState)) {
+          return false;
         }
 
-        if (vm.selectedOwningCluster != SHOW_ALL_OPTION) {
-          match = match && upstream.Value.OwningCluster == vm.selectedOwningCluster;
+        if (vm.selectedOwningCluster !== SHOW_ALL_OPTION && upstream.Value.OwningCluster !== vm.selectedOwningCluster) {
+          return false;
         }
 
-        return match;
+        return true;
       });
 
       
@@ -164,7 +167,6 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     function restructureUpstreams(upstreams) {
 
       var flattenedUpstreams = [];
-
       upstreams.forEach(function (upstream) {
         var service = getServiceForUpstream(upstream.Value.ServiceName);
         upstream.Value.Hosts.forEach(function (host) {
@@ -245,23 +247,16 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     }
 
     function getLBStatusForUpstream(upstreamName, upstreamPort, LBData) {
-      var match = null;
-      LBData.forEach(function (lbUpstream) {
-        if (lbUpstream.Name === upstreamName) {
-
-          if (lbUpstream.Hosts) {
-            // Filter to only the ports for this slice
-            match = lbUpstream.Hosts.filter(function (host) {
-              var port = host.Server.split(':')[1];
-              return port === upstreamPort;
-            });
-          }
-
-          return;
-        }
-      });
-
-      return match;
+      var lbUpstream = _.find(LBData, { Name: upstreamName });
+      if (lbUpstream !== undefined && lbUpstream.Hosts !== undefined && _.isEmpty(lbUpstream.Hosts) === false) {
+        // Filter to only the ports for this slice
+        return lbUpstream.Hosts.filter(function (host) {
+          var port = parseInt(host.Server.split(':')[1], 10);
+          return port === upstreamPort;
+        });
+      } else {
+        return [];
+      }
     }
 
     function getActualUpstreamState(lbServerStatusData) {
@@ -270,7 +265,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
       var unhealthyCount = 0;
       var state = 'Empty';
 
-      if (lbServerStatusData && lbServerStatusData.length > 0) {
+      if (_.isArray(lbServerStatusData) && lbServerStatusData.length > 0) {
         lbServerStatusData.forEach(function (server) {
           if (server) {
             if (server.State == 'up') { upCount++; }
