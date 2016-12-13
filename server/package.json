@@ -2,6 +2,15 @@
   "name": "environmentmanager",
   "version": "3.17.1",
   "description": "EnvironmentManager Server",
+  "homepage": "https://trainline.github.io/environment-manager/",
+  "bugs": {
+    "url": "https://github.com/trainline/environment-manager/issues",
+    "email": "platform.development@thetrainline.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/trainline/environment-manager.git"
+  },
   "main": "server.js",
   "scripts": {
     "start": "node index.js",
@@ -17,7 +26,7 @@
     "name": "Platform Development",
     "email": "platform.development@thetrainline.com"
   },
-  "license": "Apache License, Version 2.0",
+  "license": "Apache-2.0",
   "dependencies": {
     "activedirectory": "^0.7.2",
     "ajv": "^4.9.1",
@@ -79,6 +88,15 @@
     "supertest": "^2.0.1",
     "yargs": "^6.5.0"
   },
+  "engines": {
+    "node": ">=6.7.0",
+    "npm": ">=3.10.3"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
   "jshintConfig": {
     "esversion": 6,
     "globals": {
