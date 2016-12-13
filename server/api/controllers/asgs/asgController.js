@@ -106,7 +106,7 @@ function putAsg(req, res, next) {
 function deleteAsg(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
   const autoScalingGroupName = req.swagger.params.name.value;
-  
+
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     AutoScalingGroup.getByName(accountName, autoScalingGroupName)

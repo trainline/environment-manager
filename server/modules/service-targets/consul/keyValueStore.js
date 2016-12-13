@@ -112,21 +112,21 @@ function setTargetState(environment, parameters) {
 }
 
 function removeRuntimeServerRoleTargetState(environmentName, runtimeServerRoleName) {
-  return removeTargetState(environment, {
+  return removeTargetState(environmentName, {
     key: `environments/${environmentName}/roles/${runtimeServerRoleName}`,
     recurse: true
   });
 }
 
-function removeTargetState(environment, parameters) {
-  assert(parameters, 'Expected "parameters" not to be null or empty.');
+function removeTargetState(environment, { key, recurse }) {
+  assert(key, 'Expected "key" not to be null or empty.');
   let promiseFactoryMethod = () => new Promise((resolve, reject) => {
 
     createConsulClient(environment).then(consulClient => {
-      consulClient.kv.get({ key: parameters.key, recurse: parameters.recurse }, function (error, result) {
-        consulClient.kv.del(parameters.key, function (error) {
+      consulClient.kv.get({ key, recurse }, function (error, result) {
+        consulClient.kv.del({ key, recurse }, function (error) {
           if (!error) {
-            logChange("DELETE", parameters.key, result);
+            logChange('DELETE', key, result);
             return resolve();
           }
           return reject(new HttpRequestError(
