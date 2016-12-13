@@ -5,6 +5,7 @@ let _  = require('lodash');
 let AwsError = require('modules/errors/AwsError.class');
 let AutoScalingGroupNotFoundError = require('modules/errors/AutoScalingGroupNotFoundError.class');
 let AutoScalingGroupAlreadyExistsError = require('modules/errors/AutoScalingGroupAlreadyExistsError.class');
+let logger = require('modules/logger');
 
 let cacheManager = require('modules/cacheManager');
 
@@ -84,6 +85,7 @@ function AsgResource(client, accountName) {
   };
 
   this.delete = function ({ name, force }) {
+    logger.warn(`Deleting Auto Scaling Group "${name}"`);
     return client.deleteAutoScalingGroup({ AutoScalingGroupName: name, ForceDelete: force }).promise();
   };
 

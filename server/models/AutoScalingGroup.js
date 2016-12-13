@@ -9,6 +9,7 @@ let Environment = require('models/Environment');
 let taggable = require('./taggable');
 let serviceTargets = require('modules/service-targets');
 let resourceProvider = require('modules/resourceProvider');
+let logger = require('modules/logger');
 
 class AutoScalingGroup {
 
@@ -40,11 +41,15 @@ class AutoScalingGroup {
       let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
       let asgResource = yield resourceProvider.getInstanceByName('asgs', { accountName });
       let launchConfigResource = yield resourceProvider.getInstanceByName('launchconfig', { accountName });
+      logger.info(`Deleting AutoScalingGroup ${self.AutoScalingGroupName} and associated Launch configuration ${self.LaunchConfigurationName}`);
+
       yield asgResource.delete({ name: self.AutoScalingGroupName, force: true });
-      yield launchConfigResource.delete({ name: self.LaunchConfigurationName });
+      if (self.LaunchConfigurationName !== undefined) {
+        // If not present it means that this ASG is already being deleted
+        yield launchConfigResource.delete({ name: self.LaunchConfigurationName });
+      }
 
       yield serviceTargets.removeRuntimeServerRoleTargetState(environmentName, self.getRuntimeServerRoleName());
-
       return true;
     });
   }
