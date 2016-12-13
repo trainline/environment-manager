@@ -247,13 +247,13 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     function getLBStatusForUpstream(upstreamName, upstreamPort, LBData) {
       var match = null;
       LBData.forEach(function (lbUpstream) {
-        if (lbUpstream.name == upstreamName) {
+        if (lbUpstream.Name === upstreamName) {
 
-          if (lbUpstream.hosts) {
+          if (lbUpstream.Hosts) {
             // Filter to only the ports for this slice
-            match = lbUpstream.hosts.filter(function (host) {
-              var port = host.server.split(':')[1];
-              return port == upstreamPort;
+            match = lbUpstream.Hosts.filter(function (host) {
+              var port = host.Server.split(':')[1];
+              return port === upstreamPort;
             });
           }
 
@@ -273,9 +273,9 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
       if (lbServerStatusData && lbServerStatusData.length > 0) {
         lbServerStatusData.forEach(function (server) {
           if (server) {
-            if (server.state == 'up') { upCount++; }
-            if (server.state == 'down') { downCount++; }
-            if (server.state == 'unhealthy') { unhealthyCount++; }
+            if (server.State == 'up') { upCount++; }
+            if (server.State == 'down') { downCount++; }
+            if (server.State == 'unhealthy') { unhealthyCount++; }
           }
         });
 

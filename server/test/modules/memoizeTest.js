@@ -22,6 +22,21 @@ describe('memoize', function () {
             let g = memoize(f);
             g(1, 'one').should.be.eql(f(1, 'one'));
         });
+        it('the result is immutable', function () {
+            let f = (x, y) => ({ x, nested: { y } });
+            let g = memoize(f);
+            let result = g(1, 'old');
+            let mutateResult = () => { result.nested.y = 'new'; return result };
+            mutateResult.should.throw();
+            result.nested.y.should.eql('old');
+        });
+    });
+    context('when I memoize a function that returns a promise', function () {
+        it('the first call to the memoized function returns the same result as the un-memoized function', function () {
+            let f = x => Promise.resolve(x);
+            let g = memoize(f);
+            g(1, 'one').should.be.eql(f(1, 'one'));
+        });
     });
     context('when I call the memoized function twice with the same arguments', function () {
         it('the un-memoized function is called once', function () {
@@ -41,7 +56,9 @@ describe('memoize', function () {
             let f = (x, y) => ({ x, y });
             let g = memoize(f);
             let first = g(1, 'one');
-            delete first.x;
+            try {
+                delete first.x;
+            } catch (error) {}
             g(1, 'one').should.be.eql(f(1, 'one'));
         });
     });

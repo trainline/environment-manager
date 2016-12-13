@@ -17,12 +17,23 @@ module.exports = {
     Green: 'green'
   },
 
+  DIFF_STATE: {
+    Ignored: 'Ignored',
+    Missing: 'Missing',
+    Extra: 'Extra'
+  },
+
   HEALTH_STATUS: {
     Healthy: 'Healthy',
     Warning: 'Warning',
     Error: 'Error',
     NoData: 'NoData',
-    Missing: 'Missing'
+    Unknown: 'Unknown',
+    Missing: 'Missing',
+  },
+
+  ASGLifecycleState: {
+    IN_SERVICE: 'InService'
   },
 
   NodeDeploymentStatus: {

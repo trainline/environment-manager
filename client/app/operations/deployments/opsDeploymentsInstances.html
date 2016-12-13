@@ -30,7 +30,7 @@
             <small>{{instance.LaunchTime | amDateFormat:'DD/MM/YYYY HH:mm:ss'}}</small>
           </td>
           <td>
-            <health-status status='instance.OverallHealth.Status'></health-status> 
+            <health-status status='instance.OverallHealth'></health-status> 
            {{ instance.Name || '-'}} <small>({{ instance.InstanceId || '-'}})</small>
             <br /><small>IP: {{ instance.PrivateIpAddress }}</small>
           </td>
@@ -65,7 +65,7 @@
             <table class="table">
               <tbody>
                 <tr ng-repeat="service in instance.Services">
-                  <td><health-status status='service.OverallHealth.Status'></health-status> {{ service.NameAndSlice }}
+                  <td><health-status status='service.OverallHealth'></health-status> {{ service.NameAndSlice }}
                 </tr>
               </tbody>
             </table>
