@@ -2,7 +2,18 @@
 
 'use strict';
 
-let lodash = require('lodash');
+let deepFreeze = require('deep-freeze');
+
+function isPromise(obj) {
+  return obj && obj.then && typeof obj.then === 'function';
+}
+
+function deepFreezeIfObj(obj) {
+  let t = typeof obj;
+  return ((t === 'object' || t === 'function') && t !== null)
+    ? deepFreeze(obj)
+    : obj;
+}
 
 function memoize(fn) {
   if (typeof fn !== 'function') {
@@ -14,9 +25,12 @@ function memoize(fn) {
     let key = JSON.stringify(args);
     if (!memo.has(key)) {
       let result = fn(...args);
-      memo.set(key, result);
+      if (isPromise(result)) {
+        memo.set(key, result.then(deepFreezeIfObj));
+      }
+      memo.set(key, deepFreezeIfObj(result));
     }
-    return lodash.cloneDeep(memo.get(key));
+    return memo.get(key);
   };
 }
 
