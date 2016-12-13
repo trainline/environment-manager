@@ -29,8 +29,11 @@ module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
 
     let scalingSchedule;
     if (_.isArray(command.schedule)) {
-      scalingSchedule = command.schedule;
-      schedule = 'NOSCHEDULE';
+      return Promise.reject(new InvalidOperationError(
+        'Scheduled scaling has been temporarily disabled. Please contact Platform Development for more information'
+      ));
+      /*scalingSchedule = command.schedule;
+      schedule = 'NOSCHEDULE';*/
     } else {
       scalingSchedule = [];
       schedule = command.schedule;
