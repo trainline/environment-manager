@@ -51,7 +51,6 @@ function createFilter(query) {
 
 /**
  * GET /audit
- * TODO(Filip): extract code & remove duplication when old API is removed
  */
 function getAuditLogs(request, response, next) {
   let redirectUrl = url.parse(request.originalUrl, true);
