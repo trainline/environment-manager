@@ -39,7 +39,7 @@ function* ScanServersStatusQueryHandler(query) {
           var image = getImage(allImages, instance.ImageId); // TODO(filip): use Image in place of this
           return {
             instanceId: instance.InstanceId,
-            name: getTagValue(instance, 'Name'),
+            name: instance.getTag('Name', ''),
             ami: image,
             status: asgInstance.HealthStatus,
           };
@@ -56,8 +56,9 @@ function* ScanServersStatusQueryHandler(query) {
             Name: asg.AutoScalingGroupName,
             Role: asg.getRuntimeServerRoleName(),
             Status: status,
-            Cluster: getTagValue(asg, 'OwningCluster'),
-            Schedule: getTagValue(asg, 'Schedule'),
+            Cluster: asg.getTag('OwningCluster', ''),
+            Schedule: asg.getTag('Schedule', ''),
+            IsBeingDeleted: asg.Status === 'Delete in progress',
             Size: {
               Current: instanceCount,
               Desired: asg.DesiredCapacity
