@@ -2,6 +2,8 @@
 
 module.exports = {
 
+  DEPLOYMENT_INSTANCES_LIST_MAXIMUM_LENGTH: 300,
+
   SourcePackageType: {
     CodeDeployRevision: 'CodeDeployRevision',
     DeploymentMap: 'DeploymentMap'

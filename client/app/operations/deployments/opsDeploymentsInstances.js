@@ -26,6 +26,9 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsInstanc
 
         vm.dataLoading = false;
         vm.dataFound = true;
+      }, function () {
+        vm.dataFound = false;
+        vm.dataLoading = false;
       });
     }
 
