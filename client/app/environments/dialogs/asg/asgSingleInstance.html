@@ -21,35 +21,7 @@
             <td>{{ service.Version }}</td>
             <td><span class="slice-symbol" ng-class="service.Slice"></span>{{ service.Slice }}</td>
             <td>
-              <span style="display: inline-block; padding-left: 25%; zoom: 120%" ng-if="service.DiffWithTargetState === null" class="health-status glyphicon glyphicon-ok-sign healthy"></span>
-              <span ng-if="service.DiffWithTargetState === 'Ignored'"><strong>Ignored</strong>
-                <span data-uib-popover
-                       data-popover-trigger="'mouseenter'"
-                       uib-popover-template="'app/environments/dialogs/asg/popovers/help-service-ignored.html'"
-                       data-popover-placement="top"
-                       class="glyphicon glyphicon-question-sign help-icon"
-                       aria-hidden="true">
-                </span>
-              </span>
-              <span ng-if="service.DiffWithTargetState === 'Missing'"><strong>Missing</strong>
-                <span data-uib-popover
-                     data-popover-trigger="'mouseenter'"
-                     uib-popover-template="'app/environments/dialogs/asg/popovers/help-service-missing.html'"
-                     data-popover-placement="top"
-                     class="glyphicon glyphicon-question-sign help-icon"
-                     aria-hidden="true">
-                </span>
-              </span>
-              <span ng-if="service.DiffWithTargetState === 'Extra'"><strong>Unexpected</strong> 
-                <span data-uib-popover
-                     data-popover-trigger="'mouseenter'"
-                     uib-popover-template="'app/environments/dialogs/asg/popovers/help-service-unexpected.html'"
-                     data-popover-placement="top"
-                     class="glyphicon glyphicon-question-sign help-icon"
-                     aria-hidden="true">
-                </span>
-              </span>
-              
+              <service-diff-with-target-state state="service.DiffWithTargetState"></service-diff-with-target-state>
             </td>
             <td><health-checks list="service.HealthChecks" ></health-checks></td>
             <!-- <td>{{ service.DeploymentCause }}</td> -->
