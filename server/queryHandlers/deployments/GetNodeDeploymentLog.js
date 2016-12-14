@@ -21,14 +21,10 @@ function getNode(query) {
 }
 
 function fetchS3Object(account, s3Details) {
-  return amazonClientFactory.createS3Client(account).then(client => {
-    return new Promise((resolve, reject) => {
-      var s3Request = new S3GetObjectRequest(client, s3Details);
-      s3Request.execute((err, result) => {
-        if (err) return reject(err);
-        return resolve(result.Body.toString());
-      });
-    });
+  return amazonClientFactory.createS3Client(account).then((client) => {
+    let s3Request = new S3GetObjectRequest(client, s3Details);
+    return s3Request.execute()
+      .then((result) => result.Body.toString());
   });
 }
 
