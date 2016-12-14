@@ -8,7 +8,8 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
     asgState: '<',
     environment: '<',
     role: '<',
-    refresh: '&'
+    refresh: '&',
+    closeModal: '&'
   },
   controllerAs: 'vm',
   controller: function (roles, $q, $uibModal, modal, Deployment, targetStateService) {
@@ -63,7 +64,9 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
             'to delete the ASG and it\'s associated Launch Configuration?',
           severity: 'Warning',
         }).then(function () {
-          vm.asg.delete();
+          vm.asg.delete().then(function () {
+            vm.closeModal();
+          });
         });
       }
     }

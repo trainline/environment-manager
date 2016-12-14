@@ -52,7 +52,7 @@
         </form>
       </uib-tab>
       <uib-tab heading="Services" index="'services'">
-        <asg-services asg="vm.asg" asg-state="vm.asgState" refresh="vm.refresh()" environment="vm.environmentName" role="vm.asg.Role" ng-if="vm.asgState"></asg-services>
+        <asg-services asg="vm.asg" asg-state="vm.asgState" refresh="vm.refresh()" environment="vm.environmentName" role="vm.asg.Role" close-modal="vm.closeModal()" ng-if="vm.asgState"></asg-services>
       </uib-tab>
       <uib-tab heading="Schedule &amp; Scaling" index="'schedule'">
         <form name="formScaling" class="form-horizontal">
