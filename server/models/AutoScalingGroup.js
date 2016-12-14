@@ -8,24 +8,9 @@ let sender = require('modules/sender');
 let EnvironmentType = require('models/EnvironmentType');
 let Environment = require('models/Environment');
 let taggable = require('./taggable');
-<<<<<<< HEAD
 let serviceTargets = require('modules/service-targets');
 let resourceProvider = require('modules/resourceProvider');
 let logger = require('modules/logger');
-=======
-let logger = require('modules/logger');
-
-function parseName(name) {
-  let segments = name.split('-');
-
-  return {
-    environment: segments[0],
-    clusterCode: segments[1],
-    serverRole: segments[2],
-    slice: segments[3] || null,
-  };
-}
->>>>>>> develop
 
 class AutoScalingGroup {
 
