@@ -29,9 +29,7 @@ function getServiceChecksInfo(serviceObjects) {
 }
 
 function getServiceOverallHealth(healthChecks) {
-  return {
-    Status: _.some(healthChecks, { Status: HEALTH_BAD }) ? HEALTH_BAD : HEALTH_GOOD
-  };
+  return _.some(healthChecks, { Status: HEALTH_BAD }) ? HEALTH_BAD : HEALTH_GOOD
 }
 
 function checkServiceProperties(svcA, svcB, prop) {
@@ -70,6 +68,8 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
         DiffWithTargetState: 'Extra',
       };
     } else {
+      service.DiffWithTargetState = null;
+
       // Check instance serviceObjects for inconsistencies with target state
       // TODO(Filip): add error / warnings to API output when inconsistencies detected
       _.each(serviceObjects, (obj) => {
@@ -89,12 +89,16 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
     // Healthy nodes are these where service is present AND service's status is healthy
     let healthyNodes = _.filter(serviceInstances, (instance) => {
       let serviceOnInstance = _.find(instance.Services, { Name: service.Name, Slice: service.Slice });
+
       if (serviceOnInstance !== undefined) {
-        return serviceOnInstance.OverallHealth.Status === 'Healthy';
+        // If at least one instance has state "Missing", overall service state will also be "Missing"
+        if (serviceOnInstance.DiffWithTargetState === 'Missing') {
+          service.DiffWithTargetState = 'Missing';
+        }
+        return serviceOnInstance.OverallHealth === 'Healthy';
       }
       return false;
     });
-    let instancesHealthCount = healthyNodes.length + '/' + instances.length;
 
     let serviceHealthChecks = getServiceChecksInfo(serviceObjects);
     let serviceAction = service.Action || SERVICE_INSTALL;
@@ -106,7 +110,10 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
       DiffWithTargetState: service.DiffWithTargetState,
       DeploymentId: service.DeploymentId,
       InstancesNames: _.map(serviceInstances, 'Name'),
-      InstancesHealthCount: instancesHealthCount,
+      InstancesCount: {
+        Healthy: healthyNodes.length,
+        Total: instances.length
+      },
       OverallHealth: getServiceOverallHealth(serviceHealthChecks, serviceInstances),
       HealthChecks: serviceHealthChecks,
       Action: serviceAction

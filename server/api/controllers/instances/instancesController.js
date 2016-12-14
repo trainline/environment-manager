@@ -72,6 +72,10 @@ function getInstances(req, res, next) {
     }
 
     if (includeDeploymentsStatus === true) {
+      if (list.length > Enums.DEPLOYMENT_INSTANCES_LIST_MAXIMUM_LENGTH) {
+        throw new Error('Too many results. Please refine your search query, ie. choose later since date, or limit query to one environment');
+      }
+
       list = yield _.map(list, (instance) => {
         let instanceEnvironment = instance.getTag('Environment', null);
 
@@ -80,7 +84,7 @@ function getInstances(req, res, next) {
         let instanceName = instance.getTag('Name', null);
         let instanceRoleTag = instance.getTag('Role', null);
 
-        if (instanceName === null || instanceName === '' || instanceEnvironment === null || instanceRoleTag === null) {
+        if (instanceName === null || instanceName === '' || instanceEnvironment === null || instanceRoleTag === null || instanceRoleTag === '') {
           // This instance won't be returned
           return false;
         }
@@ -167,8 +171,24 @@ function putInstanceMaintenance(req, res, next) {
   }).catch(next);
 }
 
+/**
+ * GET /instances/{id}/connect
+ */
+function connectToInstance(req, res, next) {
+  const id = req.swagger.params.id.value;
+  Instance.getById(id).then(instance => {
+    res.status(200);
+    res.set({
+      'content-type': 'application/rdp',
+      'content-disposition': `attachment; filename*=UTF-8''${id}.rdp`
+    });
+    res.send(`full address:s:${instance.PrivateIpAddress}`);
+  }).catch(next);
+}
+
 module.exports = {
   getInstances,
   getInstanceById,
-  putInstanceMaintenance
+  putInstanceMaintenance,
+  connectToInstance
 };

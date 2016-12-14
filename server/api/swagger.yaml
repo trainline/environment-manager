@@ -96,7 +96,39 @@ paths:
       responses:
         200:
           description: Ok
-
+  /asgs/{name}/ready:
+    x-swagger-router-controller: asgController
+    get:
+      operationId: getAsgReadyByName
+      summary: Determine if an ASG is ready to deploy to, eg. at least one instance is present and all are "InService"
+      tags:
+        - ASG
+      parameters:
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The matching ASG ready state
+          schema:
+            type: object
+            properties:
+              ReadyToDeploy:
+                type: boolean
+              InstancesByLifecycleState:
+                type: object
+                properties:
+                  InService:
+                    type: integer
+                  Standby:
+                    type: integer
+              InstancesTotalCount:
+                type: integer
   /asgs/{name}/ips:
     x-swagger-router-controller: asgController
     get:
@@ -678,6 +710,21 @@ paths:
           description: The instance
           schema:
             $ref: '#/definitions/Instance'
+  /instances/{id}/connect:
+    x-swagger-router-controller: instancesController
+    get:
+      operationId: connectToInstance
+      summary: Connect to the instance via remote desktop.
+      tags:
+        - Instance
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Remote desktop connection
   /instances/{id}/maintenance:
     x-swagger-router-controller: instancesController
     put:
@@ -760,6 +807,27 @@ paths:
           required: true
           items:
             type: string
+      responses:
+        200:
+          description: The service
+          schema:
+            type: object
+  /services/{service}/health:
+    x-swagger-router-controller: servicesController
+    get:
+      operationId: getServiceHealthById
+      summary: Get a currently deployed service.
+      tags:
+        - Service
+      parameters:
+        - name: service
+          in: path
+          type: string
+          required: true
+        - name: environment
+          in: query
+          type: string
+          required: true
       responses:
         200:
           description: The service
@@ -2005,18 +2073,15 @@ definitions:
         type: string
   LoadBalancerUpstream:
     type: object
-    required:
-      - name
-      - hosts
     properties:
-      name:
+      Name:
         type: string
-      hosts:
+      Hosts:
         type: array
         items:
           type: object
           properties:
-            health_checks:
+            HealthChecks:
               type: object
               properties:
                 checks:
@@ -2025,9 +2090,9 @@ definitions:
                   type: integer
                 unhealthy:
                   type: integer
-            server:
+            Server:
               type: string
-            state:
+            State:
               type: string
   DeploymentMap:
     type: object
@@ -2172,6 +2237,124 @@ definitions:
             properties:
               Status:
                 type: string
+  ASGServersState:
+    type: object
+    properties:
+      AllExpectedServicesPresent:
+        type: boolean
+      AllExpectedServicesHealthy:
+        type: boolean
+      ServicesCount:
+        type: object
+        properties:
+          Expected:
+            type: integer
+          Unexpected:
+            type: integer
+          Missing:
+            type: integer
+          Ignored:
+            type: integer
+      ExpectedServices:
+        type: array
+        items:
+          $ref: '#/definitions/SimpleServiceObject'
+      MissingServices:
+        type: array
+        items:
+          $ref: '#/definitions/SimpleServiceObject'
+      Services:
+        type: array
+        items:
+          type: object
+          properties:
+            Name:
+              type: string
+            Version:
+              type: string
+            Slice:
+              type: string
+            DiffWithTargetState:
+              type: [string, 'null']
+            DeploymentId:
+              type: string
+            InstancesNames:
+              type: array
+              items:
+                type: string
+            InstancesCount:
+              type: object
+              properties:
+                Healthy:
+                  type: integer
+                Total:
+                  type: integer
+            OverallHealth:
+              type: string
+            HealthChecks:
+              type: array
+              items:
+                type: object
+                properties:
+                  Name:
+                    type: string
+                  Status:
+                    type: string
+            Action:
+              type: string
+              enum:
+                - Install
+                - Ignore
+      Instances:
+        type: array
+        items:
+          type: object
+        properties:
+          Name:
+            type: string
+          OverallHealth:
+            type: string
+          LifecycleState:
+            type: string
+          ContactEmail:
+            type: string
+          Services:
+            type: object
+            properties:
+              Name:
+                type: string
+              Version:
+                type: string
+              Slice:
+                type: string
+              NameAndSlice:
+                type: string
+              OverallHealth:
+                type: string
+              HealthChecks:
+                type: object
+                properties:
+                  CheckId:
+                    type: string
+                  Name:
+                    type: string
+                  Notes:
+                    type: string
+                  Status:
+                    type: string
+              DiffWithTargetState:
+                type: [string, 'null']
+              Issues:
+                type: object
+                properties:
+                  Warnings:
+                    type: array
+                    items:
+                      type: string
+                  Errors:
+                    type: array
+                    items:
+                      type: string
   EnvironmentScheduleValue:
     type: object
     properties:
@@ -2359,10 +2542,7 @@ definitions:
         items:
           type: object
       OverallHealth:
-        type: object
-        properties:
-          Status:
-            type: string
+        type: string
       OwningCluster:
         type: string
       Placement:
@@ -2701,34 +2881,6 @@ definitions:
       description:
         type: string
         description: A long, human readable description of the error.
-  ASGServersState:
-    type: object
-    properties:
-      AllServicesPresent:
-        type: boolean
-      AllServicesPresentAndHealthy:
-        type: boolean
-      ServicesCount:
-        type: object
-        properties:
-          Present:
-            type: integer
-          PresentWithUnexpected:
-            type: integer
-          PresentAndHealthy:
-            type: integer
-          Ignored:
-            type: integer
-          Total:
-            type: integer
-      PresentServices:
-        type: array
-        items:
-          $ref: '#/definitions/SimpleServiceObject'
-      MissingServices:
-        type: array
-        items:
-          $ref: '#/definitions/SimpleServiceObject'
 parameters:
   ExpectedVersionHeader:
     name: expected-version

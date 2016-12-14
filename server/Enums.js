@@ -2,6 +2,8 @@
 
 module.exports = {
 
+  DEPLOYMENT_INSTANCES_LIST_MAXIMUM_LENGTH: 300,
+
   SourcePackageType: {
     CodeDeployRevision: 'CodeDeployRevision',
     DeploymentMap: 'DeploymentMap'
@@ -17,12 +19,23 @@ module.exports = {
     Green: 'green'
   },
 
+  DIFF_STATE: {
+    Ignored: 'Ignored',
+    Missing: 'Missing',
+    Extra: 'Extra'
+  },
+
   HEALTH_STATUS: {
     Healthy: 'Healthy',
     Warning: 'Warning',
     Error: 'Error',
     NoData: 'NoData',
-    Missing: 'Missing'
+    Unknown: 'Unknown',
+    Missing: 'Missing',
+  },
+
+  ASGLifecycleState: {
+    IN_SERVICE: 'InService'
   },
 
   NodeDeploymentStatus: {

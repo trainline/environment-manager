@@ -2,14 +2,30 @@
 'use strict';
 
 let _ = require('lodash');
+let moment = require('moment');
 let co = require('co');
 let sender = require('modules/sender');
 let EnvironmentType = require('models/EnvironmentType');
 let Environment = require('models/Environment');
 let taggable = require('./taggable');
+<<<<<<< HEAD
 let serviceTargets = require('modules/service-targets');
 let resourceProvider = require('modules/resourceProvider');
 let logger = require('modules/logger');
+=======
+let logger = require('modules/logger');
+
+function parseName(name) {
+  let segments = name.split('-');
+
+  return {
+    environment: segments[0],
+    clusterCode: segments[1],
+    serverRole: segments[2],
+    slice: segments[3] || null,
+  };
+}
+>>>>>>> develop
 
 class AutoScalingGroup {
 
@@ -54,6 +70,13 @@ class AutoScalingGroup {
     });
   }
 
+  static getAllByServerRoleName(environmentName, serverRoleName) {
+    return AutoScalingGroup.getAllByEnvironment(environmentName)
+      .then((asgs) => {
+        return _.filter(asgs, (asg) => asg.getTag('Role') === serverRoleName);
+      });
+  }
+
   static getByName(accountName, autoScalingGroupName) {
     return co(function* () {
       let query = {
@@ -66,6 +89,25 @@ class AutoScalingGroup {
       data.$accountName = accountName;
       data.$autoScalingGroupName = autoScalingGroupName;
       return data;
+    });
+  }
+
+  static getAllByEnvironment(environmentName) {
+    return co(function* () {
+      let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+      let startTime = moment.utc();
+
+      return sender.sendQuery({
+        query: {
+          name: 'ScanAutoScalingGroups',
+          accountName: accountName,
+        },
+      }).then(result => {
+        let duration = moment.duration(moment.utc().diff(startTime)).asMilliseconds();
+        logger.debug(`server-status-query: AllAsgsQuery took ${duration}ms`);
+        result = _.filter(result, (asg) => asg.getTag('Environment') === environmentName);
+        return result;
+      });
     });
   }
 
