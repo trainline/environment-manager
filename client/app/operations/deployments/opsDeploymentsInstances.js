@@ -12,6 +12,9 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsInstanc
     var vm = this;
 
     function refresh() {
+      if (vm.query === undefined) {
+        return;
+      }
       vm.dataLoading = true;
       var params = _.clone(vm.query);
       params.include_deployments_status = true;
