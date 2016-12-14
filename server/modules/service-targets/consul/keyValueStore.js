@@ -53,6 +53,8 @@ function getTargetState(environment, parameters) {
 }
 
 function getAllServiceTargets(environmentName, runtimeServerRole) {
+  assert(runtimeServerRole, 'runTimeServerRole needs to be defined');
+  assert(environmentName, 'environmentName needs to be defined');
   let key = `environments/${environmentName}/roles/${runtimeServerRole}/services`;
   return getTargetState(environmentName, { key, recurse: true }).then(data => _.map(data, 'value'))
     .then((data) => {

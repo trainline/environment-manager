@@ -80,7 +80,7 @@ function getInstances(req, res, next) {
         let instanceName = instance.getTag('Name', null);
         let instanceRoleTag = instance.getTag('Role', null);
 
-        if (instanceName === null || instanceName === '' || instanceEnvironment === null || instanceRoleTag === null) {
+        if (instanceName === null || instanceName === '' || instanceEnvironment === null || instanceRoleTag === null || instanceRoleTag === '') {
           // This instance won't be returned
           return false;
         }
