@@ -26,7 +26,11 @@ function getAsgs(req, res, next) {
 
   return co(function* () {
     let list;
-    if (accountName !== undefined) {
+    if (environment !== undefined) {
+      let account = yield Environment.getAccountNameForEnvironment(environment);
+      let t = yield getAccountASGs({ accountName: account });
+      list = t.filter(asg => asg.getTag('Environment') === environment);
+    } else if (accountName !== undefined) {
       list = yield getAccountASGs({ accountName });
     } else {
       list = yield getAllASGs();
@@ -57,7 +61,7 @@ function getAsgReadyByName(req, res, next) {
   const autoScalingGroupName = req.swagger.params.name.value;
   const environmentName = req.swagger.params.environment.value;
 
-  return getASGReady({ autoScalingGroupName, environmentName})
+  return getASGReady({ autoScalingGroupName, environmentName })
     .then((data) => res.json(data)).catch(next);
 }
 
@@ -149,8 +153,10 @@ function putAsgSize(req, res, next) {
 
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    SetAutoScalingGroupSize({ accountName, autoScalingGroupName,
-      autoScalingGroupMinSize, autoScalingGroupDesiredSize, autoScalingGroupMaxSize })
+    SetAutoScalingGroupSize({
+      accountName, autoScalingGroupName,
+      autoScalingGroupMinSize, autoScalingGroupDesiredSize, autoScalingGroupMaxSize
+    })
       .then(data => res.json(data)).catch(next);
   });
 }
