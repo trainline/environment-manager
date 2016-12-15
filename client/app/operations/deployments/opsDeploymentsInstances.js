@@ -26,7 +26,7 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsInstanc
           instance.asgLink = '#/environment/servers/?environment=' + instance.Environment + '&asg_name=' + instance['aws:autoscaling:groupName'];
           instance.status = _.capitalize(instance.State.Name);
           instance.hoverTitle = {
-            Healthy: 'Instance service discovery healthy'
+            Healthy: 'Instance service discovery healthy',
             Error: 'Instance service discovery unhealthy',
             Unknown: 'Unknown state of instance service discovery',
           }[instance.OverallHealth];
