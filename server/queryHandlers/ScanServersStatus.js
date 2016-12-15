@@ -8,6 +8,7 @@ let logger = require('modules/logger');
 let sender = require('modules/sender');
 let Environment = require('models/Environment');
 let AutoScalingGroup = require('models/AutoScalingGroup');
+let Instance = require('models/Instance');
 
 module.exports = co.wrap(ScanServersStatusQueryHandler);
 
@@ -19,7 +20,7 @@ function* ScanServersStatusQueryHandler(query) {
 
   return Promise.all([
     AutoScalingGroup.getAllByEnvironment(environmentName),
-    getAllInstances(environmentName),
+    Instance.getAllByEnvironment(environmentName),
     getAllImages()
   ]).then(results => {
 
@@ -181,17 +182,6 @@ function sanitizeConsulServices(consulServices) {
   });
 }
 
-function getTagValue(resource, key) {
-  if (!resource || !resource.Tags)
-    return [];
-
-  let tags = resource.Tags.filter(tag => {
-    return tag.Key === key;
-  });
-
-  return (tags.length > 0) ? tags[0].Value : '';
-}
-
 function getImage(images, imageId) {
   let foundImages = images.filter(image => {
     return image.ImageId === imageId;
@@ -213,34 +203,6 @@ function byStatus(status) {
     if (!status) return true;
     return resource.Status.toLowerCase() == status.toLowerCase();
   };
-}
-
-function byTag(key, value) {
-  return resource => {
-    if (!value) return true;
-    return _.some(resource.Tags, tag => {
-      return tag.Key === key &&
-        tag.Value.toLowerCase() === value.toLowerCase();
-    });
-  };
-}
-
-function getAllInstances(environment) {
-  let startTime = moment.utc();
-
-  let filter = {};
-  filter['tag:Environment'] = environment;
-
-  return sender.sendQuery({
-    query: {
-      name: 'ScanCrossAccountInstances',
-      filter: filter,
-    },
-  }).then(result => {
-    let duration = moment.duration(moment.utc().diff(startTime)).asMilliseconds();
-    logger.debug(`server-status-query: InstancesQuery took ${duration}ms`);
-    return result;
-  });
 }
 
 function getAllImages() {

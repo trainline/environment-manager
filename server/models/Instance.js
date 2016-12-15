@@ -2,9 +2,14 @@
 'use strict';
 
 let _ = require('lodash');
+let co = require('co');
 let taggable = require('./taggable');
 let ScanCrossAccountInstances = require('queryHandlers/ScanCrossAccountInstances');
 let ec2InstanceClientFactory = require('modules/clientFactories/ec2InstanceClientFactory');
+let Environment = require('models/Environment');
+let moment = require('moment');
+let sender = require('modules/sender');
+let logger = require('modules/logger');
 
 class Instance {
 
@@ -35,6 +40,28 @@ class Instance {
     });
   }
 
+  static getAllByEnvironment(environmentName) {
+    return co(function* () {
+      let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+      let startTime = moment.utc();
+
+      let filter = {};
+      filter['tag:Environment'] = environmentName;
+
+      return sender.sendQuery({
+        query: {
+          name: 'ScanInstances',
+          accountName,
+          filter
+        },
+      }).then((result) => {
+        console.log(result);
+        let duration = moment.duration(moment.utc().diff(startTime)).asMilliseconds();
+        logger.debug(`server-status-query: InstancesQuery took ${duration}ms`);
+        return result;
+      });
+    });
+  }
 }
 
 taggable(Instance);
