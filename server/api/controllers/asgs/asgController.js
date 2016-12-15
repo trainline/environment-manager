@@ -26,10 +26,10 @@ function getAsgs(req, res, next) {
 
   return co(function* () {
     let list;
-    if (environment) {
+    if (environment !== undefined) {
       let account = yield Environment.getAccountNameForEnvironment(environment);
       let t = yield getAccountASGs({ accountName: account });
-      list = t.filter(asg => asg.Tags.some(tag => tag.Key === 'Environment' && tag.Value === environment));
+      list = t.filter(asg => asg.getTag('Environment') === environment);
     } else if (accountName !== undefined) {
       list = yield getAccountASGs({ accountName });
     } else {
