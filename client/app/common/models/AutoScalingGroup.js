@@ -4,8 +4,6 @@
 angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
   function ($q, $http, awsService, resources, roles, serviceDiscovery, taggable, accountMappingService) {
 
-    // TODO(Filip): get rid of this mapping, and just operate on ASG model.
-    // It's confusing. 
     function getSummaryFromAsg(asg) {
       var asgSummary = {
         AccountName: asg.AccountName,

@@ -1,8 +1,6 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
-// TODO(filip): replace this with proper error handling middleware
-
 function getStatusCode(error) {
   if (error.name !== undefined) {
     switch (error.name.replace('.class', '')) {
