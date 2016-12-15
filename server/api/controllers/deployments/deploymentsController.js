@@ -42,17 +42,17 @@ function getDeploymentById(req, res, next) {
 function getDeploymentLog(req, res, next) {
   return co(function* () {
     const key = req.swagger.params.id.value;
-    const account = req.swagger.params.account.value;
-    const node = req.swagger.params.instance.value;
+    const accountName = req.swagger.params.account.value;
+    const instanceId = req.swagger.params.instance.value;
 
-    let deployment = yield deploymentsHelper.get({ key, account });
+    let deployment = yield deploymentsHelper.get({ key, account: accountName });
     let environment = deployment.Value.EnvironmentName;
 
     let query = {
-      account,
+      accountName,
       environment,
       deploymentId: key,
-      node,
+      instanceId,
     };
 
     return GetNodeDeploymentLog(query).then(data => {

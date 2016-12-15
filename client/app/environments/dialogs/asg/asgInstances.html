@@ -36,7 +36,7 @@
           <td>{{ instance.LifecycleState }}
             <br />{{ instance.State }}
           </td>
-          <td><a ng-click="vm.showAsgSingleInstance(instance)" ng-if="instance.Services.length > 0">Show services ({{ instance.Services.length }})</a><span ng-if="instance.Services.length === 0">No services</span></td>
+          <td><a ng-click="vm.showAsgSingleInstance(instance)" ng-if="instance.Services.length > 0" title="Services deployed to instance / All services">{{ instance.enabledServicesCount }}/{{ instance.Services.length }}</a><span ng-if="instance.Services.length === 0">No services</span></td>
           <td>
             <span ng-if="instance.Ami.Name">
                 {{ instance.Ami.AmiType }} {{ instance.Ami.AmiVersion }}<br />

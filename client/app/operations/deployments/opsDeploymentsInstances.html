@@ -30,8 +30,7 @@
             <small>{{instance.LaunchTime | amDateFormat:'DD/MM/YYYY HH:mm:ss'}}</small>
           </td>
           <td>
-            <health-status status='instance.OverallHealth'></health-status> 
-           {{ instance.Name || '-'}} <small>({{ instance.InstanceId || '-'}})</small>
+            <health-status status='instance.OverallHealth' title='{{ instance.hoverTitle }}'></health-status> {{ instance.Name || '-'}} <small>({{ instance.InstanceId || '-'}})</small>
             <br /><small>IP: {{ instance.PrivateIpAddress }}</small>
           </td>
           <td class="status-{{instance.DeploymentStatus.replace(' ', '-').toLowerCase() }}">

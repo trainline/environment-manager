@@ -10,10 +10,10 @@ module.exports = (request, response) => {
 
   let query = {
     name: 'GetNodeDeploymentLog',
-    account: params.account,
+    accountName: params.account,
     environment: params.environment,
     deploymentId: params.deploymentId,
-    node: params.node,
+    instanceId: params.node,
   };
 
   sender.sendQuery({ query: query, user: request.user }).then(data => {
