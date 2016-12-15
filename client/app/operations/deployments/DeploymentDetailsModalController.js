@@ -97,10 +97,6 @@ function deploymentView(deploymentRecord, clusters) {
   }
 
   var deployment = deploymentRecord.Value;
-
-  var service = deployment.ServiceName + ' (' + deployment.ServiceVersion + ')';
-  var user = deployment.User + ' (' + deployment.OwningCluster + ')';
-  var progress = (deployment.Status.toLowerCase() === 'in progress');
   var log = getDeploymentLog(deployment.ExecutionLog);
 
   var duration = getDuration();
@@ -116,22 +112,17 @@ function deploymentView(deploymentRecord, clusters) {
   // TODO(filip): rather than linking to separate page, open modal inside current page
   var asgLink = '#/environment/servers/?environment=' + deployment.EnvironmentName + '&asg_name=' + asgName;
 
-  return {
-    deploymentId: deploymentRecord.DeploymentID,
+  return _.assign({ DeploymentID: deploymentRecord.DeploymentID }, deployment, {
     environment: deployment.EnvironmentName,
     asgName: asgName,
     asgLink: asgLink,
     status: deployment.Status,
     statusClass: statusClass,
     duration: duration,
-    service: service,
-    user: user,
-    deploymentType: deployment.DeploymentType,
     error: error,
-    progress: progress,
     log: log,
     nodes: nodes,
-  };
+  });
 }
 
 angular.module('EnvironmentManager.operations')

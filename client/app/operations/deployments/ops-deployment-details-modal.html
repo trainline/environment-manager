@@ -1,6 +1,6 @@
 <div class="modal-header">
     <h2>Status: <span class="{{vm.view.statusClass}}">{{vm.view.status}}</span></h2>
-    <div id="RefreshData" ng-show="vm.view.progress">
+    <div id="RefreshData" ng-show="vm.view.Status === 'In Progress'">
         <span class="glyphicon glyphicon-refresh {{vm.view.statusClass}}" ng-class="{ spin: vm.spin }" ng-click="vm.refresh()" title="Refresh data"></span>
     </div>
 </div>
@@ -9,11 +9,11 @@
     <div class="summary">
         <ul>
             <li><strong>{{vm.view.duration.label}}:</strong> {{vm.view.duration.value}}</li>
-            <li><strong>Service:</strong> {{vm.view.service}}</li>
+            <li><strong>Service:</strong> {{vm.view.ServiceName}} ({{vm.view.ServiceVersion}})</li>
             <li><strong>AutoScalingGroup:</strong> <a ng-href="{{vm.view.asgLink}}">{{vm.view.asgName}}</a></li>
-            <li><strong>User:</strong> {{vm.view.user}}</li>
-            <li><strong>Deployment Type:</strong> {{vm.view.deploymentType}}</li>
-            <li><strong>Deployment ID:</strong> {{vm.view.deploymentId}}</li>
+            <li><strong>User:</strong> {{vm.view.User}} ({{vm.view.OwningCluster}})</li>
+            <li><strong>Deployment Type:</strong> {{vm.view.DeploymentType}}</li>
+            <li><strong>Deployment ID:</strong> {{vm.view.DeploymentID}}</li>
         </ul>
 
         <div ng-if="vm.view.error" class="alert alert-danger">
