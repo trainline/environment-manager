@@ -55,11 +55,7 @@ function deploymentView(deploymentRecord, clusters) {
     if (nodes) {
       return nodes.map(function (node) {
 
-        var logLink;
-        if (node.Status.toLowerCase() === 'success' ||
-          (node.Status.toLowerCase() === 'failed' && node.LastCompletedStage.toLowerCase() !== 'timed out')) {
-          logLink = '/api/v1/deployments/' + deployment.DeploymentID + '/log?account=' + deployment.AccountName + '&instance=' + node.InstanceId
-        }
+        var logLink = '/api/v1/deployments/' + deployment.DeploymentID + '/log?account=' + deployment.AccountName + '&instance=' + node.InstanceId;
 
         return {
           instanceId: node.InstanceId,
@@ -157,7 +153,7 @@ angular.module('EnvironmentManager.operations')
 
       if (refreshTimer) $timeout.cancel(refreshTimer);
 
-      if (data.Value.Status.toLowerCase() === 'in progress') {
+      if (data.Value.Status === 'In Progress') {
         refreshTimer = $timeout(refreshData, 5000);
       }
     }
@@ -174,10 +170,7 @@ angular.module('EnvironmentManager.operations')
     };
 
     vm.allowCancel = function () {
-      if (vm.deployment.Value.Status !== 'In Progress') {
-        return false;
-      }
-      return true;
+      return vm.deployment.Value.Status === 'In Progress';
     };
 
     vm.cancelDeployment = function () {
