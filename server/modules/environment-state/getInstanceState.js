@@ -6,6 +6,7 @@ let serviceTargets = require('modules/service-targets');
 let _ = require('lodash');
 let co = require('co');
 let Enums = require('Enums');
+let DIFF_STATE = Enums.DIFF_STATE;
 let DEPLOYMENT_STATUS = Enums.DEPLOYMENT_STATUS;
 let logger = require('modules/logger');
 
@@ -51,7 +52,7 @@ function getInstanceServiceHealthChecks(checks, serviceId) {
 function getInstanceDeploymentStatus(services) {
   let instanceDeploymentStatus;
   let expectedServices = _.filter(services, (service) => {
-    return service.DiffWithTargetState !== 'Extra';
+    return service.DiffWithTargetState !== DIFF_STATE.Unexpected;
   });
 
   if (_.some(expectedServices, (service) => {
@@ -153,7 +154,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
           HealthChecks: [],
           LogLink: `/api/v1/deployments/${targetService.DeploymentId}/log?account=${accountName}&instance=${instanceId}`,
           OverallHealth: Enums.HEALTH_STATUS.Missing,
-          DiffWithTargetState: (targetService.Action === Enums.ServiceAction.INSTALL ? 'Missing' : 'Ignored'),
+          DiffWithTargetState: (targetService.Action === Enums.ServiceAction.INSTALL ? DIFF_STATE.Missing : DIFF_STATE.Ignored),
           Issues: { Warnings: [], Errors: [] }
         };
         if (targetService.Action === Enums.ServiceAction.INSTALL) {
@@ -172,10 +173,10 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
       let targetState = _.find(targetServiceStates, { Name: instanceService.Name, Slice: instanceService.Slice });
       if (targetState === undefined) {
         instanceService.Issues.Warnings.push(`Service not found in target state for server role that instance belongs to: "${runtimeServerRoleName}"`);
-        instanceService.DiffWithTargetState = 'Extra';
+        instanceService.DiffWithTargetState = DIFF_STATE.Unexpected;
       } else if (targetState.Action !== Enums.ServiceAction.INSTALL) {
         instanceService.Issues.Warnings.push(`Service found in target state for server role that instance belongs to: "${runtimeServerRoleName}", but with Action different from "Install": ${targetState.Action}`);
-        instanceService.DiffWithTargetState = 'Extra';
+        instanceService.DiffWithTargetState = DIFF_STATE.Unexpected;
       }
     });
 
@@ -184,10 +185,14 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
       return service;
     });
 
+    let runningServicesCount = _.filter(services, (s) => s.DiffWithTargetState !== DIFF_STATE.Missing).length;
+    let missingOrUnexpectedServices = _.filter(services, (s) => s.DiffWithTargetState === DIFF_STATE.Missing || s.DiffWithTargetState === DIFF_STATE.Unexpected).length > 0;
 
     return {
       OverallHealth: getOverallHealth(checks),
       DeploymentStatus: getInstanceDeploymentStatus(services),
+      RunningServicesCount: runningServicesCount,
+      MissingOrUnexpectedServices: missingOrUnexpectedServices,
       Services: services,
     };
   });

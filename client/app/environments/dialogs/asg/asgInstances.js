@@ -13,10 +13,6 @@ angular.module('EnvironmentManager.environments').component('asgInstances', {
     vm.dataLoading = false;
     vm.showRDC = vm.asg.Ami.Platform === 'Windows';
 
-    _.each(vm.asgState.Instances, function (instance) {
-      instance.enabledServicesCount = _.filter(instance.Services, { DiffWithTargetState: null }).length;
-    });
-
     vm.showAsgSingleInstance = function (instance) {
       $uibModal.open({
         component: 'asgSingleInstance',
