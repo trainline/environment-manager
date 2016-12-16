@@ -22,7 +22,7 @@ module.exports = {
   DIFF_STATE: {
     Ignored: 'Ignored',
     Missing: 'Missing',
-    Extra: 'Extra'
+    Unexpected: 'Unexpected'
   },
 
   HEALTH_STATUS: {
