@@ -139,16 +139,11 @@ angular.module('EnvironmentManager.common').controller('MainController',
           title = 'Errors';
           errorMessage = _.join(_.map(errors, function (e) { return "<h2>" + e.title + "</h2><p>" + e.detail; }), "<hr>");
         }
-      }
-      else {
+      } else {
         errorMessage = response.data.error;
       }
 
-      modal.information({
-        title: title,
-        message: errorMessage,
-        severity: 'Danger',
-      });
+      modal.error(title, errorMessage);
     });
 
     $rootScope.$on('cookie-expired', function () {
