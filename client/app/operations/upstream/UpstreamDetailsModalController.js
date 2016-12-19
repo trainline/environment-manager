@@ -14,14 +14,14 @@ angular.module('EnvironmentManager.operations').controller('UpstreamDetailsModal
       var uniqueIPs = GetUniqueIPs();
       var servers = [];
 
-      GetAWSData(uniqueIPs).then(function (data) {
+      getAWSData(uniqueIPs).then(function (data) {
 
         servers = data;
 
         // Check for IPs that don't have matching Instances in AWS - probably already removed by scaling or manual change
         if (data.length != uniqueIPs.length) {
           var ipsNotFound = uniqueIPs.filter(function awsDataNotFound(ip) {
-            return GetAWSDataByIP(ip, data) == null;
+            return getAWSDataByIP(ip, data) == null;
           });
 
           ipsNotFound.forEach(function (ip) {
@@ -33,7 +33,7 @@ angular.module('EnvironmentManager.operations').controller('UpstreamDetailsModal
         servers.forEach(function (server) {
           server.LoadBalancerServerState = [];
           upstream.Value.LoadBalancerState.LBs.forEach(function (lb) {
-            var lbServerState = { Name: lb.Name, State: GetLBServerState(server.Ip, lb) };
+            var lbServerState = { Name: lb.Name, State: getLBServerState(server.Ip, lb) };
             server.LoadBalancerServerState.push(lbServerState);
           });
         });
@@ -54,7 +54,7 @@ angular.module('EnvironmentManager.operations').controller('UpstreamDetailsModal
       upstream.Value.LoadBalancerState.LBs.forEach(function (lb) {
         if (lb.ServerStatus) {
           lb.ServerStatus.forEach(function (serverState) {
-            var ip = serverState.server.split(':')[0]; // Truncate port
+            var ip = serverState.Server.split(':')[0]; // Truncate port
             if (uniqueIPs.indexOf(ip) == -1) {
               uniqueIPs.push(ip);
             }
@@ -67,7 +67,7 @@ angular.module('EnvironmentManager.operations').controller('UpstreamDetailsModal
       return uniqueIPs;
     }
 
-    function GetAWSData(uniqueIPs) {
+    function getAWSData(uniqueIPs) {
       var deferred = $q.defer();
       accountMappingService.getAccountForEnvironment(upstream.Value.EnvironmentName).then(function (accountName) {
         if (uniqueIPs.length > 0) {
@@ -93,7 +93,7 @@ angular.module('EnvironmentManager.operations').controller('UpstreamDetailsModal
       return deferred.promise;
     }
 
-    function GetAWSDataByIP(ip, data) {
+    function getAWSDataByIP(ip, data) {
       for (var i = 0; i < data.length; i++) {
         if (data[i].Ip == ip) {
           return data[i];
@@ -103,12 +103,12 @@ angular.module('EnvironmentManager.operations').controller('UpstreamDetailsModal
       return null;
     }
 
-    function GetLBServerState(ip, lb) {
+    function getLBServerState(ip, lb) {
       for (var i = 0; i < lb.ServerStatus.length; i++) {
-        if (lb.ServerStatus[i].server) {
-          var serverIp = lb.ServerStatus[i].server.split(':')[0]; // remove port
+        if (lb.ServerStatus[i].Server) {
+          var serverIp = lb.ServerStatus[i].Server.split(':')[0]; // remove port
           if (serverIp == ip) {
-            return lb.ServerStatus[i].state;
+            return lb.ServerStatus[i].State;
           }
         }
       }

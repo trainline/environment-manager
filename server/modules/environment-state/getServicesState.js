@@ -3,6 +3,7 @@
 
 let _ = require('lodash');
 let Enums = require('Enums');
+let DIFF_STATE = Enums.DIFF_STATE;
 let co = require('co');
 let logger = require('modules/logger');
 let serviceTargets = require('modules/service-targets');
@@ -65,7 +66,7 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
         Name: serviceObjects[0].Name,
         Version: serviceObjects[0].Version,
         Slice: serviceObjects[0].Slice,
-        DiffWithTargetState: 'Extra',
+        DiffWithTargetState: DIFF_STATE.Unexpected,
       };
     } else {
       service.DiffWithTargetState = null;
@@ -78,22 +79,27 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
       });
 
       if (service.Action === 'Ignore') {
-        service.DiffWithTargetState = 'Ignored';
+        service.DiffWithTargetState = DIFF_STATE.Ignored;
       } else {
         service.DiffWithTargetState = null;
       }
     }
 
     let serviceInstances = _.filter(instances, (instance) => _.some(instance.Services, { Name: service.Name, Slice: service.Slice }));
+    let presentOnInstancesCount = 0;
+    let serviceObjectsOnInstances = [];
 
     // Healthy nodes are these where service is present AND service's status is healthy
     let healthyNodes = _.filter(serviceInstances, (instance) => {
       let serviceOnInstance = _.find(instance.Services, { Name: service.Name, Slice: service.Slice });
 
       if (serviceOnInstance !== undefined) {
+        serviceObjectsOnInstances.push(serviceOnInstance);
         // If at least one instance has state "Missing", overall service state will also be "Missing"
-        if (serviceOnInstance.DiffWithTargetState === 'Missing') {
-          service.DiffWithTargetState = 'Missing';
+        if (serviceOnInstance.DiffWithTargetState === DIFF_STATE.Missing) {
+          service.DiffWithTargetState = DIFF_STATE.Missing;
+        } else {
+          presentOnInstancesCount += 1;
         }
         return serviceOnInstance.OverallHealth === 'Healthy';
       }
@@ -102,6 +108,9 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
 
     let serviceHealthChecks = getServiceChecksInfo(serviceObjects);
     let serviceAction = service.Action || SERVICE_INSTALL;
+
+    let missingOrUnexpectedInstances = _.filter(serviceObjectsOnInstances,
+      (s) => s.DiffWithTargetState === DIFF_STATE.Missing || s.DiffWithTargetState === DIFF_STATE.Unexpected).length > 0;
 
     return {
       Name: service.Name,
@@ -112,8 +121,10 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
       InstancesNames: _.map(serviceInstances, 'Name'),
       InstancesCount: {
         Healthy: healthyNodes.length,
-        Total: instances.length
+        Present: presentOnInstancesCount,
+        Total: serviceInstances.length
       },
+      MissingOrUnexpectedInstances: missingOrUnexpectedInstances,
       OverallHealth: getServiceOverallHealth(serviceHealthChecks, serviceInstances),
       HealthChecks: serviceHealthChecks,
       Action: serviceAction

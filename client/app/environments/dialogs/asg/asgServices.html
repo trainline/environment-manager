@@ -39,7 +39,7 @@
             <service-diff-with-target-state state="service.DiffWithTargetState"></service-diff-with-target-state>
           </td>
           <td><health-checks list="service.HealthChecks"></health-checks></td>
-          <td><a ng-click="vm.showAsgSingleService(service)">{{ service.InstancesCount.Healthy }}/{{ service.InstancesCount.Total }}</a></td>
+          <td><a ng-click="vm.showAsgSingleService(service)">{{ service.InstancesCount.Present }} {{ service.InstancesCount.Present === 1 ? 'instance' : 'instances' }}</a> <span ng-if="service.MissingOrUnexpectedInstances" class="glyphicon glyphicon-exclamation-sign warning" title="Missing or unexpected services present"></span></td>
           <td><a ng-click="vm.showDeploymentLog(service)">Show Deployment</a></td>
           <td data-ng-if="vm.allowServiceDisabling">
             <div class="onoffswitch enabled-toggle">

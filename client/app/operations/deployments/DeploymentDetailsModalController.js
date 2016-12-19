@@ -55,11 +55,7 @@ function deploymentView(deploymentRecord, clusters) {
     if (nodes) {
       return nodes.map(function (node) {
 
-        var logLink;
-        if (node.Status.toLowerCase() === 'success' ||
-          (node.Status.toLowerCase() === 'failed' && node.LastCompletedStage.toLowerCase() !== 'timed out')) {
-          logLink = '/api/v1/deployments/' + deployment.DeploymentID + '/log?account=' + deployment.AccountName + '&instance=' + node.InstanceId
-        }
+        var logLink = '/api/v1/deployments/' + deployment.DeploymentID + '/log?account=' + deployment.AccountName + '&instance=' + node.InstanceId;
 
         return {
           instanceId: node.InstanceId,
@@ -97,10 +93,6 @@ function deploymentView(deploymentRecord, clusters) {
   }
 
   var deployment = deploymentRecord.Value;
-
-  var service = deployment.ServiceName + ' (' + deployment.ServiceVersion + ')';
-  var user = deployment.User + ' (' + deployment.OwningCluster + ')';
-  var progress = (deployment.Status.toLowerCase() === 'in progress');
   var log = getDeploymentLog(deployment.ExecutionLog);
 
   var duration = getDuration();
@@ -116,22 +108,17 @@ function deploymentView(deploymentRecord, clusters) {
   // TODO(filip): rather than linking to separate page, open modal inside current page
   var asgLink = '#/environment/servers/?environment=' + deployment.EnvironmentName + '&asg_name=' + asgName;
 
-  return {
-    deploymentId: deploymentRecord.DeploymentID,
+  return _.assign({ DeploymentID: deploymentRecord.DeploymentID }, deployment, {
     environment: deployment.EnvironmentName,
     asgName: asgName,
     asgLink: asgLink,
     status: deployment.Status,
     statusClass: statusClass,
     duration: duration,
-    service: service,
-    user: user,
-    deploymentType: deployment.DeploymentType,
     error: error,
-    progress: progress,
     log: log,
     nodes: nodes,
-  };
+  });
 }
 
 angular.module('EnvironmentManager.operations')
@@ -166,7 +153,7 @@ angular.module('EnvironmentManager.operations')
 
       if (refreshTimer) $timeout.cancel(refreshTimer);
 
-      if (data.Value.Status.toLowerCase() === 'in progress') {
+      if (data.Value.Status === 'In Progress') {
         refreshTimer = $timeout(refreshData, 5000);
       }
     }
@@ -183,10 +170,7 @@ angular.module('EnvironmentManager.operations')
     };
 
     vm.allowCancel = function () {
-      if (vm.deployment.Value.Status !== 'In Progress') {
-        return false;
-      }
-      return true;
+      return vm.deployment.Value.Status === 'In Progress';
     };
 
     vm.cancelDeployment = function () {
