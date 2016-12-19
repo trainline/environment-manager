@@ -42,9 +42,9 @@ module.exports = {
 function getKeyPairByName(keyName, accountName) {
   let query = {
     name: 'GetKeyPair',
-    accountName: accountName,
-    keyName: keyName,
+    accountName,
+    keyName,
   };
 
-  return sender.sendQuery({ query: query });
+  return sender.sendQuery({ query });
 }

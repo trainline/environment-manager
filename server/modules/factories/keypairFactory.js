@@ -18,7 +18,7 @@ class KeyPairResource {
       KeyNames: [ keyName ]
     };
 
-    self.client.describeKeyPairs(request).promise().then(function (response) {
+    return self.client.describeKeyPairs(request).promise().then(function (response) {
       if (response.KeyPairs.length) {
         return response.KeyPairs[0];
       } else {
