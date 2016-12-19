@@ -22,6 +22,9 @@ class AutoScalingGroup {
     let self = this;
     return co(function* () {
       let name = self.LaunchConfigurationName;
+      if (name === undefined) {
+        throw new Error(`Launch configuration doesn't exist for ${self.AutoScalingGroupName}`);
+      }
       let client = yield resourceProvider.getInstanceByName('launchconfig', { accountName: self.$accountName });
       return client.get({ name });
     });

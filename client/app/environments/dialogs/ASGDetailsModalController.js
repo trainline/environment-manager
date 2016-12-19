@@ -178,6 +178,9 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
             initializeScope();
           }
         });
+      }, function (error) {
+        $rootScope.$emit('error', { data: error.message });
+        vm.closeModal();
       });
 
     };

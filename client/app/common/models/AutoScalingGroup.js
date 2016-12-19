@@ -14,6 +14,7 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
         DesiredCapacity: asg.DesiredCapacity,
         CurrentSize: asg.Instances.length,
         LaunchConfigurationName: (asg.LaunchConfigurationName) ? asg.LaunchConfigurationName.replace('LaunchConfig_', '') : null,
+        IsBeingDeleted: asg.Status === 'Delete in progress',
         Instances: asg.Instances,
         Tags: asg.Tags,
       };
@@ -85,7 +86,11 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
       return getAsgDetails(asgName, environmentName).then(function (asgDetails) {
         // Refresh ASG to get up to date list of instance IDs (changes after scaling)
         if (asgDetails) {
-          return new AutoScalingGroup(asgDetails, account);
+          if (asgDetails.IsBeingDeleted) {
+            throw new Error('This ASG is currently being deleted');
+          } else {
+            return new AutoScalingGroup(asgDetails, account);
+          }
         } else {
           throw new Error('ASG data not found');
         }
