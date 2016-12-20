@@ -13,7 +13,7 @@ exports.handler = (event, context, callback) => {
 
     scheduler.doScheduling()
     .then(result => {
-      if (result.success) callback(null, result);
+      if (result.success) callback(null, logSuccess(result));
       else callback(logError('Scheduling Failure', result));
     })
     .catch(err => {
@@ -25,6 +25,11 @@ exports.handler = (event, context, callback) => {
   }
 
 };
+
+function logSuccess(result) {
+  console.log(JSON.stringify(result, null, 2));
+  return `SUCCESS! See logs for more details.`;
+}
 
 function logError(err, details) {
   console.error(JSON.stringify({ err, details }, null, 2));
