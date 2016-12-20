@@ -47,6 +47,7 @@ function getNodeHealth(environment, nodeName) {
 }
 
 function executeConsul(environment, fn) {
+  assert(environment);
   let promiseFactoryMethod = () => createConsulClient(environment).then(fn);
   return executeAction(promiseFactoryMethod);
 }
@@ -60,7 +61,7 @@ function unravelTags(service) {
     let tagComponents = tag.split(':');
     val[tagComponents[0]] = tagComponents[1];
     return val;
-  }, {})
+  }, {});
 }
 
 function executeAction(promiseFactoryMethod) {
@@ -83,6 +84,7 @@ function executeAction(promiseFactoryMethod) {
 }
 
 function createConsulClient(environment) {
+  assert(environment);
   return consulClient.create({ environment, promisify: true }).catch(logger.error.bind(logger));
 }
 

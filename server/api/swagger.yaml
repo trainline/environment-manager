@@ -758,11 +758,8 @@ paths:
       parameters:
         - name: environment
           in: query
-          type: array
-          collectionFormat: csv
+          type: string
           required: true
-          items:
-            type: string
       responses:
         200:
           description: Currently deployed services
@@ -784,11 +781,8 @@ paths:
           required: true
         - name: environment
           in: query
-          type: array
-          collectionFormat: csv
+          type: string
           required: true
-          items:
-            type: string
       responses:
         200:
           description: The service

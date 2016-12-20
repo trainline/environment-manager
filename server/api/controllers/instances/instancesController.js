@@ -15,7 +15,6 @@ let logger = require('modules/logger');
 let getInstanceState = require('modules/environment-state/getInstanceState');
 let Environment = require('models/Environment');
 let Enums = require('Enums');
-let DEPLOYMENT_STATUS = Enums.DEPLOYMENT_STATUS;
 
 /**
  * GET /instances

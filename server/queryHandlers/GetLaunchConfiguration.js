@@ -20,7 +20,7 @@ module.exports = function GetLaunchConfiguration(query) {
 
     let Volumes = instanceDevicesProvider.fromAWS(awsLaunchConfig.BlockDeviceMappings);
 
-    let image = yield Image.getById(awsLaunchConfig.ImageId)
+    let image = yield Image.getById(awsLaunchConfig.ImageId);
 
     let environmentType = yield autoScalingGroup.getEnvironmentType();
     let vpcId = environmentType.VpcId;
