@@ -1,3 +1,4 @@
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict'
 
 function RateLimiter(taskLimitPerSecond) {
@@ -21,7 +22,7 @@ function RateLimiter(taskLimitPerSecond) {
 
   function startTask(task) {
     tasksStartedWithinTheSecond++;
-    delay(1000).then(timeoutCompleted);
+    setTimeout(timeoutCompleted, 1000);
     return task();
   }
 
@@ -31,12 +32,6 @@ function RateLimiter(taskLimitPerSecond) {
       let job = jobQueue.shift();
       startTask(job.task).then(job.resolve).catch(job.reject);
     }
-  }
-
-  function delay(milliseconds) {
-    return new Promise(resolve => {
-      setTimeout(resolve, milliseconds);
-    });
   }
 
 };
