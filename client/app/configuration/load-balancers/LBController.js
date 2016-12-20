@@ -176,8 +176,8 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
         errors = errors.concat(listenErrors);
 
         if (listenErrors.length == 0) {
-          var listenMandatoryFields = ['Port', 'SSL'];
-          var listenOptionalFields = ['IP'];
+          var listenMandatoryFields = ['Port'];
+          var listenOptionalFields = ['IP', 'SSL'];
           for (var i = 0; i < value.Listen.length; i++) {
             errors = errors.concat($scope.ValidateFields(value.Listen[i], listenMandatoryFields, listenOptionalFields, 'Listen[' + i + ']'));
           }
