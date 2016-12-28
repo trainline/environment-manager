@@ -3,6 +3,19 @@
 
 let GetServerRoles = require('queryHandlers/services/GetServerRoles');
 
+function scanAndDelete(environment, parameters) {
+  return co(function* () {
+    let keyValuePairs = yield serviceTargets.getTargetState(query.environment, { key: parameters.keyPrefix, recurse: true });
+    let erasedKeys = yield keyValuePairs.filter((keyValuePair) =>
+      parameters.condition(keyValuePair.key, keyValuePair.value)
+    ).map((keyValuePair) => {
+      return serviceTargets.removeTargetState(environment, { key: keyValuePair.key }).then(() => keyValuePair.key);
+    });
+
+    return erasedKeys;
+  });
+}
+
 /**
  * GET /target-state/{environment}
  */
