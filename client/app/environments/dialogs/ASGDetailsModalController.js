@@ -179,7 +179,6 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
           }
         });
       }, function (error) {
-        modal.error('Error', error.message);
         vm.closeModal();
       });
 
