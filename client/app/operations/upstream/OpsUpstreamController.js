@@ -63,8 +63,12 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
       var params = { account: 'all' };
       resources.config.lbUpstream.all(params).then(function (data) {
         vm.fullUpstreamData = restructureUpstreams(data);
-        return updateLBStatus().then(function(){
+        return updateLBStatus().then(function () {
           vm.updateFilter();
+          vm.dataFound = true;
+        }, function () {
+          vm.updateFilter();
+          modal.error('Warning', 'Couldn\'t get load balancer info. Active state data of upstreams will not be shown.')
           vm.dataFound = true;
         });
       }).finally(function () {
