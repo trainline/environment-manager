@@ -147,7 +147,7 @@ function patchDeployment(req, res, next) {
 
     if (status === Enums.DEPLOYMENT_STATUS.Cancelled) {
       let deployment = yield deploymentsHelper.get({ key })
-      if (deployment.Value.Status !== 'In Progress') {
+      if (deployment.Value.Status !== Enums.DEPLOYMENT_STATUS.InProgress) {
         throw new Error(`You can only cancel deployments that are In Progress`);
       }
 
@@ -161,9 +161,9 @@ function patchDeployment(req, res, next) {
       return switchDeployment(key, false, req.user);
     } else if (action !== undefined) {
       let enable;
-      if (action === 'Ignore') {
+      if (action === Enums.ServiceAction.IGNORE) {
         enable = false;
-      } else if (action === 'Install') {
+      } else if (action === Enums.ServiceAction.INSTALL) {
         enable = true;
       } else {
         throw new Error(`Invalid Action: "${action}", only "Install" and "Ignore" are allowed.`);

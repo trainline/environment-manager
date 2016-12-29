@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ASGDetailsModalController',
-  function ($scope, $uibModal, $uibModalInstance, $q, modal, serviceDiscovery, $rootScope, Image, awsService, AutoScalingGroup, resources, cachedResources, deploymentMapConverter, asgDistributionService, parameters) {
+  function ($scope, $uibModal, $uibModalInstance, $q, modal, serviceDiscovery, Image, awsService, AutoScalingGroup, resources, cachedResources, deploymentMapConverter, asgDistributionService, parameters) {
     var vm = this;
     
     vm.context = 'asg';
@@ -178,6 +178,8 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
             initializeScope();
           }
         });
+      }, function (error) {
+        vm.closeModal();
       });
 
     };
@@ -218,8 +220,6 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       delete updated.UI_SecurityGroupsFlatList;
       vm.asg.updateLaunchConfig(updated).then(function() {
         showLaunchConfigConfirmation().then(vm.refresh);
-      }, function (error) {
-        $rootScope.$broadcast('error', error);
       });
     };
 
@@ -242,8 +242,6 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
             }).then(function () {
               vm.refresh();
             });
-          }, function (error) {
-            $rootScope.$broadcast('error', error);
           });
       });
     };

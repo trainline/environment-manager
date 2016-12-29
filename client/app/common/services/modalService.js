@@ -25,6 +25,14 @@ angular.module('EnvironmentManager.common').factory('modal',
 
         return $uibModal.open(parameters).result;
       },
+
+      error: function (title, errorMessage) {
+        return this.information({
+          title: title,
+          message: errorMessage,
+          severity: 'Danger',
+        });
+      },
       
       information: function (configuration) {
         configuration.infomode = true;

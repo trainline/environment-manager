@@ -5,6 +5,8 @@ let sinon = require('sinon');
 let rewire = require('rewire');
 let assert = require('assert');
 
+let Instance = require('models/Instance');
+
 describe('ScanServersStatus', function() {
 
   const MOCK_ENVIRONMENT = 'test-env';
@@ -13,23 +15,23 @@ describe('ScanServersStatus', function() {
   const RUNNING_INSTANCE_SERVICE = 'running-instance-service';
   const TERMINATED_INSTANCE_SERVICE = 'terminated-instance-service';
 
-  let mockInstance_1 = {
+  let mockInstance_1 = new Instance({
     InstanceId: 22,
     ImageId: 44,
     Tags: [{Key:'Name', Value:RUNNING_INSTANCE}],
     State: {
       Name: 'running'
     }
-  };
+  });
 
-  let mockInstance_2 = {
+  let mockInstance_2 = new Instance({
     InstanceId: 55,
     ImageId: 44,
     Tags: [{Key:'Name', Value:TERMINATED_INSTANCE}],
     State: {
       Name: 'running'
     }
-  };
+  });
 
   let mockImage = {
     IsLatest: true,
@@ -63,9 +65,6 @@ describe('ScanServersStatus', function() {
     sendQuery: function(value) {
       let query = value.query;
       switch(query.name) {
-        case 'ScanCrossAccountInstances':
-          return Promise.resolve([mockInstance_1, mockInstance_2]);
-          break;
         case 'ScanCrossAccountImages':
           return Promise.resolve([mockImage]);
           break;
@@ -84,6 +83,12 @@ describe('ScanServersStatus', function() {
       return Promise.resolve();
     }
   };
+
+  let InstanceMock = {
+    getAllByEnvironment: function () {
+      return Promise.resolve([mockInstance_1, mockInstance_2]);
+    }
+  }
 
   let AutoScalingGroupMock = {
     getAllByEnvironment: function () {
@@ -104,6 +109,7 @@ describe('ScanServersStatus', function() {
     sut.__set__({
       sender,
       Environment,
+      Instance: InstanceMock,
       AutoScalingGroup: AutoScalingGroupMock
     });
 

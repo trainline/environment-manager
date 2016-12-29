@@ -78,6 +78,24 @@ paths:
       responses:
         200:
           description: Ok
+    delete:
+      operationId: deleteAsg
+      summary: Delete ASG and it's target state
+      tags:
+        - ASG
+      x-authorizer: asgs
+      parameters:
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Ok
   /asgs/{name}/ready:
     x-swagger-router-controller: asgController
     get:
@@ -96,7 +114,7 @@ paths:
           required: true
       responses:
         200:
-          description: The matching ASG
+          description: The matching ASG ready state
           schema:
             type: object
             properties:
