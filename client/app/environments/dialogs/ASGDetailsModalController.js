@@ -10,6 +10,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     var selectedImageVersions = null;
     var amiData = [];
     var environment = parameters.environment;
+    var launchConfigForm;
 
     vm.awsInstanceTypesList = [];
     vm.deploymentMap = null;
@@ -60,9 +61,9 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       vm.selectedScheduleMode = vm.asg.ScalingSchedule && vm.asg.ScalingSchedule.length ? 'scaling' : 'schedule';
     }
 
-    vm.isAZChecked = function(az) {
-        return _.includes(vm.asgUpdate.AvailabilityZone, az);
-    }
+    vm.isAZChecked = function (az) {
+      return _.includes(vm.asgUpdate.AvailabilityZone, az);
+    };
 
     vm.toggleAZSelection = function(az) {
         if (_.includes(vm.asgUpdate.AvailabilityZone, az)) {
@@ -75,6 +76,10 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     function deriveAvailabilityZoneFriendlyName(azs) {
       return azs.map(function(az){ return az.substring(azs[0].length - 1).toUpperCase(); });
     }
+
+    vm.setLaunchConfigForm = function (form) {
+      launchConfigForm = form;
+    };
 
     vm.openServerRoleConfig = function () {
       $uibModal.open({
@@ -104,8 +109,8 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     };
 
     vm.updateASGFormIsValid = function () {
-        return !!vm.asgUpdate.AvailabilityZone.length;
-    }
+      return !!vm.asgUpdate.AvailabilityZone.length;
+    };
 
     vm.formIsValid = function (form) {
       // TODO: Workaround for bug in uniqueAmong directive, returns false positive for disabled control. Can remove this once fixed.
@@ -209,6 +214,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         vm.target.ASG.LaunchConfig.AMI = selectedAmi.displayName;
         vm.requiredImageSize = selectedAmi.rootVolumeSize;
         vm.target.ASG.LaunchConfig.Volumes[0].Size = selectedAmi.rootVolumeSize;
+        launchConfigForm.$setDirty(true);
       });
     };
 

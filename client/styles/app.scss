@@ -74,6 +74,16 @@ label.nonbold { font-weight: normal; }
 label.nowrap { white-space:nowrap; }
 label.info { font-weight: normal; color: #555; }
 
+.btn-highlight {
+  box-shadow: 0px 0px 7px 1px red;
+}
+
+form.asg-launch-configuration.ng-dirty {
+  .btn.submit {
+    @extend .btn-highlight;
+  }
+}
+
 button { margin-right: 10px; }
 button.left { float:left; margin-left: 0px; margin-right: 10px; }
 button.right { float:right; margin-left: 10px; margin-right: 0px; }
