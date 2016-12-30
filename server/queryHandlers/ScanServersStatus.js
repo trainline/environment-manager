@@ -9,6 +9,7 @@ let sender = require('modules/sender');
 let Environment = require('models/Environment');
 let AutoScalingGroup = require('models/AutoScalingGroup');
 let Instance = require('models/Instance');
+let serviceDiscovery = require('modules/service-discovery');
 
 module.exports = co.wrap(ScanServersStatusQueryHandler);
 
@@ -34,10 +35,10 @@ function* ScanServersStatusQueryHandler(query) {
  
     return Promise.all(asgs.map(asg => {
       let instances = asg.Instances.map(asgInstance => {
-        var instance = _.find(allInstances, { InstanceId: asgInstance.InstanceId });
+        let instance = _.find(allInstances, { InstanceId: asgInstance.InstanceId });
 
         if (instance && instance.State.Name !== 'terminated') {
-          var image = getImage(allImages, instance.ImageId); // TODO(filip): use Image in place of this
+          let image = getImage(allImages, instance.ImageId); // TODO(filip): use Image in place of this
           return {
             instanceId: instance.InstanceId,
             name: instance.getTag('Name', ''),
@@ -101,12 +102,14 @@ function getConsulServicesForNode(environment, nodeName) {
   return sender.sendQuery({
     query: {
       name: 'GetNode',
-      environment: environment,
-      nodeName: nodeName
+      environment,
+      nodeName
     }
   }).then(consulNode => {
     if (!consulNode) return [];
     return consulNode.Services;
+  }, () => {
+    return [];
   });
 }
 
