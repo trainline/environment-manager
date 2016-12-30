@@ -1,9 +1,7 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
-// TODO(filip): why do we even need this ugly rewrite? What's wrong with operating on AWS data?
-// Why add so much complexity to something that can be as simple as CRUD operation on AWS?
-
+// Note: considering simply operating on AWS data rather than mapping our structures
 let _ = require('lodash');
 
 const OS_DEVICE_NAME = '/dev/sda1';
