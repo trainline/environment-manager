@@ -50,6 +50,7 @@
             <thead>
                 <tr>
                     <th class="text-nowrap">Service Name</th>
+                    <th class="text-nowrap">ASGs</th>
                     <th class="text-nowrap">Service Owner</th>
                     <th class="text-nowrap">Host DNS / IP</th>
                     <th class="text-nowrap">Slice</th>
@@ -65,6 +66,13 @@
                     <td ng-click="vm.showInstanceDetails(host)">
                         {{host.Value.ServiceName || "-"}}<br/>
                         ({{host.Value.UpstreamName}})
+                    </td>
+                    <td ng-click="vm.showInstanceDetails(host)">
+                        <ul>
+                            <li ng-repeat="asg in host.asgs">
+                                {{asg}}
+                            </li>
+                        </ul>
                     </td>
                     <td ng-click="vm.showInstanceDetails(host)">
                       {{host.Value.OwningCluster}}

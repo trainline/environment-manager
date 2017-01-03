@@ -17,6 +17,8 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     vm.data = [];
     vm.dataFound = false;
     vm.dataLoading = false;
+    vm.LBDataLoading = false;
+    vm.ASGDataLoading = false;
 
     function init() {
       $q.all([
@@ -60,21 +62,31 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     }
 
     vm.refresh = function () {
-      vm.dataLoading = true;
-      var params = { account: 'all' };
-      resources.config.lbUpstream.all(params).then(function (data) {
-        vm.fullUpstreamData = restructureUpstreams(data);
-        return updateLBStatus().then(function () {
-          vm.updateFilter();
+      if (!vm.dataLoading && !vm.LBDataLoading && !vm.ASGDataLoading) {
+        vm.dataLoading = true;
+        var params = { account: 'all' };
+        resources.config.lbUpstream.all(params).then(function (data) {
+          vm.fullUpstreamData = restructureUpstreams(data);
           vm.dataFound = true;
-        }, function () {
           vm.updateFilter();
-          modal.error('Warning', 'Couldn\'t get load balancer info. Active state data of upstreams will not be shown.');
-          vm.dataFound = true;
+          
+          updateLBStatus().catch(function(){
+            modal.error('Warning', 'Couldn\'t get load balancer info. Active state data of upstreams will not be shown.');
+          }).finally(function () {
+            vm.updateFilter();
+            vm.LBDataLoading = false;
+          });
+
+          updateASGStatus().then(function(){
+            vm.updateFilter();
+          }).finally(function () {
+            vm.ASGDataLoading = false;
+          });
+
+        }).finally(function () {
+          vm.dataLoading = false;
         });
-      }).finally(function () {
-        vm.dataLoading = false;
-      });
+      }
     };
 
     vm.updateFilter = function () {
@@ -166,7 +178,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     };
 
 
-    // Convert to flat hosts array. Match port numbers to Blue/Green slice for corresponding service. Add NGINX status
+    // Convert to flat hosts array. Match port numbers to Blue/Green slice for corresponding service.
     function restructureUpstreams(upstreams) {
       var flattenedUpstreams = [];
       upstreams.forEach(function (upstream) {
@@ -207,6 +219,68 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
       return 'Unknown';
     }
 
+    function getDummyData() {
+      return new Promise(function(resolve, reject){
+        setTimeout(function(){
+           resolve([{
+              "name": "c51-TestService99",
+              "hosts": [
+                {
+                  "server": "10.248.151.171:40501",
+                  "state": "up",
+                  "health_checks": {
+                    "checks": 0,
+                    "fails": 0,
+                    "unhealthy": 0
+                  }
+                },
+                {
+                  "server": "10.248.173.203:40501",
+                  "state": "up",
+                  "health_checks": {
+                    "checks": 0,
+                    "fails": 0,
+                    "unhealthy": 0
+                  }
+                }
+              ]},{
+              "name": "c51-TestService99",
+              "hosts": [
+                {
+                  "server": "10.248.151.171:40502",
+                  "state": "down",
+                  "health_checks": {
+                    "checks": 0,
+                    "fails": 0,
+                    "unhealthy": 0
+                  }
+                },
+                {
+                  "server": "10.248.173.203:40502",
+                  "state": "down",
+                  "health_checks": {
+                    "checks": 0,
+                    "fails": 0,
+                    "unhealthy": 0
+                  }
+                }
+              ]
+            }
+            ]);
+        }, 2000);
+      });
+    }
+
+    function updateASGStatus() {
+      var promises = vm.fullUpstreamData.map(function (upstreamHost){
+        var url = ['api', 'v1', 'services', upstreamHost.Value.DnsName, "asgs"].join('/') + '?environment=' + upstreamHost.Value.EnvironmentName;
+        return $http.get(url).then(function (response) {
+          upstreamHost.asgs = response.data.map(function(asg){return asg.AutoScalingGroupName;});
+        });
+      });
+      return $q.all(promises);
+    }
+
     function updateLBStatus() {
       // Read LBs for this environment
       return accountMappingService.getEnvironmentLoadBalancers(vm.selectedEnvironment).then(function (lbs) {
@@ -219,8 +293,8 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
         var promises = lbs.map(function (lb) {
           var url = ['api', 'v1', 'load-balancer', lb].join('/');
 
-          return $http.get(url).then(function (response) {
-            var nginxData = response.data;
+          //return $http.get(url).then(function (response) {
+          return getDummyData().then(function (nginxData) {
             var lbName = lb.split('.')[0]; // Drop .prod/nonprod.local from name
 
             // Loop upstream hosts and associate LB status with each record
