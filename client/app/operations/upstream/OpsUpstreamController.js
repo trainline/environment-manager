@@ -63,7 +63,11 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
 
     vm.refresh = function () {
       if (!vm.dataLoading && !vm.LBDataLoading && !vm.ASGDataLoading) {
+          
         vm.dataLoading = true;
+        vm.LBDataLoading = true;
+        vm.ASGDataLoading = true;
+
         var params = { account: 'all' };
         resources.config.lbUpstream.all(params).then(function (data) {
           vm.fullUpstreamData = restructureUpstreams(data);
@@ -129,16 +133,63 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     };
 
     vm.showInstanceDetails = function (upstreamData) {
+      if (upstreamData.asgs.length) {
+        selectASG(upstreamData.asgs).then(function(asg){
+          showAsgDetails(asg);
+        });
+      } else {
+        $uibModal.open({
+          templateUrl: '/app/operations/upstream/ops-upstream-details-modal.html',
+          controller: 'UpstreamDetailsModalController as vm',
+          size: 'lg',
+          windowClass: 'LBStatus',
+          resolve: {
+            upstream: function () {
+              return upstreamData;
+            },
+          },
+        });
+      }
+    };
+
+    function selectASG(asgs) {
+      if (asgs.length === 1)
+        return Promise.resolve(_.first(asgs));
+      
       var instance = $uibModal.open({
-        templateUrl: '/app/operations/upstream/ops-upstream-details-modal.html',
-        controller: 'UpstreamDetailsModalController as vm',
-        size: 'lg',
-        windowClass: 'LBStatus',
+        templateUrl: '/app/operations/upstream/select-asg-modal.html',
+        controller: 'ASGSelectionModalController as vm',
+        size: 'sm',
         resolve: {
-          upstream: function () {
-            return upstreamData;
+          parameters: function () {
+            return { asgs: asgs };
           }
         }
+      });
+
+      return instance.result;
+    }
+
+    function showAsgDetails(asgName) {
+      cachedResources.config.environments.all().then(function (envData) {
+        return cachedResources.config.environments.getByName(vm.selectedEnvironment, 'EnvironmentName', envData);
+      }).then(function(env){
+        var account = accountMappingService.getAccountForEnvironment(vm.selectedEnvironment).then(function(account){
+          $uibModal.open({
+            templateUrl: '/app/environments/dialogs/env-asg-details-modal.html',
+            controller: 'ASGDetailsModalController as vm',
+            windowClass: 'InstanceDetails',
+            resolve: {
+              parameters: function () {
+                return {
+                  groupName: asgName,
+                  environment: env,
+                  accountName: account
+                };
+              },
+            },
+          });
+        });
       });
     };
 
@@ -273,7 +324,12 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
 
     function updateASGStatus() {
       var promises = vm.fullUpstreamData.map(function (upstreamHost){
-        var url = ['api', 'v1', 'services', upstreamHost.Value.DnsName, "asgs"].join('/') + '?environment=' + upstreamHost.Value.EnvironmentName;
+          
+        var environment = upstreamHost.Value.EnvironmentName;
+        var service = upstreamHost.Value.ServiceName;
+        var slice = upstreamHost.Value.Slice === 'Unknown' ? '' : '&slice=' + upstreamHost.Value.Slice;
+
+        var url = ['api', 'v1', 'services', service, "asgs"].join('/') + '?environment=' + environment + slice;
         return $http.get(url).then(function (response) {
           upstreamHost.asgs = response.data.map(function(asg){return asg.AutoScalingGroupName;});
         });
