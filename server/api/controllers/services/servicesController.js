@@ -33,7 +33,10 @@ function getASGsByService(req, res, next) {
 
   return co(function* () {
 
-    let nodes = _.castArray(yield serviceDiscovery.getService(environment, serviceName));
+    let slice = sliceName ? `-${sliceName}` : '';
+    let service = serviceName + slice;
+
+    let nodes = _.castArray(yield serviceDiscovery.getService(environment, service));
     let accountName = yield Environment.getAccountNameForEnvironment(environment);
 
     let asgs = yield nodes.map(node => {
@@ -44,7 +47,9 @@ function getASGsByService(req, res, next) {
       });
     });
 
-    return _.compact(_.uniqBy(asgs, _.isEqual));
+    return _.chain(asgs).compact().uniq().map(asg => {
+      return { AutoScalingGroupName: asg };
+    }).value();
 
   }).then(data => res.json(data)).catch(next);
 }
