@@ -2,8 +2,7 @@
 'use strict';
 
 let co = require('co');
-let autoScalingGroupClientFactory = require('modules/clientFactories/autoScalingGroupClientFactory');
-let launchConfigurationClientFactory = require('modules/clientFactories/launchConfigurationClientFactory');
+let resourceProvider = require('modules/resourceProvider');
 let sender = require('modules/sender');
 let AutoScalingGroup = require('models/AutoScalingGroup');
 
@@ -16,13 +15,8 @@ module.exports = {
       // 
       let autoScalingGroupName = autoScalingGroup.$autoScalingGroupName;
 
-      let launchConfigurationClient = yield launchConfigurationClientFactory.create(
-        { accountName: accountName }
-      );
-
-      let autoScalingGroupClient = yield autoScalingGroupClientFactory.create(
-        { accountName: accountName }
-      );
+      let launchConfigurationClient = yield resourceProvider.getInstanceByName('launchconfig', { accountName });
+      let autoScalingGroupClient = yield resourceProvider.getInstanceByName('asgs', { accountName });
 
       // Send a request to obtain the LaunchConfiguration for the specific
       // AutoScalingGroup

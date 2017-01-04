@@ -64,11 +64,11 @@ function LaunchConfigurationResource(client) {
     return describeLaunchConfigurations(parameters.names || []);
   };
 
-  this.delete = function (parameters) {
-    let request = { LaunchConfigurationName: parameters.name };
+  this.delete = function ({ name }) {
+    let request = { LaunchConfigurationName: name };
 
     return client.deleteLaunchConfiguration(request).promise().catch(error => {
-      throw standardifyError(error, parameters.name);
+      throw standardifyError(error, name);
     });
   };
 

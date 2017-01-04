@@ -53,8 +53,8 @@ describe('CreateLaunchConfigurationCommandHandler:', () => {
       post: sinon.stub().returns(Promise.resolve()),
     };
 
-    var autoScalingClientFactory = {
-      create: sinon.stub().returns(Promise.resolve(launchConfigurationClientMock)),
+    var resourceProvider = {
+      getInstanceByName: sinon.stub().returns(Promise.resolve(launchConfigurationClientMock)),
     };
 
     var command = {
@@ -64,15 +64,15 @@ describe('CreateLaunchConfigurationCommandHandler:', () => {
     };
 
     // Act
-    CreateLaunchConfigurationCommandHandler.__set__('launchConfigurationClientFactory', autoScalingClientFactory);
+    CreateLaunchConfigurationCommandHandler.__set__('resourceProvider', resourceProvider);
     var promise = CreateLaunchConfigurationCommandHandler(command);
 
     // Assert
     return promise.then(result => {
 
-      autoScalingClientFactory.create.called.should.be.true();
-      autoScalingClientFactory.create.getCall(0).args.should.match(
-        [{ accountName: ACCOUNT_NAME }]
+      resourceProvider.getInstanceByName.called.should.be.true();
+      resourceProvider.getInstanceByName.getCall(0).args.should.match(
+        ['launchconfig', { accountName: ACCOUNT_NAME }]
       );
 
       launchConfigurationClientMock.post.called.should.be.true();
