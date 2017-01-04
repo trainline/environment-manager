@@ -41,7 +41,6 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsInstanc
     }
 
     vm.showDetails = function (instance) {
-      console.log(instance);
       $uibModal.open({
         component: 'asgSingleInstance',
         size: 'lg',
