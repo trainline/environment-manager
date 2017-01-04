@@ -25,6 +25,7 @@ module.exports = {
           ServiceName: deployment.serviceName,
           ServiceSlice: deployment.serviceSlice,
           ServiceVersion: deployment.serviceVersion,
+          RuntimeServerRoleName: deployment.serverRole,
           ServerRoleName: deployment.serverRoleName,
           Status: 'In Progress',
           User: deployment.username,

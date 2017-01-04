@@ -180,7 +180,9 @@ function switchDeployment(key, enable, user) {
     if (deployment.Value.ServerRoleName === undefined) {
       throw new Error('This operation is unsupported for Deployments started before 09.2016. If you would like to use this feature, please redeploy your service, or contact Platform Dev team.');
     }
-    let serverRole = deployment.Value.ServerRoleName;
+    // Note: falling back to ServerRoleName is a temporary measure - RuntimeServerRoleName should be used,
+    // but it's not available in deployments before Jan 2017
+    let serverRole = deployment.Value.RuntimeServerRoleName || deployment.Value.ServerRoleName;
     let environment = deployment.Value.EnvironmentName;
     let slice = deployment.Value.ServiceSlice;
     let service = deployment.Value.ServiceName;
