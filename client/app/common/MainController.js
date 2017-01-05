@@ -3,6 +3,7 @@
 
 angular.module('EnvironmentManager.common').controller('MainController',
   function ($rootScope, $scope, $route, $routeParams, $location, modal, Environment) {
+    var vm = this;
 
     $scope.appVersion = window.version;
     $scope.$route = $route; // Used by index page to determine active section
@@ -18,7 +19,7 @@ angular.module('EnvironmentManager.common').controller('MainController',
       });
     }
 
-    $scope.GetSection = function () {
+    vm.getSection = function () {
       if ($location.path().indexOf('config') > -1) {
         return 'config';
       } else if ($location.path().indexOf('operations') > -1) {
