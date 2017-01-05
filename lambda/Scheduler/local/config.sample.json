@@ -2,8 +2,9 @@
   "limitToEnvironment": "xxx",
   "whatIf": true,
   "listSkippedInstances": true,
+  "ignoreASGInstances": false,
   "em": {
-    "host": "environment-manager-domain-name",
+    "host": "https://environment-manager-domain-name",
     "credentials": {
       "username": "username",
       "password": "password"
