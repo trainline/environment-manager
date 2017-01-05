@@ -162,16 +162,17 @@
   <!-- endbuild -->
 
 </head>
-<body ng-controller="MainController">
+<body ng-controller="MainController as main">
   <header>
     <a href="#/"><img id="logo" src="assets/images/logo.jpg" height="30"/></a>
     <h1 title="Environment Manager {{appVersion}}"><a href="#/">Environment Manager</a></h1>
     <nav>
       <ul>
-        <li><a href="#/environments" ng-class="{active: GetSection()=='environments'}">Environments</a></li>
-        <li><a href="#/operations/deployments" ng-class="{active: GetSection()=='operations'}">Operations</a></li>
-        <li><a href="#/compare" ng-class="{active: GetSection()=='compare'}">Compare</a></li>
-        <li><a href="#/config/services" ng-class="{active: GetSection()=='config'}">Configuration</a></li>
+        <li><a href="#/environments" ng-class="{active: main.getSection()=='environments'}">Environments</a></li>
+        <li><a href="#/operations/deployments" ng-class="{active: main.getSection()=='operations'}">Operations</a></li>
+        <li><a href="#/compare" ng-class="{active: main.getSection()=='compare'}">Compare</a></li>
+        <li><a href="#/config/services" ng-class="{active: main.getSection()=='config'}">Configuration</a></li>
+        <li><a href="/docs" target="_blank">API docs</a></li>
       </ul>
     </nav>
     <div id="userinfo">
@@ -181,7 +182,7 @@
   </header>
 
   <div>
-    <div id="sidebar" ng-if="GetSection()=='config'">
+    <div id="sidebar" ng-if="main.getSection()=='config'">
       <h3>Configuration:</h3>
       <nav>
         <ul>
@@ -208,7 +209,7 @@
         </ul>
       </nav>
     </div>
-    <div id="sidebar" ng-if="GetSection()=='operations'">
+    <div id="sidebar" ng-if="main.getSection()=='operations'">
       <h3>Operations:</h3>
       <nav>
         <ul>
@@ -219,7 +220,7 @@
         </ul>
       </nav>
     </div>
-    <div id="sidebar" ng-if="GetSection()=='environments' && $route.current.menusection != ''">
+    <div id="sidebar" ng-if="main.getSection()=='environments' && $route.current.menusection != ''">
       <h3>Environment</h3>
       <form name="form">
         <select id="SelectEnvironment" class="form-control" ng-model="WorkingEnvironment.EnvironmentName" ng-change="ChangeEnvironment()">
