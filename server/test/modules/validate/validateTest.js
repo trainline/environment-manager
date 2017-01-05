@@ -1,4 +1,4 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 /* eslint-env mocha */
 /* eslint-disable prefer-arrow-callback */
 /* eslint-disable func-names */
