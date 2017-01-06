@@ -5,6 +5,7 @@ var app = angular.module('EnvironmentManager', [
   'ui.grid',
   'ngRoute',
   'angularMoment',
+  'ngclipboard',
   'EnvironmentManager.common',
   'EnvironmentManager.environments',
   'EnvironmentManager.operations',
