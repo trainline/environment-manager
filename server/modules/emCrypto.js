@@ -34,6 +34,10 @@ function unpack(buffer) {
 }
 
 function encrypt(key, plaintext) {
+  if (!plaintext) {
+    throw new Error(`plaintext must be a buffer: got ${plaintext}`);
+  }
+
   let iv = crypto.randomBytes(12);
   let salt = crypto.randomBytes(16);
   let sessionKey = crypto.pbkdf2Sync(key, salt, ITERATIONS, KEY_LENGTH, HASH_ALGORITHM);
@@ -52,6 +56,10 @@ function encrypt(key, plaintext) {
 }
 
 function decrypt(key, ciphertext) {
+  if (!ciphertext) {
+    throw new Error(`ciphertext must be a buffer: got ${ciphertext}`);
+  }
+
   let parts = unpack(ciphertext);
   let cipherAlgorithm = parts[0].toString('utf8');
   let hashAlgorithm = parts[1].toString('utf8');

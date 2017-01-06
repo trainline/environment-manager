@@ -74,15 +74,15 @@ describe("caching", function() {
       });
 
       context("when the fetch fails", function() {
-        it("should propagate the failure", function() {
-          let fetch = sinon.stub().returns(Promise.reject());
+        it("the error should be returned to the caller", function() {
+          let fetch = sinon.stub().returns(Promise.reject(new Error('fetch failed')));
           cacheManager.create("A", fetch);
           let sut = cacheManager.get("A");
           let results = Array.apply(null, Array(10)).map(() => sut.get("my-key"));
           return Promise.all(results).catch(() => fetch.callCount).should.eventually.be.equal(1);
         });
-        it("should not cache the failure", function() {
-          let fetch = sinon.stub().returns(Promise.reject());
+        it("the error should not be cached", function() {
+          let fetch = sinon.stub().returns(Promise.reject(new Error('fetch failed')));
           cacheManager.create("A", fetch);
           let sut = cacheManager.get("A");
           return sut.get("my-key")

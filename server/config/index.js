@@ -76,6 +76,7 @@ module.exports = {
     });
   },
   get: nconf.get.bind(nconf),
+  set: nconf.set.bind(nconf),
   setUserValue: userSet,
   getUserValue: userGet,
 };

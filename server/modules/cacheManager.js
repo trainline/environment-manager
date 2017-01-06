@@ -6,24 +6,50 @@
 
 'use strict';
 
-let NodeCache = require('node-cache');
+let cacheManager = require('cache-manager');
+let cacheManagerEncryptedRedis = require('modules/data-access/cacheManagerEncryptedRedis');
+let config = require('config');
+let emCrypto = require('modules/emCrypto');
+let fp = require('lodash/fp');
 let logger = require('modules/logger');
+
+const EM_REDIS_CRYPTO_KEY = config.get('EM_REDIS_CRYPTO_KEY');
+const EM_REDIS_ADDRESS = config.get('EM_REDIS_ADDRESS');
+const EM_REDIS_PORT = config.get('EM_REDIS_PORT');
 const caches = new Map();
 
-const cacheManager = {
+let redisStore = cacheManagerEncryptedRedis.create({
+  host: EM_REDIS_ADDRESS,
+  port: EM_REDIS_PORT,
+  valueTransform: {
+    toStore: fp.flow(JSON.stringify, str => new Buffer(str), emCrypto.encrypt.bind(null, EM_REDIS_CRYPTO_KEY)),
+    fromStore: fp.flow(emCrypto.decrypt.bind(null, EM_REDIS_CRYPTO_KEY), buf => buf.toString(), JSON.parse),
+  },
+});
 
-  create(name, fn, userOptions) {
+let memoryCache = cacheManager.caching({ store: 'memory', max: 256, ttl: 1 });
+let redisCache = cacheManager.caching({ store: redisStore, db: 0, ttl: 600 });
+let cache = cacheManager.multiCaching([
+  memoryCache,
+  redisCache,
+]);
+
+const myCacheManager = {
+  /**
+   * Create a cache that delegates to an async function on a cache miss.
+   * @param {string} name - identifies the cache.
+   * @param {CacheMissCallback} fn - function called to get the value on a cache miss.
+   */
+  create(name, fn, options) {
+    if (typeof fn !== 'function') {
+      throw new Error(`fn must be a function. fn = ${fn}`);
+    }
+
     if (caches.has(name)) {
       throw new Error(`Cache "${name}" already exists`);
     }
 
-    let options = userOptions || { stdTTL: 60 * 10 };
-    if (options.useClones === undefined) {
-      // We need this for perfomance reasons, as cloning some big objects is too expensive
-      options.useClones = false;
-    }
-
-    let result = createCache(name, new NodeCache(options), fn, {}, logger, options.logHits !== false);
+    let result = createCache(name, fn);
     caches.set(name, result);
     return result;
   },
@@ -46,18 +72,22 @@ const cacheManager = {
    */
   clear() {
     caches.clear();
+    cache.reset();
   },
 };
 
-function createCache(name, cache, fn, pending, instanceLogger, logHits) {
-  return {
-    get,
-    del,
-    mget: cache.mget.bind(cache),
-    keys: cache.keys.bind(cache),
-    set: setInCache,
-    flushAll: cache.flushAll.bind(cache),
-  };
+function createCache(name, fn) {
+  function cacheKey(key) {
+    return JSON.stringify({ ns: name, key });
+  }
+
+  function normalizeValue(item) {
+    if (item && item.value && item.ttl) {
+      return item.value;
+    } else {
+      return item;
+    }
+  }
 
   /**
    * Get an item from the cache.
@@ -67,52 +97,30 @@ function createCache(name, cache, fn, pending, instanceLogger, logHits) {
       throw new Error('Cache key must be a string.');
     }
 
-    let value = cache.get(key);
-    if (value) {
-      if (logHits) {
-        instanceLogger.debug(`Cache hit: namespace: "${name}", key: "${key}"`);
-      }
-      return Promise.resolve(value);
-    } else {
-      let result = pending[key];
-      if (result) {
-        instanceLogger.debug(`Cache wait: namespace: "${name}", key: "${key}"`);
-        return result.then(val);
-      } else {
-        instanceLogger.debug(`Cache miss: namespace: "${name}", key: "${key}"`);
-        if (!fn) return Promise.resolve();
-        let item = fn(key);
-        pending[key] = item;
-        return item.then((i) => {
-          delete pending[key];
-          setInCache(key, i);
-          return val(i);
-        }, (error) => {
-          delete pending[key];
-          throw error;
-        });
-      }
-    }
+    return cache.wrap(cacheKey(key), function () {
+      logger.debug(`Cache miss: namespace: "${name}", key: "${key}"`);
+      return Promise.resolve().then(() => fn(key)).then(normalizeValue);
+    });
   }
 
   /**
    * Evict an item from the cache.
    */
   function del(key) {
-    cache.del(key);
-  }
-
-  function val(item) {
-    return (item.value && item.ttl) ? item.value : item;
+    cache.del(cacheKey(key));
   }
 
   function setInCache(key, item) {
-    if (item && item.value && item.ttl) {
-      cache.set(key, item.value, item.ttl);
-    } else {
-      cache.set(key, item);
-    }
+    cache.set(key, normalizeValue(item));
   }
+
+  return {
+    get,
+    del,
+    // keys: cache.keys.bind(cache),
+    set: setInCache,
+    // flushAll: cache.flushAll.bind(cache),
+  };
 }
 
-module.exports = cacheManager;
+module.exports = myCacheManager;

@@ -36,27 +36,64 @@ function encryptedRedisStore(args) {
   let valueToStore = fp.get(['valueTransform', 'toStore'])(args) || fp.flow(JSON.stringify, str => new Buffer(str));
   let valueFromStore = fp.get(['valueTransform', 'fromStore'])(args) || fp.flow(buf => buf.toString(), JSON.parse);
 
-  function del(key, options) {
+  function del(key, options, cb) {
+    if (typeof options === 'function') {
+      cb = options;
+    }
+
     let skey = keyToStore(key);
-    console.log(skey);
-    return usingRedisConnection(connect, redis => redis.del(skey));
+    let promise = usingRedisConnection(connect, redis => redis.del(skey));
+
+    if (cb) {
+      promise.then(cb.bind(null, null), cb.bind(null));
+    } else {
+      return promise;
+    }
   }
 
-  function get(key, options) {
+  function get(key, options, cb) {
+    if (typeof options === 'function') {
+      cb = options;
+    }
+
     let skey = keyToStore(key);
-    return usingRedisConnection(connect, redis => redis.getBuffer(skey))
-      .then(value => valueFromStore(value));
+
+    let promise = usingRedisConnection(connect, redis => redis.getBuffer(skey))
+      .then(value => (value ? valueFromStore(value) : undefined));
+
+    if (cb) {
+      promise.then(cb.bind(null, null), cb.bind(null));
+    } else {
+      return promise;
+    }
   }
 
-  function keys(pattern) {
-    return Promise.reject('Encrypted Redis store does not support the "keys" operation');
+  function keys(cb) {
+    let error = new Error('Encrypted Redis store does not support the "keys" operation');
+    if (cb) {
+      cb(error);
+    } else {
+      return Promise.reject(error);
+    }
   }
 
-  function reset() {
-    return usingRedisConnection(connect, redis => redis.flushdb());
+  function reset(cb) {
+    let promise = usingRedisConnection(connect, redis => redis.flushdb());
+
+    if (cb) {
+      promise.then(cb.bind(null, null), cb.bind(null));
+    } else {
+      return promise;
+    }
   }
 
-  function set(key, value, options) {
+  function set(key, value, options, cb) {
+    if (typeof options === 'function') {
+      cb = options;
+      options = {};
+    }
+    options = options || {};
+
     let skey = keyToStore(key);
     let svalue = valueToStore(value);
     let redisOperation = (() => {
@@ -67,7 +104,14 @@ function encryptedRedisStore(args) {
         return redis => redis.setBuffer(skey, svalue);
       }
     })();
-    return usingRedisConnection(connect, redisOperation);
+
+    let promise = usingRedisConnection(connect, redisOperation);
+
+    if (cb) {
+      promise.then(cb.bind(null, null), cb.bind(null));
+    } else {
+      return promise;
+    }
   }
 
   return {
