@@ -3,7 +3,7 @@
 </div>
 <form id="SearchFilter" class="form-inline" ng-if="canUser('post')">
   <div class="form-group">
-    <button type="button" class="btn btn-default" ng-click="accounts.addNew()" ng-if="canUser('post')">Add New...</button>
+    <a type="button" class="btn btn-default" ng-href="#/config/accounts/add" ng-if="canUser('post')">Add New...</a>
   </div>
 </form>
 <div class="row">
@@ -26,11 +26,11 @@
       <tbody>
         <tr ng-repeat="account in accounts.data">
           <td>
-            <a data-ng-href="/#/config/accounts/{{::account.AccountName}}">{{::account.AccountName}}</a>
+            <a ng-href="/#/config/accounts/{{::account.AccountName}}">{{::account.AccountName}}</a>
           </td>
           <td>{{::account.AccountNumber}}</td>
           <td>{{::account.IsMaster}}</td>
-          <td data-ng-if="accounts.canDelete" class="command command-delete">
+          <td ng-if="accounts.canDelete" class="command command-delete">
             <span class="glyphicon glyphicon-remove" ng-click="accounts.attemptRemove(account)" title="Delete"></span>
           </td>
         </tr>

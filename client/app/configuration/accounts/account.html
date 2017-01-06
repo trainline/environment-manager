@@ -1,10 +1,10 @@
 <div class="row">
-    <div class="col-md-12" data-ng-if="!account.isBeingEdited"><h2>Add an AWS Account</h2></div>
-    <div class="col-md-12" data-ng-if="account.isBeingEdited"><h2>Edit AWS Account</h2></div>
+    <div class="col-md-12" ng-if="!account.isBeingEdited"><h2>Add an AWS Account</h2></div>
+    <div class="col-md-12" ng-if="account.isBeingEdited"><h2>Edit AWS Account</h2></div>
 </div>
 <hr />
 
-<div data-ng-show="account.loadFailed">
+<div ng-show="account.loadFailed">
     Could not find AWS account: <strong>{{::account.awsAccountName}}</strong>
     <div>
         <br />
@@ -12,8 +12,8 @@
     </div>
 </div>
 
-<form data-ng-hide="account.loadFailed" name="form" class="form-horizontal aws-account-form">
-    <div class="form-group" data-ng-class="{'has-error': form.awsAccountName.$invalid && form.awsAccountName.$dirty}">
+<form ng-hide="account.loadFailed" name="form" class="form-horizontal aws-account-form">
+    <div class="form-group" ng-class="{'has-error': form.awsAccountName.$invalid && form.awsAccountName.$dirty}">
         <label for="aws-account-name" class="col-md-1 control-label">Account Name:</label>
         <div class="col-md-2">
             <input id="aws-account-name"
@@ -21,14 +21,14 @@
                    type="text"
                    class="form-control"
                    required
-                   data-ng-model="account.awsAccountName" />
+                   ng-model="account.awsAccountName" />
         </div>
         <span class="help-block"
-              data-ng-if="form.awsAccountName.$dirty && form.awsAccountName.$error.required">
+              ng-if="form.awsAccountName.$dirty && form.awsAccountName.$error.required">
             AWS Account Name is required
         </span>
     </div>
-    <div class="form-group" data-ng-class="{'has-error': form.awsAccountNumber.$invalid && form.awsAccountNumber.$dirty}">
+    <div class="form-group" ng-class="{'has-error': form.awsAccountNumber.$invalid && form.awsAccountNumber.$dirty}">
         <label for="aws-account-number" class="col-md-1 control-label text-left">Account #:</label>
         <div class="col-md-2">
             <input id="aws-account-number"
@@ -39,19 +39,19 @@
                    minlength="12"
                    maxlength="12"
                    pattern="[0-9]*"
-                   data-ng-disabled="account.isBeingEdited"
-                   data-ng-model="account.awsAccountNumber" />
+                   ng-disabled="account.isBeingEdited"
+                   ng-model="account.awsAccountNumber" />
         </div>
         <span class="help-block"
-              data-ng-if="form.awsAccountNumber.$dirty && form.awsAccountNumber.$error.pattern">
+              ng-if="form.awsAccountNumber.$dirty && form.awsAccountNumber.$error.pattern">
             AWS Account Number must contain only numeric characters
         </span>
         <span class="help-block"
-              data-ng-if="form.awsAccountNumber.$dirty && !form.awsAccountNumber.$error.pattern && form.awsAccountNumber.$error.minlength">
+              ng-if="form.awsAccountNumber.$dirty && !form.awsAccountNumber.$error.pattern && form.awsAccountNumber.$error.minlength">
             AWS Account Number must be 12 characters
         </span>
         <span class="help-block"
-              data-ng-if="form.awsAccountNumber.$dirty && !form.awsAccountNumber.$error.pattern && !form.awsAccountNumber.$error.minlength && form.awsAccountNumber.$error.required">
+              ng-if="form.awsAccountNumber.$dirty && !form.awsAccountNumber.$error.pattern && !form.awsAccountNumber.$error.minlength && form.awsAccountNumber.$error.required">
             AWS Account Number is required
         </span>
     </div>
@@ -60,7 +60,7 @@
         <div class="col-md-offset-1 col-md-2">
             <div>
                 <label style="font-weight: normal">
-                    <input type="checkbox" data-ng-model="account.includeAMIs">
+                    <input type="checkbox" ng-model="account.includeAMIs">
                     Include AMIs from this account
                 </label>
             </div>
@@ -71,20 +71,20 @@
         <div class="col-md-offset-1 col-md-2">
             <div class="radio">
                 <label>
-                    <input type="radio" data-ng-model="account.isMaster" data-ng-value="true" checked>
+                    <input type="radio" ng-model="account.isMaster" ng-value="true" checked>
                     Master Account
                 </label>
             </div>
             <div class="radio">
                 <label>
-                    <input type="radio" data-ng-model="account.isMaster" data-ng-value="false">
+                    <input type="radio" ng-model="account.isMaster" ng-value="false">
                     Child Account
                 </label>
             </div>
         </div>
     </div>
 
-    <div class="form-group" data-ng-hide="account.isMaster">
+    <div class="form-group" ng-hide="account.isMaster">
         <label for="aws-account-name" class="col-md-1 control-label">Role ARN:</label>
         <div class="col-md-4">
             <div class="input-group">
@@ -95,15 +95,15 @@
                        class="form-control"
                        placeholder="Role Name"
                        aria-describedby="arn-prefix"
-                       data-ng-model="account.roleName">
+                       ng-model="account.roleName">
             </div>
         </div>
     </div>
 
     <div class="form-group" style="margin-top: 30px">
         <div class="col-md-offset-1 col-md-2">
-            <button type="button" class="btn btn-default" data-ng-click="account.save(form)">Save</button>
-            <button type="button" class="btn btn-default" data-ng-click="account.cancel()">Cancel</button>
+            <button type="button" class="btn btn-default" ng-click="account.save(form)">Save</button>
+            <button type="button" class="btn btn-default" ng-click="account.cancel()">Cancel</button>
         </div>
     </div>
 </form>

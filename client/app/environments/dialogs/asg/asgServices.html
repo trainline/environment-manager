@@ -18,7 +18,7 @@
           <th class="text-nowrap">Health Checks</th>
           <th class="text-nowrap">Instances</th>
           <th class="text-nowrap">Deployment Log</th>
-          <th class="text-nowrap" data-ng-if="vm.allowServiceDisabling">Installation
+          <th class="text-nowrap" ng-if="vm.allowServiceDisabling">Installation
             <span data-uib-popover
                   data-popover-trigger="'mouseenter'"
                   uib-popover-template="'app/environments/dialogs/asg/popovers/help-disable-service.html'"
@@ -41,9 +41,9 @@
           <td><health-checks list="service.HealthChecks"></health-checks></td>
           <td><a ng-click="vm.showAsgSingleService(service)">{{ service.InstancesCount.Present }} {{ service.InstancesCount.Present === 1 ? 'instance' : 'instances' }}</a> <span ng-if="service.MissingOrUnexpectedInstances" class="glyphicon glyphicon-exclamation-sign warning" title="Missing or unexpected services present"></span></td>
           <td><a ng-click="vm.showDeploymentLog(service)">Show Deployment</a></td>
-          <td data-ng-if="vm.allowServiceDisabling">
+          <td ng-if="vm.allowServiceDisabling">
             <div class="onoffswitch enabled-toggle">
-              <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="toggle-{{::$index}}" data-ng-change="vm.setDeploymentStatus(service)" data-ng-model="service.installationEnabled">
+              <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="toggle-{{::$index}}" ng-change="vm.setDeploymentStatus(service)" ng-model="service.installationEnabled">
               <label class="onoffswitch-label" for="toggle-{{::$index}}">
                 <span class="onoffswitch-inner"></span>
                 <span class="onoffswitch-switch"></span>
