@@ -48,8 +48,8 @@ function getEnvironmentPermissionsPromise(upstreamName, environmentName, account
   return getUpstream(accountName, upstreamName)
     .then((upstream) => {
       if (upstream) {
-        let environmentName = upstream.Value.EnvironmentName;
-        return getModifyPermissionsForEnvironment(environmentName);
+        let envName = upstream.Value.EnvironmentName;
+        return getModifyPermissionsForEnvironment(envName);
       }
 
       throw `Could not find upstream: ${upstreamName}`;

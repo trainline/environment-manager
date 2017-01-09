@@ -13,7 +13,7 @@ const masterAccountName = config.getUserValue('masterAccountName');
  */
 function putResourceImport(req, res, next) {
   const resource = `config/${req.swagger.params.resource.value}`;
-  const data = req.swagger.params.data.value;
+  const value = req.swagger.params.data.value;
   const mode = req.swagger.params.mode.value;
   const user = req.user;
 
@@ -32,7 +32,7 @@ function putResourceImport(req, res, next) {
   let command = {
     name: commandName,
     resource,
-    items: _.concat(data),
+    items: _.concat(value),
     accountName,
   };
 

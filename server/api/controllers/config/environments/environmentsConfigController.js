@@ -47,7 +47,7 @@ function postEnvironmentsConfig(req, res, next) {
   const body = req.swagger.params.body.value;
   const user = req.user;
 
-  return environmentTable.create(body[KEY_NAME], { Value: body.Value }, user).then(_ => res.status(201).end()).catch(next);
+  return environmentTable.create(body[KEY_NAME], { Value: body.Value }, user).then(r => res.status(201).end()).catch(next);
 }
 
 /**
@@ -60,7 +60,7 @@ function putEnvironmentConfigByName(req, res, next) {
   const user = req.user;
 
   return environmentTable.update(key, { Value: body }, expectedVersion, user)
-    .then(_ => res.status(200).end())
+    .then(r => res.status(200).end())
     .catch(next);
 }
 

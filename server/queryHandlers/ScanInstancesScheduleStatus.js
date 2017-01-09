@@ -14,9 +14,7 @@ module.exports = function ScanInstancesScheduleStatusQueryHandler(query) {
     let instances = yield getInstances(query);
 
     let dateTime = query.dateTime ? query.dateTime : new Date();
-    let scheduledActions = scheduledActionsForInstances(instances, query.dateTime);
-
-    return scheduledActions;
+    return scheduledActionsForInstances(instances, dateTime);
   });
 };
 
@@ -91,7 +89,7 @@ function findInIndex(map, name) {
 }
 
 function getInstanceTagValue(instance, tagName) {
-  let tag = _.first(instance.Tags.filter(tag => tag.Key.toLowerCase() == tagName.toLowerCase()));
+  let tag = _.first(instance.Tags.filter(t => t.Key.toLowerCase() == tagName.toLowerCase()));
   if (tag) return tag.Value;
 }
 

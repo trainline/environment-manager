@@ -1,4 +1,4 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
 
@@ -69,10 +69,10 @@ function* ScanServersStatusQueryHandler(query) {
           Ami: ami,
         }));
     })).then((asgResults) => {
-      let asgs = asgResults.filter(byStatus(query.filter.status));
+      let filteredAsgs = asgResults.filter(byStatus(query.filter.status));
       let result = {
         EnvironmentName: environmentName,
-        Value: asgs,
+        Value: filteredAsgs,
       };
 
       let duration = moment.duration(moment.utc().diff(allStartTime)).asMilliseconds();

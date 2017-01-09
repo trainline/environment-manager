@@ -43,7 +43,6 @@ function getLBSettingConfigByName(req, res, next) {
  */
 function postLBSettingsConfig(req, res, next) {
   const body = req.swagger.params.body.value;
-  const environmentName = body[PARTITION_KEY];
   const vHostName = body[SORT_KEY];
   const user = req.user;
 

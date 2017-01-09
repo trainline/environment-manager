@@ -53,14 +53,14 @@ function* getServiceHealth({ environmentName, serviceName }) {
     }
   }
 
-  function aggregateHealth(list) {
-    if (_.every(list, { OverallHealth: HEALTH_STATUS.Healthy })) {
+  function aggregateHealth(statusList) {
+    if (_.every(statusList, { OverallHealth: HEALTH_STATUS.Healthy })) {
       return HEALTH_STATUS.Healthy;
-    } else if (_.some(list, { OverallHealth: HEALTH_STATUS.Missing })) {
+    } else if (_.some(statusList, { OverallHealth: HEALTH_STATUS.Missing })) {
       return HEALTH_STATUS.Missing;
-    } else if (_.some(list, { OverallHealth: HEALTH_STATUS.Error })) {
+    } else if (_.some(statusList, { OverallHealth: HEALTH_STATUS.Error })) {
       return HEALTH_STATUS.Error;
-    } else if (_.some(list, { OverallHealth: HEALTH_STATUS.Warning })) {
+    } else if (_.some(statusList, { OverallHealth: HEALTH_STATUS.Warning })) {
       return HEALTH_STATUS.Warning;
     } else {
       return HEALTH_STATUS.Unknown;

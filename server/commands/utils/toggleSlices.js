@@ -95,7 +95,7 @@ function ToggleUpstreamByNameVerifier(resourceName) {
   };
 }
 
-function UpstreamProvider(sender, toggleCommand, resourceName) {
+function UpstreamProvider(senderInstance, toggleCommand, resourceName) {
   this.provideUpstreams = () => co(function* () {
       // Requires all LoadBalancer upstreams in the specified AWS account.
     let query = {
@@ -104,7 +104,7 @@ function UpstreamProvider(sender, toggleCommand, resourceName) {
       accountName: toggleCommand.accountName,
     };
 
-    let upstreams = yield sender.sendQuery({ query, parent: toggleCommand });
+    let upstreams = yield senderInstance.sendQuery({ query, parent: toggleCommand });
     let filteredUpstreams = _.filter(upstreams, upstream => upstream.Value.EnvironmentName === toggleCommand.environmentName);
     if (toggleCommand.serviceName) {
       filteredUpstreams = _.filter(filteredUpstreams, upstream => upstream.Value.ServiceName === toggleCommand.serviceName);
@@ -118,7 +118,7 @@ function UpstreamProvider(sender, toggleCommand, resourceName) {
   });
 }
 
-function UpstreamToggler(sender, toggleCommand) {
+function UpstreamToggler(senderInstance, toggleCommand) {
   this.toggleUpstream = (upstream) => {
     function toggleHost(host) {
       host.State = (host.State === 'up' ? 'down' : 'up');
@@ -132,7 +132,7 @@ function UpstreamToggler(sender, toggleCommand) {
       item: upstream,
       accountName: toggleCommand.accountName,
     };
-    return sender.sendCommand({ command, parent: toggleCommand });
+    return senderInstance.sendCommand({ command, parent: toggleCommand });
   };
 }
 

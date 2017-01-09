@@ -10,7 +10,7 @@ let _ = require('lodash');
 let assert = require('assert');
 
 function getAllServices(environment) {
-  let getServiceList = consulClient => consulClient.catalog.service.list();
+  let getServiceList = clientInstance => clientInstance.catalog.service.list();
   let filterByDeploymentId = list => _.pickBy(list, s => s.some(tag => tag.indexOf('deployment_id:') === 0));
 
   let promiseFactoryMethod = () =>
@@ -24,7 +24,7 @@ function getAllServices(environment) {
 
 function getService(environment, serviceQuery) {
   serviceQuery = `${environment}-${serviceQuery}`;
-  return executeConsul(environment, consulClient => consulClient.catalog.service.nodes(serviceQuery))
+  return executeConsul(environment, clientInstance => clientInstance.catalog.service.nodes(serviceQuery))
     .then((service) => {
       if (!service.length) return service;
       service = service[0];
@@ -39,12 +39,12 @@ function getAllNodes(environment) {
 
 function getNode(environment, nodeName) {
   assert(nodeName, 'nodeName is required');
-  return executeConsul(environment, consulClient => consulClient.catalog.node.services(nodeName));
+  return executeConsul(environment, clientInstance => clientInstance.catalog.node.services(nodeName));
 }
 
 function getNodeHealth(environment, nodeName) {
   assert(nodeName, 'nodeName is required');
-  return executeConsul(environment, consulClient => consulClient.health.node(nodeName));
+  return executeConsul(environment, clientInstance => clientInstance.health.node(nodeName));
 }
 
 function executeConsul(environment, fn) {

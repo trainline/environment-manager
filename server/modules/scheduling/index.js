@@ -169,12 +169,12 @@ function parseEnvironmentSchedule(environmentSchedule) {
   return parseSchedule(environmentSchedule.DefaultSchedule);
 }
 
-function expectedStateFromSchedule(schedule, dateTime) {
-  if (schedule.permanent) {
-    return schedule.permanent;
+function expectedStateFromSchedule(schedules, dateTime) {
+  if (schedules.permanent) {
+    return schedules.permanent;
   }
 
-  let scheduleStates = schedule.map(schedule => ({
+  let scheduleStates = schedules.map(schedule => ({
     dateTime: later.schedule(schedule.recurrence).prev(1, dateTime),
     state: schedule.state,
   }));
@@ -188,7 +188,7 @@ function expectedStateFromSchedule(schedule, dateTime) {
 
 function getTagValue(instance, tagName) {
   if (instance.Tags) {
-    let tag = _.first(instance.Tags.filter(tag => tag.Key.toLowerCase() == tagName.toLowerCase()));
+    let tag = _.first(instance.Tags.filter(t => t.Key.toLowerCase() == tagName.toLowerCase()));
     if (tag && tag.Value) { return tag.Value.trim(); }
   }
 }
