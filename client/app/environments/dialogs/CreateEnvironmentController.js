@@ -3,6 +3,7 @@
 
 angular.module('EnvironmentManager.environments').controller('CreateEnvironmentController',
   function ($scope, $uibModalInstance, $q, resources, cachedResources) {
+    var vm = this;
 
     $scope.OwningClustersList = [];
     $scope.EnvironmentTypesList = [];

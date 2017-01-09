@@ -134,7 +134,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
     vm.newEnvironment = function () {
       var instance = $uibModal.open({
         templateUrl: '/app/environments/dialogs/env-create-environment-modal.html',
-        controller: 'CreateEnvironmentController',
+        controller: 'CreateEnvironmentController as vm',
       });
       instance.result.then(function () {
         cachedResources.config.environments.flush();

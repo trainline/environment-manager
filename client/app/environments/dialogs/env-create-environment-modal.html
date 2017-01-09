@@ -46,6 +46,26 @@
             </div>
             <span class="help-block" ng-if="form.OwningClusters.$dirty && form.OwningClusters.$error.required">Owning cluster is mandatory.</span>
         </div>
+        <div class="form-group" ng-class="{'has-error': form.AlertSettings.$invalid}">
+            <label class="col-md-3 control-label text-left nowrap">Alert Settings: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+            <div class="col-md-4">
+                <select class="form-control"
+                        name="AlertSettings"
+                        required=""
+                        ng-model="Environment.Value.AlertSettings">
+                    <option ng-repeat="alertSettings in vm.alertSettingsList" ng-selected="{{alertSettings == Environment.Value.AlertSettings}}" value="{{alertSettings.Value}}">{{alertSettings.Name}}</option>
+                </select>
+            </div>
+            <div class="col-md-4 col-md-offset-3" style="margin-top: 10px;" ng-if="Environment.Value.AlertSettings == 'Custom'">
+                <select class="form-control"
+                        name="NotificationSettings"
+                        required=""
+                        ng-model="Environment.Value.NotificationSettingsId">
+                    <option ng-repeat="notificationSettings in vm.alertSettingsList" ng-selected="{{notificationSettings == Environment.Value.NotificationSettingsId}}" value="{{alertSettings.NotificationSettingsId}}">{{alertSettings.NotificationSettingsId}}</option>
+                </select>
+            </div>
+            <span class="help-block" ng-if="form.NotificationSettings.$dirty && form.NotificationSettings.$error.required">Alert Settings is mandatory.</span>
+        </div>
         <div class="form-group" ng-class="{'has-error': form.DeploymentMap.$invalid}">
             <label class="col-md-3 control-label text-left nowrap">Deployment Map: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
             <div class="col-md-4">
