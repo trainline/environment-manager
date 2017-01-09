@@ -25,9 +25,10 @@ function getImages(req, res, next) {
 
   sender.sendQuery({ query }).then((data) => {
     if (stable !== undefined) {
-      data = _.filter(data, { IsStable: stable });
+      res.json(_.filter(data, { IsStable: stable }));
+    } else {
+      res.json(data);
     }
-    res.json(data);
   }).catch(next);
 }
 

@@ -22,7 +22,7 @@
     "acceptance-tests": "mocha --recursive ./acceptance-tests --EM_PROFILE acceptance-tests/test-profile.json",
 
     "lint": "eslint . --ext .js --quiet",
-    "lint-only": "eslint . --ext .js --no-eslintrc --rule eqeqeq:error --parser-options {ecmaVersion:6}"
+    "lint-only": "eslint . --ext .js --no-eslintrc --rule no-param-reassign:error --parser-options {ecmaVersion:6}"
   },
   "author": {
     "name": "Platform Development",

@@ -92,8 +92,7 @@ class AutoScalingGroup {
       }).then((result) => {
         let duration = moment.duration(moment.utc().diff(startTime)).asMilliseconds();
         logger.debug(`server-status-query: AllAsgsQuery took ${duration}ms`);
-        result = _.filter(result, asg => asg.getTag('Environment') === environmentName);
-        return result;
+        return _.filter(result, asg => asg.getTag('Environment') === environmentName);
       });
     });
   }

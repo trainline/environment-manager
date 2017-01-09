@@ -23,13 +23,13 @@ function getAllServices(environment) {
 }
 
 function getService(environment, serviceQuery) {
-  serviceQuery = `${environment}-${serviceQuery}`;
-  return executeConsul(environment, clientInstance => clientInstance.catalog.service.nodes(serviceQuery))
+  let nodeKey = `${environment}-${serviceQuery}`;
+  return executeConsul(environment, clientInstance => clientInstance.catalog.service.nodes(nodeKey))
     .then((service) => {
       if (!service.length) return service;
-      service = service[0];
-      service.ServiceTags = unravelTags(service.ServiceTags);
-      return service;
+      let firstService = service[0];
+      firstService.ServiceTags = unravelTags(firstService.ServiceTags);
+      return firstService;
     });
 }
 

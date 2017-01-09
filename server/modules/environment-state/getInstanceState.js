@@ -39,8 +39,8 @@ function getInstanceServiceOverallHealth(checks) {
 }
 
 function getInstanceServiceHealthChecks(checks, serviceId) {
-  checks = _.filter(checks, { ServiceID: serviceId });
-  return _.map(checks, check => ({
+  let filteredChecks = _.filter(checks, { ServiceID: serviceId });
+  return _.map(filteredChecks, check => ({
     CheckId: check.CheckID,
     Name: check.Name,
     Notes: check.Notes,
