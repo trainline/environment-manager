@@ -143,7 +143,7 @@ function patchDeployment(req, res, next) {
       let error = `You can only PATCH deployment with { Status: '${Enums.DEPLOYMENT_STATUS.Cancelled}' } to cancel it.`;
       res.send({ error });
       res.status(400);
-      return;
+      return null;
     }
 
     if (status === Enums.DEPLOYMENT_STATUS.Cancelled) {
@@ -170,6 +170,8 @@ function patchDeployment(req, res, next) {
         throw new Error(`Invalid Action: "${action}", only "Install" and "Ignore" are allowed.`);
       }
       return switchDeployment(key, enable, req.user);
+    } else {
+      return null;
     }
   }).then(data => res.json(data)).catch(next);
 }

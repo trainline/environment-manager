@@ -40,9 +40,11 @@ function asExpressRouteDescriptor(descriptor) {
 
   // Action step
   middlewares.push((request, response, next) => {
-    if (request.url.indexOf('/v1') === 0) return next();
-
-    action(request, response, next);
+    if (request.url.indexOf('/v1') === 0) {
+      next();
+    } else {
+      action(request, response, next);
+    }
   });
 
   return {

@@ -26,6 +26,7 @@ function S3GetObjectRequest(client, parameters) {
 
     if (callback !== undefined) {
       promise.then(result => callback(null, result), error => callback(error));
+      return undefined;
     } else {
       return promise;
     }

@@ -51,6 +51,7 @@ let User = function (data) {
           return true;
         }
       }
+      return undefined;
     });
   };
 

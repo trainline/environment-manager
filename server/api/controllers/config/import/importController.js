@@ -26,7 +26,8 @@ function putResourceImport(req, res, next) {
   } else if (mode === 'merge') {
     commandName = 'MergeDynamoResources';
   } else {
-    return next(new Error(`Unknown mode "${mode}"`));
+    next(new Error(`Unknown mode "${mode}"`));
+    return;
   }
 
   let command = {

@@ -30,7 +30,8 @@ module.exports = [
       tags: ['Images (AMIs)'],
     }).do((request, response, next) => {
       if (request.params.account === 'v1') {
-        return next();
+        next();
+        return;
       }
 
       let query = {

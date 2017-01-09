@@ -131,7 +131,7 @@ function getAmi(instances) {
   let amis = instances.map(i => i.ami);
   let amiNames = _.uniq(amis.map(ami => ami.name));
 
-  if (amiNames.length !== 1) return;
+  if (amiNames.length !== 1) return undefined;
   let ami = amis[0];
 
   return {

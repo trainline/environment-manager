@@ -85,12 +85,12 @@ function buildASGIndex(asgData) {
 }
 
 function findInIndex(map, name) {
-  if (name) return map[name];
+  return name ? map[name] : undefined;
 }
 
 function getInstanceTagValue(instance, tagName) {
   let tag = _.first(instance.Tags.filter(t => t.Key.toLowerCase() == tagName.toLowerCase()));
-  if (tag) return tag.Value;
+  return tag ? tag.Value : undefined;
 }
 
 function getAllInstances(query) {

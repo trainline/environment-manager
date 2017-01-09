@@ -31,7 +31,8 @@ module.exports = [
   route.get('/:account/asgs')
   .withDocs({ description: 'Auto Scaling Group', perAccount: true, verb: 'scan', tags: ['Auto Scaling Groups'] }).do((request, response, next) => {
     if (request.params.account === 'v1') {
-      return next();
+      next();
+      return;
     }
 
     let query = {

@@ -189,8 +189,9 @@ function expectedStateFromSchedule(schedules, dateTime) {
 function getTagValue(instance, tagName) {
   if (instance.Tags) {
     let tag = _.first(instance.Tags.filter(t => t.Key.toLowerCase() == tagName.toLowerCase()));
-    if (tag && tag.Value) { return tag.Value.trim(); }
+    return (tag && tag.Value) ? tag.Value.trim() : undefined;
   }
+  return undefined;
 }
 
 function currentStateOfInstance(instance) {
