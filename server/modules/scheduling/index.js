@@ -135,7 +135,7 @@ function isInMaintenanceMode(instance) {
 }
 
 function getAsgInstanceLifeCycleState(instance) {
-  let asgInstanceEntry = _.first(instance.AutoScalingGroup.Instances.filter(i => i.InstanceId.toLowerCase() == instance.InstanceId.toLowerCase()));
+  let asgInstanceEntry = _.first(instance.AutoScalingGroup.Instances.filter(i => i.InstanceId.toLowerCase() === instance.InstanceId.toLowerCase()));
 
   if (asgInstanceEntry) {
     if (asgInstanceEntry.LifecycleState === 'Standby') return lifeCycleStates.outOfService;
@@ -188,7 +188,7 @@ function expectedStateFromSchedule(schedules, dateTime) {
 
 function getTagValue(instance, tagName) {
   if (instance.Tags) {
-    let tag = _.first(instance.Tags.filter(t => t.Key.toLowerCase() == tagName.toLowerCase()));
+    let tag = _.first(instance.Tags.filter(t => t.Key.toLowerCase() === tagName.toLowerCase()));
     return (tag && tag.Value) ? tag.Value.trim() : undefined;
   }
   return undefined;

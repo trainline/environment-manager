@@ -89,7 +89,7 @@ function findInIndex(map, name) {
 }
 
 function getInstanceTagValue(instance, tagName) {
-  let tag = _.first(instance.Tags.filter(t => t.Key.toLowerCase() == tagName.toLowerCase()));
+  let tag = _.first(instance.Tags.filter(t => t.Key.toLowerCase() === tagName.toLowerCase()));
   return tag ? tag.Value : undefined;
 }
 

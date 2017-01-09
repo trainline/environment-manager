@@ -55,7 +55,7 @@ function ToggleUpstreamByServiceVerifier(toggleCommand) {
     }
 
     let statuses = upstream.Value.Hosts.map(host => host.State === 'up' ? 'Active' : 'Inactive').distinct();
-    if (statuses.length == 1) {
+    if (statuses.length === 1) {
       return makeUpstreamError(upstream, `cannot be toggled because all its slices are "${statuses[0]}"`);
     }
 
@@ -86,7 +86,7 @@ function ToggleUpstreamByNameVerifier(resourceName) {
     }
 
     let upstream = upstreams[0];
-    if (upstream.Value.Hosts.length == 0) {
+    if (upstream.Value.Hosts.length === 0) {
       let message = `Upstream named "${upstream.Value.UpstreamName}" which refers to "${upstream.Value.ServiceName}" service in "${upstream.Value.EnvironmentName}" environment cannot be toggled because it has no slice.`;
       return Promise.reject(new InconsistentSlicesStatusError(message));
     }
