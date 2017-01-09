@@ -3,18 +3,18 @@
 'use strict';
 
 let _ = require('lodash');
-let co = require('co');
 let amazonClientFactory = require('modules/amazon-client/childAccountClient');
 let awsAccounts = require('modules/awsAccounts');
 let cacheManager = require('modules/cacheManager');
-const imagesCache = cacheManager.create('ImagesCache', null, { stdTTL: 30 * 60 });
+let fp = require('lodash/fp');
+
 const USE_CACHE = true;
 
-function ImageResource(client, account) {
+function getImagesVisibleToAccount(accountId, filter) {
   function getImagesOwners() {
     return awsAccounts.getAMIsharingAccounts()
-      .then(accounts => _.uniq(accounts.concat(account.AccountNumber))
-      .map(n => `${n}`));
+      .then(accounts => _.uniq(accounts.concat(accountId))
+        .map(_.toString));
   }
 
   function buildRequest(query) {
@@ -31,49 +31,41 @@ function ImageResource(client, account) {
     return getImagesOwners().then(Owners => ({ Filters, Owners }));
   }
 
-  this.all = function (params) {
-    return cachedGetAll(params);
-  };
+  let ec2ClientPromise = amazonClientFactory.createEC2Client(accountId);
 
-  function cachedGetAll(params) {
-    if (params.filter || !USE_CACHE) {
-      return getAll(params);
-    }
-
-    let accountName = account.AccountName.toLowerCase();
-    return imagesCache.get(accountName).then((result) => {
-      if (result) {
-        return result;
-      } else {
-        return getAll(params).then((freshResult) => {
-          if (freshResult) {
-            imagesCache.set(accountName, freshResult);
-          }
-          return freshResult;
-        });
-      }
-    });
-  }
-
-  function getAll(parameters) {
-    return buildRequest(parameters.filter)
-      .then(request => client.describeImages(request).promise()
-      .then(data => data.Images));
-  }
+  return Promise.all([ec2ClientPromise, buildRequest(filter)])
+    .then(([client, request]) => client.describeImages(request).promise())
+    .then(data => data.Images);
 }
 
-function* create(resourceDescriptor, parameters) {
-  let account = yield awsAccounts.getByName(parameters.accountName);
-  return amazonClientFactory.createEC2Client(parameters.accountName).then(
-    client => new ImageResource(client, account));
+const imagesCache = cacheManager.create('ImagesCache', getImagesVisibleToAccount, { stdTTL: 30 * 60 });
+
+function ImageResource(account) {
+  let accountId = _.toString(account.AccountNumber);
+
+  function cachedGetAll(params) {
+    let hasFilter = fp.flow(fp.get('filter'), fp.toPairs, x => x.length > 0);
+
+    if (hasFilter(params) || !USE_CACHE) {
+      return getImagesVisibleToAccount(accountId, params.filter);
+    } else {
+      return imagesCache.get(accountId);
+    }
+  }
+
+  this.all = cachedGetAll;
+}
+
+function create(resourceDescriptor, parameters) {
+  return awsAccounts.getByName(parameters.accountName)
+  .then(account => new ImageResource(account));
 }
 
 function canCreate(resourceDescriptor) {
   return resourceDescriptor.type.toLowerCase() === 'ec2/image';
 }
 
-
 module.exports = {
   canCreate,
-  create: co.wrap(create),
+  create,
 };
