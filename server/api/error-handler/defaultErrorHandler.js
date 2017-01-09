@@ -44,9 +44,9 @@ function getStatusByErrorType(error) {
     case 'RoleNotFoundError':
     case 'SecurityGroupNotFoundError':
     case 'TopicNotFoundError':
-    case 'DynamoItemNotFoundError': return 404; break;
+    case 'DynamoItemNotFoundError': return 404;
 
-    case 'DynamoConcurrencyError': return 409; break;
+    case 'DynamoConcurrencyError': return 409;
 
     case 'EvalError':
     case 'InternalError':
@@ -55,9 +55,9 @@ function getStatusByErrorType(error) {
     case 'SyntaxError':
     case 'TypeError':
     case 'URIError':
-    case 'AssertionError': return 500; break;
+    case 'AssertionError': return 500;
 
-    default: return 400; break;
+    default: return 400;
   }
 }
 
