@@ -1,6 +1,7 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
+let proxyquire = require('proxyquire');
 let should = require('should');
 let sinon = require('sinon');
 let AsgResource = null;
@@ -13,7 +14,11 @@ var asgClient = {
 describe('Describing [AsgResource]', () => {
 
   before(function () {
-    AsgResource = require('modules/resourceFactories/AsgResource');
+    AsgResource = proxyquire('modules/resourceFactories/AsgResource', {
+      'modules/amazon-client/childAccountClient': {
+        createASGClient: () => Promise.resolve(asgClient),
+      }
+    });
   });
 
   describe('# enterInstancesToStandby() function', () => {
@@ -34,22 +39,24 @@ describe('Describing [AsgResource]', () => {
         instanceIds: ['instance-one'],
       };
 
-      var target = new AsgResource(asgClient);
+      var target = new AsgResource('123456789012');
 
       promise = target.enterInstancesToStandby(parameters);
 
     });
 
     it('should call the provided callback', () => {
-      promise.should.be.fulfilled();
+      return promise.should.be.fulfilled();
     });
 
     it('should call AutoScalingGroup enterStandby() function', () => {
-      asgClient.enterStandby.calledOnce.should.be.true();
-      asgClient.enterStandby.getCall(0).args[0].should.match({
-        AutoScalingGroupName: 'sb1-in-Test',
-        ShouldDecrementDesiredCapacity: true,
-        InstanceIds: ['instance-one'],
+      return promise.then(() => {
+        sinon.assert.calledOnce(asgClient.enterStandby);
+        sinon.assert.calledWith(asgClient.enterStandby, sinon.match({
+          AutoScalingGroupName: 'sb1-in-Test',
+          ShouldDecrementDesiredCapacity: true,
+          InstanceIds: ['instance-one'],
+        }));
       });
     });
 
@@ -80,17 +87,17 @@ describe('Describing [AsgResource]', () => {
     });
 
     it('should call the provided callback', () => {
-      promise.should.be.fulfilled();
+      return promise.should.be.fulfilled();
     });
 
     it('should call AutoScalingGroup exitStandby() function', () => {
-      asgClient.exitStandby.calledOnce.should.be.true();
-      asgClient.exitStandby.getCall(0).args[0].should.match({
-        AutoScalingGroupName: 'sb1-in-Test',
-        InstanceIds: ['instance-one'],
+      return promise.then(() => {
+        sinon.assert.calledOnce(asgClient.exitStandby);
+        sinon.assert.calledWith(asgClient.exitStandby, sinon.match({
+          AutoScalingGroupName: 'sb1-in-Test',
+          InstanceIds: ['instance-one'],
+        }));
       });
     });
-
   });
-
 });
