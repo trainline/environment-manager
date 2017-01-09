@@ -103,6 +103,15 @@ angular.module('EnvironmentManager.configuration').config(function ($routeProvid
       controller: 'PermissionController as vm',
       menusection: 'Permissions',
     })
+    .when('/config/notification-settings/', {
+      template: '<notification-settings-list></notification-settings-list>',
+    })
+    .when('/config/notification-settings/:id/', {
+      templateUrl: '/app/configuration/notification-settings/entry.html',
+      controller: 'NotificationSettingsEntry as vm',
+      menusection: 'NotificationSettings',
+    })
+
     .when('/config/clusters/', {
       templateUrl: '/app/configuration/clusters/clusters.html',
       controller: 'ClustersController as vm',
