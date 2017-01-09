@@ -182,6 +182,31 @@
                 "TableName": "ConfigLBUpstream"
             }
         },
+        "ConfigNotificationSettings": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+                "AttributeDefinitions": [
+                    {
+                        "AttributeName": "NotificationSettingsId",
+                        "AttributeType": "S"
+                    }
+                ],
+                "KeySchema": [
+                    {
+                        "AttributeName": "NotificationSettingsId",
+                        "KeyType": "HASH"
+                    }
+                ],
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": 10,
+                    "WriteCapacityUnits": 2
+                },
+                "StreamSpecification": {
+                    "StreamViewType": "NEW_AND_OLD_IMAGES"
+                },
+                "TableName": "ConfigNotificationSettings"
+            }
+        },
         "ConfigDeploymentExecutionStatus": {
             "Type": "AWS::DynamoDB::Table",
             "Properties": {

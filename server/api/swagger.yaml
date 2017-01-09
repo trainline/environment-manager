@@ -1088,6 +1088,67 @@ paths:
       responses:
         200:
           description: OK
+  /config/notification-settings:
+    x-swagger-router-controller: notificationSettingsController
+    get:
+      operationId: getAllNotificationSettings
+      summary: List Notification settings.
+      tags:
+        - Notification Settings
+      responses:
+        200:
+          description: The list of accounts
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NotificationSettings'
+    post:
+      operationId: postNotificationSettings
+      summary: Post new Notification settings.
+      parameters:
+        - name: account
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/NotificationSettings'
+      tags:
+        - Notification Settings
+      responses:
+        201:
+          description: OK
+  /config/notification-settings/{id}:
+    x-swagger-router-controller: notificationSettingsController
+    put:
+      operationId: putNotificationSettingsById
+      summary: Update an associated AWS Account.
+      tags:
+        - Notification Settings
+      parameters:
+        - name: id
+          type: string
+          required: true
+          in: path
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/NotificationSettings'
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: deleteNotificationSettingsById
+      summary: Remove Notification settings.
+      tags:
+        - Notification Settings
+      parameters:
+        - name: id
+          type: string
+          required: true
+          in: path
+      responses:
+        200:
+          description: OK
   /config/clusters:
     x-swagger-router-controller: clusterController
     get:
@@ -2172,6 +2233,22 @@ definitions:
         type: string
       ScheduleStatus:
         type: string
+  NotificationSettings:
+    type: object
+    required:
+      - NotificationSettingsId
+      - Value
+    properties:
+      NotificationSettingsId:
+        type: string
+      Value:
+        $ref: '#/definitions/NotificationSettingsValue'
+  NotificationSettingsValue:
+    type: object
+    properties:
+      ChatChannel:
+        type: string
+
   EnvironmentSchedule:
     type: object
     required:
