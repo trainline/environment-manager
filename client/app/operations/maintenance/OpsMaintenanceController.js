@@ -2,7 +2,8 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsMaintenanceController',
-  function ($scope, $routeParams, $location, $uibModal, $q, resources, cachedResources, modal, awsService, instancesService) {
+  function ($scope, $http, $routeParams, $location, $uibModal, $q, resources, cachedResources, modal, awsService, instancesService) {
+    var vm = this;
 
     var RECORD_KEY = 'MAINTENANCE_MODE';
     var SHOW_ALL_OPTION = 'All';
@@ -11,74 +12,46 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
       NotFound: 'NotFound',
     };
 
-    $scope.AccountIPList = []; // [{ AccountName, Ip }]
-    $scope.Data = [];
-    $scope.IPsNotFound = [];
-    $scope.AccountsList = [];
-    $scope.SelectedAccount = SHOW_ALL_OPTION;
-    $scope.DataLoading = false;
+    vm.accountIPList = []; // [{ AccountName, Ip }]
+    vm.data = [];
+    vm.IPsNotFound = [];
+    vm.accountsList = [];
+    vm.selectedAccount = SHOW_ALL_OPTION;
+    vm.dataLoading = false;
 
     function init() {
-      cachedResources.aws.accounts.all().then(function (accounts) {
-        $scope.AccountsList = [SHOW_ALL_OPTION].concat(accounts).sort();
+      cachedResources.config.accounts.all().then(function (accounts) {
+        accounts = _.map(accounts, 'AccountName');
+        vm.accountsList = [SHOW_ALL_OPTION].concat(accounts).sort();
       }).then(function () {
-        $scope.Refresh();
+        vm.refresh();
       });
     };
 
-    $scope.Refresh = function () {
+    vm.refresh = function () {
 
-      $scope.AccountIPList = [];
-      $scope.Data = [];
-      $scope.IPsNotFound = [];
-      $scope.DataLoading = true;
+      vm.accountIPList = [];
+      vm.data = [];
+      vm.IPsNotFound = [];
+      vm.dataLoading = true;
 
       var readAccountPromises;
       // Read all or just selected account
-      if ($scope.SelectedAccount == SHOW_ALL_OPTION) {
-        readAccountPromises = $scope.AccountsList.map(ProcessMaintenanceIpsByAccount);
+      if (vm.selectedAccount == SHOW_ALL_OPTION) {
+        readAccountPromises = vm.accountsList.map(ProcessMaintenanceIpsByAccount);
       } else {
-        readAccountPromises = [ProcessMaintenanceIpsByAccount($scope.SelectedAccount)];
+        readAccountPromises = [ProcessMaintenanceIpsByAccount(vm.selectedAccount)];
       }
 
-      $q.all(readAccountPromises).then(function () {
-
-        // Read EC2 meta data for selected IPs
-        if ($scope.AccountIPList.length > 0) {
-          var params = {
-            account: $scope.SelectedAccount,
-            query: {
-              'private-ip-address': [],
-            },
-          };
-          $scope.AccountIPList.forEach(function (accountIP) {
-            params.query['private-ip-address'].push(accountIP.Ip);
-          });
-
-          awsService.instances.GetInstanceDetails(params).then(function (data) {
-            $scope.Data = data;
-            // Check for IPs that don't have matching Instances in AWS - probably already removed by scaling or manual change
-            if ($scope.Data.length < $scope.AccountIPList.length) {
-              $scope.IPsNotFound = $scope.AccountIPList.filter(function awsDataNotFound(accountIP) {
-                var notFound = true;
-                for (var i = 0; i < data.length; i++) {
-                  if (data[i].Ip == accountIP.Ip) {
-                    notFound = false;
-                  }
-                }
-
-                return notFound;
-              });
-            }
-          });
-        }
-
+      $q.all(readAccountPromises).then(function (data) {
+        data = _.flatten(data);
+        vm.data = data;
       }).finally(function () {
-        $scope.DataLoading = false;
+        vm.dataLoading = false;
       });
     };
 
-    $scope.RemoveNotFound = function () {
+    vm.removeNotFound = function () {
       modal.confirmation({
         title: 'Remove Out of Date Records',
         message: 'This will remove the selected out of date records.',
@@ -89,7 +62,7 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
       });
     };
 
-    $scope.Remove = function () {
+    vm.remove = function () {
       modal.confirmation({
         title: 'Put Selected Servers Back in Service',
         message: 'Are you sure you want to bring the selected servers back into service?',
@@ -101,33 +74,33 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
       });
     };
 
-    $scope.Add = function () {
+    vm.add = function () {
       var instance = $uibModal.open({
         templateUrl: '/app/operations/maintenance/ops-maintenance-addserver-modal.html',
-        controller: 'MaintenanceAddServerModalController',
+        controller: 'MaintenanceAddServerModalController as vm',
         resolve: {
           defaultAccount: function () {
-            return $scope.SelectedAccount;
+            return vm.selectedAccount;
           },
         },
       }).result.then(function () {
-        $scope.Refresh();
+        vm.refresh();
       });
     };
 
-    $scope.NumberOfItemsSelected = function () {
+    vm.numberOfItemsSelected = function () {
       var count = 0;
-      for (var i = 0; i < $scope.Data.length; i++) {
-        if ($scope.Data[i].Selected) { count++; }
+      for (var i = 0; i < vm.data.length; i++) {
+        if (vm.data[i].Selected) { count++; }
       }
 
       return count;
     };
 
-    $scope.NumberOfNotFoundItemsSelected = function () {
+    vm.numberOfNotFoundItemsSelected = function () {
       var count = 0;
-      for (var i = 0; i < $scope.IPsNotFound.length; i++) {
-        if ($scope.IPsNotFound[i].Selected) { count++; }
+      for (var i = 0; i < vm.IPsNotFound.length; i++) {
+        if (vm.IPsNotFound[i].Selected) { count++; }
       }
 
       return count;
@@ -135,62 +108,46 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
 
     function ProcessMaintenanceIpsByAccount(account) {
 
-      if (account == SHOW_ALL_OPTION) return $q.when(true);
+      if (account == SHOW_ALL_OPTION) return $q.when([]);
 
-      var defer = $q.defer();
       var params = {
         account: account,
         key: RECORD_KEY,
       };
-      resources.asgips.get(params).then(function (data) {
+      return $http.get('/api/v1/instances', { params: { maintenance: true }}).then(function (response) {
+        var data = response.data;
 
         var ipList = [];
 
         // Read list of IPs under Maintenance and add account info
-        if (data.IPs && data.IPs.length > 0) {
-          ipList = JSON.parse(data.IPs).map(function (ip) {
-            return { AccountName: account, Ip: ip };
+        if (data.length > 0) {
+          ipList = _.map(data, function (instance) {
+            return { AccountName: account, Ip: instance.PrivateIpAddress };
           });
         }
 
         // Append to $scope variable
         ipList.forEach(function (ip) {
-          $scope.AccountIPList.push(ip);
+          vm.accountIPList.push(ip);
         });
 
-        defer.resolve(ipList);
-
-      }, function (error) {
-
-        // Record doesn't exist for this account, create empty placeholder
-        console.log(RECORD_KEY + ' not found for ' + account + ' account, creating for first time use');
-        var params = {
-          account: account,
-          key: RECORD_KEY,
-          data: {
-            IPs: JSON.stringify([]),
-          },
-        };
-        resources.asgips.post(params).then(function (data) {
-          defer.resolve();
+        return _.map(data, function (instance) {
+          return awsService.instances.getSummaryFromInstance(instance, vm.selectedAccount);
         });
 
       });
-
-      return defer.promise;
     }
 
     function getTasksForRemovingInstancesFromMaintenance(account, ipListTypeToManage) {
 
       var exitMaintenanceList = []; // IP list to remove from "MAINTENANCE_MODE" record in AsgIps DynamoDB table
-      var stayInMaintenanceList = []; // IP list to maintain in "MAINTENANCE_MODE" record in AsgIps DynamoDB table
       var asgForWhichPutInstancesInService = {}; // AutoScalingGroup for which move instances from Standby to InService
 
       function isItemBelongingToAccount(item, account) {
         return !item.AccountName || item.AccountName === account;
       }
 
-      $scope.Data.forEach(function (item) {
+      vm.data.forEach(function (item) {
 
         // Item must belong to the target AWS account
         if (!isItemBelongingToAccount(item, account)) return;
@@ -206,12 +163,10 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
             asgForWhichPutInstancesInService[groupName] = asgForWhichPutInstancesInService[groupName] || [];
             asgForWhichPutInstancesInService[groupName].push(item.InstanceId);
           }
-        } else {
-          stayInMaintenanceList.push(item);
         }
       });
 
-      $scope.IPsNotFound.forEach(function (item) {
+      vm.IPsNotFound.forEach(function (item) {
 
         // Item must belong to the target AWS account
         if (!isItemBelongingToAccount(item, account)) return;
@@ -220,13 +175,8 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
 
           // Adding to list of instances removed from maintenance
           exitMaintenanceList.push(item);
-        } else {
-          stayInMaintenanceList.push(item);
         }
       });
-
-      // If no IP is to remove then no operations are needed
-      if (!exitMaintenanceList.length) return [];
 
       var tasks = [];
 
@@ -235,40 +185,20 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
         tasks.push(task);
       });
 
-      // Adding a task to updating "MAINTENANCE_MODE" record in AsgIps DynamoDB table
-      tasks.push(resources.asgips.put({
-        account: account,
-        key: RECORD_KEY,
-        data: {
-          IPs: JSON.stringify(_.map(stayInMaintenanceList, 'Ip')),
-        },
-      }));
-
-      // Adding a task for each AutoScalingGroup for which moving its instances from Standby to InService
-      for (var groupName in asgForWhichPutInstancesInService) {
-        var instanceIdsToPutInService = asgForWhichPutInstancesInService[groupName];
-
-        tasks.push(resources.aws.asgs.exit(groupName)
-          .instances(instanceIdsToPutInService)
-          .fromStandby()
-          .inAWSAccount(account)
-          .do());
-      }
-
       return tasks;
     }
 
     function removingIPsFromMaintenance(ipListTypeToManage) {
 
       var tasks = [];
-      var accounts = $scope.SelectedAccount === SHOW_ALL_OPTION ? $scope.AccountsList : [$scope.SelectedAccount];
+      var accounts = vm.selectedAccount === SHOW_ALL_OPTION ? vm.accountsList : [vm.selectedAccount];
 
       accounts.forEach(function (account) {
         tasks = tasks.concat(getTasksForRemovingInstancesFromMaintenance(account, ipListTypeToManage));
       });
 
       $q.all(tasks).then(function () {
-        $scope.Refresh();
+        vm.refresh();
       });
     }
 

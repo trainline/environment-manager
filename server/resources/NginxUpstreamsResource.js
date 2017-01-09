@@ -2,7 +2,7 @@
 
 'use strict';
 
-﻿module.exports = {
+module.exports = {
   name: 'nginx',
   type: 'nginx/upstreams',
 };

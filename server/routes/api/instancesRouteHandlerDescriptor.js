@@ -72,6 +72,22 @@ module.exports = [
     send.query(query, request, response);
   }),
 
+  route.get('/:account/instances/schedule-actions/:dateTime')
+  .inOrderTo('List instances changes needed due to scheduling as of a particular date and time')
+  .withDocs({
+    disableDocs: true
+  })
+  .do((request, response) => {
+    var query = {
+      name: 'ScanInstancesScheduleStatus',
+      accountName: request.params.account,
+      filter: utilities.extractQuery(request),
+      dateTime: request.params.dateTime
+    };
+
+    send.query(query, request, response);
+  }),
+
   route.get('/:account/instances/:environment').inOrderTo('List all Instances within an account with a particular Environment tag')
   .withDocs({
     description: 'Instance',

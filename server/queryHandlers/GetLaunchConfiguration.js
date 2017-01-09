@@ -35,6 +35,7 @@ module.exports = function GetLaunchConfiguration(query) {
       InstanceType: awsLaunchConfig.InstanceType,
       SecurityGroups: securityGroupsNames,
       Volumes,
+      UserData: new Buffer(awsLaunchConfig.UserData, 'base64').toString("ascii")
     };
 
     return ret;

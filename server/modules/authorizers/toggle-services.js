@@ -1,4 +1,7 @@
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
+
+let _ = require('lodash');
 
 function getSlicesByService(serviceName, environmentName, accountName, user) {
   return new Promise((resolve, reject) => {

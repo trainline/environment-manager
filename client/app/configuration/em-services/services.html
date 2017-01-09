@@ -1,66 +1,66 @@
 <div class="row">
-    <div class="col-md-12"><h2>Services</h2></div>
-    <div id="RefreshData">
-        <span class="glyphicon glyphicon-refresh" ng-click="Refresh()" title="Refresh data"></span>
-    </div>
+  <div class="col-md-12"><h2>Services</h2></div>
+  <div id="RefreshData">
+    <span class="glyphicon glyphicon-refresh" ng-click="Refresh()" title="Refresh data"></span>
+  </div>
 </div>
 
 <form id="SearchFilter" class="form-inline">
-    <div class="form-group">
-        <label class="control-label text-left">Owning Cluster:</label>
-    </div>
-    <div class="form-group">
-        <select class="form-control" ng-model="SelectedOwningCluster" ng-change="Refresh()">
-            <option ng-repeat="c in OwningClustersList" ng-selected="{{c == SelectedOwningCluster}}" value="{{c}}">{{c}}</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label class="control-label text-left">Name:</label>
-    </div>
-    <div class="form-group">
-        <input type="search" name="ServiceName" class="form-control" ng-model="SelectedService" ng-change="UpdateFilter()" />
-    </div>
-    <div class="form-group">
-        <button type="button" class="btn btn-default right" ng-click="NewItem()" ng-if="canUser('post')">Create New...</button>
-    </div>
+  <div class="form-group">
+    <label class="control-label text-left">Owning Cluster:</label>
+  </div>
+  <div class="form-group">
+    <select class="form-control" ng-model="SelectedOwningCluster" ng-change="Refresh()">
+      <option ng-repeat="c in OwningClustersList" ng-selected="{{c == SelectedOwningCluster}}" value="{{c}}">{{c}}</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="control-label text-left">Name:</label>
+  </div>
+  <div class="form-group">
+    <input type="search" name="ServiceName" class="form-control" ng-model="SelectedService" ng-change="UpdateFilter()" />
+  </div>
+  <div class="form-group">
+    <button type="button" class="btn btn-default right" ng-click="NewItem()" ng-if="canUser('post')">Create New...</button>
+  </div>
 </form>
 
 <hr />
 
 <div class="row">
-    <div class="col-md-12" ng-if="dataLoading">
-        <spinner></spinner>
-    </div>
+  <div class="col-md-12" ng-if="dataLoading">
+    <spinner></spinner>
+  </div>
 
-    <div class="col-md-12" ng-if="!dataLoading && Data.length == 0">
-        <p>No services found.</p>
-    </div>
-    <div class="col-md-12" ng-if="!dataLoading && Data.length > 0">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th class="text-nowrap">Service Name</th>
-                    <th class="text-nowrap">Owning Cluster</th>
-                    <th class="text-nowrap">Description</th>
-                    <th class="text-nowrap">Blue Port</th>
-                    <th class="text-nowrap">Green Port</th>
-                    <th class="text-nowrap command-header">View Deployments</th>
-                    <th class="text-nowrap command-header">View History</th>
-                    <th ng-if="canUser('delete')" class="text-nowrap command-header">Delete</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="service in Data | orderBy : 'ServiceName' ">
-                    <td><a href="#/config/services/{{service.ServiceName}}?Range={{service.OwningCluster}}">{{service.ServiceName}}</a></td>
-                    <td>{{service.OwningCluster}}</td>
-                    <td>{{service.Value.Description}}</td>
-                    <td>{{service.Value.BluePort}}</td>
-                    <td>{{service.Value.GreenPort}}</td>
-                    <td class="command command-viewDeployments"><span class="glyphicon glyphicon-log-in" ng-click="ViewDeployments(service)" title="View Deployments"></span></td>
-                    <td class="command command-viewHistory"><span class="glyphicon glyphicon-time" ng-click="ViewHistory(service)" title="View History"></span></td>
-                    <td ng-if="canUser('delete')" class="command command-delete"><span class="glyphicon glyphicon-remove" ng-click="Delete(service)" title="Delete"></span></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+  <div class="col-md-12" ng-if="!dataLoading && Data.length == 0">
+    <p>No services found.</p>
+  </div>
+  <div class="col-md-12" ng-if="!dataLoading && Data.length > 0">
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="text-nowrap">Service Name</th>
+          <th class="text-nowrap">Owning Cluster</th>
+          <th class="text-nowrap">Description</th>
+          <th class="text-nowrap">Blue Port</th>
+          <th class="text-nowrap">Green Port</th>
+          <th class="text-nowrap command-header">View Deployments</th>
+          <th class="text-nowrap command-header">View History</th>
+          <th ng-if="canUser('delete')" class="text-nowrap command-header">Delete</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="service in Data | orderBy : 'ServiceName' ">
+          <td><a href="#/config/services/{{service.ServiceName}}?Range={{service.OwningCluster}}">{{service.ServiceName}}</a></td>
+          <td>{{service.OwningCluster}}</td>
+          <td>{{service.Value.Description}}</td>
+          <td>{{service.Value.BluePort}}</td>
+          <td>{{service.Value.GreenPort}}</td>
+          <td class="command command-viewDeployments"><span class="glyphicon glyphicon-log-in" ng-click="ViewDeployments(service)" title="View Deployments"></span></td>
+          <td class="command command-viewHistory"><span class="glyphicon glyphicon-time" ng-click="ViewHistory(service)" title="View History"></span></td>
+          <td ng-if="canUser('delete')" class="command command-delete"><span class="glyphicon glyphicon-remove" ng-click="Delete(service)" title="Delete"></span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

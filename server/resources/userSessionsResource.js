@@ -2,7 +2,7 @@
 
 'use strict';
 
-﻿module.exports = {
+module.exports = {
   name: 'user-sessions',
   type: 'dynamodb/table',
   tableName: 'InfraEnvManagerSessions',

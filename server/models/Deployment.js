@@ -3,30 +3,43 @@
 'use strict';
 
 let _ = require('lodash');
-let assertContract = require('modules/assertContract');
+let deploymentsHelper = require('modules/queryHandlersUtil/deployments-helper');
+let systemUser = require('modules/systemUser');
+let sender = require('modules/sender');
 
 class Deployment {
 
   constructor(data) {
-    assertContract(data, 'DeploymentContract', {
-      properties: {
-        id: { type: String, empty: false },
-        environmentTypeName: { type: String, empty: false },
-        environmentName: { type: String, empty: false },
-        serverRole: { type: String, empty: false },
-        serverRoleName: { type: String, empty: false },
-        serviceName: { type: String, empty: false },
-        serviceVersion: { type: String, empty: false },
-        serviceSlice: { type: String, empty: true },
-        clusterName: { type: String, empty: false },
-        accountName: { type: String, empty: false },
-        username: { type: String, empty: false },
-      },
-    });
-
     _.assign(this, data);
   }
 
+  static getById(key) {
+    return deploymentsHelper.get({ key });
+  }
+
+  updateItemValue(itemValue) {
+    let command = {
+      name: 'UpdateDynamoResource',
+      resource: 'deployments/history',
+      accountName: this.AccountName,
+      key: this.DeploymentID,
+      item: itemValue
+    };
+    return sender.sendCommand({ command, user: systemUser });
+  }
+
+  addExecutionLogEntries(logs) {
+    let executionLog = this.Value.ExecutionLog;
+    let executionLogEntries = executionLog ? executionLog.split('\n') : [];
+    executionLogEntries = executionLogEntries.concat(logs);
+
+    this.Value.ExecutionLog = executionLogEntries.join('\n');
+
+    return this.updateItemValue({
+      'Value.ExecutionLog': this.Value.ExecutionLog
+    });
+  }
+  
 }
 
 module.exports = Deployment;

@@ -6,31 +6,30 @@ let S3GetObjectRequest = require('modules/S3GetObjectRequest');
 let amazonClientFactory = require('modules/amazon-client/childAccountClient');
 let sender = require('modules/sender');
 
-function getNode(query) {
-  let consulQuery = {
+function getNode({ deploymentId, instanceId, accountName, environment }) {
+  let query = {
     name: 'GetTargetState',
-    key: `deployments/${query.deploymentId}/nodes/${query.node}`,
-    accountName: query.account,
-    environment: query.environment,
+    key: `deployments/${deploymentId}/nodes/${instanceId}`,
+    accountName,
+    environment,
     recurse: false,
   };
 
-  return sender.sendQuery({ query: consulQuery }).then((node) => {
-    let s3Details = parseBucketAndPathFromS3Url(node.value.Log);
-    return fetchS3Object(query.account, s3Details);
+  return sender.sendQuery({ query }).then((node) => {
+    var s3Details = parseBucketAndPathFromS3Url(node.value.Log);
+    return fetchS3Object(accountName, s3Details);
+  }, (error) => {
+    if (error.message.match(/Key.*has not been found/)) {
+      throw new Error(`The service deployment ${deploymentId} hasn\'t started on instance ${instanceId}.`);
+    } else throw error;
   });
 }
 
 function fetchS3Object(account, s3Details) {
-  // eslint-disable-next-line arrow-body-style
   return amazonClientFactory.createS3Client(account).then((client) => {
-    return new Promise((resolve, reject) => {
-      let s3Request = new S3GetObjectRequest(client, s3Details);
-      s3Request.execute((err, result) => {
-        if (err) return reject(err);
-        return resolve(result.Body.toString());
-      });
-    });
+    let s3Request = new S3GetObjectRequest(client, s3Details);
+    return s3Request.execute()
+      .then((result) => result.Body.toString());
   });
 }
 

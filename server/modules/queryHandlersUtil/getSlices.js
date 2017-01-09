@@ -8,7 +8,17 @@ let config = require('config');
 let _ = require('lodash');
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
 
-function* handleQuery(query, resourceName, upstreamFilter, hostFilter) {
+function hostFilter(active) {
+  if (active === true) {
+    return (host) => host.State === 'up';
+  } else if (active === false) {
+    return (host) => host.State === 'down';
+  } else {
+    return (host) => true;
+  }
+}
+
+function* handleQuery(query, resourceName, upstreamFilter) {
   const masterAccountName = config.getUserValue('masterAccountName');
 
   // Get all LoadBalancer upstreams from DynamoDB without apply any filter.
@@ -36,8 +46,8 @@ function* handleQuery(query, resourceName, upstreamFilter, hostFilter) {
   // Flatting upstreams hosts in to a plain list
   // eslint-disable-next-line arrow-body-style
   let upstreamValues = (upstream) => {
-    return upstream.Value.Hosts.filter(hostFilter).map(host => (
-      {
+    return upstream.Value.Hosts.filter(hostFilter(query.active)).map((host) => {
+      return {
         Key: upstream.key,
         EnvironmentName: upstream.Value.EnvironmentName,
         ServiceName: upstream.Value.ServiceName,
@@ -117,11 +127,7 @@ let FILTER = {
       upstream =>
         upstream.Value.EnvironmentName === query.environmentName && upstream.Value.ServiceName === query.serviceName,
   },
-  host: {
-    allSlices: host => true,
-    onlyActiveSlices: host => host.State === 'up',
-    onlyInactiveSlices: host => host.State === 'down',
-  },
+  
 };
 
 module.exports = {

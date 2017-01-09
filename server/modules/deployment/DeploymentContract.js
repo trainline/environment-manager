@@ -2,8 +2,38 @@
 
 'use strict';
 
-// TODO(filip): phase out usage of this. Use Deployment class instead
+let deploymentValidators = require('modules/deployment/deploymentValidators');
+let assertContract = require('modules/assertContract');
+let _ = require('lodash');
 
-let Deployment = require('models/Deployment');
+class DeploymentContract {
 
-module.exports = Deployment;
+  constructor(data) {
+    assertContract(data, 'DeploymentContract', {
+      properties: {
+        id: { type: String, empty: false },
+        environmentTypeName: { type: String, empty: false },
+        environmentName: { type: String, empty: false },
+        serverRole: { type: String, empty: false },
+        serverRoleName: { type: String, empty: false },
+        serviceName: { type: String, empty: false },
+        serviceVersion: { type: String, empty: false },
+        serviceSlice: { type: String, empty: true },
+        clusterName: { type: String, empty: false },
+        accountName: { type: String, empty: false },
+        username: { type: String, empty: false },
+      },
+    });
+
+    _.assign(this, data);
+  }
+
+  validate(configuration) {
+    // Checking deployment is valid through all validators otherwise return a rejected promise
+    return deploymentValidators.map(validator => validator.validate(this, configuration));
+  }
+
+}
+
+
+module.exports = DeploymentContract;

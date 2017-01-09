@@ -1,11 +1,12 @@
 <div class="modal-content">
   <div class="modal-body" style="padding: 5px 15px">
     <div>
-      <h3>Service: {{ vm.service.Name }}</h3>
+      <h3>Service: {{ vm.service.Name }}<span ng-if="vm.service.Slice !== 'none'">-{{ vm.service.Slice }}</span> {{ vm.service.Version }}</h3>
       <table class="table">
         <thead>
           <tr>
             <th class="text-nowrap">Instance</th>
+            <th class="text-nowrap">Installed</th>
             <th class="text-nowrap">Health Checks</th>
             <!-- <th class="text-nowrap">Deploy Reason</th> -->
             <th class="text-nowrap">Deploy Log</th>
@@ -13,7 +14,11 @@
         </thead>
         <tbody>
           <tr ng-repeat="instance in vm.instances">
-            <td><health-status status='instance.OverallHealth.Status'></health-status> {{ instance.InstanceId }} ({{ instance.PrivateIpAddress }})</td>
+            <td><health-status status='instance.OverallHealth'></health-status> {{ instance.InstanceId }} ({{ instance.PrivateIpAddress }})
+            </td>
+            <td>
+              <service-diff-with-target-state state="instance.serviceObject.DiffWithTargetState"></service-diff-with-target-state>
+            </td>
             <td><health-checks list="instance.serviceObject.HealthChecks"></health-checks></td>
             <!-- <td>{{ instance.serviceObject.DeploymentCause }}</td> -->
             <td><a ng-href="{{ instance.serviceObject.LogLink }}" target="_blank">View Log</a></td>

@@ -8,33 +8,13 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
 
       var resourceName = params.name;
       var resourceDescription = params.description;
-      var resourceSection = params.section || '';
+      var resourceSection = params.section;
       var resourcePerAccount = params.perAccount;
 
-      function arraify(target) {
-        return Array.isArray(target) ? target : [target];
-      }
-
-      function querify(query) {
-        var querystring = '';
-        if (!query) return querystring;
-
-        for (var property in query) {
-          arraify(query[property]).forEach(function (value) {
-            querystring += (querystring.length) ? '&' : '?';
-            querystring += property + '=' + encodeURIComponent(value);
-          });
-        }
-
-        return querystring;
-      }
-
       function urlify(params) {
-        var segments = ['api'];
+        var segments = ['api', 'v1'];
 
-        if (params && params.account) segments.push(params.account);
-
-        if (resourceSection) segments.push(resourceSection);
+        if (resourceSection !== undefined) segments.push(resourceSection);
 
         segments.push(resourceName);
 
@@ -50,7 +30,7 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
           var data = response.data;
 
           if (params.name === 'audit') {
-            data = {items:response.data};
+            data = { items: response.data };
             data.headers = response.headers;
           } 
   
@@ -62,34 +42,13 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
       }
 
       function getExpectedVersionHeader(expectedVersion) {
-        if (!expectedVersion) return {};
+        if (expectedVersion === undefined) return {};
         return {
           headers: {
             'expected-version': expectedVersion,
           },
         };
       }
-
-      function cleanData(data) {
-        function internalCleaning(data) {
-          for (var property in data) {
-            var value = data[property];
-            var type = typeof value;
-
-            switch (type) {
-              case 'string':
-                if (value === '') delete data[property];
-                break;
-              case 'object':
-                internalCleaning(value);
-                break;
-            }
-          }
-        }
-
-        internalCleaning(data);
-        return data;
-      };
 
       this.name = function () {
         return resourceName;
@@ -101,17 +60,13 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
 
       this.all = function (params) {
         var url = urlify(params);
-        if (params && params.query) url += querify(params.query);
-        return promisify($http.get(url));
+        var query;
+        if (params && params.query) query = params.query;
+        return promisify($http.get(url, { params: query }));
       };
 
       this.export = function (params) {
-        var url = '/api/';
-        if (params && params.account) {
-          url += params.account + '/';
-        }
-
-        url += 'config/' + resourceName + '/export';
+        var url = '/api/v1/config/export/' + resourceName.toLowerCase();
         return promisify($http.get(url));
       };
 
@@ -129,37 +84,16 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
       this.put = function (params) {
         var url = urlify(params);
         var config = getExpectedVersionHeader(params.expectedVersion);
-        var data = cleanData(params.data);
 
-        return promisify($http.put(url, data, config));
+        return promisify($http.put(url, params.data, config));
       };
 
       this.post = function (params) {
         var url = urlify(params);
-        var data = cleanData(params.data);
 
-        return promisify($http.post(url, data));
+        return promisify($http.post(url, params.data));
       };
 
-      this.replace = function (params) {
-        var url = '/api/';
-        if (params && params.account && resourcePerAccount) {
-          url += params.account + '/';
-        }
-
-        url += 'config/' + resourceName + '/replace';
-        return promisify($http.put(url, params.items));
-      };
-
-      this.merge = function (params) {
-        var url = '/api/';
-        if (params && params.account && resourcePerAccount) {
-          url += params.account + '/';
-        }
-
-        url += 'config/' + resourceName + '/merge';
-        return promisify($http.put(url, params.items));
-      };
     };
 
     function FullAccessRemoteResource(params) {

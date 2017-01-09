@@ -2,18 +2,14 @@
 
 'use strict';
 
-let assertContract = require('modules/assertContract');
+let assert = require('assert');
 let keypairFactory = require('modules/factories/keypairFactory');
 
-module.exports = function GetKeyPairQueryHandler(query) {
-  assertContract(query, 'query', {
-    properties: {
-      accountName: { type: String, empty: false },
-      keyName: { type: String, empty: false },
-    },
-  });
-
-  let parameters = { accountName: query.accountName };
+module.exports = function GetKeyPairQueryHandler({ accountName, keyName }) {
+  assert(accountName);
+  assert(keyName);
+  
+  let parameters = { accountName };
   return keypairFactory.create(parameters)
-    .then(resource => resource.get({ keyName: query.keyName }));
+    .then(resource => resource.get({ keyName }));
 };

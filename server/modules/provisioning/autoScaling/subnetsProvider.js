@@ -49,37 +49,40 @@ function getSubnetsByAvailabilityZone(subnetTypeName, configuration) {
   let availabilityZoneName = (configuration.serverRole.AvailabilityZoneName || '*');
   let subnets = [];
 
-  switch (availabilityZoneName.toUpperCase()) {
-    case 'A':
-      subnets = [subnetType.AvailabilityZoneA];
-      break;
-    case 'B':
-      subnets = [subnetType.AvailabilityZoneB];
-      break;
-    case 'C':
-      subnets = [subnetType.AvailabilityZoneC];
-      break;
-    case 'D':
-      subnets = [subnetType.AvailabilityZoneD];
-      break;
-    case 'E':
-      subnets = [subnetType.AvailabilityZoneE];
-      break;
-    case 'F':
-      subnets = [subnetType.AvailabilityZoneF];
-      break;
-    case '*':
-      subnets = [
-        subnetType.AvailabilityZoneA, subnetType.AvailabilityZoneB,
-        subnetType.AvailabilityZoneC, subnetType.AvailabilityZoneD,
-        subnetType.AvailabilityZoneE, subnetType.AvailabilityZoneF,
-      ];
-      subnets = _.compact(subnets); // Strip subnets C, D, E, F if they don't exist
-      break;
-    default:
-      throw new Error(`Unknown "${availabilityZoneName}" availability zone specified in configuration. ` +
-        'Please specify one of the following values: "A", "B", "C" or "*".');
+  if (availabilityZoneName === '*') {
+    subnets = [subnetType.AvailabilityZoneA, subnetType.AvailabilityZoneB, subnetType.AvailabilityZoneC,
+               subnetType.AvailabilityZoneD, subnetType.AvailabilityZoneE, subnetType.AvailabilityZoneF];
+  } else {
+    let azs = _.toArray(availabilityZoneName);
+    azs.forEach(az => {
+      let name = az.toUpperCase();
+      switch (name) {
+        case 'A':
+          subnets.push(subnetType.AvailabilityZoneA);
+          break;
+        case 'B':
+          subnets.push(subnetType.AvailabilityZoneB);
+          break;
+        case 'C':
+          subnets.push(subnetType.AvailabilityZoneC);
+          break;
+        case 'D':
+          subnets.push(subnetType.AvailabilityZoneD);
+          break;
+        case 'E':
+          subnets.push(subnetType.AvailabilityZoneE);
+          break;
+        case 'F':
+          subnets.push(subnetType.AvailabilityZoneF);
+          break;
+        default:
+          throw new Error(`Unknown "${name}" availability zone specified in configuration. ` +
+            `Please specify one of the following values: "A", "B", "C" or "*".`);
+      }
+    });
   }
+
+  subnets = _.compact(subnets);
 
   if (subnets.some(subnet => !subnet.trim())) {
     throw new Error(`"${subnetTypeName}" subnet type does not contain the expected availability zones.`);

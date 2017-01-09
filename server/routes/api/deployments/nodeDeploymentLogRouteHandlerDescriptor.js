@@ -11,10 +11,10 @@ module.exports = route.get('/:account/deployments/:environment/:deploymentId/nod
   .do((request, response) => {
     let query = {
       name: 'GetNodeDeploymentLog',
-      account: request.params.account,
+      accountName: request.params.account,
       environment: request.params.environment,
       deploymentId: request.params.deploymentId,
-      node: request.params.node,
+      instanceId: request.params.node,
     };
 
     send.query(query, request, response);

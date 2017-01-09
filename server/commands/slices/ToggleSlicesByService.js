@@ -4,29 +4,25 @@
 
 let assert = require('assert');
 let toggleSlices = require('../utils/toggleSlices');
-let UpstreamByServiceProvider = toggleSlices.UpstreamByServiceProvider;
+let UpstreamProvider = toggleSlices.UpstreamProvider;
 let ToggleUpstreamByServiceVerifier = toggleSlices.ToggleUpstreamByServiceVerifier;
 let UpstreamToggler = toggleSlices.UpstreamToggler;
-let ToggleSlicesOrchestrator = toggleSlices.ToggleSlicesOrchestrator;
+let orchestrate = toggleSlices.orchestrate;
 let sender = require('modules/sender');
+let Environment = require('models/Environment');
 
 module.exports = function ToggleSlicesByService(command) {
-  assert.equal(typeof command.accountName, 'string');
   assert.equal(typeof command.environmentName, 'string');
   assert.equal(typeof command.serviceName, 'string');
 
-  let resourceName = `Upstream for "${command.serviceName}" service in "${command.environmentName}" environment`;
-  let provider = new UpstreamByServiceProvider(sender, command, resourceName);
-  let verifier = new ToggleUpstreamByServiceVerifier(sender, command);
-  let toggler = new UpstreamToggler(sender, command);
-  let orchestrator = new ToggleSlicesOrchestrator(provider, verifier, toggler);
+  return Environment.getAccountNameForEnvironment(command.environmentName).then(account => {
+    command.accountName = account;
 
-  return new Promise((resolve, reject) => {
-    let callback = (err, result) => {
-      if (err) reject(err);
-      else resolve(result);
-    };
+    let resourceName = `Upstream for "${command.serviceName}" service in "${command.environmentName}" environment`;
+    let provider = new UpstreamProvider(sender, command, resourceName);
+    let verifier = new ToggleUpstreamByServiceVerifier(sender, command);
+    let toggler = new UpstreamToggler(sender, command);
 
-    orchestrator.orchestrate(callback);
+    return orchestrate(provider, verifier, toggler);
   });
 };

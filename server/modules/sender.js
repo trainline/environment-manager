@@ -5,6 +5,7 @@
 let guid = require('node-uuid');
 let assertContract = require('modules/assertContract');
 let logger = require('modules/logger');
+let commandMetadata = require('commands/utils/metadata');
 
 const COMMAND_TYPE = 'Command';
 const QUERY_TYPE = 'Query';
@@ -21,7 +22,10 @@ module.exports = {
       },
     });
 
-    let command = prepareCommand(parameters);
+    let command = commandMetadata.createFromParameters(parameters);
+    let message = getLogMessage(command);
+    logger.info(message);
+
     let type = COMMAND_TYPE;
     let promise = sendCommandOrQuery(command);
     return promiseOrCallback(promise, command, type, callback);
@@ -45,23 +49,6 @@ module.exports = {
   },
 };
 
-function prepareCommand(parameters) {
-  let command = Object.assign({}, parameters.command);
-
-  if (parameters.parent) {
-    command.commandId = parameters.parent.commandId;
-    command.username = parameters.parent.username;
-  } else {
-    command.commandId = guid.v1();
-    command.username = parameters.user.getName();
-  }
-
-  command.timestamp = new Date().toISOString();
-  let message = getLogMessage(command);
-  logger.debug(message);
-  return command;
-}
-
 function prepareQuery(parameters) {
   let query = Object.assign({}, parameters.query);
 
@@ -82,17 +69,20 @@ function prepareQuery(parameters) {
 }
 
 function promiseOrCallback(promise, commandOrQuery, type, callback) {
-  promise.catch((error) => {
-    let errorMessage = getErrorMessage(commandOrQuery, error);
-    logger.error(errorMessage, {
-      error: {
-        name: error.name,
-        message: error.message,
-        stack: error.toString(true),
-      },
-      command: type === COMMAND_TYPE ? commandOrQuery : undefined,
-      query: type === QUERY_TYPE ? commandOrQuery : undefined,
-    });
+
+  promise.catch(error => {
+    if (commandOrQuery.suppressError !== true) {
+      let errorMessage = getErrorMessage(commandOrQuery, error);
+      logger.error(errorMessage, {
+        error: {
+          name: error.name,
+          message: error.message,
+          stack: error.toString(true)
+        },
+        command: type === COMMAND_TYPE ? commandOrQuery : undefined,
+        query: type === QUERY_TYPE ? commandOrQuery : undefined
+      });
+    }
   });
 
   if (!callback) return promise;
@@ -121,8 +111,8 @@ function getLogMessage(commandOrQuery) {
 }
 
 function getErrorMessage(commandOrQuery, error) {
-  let message = [
-    'Error executing command:',
+  var message = [
+    'Error executing:',
     THICK_SEPARATOR,
     `[${commandOrQuery.name}]`,
     JSON.stringify(commandOrQuery, null, '  '),

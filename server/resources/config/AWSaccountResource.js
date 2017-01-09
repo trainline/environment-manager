@@ -3,7 +3,7 @@
 'use strict';
 
 ﻿module.exports = {
-  name: 'config/awsAccounts',
+  name: 'config/accounts',
   type: 'dynamodb/table',
   tableName: 'InfraConfigAccounts',
   keyName: 'AccountNumber',

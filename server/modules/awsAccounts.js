@@ -12,7 +12,7 @@ let fetchAccounts = require('queryHandlers/GetAWSaccounts');
 let cacheManager = require('modules/cacheManager');
 let accountsCache = cacheManager.create(CACHE_KEY, fetchAccounts, { stdTTL: TEN_MINUTES, logHits: false });
 
-function getAccountByName(accountName) {
+function getByName(accountName) {
   let matches = val => accountName.toLowerCase() === val.toString().toLowerCase();
 
   return getAllAccounts().then((accounts) => {
@@ -41,15 +41,15 @@ function getAllAccounts() {
   return accountsCache.get(CACHE_KEY);
 }
 
-function flushAccounts() {
+function flush() {
   accountsCache.flushAll();
   return getMasterAccount().then(account => config.setUserValue('masterAccountName', account.AccountName));
 }
 
 module.exports = {
-  flush: flushAccounts,
+  flush,
   all: getAllAccounts,
-  getByName: getAccountByName,
+  getByName,
   getMasterAccount,
-  getAMIsharingAccounts,
+  getAMIsharingAccounts
 };

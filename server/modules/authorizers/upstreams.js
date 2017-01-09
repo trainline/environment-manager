@@ -3,21 +3,24 @@
 'use strict';
 
 let config = require('config');
+let co = require('co');
+let Environment = require('models/Environment');
+let logger = require('modules/logger');
 
-function getUpstream(accountName, upstreamName, user) {
+function getUpstream(accountName, upstreamName) {
   let sender = require('modules/sender');
 
   let query = {
     name: 'GetDynamoResource',
     key: upstreamName,
     resource: 'config/lbupstream',
-    accountName,
+    accountName
   };
 
-  return sender.sendQuery({ query, user });
+  return sender.sendQuery({ query });
 }
 
-function getEnvironment(name, user) {
+function getEnvironment(name) {
   const masterAccountName = config.getUserValue('masterAccountName');
   let sender = require('modules/sender');
   let query = {
@@ -27,55 +30,65 @@ function getEnvironment(name, user) {
     accountName: masterAccountName,
   };
 
-  return sender.sendQuery({ query, user });
+  return sender.sendQuery({ query });
 }
 
-function getModifyPermissionsForEnvironment(environmentName, user) {
-  return getEnvironment(environmentName, user).then((environment) => {
-    if (environment) {
-      return {
-        cluster: environment.Value.OwningCluster.toLowerCase(),
-        environmentType: environment.Value.EnvironmentType.toLowerCase(),
-      };
-    }
-    throw new Error(`Could not find environment: ${environmentName}`);
+function getModifyPermissionsForEnvironment(environmentName) {
+  return getEnvironment(environmentName).then((environment) => {
+    return {
+      cluster: environment.Value.OwningCluster.toLowerCase(),
+      environmentType: environment.Value.EnvironmentType.toLowerCase()
+    };
   });
 }
 
-function getEnvironmentPermissionsPromise(request) {
-  let user = request.user;
-  if (request.method === 'POST') {
-    return getModifyPermissionsForEnvironment(request.body.Value.EnvironmentName, user);
+function getEnvironmentPermissionsPromise(upstreamName, environmentName, accountName, method) {
+  if (method === 'POST') {
+    return getModifyPermissionsForEnvironment(environmentName);
   }
 
-  let upstreamName = request.params.key;
-  let accountName = request.params.account;
+  return getUpstream(accountName, upstreamName)
+    .then((upstream) => {
 
-  return getUpstream(accountName, upstreamName, request.user)
-  .then((upstream) => {
-    if (upstream) {
-      let environmentName = upstream.Value.EnvironmentName;
-      return getModifyPermissionsForEnvironment(environmentName, user);
-    }
+      if (upstream) {
+        let environmentName = upstream.Value.EnvironmentName;
+        return getModifyPermissionsForEnvironment(environmentName);
+      }
 
-    throw new Error(`Could not find upstream: ${upstreamName}`);
-  });
+      throw `Could not find upstream: ${upstreamName}`;
+    });
 }
 
 exports.getRules = (request) => {
   let r = /^\/(.*)\/config$/;
-  let match = r.exec(request.params.key);
-  let path = `/${request.params.account}/config/lbUpstream/${match[1]}`;
-  let getEnvironmentPermissions = getEnvironmentPermissionsPromise(request);
+  // TODO(Filip): remove this after switching all to V1 API
+  let upstreamName = request.params.key || request.params.name || request.params.body.key;
+  let accountName = request.params.account;
 
-  return getEnvironmentPermissions.then(envPermissions => (
-    [{
-      resource: path,
-      access: request.method,
-      clusters: [envPermissions.cluster],
-      environmentTypes: [envPermissions.environmentType],
-    }]
-  ));
+  return co(function* () {
+    let body = request.params.body || request.body;
+    logger.debug(`Upstreams authorizer`, { body, url: request.url });
+    // TODO(Filip): remove this hack after we move all upstreams data into one account
+    let environmentName = upstreamName.substr(1, 3);
+    
+    if (accountName === undefined) {
+      accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+    }
+
+    let match = r.exec(upstreamName);
+    let path = `/${request.params.account}/config/lbUpstream/${match[1]}`;
+    let getEnvironmentPermissions = getEnvironmentPermissionsPromise(upstreamName, environmentName, accountName, request.method);
+
+    return getEnvironmentPermissions.then(envPermissions => {
+      return [{
+        resource: path,
+        access: request.method,
+        clusters: [ envPermissions.cluster ],
+        environmentTypes: [ envPermissions.environmentType ]
+      }];
+    });
+
+  });
 };
 
 exports.docs = {

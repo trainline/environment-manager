@@ -29,10 +29,11 @@ module.exports = [
   .withDocs({ link: docsLink, description: 'Upstream', tags: ['Upstreams'] })
   .do((request, response) => {
     send.query({
-      name: 'GetActiveSlicesByUpstream',
+      name: 'GetSlicesByUpstream',
       accountName: request.params.account,
       environmentName: request.params.environment,
       upstreamName: request.params.upstream,
+      active: true
     }, request, response);
   }),
 
@@ -41,10 +42,11 @@ module.exports = [
   .withDocs({ link: docsLink, description: 'Upstream', tags: ['Upstreams'] })
   .do((request, response) => {
     send.query({
-      name: 'GetInactiveSlicesByUpstream',
+      name: 'GetSlicesByUpstream',
       accountName: request.params.account,
       environmentName: request.params.environment,
       upstreamName: request.params.upstream,
+      active: false
     }, request, response);
   }),
 
@@ -65,10 +67,11 @@ module.exports = [
   .withDocs({ link: docsLink, description: 'Service', tags: ['Services'] })
   .do((request, response) => {
     send.query({
-      name: 'GetActiveSlicesByService',
+      name: 'GetSlicesByService',
       accountName: request.params.account,
       environmentName: request.params.environment,
       serviceName: request.params.service,
+      active: true,
     }, request, response);
   }),
 
@@ -77,10 +80,11 @@ module.exports = [
   .withDocs({ link: docsLink, description: 'Service', tags: ['Services'] })
   .do((request, response) => {
     send.query({
-      name: 'GetInactiveSlicesByService',
+      name: 'GetSlicesByService',
       accountName: request.params.account,
       environmentName: request.params.environment,
       serviceName: request.params.service,
+      active: false,
     }, request, response);
   }),
 

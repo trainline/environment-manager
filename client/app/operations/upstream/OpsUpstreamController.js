@@ -1,8 +1,8 @@
-﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsUpstreamController',
-  function ($scope, $routeParams, $location, $uibModal, $q, resources, QuerySync, cachedResources, accountMappingService, modal) {
+  function ($routeParams, $location, $uibModal, $q, $http, resources, QuerySync, cachedResources, accountMappingService, modal) {
     var vm = this;
     var querySync;
     var SHOW_ALL_OPTION = 'Any';
@@ -63,8 +63,10 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
       var params = { account: 'all' };
       resources.config.lbUpstream.all(params).then(function (data) {
         vm.fullUpstreamData = restructureUpstreams(data);
-        vm.dataFound = true;
-        vm.updateFilter();
+        return updateLBStatus().then(function(){
+          vm.updateFilter();
+          vm.dataFound = true;
+        });
       }).finally(function () {
         vm.dataLoading = false;
       });
@@ -74,8 +76,9 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
       querySync.updateQuery();
       
       vm.data = vm.fullUpstreamData.filter(function (upstream) {
-        var match = true;
-        match = match && upstream.Value.EnvironmentName == vm.selectedEnvironment;
+        if (upstream.Value.EnvironmentName !== vm.selectedEnvironment) {
+          return false;
+        }
 
         if (vm.selectedService) {
           var serviceName = angular.lowercase(upstream.Value.ServiceName);
@@ -91,25 +94,29 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
             upstreamMatch = upstreamName.indexOf(angular.lowercase(vm.selectedService)) != -1;
           }
 
-          match = match && (serviceMatch || upstreamMatch);
+          if (!(serviceMatch || upstreamMatch)) {
+            return false;
+          }
         }
 
-        if (vm.selectedState != 'All') {
-          match = match && upstream.Value.State == angular.lowercase(vm.selectedState);
+        if (vm.selectedState !== 'All' && upstream.Value.State !== angular.lowercase(vm.selectedState)) {
+          return false;
         }
 
-        if (vm.selectedOwningCluster != SHOW_ALL_OPTION) {
-          match = match && upstream.Value.OwningCluster == vm.selectedOwningCluster;
+        if (vm.selectedOwningCluster !== SHOW_ALL_OPTION && upstream.Value.OwningCluster !== vm.selectedOwningCluster) {
+          return false;
         }
 
-        return match;
+        return true;
       });
+
+      
     };
 
     vm.showInstanceDetails = function (upstreamData) {
       var instance = $uibModal.open({
         templateUrl: '/app/operations/upstream/ops-upstream-details-modal.html',
-        controller: 'UpstreamDetailsModalController',
+        controller: 'UpstreamDetailsModalController as vm',
         size: 'lg',
         windowClass: 'LBStatus',
         resolve: {
@@ -123,7 +130,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     vm.toggleService = function () {
       $uibModal.open({
         templateUrl: '/app/operations/ops-toggle-service-modal.html',
-        controller: 'ToggleServiceModalController',
+        controller: 'ToggleServiceModalController as vm',
         resolve: {
           environmentName: function () {
             return vm.selectedEnvironment;
@@ -145,29 +152,21 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
         details: ['Note: In most cases it is better to use <b>Toggle Service</b> instead when doing Blue/Green cutovers as this performs additional validation and copes with multiple upstreams.'],
         action: 'Toggle Upstream',
       }).then(function () {
-        accountMappingService.GetAccountForEnvironment(environmentName).then(function (awsAccount) {
-          resources.environment(environmentName)
-            .inAWSAccount(awsAccount)
-            .toggleSlices()
-            .byUpstream(upstreamName)
-            .do(function (result) { vm.refresh(); });
+        $http({
+          method: 'put',
+          url: '/api/v1/upstreams/' + upstreamName + '/slices/toggle?environment=' + environmentName,
+          data: {}
+        }).then(function() {
+          vm.refresh();
         });
       });
     };
 
-    $scope.vm = vm;
-
-    $scope.$watch('vm.data', function (newVal, oldVal) {
-      if (newVal) {
-        updateLBStatus();
-      }
-    });
 
     // Convert to flat hosts array. Match port numbers to Blue/Green slice for corresponding service. Add NGINX status
     function restructureUpstreams(upstreams) {
 
       var flattenedUpstreams = [];
-
       upstreams.forEach(function (upstream) {
         var service = getServiceForUpstream(upstream.Value.ServiceName);
         upstream.Value.Hosts.forEach(function (host) {
@@ -178,7 +177,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
           upstreamHost.Value.State = host.State;
           upstreamHost.Value.Slice = getSlice(host.Port, service);
           upstreamHost.Value.OwningCluster = service ? service.OwningCluster : 'Unknown';
-          upstreamHost.Value.LoadBalancerState = []; // Populated async later
+          upstreamHost.Value.LoadBalancerState = { LBs: [] }; // Populated async later
           flattenedUpstreams.push(upstreamHost);
         });
       });
@@ -202,72 +201,62 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     }
 
     function getSlice(port, service) {
-      if (service && service.Value && service.Value.BluePort == port) return 'Blue';
-      if (service && service.Value && service.Value.GreenPort == port) return 'Green';
+      if (_.toInteger(_.get(service, 'Value.BluePort')) === port) return 'Blue';
+      if (_.toInteger(_.get(service, 'Value.GreenPort')) === port) return 'Green';
       return 'Unknown';
     }
 
     function updateLBStatus() {
 
       // Read LBs for this environment
-      accountMappingService.GetEnvironmentLoadBalancers(vm.selectedEnvironment).then(function (lbs) {
+      return accountMappingService.getEnvironmentLoadBalancers(vm.selectedEnvironment).then(function (lbs) {
 
         // Clear existing data
-        vm.data.forEach(function (upstreamHost) {
-          upstreamHost.Value.LoadBalancerState = [];
+        vm.fullUpstreamData.forEach(function (upstreamHost) {
+          upstreamHost.Value.LoadBalancerState.LBs = [];
         });
 
         // Loop LBs and read LB status data
-        lbs.forEach(function (lb) {
+        var promises = lbs.map(function (lb) {
+          var url = ['api', 'v1', 'load-balancer', lb].join('/');
 
-          resources.nginx.all({ instance: lb }).then(function success(nginxData) {
-
+          return $http.get(url).then(function (response) {
+            var nginxData = response.data;
             var lbName = lb.split('.')[0]; // Drop .prod/nonprod.local from name
 
             // Loop upstream hosts and associate LB status with each record
-            vm.data.forEach(function (upstreamHost) {
-
+            vm.fullUpstreamData.forEach(function (upstreamHost) {
               var lbServerStatusData = getLBStatusForUpstream(upstreamHost.Value.UpstreamName, upstreamHost.Value.Port, nginxData);
               var lbData = { Name: lbName, State: getActualUpstreamState(lbServerStatusData), ServerStatus: lbServerStatusData };
 
-              upstreamHost.Value.LoadBalancerState = upstreamHost.Value.LoadBalancerState.filter(function (existingLbData) {
+              upstreamHost.Value.LoadBalancerState.LBs = upstreamHost.Value.LoadBalancerState.LBs.filter(function (existingLbData) {
                 return (existingLbData.Name != lbName);
               });
 
-              upstreamHost.Value.LoadBalancerState.push(lbData);
+              upstreamHost.Value.LoadBalancerState.LBs.push(lbData);
 
+              var allLbServerStatusData = _.flatten(upstreamHost.Value.LoadBalancerState.LBs.map(function(lb){ return lb.ServerStatus; }));
+              upstreamHost.Value.LoadBalancerState.State = getActualUpstreamState(allLbServerStatusData);
             });
 
-          }, function error(err) {
-            var message = 'Unable to retrieve data for ' + lb + ': <br/><br/>' + err.data;
-            $scope.$emit('error', { data: message });
-
-            console.log(message);
           });
-
         });
-
+        
+        return $q.all(promises);
       });
     }
 
     function getLBStatusForUpstream(upstreamName, upstreamPort, LBData) {
-      var match = null;
-      LBData.forEach(function (lbUpstream) {
-        if (lbUpstream.name == upstreamName) {
-
-          if (lbUpstream.hosts) {
-            // Filter to only the ports for this slice
-            match = lbUpstream.hosts.filter(function (host) {
-              var port = host.server.split(':')[1];
-              return port == upstreamPort;
-            });
-          }
-
-          return;
-        }
-      });
-
-      return match;
+      var lbUpstream = _.find(LBData, { Name: upstreamName });
+      if (lbUpstream !== undefined && lbUpstream.Hosts !== undefined && _.isEmpty(lbUpstream.Hosts) === false) {
+        // Filter to only the ports for this slice
+        return lbUpstream.Hosts.filter(function (host) {
+          var port = parseInt(host.Server.split(':')[1], 10);
+          return port === upstreamPort;
+        });
+      } else {
+        return [];
+      }
     }
 
     function getActualUpstreamState(lbServerStatusData) {
@@ -276,13 +265,13 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
       var unhealthyCount = 0;
       var state = 'Empty';
 
-      if (lbServerStatusData && lbServerStatusData.length > 0) {
+      if (_.isArray(lbServerStatusData) && lbServerStatusData.length > 0) {
         lbServerStatusData.forEach(function (server) {
-          if (server.state == 'up') { upCount++; }
-
-          if (server.state == 'down') { downCount++; }
-
-          if (server.state == 'unhealthy') { unhealthyCount++; }
+          if (server) {
+            if (server.State == 'up') { upCount++; }
+            if (server.State == 'down') { downCount++; }
+            if (server.State == 'unhealthy') { unhealthyCount++; }
+          }
         });
 
         if (upCount == lbServerStatusData.length) {

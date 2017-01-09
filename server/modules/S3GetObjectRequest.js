@@ -18,14 +18,19 @@ function S3GetObjectRequest(client, parameters) {
       Key: parameters.objectPath,
     };
 
-    client.getObject(request, (error, data) => {
-      if (error) {
+    let promise = client.getObject(request)
+      .promise().then((data) => {
+        return data;
+      }, (error) => {
         let message = `An error has occurred retrieving '${request.Key}' file from '${request.Bucket}' S3 bucket: ${error.message}`;
-        callback(new Error(message));
-      } else {
-        callback(null, data);
-      }
-    });
+        throw new Error(message);
+      });
+
+    if (callback !== undefined) {
+      promise.then((result) => callback(null, result), (error) => callback(error));
+    } else {
+      return promise;
+    }
   };
 }
 

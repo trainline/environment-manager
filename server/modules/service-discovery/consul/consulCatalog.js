@@ -7,32 +7,30 @@ let HttpRequestError = require('modules/errors/HttpRequestError.class');
 let consulClient = require('modules/consul-client');
 let logger = require('modules/logger');
 let _ = require('lodash');
+let assert = require('assert');
 
-function throwHttpError(error) {
-  throw new HttpRequestError(`An error has occurred contacting consul agent: ${error.message}`);
-}
-
-function getAllServices(query) {
-  let environment = query.environment;
+function getAllServices(environment) {
+  let getServiceList = consulClient => consulClient.catalog.service.list();
+  let filterByDeploymentId = list => _.pickBy(list, s => s.some(tag => tag.indexOf('deployment_id:') === 0));
 
   let promiseFactoryMethod = () =>
     createConsulClient(environment)
-      .then(clientInstance => clientInstance.catalog.service.list()).then((list) => {
-        let filteredList = list;
-
-        if (query.server_role !== undefined) {
-          filteredList = _.pickBy(list, tags => _.includes(tags, `server_role:${query.server_role}`));
-        }
-        return filteredList;
-      })
-      .then(list => _.pickBy(list, s => s.some(tag => tag.indexOf('deployment_id:') === 0)))
-      .catch(throwHttpError);
+      .then(getServiceList)
+      .then(filterByDeploymentId)
+      .then(formatServices);
 
   return executeAction(promiseFactoryMethod);
 }
 
-function getService(environment, service) {
-  return executeConsul(environment, clientInstance => clientInstance.catalog.service.nodes(service));
+function getService(environment, serviceQuery) {
+  serviceQuery = `${environment}-${serviceQuery}`;
+  return executeConsul(environment, consulClient => consulClient.catalog.service.nodes(serviceQuery))
+    .then(service => {
+      if (!service.length) return service;
+      service = service[0];
+      service.ServiceTags = unravelTags(service.ServiceTags);
+      return service;
+    })
 }
 
 function getAllNodes(environment) {
@@ -40,16 +38,31 @@ function getAllNodes(environment) {
 }
 
 function getNode(environment, nodeName) {
-  return executeConsul(environment, clientInstance => clientInstance.catalog.node.services(nodeName));
+  assert(nodeName, 'nodeName is required');
+  return executeConsul(environment, consulClient => consulClient.catalog.node.services(nodeName));
 }
 
 function getNodeHealth(environment, nodeName) {
-  return executeConsul(environment, clientInstance => consulClient.health.node(nodeName));
+  assert(nodeName, 'nodeName is required');
+  return executeConsul(environment, consulClient => consulClient.health.node(nodeName));
 }
 
 function executeConsul(environment, fn) {
-  let promiseFactoryMethod = () => createConsulClient(environment).then(fn).catch(throwHttpError);
+  assert(environment);
+  let promiseFactoryMethod = () => createConsulClient(environment).then(fn);
   return executeAction(promiseFactoryMethod);
+}
+
+function formatServices(services) {
+  return _.mapValues(services, unravelTags);
+}
+
+function unravelTags(service) {
+  return service.reduce((val, tag) => {
+    let tagComponents = tag.split(':');
+    val[tagComponents[0]] = tagComponents[1];
+    return val;
+  }, {});
 }
 
 function executeAction(promiseFactoryMethod) {
@@ -72,6 +85,7 @@ function executeAction(promiseFactoryMethod) {
 }
 
 function createConsulClient(environment) {
+  assert(environment);
   return consulClient.create({ environment, promisify: true }).catch(logger.error.bind(logger));
 }
 

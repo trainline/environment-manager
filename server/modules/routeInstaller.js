@@ -18,13 +18,19 @@ function asExpressRouteDescriptor(descriptor) {
   if (!descriptor.allowsAnonymous) {
     let authorizer = descriptor.authorizer || simpleAuthorizer;
 
-    middlewares.push((request, response, next) => authorize(authorizer, request, response, next));
+    middlewares.push((request, response, next) => {
+      if (request.url.indexOf('/v1') === 0) return next();
+
+      return authorize(authorizer, request, response, next);
+    });
   }
 
   // Validation step
   if (validation) {
-    middlewares.push((request, response, next) => {
-      let error = validation(request.url, request.body);
+    middlewares.push(function (request, response, next) {
+      if (request.url.indexOf('/v1') === 0) return next();
+
+      var error = validation(request.url, request.body);
       if (!error) return next();
 
       response.status(400);
@@ -33,7 +39,11 @@ function asExpressRouteDescriptor(descriptor) {
   }
 
   // Action step
-  middlewares.push(action);
+  middlewares.push(function (request, response, next) {
+    if (request.url.indexOf('/v1') === 0) return next();
+
+    action(request, response, next);
+  });
 
   return {
     name: descriptor.$name,

@@ -43,26 +43,7 @@ function* handler(command) {
   }
 
   // Delete item from storage
-  yield resource.delete(params);
-
-  let result = new OperationResult({ deleted: [resourceUri] });
-
-  // NOTE: Ugly...
-  if (command.resource !== 'config/environments') {
-    return result;
-  }
-
-  let childResult = yield sender.sendCommand({
-    command: {
-      name: 'DeleteDynamoResource',
-      resource: 'ops/environments',
-      key: params.key,
-      accountName: command.accountName,
-    },
-    parent: command,
-  });
-
-  return result.add(childResult);
+  return resource.delete(params);
 }
 
 module.exports = co.wrap(handler);

@@ -7,38 +7,32 @@ const amazonClientFactory = require('modules/amazon-client/childAccountClient');
 const AwsError = require('modules/errors/AwsError.class');
 const KeyPairNotFoundError = require('modules/errors/KeyPairNotFoundError.class');
 
-function KeyPairResource(client) {
-  // TODO(filip): promisify client, use chaining
+class KeyPairResource {
 
-  this.get = function (parameters) {
-    return new Promise((resolve, reject) => {
-      let request = {
-        KeyNames: [
-          parameters.keyName,
-        ],
-      };
+  constructor(client) {
+    this.client = client;
+  }
 
-      function getKeyPair(instanceClient) {
-        instanceClient.describeKeyPairs(request, (error, response) => {
-          if (error) {
-            return reject(new AwsError(`An error has occurred describing EC2 key pairs: ${error.message}`));
-          } else if (response.KeyPairs.length) {
-            return resolve(response.KeyPairs[0]);
-          } else {
-            return reject(new KeyPairNotFoundError(`Key pair "${parameters.keyName}" not found.`));
-          }
-        });
+  get({ keyName }) {
+    let self = this;
+    let request = {
+      KeyNames: [ keyName ]
+    };
+
+    return self.client.describeKeyPairs(request).promise().then(function (response) {
+      if (response.KeyPairs.length) {
+        return response.KeyPairs[0];
+      } else {
+        throw new KeyPairNotFoundError(`Key pair "${keyName}" not found.`);
       }
-
-      getKeyPair(client);
+    }, function (error) {
+      throw new AwsError(`An error has occurred describing EC2 key pairs: ${error.message}`);
     });
-  };
+  }
 }
 
 module.exports = {
-  create: parameters => (
-    amazonClientFactory.createEC2Client(parameters.accountName).then(
-      client => new KeyPairResource(client)
-    )
-  ),
+  create: (parameters) => {
+    return amazonClientFactory.createEC2Client(parameters.accountName).then((client) => new KeyPairResource(client));
+  },
 };

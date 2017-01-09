@@ -3,10 +3,11 @@
 'use strict';
 
 let nconf = require('nconf');
-const REQUIRED_VALUES = ['EM_AWS_REGION'];
-const LOGGED_VALUES = ['EM_AWS_REGION', 'EM_AWS_RESOURCE_PREFIX', 'EM_AWS_S3_BUCKET'];
 let fs = require('fs');
-let appVersion = require('package.json').version;
+
+const REQUIRED_VALUES = ['EM_AWS_REGION', 'EM_PACKAGES_BUCKET'];
+const LOGGED_VALUES = ['EM_AWS_REGION', 'EM_AWS_RESOURCE_PREFIX', 'EM_AWS_S3_BUCKET', 'EM_PACKAGES_BUCKET', 'EM_PACKAGES_KEY_PREFIX'];
+const APP_VERSION = require('./version').getVersion();
 
 /**
  * ENV is default but allow argument overrides
@@ -29,10 +30,11 @@ if (profileOverride !== undefined) {
  * Defaults if not previously set via ENV, args or profile
  */
 nconf.defaults({
-  EM_AWS_RESOURCE_PREFIX: '',
-  EM_LOG_LEVEL: 'Debug',
-  EM_AWS_S3_BUCKET: 'S3 Bucket value not set',
-  EM_AWS_S3_KEY: 'S3 Key value not set',
+  'EM_AWS_RESOURCE_PREFIX': '',
+  'EM_LOG_LEVEL': 'Debug',
+  'EM_AWS_S3_BUCKET': 'S3 Bucket value not set',
+  'EM_AWS_S3_KEY': 'S3 Key value not set',
+  'EM_PACKAGES_KEY_PREFIX': 'PACKAGES',
 });
 
 /**
@@ -43,7 +45,7 @@ const useDevSources = nconf.get('DEV_SOURCES') === 'true';
 const publicDir = isProduction || useDevSources ? './dist' : '../client';
 
 nconf.set('IS_PRODUCTION', isProduction);
-nconf.set('APP_VERSION', appVersion);
+nconf.set('APP_VERSION', APP_VERSION);
 nconf.set('PUBLIC_DIR', publicDir);
 
 /**

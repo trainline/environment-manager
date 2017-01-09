@@ -29,8 +29,12 @@ module.exports = [
     send.query(query, request, response);
   }),
   route.get('/:account/asgs')
-  .withDocs({ description: 'Auto Scaling Group', perAccount: true, verb: 'scan', tags: ['Auto Scaling Groups'] }).do((request, response) => {
-    let query = {
+  .withDocs({ description: 'Auto Scaling Group', perAccount: true, verb: 'scan', tags: ['Auto Scaling Groups'] }).do((request, response, next) => {
+    if (request.params.account === 'v1') {
+      return next();
+    }
+
+    var query = {
       name: 'ScanAutoScalingGroups',
       accountName: request.params.account,
     };
@@ -42,8 +46,9 @@ module.exports = [
     description: 'Auto Scaling Group',
     perAccount: true,
     tags: ['Auto Scaling Groups'],
-  }).do((request, response) => {
-    let query = {
+  }).do((request, response, next) => {
+
+    var query = {
       name: 'GetAutoScalingGroup',
       accountName: request.params.account,
       autoScalingGroupName: request.params.name,
@@ -81,8 +86,8 @@ module.exports = [
     }
 
     return null;
-  }).do((request, response) => {
-    let command = {
+  }).do((request, response, next) => {
+    var command = {
       name: 'SetAutoScalingGroupSize',
       accountName: request.params.account,
       autoScalingGroupName: request.params.name,

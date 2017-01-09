@@ -2,57 +2,68 @@
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('PermissionController',
-  function ($scope, $routeParams, $location, $q, resources, cachedResources, modal, permissionsValidation) {
+  function ($scope, $routeParams, $http, $location, $q, resources, cachedResources, modal, permissionsValidation) {
+    var vm = this;
 
     var RETURN_PATH = '/config/permissions';
 
     function init() {
 
       var name = $routeParams['member'];
-      $scope.EditMode = name.toLowerCase() !== 'new';
+      vm.editMode = name.toLowerCase() !== 'new';
 
-      var access = $scope.EditMode ? 'PUT' : 'POST';
-      var resource = $scope.EditMode ? name : '*';
-      $scope.userHasPermission = user.hasPermission({ access: access, resource: '/config/permissions/' + resource });
+      var access = vm.editMode ? 'PUT' : 'POST';
+      var resource = vm.editMode ? name : '*';
+      vm.userHasPermission = user.hasPermission({ access: access, resource: '/config/permissions/' + resource });
 
-      if ($scope.EditMode) {
+      if (vm.editMode) {
         readItem(name);
       } else {
-        $scope.member = {};
+        vm.member = {};
       }
 
     }
 
-    $scope.ValidateJson = permissionsValidation;
+    $scope.validateJson = permissionsValidation;
 
-    $scope.canUser = function () {
-      return $scope.userHasPermission;
+    vm.canUser = function () {
+      return vm.userHasPermission;
     };
 
-    $scope.Cancel = navigateToList;
+    vm.cancel = navigateToList;
 
-    $scope.Save = function () {
-      var saveMethod = $scope.EditMode ? resources.config.permissions.put : resources.config.permissions.post;
-      $scope.member.Permissions = JSON.parse($scope.permissions);
-      var params = {
-        key: $scope.member.Name,
-        expectedVersion: $scope.Version,
-        data: $scope.member,
-      };
-      saveMethod(params).then(function () {
+    vm.save = function () {
+      vm.member.Permissions = JSON.parse(vm.permissions);
+
+      var saveMethod = vm.editMode ? 'put' : 'post';
+      var url = '/api/v1/config/permissions';
+      var data;
+      if (saveMethod === 'put') {
+        url += '/' + vm.member.Name;
+        data = vm.member.Permissions;
+      } else {
+        data = vm.member;
+      }
+      
+      $http({
+        method: saveMethod,
+        url: url,
+        data: data,
+        headers: { 'expected-version': vm.version }
+      }).then(function() {
         navigateToList();
       });
     };
 
     function readItem(name) {
-      resources.config.permissions.get({ key: name }).then(function (data) {
-        $scope.DataFound = true;
-        $scope.member = data;
-        $scope.permissions = JSON.stringify(data.Permissions, null, 2);
-        $scope.Version = data.Version;
+      $http.get('/api/v1/config/permissions/' + name).then(function (response) {
+        var data = response.data;
+        vm.dataFound = true;
+        vm.member = data;
+        vm.permissions = JSON.stringify(data.Permissions, null, 2);
+        vm.version = data.Version;
       }, function (err) {
-
-        $scope.DataFound = false;
+        vm.dataFound = false;
       });
     }
 

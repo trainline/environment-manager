@@ -2,14 +2,27 @@
 
 'use strict';
 
-let consulMacro = require('./consulMacroManager');
-let consulKVstore = require('./keyValueStore');
+let {
+  setInstanceMaintenanceMode
+} = require('./consulMacroManager');
+
+let {
+  getTargetState,
+  setTargetState,
+  removeTargetState,
+  removeRuntimeServerRoleTargetState,
+  getAllServiceTargets,
+  getServiceDeploymentCause,
+  getInstanceServiceDeploymentInfo
+} = require('./keyValueStore');
 
 module.exports = {
-  getTargetState: consulKVstore.getTargetState,
-  setTargetState: consulKVstore.setTargetState,
-  removeTargetState: consulKVstore.removeTargetState,
-  setInstanceMaintenanceMode: consulMacro.setInstanceMaintenanceMode,
-  getAllServiceTargets: consulKVstore.getAllServiceTargets,
-  getServiceDeploymentCause: consulKVstore.getServiceDeploymentCause,
+  getTargetState,
+  setTargetState,
+  removeTargetState,
+  removeRuntimeServerRoleTargetState,
+  setInstanceMaintenanceMode,
+  getAllServiceTargets,
+  getServiceDeploymentCause,
+  getInstanceServiceDeploymentInfo
 };

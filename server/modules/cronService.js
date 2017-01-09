@@ -254,7 +254,15 @@
     }
     if (!ScheduleTagString) return null;
 
-    let Schedule = ScheduleTagString.toUpperCase().trim().replace(';', '');
+    function ScheduleInterpreter(ScheduleTagString, datetime) {
+        if (!datetime) {
+    			var now = new Date();
+    			var now_utc = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
+    			datetime = now_utc;
+    		}
+        if (!ScheduleTagString) return null;
+
+        var Schedule = ScheduleTagString.toUpperCase().trim().replace(';', '');
 
     if (Schedule.match(/^ON6$/)) Schedule = 'START: 30 6 * * * * STOP: 30 18 * * * *';
     if (Schedule.match(/^247$/)) Schedule = 'START: * * * * * *';

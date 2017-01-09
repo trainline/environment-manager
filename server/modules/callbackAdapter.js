@@ -2,8 +2,6 @@
 
 'use strict';
 
-// TODO(filip): replace this with proper error handling middleware
-
 function getStatusCode(error) {
   if (error.name !== undefined) {
     switch (error.name.replace('.class', '')) {
@@ -50,9 +48,9 @@ function callbackToExpress(req, res) {
 function promiseToExpress(req, res) {
   let callback = callbackToExpress(req, res);
   return function (promise) {
-    promise.then(result => callback(null, result), err => callback(err));
+    promise.then((result) => callback(null, result), (err) => callback(err));
   };
-}
+} 
 
 module.exports = {
   callbackToExpress,

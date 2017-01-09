@@ -22,8 +22,8 @@ function getInstanceByDescriptor(resourceDescriptor, parameters) {
 }
 
 function getInstanceByName(resourceName, parameters) {
-  let resourceDescriptor = resourceDescriptorProvider.get(resourceName);
-  if (resourceDescriptor !== null) return getInstanceByDescriptor(resourceDescriptor, parameters);
+  var resourceDescriptor = resourceDescriptorProvider.get(resourceName);
+  if (resourceDescriptor !== null && resourceDescriptor !== undefined) return getInstanceByDescriptor(resourceDescriptor, parameters);
   else return Promise.reject(new Error(`No resource found with name "${resourceName}".`));
 }
 

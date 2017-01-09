@@ -33,10 +33,16 @@ function getModifyPermissionsForEnvironment(environmentName, user) {
   });
 }
 
-// eslint-disable-next-line arrow-body-style
 exports.getRules = (request) => {
-  return getModifyPermissionsForEnvironment(request.params.key, request.user).then(envPermissions => (
-    [{
+  // TODO(Filip): simplify after removing old API
+  let environmentName = request.params.key || request.params.environment;
+  if (environmentName === undefined) {
+    // Environment is in the body
+    let body = request.params.body || request.body;
+    environmentName = body.EnvironmentName || body.Value.EnvironmentName
+  }
+  return getModifyPermissionsForEnvironment(environmentName, request.user).then(envPermissions => {
+    return [{
       resource: request.url.replace(/\/+$/, ''),
       access: request.method,
       clusters: [envPermissions.cluster],

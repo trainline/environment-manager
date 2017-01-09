@@ -17,7 +17,7 @@ function InstanceResource(client) {
     if (!query) return {};
 
     // {a:1, b:2} => [{Name:'a', Values:[1]}, {Name:'b', Values:[2]}]
-    let Filters = _.toPairs(query).map(q => ({ Name: q[0], Values: _.concat(q[1]) }));
+    let Filters = _.toPairs(query).map(q => ({ Name: q[0], Values: _.castArray(q[1]) }));
     return { Filters };
   }
 

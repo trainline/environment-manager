@@ -7,16 +7,17 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
     asg: '<',
     asgState: '<',
     environment: '<',
-    role: '<'
+    role: '<',
+    refresh: '&',
+    closeModal: '&'
   },
   controllerAs: 'vm',
-  controller: function (roles, $uibModal, modal, Deployment, targetStateService) {
+  controller: function (roles, $q, $uibModal, modal, Deployment, targetStateService) {
     var vm = this;
     vm.servicesList = vm.asgState.Services;
-    vm.helpTextTemplate = 'app/environments/dialogs/asg/popovers/help-disable-service.html';
     vm.allowServiceDisabling = window.FEATURE_DISABLE_SERVICE;
 
-    vm.servicesList = vm.servicesList.map(function(service) {
+    vm.servicesList = vm.servicesList.map(function (service) {
       service.installationEnabled = service.Action !== 'Ignore';
       return service;
     });
@@ -26,7 +27,7 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
         $uibModal.open({
           templateUrl: '/app/operations/deployments/ops-deployment-details-modal.html',
           windowClass: 'deployment-summary',
-          controller: 'DeploymentDetailsModalController',
+          controller: 'DeploymentDetailsModalController as vm',
           size: 'lg',
           resolve: {
             deployment: function () {
@@ -48,17 +49,50 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
           asgState: function() {
             return vm.asgState;
           },
-          serviceName: function () {
-            return service.Name;
+          service: function () {
+            return service;
           },
         },
       });
     };
 
+    function checkIfAllServicesDisabled() {
+      if (_.every(vm.servicesList, { Action: 'Ignore' })) {
+        modal.confirmation({
+          title: 'Delete Auto Scaling Group?',
+          message: 'There are no longer any active services for this ASG. Would you like ' +
+            'to delete the ASG and it\'s associated Launch Configuration?',
+          severity: 'Warning',
+        }).then(function () {
+          vm.asg.delete().then(function () {
+            vm.closeModal();
+          });
+        });
+      }
+    }
+
     vm.setDeploymentStatus = function (service) {
       var enableService = service.installationEnabled;
-      targetStateService.changeDeploymentStatus(enableService, service, vm.role, vm.environment).then(function(result) {
-        service.Action = result.Action;
+      var promise = $q.when();
+      if (enableService === false) {
+        promise = modal.confirmation({
+          title: 'Disable service deployment?',
+          message: 'This will prevent service <strong>' + service.Name + (service.Slice === 'none' ? '' : service.Slice) +
+            ' version ' + service.Version + '</strong> from ' +
+            'being deployed to new instances from now on. It will NOT affect any existing machines.' +
+            'You can use this option to effectively uninstall this service by scaling the ASG to create a new set of servers.<br/>' +
+            'Are you sure you want to continue?',
+          severity: 'Warning',
+        });
+      }
+      promise.then(function () {
+        targetStateService.changeDeploymentAction(service.DeploymentId, enableService).then(function (result) {
+          service.Action = result.Action;
+          checkIfAllServicesDisabled();
+          vm.refresh();
+        });
+      }, function () {
+        service.installationEnabled = true;
       });
     };
   }

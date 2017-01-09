@@ -6,9 +6,8 @@ let co = require('co');
 let serviceTargets = require('modules/service-targets');
 let Enums = require('Enums');
 
-const SERVICE_ACTION = Enums.serviceAction.NAME;
-const SERVICE_INSTALL = Enums.serviceAction.INSTALL;
-const SERVICE_IGNORE = Enums.serviceAction.IGNORE;
+const SERVICE_INSTALL = Enums.ServiceAction.INSTALL;
+const SERVICE_IGNORE = Enums.ServiceAction.IGNORE;
 
 function* ToggleTargetStatus(command) {
   let environment = command.environment;
@@ -19,14 +18,12 @@ function* ToggleTargetStatus(command) {
   let key = `environments/${environment}/roles/${serverRole}/services/${serviceName}/${slice}`;
   let state = yield serviceTargets.getTargetState(environment, { key });
   let service = state.value;
-  let previousStatus = {}.hasOwnProperty.call(service, SERVICE_ACTION) ? service[SERVICE_ACTION] : SERVICE_INSTALL;
+  let previousStatus = service['Action'] || SERVICE_INSTALL;
 
-  service[SERVICE_ACTION] = enabled ? SERVICE_INSTALL : SERVICE_IGNORE;
+  service['Action'] = enabled ? SERVICE_INSTALL : SERVICE_IGNORE;
 
   try {
-    // eslint-disable-next-line no-unused-vars
     let result = yield serviceTargets.setTargetState(environment, { key, value: service });
-    // It's better to assign the result and do nothing than have a non-assignment expression
     return service;
   } catch (error) {
     throw new Error(

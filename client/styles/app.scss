@@ -7,7 +7,7 @@
  * `gulp serve` to start gulp development workflow with style watchers
  */
 
-body { padding: 15px; }
+body { padding: 15px; min-width: 1200px; }
 h1 { font-size: 1.9em; }
 h2 { font-size: 1.4em; margin-top: 10px; }
 h3 { font-size: 1.2em; margin-top: 10px; }
@@ -73,6 +73,16 @@ a.active { font-weight: bold; }
 label.nonbold { font-weight: normal; }
 label.nowrap { white-space:nowrap; }
 label.info { font-weight: normal; color: #555; }
+
+.btn-highlight {
+  box-shadow: 0px 0px 7px 1px red;
+}
+
+form.asg-launch-configuration.ng-dirty {
+  .btn.submit {
+    @extend .btn-highlight;
+  }
+}
 
 button { margin-right: 10px; }
 button.left { float:left; margin-left: 0px; margin-right: 10px; }
@@ -171,7 +181,7 @@ td.actions-button a { color: inherit; }
 /* Deployment status page */
 .status-success { color: green; }
 .status-in-progress { color: blue; }
-.status-failed { color: rgb(169, 68, 66); }
+.status-failed, .status-Failed { color: rgb(169, 68, 66); }
 .error-description { max-height: 200px; }
 
 /* Config Deployment Maps page */
@@ -236,7 +246,6 @@ input[type=number].form-control.inline { width: 90px; }
 
 #InfrastructureSettingsTab label { width: 180px; }
 #InfrastructureSettingsTab label.inline { width: auto; }
-
 
 /* Config Upstreams page */
 #upstreams {
@@ -384,7 +393,7 @@ form#Cluster label { width: 180px; }
 
 /* Audit Compare */
 json-diff-patch > pre { overflow-y: scroll; }
-.compare-overview > pre { max-height: 150px; }
+.compare-overview > pre { max-height: 150px; width: 500px }
 .compare-detail > pre { max-height: 550px; }
 
 
@@ -411,22 +420,20 @@ json-diff-patch > pre { overflow-y: scroll; }
   }
 }
 
-.compare-page {
-  .service-cell {
-    display: inline-block;
-  }
+.service-cell {
+  display: inline-block;
+}
 
-  .service-hover-table {
-    margin: 0px;
-  }
+.service-hover-table {
+  margin: 0px;
+}
 
-  .service-hover-table th {
-    border-top: none;
-  }
+.service-hover-table th {
+  border-top: none;
+}
 
-  .popover {
-    max-width: 600px;
-  }
+.popover {
+  max-width: 600px;
 }
 
 /* OPERATION SECTION */
@@ -570,10 +577,33 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
 
 /* Deployment History */
 
+.deployments-instances {
+  .table .table {
+    tr:first-child td {
+      border-top: none;
+    }
+
+    td {
+      padding: 2px;
+    }
+  }
+}
+
 .loading {
   position: absolute;
   right: 20px;
   top: 15px;
+}
+
+.glyphicon-refresh {
+  cursor: pointer;
+}
+
+.cancel-deployment.btn {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  color: #d43f3a;
 }
 
 .deployment-summary {
@@ -613,10 +643,6 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
     margin-bottom: 20px;
   }
 
-  .glyphicon-refresh {
-    cursor: pointer;
-  }
-
   thead tr th {
     padding-bottom: 5px;
   }
@@ -642,7 +668,7 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
   color: green
 }
 
-.status-failed {
+.status-failed, .status-cancelled {
   color: rgb(169, 68, 66);
 }
 
@@ -684,7 +710,6 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
 
 .help-icon {
   color: #858585;
-  margin-left: 12px;
 }
 
 #DeploymentHistory .node-list {
@@ -719,4 +744,81 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
   display: block;
   margin-top: 5px;
   margin-bottom: 10px;
+}
+
+.region-visualisation {
+
+  overflow: auto;
+  display: flex;
+  padding-top: 3px;
+
+  .az {
+
+    display: flex;
+
+    .az-container {
+
+      float: left;
+      border: 1px solid;
+      border-top: 4px solid; 
+      border-radius: 4px;
+      margin-right: 10px;
+      width: 220px;
+      border-color: #ccc;
+
+      &.active {
+        border-color: #337ab7;
+      }
+
+      .az-name {
+        color: white;
+        text-align: center;
+        font-weight: bold;
+        padding-bottom: 4px;
+        background-color: #ccc;
+      }
+
+      &.active > .az-name {
+        background-color: #337ab7;
+      }
+
+      .az-content {
+
+        padding: 10px 10px 5px 10px;
+
+        .az-not-in-use {
+          text-align: center;
+          color: #ccc;
+        }
+
+        .node {
+
+          border: 1px solid #ccc;
+          text-align: center;
+          padding: 5px;
+          margin-bottom: 10px;
+
+          &.protected {
+            color: #555;
+            border-color: #555;
+          }
+
+          &.old {
+            color: #aa5533;
+            border-color: #aa5533;
+          }
+
+          .glyphicon-warning-sign {
+            color: #aa5533;
+            margin-right: 2px;
+          }
+
+        }
+
+      }
+
+    }
+
+  }
+
 }

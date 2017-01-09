@@ -35,13 +35,13 @@ angular.module('EnvironmentManager.configuration').controller('AccountsControlle
     };
 
     vm.loadData = function () {
-      cachedResources.config.awsAccounts.all().then(function (data) {
+      cachedResources.config.accounts.all().then(function (data) {
         updateAccounts(data)
       });
     };
 
     vm.refreshData = function () {
-      cachedResources.config.awsAccounts.flush();
+      cachedResources.config.accounts.flush();
       vm.loadData();
     };
 
@@ -62,7 +62,7 @@ angular.module('EnvironmentManager.configuration').controller('AccountsControlle
     }
 
     function removeAccount(account) {
-      $http.delete('/api/aws/account', { params: {accountNumber: account.AccountNumber} }).then(function () {
+      $http.delete('/api/v1/config/accounts/' + account.AccountNumber).then(function () {
         vm.refreshData();
       });
     }

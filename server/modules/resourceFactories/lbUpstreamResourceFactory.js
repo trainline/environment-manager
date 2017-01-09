@@ -7,36 +7,38 @@ let amazonClientFactory = require('modules/amazon-client/childAccountClient');
 let DynamoTableResource = require('./DynamoTableResource');
 let _ = require('lodash');
 
+
+function fromNativeDynamoItem(item) {
+  if (!item.value) return item;
+
+  let itemClone = _.clone(item);
+
+  itemClone.Value = utils.safeParseJSON(itemClone.value);
+  delete itemClone.value;
+
+  return itemClone;
+}
+
+function toNativeDynamoItem(item) {
+  if (!item.Value) return item;
+
+  let itemClone = _.clone(item);
+
+  itemClone.value = JSON.stringify(itemClone.Value);
+  delete itemClone.Value;
+
+  return itemClone;
+}
+
 function LBUpstreamTableResource(config, client) {
   this.client = client;
 
   let $base = new DynamoTableResource(config, client);
 
-  function fromNativeDynamoItem(item) {
-    if (!item.value) return item;
-
-    let itemClone = _.clone(item);
-
-    itemClone.Value = utils.safeParseJSON(itemClone.value);
-    delete itemClone.value;
-
-    return itemClone;
-  }
-
-  function toNativeDynamoItem(item) {
-    if (!item.Value) return item;
-
-    let itemClone = _.clone(item);
-
-    itemClone.value = JSON.stringify(itemClone.Value);
-    delete itemClone.Value;
-
-    return itemClone;
-  }
-
-  this.getKeyName = $base.getKeyName;
-  this.getRangeName = $base.getRangeName;
-  this.isAuditingEnabled = $base.isAuditingEnabled;
+  this.getKeyName = $base.getKeyName.bind($base);
+  this.getRangeName = $base.getRangeName.bind($base);
+  this.isAuditingEnabled = $base.isAuditingEnabled.bind($base);
+  this._buildPrimaryKey = $base._buildPrimaryKey.bind($base);
 
   this.get = function (params) {
     return $base.get(params).then(item => fromNativeDynamoItem(item));
@@ -56,8 +58,9 @@ function LBUpstreamTableResource(config, client) {
     return $base.post(params);
   };
 
-  this.delete = $base.delete;
+  this.delete = $base.delete.bind($base);
 }
+
 
 module.exports = {
   canCreate: resourceDescriptor =>
@@ -67,18 +70,17 @@ module.exports = {
     resourceDescriptor.name.toLowerCase() === 'config/lbupstream',
 
   create: (resourceDescriptor, parameters) =>
-  amazonClientFactory.createDynamoClient(parameters.accountName).then(
-    (client) => {
-      let config = {
-        resourceName: resourceDescriptor.name,
-        table: resourceDescriptor.tableName,
-        key: resourceDescriptor.keyName,
-        range: resourceDescriptor.rangeName,
-        auditingEnabled: resourceDescriptor.enableAuditing,
-        dateField: resourceDescriptor.dateField,
-      };
+  amazonClientFactory.createDynamoClient(parameters.accountName).then((client) => {
 
-      return new LBUpstreamTableResource(config, client);
-    }),
+    let config = {
+      resourceName:    resourceDescriptor.name,
+      table:           resourceDescriptor.tableName,
+      key:             resourceDescriptor.keyName,
+      range:           resourceDescriptor.rangeName,
+      auditingEnabled: resourceDescriptor.enableAuditing,
+      dateField:       resourceDescriptor.dateField,
+    };
 
+    return new LBUpstreamTableResource(config, client);
+  }),
 };

@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ManageEnvironmentScheduleController',
-  function ($rootScope, $routeParams, $location, $q, modal, resources, cachedResources, configValidation, cron) {
+  function ($rootScope, $routeParams, $location, $q, modal, resources, $http, cachedResources, configValidation, cron, Environment) {
 
     var PROTECTED_ACTION = 'SCHEDULE_ENVIRONMENT';
 
@@ -24,8 +24,8 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       var environmentName = GetActiveEnvironment();
       vm.Environment.EnvironmentName = environmentName;
 
-      resources.environment(environmentName).isProtectedAgainstAction(PROTECTED_ACTION).then(function(isProtected) {
-        vm.schedulingProtected = isProtected;
+      $http.get('/api/v1/environments/' + environmentName + '/protected', { params: { action: PROTECTED_ACTION } }).then(function(result) {
+        vm.schedulingProtected = result.data.isProtected;
         vm.Refresh();
       });
     }
@@ -38,8 +38,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
         vm.OperationsVersion = operations.Version;
 
         var scheduleAction = GetScheduleAction(operations.Value);
-        vm.Operations.getScheduleAction = function () {
-          return scheduleAction; };
+        vm.Operations.getScheduleAction = function () { return scheduleAction; };
 
         vm.NewSchedule = {
           DefaultSchedule: operations.Value.DefaultSchedule,
@@ -47,7 +46,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
         };
       };
 
-      resources.ops.environments.get({ key: vm.Environment.EnvironmentName })
+      Environment.getSchedule(vm.Environment.EnvironmentName)
         .then(function (operations) {
           assignToTheScope(operations);
           vm.DataFound = true;
@@ -92,14 +91,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       vm.Operations.Value.ManualScheduleUp = vm.NewSchedule.Type == 'On';
       vm.Operations.Value.DefaultSchedule = vm.NewSchedule.DefaultSchedule;
 
-      var params = {
-        key: vm.Operations.EnvironmentName,
-        expectedVersion: vm.OperationsVersion,
-        data: {
-          Value: vm.Operations.Value,
-        },
-      };
-      resources.ops.environments.put(params).then(function () {
+      Environment.putSchedule(vm.Operations.EnvironmentName, vm.OperationsVersion, vm.Operations.Value).then(function () {
         cachedResources.config.environments.flush();
         modal.information({
           title: 'Environment Schedule Updated',

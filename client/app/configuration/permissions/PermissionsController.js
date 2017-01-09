@@ -2,45 +2,47 @@
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('PermissionsController',
-  function ($scope, $routeParams, $location, resources, cachedResources, modal) {
+  function ($routeParams, $location, resources, cachedResources, modal, $http) {
+    var vm = this;
 
     function init() {
-      $scope.canPost = user.hasPermission({ access: 'POST', resource: '/config/permissions/*' });
-      $scope.Refresh();
+      vm.canPost = user.hasPermission({ access: 'POST', resource: '/config/permissions/*' });
+      vm.refresh();
     }
 
-    $scope.Refresh = function () {
-      resources.config.permissions.all().then(function (members) {
-        $scope.members = members.sort(function (a, b) {
-          var nameA = a.Name.toLowerCase(),
-            nameB = b.Name.toLowerCase();
+    vm.refresh = function () {
+      $http.get('/api/v1/config/permissions').then(function (response) {
+        var members = response.data;
+        vm.members = members.sort(function (a, b) {
+          var nameA = a.Name.toLowerCase();
+          var nameB = b.Name.toLowerCase();
           if (nameA < nameB) return -1;
           if (nameA > nameB) return 1;
           return 0;
         });
 
-        $scope.canDelete = false;
+        vm.canDelete = false;
         for (var i in members) {
           var member = members[i];
           var canDelete = user.hasPermission({ access: 'DELETE', resource: '/config/permissions/' + member.Name });
           if (canDelete) {
-            $scope.canDelete = true;
+            vm.canDelete = true;
             break;
           }
         };
       });
     };
 
-    $scope.canUser = function (action) {
-      if (action == 'post') return $scope.canPost;
-      if (action == 'delete') return $scope.canDelete;
+    vm.canUser = function (action) {
+      if (action == 'post') return vm.canPost;
+      if (action == 'delete') return vm.canDelete;
     };
 
-    $scope.New = function () {
+    vm.new = function () {
       $location.path('/config/permissions/new');
     };
 
-    $scope.Delete = function (member) {
+    vm.delete = function (member) {
       var memberName = member.Name;
 
       modal.confirmation({
@@ -50,9 +52,8 @@ angular.module('EnvironmentManager.configuration').controller('PermissionsContro
         severity: 'Danger',
         details: ["NOTE: This will delete all permissions assignment for '" + memberName + "'. It will not delete '" + memberName + "' from the directory."],
       }).then(function () {
-        var params = { key: memberName };
-        resources.config.permissions.delete(params).then(function () {
-          $scope.Refresh();
+        $http.delete('/api/v1/config/permissions/' + memberName).then(function () {
+          vm.refresh();
         });
       });
     };

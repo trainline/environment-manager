@@ -12,6 +12,7 @@ let sender = require('modules/sender');
 let SCHEDULE_PATTERN = /^(NOSCHEDULE\s+)?((247|OFF|on|on6)|(((Start|Stop): [\d\,\-\*\\]+ [\d\,\-\*\\]+ [\d\,\-\*\\\w]+ [\d\,\-\*\\\w]+ [\d\,\-\*\\\w]+\s?[\d\,\-\*]*)(\s*\;?\s+|$))+)?(\s*NOSCHEDULE)?$/i;
 let InvalidOperationError = require('modules/errors/InvalidOperationError.class');
 let ec2InstanceClientFactory = require('modules/clientFactories/ec2InstanceClientFactory');
+let AutoScalingGroup = require('models/AutoScalingGroup');
 
 module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
   assertContract(command, 'command', {
@@ -27,11 +28,14 @@ module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
     let accountName = command.accountName;
     let autoScalingGroupName = command.autoScalingGroupName;
     let propagateToInstances = command.propagateToInstances;
-    let scalingSchedule;
 
+    let scalingSchedule;
     if (_.isArray(command.schedule)) {
-      scalingSchedule = command.schedule;
-      schedule = 'NOSCHEDULE';
+      return Promise.reject(new InvalidOperationError(
+        'Scheduled scaling has been temporarily disabled. Please contact Platform Development for more information'
+      ));
+      /*scalingSchedule = command.schedule;
+      schedule = 'NOSCHEDULE';*/
     } else {
       scalingSchedule = [];
       schedule = command.schedule;
@@ -48,7 +52,7 @@ module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
       ChangedInstances: undefined,
     };
 
-    result.ChangedAutoScalingGroups = setAutoScalingGroupSchedule(
+    result.ChangedAutoScalingGroups = yield setAutoScalingGroupSchedule(
       autoScalingGroupName,
       schedule,
       scalingSchedule,
@@ -56,32 +60,23 @@ module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
     );
 
     if (propagateToInstances) {
-      let autoScalingGroup = yield getAutoScalingGroupByName(autoScalingGroupName, accountName);
+      let autoScalingGroup = yield AutoScalingGroup.getByName(accountName, autoScalingGroupName);
       let instanceIds = autoScalingGroup.Instances.map(instance => instance.InstanceId);
 
-      result.ChangedInstances = setEC2InstancesScheduleTag(
+      result.ChangedInstances = yield setEC2InstancesScheduleTag(
         instanceIds,
         schedule,
         accountName
       );
     }
 
-    return yield result;
+    return result;
   });
 };
 
-function getAutoScalingGroupByName(autoScalingGroupName, accountName) {
-  let query = {
-    name: 'GetAutoScalingGroup',
-    accountName,
-    autoScalingGroupName,
-  };
-
-  return sender.sendQuery({ query });
-}
-
 function setAutoScalingGroupSchedule(autoScalingGroupName, schedule, scalingSchedule, accountName) {
-  return autoScalingGroupClientFactory.create({ accountName }).then((client) => {
+  return autoScalingGroupClientFactory.create({ accountName }).then(client => {
+
     let setScheduleTask = setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, scalingSchedule, accountName);
     let setTagsTask = setAutoScalingGroupScheduleTag(client, autoScalingGroupName, schedule, accountName);
 
@@ -103,8 +98,11 @@ function setAutoScalingGroupScheduleTag(client, autoScalingGroupName, schedule, 
 
 function setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, newScheduledActions, accountName) {
   return co(function* () {
+    
     let existingScheduledActions = yield getScheduledActions(client, autoScalingGroupName);
-    yield existingScheduledActions.map(action => deleteScheduledAction(client, action));
+    yield existingScheduledActions.map(action => {
+      return deleteScheduledAction(client, action);
+    });
 
     if (!(newScheduledActions instanceof Array)) return Promise.resolve();
 
@@ -117,7 +115,7 @@ function setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, newSch
         DesiredCapacity: action.DesiredCapacity,
         Recurrence: action.Recurrence,
       };
-      return createScheduledAction(client, namedAction);
+      return client.createScheduledAction(namedAction);
     });
   });
 }
@@ -136,11 +134,6 @@ function deleteScheduledAction(client, action) {
   };
   return client.deleteScheduledAction(parameters);
 }
-
-function createScheduledAction(client, action) {
-  return client.createScheduledAction(action);
-}
-
 
 function setEC2InstancesScheduleTag(instanceIds, schedule, accountName) {
   if (!instanceIds.length) return Promise.resolve();

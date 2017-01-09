@@ -15,6 +15,7 @@ module.exports = {
   createIAMClient: createClientWithRole(AWS.IAM),
   createS3Client: createClientWithRole(AWS.S3),
   createSNSClient: createClientWithRole(AWS.SNS),
+  assumeRole
 };
 
 function createClientWithRole(ClientType) {
@@ -30,18 +31,21 @@ function createClientWithRole(ClientType) {
 }
 
 function getCredentials(roleARN) {
+  return assumeRole(roleARN).then(response =>
+    new AWS.Credentials(
+      response.Credentials.AccessKeyId,
+      response.Credentials.SecretAccessKey,
+      response.Credentials.SessionToken
+    )
+  );
+}
+
+function assumeRole(roleARN) {
   let stsClient = new AWS.STS();
   let stsParameters = {
     RoleArn: roleARN,
     RoleSessionName: guid.v1(),
   };
 
-  return stsClient.assumeRole(stsParameters).promise()
-    .then(response =>
-      new AWS.Credentials(
-        response.Credentials.AccessKeyId,
-        response.Credentials.SecretAccessKey,
-        response.Credentials.SessionToken
-    )
-  );
+  return stsClient.assumeRole(stsParameters).promise();
 }

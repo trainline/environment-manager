@@ -2,10 +2,9 @@
 
 'use strict';
 
-let resourceProvider = require('modules/resourceProvider');
-
 module.exports = {
-  create(parameters) {
+  create: function (parameters) {
+    let resourceProvider = require('modules/resourceProvider');
     return resourceProvider.getInstanceByName('instances', parameters);
   },
 };

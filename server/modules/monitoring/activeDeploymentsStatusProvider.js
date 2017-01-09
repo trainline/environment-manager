@@ -170,7 +170,9 @@ function getExpectedNodesIdByDeployment(deployment) {
 
     try {
       let autoScalingGroup = yield sender.sendQuery({ query });
-      let nodeIds = autoScalingGroup.Instances.map(instance => instance.InstanceId);
+      let nodeIds = autoScalingGroup.Instances
+        .filter(instance => instance.LifecycleState === 'InService')
+        .map(instance => instance.InstanceId);
       return nodeIds;
     } catch (err) {
       logger.error('Couldn\'t find AutoScalingGroup - it\'s not in cached array?');

@@ -2,7 +2,7 @@
 
 'use strict';
 
-﻿module.exports = {
+module.exports = {
   name: 'launchconfig',
   type: 'launchconfig',
   perAccount: true,

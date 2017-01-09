@@ -13,6 +13,7 @@
   "nugetRootUrl": "http://nuget-artifactory-url.com",
   "content": {
     "links": {
+      "SCALING_EXPLANATION": "https://explanation-of-scaling-for-asg-refresh",
       "LIST_OF_IMAGES": "http://link to documentation / list of available AWS AMIs",
       "DYNAMO_CONFIG": "http://explanation-of-dynamo-config-potentially-on-environment-manager-page",
       "SECURITY_ZONES": "http://link-to-security-zones-info",

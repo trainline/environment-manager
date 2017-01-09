@@ -10,6 +10,7 @@ let consulClient = require('modules/consul-client');
 let logger = require('modules/logger');
 let retry = require('retry');
 let _ = require('lodash');
+let Enums = require('Enums');
 
 function encodeValue(value) {
   if (!value) return null;
@@ -32,30 +33,45 @@ function asKeyValuePair(item) {
 function getTargetState(environment, parameters) {
   assert(parameters, 'Expected "parameters" not to be null or empty.');
 
-  let promiseFactoryMethod = () => new Promise((resolve, reject) => {
-    createConsulClient(environment).then((clientInstance) => {
-      clientInstance.kv.get({ key: parameters.key, recurse: parameters.recurse }, (error, result) => {
-        if (error) {
-          return reject(new HttpRequestError(`An error has occurred contacting consul agent: ${error.message}`));
-        }
+  let promiseFactoryMethod = () => {
+    return createConsulClient(environment).then(consulClient => {
+      return consulClient.kv.get({ key: parameters.key, recurse: parameters.recurse }).catch((error) => {
+        throw new HttpRequestError(`An error has occurred contacting consul agent: ${error.message}`);
+      }).then((result) => {
         if (parameters.recurse) {
           let data = result ? result.map(asKeyValuePair) : [];
-          return resolve(data);
+          return data;
         }
         if (result) {
-          return resolve(asKeyValuePair(result));
+          return asKeyValuePair(result);
         }
-        return reject(new ResourceNotFoundError(`Key "${parameters.key}" in Consul key/value storage has not been found.`));
-      });
+        throw new ResourceNotFoundError(`Key "${parameters.key}" in Consul key/value storage has not been found.`);
+      })
     });
-  });
+  }
 
   return executeAction(promiseFactoryMethod);
 }
 
 function getAllServiceTargets(environmentName, runtimeServerRole) {
+  assert(runtimeServerRole, 'runTimeServerRole needs to be defined');
+  assert(environmentName, 'environmentName needs to be defined');
   let key = `environments/${environmentName}/roles/${runtimeServerRole}/services`;
-  return getTargetState(environmentName, { key, recurse: true }).then(data => _.map(data, 'value'));
+  return getTargetState(environmentName, { key, recurse: true }).then(data => _.map(data, 'value'))
+    .then((data) => {
+      // Note: this is for backwards compatibility. Once all server role services have "Action" attribute, we can remove that
+      _.each(data, (service) => {
+        if (service.Action === undefined) {
+          service.Action = 'Install';
+        }
+      });
+      return data;
+    });
+}
+
+function getInstanceServiceDeploymentInfo(environmentName, deploymentId, instanceId) {
+  let key = `deployments/${deploymentId}/nodes/${instanceId}`;
+  return getTargetState(environmentName, { key, recurse: true }).then(data => _.get(data, '[0].value'));
 }
 
 function getServiceDeploymentCause(environmentName, deploymentId, instanceId) {
@@ -69,7 +85,8 @@ function getServiceDeploymentCause(environmentName, deploymentId, instanceId) {
 function setTargetState(environment, parameters) {
   assert(parameters, 'Expected "parameters" not to be null or empty.');
   let promiseFactoryMethod = () => new Promise((resolve, reject) => {
-    createConsulClient(environment).then((clientInstance) => {
+
+    createConsulClient(environment).then(consulClient => {
       let encodedValue = encodeValue(parameters.value);
       let options = {};
 
@@ -97,14 +114,22 @@ function setTargetState(environment, parameters) {
   return executeAction(promiseFactoryMethod);
 }
 
-function removeTargetState(environment, parameters) {
-  assert(parameters, 'Expected "parameters" not to be null or empty.');
+function removeRuntimeServerRoleTargetState(environmentName, runtimeServerRoleName) {
+  return removeTargetState(environmentName, {
+    key: `environments/${environmentName}/roles/${runtimeServerRoleName}`,
+    recurse: true
+  });
+}
+
+function removeTargetState(environment, { key, recurse }) {
+  assert(key, 'Expected "key" not to be null or empty.');
   let promiseFactoryMethod = () => new Promise((resolve, reject) => {
-    createConsulClient(environment).then((clientInstance) => {
-      clientInstance.kv.get({ key: parameters.key, recurse: parameters.recurse }, (error, result) => {
-        clientInstance.kv.del(parameters.key, (deletionError) => {
-          if (!deletionError) {
-            logChange('DELETE', parameters.key, result);
+
+    createConsulClient(environment).then(consulClient => {
+      consulClient.kv.get({ key, recurse }, function (error, result) {
+        consulClient.kv.del({ key, recurse }, function (error) {
+          if (!error) {
+            logChange('DELETE', key, result);
             return resolve();
           }
           return reject(new HttpRequestError(
@@ -127,18 +152,17 @@ function executeAction(promiseFactoryMethod) {
   return new Promise((resolve, reject) => {
     operation.attempt(() => {
       promiseFactoryMethod()
-      .then(result => resolve(result))
-      .catch((error) => {
-        logger.error(error.toString(true));
-        if ((error instanceof HttpRequestError) && operation.retry(error)) return;
-        reject(operation.mainError());
-      });
+        .then(result => resolve(result))
+        .catch(error => {
+          if ((error instanceof HttpRequestError) && operation.retry(error)) return;
+          reject(error);
+        });
     });
   });
 }
 
 function createConsulClient(environment) {
-  return consulClient.create({ environment }).catch(logger.error.bind(logger));
+  return consulClient.create({ environment, promisify: true });
 }
 
 function logChange(operation, key, value) {
@@ -149,6 +173,8 @@ module.exports = {
   getTargetState,
   setTargetState,
   removeTargetState,
+  removeRuntimeServerRoleTargetState,
   getAllServiceTargets,
   getServiceDeploymentCause,
+  getInstanceServiceDeploymentInfo
 };

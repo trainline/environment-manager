@@ -12,7 +12,9 @@ module.exports = function ScanInstancesScheduleStatusQueryHandler(query) {
   return co(function*() {
 
     let instances = yield getInstances(query);
-    let scheduledActions = scheduledActionsForInstances(instances);
+
+    let dateTime = query.dateTime ? query.dateTime : new Date();
+    let scheduledActions = scheduledActionsForInstances(instances, query.dateTime);
 
     return scheduledActions;
 
@@ -32,7 +34,9 @@ function getInstances(query) {
 
     allInstances.forEach(instance => {
       let environmentName = getInstanceTagValue(instance, 'environment');
-      instance.Environment = findInIndex(environments, environmentName);
+
+      if (environmentName)
+        instance.Environment = findInIndex(environments, environmentName.toLowerCase());
 
       let asgName = getInstanceTagValue(instance, 'aws:autoscaling:groupName');
       instance.AutoScalingGroup = findInIndex(asgs, asgName);
@@ -46,9 +50,7 @@ function getInstances(query) {
 
 }
 
-function scheduledActionsForInstances(instances) {
-
-  let dateTime = new Date();
+function scheduledActionsForInstances(instances, dateTime) {
 
   return instances.map(instance => {
     let action = scheduling.actionForInstance(instance, dateTime);
@@ -73,8 +75,8 @@ function buildEnvironmentIndex(environmentData) {
 
   environmentData.forEach(env => {
     let environment = env.Value;
-    environment.Name = env.EnvironmentName;
-    environments[env.EnvironmentName] = environment;
+    environment.Name = env.EnvironmentName.toLowerCase();
+    environments[environment.Name] = environment;
   });
 
   return environments;

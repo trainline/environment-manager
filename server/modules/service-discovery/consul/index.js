@@ -2,12 +2,18 @@
 
 'use strict';
 
-let consulCatalog = require('./consulCatalog');
+let {
+  getAllServices,
+  getService,
+  getAllNodes,
+  getNode,
+  getNodeHealth
+} = require('./consulCatalog');
 
 module.exports = {
-  getAllServices: consulCatalog.getAllServices,
-  getService: consulCatalog.getService,
-  getAllNodes: consulCatalog.getAllNodes,
-  getNode: consulCatalog.getNode,
-  getNodeHealth: consulCatalog.getNodeHealth,
+  getAllServices,
+  getService,
+  getAllNodes,
+  getNode,
+  getNodeHealth
 };

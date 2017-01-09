@@ -79,38 +79,6 @@
                 <textarea ng-model="Environment.Value.Description"></textarea>
             </div>
         </div>
-        <!--
-        <div class="form-group">
-            <label class="col-md-3 control-label text-left">Load Balancer Settings:</label>
-            <div class="col-md-6">
-                <label class="control-label text-left">
-                    <input type="radio" ng-model="CloneExistingLB" ng-value="false"> None / Add later
-                </label><br />
-                <label class="control-label text-left">
-                    <input type="radio" ng-model="CloneExistingLB" ng-value="true" disabled> Copy from another environment
-                </label>
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="col-md-offset-3 col-md-4" ng-show="CloneExistingLB==true">
-                <select class="form-control" ng-model="CloneLBEnvironmentName" required>
-                    <option ng-repeat="env in EnvironmentNames" ng-selected="{{env == CloneLBEnvironmentName}}" value="{{env}}">{{env}}</option>
-                </select>
-            </div>
-        </div>
-        <!--
-        <div class="form-group" ng-class="{'has-error': form.DefaultSchedule.$invalid}">
-            <label class="col-md-3 control-label text-left nowrap">Default Schedule:</label>
-            <div class="col-md-4">
-                <input type="text"
-                       name="DefaultSchedule"
-                       class="form-control"
-                       maxlength="50"
-                       disabled />
-            </div>
-        </div>
-        -->
-
     </form>
 </div>
 <div class="modal-footer">

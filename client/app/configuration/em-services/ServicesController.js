@@ -3,7 +3,7 @@
 
 // Manage all services
 angular.module('EnvironmentManager.configuration').controller('ServicesController',
-  function ($scope, $routeParams, $location, resources, cachedResources, modal) {
+  function ($scope, $routeParams, $location, $http, resources, cachedResources, modal) {
 
     var SHOW_ALL_OPTION = 'Any';
 
@@ -37,11 +37,11 @@ angular.module('EnvironmentManager.configuration').controller('ServicesControlle
     $scope.Refresh = function () {
       var query = {};
       if ($scope.SelectedOwningCluster != SHOW_ALL_OPTION) {
-        query['OwningCluster'] = $scope.SelectedOwningCluster;
+        query['cluster'] = $scope.SelectedOwningCluster;
       }
 
-      var params = { query: query };
-      resources.config.services.all(params).then(function (data) {
+      $http.get('/api/v1/config/services', { params: query }).then(function (response) {
+        var data = response.data;
         $scope.FullData = data;
         $scope.UpdateFilter();
         $scope.canDelete = false;
@@ -61,15 +61,15 @@ angular.module('EnvironmentManager.configuration').controller('ServicesControlle
     };
 
     $scope.canUser = function (action) {
-      if (action == 'post') return $scope.canPost;
-      if (action == 'delete') return $scope.canDelete;
+      if (action === 'post') return $scope.canPost;
+      if (action === 'delete') return $scope.canDelete;
     };
 
     $scope.UpdateFilter = function () {
       $location.search('cluster', $scope.SelectedOwningCluster);
       $location.search('service', $scope.SelectedService || null);
       $scope.Data = $scope.FullData.filter(function (service) {
-        return ($scope.SelectedService == '' || angular.lowercase(service.ServiceName).indexOf(angular.lowercase($scope.SelectedService)) != -1);
+        return ($scope.SelectedService === '' || angular.lowercase(service.ServiceName).indexOf(angular.lowercase($scope.SelectedService)) != -1);
       });
     };
 

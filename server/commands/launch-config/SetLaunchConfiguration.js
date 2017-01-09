@@ -69,8 +69,12 @@ module.exports = function SetLaunchConfiguration(command) {
       updated.ImageId = image.id;
     }
 
-    let accountName = command.accountName;
-    let autoScalingGroupName = command.autoScalingGroupName;
+    if (data.UserData !== undefined) {
+      updated.UserData = new Buffer(data.UserData).toString('base64');
+    }
+
+    var accountName = command.accountName;
+    var autoScalingGroupName = command.autoScalingGroupName;
 
     logger.debug(`Updating ASG ${autoScalingGroupName} with: ${JSON.stringify(updated)}`);
 

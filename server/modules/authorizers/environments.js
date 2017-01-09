@@ -18,7 +18,7 @@ function getCurrentEnvironment(name, user) {
   return sender.sendQuery({ query, user });
 }
 
-exports.getRules = (request) => {
+exports.getRules = request => {
   let requiredPermission = {
     resource: request.url.replace(/\/+$/, ''),
     access: request.method,
@@ -41,14 +41,16 @@ exports.getRules = (request) => {
   }
 
   if (request.method === 'PUT') {
-    let environmentType = request.body.Value.EnvironmentType;
+    // TODO(filip): second for swagger API
+    let environmentType = request.body.EnvironmentType || request.body.Value.EnvironmentType;
 
     if (environmentType) {
       requiredPermission.environmentTypes.push(environmentType.toLowerCase());
     }
   }
 
-  let environmentName = request.params.key;
+  // TODO(filip): second for swagger API
+  let environmentName = request.params.key || request.params.name;
   let user = request.user;
 
   return getCurrentEnvironment(environmentName, user).then((environment) => {

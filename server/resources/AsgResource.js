@@ -2,7 +2,7 @@
 
 'use strict';
 
-﻿module.exports = {
+module.exports = {
   name: 'asgs',
   type: 'asgs',
   perAccount: true,

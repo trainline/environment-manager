@@ -3,12 +3,12 @@
 
 angular.module('EnvironmentManager.environments')
   .controller('ManageEnvironmentServersController',
-    function ($scope, $rootScope, $routeParams, $q, cachedResources, resources, $uibModal, accountMappingService, serversView, QuerySync) {
+    function ($rootScope, $routeParams, $http, $q, cachedResources, resources, $uibModal, accountMappingService, serversView, QuerySync) {
       var vm = this;
 
       var SHOW_ALL_OPTION = 'Any';
 
-      var querySync = new QuerySync($scope, {
+      var querySync = new QuerySync(vm, {
         environment: {
           property: 'selected.environment.EnvironmentName',
           default: $rootScope.WorkingEnvironment.EnvironmentName,
@@ -36,61 +36,64 @@ angular.module('EnvironmentManager.environments')
       });
 
       function init() {
-        $scope.DataLoading = true;
-        $scope.DataFound = false;
+        vm.dataLoading = true;
+        vm.dataFound = false;
 
-        $scope.options = {
+        vm.options = {
           statuses: [SHOW_ALL_OPTION, 'Healthy', 'Warning', 'Error'],
           clusters: [SHOW_ALL_OPTION],
         };
 
-        $scope.selected = {
+        vm.selected = {
           environment: {},
         };
 
         querySync.init();
 
-        var environmentName = $scope.selected.environment.EnvironmentName;
+        var environmentName = vm.selected.environment.EnvironmentName;
         $rootScope.WorkingEnvironment.EnvironmentName = environmentName;
 
         $q.all([
 
           cachedResources.config.clusters.all().then(function (clusters) {
-            $scope.options.clusters = $scope.options.clusters.concat(_.map(clusters, 'ClusterName')).sort();
-            $scope.selected.cluster = $scope.options.clusters[0];
+            vm.options.clusters = vm.options.clusters.concat(_.map(clusters, 'ClusterName')).sort();
+            vm.selected.cluster = vm.options.clusters[0];
           }),
 
           cachedResources.config.environments.all().then(function (envData) {
-            $scope.selected.environment = cachedResources.config.environments.getByName(environmentName, 'EnvironmentName', envData);
+            vm.selected.environment = cachedResources.config.environments.getByName(environmentName, 'EnvironmentName', envData);
           }),
 
-          accountMappingService.GetAccountForEnvironment($scope.selected.environment.EnvironmentName).then(function (account) {
-            $scope.selected.account = account;
+          accountMappingService.getAccountForEnvironment(vm.selected.environment.EnvironmentName).then(function (account) {
+            vm.selected.account = account;
           }),
         ]).then(function() {
 
-          if ($scope.openAsgName !== null) {
-            vm.showInstanceDetails($scope.openAsgName);
+          if (vm.openAsgName !== null) {
+            vm.showInstanceDetails(vm.openAsgName);
           }
 
-          $scope.Refresh();
+          vm.refresh();
         });
       }
 
-      $scope.Refresh = function () {
+      vm.refresh = function () {
         querySync.updateQuery();
 
-        $scope.DataLoading = true;
-        var promise = resources.servers.all($scope.selected).then(function (data) {
-          $scope.data = data;
-          $scope.DataFound = data.Value && data.Value.length > 0;
+        vm.dataLoading = true;
+        var promise = $http({
+          url: '/api/v1/environments/' + vm.selected.environment.EnvironmentName + '/servers',
+        }).then(function (response) {
+          var data = response.data;
+          vm.data = data;
+          vm.dataFound = data.Value && data.Value.length > 0;
 
-          if ($scope.DataFound) {
+          if (vm.dataFound) {
             vm.update();            
           }
         });
         promise['finally'](function() {
-          $scope.DataLoading = false;
+          vm.dataLoading = false;
         });
 
         return promise;
@@ -99,18 +102,18 @@ angular.module('EnvironmentManager.environments')
       vm.update = function () {
         querySync.updateQuery();
 
-        $scope.view = serversView($scope.data, $scope.selected);
+        vm.view = serversView(vm.data, vm.selected);
       };
 
       vm.loadDeployDialog = function () {
         $uibModal.open({
-          templateUrl: '/app/environments/dialogs/env-deploy.html',
-          controller: 'DeployModalController',
+          templateUrl: '/app/environments/dialogs/env-deploy-modal.html',
+          controller: 'DeployModalController as vm',
           size: 'lg',
           resolve: {
             parameters: function () {
               return {
-                Environment: $scope.selected.environment,
+                Environment: vm.selected.environment,
               };
             },
           },
@@ -118,7 +121,7 @@ angular.module('EnvironmentManager.environments')
       };
 
       vm.showInstanceDetails = function (asgName, action) {
-        $scope.openAsgName = asgName;
+        vm.openAsgName = asgName;
         querySync.updateQuery();
 
         var modal = $uibModal.open({
@@ -129,8 +132,8 @@ angular.module('EnvironmentManager.environments')
             parameters: function () {
               return {
                 groupName: asgName,
-                environment: $scope.selected.environment,
-                accountName: $scope.selected.account,
+                environment: vm.selected.environment,
+                accountName: vm.selected.account,
                 defaultAction: action,
               };
             },
@@ -138,7 +141,7 @@ angular.module('EnvironmentManager.environments')
         });
 
         modal.result['finally'](function() {
-          $scope.openAsgName = null;
+          vm.openAsgName = null;
           querySync.updateQuery();
         });
       };

@@ -10,17 +10,18 @@ let accountValidator = require('../validators/awsAccountValidator');
 function UpdateAWSAccount(command) {
   try {
     const masterAccountName = config.getUserValue('masterAccountName');
+    let account = command.account;
 
-    let account = command.data;
-    accountValidator.validate(account);
+    return accountValidator.validate(account).then(_ => {
+      let dynamoCommand = {
+        name: 'UpdateDynamoResource',
+        resource: 'config/accounts',
+        item: account,
+        accountName: masterAccountName,
+      };
 
-    let dynamoCommand = {
-      name: 'UpdateDynamoResource',
-      resource: 'config/awsAccounts',
-      item: account,
-      accountName: masterAccountName,
-    };
-    return sender.sendCommand({ command: dynamoCommand, parent: command }).then(awsAccounts.flush);
+      return sender.sendCommand({ command: dynamoCommand, parent: command }).then(awsAccounts.flush);
+    });
   } catch (error) {
     return Promise.reject(error);
   }

@@ -1,0 +1,2930 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: Environment Manager API
+host: environmentmanager.corp.local
+basePath: /api/v1
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /asgs:
+    x-swagger-router-controller: asgController
+    get:
+      operationId: getAsgs
+      summary: List ASGS matching the given criteria. By default returns all ASGs across all accounts.
+      tags:
+        - ASG
+      parameters:
+        - name: account
+          in: query
+          type: string
+          required: false
+        - name: environment
+          in: query
+          type: string
+          required: false
+      responses:
+        200:
+          description: A list of matching ASGs.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/AWSAutoScalingGroup'
+  /asgs/{name}:
+    x-swagger-router-controller: asgController
+    get:
+      operationId: getAsgByName
+      summary: Get a single ASG for the given environment.
+      tags:
+        - ASG
+      parameters:
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The matching ASG
+          schema:
+            $ref: '#/definitions/AWSAutoScalingGroup'
+    put:
+      operationId: putAsg
+      summary: Update properties of an ASG.
+      tags:
+        - ASG
+      x-authorizer: asgs
+      parameters:
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AWSAutoScalingGroup'
+      responses:
+        200:
+          description: Ok
+    delete:
+      operationId: deleteAsg
+      summary: Delete ASG and it's target state
+      tags:
+        - ASG
+      x-authorizer: asgs
+      parameters:
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Ok
+  /asgs/{name}/ready:
+    x-swagger-router-controller: asgController
+    get:
+      operationId: getAsgReadyByName
+      summary: Determine if an ASG is ready to deploy to, eg. at least one instance is present and all are "InService"
+      tags:
+        - ASG
+      parameters:
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The matching ASG ready state
+          schema:
+            type: object
+            properties:
+              ReadyToDeploy:
+                type: boolean
+              InstancesByLifecycleState:
+                type: object
+                properties:
+                  InService:
+                    type: integer
+                  Standby:
+                    type: integer
+              InstancesTotalCount:
+                type: integer
+  /asgs/{name}/ips:
+    x-swagger-router-controller: asgController
+    get:
+      operationId: getAsgIps
+      summary: Get IPs associated with an ASG under the given account.
+      tags:
+        - ASG
+      parameters:
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: A list of IPs.
+          schema:
+            type: array
+            items:
+              type: object
+  /asgs/{name}/scaling-schedule:
+    x-swagger-router-controller: asgController
+    get:
+      operationId: getScalingSchedule
+      summary: Get scaling schedule actions for given ASG.
+      tags:
+        - ASG
+      x-authorizer: asgs
+      parameters:
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Ok
+    put:
+      operationId: putScalingSchedule
+      summary: Update scaling schedule actions for given ASG.
+      tags:
+        - ASG
+      x-authorizer: asgs
+      parameters:
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+      responses:
+        200:
+          description: Ok
+  /asgs/{name}/size:
+    x-swagger-router-controller: asgController
+    put:
+      operationId: putAsgSize
+      summary: Resize an ASG under the given account.
+      tags:
+        - ASG
+      x-authorizer: asgs
+      parameters:
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+      responses:
+        200:
+          description: Ok
+          schema:
+            type: object
+            properties:
+              min:
+                type: integer
+              desired:
+                type: integer
+              max:
+                type: integer
+  /asgs/{name}/launch-config:
+    x-swagger-router-controller: asgController
+    get:
+      operationId: getAsgLaunchConfig
+      summary: Get the launch config associated with an ASG under the given account.
+      tags:
+        - ASG
+      x-authorizer: asgs  
+      parameters:
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The launch config
+          schema:
+            $ref: '#/definitions/AWSLaunchConfig'
+    put:
+      operationId: putAsgLaunchConfig
+      summary: Update the launch config associated with an ASG under the given account.
+      tags:
+        - ASG
+      x-authorizer: asgs
+      parameters:
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AWSLaunchConfig'
+      responses:
+        200:
+          description: ASG launch config.
+  /audit:
+    x-swagger-router-controller: auditController
+    get:
+      operationId: getAuditLogs
+      summary: Get Audit Logs for a given time period. Default values are 'since yesterday' and 'until now'.
+      tags:
+        - Audit
+      parameters:
+        - name: since
+          in: query
+          type: string
+          format: date-time
+          required: false
+        - name: until
+          in: query
+          type: string
+          format: date-time
+          required: false
+      responses:
+        200:
+          description: A list of Audit logs
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/AuditEntry'
+  /audit/{key}:
+    x-swagger-router-controller: auditController
+    get:
+      operationId: getAuditLogByKey
+      summary: Get a specific audit log.
+      tags:
+        - Audit
+      parameters:
+        - name: key
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The audit log
+          schema:
+            $ref: '#/definitions/AuditEntry'
+  /deployments:
+    x-swagger-router-controller: deploymentsController
+    get:
+      operationId: getDeployments
+      summary: List all deployments matching the given criteria. If no parameters are provided, the default is 'since yesterday'.
+      tags:
+        - Deployment
+      parameters:
+        - name: since
+          in: query
+          type: string
+          format: date-time
+          required: false
+        - name: environment
+          in: query
+          type: string
+          required: false
+        - name: status
+          in: query
+          type: string
+          required: false
+        - name: cluster
+          in: query
+          type: string
+          required: false
+      responses:
+        200:
+          description: A list of deployments
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Deployment'
+    post:
+      operationId: postDeployment
+      summary: Create a new deployment. This will provision any required infrastructure and update the required target-state.
+      tags:
+        - Deployment
+      x-authorizer: deploy-authorizer
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PostDeployment'
+      responses:
+        202:
+          description: The deployment ID
+  /deployments/{id}:
+    x-swagger-router-controller: deploymentsController
+    get:
+      operationId: getDeploymentById
+      summary: Get information for a deployment.
+      tags:
+        - Deployment
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The deployment
+          schema:
+            $ref: '#/definitions/Deployment'
+    patch:
+      operationId: patchDeployment
+      summary: Modify deployment - cancel in-progress, or modify Action.
+      tags:
+        - Deployment
+      x-authorizer: deployments
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              Status:
+                type: string
+                enum:
+                  - Cancelled
+              Action:
+                type: string
+                enum:
+                  - Install
+                  - Ignore
+
+      responses:
+        200:
+          description: OK
+  /deployments/{id}/log:
+    x-swagger-router-controller: deploymentsController
+    get:
+      operationId: getDeploymentLog
+      summary: Retrieve logs for a particular deployment.
+      tags:
+        - Deployment
+      parameters:
+        - name: account
+          in: query
+          type: string
+          required: true
+        - name: instance
+          in: query
+          type: string
+          required: true
+        - name: id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The deployment log
+          schema:
+            type: string
+  /diagnostics/healthcheck:
+    x-swagger-router-controller: diagnosticsController
+    get:
+      operationId: getHealthcheck
+      summary: Get version and status information.
+      tags:
+        - Status
+      responses:
+        200:
+          description: The current status
+          schema:
+            $ref: '#/definitions/DiagnosticsHealthcheck'
+  /environments:
+    x-swagger-router-controller: environmentsController
+    get:
+      operationId: getEnvironments
+      summary: Get all environments
+      tags:
+        - Environment
+      responses:
+        200:
+          description: A list of environments
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/OpsEnvironment'
+  /environments/{name}:
+    x-swagger-router-controller: environmentsController
+    get:
+      operationId: getEnvironmentByName
+      summary: Get an environment.
+      tags:
+        - Environment
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The environment
+          schema:
+            $ref: '#/definitions/OpsEnvironment'
+  /environments/{name}/protected:
+    x-swagger-router-controller: environmentsController
+    get:
+      operationId: isEnvironmentProtectedFromAction
+      summary: Find if environment is protected from action
+      tags:
+        - Environment
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: action
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: The environment
+          schema:
+            type: object
+            properties:
+              isProtected:
+                type: boolean
+  /environments/{name}/servers:
+    x-swagger-router-controller: environmentsController
+    get:
+      operationId: getEnvironmentServers
+      summary: Get the list of servers in an environment.
+      tags:
+        - Environment
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The list of servers
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/EnvironmentServers'
+  /environments/{name}/servers/{asgName}:
+    x-swagger-router-controller: environmentsController
+    get:
+      operationId: getEnvironmentServerByName
+      summary: Get a specific server in a given environment
+      tags:
+        - Environment
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: asgName
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: ASG servers state - Instances and services state
+          schema:
+            $ref: '#/definitions/ASGServersState'
+  /environments/{name}/schedule:
+    x-swagger-router-controller: environmentsController
+    put:
+      operationId: putEnvironmentSchedule
+      summary: Set the schedule for an environment.
+      tags:
+        - Environment
+      x-authorizer: environments-schedule
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/EnvironmentScheduleValue'
+        - $ref: '#/parameters/ExpectedVersionHeader'
+      responses:
+        200:
+          description: OK
+    get:
+      operationId: getEnvironmentSchedule
+      summary: Get schedule for an environment.
+      tags:
+        - Environment
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The schedule status
+          schema:
+            $ref: '#/definitions/EnvironmentSchedule'
+  /environments/{name}/accountName:
+    x-swagger-router-controller: environmentsController
+    get:
+      operationId: getEnvironmentAccountName
+      summary: Get account name for given environment.
+      tags:
+        - Environment
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Account name
+          schema:
+            type: string
+  /environments/{name}/schedule-status:
+    x-swagger-router-controller: environmentsController
+    get:
+      operationId: getEnvironmentScheduleStatus
+      summary: Get the schedule status for a given environment at a given time. If no 'at' parameter is provided,
+               the current status is returned.
+      tags:
+        - Environment
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: at
+          in: query
+          type: string
+          format: date-time
+          required: false
+      responses:
+        200:
+          description: The schedule status
+          schema:
+            type: object
+            properties:
+              Status:
+                type: string
+  /images:
+    x-swagger-router-controller: imagesController
+    get:
+      operationId: getImages
+      summary: Get the list of available AMI images. Only those that are privately published under associated accounts are included.
+      tags:
+        - AMI
+      parameters:
+        - name: account
+          type: string
+          in: query
+          required: false
+        - name: stable
+          type: boolean
+          in: query
+          required: false
+      responses:
+        200:
+          description: The list of AMI images
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Image'
+  /instances:
+    x-swagger-router-controller: instancesController
+    get:
+      operationId: getInstances
+      summary: Get all instances matching the given criteria.
+      tags:
+        - Instance
+      parameters:
+        - name: account
+          in: query
+          type: string
+          required: false
+        - name: environment
+          in: query
+          type: string
+          required: false
+        - name: cluster
+          in: query
+          type: string
+          required: false
+        - name: maintenance
+          in: query
+          type: boolean
+          required: false
+        - name: ip_address
+          in: query
+          type: string
+          required: false
+        - name: instance_id
+          in: query
+          type: string
+          required: false
+        - name: since
+          in: query
+          type: string
+          format: date-time
+          required: false
+        - name: include_deployments_status
+          in: query
+          type: boolean
+          required: false
+      responses:
+        200:
+          description: The list of instances
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Instance'
+  /instances/{id}:
+    x-swagger-router-controller: instancesController
+    get:
+      operationId: getInstanceById
+      summary: Get a specific instance.
+      tags:
+        - Instance
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The instance
+          schema:
+            $ref: '#/definitions/Instance'
+  /instances/{id}/connect:
+    x-swagger-router-controller: instancesController
+    get:
+      operationId: connectToInstance
+      summary: Connect to the instance via remote desktop.
+      tags:
+        - Instance
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Remote desktop connection
+  /instances/{id}/maintenance:
+    x-swagger-router-controller: instancesController
+    put:
+      operationId: putInstanceMaintenance
+      summary: Update the ASG standby-state of a given instance.
+      tags:
+        - Instance
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          required: false
+          schema:
+            type: object
+      responses:
+        200:
+          description: OK
+  /load-balancer/{id}:
+    x-swagger-router-controller: loadBalancerController
+    get:
+      operationId: getLoadBalancer
+      summary: Get load balancer data.
+      tags:
+        - Load Balancers
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/LoadBalancerUpstream'
+  /services:
+    x-swagger-router-controller: servicesController
+    get:
+      operationId: getServices
+      summary: Get the list of currently deployed services.
+      description: This differs from `/deployment/target-states` in that it lists the *current* services and versions
+                   that are deployed.
+      tags:
+        - Service
+      parameters:
+        - name: environment
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: Currently deployed services
+          schema:
+            type: array
+            items:
+              type: object
+  /services/{service}:
+    x-swagger-router-controller: servicesController
+    get:
+      operationId: getServiceById
+      summary: Get a currently deployed service.
+      tags:
+        - Service
+      parameters:
+        - name: service
+          in: path
+          type: string
+          required: true
+        - name: environment
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: The service
+          schema:
+            type: object
+  /services/{service}/health:
+    x-swagger-router-controller: servicesController
+    get:
+      operationId: getServiceHealthById
+      summary: Get a currently deployed service.
+      tags:
+        - Service
+      parameters:
+        - name: service
+          in: path
+          type: string
+          required: true
+        - name: environment
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: The service
+          schema:
+            type: object
+  /services/{service}/slices:
+    x-swagger-router-controller: servicesController
+    get:
+      operationId: getServiceSlices
+      summary: Get slices for a deployed service.
+      tags:
+        - Service
+      parameters:
+        - name: service
+          in: path
+          type: string
+          required: true
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: active
+          in: query
+          type: boolean
+          required: false
+      responses:
+        200:
+          description: The slices
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/UpstreamSlice'
+  /services/{service}/slices/toggle:
+    x-swagger-router-controller: servicesController
+    put:
+      operationId: putServiceSlicesToggle
+      summary: Toggle the slices for a deployed service.
+      tags:
+        - Service
+      parameters:
+        - name: service
+          in: path
+          type: string
+          required: true
+        - name: environment
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+  /target-state/{environment}:
+    x-swagger-router-controller: targetStateController
+    get:
+      operationId: getTargetState
+      summary: Get the target state for a given environment
+      description: The desired or "target" state for an environment represents service versions that "should"
+                   be deployed across an environment.
+      tags:
+        - Target State
+      parameters:
+        - name: environment
+          in: path
+          type: string
+          required: true
+        - name: serverRole
+          in: query
+          type: string
+          required: false
+      responses:
+        200:
+          description: The list of service versions that should be deployed to an environment.
+          schema:
+            type: array
+            items:
+              type: object
+    delete:
+      operationId: deleteTargetStateByEnvironment
+      summary: Remove the target state for all services in a given environment.
+      tags:
+        - Target State
+      parameters:
+        - name: environment
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+  /target-state/{environment}/{service}:
+    x-swagger-router-controller: targetStateController
+    delete:
+      operationId: deleteTargetStateByService
+      summary: Remove the target state for all versions of a service.
+      tags:
+        - Target State
+      parameters:
+        - name: environment
+          in: path
+          type: string
+          required: true
+        - name: service
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+  /target-state/{environment}/{service}/{version}:
+    x-swagger-router-controller: targetStateController
+    delete:
+      operationId: deleteTargetStateByServiceVersion
+      summary: Remove the target state for a specific version of a service.
+      tags:
+        - Target State
+      parameters:
+        - name: environment
+          in: path
+          type: string
+          required: true
+        - name: service
+          in: path
+          type: string
+          required: true
+        - name: version
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+  /token:
+    x-swagger-router-controller: tokenController
+    post:
+      operationId: postAuthorization
+      summary: Get an authorization token
+      description: "Tokens are required for all authenticated API routes. Tokens obtained from this endpoint should be
+                   used in the header of all subsequent requests as `Authorization: Bearer <token>`"
+      tags:
+        - Authentication
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - username
+              - password
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+      responses:
+        200:
+          description: An authorization token
+          schema:
+            type: string
+  /upstreams/{name}/slices:
+    x-swagger-router-controller: upstreamsController
+    get:
+      operationId: getUpstreamSlices
+      summary: Get slices for a given upstream.
+      tags:
+        - Upstream
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: active
+          in: query
+          type: boolean
+          required: false
+      responses:
+        200:
+          description: The slices
+          schema:
+            type: array
+            items:
+              type: object
+  /upstreams/{name}/slices/toggle:
+    x-swagger-router-controller: upstreamsController
+    put:
+      operationId: putUpstreamSlicesToggle
+      summary: Toggle the slices for a given upstream
+      tags:
+        - Upstream
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: environment
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+  /config/accounts:
+    x-swagger-router-controller: accountsController
+    get:
+      operationId: getAccountsConfig
+      summary: List the AWS Accounts that associated with Environment Manager.
+      tags:
+        - Accounts
+      responses:
+        200:
+          description: The list of accounts
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/AccountConfig'
+    post:
+      operationId: postAccountsConfig
+      summary: Add an association to an AWS Account.
+      parameters:
+        - name: account
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountConfig'
+      tags:
+        - Accounts
+      responses:
+        201:
+          description: OK
+  /config/accounts/{accountNumber}:
+    x-swagger-router-controller: accountsController
+    put:
+      operationId: putAccountConfigByName
+      summary: Update an associated AWS Account.
+      tags:
+        - Accounts
+      parameters:
+        - name: accountNumber
+          type: integer
+          required: true
+          in: path
+        - name: account
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountConfig'
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: deleteAccountConfigByName
+      summary: Remove an AWS Account association.
+      tags:
+        - Accounts
+      parameters:
+        - name: accountNumber
+          type: integer
+          required: true
+          in: path
+      responses:
+        200:
+          description: OK
+  /config/clusters:
+    x-swagger-router-controller: clusterController
+    get:
+      operationId: getClustersConfig
+      summary: Get all Cluster configurations.
+      tags:
+        - Cluster
+      responses:
+        200:
+          description: The list of Cluster configs
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ClusterConfig'
+    post:
+      operationId: postClustersConfig
+      summary: Create a Cluster configuration.
+      tags:
+        - Cluster
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ClusterConfig'
+      responses:
+        201:
+          description: OK
+  /config/clusters/{name}:
+    x-swagger-router-controller: clusterController
+    get:
+      operationId: getClusterConfigByName
+      summary: Get a specific Cluster configuration.
+      tags:
+        - Cluster
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The Cluster config
+          schema:
+            $ref: '#/definitions/ClusterConfig'
+    put:
+      operationId: putClusterConfigByName
+      summary: Update a Cluster configuration.
+      tags:
+        - Cluster
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ClusterConfigValue'
+        - $ref: '#/parameters/ExpectedVersionHeader'
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: deleteClusterConfigByName
+      summary: Delete a Cluster configuration.
+      tags:
+        - Cluster
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+  /config/deployment-maps:
+    x-swagger-router-controller: deploymentMapController
+    get:
+      operationId: getDeploymentMapsConfig
+      summary: Get all deployment map configurations.
+      tags:
+        - Deployment Map
+      responses:
+        200:
+          description: The list of deployment maps
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/DeploymentMap'
+    post:
+      operationId: postDeploymentMapsConfig
+      summary: Create a deployment map configuration
+      tags:
+        - Deployment Map
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeploymentMap'
+      responses:
+        201:
+          description: OK
+  /config/deployment-maps/{name}:
+    x-swagger-router-controller: deploymentMapController
+    put:
+      operationId: putDeploymentMapConfigByName
+      summary: Update a deployment map configuration.
+      tags:
+        - Deployment Map
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/DeploymentMapValue'
+        - $ref: '#/parameters/ExpectedVersionHeader'
+      responses:
+        200:
+          description: OK
+    get:
+      operationId: getDeploymentMapConfigByName
+      summary: Get a specific deployment map configuration.
+      tags:
+        - Deployment Map
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The deployment map config
+          schema:
+            $ref: '#/definitions/DeploymentMap'
+    delete:
+      operationId: deleteDeploymentMapConfigByName
+      summary: Delete a deployment map configuration.
+      tags:
+        - Deployment Map
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+  /config/environments:
+    x-swagger-router-controller: environmentsConfigController
+    get:
+      operationId: getEnvironmentsConfig
+      summary: Get all environment configurations.
+      tags:
+        - Environment
+      parameters:
+        - name: environmentType
+          in: query
+          type: string
+          required: false
+        - name: cluster
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: The list of environment configs
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/EnvironmentConfig'
+    post:
+      operationId: postEnvironmentsConfig
+      summary: Create a new environment configuration.
+      tags:
+        - Environment
+      x-authorizer: environments
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/EnvironmentConfig'
+      responses:
+        201:
+          description: OK
+  /config/environments/{name}:
+    x-swagger-router-controller: environmentsConfigController
+    get:
+      operationId: getEnvironmentConfigByName
+      summary: Get a specific environment configuration.
+      tags:
+        - Environment
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The environment config
+          schema:
+            type: object
+    put:
+      operationId: putEnvironmentConfigByName
+      summary: Update an environment configuration.
+      tags:
+        - Environment
+      x-authorizer: environments
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/EnvironmentConfigValue'
+        - $ref: '#/parameters/ExpectedVersionHeader'
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: deleteEnvironmentConfigByName
+      summary: Delete an environment configuration.
+      tags:
+        - Environment
+      x-authorizer: environments
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+  /config/environment-types:
+    x-swagger-router-controller: environmentTypeController
+    get:
+      operationId: getEnvironmentTypesConfig
+      summary: Get all environment type configurations.
+      tags:
+        - Environment Type
+      responses:
+        200:
+          description: The list of environment type configs
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/EnvironmentTypeConfig'
+    post:
+      operationId: postEnvironmentTypesConfig
+      summary: Create an Environment Type configuration.
+      tags:
+        - Environment Type
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/EnvironmentTypeConfig'
+      responses:
+        201:
+          description: OK
+  /config/environment-types/{name}:
+    x-swagger-router-controller: environmentTypeController
+    get:
+      operationId: getEnvironmentTypeConfigByName
+      summary: Get an specific environment type configuration.
+      tags:
+        - Environment Type
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: The environment type config
+          schema:
+            type: object
+    put:
+      operationId: putEnvironmentTypeConfigByName
+      summary: Update an environment type configuration.
+      tags:
+        - Environment Type
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/EnvironmentTypeConfigValue'
+        - $ref: '#/parameters/ExpectedVersionHeader'
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: deleteEnvironmentTypeConfigByName
+      summary: Delete an environment type.
+      tags:
+        - Environment Type
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+  /config/export/{resource}:
+    x-swagger-router-controller: exportController
+    get:
+      operationId: getResourceExport
+      summary: Export a configuration resources dynamo table.
+      tags:
+        - Export
+      parameters:
+        - name: account
+          in: query
+          required: false
+          type: string
+        - name: resource
+          description: The name of the resource you want to export
+          in: path
+          type: string
+          enum:
+            - accounts
+            - clusters
+            - deploymentmaps
+            - environments
+            - environmenttypes
+            - lbsettings
+            - permissions
+            - services
+            - lbupstream
+          required: true
+      responses:
+        200:
+          description: The dynamo table export
+          schema:
+            type: array
+            items:
+              type: object
+  /config/import/{resource}:
+    x-swagger-router-controller: importController
+    put:
+      operationId: putResourceImport
+      summary: Import a configuration resources dynamo table.
+      tags:
+        - Import
+      parameters:
+        - name: resource
+          description: The name of the resource you want to import
+          in: path
+          type: string
+          enum:
+            - accounts
+            - clusters
+            - deploymentmaps
+            - environments
+            - environmenttypes
+            - lbsettings
+            - permissions
+            - services
+            - lbupstream
+          required: true
+        - name: data
+          in: body
+          required: true
+          schema:
+            type: array
+            items:
+              type: object
+        - name: mode
+          in: query
+          required: true
+          type: string
+        - name: account
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: OK
+  /config/lb-settings:
+    x-swagger-router-controller: lbSettingsController
+    get:
+      operationId: getLBSettingsConfig
+      summary: List all load balancer settings.
+      tags:
+        - Load Balancers
+      parameters:
+        - name: environment
+          in: query
+          required: false
+          type: string
+        - name: frontend
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: The list of load balancer settings
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/LBSetting'
+    post:
+      operationId: postLBSettingsConfig
+      summary: Create a load balancer setting.
+      tags:
+        - Load Balancers
+      x-authorizer: load-balancer-settings
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/LBSetting'
+      responses:
+        201:
+          description: OK
+  /config/lb-settings/{environment}/{vHostName}:
+    x-swagger-router-controller: lbSettingsController
+    get:
+      operationId: getLBSettingConfigByName
+      summary: Get a specific load balancer setting.
+      tags:
+        - Load Balancers
+      parameters:
+        - name: environment
+          in: path
+          required: true
+          type: string
+        - name: vHostName
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: The load balancer setting
+          schema:
+            $ref: '#/definitions/LBSetting'
+    put:
+      operationId: putLBSettingConfigByName
+      summary: Update a load balancer setting.
+      tags:
+        - Load Balancers
+      x-authorizer: load-balancer-settings
+      parameters:
+        - name: environment
+          in: path
+          required: true
+          type: string
+        - name: vHostName
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/LBSettingValue'
+        - $ref: '#/parameters/ExpectedVersionHeader'
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: deleteLBSettingConfigByName
+      summary: Delete an load balancer setting.
+      tags:
+        - Load Balancers
+      x-authorizer: load-balancer-settings
+      parameters:
+        - name: environment
+          in: path
+          required: true
+          type: string
+        - name: vHostName
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+  /config/permissions:
+    x-swagger-router-controller: permissionsController
+    get:
+      operationId: getPermissionsConfig
+      summary: Get all permission configurations.
+      tags:
+        - Permissions
+      responses:
+        200:
+          description: List of permission configs
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Permissions'
+    post:
+      operationId: postPermissionsConfig
+      summary: Create a new permission configuration.
+      tags:
+        - Permissions
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Permissions'
+      responses:
+        201:
+          description: OK
+  /config/permissions/{name}:
+    x-swagger-router-controller: permissionsController
+    get:
+      operationId: getPermissionConfigByName
+      summary: Get a specific permission configuration.
+      tags:
+        - Permissions
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: The permission config
+          schema:
+            $ref: '#/definitions/Permissions'
+    put:
+      operationId: putPermissionConfigByName
+      summary: Update a permission configuration.
+      tags:
+        - Permissions
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/PermissionsList'
+        - $ref: '#/parameters/ExpectedVersionHeader'
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: deletePermissionConfigByName
+      summary: Delete a permissions configuration.
+      description: This will delete the permission config and optionally update any other configs or settings that depend on it.
+      tags:
+        - Permissions
+      parameters:
+        - name: name
+          in: path
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+  /config/services:
+    x-swagger-router-controller: servicesConfigController
+    get:
+      operationId: getServicesConfig
+      summary: Get all service configurations.
+      tags:
+        - Service
+      parameters:
+        - name: cluster
+          in: query
+          required: false
+          type: string
+      responses:
+        200:
+          description: The list of service configs
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ServiceConfig'
+    post:
+      operationId: postServicesConfig
+      summary: Create a service configuration
+      tags:
+        - Service
+      x-authorizer: services
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ServiceConfig'
+      responses:
+        201:
+          description: OK
+  /config/services/{name}/{cluster}:
+    x-swagger-router-controller: servicesConfigController
+    get:
+      operationId: getServiceConfigByName
+      summary: Get a specific service configuration.
+      tags:
+        - Service
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: cluster
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The service config
+          schema:
+            $ref: '#/definitions/ServiceConfig'
+    delete:
+      operationId: deleteServiceConfigByName
+      summary: Delete a service configuration.
+      tags:
+        - Service
+      x-authorizer: services
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: cluster
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+    put:
+      operationId: putServiceConfigByName
+      summary: Update a service configuration.
+      tags:
+        - Service
+      x-authorizer: services
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: cluster
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ServiceConfigValue'
+        - $ref: '#/parameters/ExpectedVersionHeader'
+      responses:
+        200:
+          description: OK
+  /config/upstreams:
+    x-swagger-router-controller: upstreamsConfigController
+    get:
+      operationId: getUpstreamsConfig
+      summary: Get all upstream configurations.
+      tags:
+        - Upstream
+      responses:
+        200:
+          description: The list of upstream configs
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/UpstreamConfig'
+    post:
+      operationId: postUpstreamsConfig
+      summary: Create an upsteram configuration.
+      tags:
+        - Upstream
+      x-authorizer: upstreams
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpstreamConfig'
+      responses:
+        201:
+          description: OK
+  /config/upstreams/{name}:
+    x-swagger-router-controller: upstreamsConfigController
+    put:
+      operationId: putUpstreamConfigByName
+      summary: Update an upstream configuration.
+      tags:
+        - Upstream
+      x-authorizer: upstreams
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UpstreamConfigValue'
+        - $ref: '#/parameters/ExpectedVersionHeader'
+      responses:
+        200:
+          description: OK
+    get:
+      operationId: getUpstreamConfigByName
+      summary: Get an a specific upstream configuration
+      tags:
+        - Upstream
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: account
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: The upstream config
+          schema:
+            $ref: '#/definitions/UpstreamConfig'
+    delete:
+      operationId: deleteUpstreamConfigByName
+      summary: Delete an upstream configuration.
+      tags:
+        - Upstream
+      x-authorizer: upstreams
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: account
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: Empty
+  /package-upload-url/{service}/{version}/{environment}:
+    x-swagger-router-controller: packageUploadUrlController
+    get:
+      operationId: getPackageUploadUrlByServiceVersionEnvironment
+      summary: Upload an environment-specific package.
+      x-authorizer: package-upload-url
+      tags:
+        - Package
+      parameters:
+        - $ref: '#/parameters/package-id'
+        - $ref: '#/parameters/package-version'
+        - $ref: '#/parameters/package-environment'
+        - $ref: '#/parameters/package-slice'
+      responses:
+        201:
+          $ref: '#/responses/package-created'
+        409:
+          $ref: '#/responses/package-already-exists'
+        422:
+          $ref: '#/responses/package-bad-ref'
+  /package-upload-url/{service}/{version}:
+    x-swagger-router-controller: packageUploadUrlController
+    get:
+      operationId: getPackageUploadUrlByServiceVersion
+      summary: Upload an environment-independent package.
+      x-authorizer: package-upload-url
+      tags:
+        - Package
+      parameters:
+        - $ref: '#/parameters/package-id'
+        - $ref: '#/parameters/package-version'
+      responses:
+        201:
+          $ref: '#/responses/package-created'
+        409:
+          $ref: '#/responses/package-already-exists'
+        422:
+          $ref: '#/responses/package-bad-ref'
+definitions:
+  AuditEntry:
+    type: object
+    properties:
+      AuditID:
+        type: string
+      ChangeType:
+        type: string
+      ChangedBy:
+        type: string
+      Date:
+        type: string
+      Entity:
+        type: object
+        properties:
+          Key:
+            type: string
+          Type:
+            type: string
+          Version:
+            type: integer
+      ISOTimestamp:
+        type: string
+        format: date-time
+      NewValue:
+        type: object
+      OldValue:
+        type: object
+      Source:
+        type: string
+      Timestamp:
+        type: integer
+      TransactionID:
+        type: string
+  AWSAutoScalingGroup:
+    type: object
+    properties:
+      AutoScalingGroupName:
+        type: string
+        example: myenv-in-EnvironmentManager
+      AutoScalingGroupARN:
+        type: string
+      LaunchConfigurationName:
+        type: string
+      MinSize:
+        type: integer
+      MaxSize:
+        type: integer
+      DesiredCapacity:
+        type: integer
+      DefaultCooldown:
+        type: integer
+      AvailabilityZones:
+        type: array
+        items:
+          type: string
+      LoadBalancerNames:
+        type: array
+        items:
+          type: string
+      HealthCheckType:
+        type: string
+      HealthCheckGracePeriod:
+        type: integer
+      Instances:
+        type: array
+        items:
+          type: object
+          properties:
+            InstanceId:
+              type: string
+            AvailabilityZone:
+              type: string
+            LifecycleState:
+              type: string
+            HealthStatus:
+              type: string
+            LaunchConfigurationName:
+              type: string
+            ProtectedFromScaleIn:
+              type: boolean
+      CreatedTime:
+        type: string
+        format: date-time
+      VPCZoneIdentifier:
+        type: string
+      Tags:
+        type: array
+        items:
+          type: object
+          properties:
+            ResourceId:
+              type: string
+            ResourceType:
+              type: string
+            Key:
+              type: string
+            Value:
+              type: string
+            PropagateAtLaunch:
+              type: boolean
+      TerminationPolicies:
+        type: array
+        items:
+          type: string
+      NewInstancesProtectedFromScaleIn:
+        type: boolean
+  AWSLaunchConfig:
+    type: object
+    properties:
+      AMI:
+        type: string
+      ImageId:
+        type: string
+      InstanceProfileName:
+        type: string
+      InstanceType:
+        type: string
+      SecurityGroups:
+        type: array
+        items:
+          type: string
+      UserData:
+        type: string
+      Volumes:
+        type: array
+        items:
+          type: object
+          properties:
+            Name:
+              type: string
+            Size:
+              type: integer
+            Type:
+              type: string
+  AccountConfig:
+    type: object
+    required:
+      - AccountName
+      - AccountNumber
+      - IsProd
+      - IsMaster
+      - Impersonate
+    properties:
+      AccountName:
+        type: string
+      AccountNumber:
+        type: integer
+      IsProd:
+        type: boolean
+      IsMaster:
+        type: boolean
+      Impersonate:
+        type: boolean
+      RoleArn:
+        type: [string, "null"]
+  ClusterConfig:
+    type: object
+    required:
+      - ClusterName
+      - Value
+    properties:
+      ClusterName:
+        type: string
+      Value:
+        $ref: '#/definitions/ClusterConfigValue'
+  ClusterConfigValue:
+    type: object
+    required:
+      - ShortName
+      - SchemaVersion
+    properties:
+      ShortName:
+        type: string
+      SchemaVersion:
+        type: integer
+      GroupEmailAddress:
+        type: string
+      ADMembershipGroup:
+        type: string
+  LoadBalancerUpstream:
+    type: object
+    properties:
+      Name:
+        type: string
+      Hosts:
+        type: array
+        items:
+          type: object
+          properties:
+            HealthChecks:
+              type: object
+              properties:
+                checks:
+                  type: integer
+                fails:
+                  type: integer
+                unhealthy:
+                  type: integer
+            Server:
+              type: string
+            State:
+              type: string
+  DeploymentMap:
+    type: object
+    required:
+      - DeploymentMapName
+      - Value
+    properties:
+      DeploymentMapName:
+        type: string
+      Value:
+        $ref: '#/definitions/DeploymentMapValue'
+  DeploymentMapValue:
+    type: object
+    properties:
+      DeploymentTarget:
+        type: array
+        items:
+          $ref: '#/definitions/DeploymentTarget'
+      SchemaVersion:
+        type: integer
+  DeploymentTarget:
+    type: object
+    properties:
+      AMI:
+        type: string
+      AutoScalingSettings:
+        type: object
+        properties:
+          DesiredCapacity:
+            type: integer
+          MaxCapacity:
+            type: integer
+          MinCapacity:
+            type: integer
+      ContactEmailTag:
+        type: string
+      FleetPerSlice:
+        type: boolean
+      InstanceType:
+        type: string
+      OwningCluster:
+        type: string
+      RoleTag:
+        type: string
+      SecurityZone:
+        type: string
+      ServerRoleName:
+        type: string
+      Services:
+        type: array
+        items:
+          type: object
+          properties:
+            ServiceName:
+              type: string
+      SubnetTypeName:
+        type: string
+      Volumes:
+        type: array
+        items:
+          type: object
+          properties:
+            Name:
+              type: string
+            Size:
+              type: integer
+            Type:
+              type: string
+  OpsEnvironment:
+    type: object
+    required:
+      - EnvironmentName
+      - Value
+    properties:
+      EnvironmentName:
+        type: string
+      Value:
+        $ref: '#/definitions/OpsEnvironmentValue'
+  OpsEnvironmentValue:
+    type: object
+    properties:
+      AccountName:
+        type: string
+      ScheduleStatus:
+        type: string
+  EnvironmentSchedule:
+    type: object
+    required:
+      - EnvironmentName
+      - Value
+    properties:
+      EnvironmentName:
+        type: string
+      Value:
+        $ref: '#/definitions/EnvironmentScheduleValue'
+  EnvironmentServers:
+    properties:
+      EnvironmentName:
+        type: string
+      Value:
+        type: object
+        properties:
+          Ami:
+            type: object
+            properties:
+              Age:
+                type: integer
+              IsLatestStable:
+                type: boolean
+              Name:
+                type: string
+          Cluster:
+            type: string
+          Name:
+            type: string
+          Role:
+            type: string
+          Schedule:
+            type: string
+          Services:
+            type: array
+            items:
+              type: object
+              properties:
+                FriendlyName:
+                  type: string
+                Name:
+                  type: string
+                Slice:
+                  type: string
+                Version:
+                  type: string
+          Size:
+            type: object
+            properties:
+              Current:
+                type: integer
+              Desired:
+                type: integer
+          Status:
+            type: object
+            properties:
+              Status:
+                type: string
+  ASGServersState:
+    type: object
+    properties:
+      AllExpectedServicesPresent:
+        type: boolean
+      AllExpectedServicesHealthy:
+        type: boolean
+      ServicesCount:
+        type: object
+        properties:
+          Expected:
+            type: integer
+          Unexpected:
+            type: integer
+          Missing:
+            type: integer
+          Ignored:
+            type: integer
+      ExpectedServices:
+        type: array
+        items:
+          $ref: '#/definitions/SimpleServiceObject'
+      MissingServices:
+        type: array
+        items:
+          $ref: '#/definitions/SimpleServiceObject'
+      Services:
+        type: array
+        items:
+          type: object
+          properties:
+            Name:
+              type: string
+            Version:
+              type: string
+            Slice:
+              type: string
+            DiffWithTargetState:
+              type: [string, 'null']
+            DeploymentId:
+              type: string
+            InstancesNames:
+              type: array
+              items:
+                type: string
+            InstancesCount:
+              type: object
+              properties:
+                Healthy:
+                  type: integer
+                Total:
+                  type: integer
+            OverallHealth:
+              type: string
+            HealthChecks:
+              type: array
+              items:
+                type: object
+                properties:
+                  Name:
+                    type: string
+                  Status:
+                    type: string
+            Action:
+              type: string
+              enum:
+                - Install
+                - Ignore
+      Instances:
+        type: array
+        items:
+          type: object
+        properties:
+          Name:
+            type: string
+          OverallHealth:
+            type: string
+          LifecycleState:
+            type: string
+          ContactEmail:
+            type: string
+          Services:
+            type: object
+            properties:
+              Name:
+                type: string
+              Version:
+                type: string
+              Slice:
+                type: string
+              NameAndSlice:
+                type: string
+              OverallHealth:
+                type: string
+              HealthChecks:
+                type: object
+                properties:
+                  CheckId:
+                    type: string
+                  Name:
+                    type: string
+                  Notes:
+                    type: string
+                  Status:
+                    type: string
+              DiffWithTargetState:
+                type: [string, 'null']
+              Issues:
+                type: object
+                properties:
+                  Warnings:
+                    type: array
+                    items:
+                      type: string
+                  Errors:
+                    type: array
+                    items:
+                      type: string
+  EnvironmentScheduleValue:
+    type: object
+    properties:
+      ManualScheduleUp:
+        type: boolean
+      ScheduleAutomatically:
+        type: boolean
+      DefaultSchedule:
+        type: string
+        example: 'start: 0 8 * * 1,2,3,4,5; Stop: 0 19 * * 1,2,3,4,5'
+  EnvironmentConfig:
+    type: object
+    required:
+      - EnvironmentName
+      - Value
+    properties:
+      EnvironmentName:
+        type: string
+      Value:
+        $ref: '#/definitions/EnvironmentConfigValue'
+  EnvironmentConfigValue:
+    type: object
+    properties:
+      OwningCluster:
+        type: string
+      Description:
+        type: string
+      EnvironmentType:
+        type: string
+      SchemaVersion:
+        type: integer
+      DeploymentMap:
+        type: string
+      CodeDeployBucket:
+        type: string
+  EnvironmentTypeConfig:
+    type: object
+    required:
+      - EnvironmentType
+      - Value
+    properties:
+      EnvironmentType:
+        type: string
+      Value:
+        $ref: '#/definitions/EnvironmentTypeConfigValue'
+  EnvironmentTypeConfigValue:
+    type: object
+    properties:
+      AWSAccountName:
+        type: string
+      AWSAccountNumber:
+        type: string
+      Consul:
+        type: object
+        properties:
+          DataCenter:
+            type: string
+          Port:
+            type: integer
+          SecurityTokenPath:
+            type: object
+            properties:
+              Bucket:
+                type: string
+              Key:
+                type: string
+          Servers:
+            type: array
+            items:
+              type: string
+      DeploymentBucket:
+        type: string
+      LoadBalancers:
+        type: array
+        items:
+          type: string
+      SchemaVersion:
+        type: integer
+      Subnets:
+        type: object
+      VpcId:
+        type: string
+  Image:
+    type: object
+    properties:
+      ImageId:
+        type: string
+      CreationDate:
+        type: string
+      Platform:
+        type: string
+      Name:
+        type: string
+      Description:
+        type: string
+      AmiType:
+        type: string
+      AmiVersion:
+        type: string
+      IsCompatibleImage:
+        type: boolean
+      IsStable:
+        type: boolean
+      Encrypted:
+        type: boolean
+      RootVolumeSize:
+        type: integer
+      Rank:
+        type: integer
+      IsLatest:
+        type: boolean
+      IsLatestStable:
+        type: boolean
+      AccountName:
+        type: string
+  Instance:
+    type: object
+    properties:
+      AccountName:
+        type: string
+      AmiLaunchIndex:
+        type: integer
+      Architecture:
+        type: string
+      BlockDeviceMappings:
+        type: array
+        items:
+          type: object
+          properties:
+            DeviceName:
+              type: string
+            Ebs:
+              type: object
+              properties:
+                AttachTime:
+                  type: string
+                  format: date-time
+                DeleteOnTermination:
+                  type: boolean
+                Status:
+                  type: string
+                VolumeId:
+                  type: string
+      ClientToken:
+        type: string
+      ContactEmail:
+        type: string
+      EbsOptimized:
+        type: boolean
+      EnaSupport:
+        type: boolean
+      Environment:
+        type: string
+      EnvironmentType:
+        type: string
+      Hypervisor:
+        type: string
+      IamInstanceProfile:
+        type: object
+        properties:
+          Arn:
+            type: string
+          Id:
+            type: string
+      ImageId:
+        type: string
+      InstanceId:
+        type: string
+      InstanceType:
+        type: string
+      KeyName:
+        type: string
+      LaunchTime:
+        type: string
+        format: date-time
+      Monitoring:
+        type: object
+        properties:
+          Status:
+            type: string
+      Name:
+        type: string
+      NetworkInterfaces:
+        type: array
+        items:
+          type: object
+      OverallHealth:
+        type: string
+      OwningCluster:
+        type: string
+      Placement:
+        type: object
+        properties:
+          AvailabilityZone:
+            type: string
+          GroupName:
+            type: string
+          Tenancy:
+            type: string
+      Platform:
+        type: string
+      PrivateDnsName:
+        type: string
+      PrivateIpAddress:
+        type: string
+      PublicDnsName:
+        type: string
+      Role:
+        type: string
+      RootDeviceName:
+        type: string
+      RootDeviceType:
+        type: string
+      Schedule:
+        type: string
+      SecurityGroups:
+        type: array
+        items:
+          type: object
+          properties:
+            GroupId:
+              type: string
+            GroupName:
+              type: string
+      SecurityZone:
+        type: string
+      SourceDestCheck:
+        type: boolean
+      State:
+        type: object
+        properties:
+          Code:
+            type: integer
+          Name:
+            type: string
+      StateTransitionReason:
+        type: string
+      SubnetId:
+        type: string
+      Tags:
+        type: array
+        items:
+          type: object
+          properties:
+            Key:
+              type: string
+            Value:
+              type: string
+      VirtualizationType:
+        type: string
+      VpcId:
+        type: string
+      'aws:autoscaling:groupName':
+        type: string
+  LBSetting:
+    type: object
+    required:
+      - AccountName
+      - EnvironmentName
+      - VHostName
+      - Value
+    properties:
+      AccountName:
+        type: string    
+      EnvironmentName:
+        type: string
+      VHostName:
+        type: string
+      Value:
+        $ref: '#/definitions/LBSettingValue'
+      Version:
+        type: integer
+  LBSettingValue:
+    type: object
+    properties:
+      EnvironmentName:
+        type: string
+      FrontEnd:
+        type: boolean
+      Listen:
+        type: array
+        items:
+          type: object
+          properties:
+            Port:
+              type: integer
+            SSL:
+              type: boolean
+            IP:
+              type: [string, "null"]
+      Locations:
+        type: array
+        items:
+          type: object
+          properties:
+            Path:
+              type: string
+            ProxyHttpVersion:
+              type: string
+            ProxyPass:
+              type: string
+            ProxySetHeaders:
+              type: array
+              items:
+                type: string
+      SSLCertificate:
+        type: [string, "null"]
+      SSLKey:
+        type: [string, "null"]
+      ServerName:
+        type: array
+        items:
+          type: string
+      VHostName:
+        type: string
+  UpstreamSlice:
+    type: object
+    properties:
+      Key:
+        type: string
+      EnvironmentName:
+        type: string
+      ServiceName:
+        type: string
+      UpstreamName:
+        type: string
+      DnsName:
+        type: string
+      Port:
+        type: integer
+      OwningCluster:
+        type: string
+      Name:
+        type: string
+      State:
+        type: string
+  UpstreamConfig:
+    type: object
+    required:
+      - AccountName
+      - key
+    properties:
+      AccountName:
+        type: string
+      key:
+        type: string
+      Value:
+        $ref: '#/definitions/UpstreamConfigValue'
+  UpstreamConfigValue:
+    type: object
+    properties:
+      EnvironmentName:
+        type: string
+      Hosts:
+        type: array
+        items:
+          type: object
+          properties:
+            DnsName:
+              type: string
+            FailTimeout:
+              type: string
+            Port:
+              type: integer
+            State:
+              type: string
+            Weight:
+              type: integer
+      LoadBalancingMethod:
+        type: string
+      SchemaVersion:
+        type: integer
+      ServiceName:
+        type: string
+      UpstreamName:
+        type: string
+      ZoneSize:
+        type: string
+  Permissions:
+    type: object
+    required:
+      - Name
+      - Permissions
+    properties:
+      Name:
+        type: string
+      Permissions:
+        $ref: '#/definitions/PermissionsList'
+      Version:
+        type: integer
+  PermissionsList:
+    type: array
+    items:
+      type: object
+      properties:
+        Access:
+          type: string
+        Resource:
+          type: string
+  ServiceConfig:
+    type: object
+    required:
+      - OwningCluster
+      - ServiceName
+      - Value
+    properties:
+      OwningCluster:
+        type: string
+      ServiceName:
+        type: string
+      Value:
+        $ref: '#/definitions/ServiceConfigValue'
+      Version:
+        type: integer
+  ServiceConfigValue:
+    type: object
+    properties:
+      PackageType:
+        type: string
+      SchemaVersion:
+        type: integer
+  Deployment:
+    type: object
+    properties:
+      DeploymentID:
+        type: string
+      Value:
+        type: object
+        properties:
+          DeploymentType:
+            type: string
+          EndTimestamp:
+            type: string
+          EnvironmentName:
+            type: string
+          EnvironmentType:
+            type: string
+          ErrorReason:
+            type: string
+          ExecutionLog:
+            type: string
+          Nodes:
+            type: array
+            items:
+              type: object
+          OwningCluster:
+            type: string
+          SchemaVersion:
+            type: integer
+          ServerRoleName:
+            type: string
+          ServiceName:
+            type: string
+          ServiceSlice:
+            type: string
+            enum:
+              - blue
+              - green
+              - none
+          ServiceVersion:
+            type: string
+          StartTimestamp:
+            type: string
+          Status:
+            type: string
+            enum:
+              - Success
+              - Failed
+              - In Progress
+              - Cancelled
+          User:
+            type: string
+  PostDeployment:
+    type: object
+    required:
+      - environment
+      - service
+      - version
+    properties:
+      environment:
+        type: string
+      service:
+        type: string
+      version:
+        type: string
+      mode:
+        type: string
+        enum:
+          - bg
+          - overwrite
+      slice:
+        type: string
+        enum:
+          - blue
+          - green
+          - none
+      packageLocation:
+        type: string
+      serverRole:
+        type: string
+  SimpleServiceObject:
+    type: object
+    properties:
+      Name:
+        type: string
+      Slice:
+        type: string
+      Version:
+        type: string
+  DiagnosticsHealthcheck:
+    type: object
+    properties:
+      OK:
+        type: boolean
+      Version:
+        type: string
+  Error:
+    type: object
+    readOnly: true
+    properties:
+      title:
+        type: string
+        description: A short, human readable title of the error.
+      description:
+        type: string
+        description: A long, human readable description of the error.
+parameters:
+  ExpectedVersionHeader:
+    name: expected-version
+    in: header
+    required: true
+    type: integer
+  package-id:
+    name: service
+    description: The name of the service implemented by the package.
+    in: path
+    type: string
+    pattern: ^[A-Za-z0-9_\-\.]+$
+    required: true
+  package-version:
+    name: version
+    description: The version of the package (semver).
+    in: path
+    required: true
+    type: string
+    pattern: (0|[1-9]\d*)(\.(0|[1-9]\d*)){2}(-[\da-zA-Z\-]+(\.[\da-zA-Z\-]+)*)?(\+[\da-zA-Z\-]+(\.[\da-zA-Z\-]+)*)?
+  package-environment:
+    name: environment
+    description: The name of the environment targeted by this package.
+    in: path
+    type: string
+    pattern: ^[A-Za-z0-9]+$
+    required: true
+  package-slice:
+    name: slice
+    description: The name of the slice targeted by this package.
+    in: formData
+    type: string
+    enum:
+      - blue
+      - green
+    required: false
+  package-content:
+    name: package
+    description: The package file.
+    in: formData
+    type: file
+    required: true
+responses:
+  package-created:
+    description: The package was uploaded successfully.
+  package-already-exists:
+    description: The package already exists.
+    schema:
+      $ref: '#/definitions/Error'
+  package-bad-ref:
+    description: The package refers to a service or environment that does not exist.
+    schema:
+      $ref: '#/definitions/Error'

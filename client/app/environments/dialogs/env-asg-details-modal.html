@@ -10,67 +10,84 @@
     <p>Loading data...</p>
   </div>
 
-  <form name="form" ng-if="!vm.dataLoading" class="form-horizontal">
+  <div ng-if="!vm.dataLoading">
     <uib-tabset active="vm.asgUpdate.SelectedAction">
       <uib-tab heading="Instances" index="'instances'">
-        <div ng-include="'/app/environments/dialogs/asg/runtime-asg-size.html'"></div>
-        <asg-instances asg="vm.asg" asg-state="vm.asgState" ng-if="vm.asgState"></asg-instances>
+        <form name="form" class="form-horizontal">
+          <asg-instances asg="vm.asg" asg-state="vm.asgState" ng-if="vm.asgState"></asg-instances>
+        </form>
       </uib-tab>
-      <uib-tab heading="Launch Configuration" index="'launchConfig'">
-        <div>
-          <div ng-include="'/app/common/launch-config/launch-config.html'" style="width: 900px"></div>
-          <div class="form-group">
-            <label class="col-md-1 control-label text-left" style="width: 180px"></label>
-            <div class="col-md-8">
-              <button class="btn btn-default" type="button" ng-click="vm.updateLaunchConfig()" ng-if="vm.canUser('edit')" ng-disabled="!vm.formIsValid(form)">Update Launch Configuration</button>
+      <uib-tab heading="ASG Settings" index="'runtime-asg'">
+        <form name="form" class="form-horizontal">
+          <div style="width: 900px">
+            <div ng-include="'/app/environments/dialogs/asg/runtime-asg.html'"></div>
+            <div class="form-group">
+              <div class="col-md-8 col-md-offset-2">
+                <button class="btn btn-default" type="button" ng-click="vm.updateAutoScalingGroup()" ng-if="vm.canUser('edit')" ng-disabled="!vm.formIsValid(form) || !vm.updateASGFormIsValid()">Update Auto Scaling Group</button>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="form-group">
-          <div ng-if="!vm.deploymentMapTarget">
-              <p style="margin-left: 15px">No corresponding configuration found for this ASG in deployment map "{{ vm.deploymentMap.DeploymentMapName }}".<br/>Expecting to find Server Role "{{ vm.asg.getDeploymentMapTargetName() }}" owned by {{vm.asg.OwningCluster}}.</p>
+        </form>
+      </uib-tab>
+      <uib-tab heading="Launch Configuration" index="'launchConfig'" >
+        <form name="form" class="form-horizontal asg-launch-configuration">
+          <div ng-init="vm.setLaunchConfigForm(form)">
+            <div ng-include="'/app/common/launch-config/launch-config.html'" style="width: 900px"></div>
+            <div class="form-group">
+              <label class="col-md-1 control-label text-left" style="width: 180px"></label>
+              <div class="col-md-8">
+                <button class="btn btn-default submit" type="button" ng-click="vm.updateLaunchConfig()" ng-if="vm.canUser('edit')" ng-disabled="!vm.formIsValid(form)">Update Launch Configuration</button>
+              </div>
+            </div>
           </div>
+          <div class="form-group">
+            <div ng-if="!vm.deploymentMapTarget">
+                <p style="margin-left: 15px">No corresponding configuration found for this ASG in deployment map "{{ vm.deploymentMap.DeploymentMapName }}".<br/>Expecting to find Server Role "{{ vm.asg.getDeploymentMapTargetName() }}" owned by {{vm.asg.OwningCluster}}.</p>
+            </div>
 
-          <div ng-if="vm.deploymentMapTarget" class="col-md-2" style="position: relative; left: 180px">
-            <a href="" ng-click="vm.openServerRoleConfig()" ng-if="canUser('edit')">View Deployment Map Settings</a>
+            <div ng-if="vm.deploymentMapTarget" class="col-md-8" style="position: relative; left: 180px">
+              <a href="" ng-click="vm.openServerRoleConfig()" ng-if="canUser('edit')">View Deployment Map Settings</a>
+            </div>
           </div>
-        </div>
+        </form>
       </uib-tab>
       <uib-tab heading="Services" index="'services'">
-        <asg-services asg="vm.asg" asg-state="vm.asgState" environment="vm.environmentName" role="vm.asg.Role" ng-if="vm.asgState"></asg-services>
+        <asg-services asg="vm.asg" asg-state="vm.asgState" refresh="vm.refresh()" environment="vm.environmentName" role="vm.asg.Role" close-modal="vm.closeModal()" ng-if="vm.asgState"></asg-services>
       </uib-tab>
       <uib-tab heading="Schedule &amp; Scaling" index="'schedule'">
-        <div class="form-group">
+        <form name="formScaling" class="form-horizontal">
+          <div class="form-group">
             <label class="col-md-1 control-label text-left nowrap">Scaling Mode:</label>
             <div class="col-md-2">
               <select class="form-control" ng-model="vm.selectedScheduleMode">
                 <option ng-repeat="mode in vm.scheduleModes" value="{{mode.type}}">{{mode.label}}</option>
               </select>
             </div>
-        </div>
-        <div ng-if="vm.selectedScheduleMode == 'scaling'">
+          </div>
+          <div ng-if="vm.selectedScheduleMode == 'scaling'">
+            <div class="form-group">
+              <label class="col-md-1 control-label text-left nowrap">Scaling Schedule:</label>
+              <div class="col-md-8">
+                <scaling-schedule-editor schedule="vm.asgUpdate.ScalingSchedule" min-size="vm.asg.MinSize" max-size="vm.asg.MaxSize"></scaling-schedule-editor>
+              </div>
+            </div>
+          </div>
+          <div ng-if="vm.selectedScheduleMode == 'schedule'">
+            <div class="form-group" ng-class="{'has-error': formScaling.DefaultSchedule.$invalid}">
+              <label class="col-md-1 control-label text-left nowrap">ASG Schedule:</label>
+              <div class="col-md-8">
+                <schedule-editor show-on="true" show-off="true" show-default="true" show-specific="true" schedule="vm.asgUpdate.NewSchedule"></schedule-editor>
+              </div>
+              <span class="help-block" ng-if="formScaling.DefaultSchedule.$dirty && formScaling.DefaultSchedule.$invalid">Schedule should be set to '247' or specific Start and End cron formats (see Tagging standards).</span>
+            </div>
+          </div>
           <div class="form-group">
-            <label class="col-md-1 control-label text-left nowrap">Scaling Schedule:</label>
-            <div class="col-md-8">
-              <scaling-schedule-editor schedule="vm.asgUpdate.ScalingSchedule" min-size="vm.asg.MinSize" max-size="vm.asg.MaxSize"></scaling-schedule-editor>
+            <label class="col-md-1 control-label text-left">&nbsp;</label>
+            <div class="col-md-2">
+              <button class="btn btn-default" type="button" ng-disabled="!vm.canSubmit()" ng-click="vm.changeAsgSchedule()">Update ASG Schedule</button>
             </div>
           </div>
-        </div>
-        <div ng-if="vm.selectedScheduleMode == 'schedule'">
-          <div class="form-group" ng-class="{'has-error': form.DefaultSchedule.$invalid}">
-            <label class="col-md-1 control-label text-left nowrap">ASG Schedule:</label>
-            <div class="col-md-8">
-              <schedule-editor show-on="true" show-off="true" show-default="true" show-specific="true" schedule="vm.asgUpdate.NewSchedule"></schedule-editor>
-            </div>
-            <span class="help-block" ng-if="form.DefaultSchedule.$dirty && form.DefaultSchedule.$invalid">Schedule should be set to '247' or specific Start and End cron formats (see Tagging standards).</span>
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="col-md-1 control-label text-left">&nbsp;</label>
-          <div class="col-md-2">
-            <button class="btn btn-default" type="button" ng-disabled="!canSubmit()" ng-click="vm.changeAsgSchedule()">Update ASG Schedule</button>
-          </div>
-        </div>
+        </form>
       </uib-tab>
     </uib-tabset>
   </form>
@@ -79,5 +96,5 @@
 </div>
 
 <div class="modal-footer">
-    <button class="btn btn-default" type="button" ng-click="vm.closeModal()">Close</button>
+  <button class="btn btn-default" type="button" ng-click="vm.closeModal()">Close</button>
 </div>

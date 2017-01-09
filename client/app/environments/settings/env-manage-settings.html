@@ -1,17 +1,17 @@
 <div class="row page-title">
-    <div class="col-md-12"><h2>Settings for {{Environment.EnvironmentName}}</h2></div>
-    <div id="RefreshData">
-        <span class="glyphicon glyphicon-refresh" ng-click="Refresh()" title="Refresh data"></span>
-    </div>
+  <div class="col-md-12"><h2>Settings for {{vm.environment.EnvironmentName}}</h2></div>
+  <div id="RefreshData">
+    <span class="glyphicon glyphicon-refresh" ng-click="vm.refresh()" title="Refresh data"></span>
+  </div>
 </div>
 
-<spinner ng-show="DataLoading"></spinner>
+<spinner ng-show="vm.dataLoading"></spinner>
 
-<div class="row" ng-show="!DataLoading">
-    <div class="col-md-12" ng-show="!DataFound">
+<div class="row" ng-show="!vm.dataLoading">
+    <div class="col-md-12" ng-show="!vm.dataFound">
         <p>Environment not found.</p>
     </div>
-    <div class="col-md-12" ng-show="DataFound">
+    <div class="col-md-12" ng-show="vm.dataFound">
 
         <uib-tabset>
             <uib-tab heading="Details">
@@ -19,48 +19,48 @@
                 <form name="form" id="EnvironmentDetails" class="form-horizontal">
                     <div class="form-group" ng-class="{'has-error': form.OwningClusters.$invalid}">
                         <label class="col-md-1 control-label text-left nowrap">Owning Cluster: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
-                        <div class="col-md-2" ng-if="canUser('edit')">
+                        <div class="col-md-2" ng-if="vm.canUser('edit')">
                             <select class="form-control"
                                     name="OwningClusters"
                                     required=""
-                                    ng-model="NewEnvironment.OwningCluster">
-                                <option ng-repeat="cluster in OwningClustersList" ng-selected="{{cluster == NewEnvironment.OwningCluster}}" value="{{cluster}}">{{cluster}}</option>
+                                    ng-model="vm.newEnvironment.OwningCluster">
+                                <option ng-repeat="cluster in vm.owningClustersList" ng-selected="{{cluster == vm.newEnvironment.OwningCluster}}" value="{{cluster}}">{{cluster}}</option>
                             </select>
                         </div>
-                        <div class="col-md-2" ng-if="!canUser('edit')">
-                            <label class="control-label text-left nonbold">{{NewEnvironment.OwningCluster}}</label>
+                        <div class="col-md-2" ng-if="!vm.canUser('edit')">
+                            <label class="control-label text-left nonbold">{{vm.newEnvironment.OwningCluster}}</label>
                         </div>
                         <span class="help-block" ng-if="form.OwningClusters.$dirty && form.OwningClusters.$error.required">Owning cluster is mandatory.</span>
                     </div>
                     <div class="form-group" ng-class="{'has-error': form.DeploymentMap.$invalid}">
                         <label class="col-md-1 control-label text-left nowrap">Deployment Map: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
-                        <div class="col-md-2" ng-if="canUser('edit')">
+                        <div class="col-md-2" ng-if="vm.canUser('edit')">
                             <select class="form-control"
                                     name="DeploymentMap"
                                     required=""
-                                    ng-model="NewEnvironment.DeploymentMap">
-                                <option ng-repeat="map in DeploymentMapsList" ng-selected="{{map == NewEnvironment.DeploymentMap}}" value="{{map}}">{{map}}</option>
+                                    ng-model="vm.newEnvironment.DeploymentMap">
+                                <option ng-repeat="map in vm.deploymentMapsList" ng-selected="{{map == vm.newEnvironment.DeploymentMap}}" value="{{map}}">{{map}}</option>
                             </select>
                         </div>
-                        <div class="col-md-2" ng-if="!canUser('edit')">
-                            <label class="control-label text-left nonbold">{{NewEnvironment.DeploymentMap}}</label>
+                        <div class="col-md-2" ng-if="!vm.canUser('edit')">
+                            <label class="control-label text-left nonbold">{{vm.newEnvironment.DeploymentMap}}</label>
                         </div>
-                        <span style="display:block;padding-top:7px"><a href="#/config/deploymentmaps/{{NewEnvironment.DeploymentMap}}" target="_blank">View Map</a> <small>(Launches new window)</small></span>
+                        <span style="display:block;padding-top:7px"><a href="#/config/deploymentmaps/{{vm.newEnvironment.DeploymentMap}}" target="_blank">View Map</a> <small>(Launches new window)</small></span>
                         <span class="help-block" ng-if="form.DeploymentMap.$dirty && form.DeploymentMap.$error.required">Deployment Map is mandatory.</span>
                         <!-- TODO: changing a deployment map not necessarily a good idea, won't update existing AWS resources. Should warn user if they do before Save -->
                     </div>
                     <div class="form-group" ng-class="{'has-error': form.CodeDeployBucket.$invalid}">
                         <label class="col-md-1 control-label text-left nowrap">Code Deploy Bucket: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
-                        <div class="col-md-2" ng-if="canUser('edit')">
+                        <div class="col-md-2" ng-if="vm.canUser('edit')">
                             <input type="text"
                                    name="CodeDeployBucket"
                                    class="form-control"
                                    required=""
                                    maxlength="60"
-                                   ng-model="NewEnvironment.CodeDeployBucket" />
+                                   ng-model="vm.newEnvironment.CodeDeployBucket" />
                             <!-- TODO: define bucket pattern, expect to start with 'tl-deployment'? pattern="[a-zA-Z]+*" -->
                         </div>
-                        <div class="col-md-3" ng-if="!canUser('edit')">
+                        <div class="col-md-3" ng-if="!vm.canUser('edit')">
                             <label class="control-label text-left nonbold">{{NewEnvironment.CodeDeployBucket}}</label>
                         </div>
                         <span class="help-block" ng-if="form.CodeDeployBucket.$dirty && form.CodeDeployBucket.$error.required">Code Deploy Bucket is mandatory.</span>
@@ -69,13 +69,13 @@
                     <div class="form-group">
                         <label class="col-md-1 control-label text-left">Description:</label>
                         <div class="col-md-2">
-                            <textarea ng-model="NewEnvironment.Description" ng-readonly="!canUser('edit')"></textarea>
+                            <textarea ng-model="vm.newEnvironment.Description" ng-readonly="!vm.canUser('edit')"></textarea>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-md-1 control-label">&nbsp;</label>
                         <div class="col-md-2">
-                            <button type="button" class="btn btn-default" ng-if="canUser('edit')" ng-disabled="!form.$valid" ng-click="Save()">Save Changes</button>
+                            <button type="button" class="btn btn-default" ng-if="vm.canUser('edit')" ng-disabled="!form.$valid" ng-click="vm.save()">Save Changes</button>
                         </div>
                     </div>
                 </form>
@@ -89,15 +89,15 @@
                             <label class="control-label text-left">Show:</label>
                         </div>
                         <div class="form-group">
-                            <select class="form-control" ng-model="SelectedValidationMode.Mode" ng-options="e.Value as e.Name for e in ValidationModes" ng-change="RefreshDependencies()"></select>
+                            <select class="form-control" ng-model="vm.selectedValidationMode.Mode" ng-options="e.Value as e.Name for e in vm.validationModes" ng-change="vm.refreshDependencies()"></select>
                         </div>
                     </form>
 
                     <div class="ValidationBlock">
                         <h3>Deployment Map Services:</h3>
-                        <p ng-if="DependentServices.length == 0 && !SelectedValidationMode.Mode">No validation errors.</p>
-                        <p ng-if="DependentServices.length == 0 && SelectedValidationMode.Mode">No services found.</p>
-                        <div id="EnvironmentDependentServices" ng-if="DependentServices.length > 0">
+                        <p ng-if="vm.dependentServices.length == 0 && !vm.selectedValidationMode.Mode">No validation errors.</p>
+                        <p ng-if="vm.dependentServices.length == 0 && vm.selectedValidationMode.Mode">No services found.</p>
+                        <div id="EnvironmentDependentServices" ng-if="vm.dependentServices.length > 0">
                             <table class="table">
                                 <thead>
                                     <tr>
@@ -106,7 +106,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat="node in DependentServices | orderBy : 'EntityName' ">
+                                    <tr ng-repeat="node in vm.dependentServices | orderBy : 'EntityName' ">
                                         <td><a href="#/config/deploymentmaps/{{Environment.Value.DeploymentMap}}?serviceName={{node.EntityName}}">{{node.EntityName}}</a></td>
                                         <td><div class="config-status-{{node.Valid}}"></div> {{node.Error ? 'Service not found' : ''}}</td>
                                     </tr>
@@ -117,9 +117,9 @@
 
                     <div class="ValidationBlock">
                         <h3>Load Balancer Settings and Upstreams:</h3>
-                        <p ng-if="DependentLBSettings.length == 0 && !SelectedValidationMode.Mode">No validation errors.</p>
-                        <p ng-if="DependentLBSettings.length == 0 && SelectedValidationMode.Mode">No settings found.</p>
-                        <div id="EnvironmentDependentLBSettings" ng-if="DependentLBSettings.length > 0">
+                        <p ng-if="vm.dependentLBSettings.length == 0 && !vm.selectedValidationMode.Mode">No validation errors.</p>
+                        <p ng-if="vm.dependentLBSettings.length == 0 && vm.selectedValidationMode.Mode">No settings found.</p>
+                        <div id="EnvironmentDependentLBSettings" ng-if="vm.dependentLBSettings.length > 0">
                             <table class="table">
                                 <thead>
                                     <tr>
@@ -128,7 +128,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr ng-repeat-start="node in DependentLBSettings | orderBy : 'EntityName' ">
+                                    <tr ng-repeat-start="node in vm.dependentLBSettings | orderBy : 'EntityName' ">
                                         <td><a href="#/config/loadbalancer/{{Environment.EnvironmentName}}?Range={{node.EntityName}}">{{node.EntityName}}</a></td>
                                         <td><div class="config-status-{{node.Valid}}"></div> {{node.Error ? 'Problem with child upstream(s)' : ''}}</td>
                                     </tr>

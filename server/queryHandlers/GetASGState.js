@@ -5,5 +5,5 @@
 let getASGState = require('modules/environment-state/getASGState');
 
 module.exports = function GetServerState(query) {
-  return getASGState(query.accountName, query.environmentName, query.asgName);
+  return getASGState(query.environmentName, query.asgName);
 };

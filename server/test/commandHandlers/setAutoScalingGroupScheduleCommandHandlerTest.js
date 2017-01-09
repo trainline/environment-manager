@@ -1,4 +1,5 @@
-"use strict";
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+'use strict';
 
 let should = require('should');
 let sinon = require('sinon');
@@ -45,8 +46,8 @@ describe('SetAutoScalingGroupScheduleCommandHandler:', () => {
       ],
     };
 
-    var senderMock = {
-      sendQuery: sinon.stub().returns(Promise.resolve(expectedAutoScalingGroup)),
+    var AutoScalingGroupMock = {
+      getByName: sinon.stub().returns(Promise.resolve(expectedAutoScalingGroup)),
     };
 
     describe('and I send a command to set its schedule tag to "247" without affecting its instances too', () => {
@@ -66,7 +67,7 @@ describe('SetAutoScalingGroupScheduleCommandHandler:', () => {
         };
         Target.__set__({
           ec2InstanceClientFactory: ec2InstanceClientFactoryMock,
-          sender: senderMock,
+          AutoScalingGroup: AutoScalingGroupMock,
           autoScalingGroupClientFactory: autoScalingGroupClientFactoryMock,
         });
         
@@ -149,7 +150,7 @@ describe('SetAutoScalingGroupScheduleCommandHandler:', () => {
         };
         Target.__set__({
           ec2InstanceClientFactory: ec2InstanceClientFactoryMock,
-          sender: senderMock,
+          AutoScalingGroup: AutoScalingGroupMock,
           autoScalingGroupClientFactory: autoScalingGroupClientFactoryMock,
         });
         
@@ -221,7 +222,7 @@ describe('SetAutoScalingGroupScheduleCommandHandler:', () => {
         };
         Target.__set__({
           ec2InstanceClientFactory: ec2InstanceClientFactoryMock,
-          sender: senderMock,
+          AutoScalingGroup: AutoScalingGroupMock,
           autoScalingGroupClientFactory: autoScalingGroupClientFactoryMock,
         });
         
@@ -274,7 +275,7 @@ describe('SetAutoScalingGroupScheduleCommandHandler:', () => {
         };
         Target.__set__({
           ec2InstanceClientFactory: ec2InstanceClientFactoryMock,
-          sender: senderMock,
+          AutoScalingGroup: AutoScalingGroupMock,
           autoScalingGroupClientFactory: autoScalingGroupClientFactoryMock,
         });
         

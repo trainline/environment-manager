@@ -6,6 +6,9 @@
         <thead>
           <tr>
             <th class="text-nowrap">Service</th>
+            <th class="text-nowrap">Version</th>
+            <th class="text-nowrap">Slice</th>
+            <th class="text-nowrap">Installed</td>
             <th class="text-nowrap">Health Checks</th>
             <!-- <th class="text-nowrap">Deploy Reason</th> -->
             <th class="text-nowrap">Deploy Log</th>
@@ -13,8 +16,14 @@
         </thead>
         <tbody>
           <tr ng-repeat="service in vm.instance.Services">
-            <td><health-status status='service.OverallHealth.Status'></health-status> {{ service.Name }}</td>
-            <td><health-checks list="service.HealthChecks"></health-checks></td>
+            <td><health-status status='service.OverallHealth'></health-status> {{ service.Name }}
+            </td>
+            <td>{{ service.Version }}</td>
+            <td><span class="slice-symbol" ng-class="service.Slice"></span>{{ service.Slice }}</td>
+            <td>
+              <service-diff-with-target-state state="service.DiffWithTargetState"></service-diff-with-target-state>
+            </td>
+            <td><health-checks list="service.HealthChecks" ></health-checks></td>
             <!-- <td>{{ service.DeploymentCause }}</td> -->
             <td><a ng-href="{{ service.LogLink }}" target="_blank">View Log</a></td>
           </tr>

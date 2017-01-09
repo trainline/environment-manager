@@ -3,7 +3,7 @@
 
 // Manage specific LoadBalancer Setting
 angular.module('EnvironmentManager.configuration').controller('LBController',
-  function ($scope, $routeParams, $location, $q, resources, cachedResources, modal, accountMappingService) {
+  function ($scope, $routeParams, $location, $q, $http, resources, cachedResources, modal, accountMappingService) {
 
     $scope.LBSetting = {};
     $scope.LBUpstreamData = [];
@@ -80,7 +80,7 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
         $scope.PageMode = mode ? mode : 'Edit';
         if ($scope.PageMode == 'Edit' || $scope.PageMode == 'Copy') {
 
-          accountMappingService.GetAccountForEnvironment(environment).then(function (accountName) {
+          accountMappingService.getAccountForEnvironment(environment).then(function (accountName) {
 
             var params = {
               account: accountName,
@@ -120,20 +120,35 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
     };
 
     $scope.Save = function () {
-      var saveMethod = $scope.PageMode == 'Edit' ? resources.config.lbSettings.put : resources.config.lbSettings.post;
 
-      accountMappingService.GetAccountForEnvironment($scope.LBSetting.EnvironmentName).then(function (accountName) {
+      accountMappingService.getAccountForEnvironment($scope.LBSetting.EnvironmentName).then(function (accountName) {
 
-        var params = {
-          account: accountName,
-          key: $scope.LBSetting.EnvironmentName,
-          range: $scope.LBSetting.VHostName,
-          expectedVersion: $scope.Version,
-          data: {
-            Value: JSON.parse($scope.LBSetting.Value),
-          },
-        };
-        saveMethod(params).then(function () {
+        var key = $scope.LBSetting.EnvironmentName;
+        var range = $scope.LBSetting.VHostName;
+        var value = JSON.parse($scope.LBSetting.Value);
+
+        var promise;
+        if ($scope.PageMode == 'Edit') {
+          promise = $http({
+            method: 'put',
+            url: '/api/v1/config/lb-settings/' + key + '/' + range,
+            data: value,
+            headers: { 'expected-version': $scope.Version }
+          });
+        } else {
+          promise = $http({
+            method: 'post',
+            url: '/api/v1/config/lb-settings',
+            data: {
+              EnvironmentName: $scope.LBSetting.EnvironmentName,
+              VHostName: $scope.LBSetting.VHostName,
+              Value: value
+            },
+            headers: { 'expected-version': $scope.Version }
+          });
+        }
+
+        promise.then(function () {
           cachedResources.config.lbSettings.flush();
           BackToSummary($scope.LBSetting.EnvironmentName);
         });
@@ -161,8 +176,8 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
         errors = errors.concat(listenErrors);
 
         if (listenErrors.length == 0) {
-          var listenMandatoryFields = ['Port', 'SSL'];
-          var listenOptionalFields = ['IP'];
+          var listenMandatoryFields = ['Port'];
+          var listenOptionalFields = ['IP', 'SSL'];
           for (var i = 0; i < value.Listen.length; i++) {
             errors = errors.concat($scope.ValidateFields(value.Listen[i], listenMandatoryFields, listenOptionalFields, 'Listen[' + i + ']'));
           }
@@ -220,13 +235,15 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
             if (location.ProxyPass) {
               var proxyUpstreamName = location.ProxyPass.replace('http://', '').replace('https://', '');
 
-              if ($scope.LBUpstreamData && $scope.LBUpstreamData.length > 0) {
-                var matchFound = $scope.LBUpstreamData.some(function upstreamIsProxy(upstream) {
-                  return upstream.Value.UpstreamName === proxyUpstreamName;
-                });
+              if (!_.includes(proxyUpstreamName, '.')) {
+                if ($scope.LBUpstreamData && $scope.LBUpstreamData.length > 0) {
+                  var matchFound = $scope.LBUpstreamData.some(function upstreamIsProxy(upstream) {
+                    return upstream.Value.UpstreamName === proxyUpstreamName;
+                  });
 
-                if (!matchFound) {
-                  errors.push('Locations[' + i + '] - Upstream name in Proxy Pass not found. Please check spelling and capitalisation');
+                  if (!matchFound) {
+                    errors.push('Locations[' + i + '] - Upstream name in Proxy Pass not found. Please check spelling and capitalisation');
+                  }
                 }
               }
             }

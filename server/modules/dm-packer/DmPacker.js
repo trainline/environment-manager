@@ -80,18 +80,22 @@ module.exports = function DmPacker(logger) {
 
   this.uploadCodeDeployPackage = function (destination, stream, s3client) {
     return new Promise((resolve, reject) => {
-      stream.on('error', err => reject(err));
-      s3client.upload({
-        Bucket: destination.bucket,
-        Key: destination.key,
-        Body: stream,
-      }, (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data);
-        }
-      });
+      try {
+        stream.on('error', err => reject(err));
+        s3client.upload({
+          Bucket: destination.bucket,
+          Key: destination.key,
+          Body: stream
+        }, (err, data) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(data);
+          }
+        });
+      } catch (err) {
+        reject(err);
+      }
     }).then(
       (rsp) => {
         logger.info(`Package uploaded to: ${rsp.Location}`);

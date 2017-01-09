@@ -30,8 +30,8 @@ describe('consulCatalog', function() {
       return sut.getAllServices({}).then(services => {
         assert(Object.keys(services).length > 20, 'expected more than 20 services');
 
-        return _.forOwn(services, service => {
-          assert(service.some(tag => tag.indexOf('deployment_id') === 0), 'expected all services to have a deployment ID');
+        return _.forOwn(services, serviceTags => {
+          assert(_.includes(Object.keys(serviceTags), 'deployment_id'), 'expected all services to have a deployment ID');
         });
       });
     });

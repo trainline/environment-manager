@@ -2,22 +2,24 @@
 'use strict';
 
 angular.module('EnvironmentManager.common').controller('MainController',
-  function ($rootScope, $scope, $route, $routeParams, $location, modal, cachedResources) {
+  function ($rootScope, $scope, $route, $routeParams, $location, modal, Environment) {
+    var vm = this;
 
+    $scope.appVersion = window.version;
     $scope.$route = $route; // Used by index page to determine active section
     $scope.LoggedInUser = window.user.getName(); // For display in header
     $scope.ParentEnvironmentsList = []; // For Environments selection
     $rootScope.WorkingEnvironment = { EnvironmentName: '' }; // For Environments section only, selected Environment from Sidebar drop-down
 
     function init() {
-      cachedResources.config.environments.all().then(function (environments) {
+      Environment.all().then(function (environments) {
         $scope.ParentEnvironmentsList = _.map(environments, 'EnvironmentName').sort();
       }).then(function () {
         if (!$rootScope.WorkingEnvironment.EnvironmentName) $rootScope.WorkingEnvironment.EnvironmentName = $scope.ParentEnvironmentsList[0];
       });
     }
 
-    $scope.GetSection = function () {
+    vm.getSection = function () {
       if ($location.path().indexOf('config') > -1) {
         return 'config';
       } else if ($location.path().indexOf('operations') > -1) {
@@ -118,29 +120,31 @@ angular.module('EnvironmentManager.common').controller('MainController',
       return !(!!value);
     }
 
-    // TODO: remove once no longer editing JSON in UI
-    $scope.tryParseJSON = function (jsonString) {
-      try {
-        var o = JSON.parse(jsonString);
-        if (o && typeof o === 'object' && o !== null) {
-          return o;
-        }
-      } catch (e) {}
-
-      return null;
-    };
-
     $scope.ShowSchemaHelp = function () {
       var DYNAMO_SCHEMA_WIKI_URL = window.links.DYNAMO_CONFIG;
       window.open(DYNAMO_SCHEMA_WIKI_URL, '_blank');
     };
 
-    $rootScope.$on('error', function (event, data) {
-      modal.information({
-        title: 'Error',
-        message: data.data,
-        severity: 'Danger',
-      });
+    $rootScope.$on('error', function (event, response) {
+      var errorMessage;
+      var title = 'Error'
+      var errors = _.get(response, ['data', 'errors']);
+      if (_.isString(response.data)) {
+        errorMessage = response.data;
+      } else if (_.isArray(errors)) {
+        // Handle errors returned in JSON API format: http://jsonapi.org/format/#errors
+        if (errors.length === 1) {
+          title = errors[0].title || title;
+          errorMessage = errors[0].detail;
+        } else {
+          title = 'Errors';
+          errorMessage = _.join(_.map(errors, function (e) { return "<h2>" + e.title + "</h2><p>" + e.detail; }), "<hr>");
+        }
+      } else {
+        errorMessage = response.data.error;
+      }
+
+      modal.error(title, errorMessage);
     });
 
     $rootScope.$on('cookie-expired', function () {

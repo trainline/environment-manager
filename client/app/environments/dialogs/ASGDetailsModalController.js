@@ -2,14 +2,15 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ASGDetailsModalController',
-  function ($scope, $uibModal, $uibModalInstance, $q, modal, serviceDiscovery, $rootScope, Image, awsService, AutoScalingGroup, resources, cachedResources, deploymentMapConverter, parameters) {
-
+  function ($scope, $uibModal, $uibModalInstance, $q, modal, serviceDiscovery, Image, awsService, AutoScalingGroup, resources, cachedResources, deploymentMapConverter, asgDistributionService, parameters) {
     var vm = this;
+    
     vm.context = 'asg';
 
     var selectedImageVersions = null;
     var amiData = [];
     var environment = parameters.environment;
+    var launchConfigForm;
 
     vm.awsInstanceTypesList = [];
     vm.deploymentMap = null;
@@ -25,9 +26,11 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       MaxSize: 0,
       ConfiguredAmiType: '',
       ConfiguredAmiVersion: '',
+      AvailabilityZone: '',
       NewAmi: null,
       NewSchedule: null,
     };
+    vm.deploymentAzsList = ['A', 'B', 'C'];
 
     vm.scheduleModes = [{
       type: 'schedule',
@@ -35,12 +38,12 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     },{
       type: 'scaling',
       label: 'Scheduled server scaling'
-    }]
+    }];
 
     function init() {
       resources.aws.instanceTypes.all().then(function (instanceTypes) {
         vm.awsInstanceTypesList = instanceTypes.filter(function (instanceType) {
-          return !(instanceType.startsWith('c3') || instanceType.startsWith('m3'));
+          return !(_.startsWith(instanceType, 'c3') || _.startsWith(instanceType, 'm3'));
         });
       }).then(function() {
         vm.refresh(true);
@@ -54,7 +57,28 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       vm.asgUpdate.MaxSize = vm.asg.MaxSize;
       vm.asgUpdate.NewSchedule = vm.asg.Schedule;
       vm.asgUpdate.ScalingSchedule = vm.asg.ScalingSchedule;
+      vm.asgUpdate.AvailabilityZone = deriveAvailabilityZoneFriendlyName(vm.asg.AvailabilityZones);
       vm.selectedScheduleMode = vm.asg.ScalingSchedule && vm.asg.ScalingSchedule.length ? 'scaling' : 'schedule';
+    }
+
+    vm.isAZChecked = function (az) {
+      return _.includes(vm.asgUpdate.AvailabilityZone, az);
+    };
+
+    vm.toggleAZSelection = function(az) {
+        if (_.includes(vm.asgUpdate.AvailabilityZone, az)) {
+            _.remove(vm.asgUpdate.AvailabilityZone, function(item) { return item === az; });
+        } else {
+            vm.asgUpdate.AvailabilityZone.push(az);
+        }
+    }
+
+    function deriveAvailabilityZoneFriendlyName(azs) {
+      return azs.map(function(az){ return az.substring(azs[0].length - 1).toUpperCase(); });
+    }
+
+    vm.setLaunchConfigForm = function (form) {
+      launchConfigForm = form;
     };
 
     vm.openServerRoleConfig = function () {
@@ -84,6 +108,10 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       return true; // TODO(filip): add perms - none were used here so far
     };
 
+    vm.updateASGFormIsValid = function () {
+      return !!vm.asgUpdate.AvailabilityZone.length;
+    };
+
     vm.formIsValid = function (form) {
       // TODO: Workaround for bug in uniqueAmong directive, returns false positive for disabled control. Can remove this once fixed.
       if (vm.pageMode == 'Edit') {
@@ -97,8 +125,8 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       vm.dataLoading = true;
 
       $q.all([
-        serviceDiscovery.getASGState(parameters.accountName, parameters.environment.EnvironmentName, parameters.groupName),
-        AutoScalingGroup.getFullByName(parameters.accountName, parameters.environment.EnvironmentName, parameters.groupName),
+        serviceDiscovery.getASGState(parameters.environment.EnvironmentName, parameters.groupName),
+        AutoScalingGroup.getFullByName(parameters.environment.EnvironmentName, parameters.groupName),
       ]).then(function (arr) {
         vm.asgState = arr[0];
         vm.asg = arr[1];
@@ -115,7 +143,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
         Image.getByName(vm.target.ASG.LaunchConfig.AMI).then(function (ami) {
           var currentSize = vm.target.ASG.LaunchConfig.Volumes[0].Size;
-          vm.requiredImageSize = ami === undefined ? currentSize : ami.RootVolumeSize;
+          vm.requiredImageSize = !_.isObject(ami) ? currentSize : ami.RootVolumeSize;
         });
 
         // Refresh deployment map data to pick up any config changes
@@ -145,6 +173,8 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
             vm.asgUpdate.NewAmi = selectedImageVersions[0];
           }
 
+          vm.currentDistribution = asgDistributionService.calcDistribution(vm.deploymentAzsList, vm.asg);
+
           vm.dataLoading = false;
         }).then(function () {
           // On initialization scope properties are initialized with ASG details
@@ -153,6 +183,8 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
             initializeScope();
           }
         });
+      }, function (error) {
+        vm.closeModal();
       });
 
     };
@@ -184,6 +216,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         vm.target.ASG.LaunchConfig.AMI = selectedAmi.displayName;
         vm.requiredImageSize = selectedAmi.rootVolumeSize;
         vm.target.ASG.LaunchConfig.Volumes[0].Size = selectedAmi.rootVolumeSize;
+        launchConfigForm.$setDirty(true);
       });
     };
 
@@ -192,24 +225,55 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       updated.SecurityGroups = vm.target.ASG.LaunchConfig.UI_SecurityGroupsFlatList.split(',').map(_.trim);
       delete updated.UI_SecurityGroupsFlatList;
       vm.asg.updateLaunchConfig(updated).then(function() {
-        showLaunchConfigConfirmation();
-        vm.refresh();
-      }, function (error) {
-        $rootScope.$broadcast('error', error);
+        showLaunchConfigConfirmation().then(vm.refresh);
       });
     };
+
+    vm.updateAutoScalingGroup = function () {
+      confirmAZChange().then(function() {
+          var updated = {
+            size: {
+              min: vm.asgUpdate.MinSize,
+              desired: vm.asgUpdate.DesiredCapacity,
+              max: vm.asgUpdate.MaxSize
+            },
+            network: {
+              availabilityZoneName: vm.asgUpdate.AvailabilityZone
+            }
+          };
+          vm.asg.updateAutoScalingGroup(updated).then(function() {
+            modal.information({
+              title: 'ASG Updated',
+              message: 'ASG update successful. You can monitor instance changes by using the Refresh Icon in the top right of the window.<br/><br/><b>Note:</b> During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection draining before termination.',
+            }).then(function () {
+              vm.refresh();
+            });
+          });
+      });
+    };
+
+    function confirmAZChange() {
+      var originalAvailabilityZone = deriveAvailabilityZoneFriendlyName(vm.asg.AvailabilityZones).sort();
+      if (_.isEqual(originalAvailabilityZone, vm.asgUpdate.AvailabilityZone.sort())) {
+        return Promise.resolve(true);
+      }
+      
+      return modal.confirmation({
+        title: 'Change Availability Zones',
+        message: 'Are you sure you want to change the AZ settings? AWS will instantly rebalance your instances according to these settings.',
+        severity: 'Danger'
+      });
+    }
 
     vm.resize = function () {
       var min = vm.asgUpdate.MinSize;
       var desired = vm.asgUpdate.DesiredCapacity;
       var max = vm.asgUpdate.MaxSize;
 
-      resources.aws.asgs.set(vm.asg.AsgName).inAWSAccount(parameters.accountName).minSize(min).desiredSize(desired).maxSize(max).do().then(function () {
-        modal.information({
+      return AutoScalingGroup.resize(vm.environmentName, vm.asg.AsgName, { min: min, desired: desired, max: max }).then(function () {
+        return modal.information({
           title: 'ASG Resized',
-          message: 'ASG resize successful. You can monitor instance changes by using the Refresh Icon in the top right of the window.<br/><br/><b>Note:</b> During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection draining before termination.',
-        }).then(function () {
-          vm.refresh();
+          message: 'ASG resize successful. You can monitor instance changes by using the Refresh Icon in the top right of the instances window.<br/><br/><b>Note:</b> During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection draining before termination.',
         });
       });
     };
@@ -219,9 +283,21 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     };
 
     function showLaunchConfigConfirmation() {
-      modal.information({
-        title: 'ASG Launch Configuration Updated',
-        message: 'Launch Configuration updated successfully.<br/><br/><b>PLEASE NOTE:</b> This change does not affect any existing instances. To rollout the change to existing instances:<ul><li>Resize the ASG to double its current size</li><li>Wait for the new instances to be brought into service</li><li>Resize the ASG to its original size again. This will remove older instances first leaving only those with the latest settings',
+      var instance = $uibModal.open({
+        templateUrl: '/app/environments/dialogs/asg/launchConfigConfirmation.html',
+        controller: 'LaunchConfigConfirmationController as vm',
+        resolve: {
+          parameters: function () { return { asg: vm.asg }; },
+        },
+      });
+      return instance.result.then(function(result){
+        if (result.doScalingRefresh) {
+          vm.asgUpdate.DesiredCapacity = result.numInstancesForRefresh;
+          if (vm.asgUpdate.MaxSize < result.numInstancesForRefresh) {
+            vm.asgUpdate.MaxSize = result.numInstancesForRefresh
+          }
+          return vm.resize();
+        }
       });
     }
     
@@ -241,8 +317,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         newSchedule = vm.asgUpdate.NewSchedule;
       }
 
-      resources.aws.asgs.set(vm.asg.AsgName).inAWSAccount(parameters.accountName).schedule(newSchedule, { propagateToInstances: true }).do().then(function () {
-        console.log('ASG Schedule updated to ' + newSchedule);
+      AutoScalingGroup.updateSchedule(vm.environmentName, vm.asg.AsgName, newSchedule).then(function () {
         resetForm();
         modal.information({
           title: 'ASG Schedule Updated',
@@ -266,7 +341,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       vm.asgUpdate.MaxSize = vm.asg.MaxSize;
     }
 
-    $scope.canSubmit = function() {
+    vm.canSubmit = function () {
       if (vm.selectedScheduleMode !== 'scaling') {
         return vm.asgUpdate.NewSchedule !== 'NOSCHEDULE';
       }
@@ -276,16 +351,16 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
       var validScalingSchedule = scalingSchedulePresent && validDesiredCapacities;
       return validScalingSchedule;
-    }
+    };
 
-    $scope.greaterThanLowestDesiredSizeScheduled = function(minSize) {
-      var desiredSizes = vm.asg.ScalingSchedule.map(function(schedule){ return schedule.DesiredCapacity; });
+    vm.greaterThanLowestDesiredSizeScheduled = function (minSize) {
+      var desiredSizes = _.map(vm.asg.ScalingSchedule, 'DesiredCapacity');
       var lowestDesiredSizeScheduled = _.min(desiredSizes);
       return minSize > lowestDesiredSizeScheduled;
     };
 
-    $scope.lessThanHighestDesiredSizeScheduled = function(maxSize) {
-      var desiredSizes = vm.asg.ScalingSchedule.map(function(schedule){ return schedule.DesiredCapacity; });
+    vm.lessThanHighestDesiredSizeScheduled = function (maxSize) {
+      var desiredSizes = _.map(vm.asg.ScalingSchedule, 'DesiredCapacity')
       var highestDesiredSizeScheduled = _.max(desiredSizes);
       return maxSize < highestDesiredSizeScheduled;
     };

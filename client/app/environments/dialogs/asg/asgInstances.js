@@ -11,15 +11,13 @@ angular.module('EnvironmentManager.environments').component('asgInstances', {
   controller: function ($uibModal) {
     var vm = this;
     vm.dataLoading = false;
+    vm.showRDC = vm.asg.Ami.Platform === 'Windows';
 
     vm.showAsgSingleInstance = function (instance) {
       $uibModal.open({
         component: 'asgSingleInstance',
         size: 'lg',
         resolve: {
-          asg: function () {
-            return vm.asg;
-          },
           instance: function () {
             return instance;
           },

@@ -6,7 +6,7 @@ let config = require('config');
 
 const APP_VERSION = config.get('APP_VERSION');
 const links = config.getUserValue('local').content.links;
-const FEATURE_DISABLE_SERVICE = config.get('FEATURE_DISABLE_SERVICE') === 'true';
+const FEATURE_DISABLE_SERVICE = true;
 
 module.exports = function (request, response) {
   let data = {

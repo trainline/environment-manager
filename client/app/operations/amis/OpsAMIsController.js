@@ -65,18 +65,18 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
 
       querySync.updateQuery();
 
-      accountMappingService.GetAccountForEnvironment($scope.SelectedEnvironment).then(function (accountName) {
+      accountMappingService.getAccountForEnvironment($scope.SelectedEnvironment).then(function (accountName) {
         $scope.SelectedAccount = accountName;
 
         var params = {
           account: accountName,
           query: {
-            'tag:Environment': $scope.SelectedEnvironment,
+            'environment': $scope.SelectedEnvironment,
           },
         };
 
         if ($scope.SelectedOwningCluster != SHOW_ALL_OPTION) {
-          params.query['tag:OwningCluster'] = $scope.SelectedOwningCluster;
+          params.query['cluster'] = $scope.SelectedOwningCluster;
         }
 
         awsService.instances.GetInstanceDetails(params).then(function (instanceData) {

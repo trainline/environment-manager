@@ -19,11 +19,12 @@
           <th class="text-nowrap">Services</th>
           <th class="text-nowrap">AMI</th>
           <th class="text-nowrap">Out of Date</th>
+          <th class="text-nowrap" ng-if="vm.showRDC">Connect</th>
         </tr>
       </thead>
       <tbody>
         <tr ng-repeat="instance in vm.asgState.Instances | orderBy : ['Name', 'LifecycleState', 'Status', 'Ip']">
-          <td><health-status status='instance.OverallHealth.Status'></health-status> 
+          <td><health-status status='instance.OverallHealth'></health-status> 
             Name: {{ instance.Name || '-'}}
             <br />&nbsp; &nbsp; &nbsp;ID: {{ instance.InstanceId || '-'}}
           </td>
@@ -35,7 +36,8 @@
           <td>{{ instance.LifecycleState }}
             <br />{{ instance.State }}
           </td>
-          <td><a ng-click="vm.showAsgSingleInstance(instance)" ng-if="instance.Services.length > 0">Show services ({{ instance.Services.length }})</a><span ng-if="instance.Services.length === 0">No services</span></td>
+          <td><a ng-click="vm.showAsgSingleInstance(instance)">{{ instance.RunningServicesCount }} services</a> <span ng-if="instance.MissingOrUnexpectedServices" class="glyphicon glyphicon-exclamation-sign warning" title="Missing or unexpected services present"></span>
+          </td>
           <td>
             <span ng-if="instance.Ami.Name">
                 {{ instance.Ami.AmiType }} {{ instance.Ami.AmiVersion }}<br />
@@ -50,6 +52,9 @@
             <span ng-if="!instance.UsingLatestAmi"><span class="glyphicon glyphicon-exclamation-sign warning"></span> {{ instance.DaysOutOfDate }} Days</span>
             </span>
             <span ng-if="!instance.LatestAmi">-</span>
+          </td>
+          <td ng-if="vm.showRDC">
+            <a href="/api/v1/instances/{{instance.InstanceId}}/connect">Remote Desktop</a>
           </td>
         </tr>
       </tbody>
