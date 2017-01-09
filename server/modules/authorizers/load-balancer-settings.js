@@ -48,7 +48,7 @@ exports.getRules = (request) => {
       clusters: [envPermissions.cluster],
       environmentTypes: [envPermissions.environmentType],
     }]
-  ));
+  });
 };
 
 exports.docs = {

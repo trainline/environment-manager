@@ -3,6 +3,7 @@
 'use strict';
 
 let _ = require('lodash');
+let co = require('co');
 let moment = require('moment');
 let logger = require('modules/logger');
 let sender = require('modules/sender');
@@ -71,9 +72,6 @@ function* ScanServersStatusQueryHandler(query) {
           };
         });
   })).then((asgResults) => {
-    let filteredASGs = asgResults.filter(byStatus(query.filter.status));
-
-    })).then(asgResults => {
       let asgs = asgResults.filter(byStatus(query.filter.status));
       let result = {
         EnvironmentName: environmentName,

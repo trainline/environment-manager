@@ -58,7 +58,7 @@ function* handleQuery(query, resourceName, upstreamFilter) {
         Name: 'Unknown',
         State: host.State === 'up' ? 'Active' : 'Inactive',
       }
-    ));
+    });
   };
 
   upstreams = _(upstreams).map(upstreamValues).compact().flatten().value();

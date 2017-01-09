@@ -35,13 +35,12 @@
           if (part.split('-').length === 2) { // simple range
             p = part.split('-');
             list.push(range(decodeAtom(p[0]), decodeAtom(p[1])));
-          } else
-                        if (part.split('/').length === 2) { // rate
-                          q = part.split('/');
-                          list.push(rate(q[1], i));
-                        } else {
-                          list.push(decodeAtom(part));
-                        }
+          } else if (part.split('/').length === 2) { // rate
+            q = part.split('/');
+            list.push(rate(q[1], i));
+          } else {
+            list.push(decodeAtom(part));
+          }
         }
         symbol = arrayToCommaString(list);
       }
@@ -49,14 +48,13 @@
         a = [];
         t = token.split('-');
         symbol = range(decodeAtom(t[0]), decodeAtom(t[1]));
-      } else
-                    if (token.split('/').length === 2) { // rate
-                      q = token.split('/');
-                      symbol = rate(q[1], i);
-                    }
-                    else {
-                      symbol = decodeAtom(token);
-                    }
+      } else if (token.split('/').length === 2) { // rate
+        q = token.split('/');
+        symbol = rate(q[1], i);
+      }
+      else {
+        symbol = decodeAtom(token);
+      }
       output.push(symbol);
     }
     return output;
@@ -92,10 +90,13 @@
     return result.slice(0, -1); // remove trailing comma
   };
 
-
   let decodeAtom = function decodeAtom(atom) {
     let symbol = '';
-    if (atom) { symbol = atom; } else { return null; }
+    if (atom) {
+      symbol = atom;
+    } else {
+      return null;
+    }
 
     let output;
 
@@ -129,8 +130,12 @@
     let string = '';
     let p;
     while (p = array.pop()) {
-      if (array.length > 0) { string += `${p},`; }
-      else { string += p; }
+      if (array.length > 0) {
+        string += `${p},`;
+      }
+      else {
+        string += p;
+      }
     }
     return string;
   }
@@ -154,15 +159,19 @@
     let ratect = 0; // eslint-disable-line no-unused-vars
 
     for (let i = array.length - 1; i > -1; i--) {
-            // list of numbers
+      // list of numbers
       if (array[i].match(',')) {
         let largestItem = 0;
         let matched = false;
         let values = array[i].split(',');
         let item;
         while (item = values.pop()) {
-          if (nowdate[i] == item) { matchCount++; matched = true; list++; }
-                    // keep the largest number
+          if (nowdate[i] == item) {
+            matchCount++;
+            matched = true;
+            list++;
+          }
+          // keep the largest number
           largestItem = Math.max(item, largestItem);
         }
         if (matched == false) {
@@ -171,20 +180,33 @@
         continue;
       }
 
-            // wildcard
-      if (array[i] == '*') { matchCount++; wildcard++; continue; }
-
-            // rate
-      if (array[i].match('/\*\\/')) {
-        rate = array[i].split('\/')[1];
-        if (nowdate[i] % rate == 0) { matchCount++; ratect++; continue; }
-        else { decrement = Math.max(calculateDecrement(i, rate, d), decrement); }
+      // wildcard
+      if (array[i] == '*') {
+        matchCount++;
+        wildcard++;
+        continue;
       }
 
-            // literal number
-      if (array[i] == nowdate[i]) { matchCount++; literal++; }
+      // rate
+      if (array[i].match('/\*\\/')) {
+        rate = array[i].split('\/')[1];
+        if (nowdate[i] % rate == 0) {
+          matchCount++;
+          ratect++;
+          continue;
+        }
+        else {
+          decrement = Math.max(calculateDecrement(i, rate, d), decrement);
+        }
+      }
+
+      // literal number
+      if (array[i] == nowdate[i]) {
+        matchCount++;
+        literal++;
+      }
       else {
-                // console.log("unmatched number");
+        // console.log("unmatched number");
         decrement = Math.max(calculateDecrement(i, array[i], d), decrement);
       }
     }
@@ -193,14 +215,18 @@
 
   function calculateDecrement(cronField, largestItem, d) {
     function rollbackHour(date, number) {
-      if (!number) { number = 1; }
+      if (!number) {
+        number = 1;
+      }
       let hourms = (number - 1) * 3600000;
       let minutems = (date.getMinutes() + 1) * 60000;
       return new Date(date - (hourms + minutems));
     }
 
     function rollbackDay(date, number) {
-      if (!number) { number = 1; }
+      if (!number) {
+        number = 1;
+      }
       let dayms = (number - 1) * 86400000;
       let hourms = (date.getHours()) * 3600000;
       let minutems = (date.getMinutes() + 1) * 60000;
@@ -215,23 +241,35 @@
       return new Date(Date.parse(`31 Dec ${number} 23:59:59 GMT`));
     }
 
-        // find the smallest change that will reduce the field to the value you need.
+    // find the smallest change that will reduce the field to the value you need.
 
     let decrement;
 
     switch (cronField) {
 
       case 0:// minute field
-        if (d.getMinutes() > largestItem) { decrement = (d.getMinutes() - largestItem) * 60000; }
-        if (d.getMinutes() < largestItem) { decrement = (60 + d.getMinutes() - largestItem) * 60000; }
+        if (d.getMinutes() > largestItem) {
+          decrement = (d.getMinutes() - largestItem) * 60000;
+        }
+        if (d.getMinutes() < largestItem) {
+          decrement = (60 + d.getMinutes() - largestItem) * 60000;
+        }
         break;
       case 1:// hour field
-        if (d.getHours() > largestItem) { decrement = d - rollbackHour(d, (d.getHours() - largestItem)); }
-        if (d.getHours() < largestItem) { decrement = d - rollbackHour(d, (24 + d.getHours() - largestItem)); }
+        if (d.getHours() > largestItem) {
+          decrement = d - rollbackHour(d, (d.getHours() - largestItem));
+        }
+        if (d.getHours() < largestItem) {
+          decrement = d - rollbackHour(d, (24 + d.getHours() - largestItem));
+        }
         break;
       case 2:// day field
-        if (d.getDate() > largestItem) { decrement = d - rollbackDay(d, (d.getDate() - largestItem)); }
-        if (d.getDate() < largestItem) { decrement = d - rollbackMonth(d); }
+        if (d.getDate() > largestItem) {
+          decrement = d - rollbackDay(d, (d.getDate() - largestItem));
+        }
+        if (d.getDate() < largestItem) {
+          decrement = d - rollbackMonth(d);
+        }
         break;
       case 3:// month field
         decrement = d - rollbackMonth(d);
@@ -255,121 +293,130 @@
     if (!ScheduleTagString) return null;
 
     function ScheduleInterpreter(ScheduleTagString, datetime) {
-        if (!datetime) {
-    			var now = new Date();
-    			var now_utc = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
-    			datetime = now_utc;
-    		}
-        if (!ScheduleTagString) return null;
-
-        var Schedule = ScheduleTagString.toUpperCase().trim().replace(';', '');
-
-    if (Schedule.match(/^ON6$/)) Schedule = 'START: 30 6 * * * * STOP: 30 18 * * * *';
-    if (Schedule.match(/^247$/)) Schedule = 'START: * * * * * *';
-    if (Schedule.match(/^OFF$/)) Schedule = 'STOP: * * * * * *';
-    if (Schedule.match('NOSCHEDULE')) return 'SKIP';
-    if (Schedule.match('DEFAULT')) return 'DEFAULT';
-    if (Schedule.match(/^$/)) return null;
-    if (!Schedule.match(/START\:|STOP\:/)) { return 'INVALID'; }
-
-        // Split into array of Start and Stop cronstrings;
-    let ScheduleParts = Schedule.match(/(\w*\: [\d\,\-\*\\]+ [\d\,\-\*\\]+ [\d\,\-\*\\\w]+ [\d\,\-\*\\\w]+ [\d\,\-\*\\\w]+\s?[\d\,\-\*]*)/g);
-    if (!ScheduleParts) {
-      console.log(`Invalid schedule value: ${Schedule}`);
-      return 'INVALID';
-    }
-
-    let cronString;
-    let mostRecentDate = new Date(2000, 1, 1); // don't look back before y2k
-    let response;
-    let cronArray;
-    let actionString;
-    let action;
-    while (actionString = ScheduleParts.pop()) {
-      if (actionString.match('START')) action = 'ON';
-      if (actionString.match('STOP')) action = 'OFF';
-      cronArray = decode(actionString.split(':')[1]);
-      if (cronArray.length < 5) { console.log('cron string too short'); return 'INVALID'; }
-      while (cronArray.length > 6) cronArray.shift();
-
-      let d = new Date(datetime);
-            // 1073 = worst case 1 year of tries
-      let giveup = 1073;
-      let giveupcount = 0;
-      let decrement = 60000;
-
-      while (giveupcount < giveup) {
-        decrement = checkDate(cronArray, d);
-        if (decrement == 0) break;
-        giveupcount++;
-        d = new Date(d - decrement);
+      if (!datetime) {
+        var now = new Date();
+        var now_utc = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
+        datetime = now_utc;
       }
+      if (!ScheduleTagString) return null;
 
-      if ((giveupcount == giveup)) {
+      var Schedule = ScheduleTagString.toUpperCase().trim().replace(';', '');
+
+      if (Schedule.match(/^ON6$/)) Schedule = 'START: 30 6 * * * * STOP: 30 18 * * * *';
+      if (Schedule.match(/^247$/)) Schedule = 'START: * * * * * *';
+      if (Schedule.match(/^OFF$/)) Schedule = 'STOP: * * * * * *';
+      if (Schedule.match('NOSCHEDULE')) return 'SKIP';
+      if (Schedule.match('DEFAULT')) return 'DEFAULT';
+      if (Schedule.match(/^$/)) return null;
+      if (!Schedule.match(/START\:|STOP\:/)) {
         return 'INVALID';
-      } // no date match within the time period
-      else if (d > mostRecentDate) {
-        response = action;
-        mostRecentDate = d;
-      }
-    }
-    return response;
-  }
-
-  function SizeScheduleInterpreter(scheduledActions, datetime) {
-    if (!datetime) {
-      let now = new Date();
-      let now_utc = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
-      datetime = now_utc;
-    }
-    if (!scheduledActions) return null;
-
-    let mostRecentDate = new Date(2000, 1, 1); // don't look back before y2k
-    let response;
-    let cronArray;
-    let scheduledAction;
-
-    while (scheduledAction = scheduledActions.pop()) {
-      let min = scheduledAction.MinSize;
-      let desired = scheduledAction.DesiredCapacity;
-      let max = scheduledAction.MaxSize;
-
-      cronArray = decode(scheduledAction.Recurrence);
-      if (cronArray.length < 5) { console.log('cron string too short'); return 'INVALID'; }
-      while (cronArray.length > 6) cronArray.shift();
-
-      let d = new Date(datetime);
-            // 1073 = worst case 1 year of tries
-      let giveup = 1073;
-      let giveupcount = 0;
-      let decrement = 60000;
-
-      while (giveupcount < giveup) {
-        decrement = checkDate(cronArray, d);
-        if (decrement == 0) break;
-        giveupcount++;
-        d = new Date(d - decrement);
       }
 
-      if ((giveupcount == giveup)) {
+      // Split into array of Start and Stop cronstrings;
+      let ScheduleParts = Schedule.match(/(\w*\: [\d\,\-\*\\]+ [\d\,\-\*\\]+ [\d\,\-\*\\\w]+ [\d\,\-\*\\\w]+ [\d\,\-\*\\\w]+\s?[\d\,\-\*]*)/g);
+      if (!ScheduleParts) {
+        console.log(`Invalid schedule value: ${Schedule}`);
         return 'INVALID';
-      } // no date match within the time period
-      else if (d > mostRecentDate) {
-        response = {
-          min,
-          max,
-          desired,
-        };
-        mostRecentDate = d;
       }
-    }
-    return response;
-  }
 
-  return {
-    getActionBySchedule: ScheduleInterpreter,
-    getSizeBySchedule: SizeScheduleInterpreter,
-  };
+      let cronString;
+      let mostRecentDate = new Date(2000, 1, 1); // don't look back before y2k
+      let response;
+      let cronArray;
+      let actionString;
+      let action;
+      while (actionString = ScheduleParts.pop()) {
+        if (actionString.match('START')) action = 'ON';
+        if (actionString.match('STOP')) action = 'OFF';
+        cronArray = decode(actionString.split(':')[1]);
+        if (cronArray.length < 5) {
+          console.log('cron string too short');
+          return 'INVALID';
+        }
+        while (cronArray.length > 6) cronArray.shift();
+
+        let d = new Date(datetime);
+        // 1073 = worst case 1 year of tries
+        let giveup = 1073;
+        let giveupcount = 0;
+        let decrement = 60000;
+
+        while (giveupcount < giveup) {
+          decrement = checkDate(cronArray, d);
+          if (decrement == 0) break;
+          giveupcount++;
+          d = new Date(d - decrement);
+        }
+
+        if ((giveupcount == giveup)) {
+          return 'INVALID';
+        } // no date match within the time period
+        else if (d > mostRecentDate) {
+          response = action;
+          mostRecentDate = d;
+        }
+      }
+      return response;
+    }
+
+    function SizeScheduleInterpreter(scheduledActions, datetime) {
+      if (!datetime) {
+        let now = new Date();
+        let now_utc = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
+        datetime = now_utc;
+      }
+      if (!scheduledActions) return null;
+
+      let mostRecentDate = new Date(2000, 1, 1); // don't look back before y2k
+      let response;
+      let cronArray;
+      let scheduledAction;
+
+      while (scheduledAction = scheduledActions.pop()) {
+        let min = scheduledAction.MinSize;
+        let desired = scheduledAction.DesiredCapacity;
+        let max = scheduledAction.MaxSize;
+
+        cronArray = decode(scheduledAction.Recurrence);
+        if (cronArray.length < 5) {
+          console.log('cron string too short');
+          return 'INVALID';
+        }
+        while (cronArray.length > 6) cronArray.shift();
+
+        let d = new Date(datetime);
+        // 1073 = worst case 1 year of tries
+        let giveup = 1073;
+        let giveupcount = 0;
+        let decrement = 60000;
+
+        while (giveupcount < giveup) {
+          decrement = checkDate(cronArray, d);
+          if (decrement == 0) break;
+          giveupcount++;
+          d = new Date(d - decrement);
+        }
+
+        if ((giveupcount == giveup)) {
+          return 'INVALID';
+        } // no date match within the time period
+        else if (d > mostRecentDate) {
+          response = {
+            min,
+            max,
+            desired,
+          };
+          mostRecentDate = d;
+        }
+      }
+      return response;
+    }
+
+    return {
+      getActionBySchedule: ScheduleInterpreter,
+      getSizeBySchedule: SizeScheduleInterpreter,
+    };
+  }
 }
 
 if (typeof module !== 'undefined' && module.exports) {
