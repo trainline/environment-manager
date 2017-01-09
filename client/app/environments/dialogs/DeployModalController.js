@@ -64,7 +64,7 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
           if (slices && slices.length > 0) {
             vm.selectedServiceActiveSliceMessage = null;
             vm.selectedServiceActiveSlices = slices.map(function(slice){
-              return 'Upstream: ' + slice.UpstreamName + ' Slice: ' + slice.Name + ' (' + slice.State + ')';
+              return slice.UpstreamName + ': ' + slice.Name + ' (' + slice.State + ')';
             });
           }
         }).catch(function(err){
