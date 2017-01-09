@@ -11,7 +11,7 @@ function getAwsAccounts(query) {
   let dynamoQuery = {
     name: 'ScanDynamoResources',
     resource: 'config/accounts',
-    accountName: masterAccountName
+    accountName: masterAccountName,
   };
   let childQuery = { query: dynamoQuery, parent: query };
   if (query.user) childQuery.user = query.user;

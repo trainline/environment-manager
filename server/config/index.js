@@ -30,11 +30,11 @@ if (profileOverride !== undefined) {
  * Defaults if not previously set via ENV, args or profile
  */
 nconf.defaults({
-  'EM_AWS_RESOURCE_PREFIX': '',
-  'EM_LOG_LEVEL': 'Debug',
-  'EM_AWS_S3_BUCKET': 'S3 Bucket value not set',
-  'EM_AWS_S3_KEY': 'S3 Key value not set',
-  'EM_PACKAGES_KEY_PREFIX': 'PACKAGES',
+  EM_AWS_RESOURCE_PREFIX: '',
+  EM_LOG_LEVEL: 'Debug',
+  EM_AWS_S3_BUCKET: 'S3 Bucket value not set',
+  EM_AWS_S3_KEY: 'S3 Key value not set',
+  EM_PACKAGES_KEY_PREFIX: 'PACKAGES',
 });
 
 /**

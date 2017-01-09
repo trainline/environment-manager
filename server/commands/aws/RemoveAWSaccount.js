@@ -13,7 +13,7 @@ function RemoveAWSAccount(command) {
 
     let accountNumber = +command.accountNumber;
     accountValidator.validateAccountNumber(accountNumber);
-    
+
     let dynamoCommand = {
       name: 'DeleteDynamoResource',
       resource: 'config/accounts',

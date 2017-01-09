@@ -117,7 +117,7 @@ function AsgResource(client, accountName) {
     let asgCache = cacheManager.get('Auto Scaling Groups');
     asgCache.del(accountName);
 
-    return client.updateAutoScalingGroup(request).promise().catch(function (error) {
+    return client.updateAutoScalingGroup(request).promise().catch((error) => {
       throw standardifyError(error, parameters.name);
     });
   };

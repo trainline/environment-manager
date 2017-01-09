@@ -14,7 +14,7 @@ function getUpstream(accountName, upstreamName) {
     name: 'GetDynamoResource',
     key: upstreamName,
     resource: 'config/lbupstream',
-    accountName
+    accountName,
   };
 
   return sender.sendQuery({ query });
@@ -34,12 +34,10 @@ function getEnvironment(name) {
 }
 
 function getModifyPermissionsForEnvironment(environmentName) {
-  return getEnvironment(environmentName).then((environment) => {
-    return {
-      cluster: environment.Value.OwningCluster.toLowerCase(),
-      environmentType: environment.Value.EnvironmentType.toLowerCase()
-    };
-  });
+  return getEnvironment(environmentName).then(environment => ({
+    cluster: environment.Value.OwningCluster.toLowerCase(),
+    environmentType: environment.Value.EnvironmentType.toLowerCase(),
+  }));
 }
 
 function getEnvironmentPermissionsPromise(upstreamName, environmentName, accountName, method) {
@@ -49,7 +47,6 @@ function getEnvironmentPermissionsPromise(upstreamName, environmentName, account
 
   return getUpstream(accountName, upstreamName)
     .then((upstream) => {
-
       if (upstream) {
         let environmentName = upstream.Value.EnvironmentName;
         return getModifyPermissionsForEnvironment(environmentName);
@@ -67,10 +64,10 @@ exports.getRules = (request) => {
 
   return co(function* () {
     let body = request.params.body || request.body;
-    logger.debug(`Upstreams authorizer`, { body, url: request.url });
+    logger.debug('Upstreams authorizer', { body, url: request.url });
     // TODO(Filip): remove this hack after we move all upstreams data into one account
     let environmentName = upstreamName.substr(1, 3);
-    
+
     if (accountName === undefined) {
       accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     }
@@ -79,15 +76,12 @@ exports.getRules = (request) => {
     let path = `/${request.params.account}/config/lbUpstream/${match[1]}`;
     let getEnvironmentPermissions = getEnvironmentPermissionsPromise(upstreamName, environmentName, accountName, request.method);
 
-    return getEnvironmentPermissions.then(envPermissions => {
-      return [{
-        resource: path,
-        access: request.method,
-        clusters: [ envPermissions.cluster ],
-        environmentTypes: [ envPermissions.environmentType ]
-      }];
-    });
-
+    return getEnvironmentPermissions.then(envPermissions => [{
+      resource: path,
+      access: request.method,
+      clusters: [envPermissions.cluster],
+      environmentTypes: [envPermissions.environmentType],
+    }]);
   });
 };
 

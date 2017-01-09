@@ -22,7 +22,7 @@ class Environment {
   }
 
   getAccountName() {
-    return EnvironmentType.getByName(this.EnvironmentType).then((data) => data.AWSAccountName);
+    return EnvironmentType.getByName(this.EnvironmentType).then(data => data.AWSAccountName);
   }
 
   static getAccountNameForEnvironment(name) {

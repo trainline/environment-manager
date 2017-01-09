@@ -15,7 +15,7 @@ module.exports = function ToggleSlicesByUpstream(command) {
   assert.equal(typeof command.environmentName, 'string');
   assert.equal(typeof command.upstreamName, 'string');
 
-  return Environment.getAccountNameForEnvironment(command.environmentName).then(account => {
+  return Environment.getAccountNameForEnvironment(command.environmentName).then((account) => {
     command.accountName = account;
 
     let resourceName = `Upstream named "${command.upstreamName}" in "${command.environmentName}" environment`;

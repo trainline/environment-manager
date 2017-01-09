@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let serviceDiscovery = require('modules/service-discovery');
@@ -63,5 +64,5 @@ module.exports = {
   getServiceById,
   getServiceHealthById,
   getServiceSlices,
-  putServiceSlicesToggle
+  putServiceSlicesToggle,
 };

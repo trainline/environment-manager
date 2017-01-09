@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -9,7 +10,7 @@ function* getAWSInstances(accountName, instancesIds) {
   let resource = yield resourceProvider.getInstanceByName('instances', { accountName });
 
   let filter = {
-    'instance-id': instancesIds
+    'instance-id': instancesIds,
   };
 
   let instances = yield resource.all({ filter });
@@ -23,7 +24,7 @@ function* getAWSInstances(accountName, instancesIds) {
       ImageId: instance.ImageId,
       LaunchTime: instance.LaunchTime,
     };
-    instance.Tags.forEach(function (tag) {
+    instance.Tags.forEach((tag) => {
       ret[tag.Key] = tag.Value;
     });
     return ret;

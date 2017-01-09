@@ -155,7 +155,7 @@ function attributesAreSatisfied(attributes) {
 
 function toRequiredAttributes(attributes) {
   if (!(attributes && attributes.length > 0)) return [];
-  return attributes.map((attribute) => ({
+  return attributes.map(attribute => ({
     name: attribute.toLowerCase(),
     satisfied: false,
   }));

@@ -33,22 +33,18 @@ function asKeyValuePair(item) {
 function getTargetState(environment, parameters) {
   assert(parameters, 'Expected "parameters" not to be null or empty.');
 
-  let promiseFactoryMethod = () => {
-    return createConsulClient(environment).then(consulClient => {
-      return consulClient.kv.get({ key: parameters.key, recurse: parameters.recurse }).catch((error) => {
-        throw new HttpRequestError(`An error has occurred contacting consul agent: ${error.message}`);
-      }).then((result) => {
-        if (parameters.recurse) {
-          let data = result ? result.map(asKeyValuePair) : [];
-          return data;
-        }
-        if (result) {
-          return asKeyValuePair(result);
-        }
-        throw new ResourceNotFoundError(`Key "${parameters.key}" in Consul key/value storage has not been found.`);
-      })
-    });
-  }
+  let promiseFactoryMethod = () => createConsulClient(environment).then(consulClient => consulClient.kv.get({ key: parameters.key, recurse: parameters.recurse }).catch((error) => {
+    throw new HttpRequestError(`An error has occurred contacting consul agent: ${error.message}`);
+  }).then((result) => {
+    if (parameters.recurse) {
+      let data = result ? result.map(asKeyValuePair) : [];
+      return data;
+    }
+    if (result) {
+      return asKeyValuePair(result);
+    }
+    throw new ResourceNotFoundError(`Key "${parameters.key}" in Consul key/value storage has not been found.`);
+  }));
 
   return executeAction(promiseFactoryMethod);
 }
@@ -85,8 +81,7 @@ function getServiceDeploymentCause(environmentName, deploymentId, instanceId) {
 function setTargetState(environment, parameters) {
   assert(parameters, 'Expected "parameters" not to be null or empty.');
   let promiseFactoryMethod = () => new Promise((resolve, reject) => {
-
-    createConsulClient(environment).then(consulClient => {
+    createConsulClient(environment).then((consulClient) => {
       let encodedValue = encodeValue(parameters.value);
       let options = {};
 
@@ -117,17 +112,16 @@ function setTargetState(environment, parameters) {
 function removeRuntimeServerRoleTargetState(environmentName, runtimeServerRoleName) {
   return removeTargetState(environmentName, {
     key: `environments/${environmentName}/roles/${runtimeServerRoleName}`,
-    recurse: true
+    recurse: true,
   });
 }
 
 function removeTargetState(environment, { key, recurse }) {
   assert(key, 'Expected "key" not to be null or empty.');
   let promiseFactoryMethod = () => new Promise((resolve, reject) => {
-
-    createConsulClient(environment).then(consulClient => {
-      consulClient.kv.get({ key, recurse }, function (error, result) {
-        consulClient.kv.del({ key, recurse }, function (error) {
+    createConsulClient(environment).then((consulClient) => {
+      consulClient.kv.get({ key, recurse }, (error, result) => {
+        consulClient.kv.del({ key, recurse }, (error) => {
           if (!error) {
             logChange('DELETE', key, result);
             return resolve();
@@ -153,7 +147,7 @@ function executeAction(promiseFactoryMethod) {
     operation.attempt(() => {
       promiseFactoryMethod()
         .then(result => resolve(result))
-        .catch(error => {
+        .catch((error) => {
           if ((error instanceof HttpRequestError) && operation.retry(error)) return;
           reject(error);
         });
@@ -176,5 +170,5 @@ module.exports = {
   removeRuntimeServerRoleTargetState,
   getAllServiceTargets,
   getServiceDeploymentCause,
-  getInstanceServiceDeploymentInfo
+  getInstanceServiceDeploymentInfo,
 };

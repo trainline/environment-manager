@@ -8,7 +8,7 @@ let keypairFactory = require('modules/factories/keypairFactory');
 module.exports = function GetKeyPairQueryHandler({ accountName, keyName }) {
   assert(accountName);
   assert(keyName);
-  
+
   let parameters = { accountName };
   return keypairFactory.create(parameters)
     .then(resource => resource.get({ keyName }));

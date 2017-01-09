@@ -68,7 +68,7 @@ function LaunchConfigurationResource(client) {
   this.delete = function ({ name }) {
     let request = { LaunchConfigurationName: name };
 
-    return client.deleteLaunchConfiguration(request).promise().catch(error => {
+    return client.deleteLaunchConfiguration(request).promise().catch((error) => {
       throw standardifyError(error, name);
     });
   };

@@ -33,7 +33,7 @@ module.exports = [
       accountName: request.params.account,
       environmentName: request.params.environment,
       upstreamName: request.params.upstream,
-      active: true
+      active: true,
     }, request, response);
   }),
 
@@ -46,7 +46,7 @@ module.exports = [
       accountName: request.params.account,
       environmentName: request.params.environment,
       upstreamName: request.params.upstream,
-      active: false
+      active: false,
     }, request, response);
   }),
 

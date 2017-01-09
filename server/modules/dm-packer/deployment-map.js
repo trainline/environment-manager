@@ -15,11 +15,11 @@ const HEALTHCHECK_DIR_REGEX = /^healthchecks[\\/]/;
 function getCodeDeployEntries(deploymentMap, inputPackages, options, logger) {
   let isMain = pack => pack.id === deploymentMap.id && pack.version === deploymentMap.version;
   let isHealthcheck = entry => HEALTHCHECK_DIR_REGEX.test(entry);
-  let entryStreams = (function *() {
+  let entryStreams = (function* () {
     yield getCodeDeploySpecialEntries(deploymentMap, options);
     for (let pack of inputPackages) {
       let mapPath = isMain(pack) ? (entry => isHealthcheck(entry) ? path.normalize(entry) : path.join('DM', entry)) : entry => path.join(pack.id, entry);
-      let result = z.createEntryStream(pack.contentStream, filterOutNugetJunk, logger).pipe(z.mapS(entry => {
+      let result = z.createEntryStream(pack.contentStream, filterOutNugetJunk, logger).pipe(z.mapS((entry) => {
         let transformedPath = mapPath(entry.path);
         entry.path = transformedPath;
         return entry;
@@ -36,9 +36,10 @@ function getCodeDeploySpecialEntries(deploymentMap, options) {
   let output = through({ objectMode: true });
 
   output.push({ path: 'appspec.yml', content: getAppSpec() });
-  output.push({ path: 'ScriptArguments.ps1', content: getScriptArguments({
-    deploymentMap,
-  }) });
+  output.push({ path: 'ScriptArguments.ps1',
+    content: getScriptArguments({
+      deploymentMap,
+    }) });
 
   co(function* () {
     let staticContent = yield io.getStaticContent(path.resolve(__dirname, 'code-deploy-files'));

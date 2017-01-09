@@ -5,12 +5,11 @@
 let _ = require('lodash');
 
 module.exports = function (cls) {
-
   cls.prototype.getTag = function (key, defaultValue) {
     let tag = _.find(this.Tags, { Key: key });
     if (tag === undefined) {
       if (arguments.length <= 1) {
-        throw new Error(`Can't find tag "${key}"`)
+        throw new Error(`Can't find tag "${key}"`);
       } else return defaultValue;
     }
     return tag.Value;
@@ -27,12 +26,11 @@ module.exports = function (cls) {
     } else {
       tag.Value = value;
     }
-  }
+  };
 
   cls.prototype.appendTagsToObject = function () {
     _.each(this.Tags, (tag) => {
       this[tag.Key] = tag.Value;
     });
   };
-
 };

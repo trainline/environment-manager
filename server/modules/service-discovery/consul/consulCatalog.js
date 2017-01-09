@@ -25,12 +25,12 @@ function getAllServices(environment) {
 function getService(environment, serviceQuery) {
   serviceQuery = `${environment}-${serviceQuery}`;
   return executeConsul(environment, consulClient => consulClient.catalog.service.nodes(serviceQuery))
-    .then(service => {
+    .then((service) => {
       if (!service.length) return service;
       service = service[0];
       service.ServiceTags = unravelTags(service.ServiceTags);
       return service;
-    })
+    });
 }
 
 function getAllNodes(environment) {

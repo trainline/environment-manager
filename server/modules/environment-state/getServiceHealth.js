@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -18,7 +19,7 @@ function* getServiceHealth({ environmentName, serviceName }) {
   });
 
   // Remove from the list roles that don't contain requested service
-  serviceRoles = _.filter(serviceRoles, (role) => _.isEmpty(role.Services) === false);
+  serviceRoles = _.filter(serviceRoles, role => _.isEmpty(role.Services) === false);
 
   let list = [];
   for (let role of serviceRoles) {
@@ -31,13 +32,13 @@ function* getServiceHealth({ environmentName, serviceName }) {
       } catch (error) {
         // If AutoScalingGroup is not found (old consul data), don't include it in the results
         if (error.name === 'AutoScalingGroupNotFoundError') {
-          state = 'not found ' + asg.AutoScalingGroupName;
+          state = `not found ${asg.AutoScalingGroupName}`;
           // continue;
         } else {
           throw error;
         }
       }
-      let instances = _.filter(state.Instances, (instance) => _.some(instance.Services, { Name: serviceName }));
+      let instances = _.filter(state.Instances, instance => _.some(instance.Services, { Name: serviceName }));
       let services = _.filter(state.Services, { Name: serviceName });
 
       // Filter services on instances info to return only queried service
@@ -47,7 +48,7 @@ function* getServiceHealth({ environmentName, serviceName }) {
       list.push({
         AutoScalingGroupName: asg.AutoScalingGroupName,
         Services: services,
-        Instances: instances
+        Instances: instances,
       });
     }
   }
@@ -72,7 +73,7 @@ function* getServiceHealth({ environmentName, serviceName }) {
 
   return {
     OverallHealth: aggregateHealth(list),
-    AutoScalingGroups: list
+    AutoScalingGroups: list,
   };
 }
 

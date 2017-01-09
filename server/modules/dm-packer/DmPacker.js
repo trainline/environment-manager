@@ -85,7 +85,7 @@ module.exports = function DmPacker(logger) {
         s3client.upload({
           Bucket: destination.bucket,
           Key: destination.key,
-          Body: stream
+          Body: stream,
         }, (err, data) => {
           if (err) {
             reject(err);

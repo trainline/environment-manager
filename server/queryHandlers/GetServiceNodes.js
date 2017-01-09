@@ -9,7 +9,7 @@ let sender = require('modules/sender');
 
 function tagsToMap(tags) {
   let map = {};
-  tags.forEach(tag => {
+  tags.forEach((tag) => {
     let parts = tag.split(':');
     map[parts[0]] = parts[1];
   });
@@ -34,6 +34,6 @@ function* GetServiceNodesQueryHandler(query) {
       return result;
     })
   ));
-};
+}
 
 module.exports = co.wrap(GetServiceNodesQueryHandler);

@@ -15,10 +15,10 @@ function* GetSlicesByUpstream(query) {
   assert.equal(typeof query.upstreamName, 'string');
 
   query.accountName = yield Environment.getAccountNameForEnvironment(query.environmentName);
-  
+
   return getSlices.handleQuery(query,
     QUERYING.upstream.byUpstreamName(query),
     FILTER.upstream.byUpstreamName(query));
-};
+}
 
 module.exports = co.wrap(GetSlicesByUpstream);

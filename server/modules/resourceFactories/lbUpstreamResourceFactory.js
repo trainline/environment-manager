@@ -71,14 +71,13 @@ module.exports = {
 
   create: (resourceDescriptor, parameters) =>
   amazonClientFactory.createDynamoClient(parameters.accountName).then((client) => {
-
     let config = {
-      resourceName:    resourceDescriptor.name,
-      table:           resourceDescriptor.tableName,
-      key:             resourceDescriptor.keyName,
-      range:           resourceDescriptor.rangeName,
+      resourceName: resourceDescriptor.name,
+      table: resourceDescriptor.tableName,
+      key: resourceDescriptor.keyName,
+      range: resourceDescriptor.rangeName,
       auditingEnabled: resourceDescriptor.enableAuditing,
-      dateField:       resourceDescriptor.dateField,
+      dateField: resourceDescriptor.dateField,
     };
 
     return new LBUpstreamTableResource(config, client);

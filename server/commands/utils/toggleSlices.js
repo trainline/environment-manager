@@ -23,13 +23,11 @@ function ToggleUpstreamByServiceVerifier(toggleCommand) {
         },
       };
 
-      let services = yield sender.sendQuery({ query: query, parent: toggleCommand });
+      let services = yield sender.sendQuery({ query, parent: toggleCommand });
       let portMapping = asPortMapping(services[0]);
 
 
-      yield _.map(upstreams, (upstream) => {
-        return detectUpstreamInconsistency(upstream, portMapping);
-      });
+      yield _.map(upstreams, upstream => detectUpstreamInconsistency(upstream, portMapping));
     });
   };
 
@@ -56,15 +54,12 @@ function ToggleUpstreamByServiceVerifier(toggleCommand) {
       return makeUpstreamError(upstream, 'cannot be toggled because it has more than two slices');
     }
 
-    let statuses = upstream.Value.Hosts.map((host) => {
-      return host.State === 'up' ? 'Active' : 'Inactive';
-    }).distinct();
+    let statuses = upstream.Value.Hosts.map(host => host.State === 'up' ? 'Active' : 'Inactive').distinct();
     if (statuses.length == 1) {
       return makeUpstreamError(upstream, `cannot be toggled because all its slices are "${statuses[0]}"`);
     }
 
-    let slicesNames = upstream.Value.Hosts.map((host) => {
-      return portMapping[host.Port]; });
+    let slicesNames = upstream.Value.Hosts.map(host => portMapping[host.Port]);
     if (slicesNames.indexOf('Blue') < 0) {
       return makeUpstreamError(upstream, 'cannot be toggled because there is no way to detect which slice is "blue"');
     }
@@ -85,7 +80,7 @@ function ToggleUpstreamByServiceVerifier(toggleCommand) {
 function ToggleUpstreamByNameVerifier(resourceName) {
   this.verifyUpstreams = (upstreams) => {
     if (upstreams.length > 1) {
-      let keys = upstreams.map((upstream) => { return upstream.key; }).join(', ');
+      let keys = upstreams.map(upstream => upstream.key).join(', ');
       let message = `${resourceName} cannot be toggled because all following keys refer to it: ${keys}.`;
       return Promise.reject(new InconsistentSlicesStatusError(message));
     }
@@ -97,32 +92,30 @@ function ToggleUpstreamByNameVerifier(resourceName) {
     }
 
     return Promise.resolve();
-  }
+  };
 }
 
 function UpstreamProvider(sender, toggleCommand, resourceName) {
-  this.provideUpstreams = () => {
-    return co(function* () {
+  this.provideUpstreams = () => co(function* () {
       // Requires all LoadBalancer upstreams in the specified AWS account.
-      let query = {
-        name: 'ScanDynamoResources',
-        resource: 'config/lbupstream',
-        accountName: toggleCommand.accountName,
-      };
+    let query = {
+      name: 'ScanDynamoResources',
+      resource: 'config/lbupstream',
+      accountName: toggleCommand.accountName,
+    };
 
-      let upstreams = yield sender.sendQuery({ query, parent: toggleCommand });
-      let filteredUpstreams = _.filter(upstreams, (upstream) => upstream.Value.EnvironmentName === toggleCommand.environmentName);
-      if (toggleCommand.serviceName) {
-        filteredUpstreams = _.filter(filteredUpstreams, (upstream) => upstream.Value.ServiceName === toggleCommand.serviceName);
-      }
-      if (toggleCommand.upstreamName) {
-        filteredUpstreams = _.filter(filteredUpstreams, (upstream) => upstream.Value.UpstreamName === toggleCommand.upstreamName);
-      }
+    let upstreams = yield sender.sendQuery({ query, parent: toggleCommand });
+    let filteredUpstreams = _.filter(upstreams, upstream => upstream.Value.EnvironmentName === toggleCommand.environmentName);
+    if (toggleCommand.serviceName) {
+      filteredUpstreams = _.filter(filteredUpstreams, upstream => upstream.Value.ServiceName === toggleCommand.serviceName);
+    }
+    if (toggleCommand.upstreamName) {
+      filteredUpstreams = _.filter(filteredUpstreams, upstream => upstream.Value.UpstreamName === toggleCommand.upstreamName);
+    }
 
-      if (filteredUpstreams.length) return filteredUpstreams;
-      else throw new ResourceNotFoundError(`No ${resourceName} has been found.`);
-    });
-  };
+    if (filteredUpstreams.length) return filteredUpstreams;
+    else throw new ResourceNotFoundError(`No ${resourceName} has been found.`);
+  });
 }
 
 function UpstreamToggler(sender, toggleCommand) {
@@ -147,9 +140,9 @@ function* orchestrate(provider, verifier, toggler) {
   let upstreams = yield provider.provideUpstreams();
   yield verifier.verifyUpstreams(upstreams);
   yield _.map(upstreams, toggler.toggleUpstream);
-  
+
   return {
-    ToggledUpstreams: _.map(upstreams, 'Value.UpstreamName')
+    ToggledUpstreams: _.map(upstreams, 'Value.UpstreamName'),
   };
 }
 

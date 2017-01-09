@@ -14,6 +14,6 @@ module.exports = {
   importable: true,
   docs: {
     description: 'Cluster',
-    tags: ['Clusters']
-  }
+    tags: ['Clusters'],
+  },
 };

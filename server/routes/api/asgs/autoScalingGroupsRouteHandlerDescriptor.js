@@ -34,7 +34,7 @@ module.exports = [
       return next();
     }
 
-    var query = {
+    let query = {
       name: 'ScanAutoScalingGroups',
       accountName: request.params.account,
     };
@@ -47,8 +47,7 @@ module.exports = [
     perAccount: true,
     tags: ['Auto Scaling Groups'],
   }).do((request, response, next) => {
-
-    var query = {
+    let query = {
       name: 'GetAutoScalingGroup',
       accountName: request.params.account,
       autoScalingGroupName: request.params.name,
@@ -87,7 +86,7 @@ module.exports = [
 
     return null;
   }).do((request, response, next) => {
-    var command = {
+    let command = {
       name: 'SetAutoScalingGroupSize',
       accountName: request.params.account,
       autoScalingGroupName: request.params.name,
@@ -196,7 +195,7 @@ module.exports = [
     return schedule === undefined ? new Error('Request body must contain "Schedule" field in request body.') : null;
   }).do((request, response) => {
     let schedule = getPropertyByName(request.body, 'Schedule');
-    let propagateToInstances = getPropertyByName(request.body, 'PropagateToInstances') ? true : false;
+    let propagateToInstances = !!getPropertyByName(request.body, 'PropagateToInstances');
 
     let command = {
       name: 'SetAutoScalingGroupSchedule',

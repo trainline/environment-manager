@@ -18,9 +18,9 @@ function* ToggleTargetStatus(command) {
   let key = `environments/${environment}/roles/${serverRole}/services/${serviceName}/${slice}`;
   let state = yield serviceTargets.getTargetState(environment, { key });
   let service = state.value;
-  let previousStatus = service['Action'] || SERVICE_INSTALL;
+  let previousStatus = service.Action || SERVICE_INSTALL;
 
-  service['Action'] = enabled ? SERVICE_INSTALL : SERVICE_IGNORE;
+  service.Action = enabled ? SERVICE_INSTALL : SERVICE_IGNORE;
 
   try {
     let result = yield serviceTargets.setTargetState(environment, { key, value: service });

@@ -18,7 +18,7 @@ function getCurrentEnvironment(name, user) {
   return sender.sendQuery({ query, user });
 }
 
-exports.getRules = request => {
+exports.getRules = (request) => {
   let requiredPermission = {
     resource: request.url.replace(/\/+$/, ''),
     access: request.method,

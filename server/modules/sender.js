@@ -69,18 +69,17 @@ function prepareQuery(parameters) {
 }
 
 function promiseOrCallback(promise, commandOrQuery, type, callback) {
-
-  promise.catch(error => {
+  promise.catch((error) => {
     if (commandOrQuery.suppressError !== true) {
       let errorMessage = getErrorMessage(commandOrQuery, error);
       logger.error(errorMessage, {
         error: {
           name: error.name,
           message: error.message,
-          stack: error.toString(true)
+          stack: error.toString(true),
         },
         command: type === COMMAND_TYPE ? commandOrQuery : undefined,
-        query: type === QUERY_TYPE ? commandOrQuery : undefined
+        query: type === QUERY_TYPE ? commandOrQuery : undefined,
       });
     }
   });
@@ -111,7 +110,7 @@ function getLogMessage(commandOrQuery) {
 }
 
 function getErrorMessage(commandOrQuery, error) {
-  var message = [
+  let message = [
     'Error executing:',
     THICK_SEPARATOR,
     `[${commandOrQuery.name}]`,

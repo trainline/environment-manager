@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -17,32 +18,31 @@ const SERVICE_INSTALL = Enums.ServiceAction.INSTALL;
  */
 function getServiceChecksInfo(serviceObjects) {
   // Get all health checks for all instances of this service
-  var serviceChecks = _.flatMap(serviceObjects, 'HealthChecks');
-  var checksGrouped = _.groupBy(serviceChecks, 'Name');
-  return _.map(checksGrouped, function (checks, checkName) {
+  let serviceChecks = _.flatMap(serviceObjects, 'HealthChecks');
+  let checksGrouped = _.groupBy(serviceChecks, 'Name');
+  return _.map(checksGrouped, (checks, checkName) =>
     // If some instances checks failed for a given check, mark as failed
     // also, don't count in instance into working
-    return {
-      Name: checks[0].Name,
-      Status: _.some(checks, { Status: 'critical' }) ? HEALTH_BAD : HEALTH_GOOD
-    };
-  });
+     ({
+       Name: checks[0].Name,
+       Status: _.some(checks, { Status: 'critical' }) ? HEALTH_BAD : HEALTH_GOOD,
+     }));
 }
 
 function getServiceOverallHealth(healthChecks) {
-  return _.some(healthChecks, { Status: HEALTH_BAD }) ? HEALTH_BAD : HEALTH_GOOD
+  return _.some(healthChecks, { Status: HEALTH_BAD }) ? HEALTH_BAD : HEALTH_GOOD;
 }
 
 function checkServiceProperties(svcA, svcB, prop) {
   if (svcA[prop] !== svcB[prop]) {
-    //TODO: What behaviour/feature do we expect if a service does not match the expected target?
+    // TODO: What behaviour/feature do we expect if a service does not match the expected target?
     logger.warn(`${svcB.Name} ${svcB.Version} ${prop} mismatch:`);
     logger.warn(` Found: ${svcA[prop]} and ${svcB[prop]}`);
   }
 }
 
 function getServiceAndSlice(obj) {
-  return obj.Name + (obj.Slice !== 'none' ? '-' + obj.Slice : '');
+  return obj.Name + (obj.Slice !== 'none' ? `-${obj.Slice}` : '');
 }
 
 function* getServicesState(environmentName, runtimeServerRoleName, instances) {
@@ -51,13 +51,10 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
   allServiceObjects = _.compact(allServiceObjects);
 
   // Find all objects representing particular service for all nodes
-  let instanceServicesGrouped = _.groupBy(allServiceObjects, (obj) => getServiceAndSlice(obj));
+  let instanceServicesGrouped = _.groupBy(allServiceObjects, obj => getServiceAndSlice(obj));
 
   let servicesList = _.map(instanceServicesGrouped, (serviceObjects, key) => {
-    
-    let service = _.find(targetServiceStates, (targetService) => {
-      return getServiceAndSlice(targetService) === getServiceAndSlice(serviceObjects[0]);
-    });
+    let service = _.find(targetServiceStates, targetService => getServiceAndSlice(targetService) === getServiceAndSlice(serviceObjects[0]));
 
     // That is a service that is not in a target state, but on at least one of instances
     if (service === undefined) {
@@ -85,7 +82,7 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
       }
     }
 
-    let serviceInstances = _.filter(instances, (instance) => _.some(instance.Services, { Name: service.Name, Slice: service.Slice }));
+    let serviceInstances = _.filter(instances, instance => _.some(instance.Services, { Name: service.Name, Slice: service.Slice }));
     let presentOnInstancesCount = 0;
     let serviceObjectsOnInstances = [];
 
@@ -110,7 +107,7 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
     let serviceAction = service.Action || SERVICE_INSTALL;
 
     let missingOrUnexpectedInstances = _.filter(serviceObjectsOnInstances,
-      (s) => s.DiffWithTargetState === DIFF_STATE.Missing || s.DiffWithTargetState === DIFF_STATE.Unexpected).length > 0;
+      s => s.DiffWithTargetState === DIFF_STATE.Missing || s.DiffWithTargetState === DIFF_STATE.Unexpected).length > 0;
 
     return {
       Name: service.Name,
@@ -122,12 +119,12 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
       InstancesCount: {
         Healthy: healthyNodes.length,
         Present: presentOnInstancesCount,
-        Total: serviceInstances.length
+        Total: serviceInstances.length,
       },
       MissingOrUnexpectedInstances: missingOrUnexpectedInstances,
       OverallHealth: getServiceOverallHealth(serviceHealthChecks, serviceInstances),
       HealthChecks: serviceHealthChecks,
-      Action: serviceAction
+      Action: serviceAction,
     };
   });
 

@@ -44,7 +44,6 @@ module.exports = function DeployServiceCommandHandler(command) {
 
 function validateCommandAndCreateDeployment(command) {
   return co(function* () {
-    
     let configuration = yield infrastructureConfigurationProvider.get(
       command.environmentName, command.serviceName, command.serverRoleName
     );
@@ -64,7 +63,7 @@ function validateCommandAndCreateDeployment(command) {
       username: command.username,
     });
 
-    yield deploymentContract.validate(configuration);    
+    yield deploymentContract.validate(configuration);
     return deploymentContract;
   });
 }

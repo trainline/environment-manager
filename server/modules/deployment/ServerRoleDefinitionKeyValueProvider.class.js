@@ -29,7 +29,7 @@ module.exports = function ServerRoleDefinitionKeyValueProvider() {
         Slice: serviceSlice || 'none',
         DeploymentId: deploymentId,
         InstanceIds: [],
-        Action: Enums.ServiceAction.INSTALL
+        Action: Enums.ServiceAction.INSTALL,
       },
     };
 

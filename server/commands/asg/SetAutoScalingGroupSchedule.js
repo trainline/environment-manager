@@ -34,7 +34,7 @@ module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
       return Promise.reject(new InvalidOperationError(
         'Scheduled scaling has been temporarily disabled. Please contact Platform Development for more information'
       ));
-      /*scalingSchedule = command.schedule;
+      /* scalingSchedule = command.schedule;
       schedule = 'NOSCHEDULE';*/
     } else {
       scalingSchedule = [];
@@ -75,8 +75,7 @@ module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
 };
 
 function setAutoScalingGroupSchedule(autoScalingGroupName, schedule, scalingSchedule, accountName) {
-  return autoScalingGroupClientFactory.create({ accountName }).then(client => {
-
+  return autoScalingGroupClientFactory.create({ accountName }).then((client) => {
     let setScheduleTask = setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, scalingSchedule, accountName);
     let setTagsTask = setAutoScalingGroupScheduleTag(client, autoScalingGroupName, schedule, accountName);
 
@@ -98,11 +97,8 @@ function setAutoScalingGroupScheduleTag(client, autoScalingGroupName, schedule, 
 
 function setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, newScheduledActions, accountName) {
   return co(function* () {
-    
     let existingScheduledActions = yield getScheduledActions(client, autoScalingGroupName);
-    yield existingScheduledActions.map(action => {
-      return deleteScheduledAction(client, action);
-    });
+    yield existingScheduledActions.map(action => deleteScheduledAction(client, action));
 
     if (!(newScheduledActions instanceof Array)) return Promise.resolve();
 

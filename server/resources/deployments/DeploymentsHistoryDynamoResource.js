@@ -11,9 +11,9 @@ module.exports = {
   queryable: true,
   dateField: {
     name: 'Value.StartTimestamp',
-    format: 'ISO'
+    format: 'ISO',
   },
   docs: {
-    disableDocs: true
-  }
+    disableDocs: true,
+  },
 };

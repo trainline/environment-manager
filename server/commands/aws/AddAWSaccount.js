@@ -21,7 +21,7 @@ function AddAWSAccount(command) {
       };
 
       return sender.sendCommand({ command: dynamoCommand, parent: command }).then(awsAccounts.flush);
-    })
+    });
   } catch (error) {
     return Promise.reject(error);
   }

@@ -24,6 +24,13 @@ module.exports = {
     "no-plusplus": 0,
     "no-confusing-arrow": [2, {'allowParens': true}],
     "no-irregular-whitespace": 0,
-    "no-param-reassign": [2, { "props": false }]
+    "no-param-reassign": [2, { "props": false }],
+    "comma-dangle": ["error", {
+      "arrays": "always-multiline",
+      "objects": "always-multiline",
+      "imports": "ignore",
+      "exports": "ignore",
+      "functions": "ignore",
+    }]
   }
 };

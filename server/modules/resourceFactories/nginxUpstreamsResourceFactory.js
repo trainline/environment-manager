@@ -63,7 +63,6 @@ function NginxUpstreamsResource() {
         let upstreams = [];
 
         for (let upstreamName in nginxUpstreams) {
-
           let nginxUpstream = nginxUpstreams[upstreamName];
 
           if (!nginxUpstream || !nginxUpstream.peers) return invalidJsonToError(body);

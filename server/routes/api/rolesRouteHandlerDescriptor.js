@@ -9,8 +9,7 @@ module.exports = route.get('/:account/environments/:environment/roles/')
   .inOrderTo('List all roles within an environment and the services they contain')
   .withDocs({ tags: ['Services'] })
   .do((request, response) => {
-
-    var query = {
+    let query = {
       name: 'GetServerRoles',
       accountName: request.params.account,
       environmentName: request.params.environment,

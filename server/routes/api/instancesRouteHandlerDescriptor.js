@@ -60,10 +60,10 @@ module.exports = [
   route.get('/:account/instances/schedule-actions')
   .inOrderTo('List instances changes needed due to scheduling')
   .withDocs({
-    disableDocs: true
+    disableDocs: true,
   })
   .do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanInstancesScheduleStatus',
       accountName: request.params.account,
       filter: utilities.extractQuery(request),
@@ -75,14 +75,14 @@ module.exports = [
   route.get('/:account/instances/schedule-actions/:dateTime')
   .inOrderTo('List instances changes needed due to scheduling as of a particular date and time')
   .withDocs({
-    disableDocs: true
+    disableDocs: true,
   })
   .do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanInstancesScheduleStatus',
       accountName: request.params.account,
       filter: utilities.extractQuery(request),
-      dateTime: request.params.dateTime
+      dateTime: request.params.dateTime,
     };
 
     send.query(query, request, response);

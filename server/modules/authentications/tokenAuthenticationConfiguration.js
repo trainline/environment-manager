@@ -20,5 +20,5 @@ module.exports = {
   getTokenDuration: () => {
     let configuration = loadConfiguration();
     return configuration.tokenDuration;
-  }
+  },
 };

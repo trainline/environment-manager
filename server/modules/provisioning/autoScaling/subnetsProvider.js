@@ -51,10 +51,10 @@ function getSubnetsByAvailabilityZone(subnetTypeName, configuration) {
 
   if (availabilityZoneName === '*') {
     subnets = [subnetType.AvailabilityZoneA, subnetType.AvailabilityZoneB, subnetType.AvailabilityZoneC,
-               subnetType.AvailabilityZoneD, subnetType.AvailabilityZoneE, subnetType.AvailabilityZoneF];
+      subnetType.AvailabilityZoneD, subnetType.AvailabilityZoneE, subnetType.AvailabilityZoneF];
   } else {
     let azs = _.toArray(availabilityZoneName);
-    azs.forEach(az => {
+    azs.forEach((az) => {
       let name = az.toUpperCase();
       switch (name) {
         case 'A':
@@ -77,7 +77,7 @@ function getSubnetsByAvailabilityZone(subnetTypeName, configuration) {
           break;
         default:
           throw new Error(`Unknown "${name}" availability zone specified in configuration. ` +
-            `Please specify one of the following values: "A", "B", "C" or "*".`);
+            'Please specify one of the following values: "A", "B", "C" or "*".');
       }
     });
   }

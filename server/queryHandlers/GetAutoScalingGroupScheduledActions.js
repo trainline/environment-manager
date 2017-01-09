@@ -18,6 +18,6 @@ function* GetAutoScalingGroupScheduledActions(query) {
 
   // Get AutoScalingGroup's Scheduled Actions by name
   return resource.get({ name: query.autoScalingGroupName });
-};
+}
 
 module.exports = co.wrap(GetAutoScalingGroupScheduledActions);

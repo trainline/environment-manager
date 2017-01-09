@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let sender = require('modules/sender');
@@ -14,9 +15,9 @@ function getLoadBalancer(req, res, next) {
     instanceDomainName: fqdn,
   };
 
-  return sender.sendQuery({ query }).then((data) => res.json(data)).catch(next);
+  return sender.sendQuery({ query }).then(data => res.json(data)).catch(next);
 }
 
 module.exports = {
-  getLoadBalancer
+  getLoadBalancer,
 };

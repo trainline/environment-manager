@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -10,7 +11,7 @@ let Environment = require('models/Environment');
 let co = require('co');
 
 class OpsEnvironment {
-  
+
   constructor(data) {
     _.assign(this, data);
   }
@@ -19,7 +20,7 @@ class OpsEnvironment {
     let env = this.Value;
     if (env.ScheduleAutomatically) {
       let schedule = cronService.getActionBySchedule(env.DefaultSchedule, date);
-      return schedule ? schedule : 'ON';
+      return schedule || 'ON';
     }
 
     return env.ManualScheduleUp ? 'ON' : 'OFF';
@@ -30,13 +31,13 @@ class OpsEnvironment {
     let self = this;
     return co(function* () {
       let value = _.pick(self.Value, 'ManualScheduleUp', 'ScheduleAutomatically');
-      
+
       let accountName = yield Environment.getAccountNameForEnvironment(self.EnvironmentName);
       value.AccountName = accountName;
 
       let ret = {
         EnvironmentName: self.EnvironmentName,
-        Value: value
+        Value: value,
       };
 
       ret.Value.ScheduleStatus = self.getScheduleStatus();
@@ -44,16 +45,16 @@ class OpsEnvironment {
     });
   }
 
-  static getAll(filter={}) {
+  static getAll(filter = {}) {
     const masterAccountName = config.getUserValue('masterAccountName');
 
     return ScanDynamoResources({ resource: 'ops/environments', filter, exposeAudit: 'version-only', accountName: masterAccountName })
-      .then((list) => list.map(env => new OpsEnvironment(env)));
+      .then(list => list.map(env => new OpsEnvironment(env)));
   }
 
   static getByName(environmentName) {
     const masterAccountName = config.getUserValue('masterAccountName');
-    
+
     let childQuery = {
       name: 'GetDynamoResource',
       resource: 'ops/environments',
@@ -61,7 +62,7 @@ class OpsEnvironment {
       accountName: masterAccountName,
     };
 
-    return sender.sendQuery({ query: childQuery }).then((obj) => new OpsEnvironment(obj));
+    return sender.sendQuery({ query: childQuery }).then(obj => new OpsEnvironment(obj));
   }
 }
 

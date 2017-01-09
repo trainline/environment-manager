@@ -12,7 +12,7 @@ function UpdateAWSAccount(command) {
     const masterAccountName = config.getUserValue('masterAccountName');
     let account = command.account;
 
-    return accountValidator.validate(account).then(_ => {
+    return accountValidator.validate(account).then((_) => {
       let dynamoCommand = {
         name: 'UpdateDynamoResource',
         resource: 'config/accounts',

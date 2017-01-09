@@ -1,4 +1,4 @@
-﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
 
@@ -15,6 +15,6 @@ module.exports = route.get('/all/deployments')
     let callback = adapt.callbackToExpress(request, response);
 
     return deployments.scan({
-      filter: utilities.extractQuery(request)
-    }).then((value) => callback(null, value), (err) => callback(err));
+      filter: utilities.extractQuery(request),
+    }).then(value => callback(null, value), err => callback(err));
   });

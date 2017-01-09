@@ -39,16 +39,14 @@ exports.getRules = (request) => {
   if (environmentName === undefined) {
     // Environment is in the body
     let body = request.params.body || request.body;
-    environmentName = body.EnvironmentName || body.Value.EnvironmentName
+    environmentName = body.EnvironmentName || body.Value.EnvironmentName;
   }
-  return getModifyPermissionsForEnvironment(environmentName, request.user).then(envPermissions => {
-    return [{
-      resource: request.url.replace(/\/+$/, ''),
-      access: request.method,
-      clusters: [envPermissions.cluster],
-      environmentTypes: [envPermissions.environmentType],
-    }]
-  });
+  return getModifyPermissionsForEnvironment(environmentName, request.user).then(envPermissions => [{
+    resource: request.url.replace(/\/+$/, ''),
+    access: request.method,
+    clusters: [envPermissions.cluster],
+    environmentTypes: [envPermissions.environmentType],
+  }]);
 };
 
 exports.docs = {

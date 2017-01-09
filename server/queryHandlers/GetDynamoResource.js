@@ -20,7 +20,7 @@ function* GetDynamoResourceQueryHandler(query) {
     formatting: {
       exposeAudit: query.exposeAudit,
     },
-    suppressError: query.suppressError
+    suppressError: query.suppressError,
   };
 
   return resource.get(params);

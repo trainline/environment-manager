@@ -3,7 +3,7 @@
 'use strict';
 
 let {
-  setInstanceMaintenanceMode
+  setInstanceMaintenanceMode,
 } = require('./consulMacroManager');
 
 let {
@@ -13,7 +13,7 @@ let {
   removeRuntimeServerRoleTargetState,
   getAllServiceTargets,
   getServiceDeploymentCause,
-  getInstanceServiceDeploymentInfo
+  getInstanceServiceDeploymentInfo,
 } = require('./keyValueStore');
 
 module.exports = {
@@ -24,5 +24,5 @@ module.exports = {
   setInstanceMaintenanceMode,
   getAllServiceTargets,
   getServiceDeploymentCause,
-  getInstanceServiceDeploymentInfo
+  getInstanceServiceDeploymentInfo,
 };

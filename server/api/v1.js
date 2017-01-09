@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -80,7 +81,7 @@ function authorize(req, res, next) {
 }
 
 function setup(app) {
-  swaggerTools.initializeMiddleware(apiSpec, function (middleware) {
+  swaggerTools.initializeMiddleware(apiSpec, (middleware) => {
     app.use(middleware.swaggerMetadata());
     app.use(middleware.swaggerValidator());
     app.use(API_BASE_PATH, authorize);
@@ -91,5 +92,5 @@ function setup(app) {
 }
 
 module.exports = {
-  setup
+  setup,
 };

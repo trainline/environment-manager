@@ -10,11 +10,11 @@ let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class'
 
 function hostFilter(active) {
   if (active === true) {
-    return (host) => host.State === 'up';
+    return host => host.State === 'up';
   } else if (active === false) {
-    return (host) => host.State === 'down';
+    return host => host.State === 'down';
   } else {
-    return (host) => true;
+    return host => true;
   }
 }
 
@@ -46,19 +46,17 @@ function* handleQuery(query, resourceName, upstreamFilter) {
   // Flatting upstreams hosts in to a plain list
   // eslint-disable-next-line arrow-body-style
   let upstreamValues = (upstream) => {
-    return upstream.Value.Hosts.filter(hostFilter(query.active)).map((host) => {
-      return {
-        Key: upstream.key,
-        EnvironmentName: upstream.Value.EnvironmentName,
-        ServiceName: upstream.Value.ServiceName,
-        UpstreamName: upstream.Value.UpstreamName,
-        DnsName: host.DnsName,
-        Port: host.Port,
-        OwningCluster: '',
-        Name: 'Unknown',
-        State: host.State === 'up' ? 'Active' : 'Inactive',
-      }
-    });
+    return upstream.Value.Hosts.filter(hostFilter(query.active)).map(host => ({
+      Key: upstream.key,
+      EnvironmentName: upstream.Value.EnvironmentName,
+      ServiceName: upstream.Value.ServiceName,
+      UpstreamName: upstream.Value.UpstreamName,
+      DnsName: host.DnsName,
+      Port: host.Port,
+      OwningCluster: '',
+      Name: 'Unknown',
+      State: host.State === 'up' ? 'Active' : 'Inactive',
+    }));
   };
 
   upstreams = _(upstreams).map(upstreamValues).compact().flatten().value();
@@ -127,7 +125,7 @@ let FILTER = {
       upstream =>
         upstream.Value.EnvironmentName === query.environmentName && upstream.Value.ServiceName === query.serviceName,
   },
-  
+
 };
 
 module.exports = {

@@ -27,10 +27,10 @@ function asExpressRouteDescriptor(descriptor) {
 
   // Validation step
   if (validation) {
-    middlewares.push(function (request, response, next) {
+    middlewares.push((request, response, next) => {
       if (request.url.indexOf('/v1') === 0) return next();
 
-      var error = validation(request.url, request.body);
+      let error = validation(request.url, request.body);
       if (!error) return next();
 
       response.status(400);
@@ -39,7 +39,7 @@ function asExpressRouteDescriptor(descriptor) {
   }
 
   // Action step
-  middlewares.push(function (request, response, next) {
+  middlewares.push((request, response, next) => {
     if (request.url.indexOf('/v1') === 0) return next();
 
     action(request, response, next);

@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let config = require('config');
@@ -9,5 +10,5 @@ function getHealthcheck(req, res, next) {
 }
 
 module.exports = {
-  getHealthcheck
+  getHealthcheck,
 };

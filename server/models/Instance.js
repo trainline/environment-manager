@@ -23,7 +23,7 @@ class Instance {
   }
 
   persistTag(tag) {
-    return ec2InstanceClientFactory.create({ accountName: this.AccountName }).then(client => {
+    return ec2InstanceClientFactory.create({ accountName: this.AccountName }).then((client) => {
       let parameters = {
         instanceIds: [this.InstanceId],
         tagKey: tag.key,
@@ -36,9 +36,7 @@ class Instance {
 
   static getById(instanceId) {
     let filter = { 'instance-id': instanceId };
-    return ScanCrossAccountInstances({ filter }).then(list => {
-      return new Instance(list[0]);
-    });
+    return ScanCrossAccountInstances({ filter }).then(list => new Instance(list[0]));
   }
 
   static getAllByEnvironment(environmentName) {
@@ -53,7 +51,7 @@ class Instance {
         query: {
           name: 'ScanInstances',
           accountName,
-          filter
+          filter,
         },
       }).then((result) => {
         console.log(result);

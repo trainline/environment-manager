@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 const RESOURCE = 'config/lbupstream';
@@ -42,14 +43,14 @@ function postUpstreamsConfig(req, res, next) {
  */
 function putUpstreamConfigByName(req, res, next) {
   let body = req.swagger.params.body.value;
-  let key = req.swagger.params.name.value
+  let key = req.swagger.params.name.value;
   let expectedVersion = req.swagger.params['expected-version'].value;
   let user = req.user;
   let environmentName = body.EnvironmentName;
 
   co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    return dynamoHelper.update(key, { Value: body }, expectedVersion, user, { accountName })
+    return dynamoHelper.update(key, { Value: body }, expectedVersion, user, { accountName });
   }).then(data => res.json(data)).catch(next);
 }
 
@@ -57,7 +58,7 @@ function putUpstreamConfigByName(req, res, next) {
  * DELETE /config/upstreams/{name}
  */
 function deleteUpstreamConfigByName(req, res, next) {
-  let key = req.swagger.params.name.value
+  let key = req.swagger.params.name.value;
   let user = req.user;
   let accountName = req.swagger.params.account.value;
   return dynamoHelper.delete(key, user, { accountName }).then(data => res.json(data)).catch(next);
@@ -68,5 +69,5 @@ module.exports = {
   getUpstreamConfigByName,
   postUpstreamsConfig,
   putUpstreamConfigByName,
-  deleteUpstreamConfigByName
+  deleteUpstreamConfigByName,
 };

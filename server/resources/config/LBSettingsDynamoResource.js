@@ -19,6 +19,6 @@ module.exports = {
   importable: true,
   docs: {
     description: 'Load Balancer Settings',
-    tags: ["Load Balancer Settings"]
-  }
+    tags: ['Load Balancer Settings'],
+  },
 };

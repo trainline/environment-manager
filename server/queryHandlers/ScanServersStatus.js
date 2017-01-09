@@ -1,4 +1,4 @@
-﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
 
@@ -22,9 +22,8 @@ function* ScanServersStatusQueryHandler(query) {
   return Promise.all([
     AutoScalingGroup.getAllByEnvironment(environmentName),
     Instance.getAllByEnvironment(environmentName),
-    getAllImages()
-  ]).then(results => {
-
+    getAllImages(),
+  ]).then((results) => {
     let asgs = results[0];
     let allInstances = results[1];
     let allImages = results[2];
@@ -32,10 +31,10 @@ function* ScanServersStatusQueryHandler(query) {
     if (query.filter.cluster) {
       asgs = _.filter(asgs, asg => asg.getTag('OwningCluster') === query.filter.cluster);
     }
- 
-    return Promise.all(asgs.map(asg => {
-      let instances = asg.Instances.map(asgInstance => {
-        var instance = _.find(allInstances, { InstanceId: asgInstance.InstanceId });
+
+    return Promise.all(asgs.map((asg) => {
+      let instances = asg.Instances.map((asgInstance) => {
+        let instance = _.find(allInstances, { InstanceId: asgInstance.InstanceId });
 
         if (instance && instance.State.Name !== 'terminated') {
           let image = getImage(allImages, instance.ImageId); // TODO(filip): use Image in place of this
@@ -48,34 +47,32 @@ function* ScanServersStatusQueryHandler(query) {
         } else {
           return null;
         }
-    }).filter(instance => !!instance);
+      }).filter(instance => !!instance);
 
-    let instanceCount = instances.length;
-    let status = getStatus(instances, asg.DesiredCapacity);
-    let ami = getAmi(instances);
+      let instanceCount = instances.length;
+      let status = getStatus(instances, asg.DesiredCapacity);
+      let ami = getAmi(instances);
 
       return getServicesInstalledOnInstances(environmentName, instances)
-        .then(services => {
-          return {
-            Name: asg.AutoScalingGroupName,
-            Role: asg.getRuntimeServerRoleName(),
-            Status: status,
-            Cluster: asg.getTag('OwningCluster', ''),
-            Schedule: asg.getTag('Schedule', ''),
-            IsBeingDeleted: asg.Status === 'Delete in progress',
-            Size: {
-              Current: instanceCount,
-              Desired: asg.DesiredCapacity,
-            },
-            Services: services.map(getServiceView(environmentName)),
-            Ami: ami,
-          };
-        });
-  })).then((asgResults) => {
+        .then(services => ({
+          Name: asg.AutoScalingGroupName,
+          Role: asg.getRuntimeServerRoleName(),
+          Status: status,
+          Cluster: asg.getTag('OwningCluster', ''),
+          Schedule: asg.getTag('Schedule', ''),
+          IsBeingDeleted: asg.Status === 'Delete in progress',
+          Size: {
+            Current: instanceCount,
+            Desired: asg.DesiredCapacity,
+          },
+          Services: services.map(getServiceView(environmentName)),
+          Ami: ami,
+        }));
+    })).then((asgResults) => {
       let asgs = asgResults.filter(byStatus(query.filter.status));
       let result = {
         EnvironmentName: environmentName,
-        Value: asgs
+        Value: asgs,
       };
 
       let duration = moment.duration(moment.utc().diff(allStartTime)).asMilliseconds();
@@ -84,7 +81,7 @@ function* ScanServersStatusQueryHandler(query) {
       return result;
     });
   });
-};
+}
 
 function getServicesInstalledOnInstances(environment, instances) {
   // eslint-disable-next-line arrow-body-style
@@ -140,7 +137,7 @@ function getAmi(instances) {
   return {
     Name: ami.name,
     Age: moment.utc().diff(moment(ami.created), 'days'),
-    IsLatestStable: ami.isLatestStable
+    IsLatestStable: ami.isLatestStable,
   };
 }
 
@@ -191,7 +188,7 @@ function getImage(images, imageId) {
   return {
     name: image.Name,
     created: image.CreationDate,
-    isLatestStable: image.IsLatest && image.IsStable
+    isLatestStable: image.IsLatest && image.IsStable,
   };
 }
 

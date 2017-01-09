@@ -22,7 +22,7 @@ module.exports = {
   DIFF_STATE: {
     Ignored: 'Ignored',
     Missing: 'Missing',
-    Unexpected: 'Unexpected'
+    Unexpected: 'Unexpected',
   },
 
   HEALTH_STATUS: {
@@ -35,7 +35,7 @@ module.exports = {
   },
 
   ASGLifecycleState: {
-    IN_SERVICE: 'InService'
+    IN_SERVICE: 'InService',
   },
 
   NodeDeploymentStatus: {
@@ -50,7 +50,7 @@ module.exports = {
     Success: 'Success',
     Failed: 'Failed',
     Cancelled: 'Cancelled',
-    Unknown: 'Unknown'
+    Unknown: 'Unknown',
   },
 
   AutoScalingNotificationType: {

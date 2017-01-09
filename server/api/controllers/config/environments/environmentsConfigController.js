@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 const KEY_NAME = 'EnvironmentName';
@@ -24,7 +25,7 @@ function getEnvironmentsConfig(req, res, next) {
 
   let filter = {
     'Value.OwningCluster': cluster,
-    'Value.EnvironmentType': environmentType
+    'Value.EnvironmentType': environmentType,
   };
   filter = _.omitBy(filter, _.isUndefined);
 
@@ -69,13 +70,13 @@ function putEnvironmentConfigByName(req, res, next) {
 function deleteEnvironmentConfigByName(req, res, next) {
   const environmentName = req.swagger.params.name.value;
   const user = req.user;
-  
+
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
 
     yield [
       deleteLBSettingsForEnvironment(environmentName, accountName, user),
-      deleteLBUpstreamsForEnvironment(environmentName, accountName, user)
+      deleteLBUpstreamsForEnvironment(environmentName, accountName, user),
     ];
 
     yield deleteEnvironment(environmentName, accountName, user);
@@ -84,29 +85,23 @@ function deleteEnvironmentConfigByName(req, res, next) {
 }
 
 function deleteLBSettingsForEnvironment(environmentName, accountName, user) {
-  return co(function*(){
+  return co(function* () {
     let lbSettingsList = yield lbSettingsTable.queryRangeByKey(environmentName);
-    return lbSettingsList.map(lbSettings => {
-      return lbSettingsTable.deleteWithSortKey(environmentName, lbSettings.VHostName, user, { accountName });
-    });
+    return lbSettingsList.map(lbSettings => lbSettingsTable.deleteWithSortKey(environmentName, lbSettings.VHostName, user, { accountName }));
   });
 }
 
 function deleteLBUpstreamsForEnvironment(environmentName, accountName, user) {
-  return co(function*(){
+  return co(function* () {
     let allLBUpstreams = yield lbUpstreamsTable.getAll(null, { accountName });
-    let lbUpstreams = allLBUpstreams.filter(lbUpstream => {
-      return lbUpstream.Value.EnvironmentName.toLowerCase() === environmentName.toLowerCase();
-    });
+    let lbUpstreams = allLBUpstreams.filter(lbUpstream => lbUpstream.Value.EnvironmentName.toLowerCase() === environmentName.toLowerCase());
 
-    return lbUpstreams.map(lbUpstream => {
-      return lbUpstreamsTable.delete(lbUpstream.key, user, { accountName });
-    });
+    return lbUpstreams.map(lbUpstream => lbUpstreamsTable.delete(lbUpstream.key, user, { accountName }));
   });
 }
 
 function deleteEnvironment(environmentName, accountName, user) {
-  return co(function*(){
+  return co(function* () {
     yield opsEnvironmentTable.delete(environmentName, user);
     yield environmentTable.delete(environmentName, user);
   });
@@ -117,5 +112,5 @@ module.exports = {
   getEnvironmentConfigByName,
   postEnvironmentsConfig,
   putEnvironmentConfigByName,
-  deleteEnvironmentConfigByName
+  deleteEnvironmentConfigByName,
 };

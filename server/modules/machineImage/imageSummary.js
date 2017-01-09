@@ -116,5 +116,5 @@ function comparable(summary) {
 function isStable(ec2Image) {
   let hasStableTag = ec2Image.Tags && ec2Image.Tags.some(t => t.Key.toLowerCase() === 'stable' && t.Value !== '');
   let hasStableInDescription = ec2Image.Description && ec2Image.Description.toLowerCase() === 'stable';
-  return (hasStableTag || hasStableInDescription) ? true : false;
+  return !!((hasStableTag || hasStableInDescription));
 }

@@ -23,7 +23,7 @@ class Deployment {
       resource: 'deployments/history',
       accountName: this.AccountName,
       key: this.DeploymentID,
-      item: itemValue
+      item: itemValue,
     };
     return sender.sendCommand({ command, user: systemUser });
   }
@@ -36,10 +36,10 @@ class Deployment {
     this.Value.ExecutionLog = executionLogEntries.join('\n');
 
     return this.updateItemValue({
-      'Value.ExecutionLog': this.Value.ExecutionLog
+      'Value.ExecutionLog': this.Value.ExecutionLog,
     });
   }
-  
+
 }
 
 module.exports = Deployment;

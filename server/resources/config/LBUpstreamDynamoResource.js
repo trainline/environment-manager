@@ -18,6 +18,6 @@ module.exports = {
   importable: true,
   docs: {
     description: 'Upstream',
-    tags: ['Upstreams']
-  }
+    tags: ['Upstreams'],
+  },
 };

@@ -48,9 +48,9 @@ function callbackToExpress(req, res) {
 function promiseToExpress(req, res) {
   let callback = callbackToExpress(req, res);
   return function (promise) {
-    promise.then((result) => callback(null, result), (err) => callback(err));
+    promise.then(result => callback(null, result), err => callback(err));
   };
-} 
+}
 
 module.exports = {
   callbackToExpress,

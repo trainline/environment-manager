@@ -22,8 +22,8 @@ function getAccountByEnvironment(command) {
     .then(getEnvType)
     .then(configCache.getEnvironmentTypeByName)
     .then(getAccountName)
-    .then((account) => validateAccount(command.environment, account))
-    .catch(e => { throw new Error(getErrorMsg(command, e)) });
+    .then(account => validateAccount(command.environment, account))
+    .catch((e) => { throw new Error(getErrorMsg(command, e)); });
 }
 
 /**
