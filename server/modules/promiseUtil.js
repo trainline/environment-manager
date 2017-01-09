@@ -5,8 +5,7 @@
 let Promise = require('bluebird');
 
 function transformToCallbackLast(fn, context) {
-  return function () {
-    let args = Array.from(arguments);
+  return function (...args) {
     let lastIndex = args.length - 1;
     let fixedArgs = args.slice(lastIndex, args.length).concat(args.slice(0, lastIndex));
     return fn.apply(context, fixedArgs);

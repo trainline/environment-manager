@@ -78,8 +78,7 @@ function validateServiceAndVersionNotDeployed(deployment) {
 
   return sender.sendQuery({ query })
     .then((deployedService) => {
-      if (canDeployToSlice(slice, deployedService)) {
-      } else {
+      if (!canDeployToSlice(slice, deployedService)) {
         let message = 'Each version of a service may only be deployed to slices of one colour per environment.'
           + ` You attempted to deploy ${service} ${version} to a ${slice} slice of ${environment}.`
           + ' Perhaps it is already deployed to another slice in this environment?';

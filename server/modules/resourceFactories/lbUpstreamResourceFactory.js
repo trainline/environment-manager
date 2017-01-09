@@ -2,6 +2,12 @@
 
 'use strict';
 
+/* eslint no-underscore-dangle: 0 */
+/**
+ * TODO: This module uses _underscoredNames in many places
+ * Disabling eslint of this until it can be properly refactored
+ */
+
 let utils = require('modules/utilities');
 let amazonClientFactory = require('modules/amazon-client/childAccountClient');
 let DynamoTableResource = require('./DynamoTableResource');

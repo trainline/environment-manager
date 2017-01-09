@@ -1,4 +1,10 @@
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* eslint-disable */
+
 'use strict';
+/**
+ * TODO: Please kill this file with murder. Twice.
+ */
 
 Array.prototype.distinct = function (keySelector) {
   let result = [];

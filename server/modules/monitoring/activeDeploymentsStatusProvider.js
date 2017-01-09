@@ -128,7 +128,7 @@ function getNodesDeployment(nodesId, nodesDeployment) {
     for (let propertyName in nodeDeployment) {
       if ({}.hasOwnProperty.call(nodeDeployment, propertyName)) {
         let property = nodeDeployment[propertyName];
-        if (!property) continue;
+        if (!property) continue; // eslint-disable-line no-continue
         result[propertyName] = property;
       }
     }

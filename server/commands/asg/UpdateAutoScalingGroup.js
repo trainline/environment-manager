@@ -8,7 +8,7 @@ let OperationResult = require('../utils/operationResult');
 let resourceProvider = require('modules/resourceProvider');
 let InvalidOperationError = require('modules/errors/InvalidOperationError.class');
 let subnetsProvider = require('modules/provisioning/autoScaling/subnetsProvider');
-let sender = new require('modules/sender');
+let sender = require('modules/sender');
 let Environment = require('models/Environment');
 let EnvironmentType = require('models/EnvironmentType');
 

@@ -45,7 +45,7 @@ exports.getRules = (request) => {
     ));
   }
 
-  return Promise.resolve(requestPermissions);
+  return Promise.resolve();
 };
 
 exports.docs = {

@@ -16,7 +16,9 @@ try {
       new (winston.transports.File)({ filename: debugOptions.apiCallLogFile }),
     ],
   });
-} catch (err) {}
+} catch (err) {
+  // eslint-disable-line no-empty
+}
 
 let logFn = (() => {
   if (!winstonLogger) return () => {};

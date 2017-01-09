@@ -28,6 +28,7 @@ class BaseError extends Error {
   }
 }
 
+// eslint-disable-next-line no-extend-native
 Error.prototype.toString = function (detailed) {
   return stringifyError(this, detailed);
 };

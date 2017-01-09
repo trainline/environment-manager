@@ -53,7 +53,7 @@ function parseCronSchedule(serialisedCronSchedule) {
     let state = cronActions[parts[0].trim()];
 
     if (state === undefined) {
-      throw 'Invalid cron action';
+      throw new Error('Invalid cron action');
     }
 
     let recurrence = later.parse.cron(parts[1].trim());

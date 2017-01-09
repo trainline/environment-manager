@@ -54,7 +54,7 @@ function ToggleUpstreamByServiceVerifier(toggleCommand) {
       return makeUpstreamError(upstream, 'cannot be toggled because it has more than two slices');
     }
 
-    let statuses = upstream.Value.Hosts.map(host => host.State === 'up' ? 'Active' : 'Inactive').distinct();
+    let statuses = upstream.Value.Hosts.map((host) => { return host.State === 'up' ? 'Active' : 'Inactive'; }).distinct();
     if (statuses.length === 1) {
       return makeUpstreamError(upstream, `cannot be toggled because all its slices are "${statuses[0]}"`);
     }

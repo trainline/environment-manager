@@ -63,16 +63,17 @@ function NginxUpstreamsResource() {
         let upstreams = [];
 
         for (let upstreamName in nginxUpstreams) {
-          let nginxUpstream = nginxUpstreams[upstreamName];
+          if ({}.hasOwnProperty.call(nginxUpstreams, upstreamName)) {
+            let nginxUpstream = nginxUpstreams[upstreamName];
+            if (!nginxUpstream || !nginxUpstream.peers) return invalidJsonToError(body);
 
-          if (!nginxUpstream || !nginxUpstream.peers) return invalidJsonToError(body);
+            let upstream = {
+              Name: upstreamName,
+              Hosts: nginxUpstream.peers.filter(isNotNginxUpstreamPeerBackup).map(asUpstreamItem),
+            };
 
-          let upstream = {
-            Name: upstreamName,
-            Hosts: nginxUpstream.peers.filter(isNotNginxUpstreamPeerBackup).map(asUpstreamItem),
-          };
-
-          upstreams.push(upstream);
+            upstreams.push(upstream);
+          }
         }
 
         return resolve(upstreams);

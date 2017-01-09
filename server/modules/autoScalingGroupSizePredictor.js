@@ -34,7 +34,7 @@ function predictSizeAfterEnteringInstancesToStandby(autoScalingGroup, instancesI
     if (STATES_AS_IN_SERVICE.indexOf(instance.LifecycleState) >= 0) instancesInService++;
 
     // Exclude all instances not specified by the command
-    if (instancesIds.indexOf(instance.InstanceId) < 0) continue;
+    if (instancesIds.indexOf(instance.InstanceId) < 0) continue; // eslint-disable-line no-continue
 
     if (instance.LifecycleState !== 'InService') {
       return Promise.reject(new InvalidOperationError(
@@ -65,7 +65,7 @@ function predictSizeAfterExitingInstancesFromStandby(autoScalingGroup, instances
     if (STATES_AS_IN_SERVICE.indexOf(instance.LifecycleState) >= 0) instancesInService++;
 
     // Exclude all instances not specified by the command
-    if (instancesIds.indexOf(instance.InstanceId) < 0) continue;
+    if (instancesIds.indexOf(instance.InstanceId) < 0) continue; // eslint-disable-line no-continue
 
     if (instance.LifecycleState !== 'Standby') {
       return Promise.reject(new InvalidOperationError(

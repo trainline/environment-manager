@@ -18,7 +18,8 @@ function getCodeDeployEntries(deploymentMap, inputPackages, options, logger) {
   let entryStreams = (function* () {
     yield getCodeDeploySpecialEntries(deploymentMap, options);
     for (let pack of inputPackages) {
-      let mapPath = isMain(pack) ? (entry => isHealthcheck(entry) ? path.normalize(entry) : path.join('DM', entry)) : entry => path.join(pack.id, entry);
+      let mainValue = (entry) => { return isHealthcheck(entry) ? path.normalize(entry) : path.join('DM', entry); };
+      let mapPath = isMain(pack) ? mainValue : entry => path.join(pack.id, entry);
       let result = z.createEntryStream(pack.contentStream, filterOutNugetJunk, logger).pipe(z.mapS((entry) => {
         let transformedPath = mapPath(entry.path);
         entry.path = transformedPath;

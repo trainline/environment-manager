@@ -16,13 +16,11 @@ function* getASGReady({ autoScalingGroupName, environmentName }) {
       let instancesInService = _.filter(instances, { LifecycleState: Enums.ASGLifecycleState.IN_SERVICE });
       let instancesByLifecycleState = _(instances).groupBy('LifecycleState').mapValues(list => list.length).value();
 
-      let response = {
+      return {
         ReadyToDeploy: instancesInService.length === instances.length,
         InstancesByLifecycleState: instancesByLifecycleState,
         InstancesTotalCount: instances.length,
       };
-
-      return response;
     });
   });
 }

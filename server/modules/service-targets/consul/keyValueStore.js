@@ -127,7 +127,7 @@ function removeTargetState(environment, { key, recurse }) {
             return resolve();
           }
           return reject(new HttpRequestError(
-            `An error has occurred contacting consul agent: ${deletionError.message}`
+            `An error has occurred contacting consul agent: ${delError.message}`
           ));
         });
       });

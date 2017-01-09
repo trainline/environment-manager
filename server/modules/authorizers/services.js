@@ -11,7 +11,7 @@ exports.getRules = (request) => {
     resource: request.url.replace(/\/+$/, ''),
     access: request.method,
     clusters: [cluster.toLowerCase()],
-  },]);
+  }]);
 };
 
 exports.docs = {

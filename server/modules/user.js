@@ -42,8 +42,16 @@ let User = function (data) {
   };
 
   this.hasPermission = function (requiredPermission) {
-    return _data.permissions.some((userPermission) => {
+    return userData.permissions.some((userPermission) => {
       if (userPermission.Resource && userPermission.Access) {
+
+        /**
+         * TODO: This file is intended to be shared across client and server.
+         * Not only is this ill-conceived but it includes logic specific to one or the other.
+         * We should split this file as appropriate and find a better method for sharing any logic.
+         */
+
+        // es-lint-disable-next-line no-undef
         let matchingResources = globIntersection(requiredPermission.resource.toLowerCase(), userPermission.Resource.toLowerCase());
         let matchingAccess = (userPermission.Access.toLowerCase() === requiredPermission.access.toLowerCase()) || userPermission.Access === 'ADMIN';
 

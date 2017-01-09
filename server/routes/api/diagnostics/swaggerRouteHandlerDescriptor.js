@@ -14,9 +14,9 @@ module.exports = routeHelper
   .inOrderTo('Describe all available API endpoints.')
   .do((request, response) => {
     function getParams(url, docs) {
-      let r = /\/:([^/]*)/g,
-        matches,
-        parameters = [];
+      let r = /\/:([^/]*)/g;
+      let matches;
+      let parameters = [];
 
       while (matches = r.exec(url)) {
         parameters.push({ in: 'path',

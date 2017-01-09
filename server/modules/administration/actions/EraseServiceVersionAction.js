@@ -17,8 +17,7 @@ function EraseServiceVersionAction(environmentName) {
 
       let erasedRolesKeys = yield keyValueStoreEraser.scanAndDelete({
         keyPrefix: `environments/${environmentName}/roles/`,
-        condition: (key, value) =>
-          value ? value.Name === serviceName && value.Version === serviceVersion : false,
+        condition: (key, value) => { return value ? value.Name === serviceName && value.Version === serviceVersion : false; },
       });
 
       return erasedServicesKeys.concat(erasedRolesKeys);

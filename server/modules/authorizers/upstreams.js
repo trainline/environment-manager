@@ -52,7 +52,7 @@ function getEnvironmentPermissionsPromise(upstreamName, environmentName, account
         return getModifyPermissionsForEnvironment(envName);
       }
 
-      throw `Could not find upstream: ${upstreamName}`;
+      throw new Error(`Could not find upstream: ${upstreamName}`);
     });
 }
 

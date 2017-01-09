@@ -33,7 +33,7 @@ module.exports = function (options) {
 };
 
 let defaults = {
-  backoff: i => Math.round(5000 * (1 + Math.random()) * Math.pow(2, (i - 1))),
+  backoff: i => Math.round(5000 * (1 + Math.random()) * Math.pow(2, (i - 1))), // eslint-disable-line no-restricted-properties
   logger: {
     debug: console.log.bind(console),
     info: console.log.bind(console),

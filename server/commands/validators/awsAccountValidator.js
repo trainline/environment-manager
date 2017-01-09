@@ -19,7 +19,7 @@ function validate(account) {
     });
 
     required.forEach((p) => {
-      if (!account.hasOwnProperty(p)) throw new Error(`Missing required attribute: ${p}`);
+      if (!{}.hasOwnProperty.call(account, p)) throw new Error(`Missing required attribute: ${p}`);
     });
 
     flags.forEach((f) => {

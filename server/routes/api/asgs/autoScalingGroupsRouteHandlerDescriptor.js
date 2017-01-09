@@ -12,7 +12,7 @@ function getPropertyByName(object, name) {
   let lowerCaseName = name.toLowerCase();
 
   for (let propertyName in object) {
-    if (lowerCaseName !== propertyName.toLowerCase()) continue;
+    if (lowerCaseName !== propertyName.toLowerCase()) continue; // eslint-disable-line no-continue
     return object[propertyName];
   }
 

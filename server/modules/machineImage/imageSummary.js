@@ -77,7 +77,7 @@ function compare(summaryImageX, summaryImageY) {
   if (summaryImageX && summaryImageY) {
     let x = comparable(summaryImageX);
     let y = comparable(summaryImageY);
-    return 2 * Math.sign(x.amiType.localeCompare(y.amiType)) + Math.sign(semver.rcompare(x.amiVersion, y.amiVersion));
+    return (2 * Math.sign(x.amiType.localeCompare(y.amiType))) + Math.sign(semver.rcompare(x.amiVersion, y.amiVersion));
   } else if (summaryImageX) {
     return 1;
   } else if (summaryImageY) {

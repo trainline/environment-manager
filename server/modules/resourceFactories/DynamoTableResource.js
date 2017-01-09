@@ -7,6 +7,7 @@
 
 'use strict';
 
+let util = require('util');
 let RequestBuilder = require('modules/awsDynamo/awsDynamoRequestBuilder');
 let awsResourceNameProvider = require('modules/awsResourceNameProvider');
 let AwsError = require('modules/errors/AwsError.class');
@@ -20,16 +21,20 @@ let logger = require('modules/logger');
 
 function removeEmptyStrings(data) {
   for (let property in data) {
-    let value = data[property];
-    let type = typeof value;
+    if ({}.hasOwnProperty.call(data, property)) {
+      let value = data[property];
+      let type = typeof value;
 
-    switch (type) {
-      case 'string':
-        if (value === '') delete data[property];
-        break;
-      case 'object':
-        removeEmptyStrings(value);
-        break;
+      switch (type) {
+        case 'string':
+          if (value === '') delete data[property];
+          break;
+        case 'object':
+          removeEmptyStrings(value);
+          break;
+        default:
+
+      }
     }
   }
 }
@@ -107,7 +112,7 @@ class DynamoTableResource {
     };
 
     return this.client.query(request).promise().then((data) => {
-      if (!_.isArray(data.Items) || data.Items.length === 0) {
+      if (!Array.isArray(data.Items) || data.Items.length === 0) {
         let message = `No ${self._resourceName} items found for ${self._keyName} ${params.key}.`;
         throw new DynamoItemNotFoundError(message);
       } else {

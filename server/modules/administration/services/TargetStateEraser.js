@@ -42,7 +42,7 @@ function TargetStateEraser(environmentName) {
       key,
     };
 
-    return sender.sendCommand({ command, user });
+    return sender.sendCommand({ command, user: systemUser });
   }
 }
 
