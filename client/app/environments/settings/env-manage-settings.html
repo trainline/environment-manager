@@ -32,6 +32,33 @@
                         </div>
                         <span class="help-block" ng-if="form.OwningClusters.$dirty && form.OwningClusters.$error.required">Owning cluster is mandatory.</span>
                     </div>
+                    <div class="form-group" ng-class="{'has-error': form.AlertSettings.$invalid}">
+                        <label class="col-md-3 control-label text-left nowrap">Alert Settings: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+                        <div class="col-md-2">
+                            <select class="form-control"
+                                    name="AlertSettings"
+                                    required=""
+                                    ng-model="vm.newEnvironment.AlertSettings">
+                                <option ng-repeat="alertSettings in vm.alertSettingsList" ng-selected="{{alertSettings == Environment.Value.AlertSettings}}" value="{{alertSettings.Value}}">{{alertSettings.Name}}</option>
+                            </select>
+                        </div>
+                        
+                        <span class="help-block" ng-if="form.AlertSettings.$dirty && form.AlertSettings.$error.required">Alert Settings is mandatory.</span>
+                    </div>
+
+                    <div class="form-group" ng-class="{'has-error': form.NotificationSettings.$invalid}" ng-if="vm.newEnvironment.AlertSettings == 'Custom'">
+                        <label class="col-md-3 control-label text-left nowrap"></label>
+                        <div class="col-md-2">
+                            <select class="form-control"
+                                    name="NotificationSettings"
+                                    required=""
+                                    ng-model="vm.newEnvironment.NotificationSettingsId">
+                                <option ng-repeat="item in vm.notificationSettingsList" ng-selected="{{item.NotificationSettingsId == Environment.Value.NotificationSettingsId}}" value="{{item.NotificationSettingsId}}">{{item.NotificationSettingsId}}</option>
+                            </select>
+                        </div>
+                        <span class="help-block" ng-if="form.NotificationSettingsId.$dirty && form.NotificationSettingsId.$error.required">Notification Settings id is mandatory.</span>
+                    </div>
+
                     <div class="form-group" ng-class="{'has-error': form.DeploymentMap.$invalid}">
                         <label class="col-md-1 control-label text-left nowrap">Deployment Map: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
                         <div class="col-md-2" ng-if="vm.canUser('edit')">

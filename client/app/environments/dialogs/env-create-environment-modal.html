@@ -61,10 +61,10 @@
                         name="NotificationSettings"
                         required=""
                         ng-model="Environment.Value.NotificationSettingsId">
-                    <option ng-repeat="notificationSettings in vm.alertSettingsList" ng-selected="{{notificationSettings == Environment.Value.NotificationSettingsId}}" value="{{alertSettings.NotificationSettingsId}}">{{alertSettings.NotificationSettingsId}}</option>
+                    <option ng-repeat="notificationSettings in vm.notificationSettingsList" ng-selected="{{notificationSettings == Environment.Value.NotificationSettingsId}}" value="{{alertSettings.NotificationSettingsId}}">{{alertSettings.NotificationSettingsId}}</option>
                 </select>
             </div>
-            <span class="help-block" ng-if="form.NotificationSettings.$dirty && form.NotificationSettings.$error.required">Alert Settings is mandatory.</span>
+            <span class="help-block" ng-if="form.AlertSettings.$dirty && form.AlertSettings.$error.required">Alert Settings is mandatory.</span>
         </div>
         <div class="form-group" ng-class="{'has-error': form.DeploymentMap.$invalid}">
             <label class="col-md-3 control-label text-left nowrap">Deployment Map: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>

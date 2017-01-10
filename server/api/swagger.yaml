@@ -2476,6 +2476,14 @@ definitions:
     properties:
       OwningCluster:
         type: string
+      AlertSettings:
+        type: string
+        enum:
+          - EnvironmentOwner
+          - ServiceOwner
+          - Custom
+      NotificationSettingsId:
+        type: string
       Description:
         type: string
       EnvironmentType:
