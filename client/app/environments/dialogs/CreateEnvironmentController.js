@@ -2,7 +2,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('CreateEnvironmentController',
-  function ($scope, $uibModalInstance, $q, resources, cachedResources) {
+  function ($scope, $http, $uibModalInstance, $q, resources, cachedResources) {
     var vm = this;
 
     $scope.OwningClustersList = [];
@@ -28,6 +28,12 @@ angular.module('EnvironmentManager.environments').controller('CreateEnvironmentC
       $scope.userHasPermission = user.hasPermission({ access: 'POST', resource: '/config/environments/*' });
 
       $q.all([
+        $http.get('/api/v1/config/notification-settings').then(function (response) {
+
+          vm.notificationSettingsList = _.map(response.data, 'NotificationSettingsId');
+          console.log(vm.notificationSettingsList);
+        }),
+
         cachedResources.config.clusters.all().then(function (clusters) {
           $scope.OwningClustersList = _.map(clusters, 'ClusterName').sort();
           $scope.Environment.Value.OwningCluster = $scope.OwningClustersList[0];

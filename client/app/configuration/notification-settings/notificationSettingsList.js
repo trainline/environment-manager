@@ -30,7 +30,7 @@ angular.module('EnvironmentManager.common')
       };
 
       vm.viewHistory = function (entry) {
-        $scope.ViewAuditHistory('Cluster', entry.NotificationSettingsId);
+        $scope.ViewAuditHistory('NotificationSettings', entry.NotificationSettingsId);
       };
 
       refresh();
