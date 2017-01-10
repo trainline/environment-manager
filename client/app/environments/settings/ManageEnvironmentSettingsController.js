@@ -51,7 +51,6 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
 
       $q.all([
         $http.get('/api/v1/config/notification-settings').then(function (response) {
-          console.log(response);
           vm.notificationSettingsList = response.data;
         }),
 
@@ -162,9 +161,6 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       vm.environment.Value.Description = vm.newEnvironment.Description;
       vm.environment.Value.AlertSettings = vm.newEnvironment.AlertSettings;
       vm.environment.Value.NotificationSettingsId = vm.newEnvironment.NotificationSettingsId;
-
-      console.log(vm.environment.Value);
-      console.log('BLE!');
 
       var params = {
         key: vm.environment.EnvironmentName,
