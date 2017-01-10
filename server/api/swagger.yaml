@@ -2687,8 +2687,8 @@ definitions:
   UpstreamConfig:
     type: object
     required:
-      - AccountName
       - key
+      - Value
     properties:
       AccountName:
         type: string
@@ -2698,6 +2698,8 @@ definitions:
         $ref: '#/definitions/UpstreamConfigValue'
   UpstreamConfigValue:
     type: object
+    required:
+      - EnvironmentName
     properties:
       EnvironmentName:
         type: string
