@@ -46,9 +46,7 @@ angular.module('EnvironmentManager.common')
           vm.model = {
             NotificationSettingsId: '',
             Version: 0,
-            Value: {
-              
-            }
+            Value: {}
           }
         }
       }
