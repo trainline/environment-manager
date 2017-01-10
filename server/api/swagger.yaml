@@ -1106,7 +1106,7 @@ paths:
       operationId: postNotificationSettings
       summary: Post new Notification settings.
       parameters:
-        - name: account
+        - name: body
           in: body
           required: true
           schema:
@@ -1118,6 +1118,21 @@ paths:
           description: OK
   /config/notification-settings/{id}:
     x-swagger-router-controller: notificationSettingsController
+    get:
+      operationId: getNotificationSettingsByName
+      summary: Get Notification settings.
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      tags:
+        - Notification Settings
+      responses:
+        200:
+          description: The notification settings
+          schema:
+            $ref: '#/definitions/NotificationSettings'
     put:
       operationId: putNotificationSettingsById
       summary: Update an associated AWS Account.
@@ -2246,9 +2261,14 @@ definitions:
   NotificationSettingsValue:
     type: object
     properties:
+      NotificationEmail:
+        type: string
       ChatChannel:
         type: string
-
+      Paging:
+        type: string
+      Ticketing:
+        type: string
   EnvironmentSchedule:
     type: object
     required:

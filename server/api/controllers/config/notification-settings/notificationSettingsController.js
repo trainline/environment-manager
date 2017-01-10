@@ -12,49 +12,49 @@ function getAllNotificationSettings(req, res, next) {
 }
 
 /**
- * GET /config/notification-settings/{name}
+ * GET /config/notification-settings/{id}
  */
-function getNotificationSettingsByName(req, res, next) {
-  let key = req.swagger.params.name.value;
+function getNotificationSettingsById(req, res, next) {
+  let key = req.swagger.params.id.value;
   return dynamoHelper.getByKey(key).then(data => res.json(data)).catch(next);
 }
 
 /**
  * POST /config/notification-settings
  */
-function postPermissionsConfig(req, res, next) {
+function postNotificationSettings(req, res, next) {
   let body = req.swagger.params.body.value;
   let user = req.user;
-  let key = body.Name;
+  let key = body.NotificationSettingsId;
 
-  return dynamoHelper.create(key, { Permissions: body.Permissions }, user).then(data => res.json(data)).catch(next);
+  return dynamoHelper.create(key, { Value: body.Value }, user).then(data => res.json(data)).catch(next);
 }
 
 /**
- * PUT /config/notification-settings/{name}
+ * PUT /config/notification-settings/{id}
  */
-function putNotificationSettingsByName(req, res, next) {
+function putNotificationSettingsById(req, res, next) {
   let body = req.swagger.params.body.value;
-  let key = req.swagger.params.name.value
+  let key = req.swagger.params.id.value
   let expectedVersion = req.swagger.params['expected-version'].value;
   let user = req.user;
 
-  return dynamoHelper.update(key, { Permissions: body }, expectedVersion, user).then(data => res.json(data)).catch(next);
+  return dynamoHelper.update(key, { Value: body }, expectedVersion, user).then(data => res.json(data)).catch(next);
 }
 
 /**
- * DELETE /config/notification-settings/{name}
+ * DELETE /config/notification-settings/{id}
  */
-function deleteNotificationSettingsByName(req, res, next) {
-  let key = req.swagger.params.name.value
+function deleteNotificationSettingsById(req, res, next) {
+  let key = req.swagger.params.id.value
   let user = req.user;
   return dynamoHelper.delete(key, user).then(data => res.json(data)).catch(next);
 }
 
 module.exports = {
   getAllNotificationSettings,
-  getNotificationSettingsByName,
+  getNotificationSettingsById,
   postNotificationSettings,
-  putNotificationSettingsByName,
-  deleteNotificationSettingsByName
+  putNotificationSettingsById,
+  deleteNotificationSettingsById
 };

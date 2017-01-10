@@ -4,8 +4,8 @@
 module.exports = {
   name: 'config/notification-settings',
   type: 'dynamodb/table',
-  tableName: 'InfraConfigNotificationSettings',
-  keyName: 'Name',
+  tableName: 'ConfigNotificationSettings',
+  keyName: 'NotificationSettingsId',
   rangeName: null,
   queryable: true,
   editable: true,

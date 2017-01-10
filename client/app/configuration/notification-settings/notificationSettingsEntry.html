@@ -3,3 +3,80 @@
     <div class="col-md-12" ng-if="vm.isBeingEdited"><h2>Edit Notification Settings</h2></div>
 </div>
 <hr />
+
+<div ng-if="vm.loadFailed">
+    Could not find NotificationSettings: <strong>{{::vm.routeId}}</strong>
+    <div>
+        <br />
+        <a href="/#/config/notification-settings">&lt; Back to Accounts</a>
+    </div>
+</div>
+
+<form ng-if="!vm.loadFailed" name="form" class="form-horizontal">
+    <div class="form-group" ng-class="{'has-error': form.NotificationSettingsId.$invalid && form.NotificationSettingsId.$dirty}">
+        <label for="notification-settings-id" class="col-md-2 control-label">Notification Settings id:</label>
+        <div class="col-md-2">
+            <input id="notification-settings-id"
+                   name="NotificationSettingsId"
+                   type="text"
+                   class="form-control"
+                   required
+                   ng-disabled="vm.isBeingEdited"
+                   ng-model="vm.model.NotificationSettingsId" />
+        </div>
+        <span class="help-block"
+              ng-if="form.NotificationSettingsId.$dirty && form.NotificationSettingsId.$error.required">
+            Notification Settings id is required
+        </span>
+    </div>
+    <div class="form-group" ng-class="{'has-error': form.NotificationEmail.$invalid && form.NotificationEmail.$dirty}">
+        <label for="notification-email" class="col-md-2 control-label">Notification email:</label>
+        <div class="col-md-2">
+            <input id="notification-email"
+                   name="NotificationEmail"
+                   type="text"
+                   class="form-control"
+                   ng-model="vm.model.Value.NotificationEmail" />
+        </div>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': form.ChatChannel.$invalid && form.ChatChannel.$dirty}">
+        <label for="chat-channel" class="col-md-2 control-label">Chat channel:</label>
+        <div class="col-md-2">
+            <input id="chat-channel"
+                   name="ChatChannel"
+                   type="text"
+                   class="form-control"
+                   ng-model="vm.model.Value.ChatChannel" />
+        </div>  
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': form.Paging.$invalid && form.Paging.$dirty}">
+        <label for="paging" class="col-md-2 control-label">Paging:</label>
+        <div class="col-md-2">
+            <input id="paging"
+                   name="Paging"
+                   type="text"
+                   class="form-control"
+                   ng-model="vm.model.Value.Paging" />
+        </div>  
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': form.Ticketing.$invalid && form.Ticketing.$dirty}">
+        <label for="ticketing" class="col-md-2 control-label">Ticketing:</label>
+        <div class="col-md-2">
+            <input id="ticketing"
+                   name="Ticketing"
+                   type="text"
+                   class="form-control"
+                   ng-model="vm.model.Value.Ticketing" />
+        </div>  
+    </div>
+
+    <div class="form-group" style="margin-top: 30px">
+        <div class="col-md-offset-2 col-md-2">
+            <button type="button" class="btn btn-default" ng-click="vm.save(form)" ng-disabled="!form.$valid">Save</button>
+            <a class="btn btn-default" ng-href="#/config/notification-settings">Cancel</a>
+        </div>
+    </div>
+</form>

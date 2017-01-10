@@ -5,11 +5,17 @@ angular.module('EnvironmentManager.common')
   .component('notificationSettingsList', {
     templateUrl: '/app/configuration/notification-settings/notificationSettingsList.html',
     controllerAs: 'vm',
-    controller: function ($scope, $http) {
+    controller: function ($scope, $http, modal) {
       var vm = this;
 
       vm.canPost = user.hasPermission({ access: 'POST', resource: '/config/notification-settings' });
       vm.canDelete = user.hasPermission({ access: 'DELETE', resource: '/config/notification-settings/*' });
+
+      function refresh() {
+        $http.get('/api/v1/config/notification-settings').then(function (response) {
+          vm.data = response.data;
+        });
+      }
 
       vm.delete = function (entry) {
         var id = entry.NotificationSettingsId;
@@ -19,8 +25,7 @@ angular.module('EnvironmentManager.common')
           action: 'Delete',
           severity: 'Danger',
         }).then(function () {
-          resources.config.notificationSettings.delete({ key: id }).then(refresh);
-          cachedResources.config.notificationSettings.flush();
+          $http.delete('/api/v1/config/notification-settings/' + id).then(refresh);
         });
       };
 
@@ -28,5 +33,6 @@ angular.module('EnvironmentManager.common')
         $scope.ViewAuditHistory('Cluster', entry.NotificationSettingsId);
       };
 
+      refresh();
     }
   });

@@ -106,10 +106,8 @@ angular.module('EnvironmentManager.configuration').config(function ($routeProvid
     .when('/config/notification-settings/', {
       template: '<notification-settings-list></notification-settings-list>',
     })
-    .when('/config/notification-settings/:id/', {
-      templateUrl: '/app/configuration/notification-settings/entry.html',
-      controller: 'NotificationSettingsEntry as vm',
-      menusection: 'NotificationSettings',
+    .when('/config/notification-settings/:id', {
+      template: '<notification-settings-entry></notification-settings-entry>',
     })
 
     .when('/config/clusters/', {

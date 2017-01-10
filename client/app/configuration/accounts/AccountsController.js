@@ -45,10 +45,6 @@ angular.module('EnvironmentManager.configuration').controller('AccountsControlle
       vm.loadData();
     };
 
-    vm.addNew = function () {
-      $location.path('/config/accounts/add');
-    };
-
     function getDependentAccounts(account) {
       return cachedResources.config.environmentTypes.all().then(function (envTypes) {
         return envTypes.filter(function (type) {
