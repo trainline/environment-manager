@@ -2606,7 +2606,6 @@ definitions:
   LBSetting:
     type: object
     required:
-      - AccountName
       - EnvironmentName
       - VHostName
       - Value
