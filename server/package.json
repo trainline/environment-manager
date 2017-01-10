@@ -20,9 +20,8 @@
     "test-ci": "npm test -- --reporter mocha-teamcity-reporter --timeout 4000",
     "mocha": "mocha",
     "acceptance-tests": "mocha --recursive ./acceptance-tests --EM_PROFILE acceptance-tests/test-profile.json",
-
     "lint": "eslint . --ext .js --quiet",
-    "lint-only": "eslint . --ext .js --no-eslintrc --rule no-undef:error --parser-options {ecmaVersion:6}"
+    "lint-rule": "eslint . --ext .js --quiet --parser-options {ecmaVersion:6} --rule "
   },
   "author": {
     "name": "Platform Development",
