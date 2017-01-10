@@ -15,10 +15,10 @@ module.exports = routeHelper
   .do((request, response) => {
     function getParams(url, docs) {
       let r = /\/:([^/]*)/g;
-      let matches;
+      let matches = r.exec(url);
       let parameters = [];
 
-      while (matches = r.exec(url)) {
+      while (matches) {
         parameters.push({ in: 'path',
           name: matches[1],
           type: 'string',
