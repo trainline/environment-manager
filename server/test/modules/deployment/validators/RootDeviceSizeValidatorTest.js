@@ -33,7 +33,7 @@ describe("CreateLaunchConfigurationCommandValidator", function() {
         ]
       }
     }; 
-    it("Correct error reported", function () {
+    it("Reports the correct error for missing root device", function () {
       return validator.validate(deployment, configuration).should.be.rejectedWith(/Server role "MyServerRole" has no OS volume\./);
     });
   });
@@ -49,7 +49,7 @@ describe("CreateLaunchConfigurationCommandValidator", function() {
         ]
       }
     }; 
-    it("Correct error reported", function () {
+    it("Reports the correct error for incorrect root device size", function () {
       return validator.validate(deployment, configuration).should.be.rejectedWith(/Server role "MyServerRole" has an OS volume of 9 GB but uses AMI "my-ami" which requires at least 10 GB\./);
     });
   });
