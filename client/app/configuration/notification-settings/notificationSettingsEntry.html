@@ -30,13 +30,24 @@
         </span>
     </div>
     <div class="form-group" ng-class="{'has-error': form.NotificationEmail.$invalid && form.NotificationEmail.$dirty}">
-        <label for="notification-email" class="col-md-2 control-label">Notification email:</label>
+        <label for="notification-email" class="col-md-2 control-label">Notification email:
+          <span uib-popover
+              popover-trigger="'mouseenter'"
+              popover-append-to-body="true"
+              uib-popover-template="'app/configuration/popovers/notification-email.html'"
+              data-popover-placement="bottom"
+              class="glyphicon glyphicon-question-sign help-icon"
+              aria-hidden="true">
+          </span>
+        
+
+        </label>
         <div class="col-md-2">
             <input id="notification-email"
                    name="NotificationEmail"
                    type="text"
                    class="form-control"
-                   ng-model="vm.model.Value.NotificationEmail" />
+                   ng-model="vm.model.Value.NotificationEmail" ng-list />
         </div>
     </div>
 

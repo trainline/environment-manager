@@ -2267,7 +2267,7 @@ definitions:
     type: object
     properties:
       NotificationEmail:
-        type: string
+        type: [string, array]
       ChatChannel:
         type: string
       Paging:
