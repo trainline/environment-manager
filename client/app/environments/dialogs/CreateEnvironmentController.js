@@ -24,6 +24,8 @@ angular.module('EnvironmentManager.environments').controller('CreateEnvironmentC
       };
 
       vm.alertSettingsList = resources.environmentAlertSettingsList;
+      console.log(vm.alertSettingsList);
+
       $scope.userHasPermission = user.hasPermission({ access: 'POST', resource: '/config/environments/*' });
 
       $q.all([

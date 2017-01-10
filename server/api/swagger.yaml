@@ -1119,7 +1119,7 @@ paths:
   /config/notification-settings/{id}:
     x-swagger-router-controller: notificationSettingsController
     get:
-      operationId: getNotificationSettingsByName
+      operationId: getNotificationSettingsById
       summary: Get Notification settings.
       parameters:
         - name: id
@@ -1147,7 +1147,8 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/NotificationSettings'
+            $ref: '#/definitions/NotificationSettingsValue'
+        - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
           description: OK
@@ -2252,12 +2253,16 @@ definitions:
     type: object
     required:
       - NotificationSettingsId
+      - Version
       - Value
     properties:
       NotificationSettingsId:
         type: string
+      Version:
+        type: integer
       Value:
         $ref: '#/definitions/NotificationSettingsValue'
+
   NotificationSettingsValue:
     type: object
     properties:

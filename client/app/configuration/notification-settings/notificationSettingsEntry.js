@@ -12,7 +12,12 @@ angular.module('EnvironmentManager.common')
 
         var promise;
         if (vm.isBeingEdited === true) {
-          promise = $http.put('/api/v1/config/notification-settings/' + notificationSettingsId, value);
+          promise = $http({
+            method: 'put',
+            url: '/api/v1/config/notification-settings/' + vm.model.NotificationSettingsId,
+            headers: { 'expected-version': vm.model.Version },
+            data: vm.model.Value
+          });
         } else {
           promise = $http.post('/api/v1/config/notification-settings', vm.model);
         }
@@ -24,8 +29,8 @@ angular.module('EnvironmentManager.common')
 
       function loadNotificationSettings() {
         $http.get('/api/v1/config/notification-settings/' + vm.routeId)
-          .then(function (model) {
-            vm.model = model;
+          .then(function (response) {
+            vm.model = response.data;
           }, function () {
             vm.loadFailed = true;
           });
@@ -40,6 +45,7 @@ angular.module('EnvironmentManager.common')
         } else {
           vm.model = {
             NotificationSettingsId: '',
+            Version: 0,
             Value: {
               
             }
