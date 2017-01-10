@@ -28,6 +28,7 @@ module.exports = {
     "no-irregular-whitespace": 0,
     "no-param-reassign": [2, { "props": false }],
     "require-yield": 0,
+    "arrow-body-style": [1, "never"],
     "comma-dangle": ["error", {
       "arrays": "always-multiline",
       "objects": "always-multiline",
