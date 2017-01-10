@@ -47,7 +47,6 @@ function postLBSettingsConfig(req, res, next) {
   const user = req.user;
 
   co(function* () {
-    let environmentName = body.EnvironmentName;
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     return dynamoHelper.createWithSortKey(environmentName, vHostName, { Value: body.Value }, user, { accountName });
   }).then(_ => res.status(201).end()).catch(next);
