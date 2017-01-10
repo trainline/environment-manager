@@ -9,7 +9,7 @@
 Array.prototype.distinct = function (keySelector) {
   let result = [];
   let defaultSelector = item => item;
-  let keySelector = keySelector || defaultSelector;
+  keySelector = keySelector || defaultSelector;
 
   for (let i = 0; i < this.length; i++) {
     let target = this[i];

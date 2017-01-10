@@ -2,108 +2,112 @@
 
 'use strict';
 
-let User = function (data) {
-  let userData = {
+/* eslint-disable */
+/**
+ * TODO: This file is used across both client and server.
+ * Not only is this a bad idea but it makes it impossible to lint.
+ * We should refactor the shared aspects of this module.
+ */
+
+var User = function(data) {
+
+  var _data = {
     name: null,
     roles: [],
-    expiration: 0,
+    expiration: 0
   };
 
-  if (data) {
-    userData.name = data.name || null;
-    userData.groups = data.groups || [];
-    userData.roles = data.roles || [];
-    userData.expiration = data.expiration || 0;
-    userData.permissions = data.permissions || [];
+  if(data) {
+    _data.name       = data.name || null;
+    _data.groups     = data.groups || [];
+    _data.roles      = data.roles || [];
+    _data.expiration = data.expiration || 0;
+    _data.permissions = data.permissions || [];
   }
 
-  this.getName = function () {
-    return userData.name;
+  this.getName = function() {
+    return _data.name;
   };
 
-  this.getExpiration = function () {
-    return userData.expiration;
+  this.getExpiration = function() {
+    return _data.expiration;
   };
 
-  this.isAuthenticated = function () {
-    return userData.roles.length > 0;
+  this.isAuthenticated = function() {
+    return _data.roles.length > 0;
   };
 
-  this.isAnonymous = function () {
-    return !!userData.name;
+  this.isAnonymous = function() {
+    return !!_data.name;
   };
 
-  this.isInRole = function (role) {
-    return userData.roles.indexOf(role) >= 0;
+  this.isInRole = function(role) {
+    return _data.roles.indexOf(role) >= 0;
   };
 
   this.getPermissions = function () {
-    return userData.permissions;
+    return _data.permissions;
   };
 
   this.hasPermission = function (requiredPermission) {
-    return userData.permissions.some((userPermission) => {
+    return _data.permissions.some(function(userPermission) {
       if (userPermission.Resource && userPermission.Access) {
-        /**
-         * TODO: This file is intended to be shared across client and server.
-         * Not only is this ill-conceived but it includes logic specific to one or the other.
-         * We should split this file as appropriate and find a better method for sharing any logic.
-         */
-        // eslint-disable-next-line no-undef
-        let matchingResources = globIntersection(requiredPermission.resource.toLowerCase(), userPermission.Resource.toLowerCase());
-        let matchingAccess = (userPermission.Access.toLowerCase() === requiredPermission.access.toLowerCase()) || userPermission.Access === 'ADMIN';
+        var matchingResources = globIntersection(requiredPermission.resource.toLowerCase(), userPermission.Resource.toLowerCase());
+        var matchingAccess = (userPermission.Access.toLowerCase() == requiredPermission.access.toLowerCase()) || userPermission.Access == 'ADMIN';
+
         if (matchingAccess && matchingResources) {
           return true;
         }
       }
-      return undefined;
     });
   };
 
   this.getGroups = function () {
-    return userData.groups;
+    return _data.groups;
   };
 
-  this.toString = function () {
-    return [userData.name, userData.roles.join(';'), userData.expiration].join('|');
+  this.toString = function() {
+    return [_data.name, _data.roles.join(';'), _data.expiration].join('|');
   };
 
-  this.toJson = function () {
-    return userData;
+  this.toJson = function() {
+    return _data;
   };
+
 };
 
-User.prototype.toString = function () {
-  return 'User';
-};
+User.prototype.toString = function() { return 'User'; };
 
-if (typeof module !== 'undefined' && module.exports) {
+if(typeof module !== 'undefined' && module.exports) {
+
   module.exports = {
 
-    anonymous() {
+    anonymous: function() {
       return new User();
     },
 
-    new(name, roles, expiration, groups, permissions) {
+    new: function(name, roles, expiration, groups, permissions) {
       return new User({
-        name,
-        roles,
-        expiration,
-        groups,
-        permissions,
+        name: name,
+        roles: roles,
+        expiration: expiration,
+        groups: groups,
+        permissions: permissions
       });
     },
 
-    parse(json) {
-      if (!json) return new User();
+    parse: function(json) {
+      if(!json) return new User();
 
-      return new User({
+      var user = new User({
         name: json.name,
         roles: json.roles,
         expiration: json.expiration,
         groups: json.groups,
-        permissions: json.permissions,
+        permissions: json.permissions
       });
-    },
-  };
+
+      return user;
+    }
+  }
 }
