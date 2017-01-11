@@ -184,7 +184,8 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
                 return {
                   groupName: asgName,
                   environment: env,
-                  accountName: account
+                  accountName: account,
+                  defaultAction: 'lb-status'
                 };
               },
             },
