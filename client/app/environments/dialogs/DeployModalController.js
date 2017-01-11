@@ -11,6 +11,7 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
     vm.selectedServiceDeployInfo = '';
     vm.selectedServiceActiveSlice = 'N/A';
     vm.deploymentMethodsList = [];
+    vm.dryRunEnabled = false;
 
     vm.deploymentSettings = {
       Environment: parameters.Environment.EnvironmentName,
@@ -77,7 +78,6 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
     });
 
     vm.ok = function () {
-
       var service = vm.deploymentSettings.SelectedService;
       var version = vm.deploymentSettings.Version;
       var env = vm.deploymentSettings.Environment;
@@ -91,7 +91,7 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
         severity: 'Warning',
       };
       modal.confirmation(modalParameters).then(function () {
-        $http({
+        var config = {
           url: '/api/v1/deployments',
           method: 'post',
           data: {
@@ -102,7 +102,13 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
             slice: vm.deploymentSettings.Mode === 'bg' ? vm.deploymentSettings.Slice : undefined,
             packageLocation: vm.deploymentSettings.PackagePath,
           }
-        }).then(function (response) {
+        };
+
+        if (vm.dryRunEnabled === true) {
+          config.params = { dry_run:true };
+        }
+
+        $http(config).then(function (response) {
           var data = response.data;
           $uibModal.open({
             templateUrl: '/app/operations/deployments/ops-deployment-details-modal.html',
