@@ -10,6 +10,7 @@ let sender = require('modules/sender');
 let Environment = require('models/Environment');
 let AutoScalingGroup = require('models/AutoScalingGroup');
 let Instance = require('models/Instance');
+let serviceDiscovery = require('modules/service-discovery');
 
 module.exports = co.wrap(ScanServersStatusQueryHandler);
 
@@ -107,6 +108,8 @@ function getConsulServicesForNode(environment, nodeName) {
   }).then((consulNode) => {
     if (!consulNode) return [];
     return consulNode.Services;
+  }, () => {
+    return [];
   });
 }
 

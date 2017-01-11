@@ -18,11 +18,12 @@ const PUBLIC_DIR = config.get('PUBLIC_DIR');
 
 renderer.register('login', `${PUBLIC_DIR}/login.html`);
 
-function serveLoginPage(response, error) {
+function serveLoginPage(response, error, username) {
   let content = {
     data: {
       error: error ? error.message : undefined,
       version: APP_VERSION,
+      username,
     },
   };
 
@@ -65,7 +66,7 @@ module.exports = {
         response.redirect(targetUrl);
       }).catch((error) => {
         logger.warn(error);
-        serveLoginPage(response, error);
+        serveLoginPage(response, error, request.body.username);
       });
     },
   },

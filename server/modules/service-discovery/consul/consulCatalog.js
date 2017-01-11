@@ -74,7 +74,11 @@ function executeAction(promiseFactoryMethod) {
   let errorHandler = (reject, error) => {
     logger.error(error.toString(true));
     if ((error instanceof HttpRequestError) && operation.retry(error)) return;
-    reject(operation.mainError());
+    if (operation.mainError() !== null) {
+      reject(operation.mainError());
+    } else {
+      reject(error.toString(true));
+    }
   };
 
   return new Promise((resolve, reject) => {

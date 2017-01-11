@@ -54,7 +54,6 @@ class Instance {
           filter,
         },
       }).then((result) => {
-        console.log(result);
         let duration = moment.duration(moment.utc().diff(startTime)).asMilliseconds();
         logger.debug(`server-status-query: InstancesQuery took ${duration}ms`);
         return result;
