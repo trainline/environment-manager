@@ -2258,6 +2258,7 @@ definitions:
     properties:
       NotificationSettingsId:
         type: string
+        pattern: ^[A-Za-z0-9_\-]+$
       Version:
         type: integer
       Value:
@@ -2267,7 +2268,9 @@ definitions:
     type: object
     properties:
       NotificationEmail:
-        type: [string, array]
+        type: array
+        items:
+          type: string
       ChatChannel:
         type: string
       Paging:
