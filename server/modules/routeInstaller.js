@@ -52,7 +52,7 @@ function asExpressRouteDescriptor(descriptor) {
     method: descriptor.method,
     url: descriptor.url,
     middlewares,
-    priority: descriptor.priority,
+    priority: descriptor.priority
   };
 }
 

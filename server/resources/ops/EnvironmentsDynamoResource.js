@@ -9,5 +9,5 @@ module.exports = {
   keyName: 'EnvironmentName',
   queryable: true,
   enableAuditing: true,
-  docs: { disableDocs: true },
+  docs: { disableDocs: true }
 };

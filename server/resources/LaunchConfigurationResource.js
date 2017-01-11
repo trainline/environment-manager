@@ -9,6 +9,6 @@ module.exports = {
   queryable: true,
   docs: {
     description: 'Launch Configuration',
-    tags: ['Launch Configurations'],
-  },
+    tags: ['Launch Configurations']
+  }
 };

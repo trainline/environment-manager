@@ -69,7 +69,7 @@ class AutoScalingGroup {
       let query = {
         name: 'GetAutoScalingGroup',
         accountName,
-        autoScalingGroupName,
+        autoScalingGroupName
       };
 
       let data = yield sender.sendQuery({ query });
@@ -87,8 +87,8 @@ class AutoScalingGroup {
       return sender.sendQuery({
         query: {
           name: 'ScanAutoScalingGroups',
-          accountName,
-        },
+          accountName
+        }
       }).then((result) => {
         let duration = moment.duration(moment.utc().diff(startTime)).asMilliseconds();
         logger.debug(`server-status-query: AllAsgsQuery took ${duration}ms`);

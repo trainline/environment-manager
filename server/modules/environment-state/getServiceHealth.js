@@ -48,7 +48,7 @@ function* getServiceHealth({ environmentName, serviceName }) {
       list.push({
         AutoScalingGroupName: asg.AutoScalingGroupName,
         Services: services,
-        Instances: instances,
+        Instances: instances
       });
     }
   }
@@ -73,7 +73,7 @@ function* getServiceHealth({ environmentName, serviceName }) {
 
   return {
     OverallHealth: aggregateHealth(list),
-    AutoScalingGroups: list,
+    AutoScalingGroups: list
   };
 }
 

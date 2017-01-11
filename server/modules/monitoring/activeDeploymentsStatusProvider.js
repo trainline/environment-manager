@@ -39,7 +39,7 @@ module.exports = {
     return Promise.all(activeDeployments.map(
       activeDeployment => getActiveDeploymentFullStatus(activeDeployment)
     ));
-  },
+  }
 
 };
 
@@ -55,8 +55,8 @@ function getActiveDeploymentsFromHistoryTable() {
       'Value.Status': expectedStatus,
       '$date_from': minimumRangeDate,
       '$date_to': maximumRangeDate,
-      'Value.SchemaVersion': 2,
-    },
+      'Value.SchemaVersion': 2
+    }
   };
 
   return sender.sendQuery({ query });
@@ -81,7 +81,7 @@ function getActiveDeploymentFullStatus(activeDeployment) {
         `deployments/${deploymentId}/nodes/`,
         environmentName,
         true
-      ),
+      )
     };
 
     let nodesDeployment = getNodesDeployment(data.nodesId, data.nodesDeployment);
@@ -93,7 +93,7 @@ function getActiveDeploymentFullStatus(activeDeployment) {
       accountName,
       installationTimeout: ms(`${installationTimeout}m`),
       startTime: new Date(activeDeployment.Value.StartTimestamp),
-      nodesDeployment,
+      nodesDeployment
     };
 
     logger.debug(`DeploymentMonitor: Deployment '${deploymentId}' is going to affect following nodes ${JSON.stringify(nodesDeployment)}`);
@@ -107,7 +107,7 @@ function getActiveDeploymentFullStatus(activeDeployment) {
       deploymentId,
       error: errorString,
       environmentName,
-      accountName,
+      accountName
     });
   });
 }
@@ -120,7 +120,7 @@ function getNodesDeployment(nodesId, nodesDeployment) {
 
     let result = {
       InstanceId: nodeId,
-      Status: Enums.NodeDeploymentStatus.NotStarted,
+      Status: Enums.NodeDeploymentStatus.NotStarted
     };
 
     if (!nodeDeployment) return result;
@@ -165,7 +165,7 @@ function getExpectedNodesIdByDeployment(deployment) {
     let query = {
       name: 'GetAutoScalingGroup',
       accountName: deployment.AccountName,
-      autoScalingGroupName,
+      autoScalingGroupName
     };
 
     try {
@@ -187,7 +187,7 @@ function getTargetState(key, environmentName, recurse) {
     name: 'GetTargetState',
     environment: environmentName,
     key,
-    recurse,
+    recurse
   };
 
   return sender.sendQuery({ query });

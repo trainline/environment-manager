@@ -50,7 +50,7 @@ let routeHandlerDescriptors = [
   // Diagnostics
   require('routes/api/diagnostics/swaggerRouteHandlerDescriptor'),
   require('routes/api/diagnostics/statusRouteHandlerDescriptor'),
-  require('routes/api/diagnostics/endpointsRouteHandlerDescriptor'),
+  require('routes/api/diagnostics/endpointsRouteHandlerDescriptor')
 ];
 
 function RouteHandlerDescriptor() {

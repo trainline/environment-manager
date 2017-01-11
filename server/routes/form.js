@@ -23,8 +23,8 @@ function serveLoginPage(response, error, username) {
     data: {
       error: error ? error.message : undefined,
       version: APP_VERSION,
-      username,
-    },
+      username
+    }
   };
 
   renderer.render('login', content, (renderedContent) => {
@@ -37,7 +37,7 @@ module.exports = {
     get: (request, response) => {
       response.clearCookie(cookieConfiguration.getCookieName());
       response.redirect('/');
-    },
+    }
   },
   login: {
     get: (request, response) => {
@@ -51,7 +51,7 @@ module.exports = {
         let credentials = {
           username: request.body.username,
           password: request.body.password,
-          scope: 'ui',
+          scope: 'ui'
         };
 
         let token = yield userService.authenticateUser(credentials, duration);
@@ -68,6 +68,6 @@ module.exports = {
         logger.warn(error);
         serveLoginPage(response, error, request.body.username);
       });
-    },
-  },
+    }
+  }
 };

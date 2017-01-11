@@ -13,7 +13,7 @@ module.exports = {
   getRootDevice,
   summaryOf,
   compare,
-  rank,
+  rank
 };
 
 function isCompatibleImage(amiName) {
@@ -67,7 +67,7 @@ function summaryOf(ec2Image) {
     IsCompatibleImage: isCompatibleImage(name),
     IsStable: isStable(ec2Image),
     Encrypted: _.get('Ebs.Encrypted')(rootDevice),
-    RootVolumeSize: _.get('Ebs.VolumeSize')(rootDevice),
+    RootVolumeSize: _.get('Ebs.VolumeSize')(rootDevice)
   };
 
   return Object.assign(tags, summary);
@@ -109,7 +109,7 @@ function rank(summaries) {
 function comparable(summary) {
   return {
     amiType: summary.AmiType || '',
-    amiVersion: semver.valid(summary.AmiVersion) || '0.0.0',
+    amiVersion: semver.valid(summary.AmiVersion) || '0.0.0'
   };
 }
 

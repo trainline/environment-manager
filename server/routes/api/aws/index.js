@@ -30,9 +30,9 @@ const WRITE_ACCOUNT_MODEL = {
       AccountNumber: { type: 'Integer' },
       IsProd: { type: 'Boolean' },
       IsMaster: { type: 'Boolean' },
-      Impersonate: { type: 'Boolean' },
-    },
-  },
+      Impersonate: { type: 'Boolean' }
+    }
+  }
 };
 
 /**
@@ -44,7 +44,7 @@ const DELETE_ACCOUNT_PARAM = {
   required: true,
   type: 'integer',
   maxLength: 12,
-  minLength: 12,
+  minLength: 12
 };
 
 function requestAccounts(req, res) {
@@ -55,7 +55,7 @@ function addAccount(req, res) {
   let command = {
     name: 'AddAWSaccount',
     account: req.body,
-    user: req.user,
+    user: req.user
   };
   send.command(command, req, res);
 }
@@ -64,7 +64,7 @@ function updateAccount(req, res) {
   let command = {
     name: 'UpdateAWSaccount',
     account: req.body,
-    user: req.user,
+    user: req.user
   };
   send.command(command, req, res);
 }
@@ -73,7 +73,7 @@ function removeAccount(req, res) {
   let command = {
     name: 'RemoveAWSaccount',
     accountNumber: req.query.accountNumber,
-    user: req.user,
+    user: req.user
   };
   send.command(command, req, res);
 }

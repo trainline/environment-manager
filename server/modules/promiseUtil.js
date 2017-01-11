@@ -22,5 +22,5 @@ module.exports = {
     }
 
     return Promise.promisify(transformToCallbackLast(fn, context), { context });
-  },
+  }
 };

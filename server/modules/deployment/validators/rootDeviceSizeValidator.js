@@ -21,7 +21,7 @@ module.exports = {
     }
 
     return success();
-  },
+  }
 };
 
 function error(message) {

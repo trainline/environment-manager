@@ -36,7 +36,7 @@ function expressionScope() {
     nameExpressionAttributeName,
     nameExpressionAttributeValue,
     ExpressionAttributeNames: expressionAttributeNames,
-    ExpressionAttributeValues: expressionAttributeValues,
+    ExpressionAttributeValues: expressionAttributeValues
   };
 }
 
@@ -45,7 +45,7 @@ function compileOne(expr, scope) {
     'and': exprs => exprs.map(x => `(${x})`).join(' and '),
     '=': exprs => exprs.map(x => `(${x})`).join(' = '),
     'attr': exprs => exprs.map(name => scope.nameExpressionAttributeName(name)).join('.'),
-    'val': exprs => exprs.map(value => scope.nameExpressionAttributeValue(value)).join(', '),
+    'val': exprs => exprs.map(value => scope.nameExpressionAttributeValue(value)).join(', ')
   };
 
   let expression = reduce(functions, expr);
@@ -67,5 +67,5 @@ function compile(expressions) {
 }
 
 module.exports = {
-  compile,
+  compile
 };

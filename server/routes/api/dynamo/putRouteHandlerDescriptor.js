@@ -18,7 +18,7 @@ module.exports = resourceDescriptorProvider
     let url = make([resource.perAccount ? ':account' : null,
       resource.name,
       resource.keyName ? ':key' : null,
-      resource.rangeName ? ':range' : null,
+      resource.rangeName ? ':range' : null
     ]).uri();
 
     let docs;
@@ -41,7 +41,7 @@ module.exports = resourceDescriptorProvider
           range: request.params.range,
           item: request.body,
           expectedVersion: request.headers['expected-version'],
-          accountName: resource.perAccount ? request.params.account : masterAccountName,
+          accountName: resource.perAccount ? request.params.account : masterAccountName
         };
 
         send.command(command, request, response);

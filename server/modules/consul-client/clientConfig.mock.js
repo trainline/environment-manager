@@ -7,8 +7,8 @@ module.exports = parameters => (
     host: '10.249.16.74',
     port: '8500',
     defaults: {
-      dc: 'tl-c50',
+      dc: 'tl-c50'
     },
-    promisify: parameters.promisify,
+    promisify: parameters.promisify
   })
 );

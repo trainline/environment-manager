@@ -75,5 +75,5 @@ module.exports = {
   appendS,
   createEntryStream,
   mapS,
-  mergeS,
+  mergeS
 };

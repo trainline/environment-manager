@@ -75,5 +75,5 @@ function canCreate(resourceDescriptor) {
 
 module.exports = {
   canCreate,
-  create: co.wrap(create),
+  create: co.wrap(create)
 };

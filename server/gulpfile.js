@@ -25,7 +25,7 @@ function build() {
     'index.js',
     'npm-shrinkwrap.json',
     'package.json',
-    'tempMapResolver.js',
+    'tempMapResolver.js'
   ]).pipe(gulp.dest(output));
 }
 

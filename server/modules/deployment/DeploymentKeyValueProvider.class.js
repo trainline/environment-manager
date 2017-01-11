@@ -11,7 +11,7 @@ module.exports = function DeploymentKeyValueProvider() {
     let deploymentId = deployment.id;
     let deploymentKeyValue = {
       key: `deployments/${deploymentId}/overall_status`,
-      value: 'In Progress',
+      value: 'In Progress'
     };
 
     return Promise.resolve(deploymentKeyValue);

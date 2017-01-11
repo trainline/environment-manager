@@ -63,13 +63,13 @@ module.exports = function UserService() {
       // Given the user data creates its encoded token
       let options = {
         algorithm: 'RS256',
-        expiresIn: duration,
+        expiresIn: duration
       };
 
       let sessionToken = {
         scope: session.scope,
         sessionId: session.sessionId,
-        userName: session.user.name,
+        userName: session.user.name
       };
 
       return jsonwebtoken.sign(sessionToken, sslComponents.privateKey, options);
@@ -96,7 +96,7 @@ module.exports = function UserService() {
         (sslComponents, callback) => {
           let options = {
             algorithm: 'RS256',
-            ignoreExpiration: false,
+            ignoreExpiration: false
           };
 
           jsonwebtoken.verify(token, sslComponents.certificate, options, callback);
@@ -108,7 +108,7 @@ module.exports = function UserService() {
 
         (session, callback) => {
           callback(null, User.parse(session.user));
-        },
+        }
       ], mainCallback);
     });
   }
@@ -133,7 +133,7 @@ module.exports = function UserService() {
       let newSession = {
         scope,
         sessionId: guid.v1(),
-        user: user.toJson(),
+        user: user.toJson()
       };
 
       let userSessionKey = getSessionKeyForUser(user.getName(), scope);
@@ -148,10 +148,10 @@ module.exports = function UserService() {
             accountName: masterAccountName,
             item: {
               UserName: userSessionKey,
-              Value: newSession,
-            },
+              Value: newSession
+            }
           },
-          user,
+          user
         }).then(
           () => {
             sessionCache[userSessionKey] = newSession;
@@ -214,7 +214,7 @@ module.exports = function UserService() {
       name: 'GetDynamoResource',
       key: userSessionKey,
       resource: 'user-sessions',
-      accountName: masterAccountName,
+      accountName: masterAccountName
     };
 
     sender.sendQuery({ query }, callback);

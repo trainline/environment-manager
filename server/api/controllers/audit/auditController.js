@@ -22,7 +22,7 @@ function createAuditLogQuery(since, until, exclusiveStartKey, perPage, filter) {
   let rq = {
     limit: perPage || 10,
     maxDate: until.toString(),
-    minDate: since.toString(),
+    minDate: since.toString()
   };
   if (exclusiveStartKey) {
     rq.exclusiveStartKey = exclusiveStartKey;
@@ -38,7 +38,7 @@ function createFilter(query) {
   let exprs = {
     'Entity.Type': val => ['=', ['attr', 'Entity', 'Type'], ['val', val]],
     'ChangeType': val => ['=', ['attr', 'ChangeType'], ['val', val]],
-    'Entity.Key': val => ['=', ['attr', 'Entity', 'Key'], ['val', val]],
+    'Entity.Key': val => ['=', ['attr', 'Entity', 'Key'], ['val', val]]
   };
 
   let filter = fp.flow(
@@ -109,5 +109,5 @@ function getAuditLogByKey(req, res, next) {
 
 module.exports = {
   getAuditLogs,
-  getAuditLogByKey,
+  getAuditLogByKey
 };

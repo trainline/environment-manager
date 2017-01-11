@@ -15,7 +15,7 @@ function InstanceProfileResource(client) {
     assert(parameters.instanceProfileName);
 
     let request = {
-      InstanceProfileName: parameters.instanceProfileName,
+      InstanceProfileName: parameters.instanceProfileName
     };
 
     return client.getInstanceProfile(request).promise()
@@ -39,6 +39,6 @@ module.exports = {
     resourceDescriptor.type.toLowerCase() === 'iam/instanceprofiles',
 
   create: (resourceDescriptor, parameters) =>
-    amazonClientFactory.createIAMClient(parameters.accountName).then(client => new InstanceProfileResource(client)),
+    amazonClientFactory.createIAMClient(parameters.accountName).then(client => new InstanceProfileResource(client))
 
 };

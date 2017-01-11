@@ -10,7 +10,7 @@ function* getAWSInstances(accountName, instancesIds) {
   let resource = yield resourceProvider.getInstanceByName('instances', { accountName });
 
   let filter = {
-    'instance-id': instancesIds,
+    'instance-id': instancesIds
   };
 
   let instances = yield resource.all({ filter });
@@ -22,7 +22,7 @@ function* getAWSInstances(accountName, instancesIds) {
       AvailabilityZone: instance.Placement.AvailabilityZone,
       State: _.capitalize(instance.State.Name),
       ImageId: instance.ImageId,
-      LaunchTime: instance.LaunchTime,
+      LaunchTime: instance.LaunchTime
     };
     instance.Tags.forEach((tag) => {
       ret[tag.Key] = tag.Value;

@@ -25,7 +25,7 @@ function getServiceChecksInfo(serviceObjects) {
     // also, don't count in instance into working
      ({
        Name: checks[0].Name,
-       Status: _.some(checks, { Status: 'critical' }) ? HEALTH_BAD : HEALTH_GOOD,
+       Status: _.some(checks, { Status: 'critical' }) ? HEALTH_BAD : HEALTH_GOOD
      }));
 }
 
@@ -63,7 +63,7 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
         Name: serviceObjects[0].Name,
         Version: serviceObjects[0].Version,
         Slice: serviceObjects[0].Slice,
-        DiffWithTargetState: DIFF_STATE.Unexpected,
+        DiffWithTargetState: DIFF_STATE.Unexpected
       };
     } else {
       service.DiffWithTargetState = null;
@@ -119,12 +119,12 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
       InstancesCount: {
         Healthy: healthyNodes.length,
         Present: presentOnInstancesCount,
-        Total: serviceInstances.length,
+        Total: serviceInstances.length
       },
       MissingOrUnexpectedInstances: missingOrUnexpectedInstances,
       OverallHealth: getServiceOverallHealth(serviceHealthChecks, serviceInstances),
       HealthChecks: serviceHealthChecks,
-      Action: serviceAction,
+      Action: serviceAction
     };
   });
 

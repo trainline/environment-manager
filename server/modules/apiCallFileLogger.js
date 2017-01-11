@@ -13,8 +13,8 @@ try {
 
   winstonLogger = new (winston.Logger)({
     transports: [
-      new (winston.transports.File)({ filename: debugOptions.apiCallLogFile }),
-    ],
+      new (winston.transports.File)({ filename: debugOptions.apiCallLogFile })
+    ]
   });
 } catch (err) {
   // eslint-disable-line no-empty
@@ -26,13 +26,13 @@ let logFn = (() => {
   return (request) => {
     winstonLogger.info({
       user: request.user ? request.user.getName() : 'Unknown',
-      url: request.url,
+      url: request.url
     });
   };
 })();
 
 let logger = {
-  log: logFn,
+  log: logFn
 };
 
 module.exports = (request, response, next) => {

@@ -11,7 +11,7 @@ function toRoleGroups(results) {
   return Object.keys(hash).map(key => (
     {
       Role: key,
-      Services: _.map(hash[key], 'value'),
+      Services: _.map(hash[key], 'value')
     }
   ));
 }
@@ -29,7 +29,7 @@ function* GetServerRoles({ environmentName }) {
 
   return {
     EnvironmentName: environmentName,
-    Value: toRoleGroups(results),
+    Value: toRoleGroups(results)
   };
 }
 

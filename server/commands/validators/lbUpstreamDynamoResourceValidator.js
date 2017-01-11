@@ -19,9 +19,9 @@ function getService(serviceName, parentCommand) {
       accountName: parentCommand.accountName,
       name: 'ScanDynamoResources',
       resource: 'config/services',
-      filter: { ServiceName: serviceName },
+      filter: { ServiceName: serviceName }
     },
-    parent: parentCommand,
+    parent: parentCommand
   });
 }
 
@@ -43,5 +43,5 @@ function* validate(resource, command) {
 
 module.exports = {
   canValidate,
-  validate: co.wrap(validate),
+  validate: co.wrap(validate)
 };

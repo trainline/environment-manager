@@ -50,8 +50,8 @@ function queryDeployment({ key }) {
         accountName: account,
         query: {
           TableName: awsResourceNameProvider.getTableName(table),
-          Key: { DeploymentID: key },
-        },
+          Key: { DeploymentID: key }
+        }
       }));
 
     function executeQuery(params) {
@@ -82,7 +82,7 @@ function queryDeployments(query) {
     'Value.EnvironmentName': query.environment,
     'Value.Status': query.status,
     'Value.OwningCluster': query.cluster,
-    '$date_from': query.since,
+    '$date_from': query.since
   };
 
   filter = _.omitBy(filter, _.isUndefined);
@@ -91,19 +91,19 @@ function queryDeployments(query) {
     name: queryName,
     resource: 'deployments/history',
     filter,
-    suppressError: true,
+    suppressError: true
   };
 
   let completedDeploymentsQuery = {
     name: queryName,
     resource: 'deployments/completed',
     filter,
-    suppressError: true,
+    suppressError: true
   };
 
   return Promise.all([
     sender.sendQuery({ query: currentDeploymentsQuery }),
-    sender.sendQuery({ query: completedDeploymentsQuery }),
+    sender.sendQuery({ query: completedDeploymentsQuery })
   ]).then(results => _.flatten(results).filter(x => !!x));
 }
 
@@ -113,7 +113,7 @@ function queryDeploymentNodeStates(environment, key, accountName) {
     key: `deployments/${key}/nodes`,
     accountName,
     environment,
-    recurse: true,
+    recurse: true
   };
 
   return sender.sendQuery({ query: consulQuery });
@@ -127,5 +127,5 @@ module.exports = {
     .then((deployments) => {
       let deploymentsWithNodes = deployments.map(mapDeployment);
       return Promise.all(deploymentsWithNodes);
-    }),
+    })
 };

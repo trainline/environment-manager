@@ -22,8 +22,8 @@ module.exports = function PushDeploymentCommandHandler(command) {
   assertContract(command, 'command', {
     properties: {
       s3Path: { type: S3PathContract, null: false },
-      deployment: { type: DeploymentContract, null: false },
-    },
+      deployment: { type: DeploymentContract, null: false }
+    }
   });
 
   let deployment = command.deployment;
@@ -40,7 +40,7 @@ module.exports = function PushDeploymentCommandHandler(command) {
       serverRoleDefinition: yield serverRoleDefinitionKeyValueProvider.get(deployment),
       serviceInstallation: yield serviceInstallationKeyValueProvider.get(deployment, s3Path),
       deployment: yield deploymentKeyValueProvider.get(deployment),
-      deploymentService: yield deploymentServiceKeyValueProvider.get(deployment),
+      deploymentService: yield deploymentServiceKeyValueProvider.get(deployment)
     };
 
     yield [
@@ -48,7 +48,7 @@ module.exports = function PushDeploymentCommandHandler(command) {
       updateTargetState(command, keyValues.serverRoleDefinition),
       updateTargetState(command, keyValues.serviceInstallation),
       updateTargetState(command, keyValues.deployment),
-      updateTargetState(command, keyValues.deploymentService),
+      updateTargetState(command, keyValues.deploymentService)
     ];
 
     logger.info('Consul metadata has been updated');
@@ -65,8 +65,8 @@ function updateTargetState(command, keyValue, options) {
       environment: command.deployment.environmentName,
       key: keyValue.key,
       value: keyValue.value,
-      options,
+      options
     },
-    parent: command,
+    parent: command
   });
 }

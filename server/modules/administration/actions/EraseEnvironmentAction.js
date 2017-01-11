@@ -12,12 +12,12 @@ function EraseEnvironmentAction(environmentName) {
     return co(function* () {
       let erasedServicesKeys = yield keyValueStoreEraser.scanAndDelete({
         keyPrefix: `environments/${environmentName}/services/`,
-        condition: () => true,
+        condition: () => true
       });
 
       let erasedRolesKeys = yield keyValueStoreEraser.scanAndDelete({
         keyPrefix: `environments/${environmentName}/roles/`,
-        condition: () => true,
+        condition: () => true
       });
 
       return erasedServicesKeys.concat(erasedRolesKeys);

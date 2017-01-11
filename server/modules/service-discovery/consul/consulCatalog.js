@@ -68,7 +68,7 @@ function unravelTags(service) {
 function executeAction(promiseFactoryMethod) {
   let operation = retry.operation({
     retries: 3,
-    minTimeout: 1000,
+    minTimeout: 1000
   });
 
   let errorHandler = (reject, error) => {
@@ -98,5 +98,5 @@ module.exports = {
   getService,
   getAllNodes,
   getNodeHealth,
-  getNode,
+  getNode
 };

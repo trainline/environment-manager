@@ -19,7 +19,7 @@ module.exports = function PackagePathProvider() {
 
         return Promise.resolve(new S3PathContract({
           bucket: environmentType.DeploymentBucket,
-          key: `${filePath}/${fileName}`,
+          key: `${filePath}/${fileName}`
         }));
       });
   };

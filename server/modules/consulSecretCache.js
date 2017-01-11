@@ -27,5 +27,5 @@ function createToken(cacheKey) {
 }
 
 module.exports = {
-  get: getToken,
+  get: getToken
 };

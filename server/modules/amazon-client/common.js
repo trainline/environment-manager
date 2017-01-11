@@ -23,8 +23,8 @@ function getOptions() {
     credentials: undefined,
     region: AWS_REGION,
     httpOptions: {
-      agent: getHttpsAgent(),
-    },
+      agent: getHttpsAgent()
+    }
   };
 }
 
@@ -36,7 +36,7 @@ function getHttpsAgent() {
       keepAlive: true,
       secureProtocol: SECURE_PROTOCOL,
       ciphers: HTTPS_CIPHERS,
-      maxFreeSockets: MAX_FREE_SOCKETS,
+      maxFreeSockets: MAX_FREE_SOCKETS
     });
   }
   return httpsAgent;
@@ -44,5 +44,5 @@ function getHttpsAgent() {
 
 module.exports = {
   create,
-  getOptions,
+  getOptions
 };

@@ -31,5 +31,5 @@ function putUpstreamSlicesToggle(req, res, next) {
 
 module.exports = {
   getUpstreamSlices,
-  putUpstreamSlicesToggle,
+  putUpstreamSlicesToggle
 };

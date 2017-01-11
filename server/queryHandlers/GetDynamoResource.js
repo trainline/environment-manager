@@ -18,9 +18,9 @@ function* GetDynamoResourceQueryHandler(query) {
     key: query.key,
     range: query.range,
     formatting: {
-      exposeAudit: query.exposeAudit,
+      exposeAudit: query.exposeAudit
     },
-    suppressError: query.suppressError,
+    suppressError: query.suppressError
   };
 
   return resource.get(params);

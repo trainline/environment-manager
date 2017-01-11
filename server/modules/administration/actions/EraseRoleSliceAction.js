@@ -16,7 +16,7 @@ function EraseRoleSliceAction(environmentName) {
           let keySegments = key.split('/');
           let keyRoleName = keySegments[3];
           return (keyRoleName === `${roleName}-${roleSlice}`);
-        },
+        }
       });
 
       let serviceInstallationKeysToErase = [];
@@ -36,12 +36,12 @@ function EraseRoleSliceAction(environmentName) {
 
           serviceInstallationKeysToErase.push(`${keySegments.join('/')}/installation`);
           return true;
-        },
+        }
       });
 
       let erasedServicesInstallationKeys = yield keyValueStoreEraser.scanAndDelete({
         keyPrefix: `environments/${environmentName}/services/`,
-        condition: key => serviceInstallationKeysToErase.indexOf(key) >= 0,
+        condition: key => serviceInstallationKeysToErase.indexOf(key) >= 0
       });
 
       return erasedServicesDefinitionKeys

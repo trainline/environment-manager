@@ -38,7 +38,7 @@ function start() {
 
     servers = [
       new MainServer(),
-      new AdminServer(),
+      new AdminServer()
     ];
 
     yield servers.map(server => server.start());
@@ -59,5 +59,5 @@ if (require.main === module) {
 
 module.exports = {
   start,
-  stop,
+  stop
 };

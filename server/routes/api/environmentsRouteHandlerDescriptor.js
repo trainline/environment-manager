@@ -13,12 +13,12 @@ let scheduleStatusRoute =
     .inOrderTo('Get the current schedule status of an Environment')
     .withDocs({
       description: 'Environment',
-      tags: ['Environments'],
+      tags: ['Environments']
     })
     .do((request, response) => {
       let query = {
         name: 'GetEnvironmentScheduleStatus',
-        environmentName: request.params.environment,
+        environmentName: request.params.environment
       };
       send.query(query, request, response);
     });
@@ -28,13 +28,13 @@ let timedScheduleStatusRoute =
     .inOrderTo('Get the schedule status of an Environment at a particular date/time')
     .withDocs({
       description: 'Environment',
-      tags: ['Environments'],
+      tags: ['Environments']
     })
     .do((request, response) => {
       let query = {
         name: 'GetEnvironmentScheduleStatus',
         environmentName: request.params.environment,
-        date: request.params.date,
+        date: request.params.date
       };
       send.query(query, request, response);
     });
@@ -50,7 +50,7 @@ let accountLookupRoute =
       let failure = error => callback(error);
       let command = {
         name: 'GetAccountByEnvironment',
-        environment: request.params.environment,
+        environment: request.params.environment
       };
       sender.sendCommand({ command, user: request.user }).then(success, failure);
     });
@@ -70,5 +70,5 @@ module.exports = [
   scheduleStatusRoute,
   timedScheduleStatusRoute,
   accountLookupRoute,
-  protectedActionRoute,
+  protectedActionRoute
 ];

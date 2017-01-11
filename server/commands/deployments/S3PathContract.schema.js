@@ -9,15 +9,15 @@ module.exports = {
   properties: {
     bucket: {
       description: 'Name of the S3 bucket',
-      type: 'string',
+      type: 'string'
     },
     key: {
       description: 'Name of the S3 key',
-      type: 'string',
-    },
+      type: 'string'
+    }
   },
   required: [
     'bucket',
-    'key',
-  ],
+    'key'
+  ]
 };

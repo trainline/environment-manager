@@ -23,7 +23,7 @@ module.exports = function HttpsServerFactory() {
   function createServerByApplicationAndSslComponents(application, sslComponents) {
     let options = {
       key: sslComponents.privateKey,
-      cert: sslComponents.certificate,
+      cert: sslComponents.certificate
     };
 
     let server = https.createServer(options, application);

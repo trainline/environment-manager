@@ -7,8 +7,8 @@ module.exports = {
   "rules": {
     "arrow-body-style": [0, "never"],
     "comma-dangle": ["error", {
-      "arrays": "always-multiline",
-      "objects": "always-multiline",
+      "arrays": "never",
+      "objects": "never",
       "imports": "ignore",
       "exports": "ignore",
       "functions": "ignore",

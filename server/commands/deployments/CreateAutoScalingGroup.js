@@ -23,7 +23,7 @@ module.exports = function CreateAutoScalingGroupCommandHandler(command) {
     logger.info(`Creating [${autoScalingGroupName}] AutoScalingGroup...`);
 
     let autoScalingGroupClient = yield autoScalingGroupClientFactory.create({
-      accountName,
+      accountName
     });
 
     let request = getCreateAutoScalingGroupRequest(template);
@@ -34,7 +34,7 @@ module.exports = function CreateAutoScalingGroupCommandHandler(command) {
 
     yield [
       attachNotificationsByTemplate(logger, autoScalingGroupClient, template),
-      attachLifecycleHooksByTemplate(logger, autoScalingGroupClient, template),
+      attachLifecycleHooksByTemplate(logger, autoScalingGroupClient, template)
     ];
 
     logger.info(`AutoScalingGroup [${autoScalingGroupName}] has been configured`);
@@ -103,7 +103,7 @@ function getCreateAutoScalingGroupRequest(template) {
     MinSize: template.size.min,
     VPCZoneIdentifier: template.subnets.join(','),
     DesiredCapacity: template.size.desired,
-    Tags: getAutoScalingGroupTags(template.tags),
+    Tags: getAutoScalingGroupTags(template.tags)
   };
 
   return request;
@@ -115,7 +115,7 @@ function getAutoScalingGroupTags(tags) {
     if ({}.hasOwnProperty.call(tags, tag)) {
       autoScalingGroupTags.push({
         Key: tag,
-        Value: tags[tag],
+        Value: tags[tag]
       });
     }
   }
@@ -128,7 +128,7 @@ function getAttachNotificationsRequests(template) {
     let request = {
       AutoScalingGroupName: template.autoScalingGroupName,
       TopicARN: mapping.topicArn,
-      NotificationTypes: mapping.notificationTypes,
+      NotificationTypes: mapping.notificationTypes
     };
 
     return request;
@@ -146,7 +146,7 @@ function getAttachLifecycleHookRequests(template) {
       RoleARN: hook.roleArn,
       NotificationTargetARN: hook.topicArn,
       HeartbeatTimeout: (ms(hook.heartbeatTimeout) / 1000),
-      DefaultResult: hook.defaultResult,
+      DefaultResult: hook.defaultResult
     };
 
     return request;

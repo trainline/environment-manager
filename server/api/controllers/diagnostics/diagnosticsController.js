@@ -9,5 +9,5 @@ function getHealthcheck(req, res, next) {
 }
 
 module.exports = {
-  getHealthcheck,
+  getHealthcheck
 };

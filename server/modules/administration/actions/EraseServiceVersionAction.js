@@ -12,12 +12,12 @@ function EraseServiceVersionAction(environmentName) {
     return co(function* () {
       let erasedServicesKeys = yield keyValueStoreEraser.scanAndDelete({
         keyPrefix: `environments/${environmentName}/services/${serviceName}/${serviceVersion}/`,
-        condition: () => true,
+        condition: () => true
       });
 
       let erasedRolesKeys = yield keyValueStoreEraser.scanAndDelete({
         keyPrefix: `environments/${environmentName}/roles/`,
-        condition: (key, value) => { return value ? value.Name === serviceName && value.Version === serviceVersion : false; },
+        condition: (key, value) => { return value ? value.Name === serviceName && value.Version === serviceVersion : false; }
       });
 
       return erasedServicesKeys.concat(erasedRolesKeys);

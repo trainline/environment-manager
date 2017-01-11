@@ -33,7 +33,7 @@ function getRules(request) {
 module.exports = {
   docs: {
     requiresClusterPermissions: true,
-    requiresEnvironmentTypePermissions: true,
+    requiresEnvironmentTypePermissions: true
   },
-  getRules,
+  getRules
 };

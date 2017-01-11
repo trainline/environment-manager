@@ -14,7 +14,7 @@ function postAuthorization(req, res, next) {
   let credentials = {
     username: body.username,
     password: body.password,
-    scope: 'api',
+    scope: 'api'
   };
 
   let duration = tokenConfiguration.getTokenDuration();
@@ -24,5 +24,5 @@ function postAuthorization(req, res, next) {
 }
 
 module.exports = {
-  postAuthorization,
+  postAuthorization
 };
