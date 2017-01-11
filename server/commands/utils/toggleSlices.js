@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -18,17 +19,15 @@ function ToggleUpstreamByServiceVerifier(toggleCommand) {
         resource: 'config/services',
         accountName: masterAccountName,
         filter: {
-          ServiceName: upstreams[0].Value.ServiceName,
-        },
+          ServiceName: upstreams[0].Value.ServiceName
+        }
       };
 
-      let services = yield sender.sendQuery({ query: query, parent: toggleCommand });
+      let services = yield sender.sendQuery({ query, parent: toggleCommand });
       let portMapping = asPortMapping(services[0]);
 
 
-      yield _.map(upstreams, (upstream) => {
-        return detectUpstreamInconsistency(upstream, portMapping);
-      });
+      yield _.map(upstreams, upstream => detectUpstreamInconsistency(upstream, portMapping));
     });
   };
 
@@ -43,11 +42,11 @@ function ToggleUpstreamByServiceVerifier(toggleCommand) {
   }
 
   function detectUpstreamInconsistency(upstream, portMapping) {
-    if (upstream.Value.Hosts.length == 0) {
+    if (upstream.Value.Hosts.length === 0) {
       return makeUpstreamError(upstream, 'cannot be toggled because it has no slice');
     }
 
-    if (upstream.Value.Hosts.length == 1) {
+    if (upstream.Value.Hosts.length === 1) {
       return makeUpstreamError(upstream, 'cannot be toggled because it has only one slice');
     }
 
@@ -55,15 +54,12 @@ function ToggleUpstreamByServiceVerifier(toggleCommand) {
       return makeUpstreamError(upstream, 'cannot be toggled because it has more than two slices');
     }
 
-    let statuses = upstream.Value.Hosts.map((host) => {
-      return host.State === 'up' ? 'Active' : 'Inactive';
-    }).distinct();
-    if (statuses.length == 1) {
+    let statuses = upstream.Value.Hosts.map((host) => { return host.State === 'up' ? 'Active' : 'Inactive'; }).distinct();
+    if (statuses.length === 1) {
       return makeUpstreamError(upstream, `cannot be toggled because all its slices are "${statuses[0]}"`);
     }
 
-    let slicesNames = upstream.Value.Hosts.map((host) => {
-      return portMapping[host.Port]; });
+    let slicesNames = upstream.Value.Hosts.map(host => portMapping[host.Port]);
     if (slicesNames.indexOf('Blue') < 0) {
       return makeUpstreamError(upstream, 'cannot be toggled because there is no way to detect which slice is "blue"');
     }
@@ -84,47 +80,45 @@ function ToggleUpstreamByServiceVerifier(toggleCommand) {
 function ToggleUpstreamByNameVerifier(resourceName) {
   this.verifyUpstreams = (upstreams) => {
     if (upstreams.length > 1) {
-      let keys = upstreams.map((upstream) => { return upstream.key; }).join(', ');
+      let keys = upstreams.map(upstream => upstream.key).join(', ');
       let message = `${resourceName} cannot be toggled because all following keys refer to it: ${keys}.`;
       return Promise.reject(new InconsistentSlicesStatusError(message));
     }
 
     let upstream = upstreams[0];
-    if (upstream.Value.Hosts.length == 0) {
+    if (upstream.Value.Hosts.length === 0) {
       let message = `Upstream named "${upstream.Value.UpstreamName}" which refers to "${upstream.Value.ServiceName}" service in "${upstream.Value.EnvironmentName}" environment cannot be toggled because it has no slice.`;
       return Promise.reject(new InconsistentSlicesStatusError(message));
     }
 
     return Promise.resolve();
-  }
-}
-
-function UpstreamProvider(sender, toggleCommand, resourceName) {
-  this.provideUpstreams = () => {
-    return co(function* () {
-      // Requires all LoadBalancer upstreams in the specified AWS account.
-      let query = {
-        name: 'ScanDynamoResources',
-        resource: 'config/lbupstream',
-        accountName: toggleCommand.accountName,
-      };
-
-      let upstreams = yield sender.sendQuery({ query, parent: toggleCommand });
-      let filteredUpstreams = _.filter(upstreams, (upstream) => upstream.Value.EnvironmentName === toggleCommand.environmentName);
-      if (toggleCommand.serviceName) {
-        filteredUpstreams = _.filter(filteredUpstreams, (upstream) => upstream.Value.ServiceName === toggleCommand.serviceName);
-      }
-      if (toggleCommand.upstreamName) {
-        filteredUpstreams = _.filter(filteredUpstreams, (upstream) => upstream.Value.UpstreamName === toggleCommand.upstreamName);
-      }
-
-      if (filteredUpstreams.length) return filteredUpstreams;
-      else throw new ResourceNotFoundError(`No ${resourceName} has been found.`);
-    });
   };
 }
 
-function UpstreamToggler(sender, toggleCommand) {
+function UpstreamProvider(senderInstance, toggleCommand, resourceName) {
+  this.provideUpstreams = () => co(function* () {
+      // Requires all LoadBalancer upstreams in the specified AWS account.
+    let query = {
+      name: 'ScanDynamoResources',
+      resource: 'config/lbupstream',
+      accountName: toggleCommand.accountName
+    };
+
+    let upstreams = yield senderInstance.sendQuery({ query, parent: toggleCommand });
+    let filteredUpstreams = _.filter(upstreams, upstream => upstream.Value.EnvironmentName === toggleCommand.environmentName);
+    if (toggleCommand.serviceName) {
+      filteredUpstreams = _.filter(filteredUpstreams, upstream => upstream.Value.ServiceName === toggleCommand.serviceName);
+    }
+    if (toggleCommand.upstreamName) {
+      filteredUpstreams = _.filter(filteredUpstreams, upstream => upstream.Value.UpstreamName === toggleCommand.upstreamName);
+    }
+
+    if (filteredUpstreams.length) return filteredUpstreams;
+    else throw new ResourceNotFoundError(`No ${resourceName} has been found.`);
+  });
+}
+
+function UpstreamToggler(senderInstance, toggleCommand) {
   this.toggleUpstream = (upstream) => {
     function toggleHost(host) {
       host.State = (host.State === 'up' ? 'down' : 'up');
@@ -136,9 +130,9 @@ function UpstreamToggler(sender, toggleCommand) {
       resource: 'config/lbupstream',
       key: upstream.key,
       item: upstream,
-      accountName: toggleCommand.accountName,
+      accountName: toggleCommand.accountName
     };
-    return sender.sendCommand({ command, parent: toggleCommand });
+    return senderInstance.sendCommand({ command, parent: toggleCommand });
   };
 }
 
@@ -146,7 +140,7 @@ function* orchestrate(provider, verifier, toggler) {
   let upstreams = yield provider.provideUpstreams();
   yield verifier.verifyUpstreams(upstreams);
   yield _.map(upstreams, toggler.toggleUpstream);
-  
+
   return {
     ToggledUpstreams: _.map(upstreams, 'Value.UpstreamName')
   };
@@ -157,5 +151,5 @@ module.exports = {
   UpstreamToggler,
   orchestrate: co.wrap(orchestrate),
   ToggleUpstreamByServiceVerifier,
-  ToggleUpstreamByNameVerifier,
+  ToggleUpstreamByNameVerifier
 };

@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let sender = require('modules/sender');
@@ -11,10 +12,10 @@ function getLoadBalancer(req, res, next) {
 
   let query = {
     name: 'ScanNginxUpstreams',
-    instanceDomainName: fqdn,
+    instanceDomainName: fqdn
   };
 
-  return sender.sendQuery({ query }).then((data) => res.json(data)).catch(next);
+  return sender.sendQuery({ query }).then(data => res.json(data)).catch(next);
 }
 
 module.exports = {

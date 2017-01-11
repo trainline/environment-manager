@@ -1,13 +1,12 @@
-"use strict";
+'use strict';
 
 module.exports = function (options) {
-
   let opts = Object.assign({}, defaults, options);
 
   if (opts.maxAttempts < 1) {
-    throw new Error("Max attempts must be 1 or greater.");
+    throw new Error('Max attempts must be 1 or greater.');
   }
-  
+
   let n = opts.maxAttempts;
   let waitFor = opts.wait;
   let millisecondsToWait = opts.backoff;
@@ -16,11 +15,10 @@ module.exports = function (options) {
   return retry;
 
   function retry(fn) {
-
     return loop(1);
 
     function loop(i) {
-      return Promise.resolve(fn(i)).catch(error => {
+      return Promise.resolve(fn(i)).catch((error) => {
         if (n <= i) {
           logger.error(`Final attempt ${i} of ${n} failed.`);
           return Promise.reject(error);
@@ -35,7 +33,7 @@ module.exports = function (options) {
 };
 
 let defaults = {
-  backoff: i => Math.round(5000 * (1 + Math.random()) * Math.pow(2, (i - 1))),
+  backoff: i => Math.round(5000 * (1 + Math.random()) * Math.pow(2, (i - 1))), // eslint-disable-line no-restricted-properties
   logger: {
     debug: console.log.bind(console),
     info: console.log.bind(console),

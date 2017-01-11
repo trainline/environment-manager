@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -15,8 +16,8 @@ module.exports = function SNSTopicClient(accountName) {
   this.get = function (parameters) {
     assertContract(parameters, 'parameters', {
       properties: {
-        topicName: { type: String, empty: false },
-      },
+        topicName: { type: String, empty: false }
+      }
     });
 
     return co(function* () {
@@ -26,8 +27,8 @@ module.exports = function SNSTopicClient(accountName) {
       let topic = yield client.getTopicAttributes({ TopicArn: topicArn }).promise().then(
 
         response => Promise.resolve(response.Attributes),
-        error => Promise.reject(error.code === 'NotFound' ? 
-          new TopicNotFoundError(`Topic '${parameters.topicName}' not found.`) 
+        error => Promise.reject(error.code === 'NotFound' ?
+          new TopicNotFoundError(`Topic '${parameters.topicName}' not found.`)
           : new AwsError(error.message))
       );
       return topic;

@@ -17,7 +17,7 @@ function environmentExists(environment) {
       log.warn(err);
       return {
         title: 'Environment Not Found',
-        detail: `environment name: ${environment}`,
+        detail: `environment name: ${environment}`
       };
     });
 }

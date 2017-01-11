@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -22,11 +23,11 @@ class Instance {
   }
 
   persistTag(tag) {
-    return ec2InstanceClientFactory.create({ accountName: this.AccountName }).then(client => {
+    return ec2InstanceClientFactory.create({ accountName: this.AccountName }).then((client) => {
       let parameters = {
         instanceIds: [this.InstanceId],
         tagKey: tag.key,
-        tagValue: tag.value,
+        tagValue: tag.value
       };
 
       return client.setTag(parameters);
@@ -35,9 +36,7 @@ class Instance {
 
   static getById(instanceId) {
     let filter = { 'instance-id': instanceId };
-    return ScanCrossAccountInstances({ filter }).then(list => {
-      return new Instance(list[0]);
-    });
+    return ScanCrossAccountInstances({ filter }).then(list => new Instance(list[0]));
   }
 
   static getAllByEnvironment(environmentName) {
@@ -53,9 +52,8 @@ class Instance {
           name: 'ScanInstances',
           accountName,
           filter
-        },
+        }
       }).then((result) => {
-        console.log(result);
         let duration = moment.duration(moment.utc().diff(startTime)).asMilliseconds();
         logger.debug(`server-status-query: InstancesQuery took ${duration}ms`);
         return result;

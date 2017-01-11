@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let async = require('async');
@@ -10,7 +11,7 @@ let co = require('co');
 let User = require('modules/user');
 let config = require('config');
 let sender = require('modules/sender');
-let userRolesProvider = new(require('modules/userRolesProvider'))();
+let userRolesProvider = new (require('modules/userRolesProvider'))();
 let activeDirectoryAdapter = require('modules/active-directory-adapter');
 let logger = require('modules/logger');
 let sessionCache = {};
@@ -24,7 +25,6 @@ module.exports = function UserService() {
 
   function authenticateUser(credentials, duration) {
     return co(function* () {
-
       if (!credentials.scope) {
         logger.warn(`credentials.scope unspecified; using "api": username=${credentials.username}.`);
       }
@@ -41,10 +41,10 @@ module.exports = function UserService() {
         activeDirectoryUser.roles
       );
 
-      let user = yield userRolesProvider.getPermissionsFor(_.union([name], groups)).then(permissions => {
+      let user = yield userRolesProvider.getPermissionsFor(_.union([name], groups)).then((permissions) => {
         let expiration = getExpiration(duration);
         return User.new(name, roles, expiration, groups, permissions);
-      }).catch(err => {
+      }).catch((err) => {
         logger.error(err);
         throw err;
       });
@@ -61,15 +61,15 @@ module.exports = function UserService() {
       let sslComponents = yield sslComponentsRepository.get();
 
       // Given the user data creates its encoded token
-      var options = {
+      let options = {
         algorithm: 'RS256',
-        expiresIn: duration,
+        expiresIn: duration
       };
 
-      var sessionToken = {
+      let sessionToken = {
         scope: session.scope,
         sessionId: session.sessionId,
-        userName: session.user.name,
+        userName: session.user.name
       };
 
       return jsonwebtoken.sign(sessionToken, sslComponents.privateKey, options);
@@ -80,7 +80,6 @@ module.exports = function UserService() {
     // TODO(filip): remove async use
     return new Promise((resolve, reject) => {
       let mainCallback = (err, result) => {
-
         if (err) reject(err);
         else resolve(result);
       };
@@ -89,39 +88,35 @@ module.exports = function UserService() {
         // Loads SSL components from the repository because next function needs
         // to the certificate to decode the user token
         (callback) => {
-          sslComponentsRepository.get().then((result) => callback(null, result))
-            .catch((error) => callback(error));
+          sslComponentsRepository.get().then(result => callback(null, result))
+            .catch(error => callback(error));
         },
 
         // Given encoded token creates the user data
         (sslComponents, callback) => {
-
-          var options = {
+          let options = {
             algorithm: 'RS256',
-            ignoreExpiration: false,
+            ignoreExpiration: false
           };
 
           jsonwebtoken.verify(token, sslComponents.certificate, options, callback);
-
         },
 
-        (token, callback) => {
-          getUserSessionByToken(token, callback);
+        (localToken, callback) => {
+          getUserSessionByToken(localToken, callback);
         },
 
         (session, callback) => {
-
           callback(null, User.parse(session.user));
-
-        },
+        }
       ], mainCallback);
     });
   }
 
   function getExpiration(duration) {
-    duration = ms(duration);
-    var dateNow = new Date();
-    var dateEnd = new Date(dateNow.setMilliseconds(dateNow.getMilliseconds() + duration));
+    let durationMs = ms(duration);
+    let dateNow = new Date();
+    let dateEnd = new Date(dateNow.setMilliseconds(dateNow.getMilliseconds() + durationMs));
 
     return dateEnd.getTime();
   }
@@ -135,17 +130,16 @@ module.exports = function UserService() {
         else resolve(result);
       };
 
-      var newSession = {
-        scope: scope,
+      let newSession = {
+        scope,
         sessionId: guid.v1(),
-        user: user.toJson(),
+        user: user.toJson()
       };
 
       let userSessionKey = getSessionKeyForUser(user.getName(), scope);
 
       getUserSessionFromDb(userSessionKey, (err, dbSession) => {
-
-        var commandName = (err || !dbSession) ? 'CreateDynamoResource' : 'UpdateDynamoResource';
+        let commandName = (err || !dbSession) ? 'CreateDynamoResource' : 'UpdateDynamoResource';
 
         sender.sendCommand({
           command: {
@@ -154,24 +148,23 @@ module.exports = function UserService() {
             accountName: masterAccountName,
             item: {
               UserName: userSessionKey,
-              Value: newSession,
-            },
+              Value: newSession
+            }
           },
-          user: user,
+          user
         }).then(
           () => {
             sessionCache[userSessionKey] = newSession;
             callback(null, newSession);
           },
 
-          (error) => callback(error)
+          error => callback(error)
         );
       });
     });
   }
 
   function getUserSessionByToken(token, callback) {
-
     if (!token.userName) {
       callback('Token error');
       return;
@@ -185,9 +178,9 @@ module.exports = function UserService() {
     let userSessionKey = getSessionKeyForUser(token.userName, token.scope);
     let expectedSessionId = token.sessionId;
 
-    var cachedSession = sessionCache[userSessionKey];
+    let cachedSession = sessionCache[userSessionKey];
 
-    if (cachedSession && cachedSession.sessionId == expectedSessionId) {
+    if (cachedSession && cachedSession.sessionId === expectedSessionId) {
       callback(null, cachedSession);
     } else {
       getUserSessionFromDb(userSessionKey, (err, dbSession) => {
@@ -217,16 +210,15 @@ module.exports = function UserService() {
 
   function getUserSessionFromDb(userSessionKey, callback) {
     const masterAccountName = config.getUserValue('masterAccountName');
-    var query = {
+    let query = {
       name: 'GetDynamoResource',
       key: userSessionKey,
       resource: 'user-sessions',
-      accountName: masterAccountName,
+      accountName: masterAccountName
     };
 
-    sender.sendQuery({ query: query }, callback);
+    sender.sendQuery({ query }, callback);
   }
-
 };
 
 function getSessionKeyForUser(username, scope) {

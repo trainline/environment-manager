@@ -1,8 +1,9 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 function getServerRoleByName(req, res) {
-  res.json([{},{},{}]);
+  res.json([{}, {}, {}]);
 }
 
 function postServerRole(req, res) {

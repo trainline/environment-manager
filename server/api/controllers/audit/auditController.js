@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let notImplemented = require('api/api-utils/notImplemented');
@@ -21,7 +22,7 @@ function createAuditLogQuery(since, until, exclusiveStartKey, perPage, filter) {
   let rq = {
     limit: perPage || 10,
     maxDate: until.toString(),
-    minDate: since.toString(),
+    minDate: since.toString()
   };
   if (exclusiveStartKey) {
     rq.exclusiveStartKey = exclusiveStartKey;
@@ -37,7 +38,7 @@ function createFilter(query) {
   let exprs = {
     'Entity.Type': val => ['=', ['attr', 'Entity', 'Type'], ['val', val]],
     'ChangeType': val => ['=', ['attr', 'ChangeType'], ['val', val]],
-    'Entity.Key': val => ['=', ['attr', 'Entity', 'Key'], ['val', val]],
+    'Entity.Key': val => ['=', ['attr', 'Entity', 'Key'], ['val', val]]
   };
 
   let filter = fp.flow(
@@ -86,7 +87,7 @@ function getAuditLogs(request, response, next) {
   let filter = createFilter(query);
   let auditLogQuery = createAuditLogQuery(since, until, exclusiveStartKey, query.per_page, filter);
   return auditLogReader.getLogs(auditLogQuery)
-    .then(auditLog => {
+    .then((auditLog) => {
       logger.debug('Audit History: Constructing navigation links');
       query.since = since.toString();
       query.until = until.toString();
@@ -103,7 +104,7 @@ function getAuditLogs(request, response, next) {
  * GET /audit/{key}
  */
 function getAuditLogByKey(req, res, next) {
-  notImplemented(res, 'Getting a specific audit log by key')
+  notImplemented(res, 'Getting a specific audit log by key');
 }
 
 module.exports = {

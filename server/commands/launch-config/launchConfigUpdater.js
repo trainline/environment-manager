@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -7,12 +8,12 @@ let sender = require('modules/sender');
 let AutoScalingGroup = require('models/AutoScalingGroup');
 
 module.exports = {
-  // 
-  set: function (accountName, autoScalingGroup, updateAction) {
+  //
+  set(accountName, autoScalingGroup, updateAction) {
     return co(function* () {
       // Obtain an object containing resource instances to work with
       // LaunchConfigurations and AutoScalingGroups
-      // 
+      //
       let autoScalingGroupName = autoScalingGroup.$autoScalingGroupName;
 
       let launchConfigurationClient = yield resourceProvider.getInstanceByName('launchconfig', { accountName });
@@ -21,7 +22,7 @@ module.exports = {
       // Send a request to obtain the LaunchConfiguration for the specific
       // AutoScalingGroup
       // [AutoScalingGroup] <---> [LaunchConfiguration]
-      // 
+      //
       let originalLaunchConfiguration = yield autoScalingGroup.getLaunchConfiguration();
 
       // Clone the original LaunchConfiguration creating a backup version
@@ -72,13 +73,13 @@ module.exports = {
       //                          [LaunchConfiguration_Backup] (deleting...)
       yield launchConfigurationClient.delete({ name: backupLaunchConfiguration.LaunchConfigurationName });
     });
-  },
+  }
 };
 
 function attachLaunchConfigurationToAutoScalingGroup(autoScalingGroupClient, autoScalingGroupName, launchConfiguration) {
   let parameters = {
     name: autoScalingGroupName,
-    launchConfigurationName: launchConfiguration.LaunchConfigurationName,
+    launchConfigurationName: launchConfiguration.LaunchConfigurationName
   };
 
   return autoScalingGroupClient.put(parameters);

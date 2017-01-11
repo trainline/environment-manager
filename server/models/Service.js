@@ -19,7 +19,7 @@ class Service {
       name: 'ScanDynamoResources',
       resource: 'config/services',
       accountName: masterAccountName,
-      filter: { ServiceName: name },
+      filter: { ServiceName: name }
     };
     return sender.sendQuery({ query }).then(obj => new Service(obj));
   }

@@ -1,10 +1,10 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 // Manage specific Upstream
 angular.module('EnvironmentManager.configuration').controller('LBUpstreamController',
   function ($scope, $routeParams, $location, $q, resources, cachedResources, modal, accountMappingService, UpstreamConfig) {
-
     $scope.LBUpstream = {};
     $scope.NewHostDefault = { DnsName: '', Port: null, FailTimeout: '30s', MaxFails: null, State: 'down', Weight: 1 };
     $scope.NewHost = angular.copy($scope.NewHostDefault);
@@ -20,11 +20,10 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
     var ReturnPath = '/config/upstreams/'; // Plus Environment name to get back to the previous selection
 
     function init() {
-
-      var mode = $routeParams['mode'];
-      var env = $routeParams['up_environment'];
-      var key = $routeParams['key'];
-      var returnPath = $routeParams['returnPath'];
+      var mode = $routeParams.mode;
+      var env = $routeParams.up_environment;
+      var key = $routeParams.key;
+      var returnPath = $routeParams.returnPath;
 
       if (key) key = decodeURIComponent(key);
       if (returnPath) ReturnPath = decodeURIComponent(returnPath);
@@ -37,16 +36,13 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
         cachedResources.config.services.all().then(function (services) {
           $scope.Services = services;
           $scope.ServicesList = _.map(services, 'ServiceName').sort();
-        }),
+        })
       ]).then(function () {
-
         $scope.PageMode = mode ? mode : 'Edit';
         if ($scope.PageMode == 'Edit' || $scope.PageMode == 'Copy') {
-
           if (!key || !env) {
             $scope.DataFound = false;
           } else {
-
             accountMappingService.getAccountForEnvironment(env).then(function (accountName) {
               UpstreamConfig.getByKey(key, accountName).then(function (data) {
                 $scope.LBUpstream = data;
@@ -70,16 +66,13 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
                 } else {
                   $scope.userHasPermission = user.hasPermission({ access: 'POST', resource: '/*/config/lbupstream/**' });
                 }
-
               });
             });
-
           }
         } else {
           $scope.LBUpstream = UpstreamConfig.createWithDefaults(env);
           $scope.userHasPermission = user.hasPermission({ access: 'POST', resource: '/*/config/lbupstream/**' });
         }
-
       });
     }
 
@@ -96,7 +89,6 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
     };
 
     $scope.Save = function () {
-
       var upstreamValue = $scope.LBUpstream.Value;
 
       if ($scope.PageMode != 'Edit' && !_.startsWith(upstreamValue.UpstreamName, upstreamValue.EnvironmentName + '-')) {
@@ -111,7 +103,6 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
       }
 
       accountMappingService.getAccountForEnvironment(upstreamValue.EnvironmentName).then(function (accountName) {
-
         var saveMethod;
         var data;
 
@@ -121,7 +112,7 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
           promise = modal.confirmation({
             title: 'No Active Upstream Hosts',
             message: 'Are you sure you want to save this upstream with no active hosts?',
-            action: 'Save',
+            action: 'Save'
           });
         } else {
           promise = $q.when();
@@ -137,7 +128,6 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
           cachedResources.config.lbUpstream.flush();
           BackToSummary(upstreamValue.EnvironmentName);
         });
-
       });
     };
 
@@ -180,7 +170,7 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamControl
     function BackToSummary(environment) {
       $location.search('up_environment', environment);
       $location.path(ReturnPath);
-    };
+    }
 
     function GetActiveHostCount() {
       if ($scope.LBUpstream.Value.Hosts.length == 0) return 0;

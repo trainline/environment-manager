@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 const AWS_REGION = require('config').get('EM_AWS_REGION');
@@ -22,8 +23,8 @@ function getOptions() {
     credentials: undefined,
     region: AWS_REGION,
     httpOptions: {
-      agent: getHttpsAgent(),
-    },
+      agent: getHttpsAgent()
+    }
   };
 }
 
@@ -35,7 +36,7 @@ function getHttpsAgent() {
       keepAlive: true,
       secureProtocol: SECURE_PROTOCOL,
       ciphers: HTTPS_CIPHERS,
-      maxFreeSockets: MAX_FREE_SOCKETS,
+      maxFreeSockets: MAX_FREE_SOCKETS
     });
   }
   return httpsAgent;
@@ -43,5 +44,5 @@ function getHttpsAgent() {
 
 module.exports = {
   create,
-  getOptions,
+  getOptions
 };

@@ -1,18 +1,17 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let ms = require('ms');
-let jsonwebtoken = require('jsonwebtoken');
 let User = require('modules/user');
 let utils = require('modules/utilities');
 
 let ActiveDirectoryError = require('modules/errors/ActiveDirectoryError.class');
 
 module.exports = function UserService() {
-
   this.authenticateUser = (credentials, duration) => {
     if (!credentials.username) {
-      return Promise.reject(new Error('User must belong to "corp" domain.'))
+      return Promise.reject(new Error('User must belong to "corp" domain.'));
     }
 
     let name = credentials.username.toLowerCase().replace('corp\\', '');
@@ -38,10 +37,10 @@ module.exports = function UserService() {
 
 
 function getExpiration(duration) {
-  duration = ms(duration);
+  let durationMs = ms(duration);
 
   let dateNow = new Date();
-  let dateEnd = new Date(dateNow.setMilliseconds(dateNow.getMilliseconds() + duration));
+  let dateEnd = new Date(dateNow.setMilliseconds(dateNow.getMilliseconds() + durationMs));
 
   return dateEnd.getTime();
 }

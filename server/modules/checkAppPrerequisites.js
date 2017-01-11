@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 let co = require('co');
 let config = require('config');
@@ -54,6 +54,7 @@ function insertDefaultAdminPermission() {
   });
 }
 
+// eslint-disable-next-line arrow-body-style
 module.exports = () => {
   return co(function* () {
     if (permissionsResource === undefined) {
@@ -62,4 +63,4 @@ module.exports = () => {
     }
     return checkAppPrerequisites();
   });
-}
+};

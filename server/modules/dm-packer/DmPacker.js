@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let archiver = require('archiver');
@@ -11,15 +12,14 @@ let config = require('config');
 let s3Url = require('modules/amazon-client/s3Url');
 
 module.exports = function DmPacker(logger) {
-
-  let retry = retryLib({ logger: logger, maxAttempts: 4 });
+  let retry = retryLib({ logger, maxAttempts: 4 });
 
   this.buildCodeDeployPackage = function (deploymentMap) {
     let options = {
       nugetRootUrl: config.getUserValue('local').nugetRootUrl
     };
 
-    return retry(tryDownload).then(archive => archive, error => {
+    return retry(tryDownload).then(archive => archive, (error) => {
       logger.error(`${failureMessage()}:
       ${error.message}`);
       logger.error(error.message);
@@ -29,24 +29,24 @@ module.exports = function DmPacker(logger) {
     function tryDownload() {
       return co(function* () {
         try {
-          logger.info("Packaging started");
+          logger.info('Packaging started');
           logger.info(`Downloading Package: ${JSON.stringify(deploymentMap)}`);
           let toDownload = yield nugetHttp.getDownloadPlan(options.nugetRootUrl, deploymentMap);
           let files = yield toDownload.map(item => downloadFile(item));
           let entryStream = yield dm.getCodeDeployEntries(deploymentMap, files, options, logger);
-          let archive = archiver.create("zip", {});
-          archive.on("entry", entry => logger.info(`Appended ${entry.name} to package`));
-          archive.on("finish", () => {
-            logger.info("Package written to S3");
-            logger.info("Packaging complete");
+          let archive = archiver.create('zip', {});
+          archive.on('entry', entry => logger.info(`Appended ${entry.name} to package`));
+          archive.on('finish', () => {
+            logger.info('Package written to S3');
+            logger.info('Packaging complete');
           });
-          archive.on('error', err => {
+          archive.on('error', (err) => {
             throw err;
           });
-          entryStream.on("data", entry => {
+          entryStream.on('data', (entry) => {
             archive.append(entry.content, { name: entry.path });
           });
-          entryStream.once("end", () => archive.finalize());
+          entryStream.once('end', () => archive.finalize());
           return archive;
         } catch (error) {
           let message = failureMessage();
@@ -71,7 +71,7 @@ module.exports = function DmPacker(logger) {
       logger.info(`Downloading package: ${url}`);
       let input = yield simpleHttp.getResponseStream(url);
       let headers = input.headers;
-      if (!(/\/zip$/.test(headers["content-type"]))) {
+      if (!(/\/zip$/.test(headers['content-type']))) {
         throw new Error(`Expected a zip file. ${url}`);
       }
       return input;
@@ -97,10 +97,10 @@ module.exports = function DmPacker(logger) {
         reject(err);
       }
     }).then(
-      rsp => {
+      (rsp) => {
         logger.info(`Package uploaded to: ${rsp.Location}`);
       },
-      err => {
+      (err) => {
         logger.error(`Package upload failed: ${err.message}`);
       });
   };

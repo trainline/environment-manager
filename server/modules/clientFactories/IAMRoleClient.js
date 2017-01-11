@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -11,8 +12,8 @@ module.exports = function IAMRoleClient(accountName) {
   this.get = function (parameters) {
     assertContract(parameters, 'parameters', {
       properties: {
-        roleName: { type: String, empty: false },
-      },
+        roleName: { type: String, empty: false }
+      }
     });
 
     return co(function* () {
@@ -21,8 +22,8 @@ module.exports = function IAMRoleClient(accountName) {
 
         response => Promise.resolve(response.Role),
 
-        error => Promise.reject(error.code === 'NoSuchEntity' 
-          ? new RoleNotFoundError(`Role '${parameters.roleName}' not found.`) 
+        error => Promise.reject(error.code === 'NoSuchEntity'
+          ? new RoleNotFoundError(`Role '${parameters.roleName}' not found.`)
           : new AwsError(error.message))
 
       );

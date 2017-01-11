@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let Expression = require('./awsDynamoExpression');
@@ -6,14 +7,14 @@ let Condition = require('./awsDynamoCondition');
 let RequestHelper = require('./awsDynamoRequestHelper');
 
 function UpdateRequestBuilder(parameters) {
-  var $this = this;
-  var $data = {
+  let $this = this;
+  let $data = {
     table: parameters.table,
     key: parameters.key,
     range: parameters.range,
     version: parameters.version,
     expectedVersion: null,
-    item: null,
+    item: null
   };
 
   this.item = function (item) {
@@ -27,21 +28,21 @@ function UpdateRequestBuilder(parameters) {
   };
 
   this.buildRequest = function () {
-    var request = {
+    let request = {
       TableName: $data.table,
-      Key: {},
+      Key: {}
     };
 
-    var keyName         = $data.key;
-    var rangeName       = $data.range;
-    var versionName     = $data.version;
-    var expectedVersion = $data.expectedVersion;
+    let keyName = $data.key;
+    let rangeName = $data.range;
+    let versionName = $data.version;
+    let expectedVersion = $data.expectedVersion;
 
-    var conditions  = [];
-    var expressions = [];
+    let conditions = [];
+    let expressions = [];
 
     if (keyName) {
-      var keyValue = $data.item[keyName];
+      let keyValue = $data.item[keyName];
       conditions.push(new Condition.Equal(keyName).to(keyValue));
 
       delete $data.item[keyName];
@@ -49,7 +50,7 @@ function UpdateRequestBuilder(parameters) {
     }
 
     if (rangeName) {
-      var rangeValue = $data.item[rangeName];
+      let rangeValue = $data.item[rangeName];
       conditions.push(new Condition.Equal(rangeName).to(rangeValue));
 
       delete $data.item[rangeName];
@@ -57,7 +58,6 @@ function UpdateRequestBuilder(parameters) {
     }
 
     if (versionName) {
-
       expressions.push(new Expression.Add(versionName).to(1));
 
       if (expectedVersion) {
@@ -65,8 +65,10 @@ function UpdateRequestBuilder(parameters) {
       }
     }
 
-    for (var field in $data.item) {
-      expressions.push(new Expression.Set(field).to($data.item[field]));
+    for (let field in $data.item) {
+      if ({}.hasOwnProperty.call($data.item, field)) {
+        expressions.push(new Expression.Set(field).to($data.item[field]));
+      }
     }
 
     RequestHelper.addConditionExpression(request, conditions);
@@ -74,7 +76,6 @@ function UpdateRequestBuilder(parameters) {
 
     return request;
   };
-
-};
+}
 
 module.exports = UpdateRequestBuilder;

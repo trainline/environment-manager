@@ -1,7 +1,8 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-//TODO: This is a temporary replacement for requirer
+// TODO: This is a temporary replacement for requirer
 let routeHandlerDescriptors = [
   require('routes/api/serversRouteHandlerDescriptor'),
   require('routes/api/instancesRouteHandlerDescriptor'),
@@ -14,8 +15,8 @@ let routeHandlerDescriptors = [
   require('routes/api/nginxUpstreamsRouteHandlerDescriptor'),
   require('routes/api/accountsRouteHandlerDescriptor'),
   require('routes/api/auditRouteHandlerDescriptor'),
-  
-  // Config  
+
+  // Config
   require('routes/api/config/slicesRouteHandlerDescriptor'),
   require('routes/api/aws'),
 
@@ -49,12 +50,12 @@ let routeHandlerDescriptors = [
   // Diagnostics
   require('routes/api/diagnostics/swaggerRouteHandlerDescriptor'),
   require('routes/api/diagnostics/statusRouteHandlerDescriptor'),
-  require('routes/api/diagnostics/endpointsRouteHandlerDescriptor'),
+  require('routes/api/diagnostics/endpointsRouteHandlerDescriptor')
 ];
 
 function RouteHandlerDescriptor() {
-  var self = this;
-  var descriptors;
+  let self = this;
+  let descriptors;
 
   self.get = () => {
     if (!descriptors) {
@@ -72,7 +73,7 @@ function RouteHandlerDescriptor() {
   }
 
   function getAllDescriptors() {
-    var result = [];
+    let result = [];
     routeHandlerDescriptors.forEach((descriptor) => {
       if (Array.isArray(descriptor)) {
         descriptor.forEach((childDescriptor) => {

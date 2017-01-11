@@ -1,11 +1,10 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
   function ($q, $http, $rootScope) {
-
     function InternalRemoteResource(params) {
-
       var resourceName = params.name;
       var resourceDescription = params.description;
       var resourceSection = params.section;
@@ -26,14 +25,13 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
 
       function promisify(delegate) {
         return delegate.then(function (response) {
-
           var data = response.data;
 
           if (params.name === 'audit') {
             data = { items: response.data };
             data.headers = response.headers;
-          } 
-  
+          }
+
           return data;
         }, function (error) {
           $rootScope.$broadcast('error', error);
@@ -45,8 +43,8 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
         if (expectedVersion === undefined) return {};
         return {
           headers: {
-            'expected-version': expectedVersion,
-          },
+            'expected-version': expectedVersion
+          }
         };
       }
 
@@ -93,11 +91,9 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
 
         return promisify($http.post(url, params.data));
       };
-
-    };
+    }
 
     function FullAccessRemoteResource(params) {
-
       var _resource = new InternalRemoteResource(params);
 
       this.name = _resource.name;
@@ -110,7 +106,7 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
       this.export = _resource.export;
       this.replace = _resource.replace;
       this.merge = _resource.merge;
-    };
+    }
 
     function ReadOnlyRemoteResource(params) {
       var _resource = new InternalRemoteResource(params);
@@ -119,7 +115,7 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
       this.description = _resource.description;
       this.all = _resource.all;
       this.get = _resource.get;
-    };
+    }
 
     return {
       getFullAccess: function (params) {
@@ -128,6 +124,6 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
 
       getReadOnly: function (params) {
         return new ReadOnlyRemoteResource(params);
-      },
+      }
     };
   });

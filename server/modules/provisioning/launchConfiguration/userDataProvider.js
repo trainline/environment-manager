@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assert = require('assert');
@@ -6,20 +7,20 @@ let namingConventionProvider = require('modules/provisioning/namingConventionPro
 let userDataBuilder = require('modules/provisioning/launchConfiguration/UserDataBuilder');
 
 module.exports = {
-  get: function (configuration, image, sliceName) {
-    assert(configuration, "Expected 'configuration' argument not to be null");
-    assert(image, "Expected 'image' argument not to be null");
+  get(configuration, image, sliceName) {
+    assert(configuration, 'Expected \'configuration\' argument not to be null');
+    assert(image, 'Expected \'image\' argument not to be null');
 
-    var userData = image.platform === 'Windows' ?
+    let userData = image.platform === 'Windows' ?
       getWindowsUserData(configuration, sliceName) :
       getLinuxUserData(configuration, sliceName);
     return userData;
-  },
+  }
 };
 
 function getLinuxUserData(configuration, sliceName) {
-  var roleName = namingConventionProvider.getRoleName(configuration, sliceName);
-  var parameters = {
+  let roleName = namingConventionProvider.getRoleName(configuration, sliceName);
+  let parameters = {
     EnvironmentType: configuration.environmentTypeName,
     Environment: configuration.environmentName,
     SecurityZone: configuration.serverRole.SecurityZone,
@@ -27,15 +28,15 @@ function getLinuxUserData(configuration, sliceName) {
     Role: roleName,
     ContactEmail: configuration.serverRole.ContactEmailTag,
     ProjectCode: configuration.serverRole.ProjectCodeTag,
-    PuppetRole: configuration.serverRole.PuppetRole,
+    PuppetRole: configuration.serverRole.PuppetRole
   };
 
   return userDataBuilder.buildLinuxUserData(parameters);
 }
 
 function getWindowsUserData(configuration, sliceName) {
-  var roleName = namingConventionProvider.getRoleName(configuration, sliceName);
-  var parameters = {
+  let roleName = namingConventionProvider.getRoleName(configuration, sliceName);
+  let parameters = {
     EnvironmentType: configuration.environmentTypeName,
     Environment: configuration.environmentName,
     SecurityZone: configuration.serverRole.SecurityZone,
@@ -44,7 +45,7 @@ function getWindowsUserData(configuration, sliceName) {
     ContactEmail: configuration.serverRole.ContactEmailTag,
     ProjectCode: configuration.serverRole.ProjectCodeTag,
     RemovalDate: configuration.serverRole.RemovalDateTag,
-    PuppetRole: configuration.serverRole.PuppetRole,
+    PuppetRole: configuration.serverRole.PuppetRole
   };
 
   return userDataBuilder.buildWindowsUserData(parameters);

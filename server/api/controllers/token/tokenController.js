@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let noAuthorization = require('modules/authorizers/none');
@@ -13,7 +14,7 @@ function postAuthorization(req, res, next) {
   let credentials = {
     username: body.username,
     password: body.password,
-    scope: 'api',
+    scope: 'api'
   };
 
   let duration = tokenConfiguration.getTokenDuration();

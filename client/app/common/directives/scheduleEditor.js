@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.common')
@@ -9,7 +10,7 @@ angular.module('EnvironmentManager.common')
       showOn: '=',
       showOff: '=',
       showDefault: '=',
-      showSpecific: '=',
+      showSpecific: '='
     },
     templateUrl: '/app/common/directives/scheduleEditor.html',
     controllerAs: 'vm',

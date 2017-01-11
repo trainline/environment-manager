@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -20,11 +21,11 @@ class DeploymentMap {
       name: 'GetDynamoResource',
       resource: 'config/deploymentmaps',
       accountName: masterAccountName,
-      key: deploymentMapName,
+      key: deploymentMapName
     };
 
     return sender
-      .sendQuery({ query: query })
+      .sendQuery({ query })
       .then(
         deploymentMap => new DeploymentMap(deploymentMap.Value),
         error => Promise.reject(error instanceof DynamoItemNotFoundError ?
@@ -34,14 +35,14 @@ class DeploymentMap {
   }
 
   getServerRolesByServiceName(serviceName) {
-    var deploymentTargets = this.DeploymentTarget.filter((target) =>
+    let deploymentTargets = this.DeploymentTarget.filter(target =>
       target.Services.some(service => service.ServiceName === serviceName)
     );
 
     if (deploymentTargets.length === 0) {
       throw new ConfigurationError(
         `Target server role cannot be identified through "${serviceName}" service because there ` +
-        `is no reference to it in the deployment map.`
+        'is no reference to it in the deployment map.'
       );
     }
 

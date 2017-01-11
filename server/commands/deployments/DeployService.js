@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -11,7 +12,7 @@ let UnknownSourcePackageTypeError = require('modules/errors/UnknownSourcePackage
 let sender = require('modules/sender');
 let infrastructureConfigurationProvider = require('modules/provisioning/infrastructureConfigurationProvider');
 let namingConventionProvider = require('modules/provisioning/namingConventionProvider');
-let packagePathProvider = new(require('modules/PackagePathProvider'))();
+let packagePathProvider = new (require('modules/PackagePathProvider'))();
 let deploymentLogger = require('modules/DeploymentLogger');
 
 module.exports = function DeployServiceCommandHandler(command) {
@@ -24,8 +25,8 @@ module.exports = function DeployServiceCommandHandler(command) {
       serviceSlice: { type: String, empty: false },
       packageType: { type: String, empty: false },
       packagePath: { type: String, empty: false },
-      serverRoleName: { type: String, empty: false },
-    },
+      serverRoleName: { type: String, empty: false }
+    }
   });
 
   return co(function* () {
@@ -43,7 +44,6 @@ module.exports = function DeployServiceCommandHandler(command) {
 
 function validateCommandAndCreateDeployment(command) {
   return co(function* () {
-    
     let configuration = yield infrastructureConfigurationProvider.get(
       command.environmentName, command.serviceName, command.serverRoleName
     );
@@ -56,14 +56,14 @@ function validateCommandAndCreateDeployment(command) {
       serviceName: command.serviceName,
       serviceVersion: command.serviceVersion,
       serviceSlice: command.serviceSlice || '',
-      serverRole: roleName, // TODO(filip): rename this to "serverRoleRuntimeName"
+      serverRole: roleName,
       serverRoleName: command.serverRoleName,
       clusterName: configuration.cluster.Name,
       accountName: command.accountName,
-      username: command.username,
+      username: command.username
     });
 
-    yield deploymentContract.validate(configuration);    
+    yield deploymentContract.validate(configuration);
     return deploymentContract;
   });
 }
@@ -79,16 +79,15 @@ function deploy(deployment, destination, sourcePackage, command) {
       deployment.accountName,
       'Waiting for nodes to perform service deployment...'
     );
-
-  }).catch(error => {
+  }).catch((error) => {
     let deploymentStatus = {
       deploymentId: deployment.id,
-      accountName: deployment.accountName,
+      accountName: deployment.accountName
     };
 
     let newStatus = {
       name: Enums.DEPLOYMENT_STATUS.Failed,
-      reason: error.toString(true),
+      reason: error.toString(true)
     };
 
     deploymentLogger.updateStatus(deploymentStatus, newStatus);
@@ -100,7 +99,7 @@ function provideInfrastructure(accountName, deployment, parentCommand) {
   let command = {
     name: 'ProvideInfrastructure',
     accountName,
-    deployment,
+    deployment
   };
 
   return sender.sendCommand({ command, parent: parentCommand });
@@ -111,7 +110,7 @@ function preparePackage(accountName, destination, source, parentCommand) {
     name: 'PreparePackage',
     accountName,
     destination,
-    source,
+    source
   };
 
   return sender.sendCommand({ command, parent: parentCommand });
@@ -122,7 +121,7 @@ function pushDeployment(accountName, deployment, s3Path, parentCommand) {
     name: 'PushDeployment',
     accountName,
     deployment,
-    s3Path,
+    s3Path
   };
 
   return sender.sendCommand({ command, parent: parentCommand });
@@ -133,13 +132,13 @@ function getSourcePackageByCommand(command) {
     case Enums.SourcePackageType.CodeDeployRevision:
       return {
         type: Enums.SourcePackageType.CodeDeployRevision,
-        url: command.packagePath,
+        url: command.packagePath
       };
     case Enums.SourcePackageType.DeploymentMap:
       return {
         type: Enums.SourcePackageType.DeploymentMap,
         id: command.packagePath,
-        version: command.serviceVersion,
+        version: command.serviceVersion
       };
     default:
       throw new UnknownSourcePackageTypeError(`Unknown "${command.sourcePackageType}" source package type.`);

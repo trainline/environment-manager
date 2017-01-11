@@ -1,4 +1,5 @@
-﻿/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.configuration', [
@@ -7,7 +8,7 @@ angular.module('EnvironmentManager.configuration', [
   'ui.bootstrap',
   'ui.tree',
   'ngFileSaver',
-  'EnvironmentManager.common',
+  'EnvironmentManager.common'
 ]);
 
 angular.module('EnvironmentManager.configuration').config(function ($routeProvider) {
@@ -16,101 +17,101 @@ angular.module('EnvironmentManager.configuration').config(function ($routeProvid
       templateUrl: '/app/configuration/accounts/accounts.html',
       controller: 'AccountsController as vm',
       controllerAs: 'accounts',
-      menusection: 'Accounts',
+      menusection: 'Accounts'
     })
     .when('/config/accounts/:accountName', {
       templateUrl: '/app/configuration/accounts/account.html',
       controller: 'AccountController as vm',
       controllerAs: 'account',
-      menusection: 'Accounts',
+      menusection: 'Accounts'
     })
     .when('/config/environmenttypes/', {
       templateUrl: '/app/configuration/environment-types/environment-types.html',
       controller: 'EnvironmentTypesController as vm',
-      menusection: 'EnvironmentTypes',
+      menusection: 'EnvironmentTypes'
     })
     .when('/config/environmenttypes/:environmenttype/', {
       templateUrl: '/app/configuration/environment-types/environment-type.html',
       controller: 'EnvironmentTypeController as vm',
-      menusection: 'EnvironmentTypes',
+      menusection: 'EnvironmentTypes'
     })
     .when('/config/services/', {
       templateUrl: '/app/configuration/em-services/services.html',
       controller: 'ServicesController as vm',
       reloadOnSearch: false,
-      menusection: 'Services',
+      menusection: 'Services'
     })
     .when('/config/services/:service/', {
       templateUrl: '/app/configuration/em-services/service.html',
       controller: 'ServiceController as vm',
-      menusection: 'Services',
+      menusection: 'Services'
     })
     .when('/config/deploymentmaps/', {
       templateUrl: '/app/configuration/deployment-maps/deployment-maps.html',
       controller: 'DeploymentMapsController as vm',
-      menusection: 'DeploymentMaps',
+      menusection: 'DeploymentMaps'
     })
     .when('/config/deploymentmaps/:deploymentmap/', {
       templateUrl: '/app/configuration/deployment-maps/deployment-map.html',
       controller: 'DeploymentMapController as vm',
       reloadOnSearch: false,
-      menusection: 'DeploymentMaps',
+      menusection: 'DeploymentMaps'
     })
     .when('/config/loadbalancers/', {
       templateUrl: '/app/configuration/load-balancers/loadbalancers.html',
       controller: 'LBsController as vm',
       reloadOnSearch: false,
-      menusection: 'LBs',
+      menusection: 'LBs'
     })
     .when('/config/loadbalancer/', {
       templateUrl: '/app/configuration/load-balancers/loadbalancer.html',
       controller: 'LBController as vm',
-      menusection: 'LBs',
+      menusection: 'LBs'
     })
     .when('/config/upstreams/', {
       templateUrl: '/app/configuration/lbupstreams/lbupstreams.html',
       controller: 'LBUpstreamsController as vm',
       reloadOnSearch: false,
-      menusection: 'LBUpstream',
+      menusection: 'LBUpstream'
     })
     .when('/config/upstream/', {
       templateUrl: '/app/configuration/lbupstreams/lbupstream.html',
       controller: 'LBUpstreamController as vm',
-      menusection: 'LBUpstream',
+      menusection: 'LBUpstream'
     })
     .when('/config/import/', {
       templateUrl: '/app/configuration/import/import.html',
       controller: 'ImportController as vm',
-      menusection: 'Import',
+      menusection: 'Import'
     })
     .when('/config/export/', {
       templateUrl: '/app/configuration/export/export.html',
       controller: 'ExportController as vm',
-      menusection: 'Export',
+      menusection: 'Export'
     })
     .when('/config/audit/', {
       templateUrl: '/app/configuration/audit/audit.html',
       controller: 'AuditController as vm',
-      menusection: 'Audit',
+      menusection: 'Audit'
     })
     .when('/config/permissions/', {
       templateUrl: '/app/configuration/permissions/permissions.html',
       controller: 'PermissionsController as vm',
-      menusection: 'Permissions',
+      menusection: 'Permissions'
     })
     .when('/config/permissions/:member/', {
       templateUrl: '/app/configuration/permissions/permission.html',
       controller: 'PermissionController as vm',
-      menusection: 'Permissions',
+      menusection: 'Permissions'
     })
     .when('/config/clusters/', {
       templateUrl: '/app/configuration/clusters/clusters.html',
       controller: 'ClustersController as vm',
-      menusection: 'Clusters',
+      menusection: 'Clusters'
     })
     .when('/config/clusters/:cluster/', {
       templateUrl: '/app/configuration/clusters/cluster.html',
       controller: 'ClusterController as vm',
-      menusection: 'Clusters',
+      menusection: 'Clusters'
     });
 });

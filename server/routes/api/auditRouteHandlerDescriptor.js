@@ -19,7 +19,7 @@ function createAuditLogQuery(minDate, maxDate, exclusiveStartKey, perPage, filte
   let rq = {
     limit: perPage || 10,
     maxDate: maxDate.toString(),
-    minDate: minDate.toString(),
+    minDate: minDate.toString()
   };
   if (exclusiveStartKey) {
     rq.exclusiveStartKey = exclusiveStartKey;
@@ -43,7 +43,7 @@ function createFilter(query) {
   let exprs = {
     'Entity.Type': val => ['=', ['attr', 'Entity', 'Type'], ['val', val]],
     'ChangeType': val => ['=', ['attr', 'ChangeType'], ['val', val]],
-    'Entity.Key': val => ['=', ['attr', 'Entity', 'Key'], ['val', val]],
+    'Entity.Key': val => ['=', ['attr', 'Entity', 'Key'], ['val', val]]
   };
 
   let filter = fp.flow(
@@ -93,6 +93,7 @@ module.exports = [
       let minDate = paramOrDefault('minDate', parseDate, now);
       let maxDate = paramOrDefault('maxDate', parseDate, now);
       let exclusiveStartKey = paramOrDefault('exclusiveStartKey', base64.decode, undefined);
+
       function sendResponse(auditLog) {
         logger.debug('Audit History: Constructing navigation links');
         query.minDate = minDate.toString();
@@ -109,5 +110,5 @@ module.exports = [
       let auditLogQuery = createAuditLogQuery(minDate, maxDate, exclusiveStartKey, query.per_page, filter);
       return auditLogReader.getLogs(auditLogQuery)
         .then(sendResponse).catch(next);
-    }),
+    })
 ];

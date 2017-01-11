@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let send = require('modules/helpers/send');
@@ -10,12 +11,12 @@ module.exports = [
   .withDocs({
     description: 'Instance',
     verb: 'crossScan',
-    tags: ['Instances'],
+    tags: ['Instances']
   })
   .withPriority(10).do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanCrossAccountInstances',
-      filter: utilities.extractQuery(request),
+      filter: utilities.extractQuery(request)
     };
 
     send.query(query, request, response);
@@ -25,12 +26,12 @@ module.exports = [
   .withDocs({
     description: 'Instance',
     verb: 'crossScan',
-    tags: ['Instances'],
+    tags: ['Instances']
   })
   .withPriority(10).do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanCrossAccountInstances',
-      filter: utilities.extractQuery(request),
+      filter: utilities.extractQuery(request)
     };
 
     query.filter = query.filter || {};
@@ -44,13 +45,13 @@ module.exports = [
     description: 'Instance',
     verb: 'scan',
     perAccount: true,
-    tags: ['Instances'],
+    tags: ['Instances']
   })
   .do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanInstances',
       accountName: request.params.account,
-      filter: utilities.extractQuery(request),
+      filter: utilities.extractQuery(request)
     };
 
     send.query(query, request, response);
@@ -62,10 +63,10 @@ module.exports = [
     disableDocs: true
   })
   .do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanInstancesScheduleStatus',
       accountName: request.params.account,
-      filter: utilities.extractQuery(request),
+      filter: utilities.extractQuery(request)
     };
 
     send.query(query, request, response);
@@ -77,7 +78,7 @@ module.exports = [
     disableDocs: true
   })
   .do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanInstancesScheduleStatus',
       accountName: request.params.account,
       filter: utilities.extractQuery(request),
@@ -92,18 +93,18 @@ module.exports = [
     description: 'Instance',
     verb: 'scan',
     perAccount: true,
-    tags: ['Instances'],
+    tags: ['Instances']
   })
   .do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanInstances',
       accountName: request.params.account,
-      filter: utilities.extractQuery(request),
+      filter: utilities.extractQuery(request)
     };
 
     query.filter = query.filter || {};
     query.filter['tag:Environment'] = request.params.environment;
 
     send.query(query, request, response);
-  }),
+  })
 ];

@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('DeployModalController',
@@ -18,7 +19,7 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
       Mode: '',
       Version: '',
       PackagePath: '',
-      Slice: 'blue',
+      Slice: 'blue'
     };
 
     function init() {
@@ -54,7 +55,6 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
 
     $scope.$watch('vm.deploymentSettings.SelectedService', function (newVal, oldVal) {
       if (newVal) {
-
         var env = vm.deploymentSettings.Environment;
 
         vm.selectedServiceActiveSliceMessage = 'Loading...';
@@ -63,11 +63,11 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
           var slices = response.data;
           if (slices && slices.length > 0) {
             vm.selectedServiceActiveSliceMessage = null;
-            vm.selectedServiceActiveSlices = slices.map(function(slice){
+            vm.selectedServiceActiveSlices = slices.map(function (slice) {
               return 'Upstream: ' + slice.UpstreamName + ' Slice: ' + slice.Name + ' (' + slice.State + ')';
             });
           }
-        }).catch(function(err){
+        }).catch(function (err) {
           vm.selectedServiceActiveSliceMessage = (err.status === 404) ? 'None' : 'Unknown';
         });
 
@@ -77,7 +77,6 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
     });
 
     vm.ok = function () {
-
       var service = vm.deploymentSettings.SelectedService;
       var version = vm.deploymentSettings.Version;
       var env = vm.deploymentSettings.Environment;
@@ -88,7 +87,7 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
         title: 'Deploy Service',
         message: 'Are you sure you want to deploy ' + service + ' version ' + version + ' to ' + env + '?',
         action: 'Deploy',
-        severity: 'Warning',
+        severity: 'Warning'
       };
       modal.confirmation(modalParameters).then(function () {
         $http({
@@ -100,7 +99,7 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
             service: service,
             mode: vm.deploymentSettings.Mode,
             slice: vm.deploymentSettings.Mode === 'bg' ? vm.deploymentSettings.Slice : undefined,
-            packageLocation: vm.deploymentSettings.PackagePath,
+            packageLocation: vm.deploymentSettings.PackagePath
           }
         }).then(function (response) {
           var data = response.data;
@@ -112,8 +111,8 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
             resolve: {
               deployment: function () {
                 return Deployment.getById(data.accountName, data.id);
-              },
-            },
+              }
+            }
           });
           $uibModalInstance.close();
         });

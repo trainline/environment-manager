@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash/fp');
@@ -12,7 +13,7 @@ module.exports = {
   getRootDevice,
   summaryOf,
   compare,
-  rank,
+  rank
 };
 
 function isCompatibleImage(amiName) {
@@ -21,9 +22,9 @@ function isCompatibleImage(amiName) {
 }
 
 function getAmiType(name) {
-  var amiType = name;
+  let amiType = name;
   if (name && isCompatibleImage(name)) {
-    var pos = name.lastIndexOf('-');
+    let pos = name.lastIndexOf('-');
     if (pos) amiType = name.substr(0, pos);
   }
 
@@ -31,9 +32,9 @@ function getAmiType(name) {
 }
 
 function getAmiVersion(name) {
-  var amiVersion = '';
+  let amiVersion = '';
   if (name && isCompatibleImage(name)) {
-    var pos = name.lastIndexOf('-');
+    let pos = name.lastIndexOf('-');
     if (pos) amiVersion = name.substr(pos + 1);
   }
 
@@ -66,7 +67,7 @@ function summaryOf(ec2Image) {
     IsCompatibleImage: isCompatibleImage(name),
     IsStable: isStable(ec2Image),
     Encrypted: _.get('Ebs.Encrypted')(rootDevice),
-    RootVolumeSize: _.get('Ebs.VolumeSize')(rootDevice),
+    RootVolumeSize: _.get('Ebs.VolumeSize')(rootDevice)
   };
 
   return Object.assign(tags, summary);
@@ -76,7 +77,7 @@ function compare(summaryImageX, summaryImageY) {
   if (summaryImageX && summaryImageY) {
     let x = comparable(summaryImageX);
     let y = comparable(summaryImageY);
-    return 2 * Math.sign(x.amiType.localeCompare(y.amiType)) + Math.sign(semver.rcompare(x.amiVersion, y.amiVersion));
+    return (2 * Math.sign(x.amiType.localeCompare(y.amiType))) + Math.sign(semver.rcompare(x.amiVersion, y.amiVersion));
   } else if (summaryImageX) {
     return 1;
   } else if (summaryImageY) {
@@ -108,12 +109,12 @@ function rank(summaries) {
 function comparable(summary) {
   return {
     amiType: summary.AmiType || '',
-    amiVersion: semver.valid(summary.AmiVersion) || '0.0.0',
+    amiVersion: semver.valid(summary.AmiVersion) || '0.0.0'
   };
 }
 
 function isStable(ec2Image) {
   let hasStableTag = ec2Image.Tags && ec2Image.Tags.some(t => t.Key.toLowerCase() === 'stable' && t.Value !== '');
   let hasStableInDescription = ec2Image.Description && ec2Image.Description.toLowerCase() === 'stable';
-  return (hasStableTag || hasStableInDescription) ? true : false;
+  return !!((hasStableTag || hasStableInDescription));
 }

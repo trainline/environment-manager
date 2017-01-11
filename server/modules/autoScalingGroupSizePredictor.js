@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let InvalidOperationError = require('modules/errors/InvalidOperationError.class');
@@ -33,7 +34,7 @@ function predictSizeAfterEnteringInstancesToStandby(autoScalingGroup, instancesI
     if (STATES_AS_IN_SERVICE.indexOf(instance.LifecycleState) >= 0) instancesInService++;
 
     // Exclude all instances not specified by the command
-    if (instancesIds.indexOf(instance.InstanceId) < 0) continue;
+    if (instancesIds.indexOf(instance.InstanceId) < 0) continue; // eslint-disable-line no-continue
 
     if (instance.LifecycleState !== 'InService') {
       return Promise.reject(new InvalidOperationError(
@@ -64,7 +65,7 @@ function predictSizeAfterExitingInstancesFromStandby(autoScalingGroup, instances
     if (STATES_AS_IN_SERVICE.indexOf(instance.LifecycleState) >= 0) instancesInService++;
 
     // Exclude all instances not specified by the command
-    if (instancesIds.indexOf(instance.InstanceId) < 0) continue;
+    if (instancesIds.indexOf(instance.InstanceId) < 0) continue; // eslint-disable-line no-continue
 
     if (instance.LifecycleState !== 'Standby') {
       return Promise.reject(new InvalidOperationError(
@@ -80,5 +81,5 @@ function predictSizeAfterExitingInstancesFromStandby(autoScalingGroup, instances
 
 module.exports = {
   predictSizeAfterEnteringInstancesToStandby,
-  predictSizeAfterExitingInstancesFromStandby,
+  predictSizeAfterExitingInstancesFromStandby
 };

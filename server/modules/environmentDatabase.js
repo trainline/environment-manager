@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let ConfigurationError = require('modules/errors/ConfigurationError.class');
@@ -13,11 +14,11 @@ function getEnvironmentByName(environmentName) {
     name: 'GetDynamoResource',
     resource: 'config/environments',
     accountName: masterAccountName,
-    key: environmentName,
+    key: environmentName
   };
 
   return sender
-    .sendQuery({ query: query })
+    .sendQuery({ query })
     .then(
       environment => Promise.resolve(environment.Value),
       error => Promise.reject(error instanceof DynamoItemNotFoundError ?
@@ -33,11 +34,11 @@ function getEnvironmentTypeByName(environmentTypeName) {
     name: 'GetDynamoResource',
     resource: 'config/environmenttypes',
     accountName: masterAccountName,
-    key: environmentTypeName,
+    key: environmentTypeName
   };
 
   return sender
-    .sendQuery({ query: query })
+    .sendQuery({ query })
     .then(
       environmentType => Promise.resolve(environmentType.Value),
       error => Promise.reject(error instanceof DynamoItemNotFoundError ?
@@ -48,5 +49,5 @@ function getEnvironmentTypeByName(environmentTypeName) {
 
 module.exports = {
   getEnvironmentByName,
-  getEnvironmentTypeByName,
+  getEnvironmentTypeByName
 };

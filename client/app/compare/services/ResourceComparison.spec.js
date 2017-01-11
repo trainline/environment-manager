@@ -1,15 +1,15 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 describe('comparing resources', function () {
-
   var primaryEnvironmentItem = { key: 'item1', EnvironmentName: 'env1', Value: { prop1: 'x' } };
 
   var items = [
     primaryEnvironmentItem,
     { key: 'item1', EnvironmentName: 'env2', Value: { prop1: 'x' } },
     { key: 'item1', EnvironmentName: 'env3', Value: { prop1: 'y' } },
-    { key: 'item2', EnvironmentName: 'env4', Value: { prop1: 'y' } },
+    { key: 'item2', EnvironmentName: 'env4', Value: { prop1: 'y' } }
   ];
 
   var comparison;
@@ -83,5 +83,4 @@ describe('comparing resources', function () {
     expect(difference.description).toBe('{ ... }');
     expect(difference.class).toBe('different showable');
   });
-
 });

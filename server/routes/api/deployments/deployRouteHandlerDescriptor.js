@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let validUrl = require('valid-url');
@@ -23,12 +24,11 @@ module.exports = route.post('/:account/environments/:environment/services/:servi
       { in: ['query', 'body'], type: 'string', required: true, name: 'Mode', description: 'Todo: Describe "Mode" parameter' },
       { in: ['query', 'body'], type: 'string', required: true, name: 'Slice', description: 'Todo: Describe "Slice" parameter' },
       { in: ['query', 'body'], type: 'string', required: true, name: 'PackagePath', description: 'Todo: Describe "PackagePath" parameter' },
-      { in: ['query'], type: 'string', required: false, name: 'server_role', description: 'Target server role for service deployment, if multiple are possible' },
-    ],
+      { in: ['query'], type: 'string', required: false, name: 'server_role', description: 'Target server role for service deployment, if multiple are possible' }
+    ]
   })
   .withAuthorizer(deployAuthorizer)
   .do((request, response) => {
-
     let requestData = new RequestData(request);
 
     let deploymentMode = requestData.get('Mode', 'overwrite').toLowerCase();
@@ -49,15 +49,15 @@ module.exports = route.post('/:account/environments/:environment/services/:servi
 
     if (!packagePath) {
       response.status(400);
-      response.send(`Missing "packagePath" argument.`);
+      response.send('Missing "packagePath" argument.');
       return;
     }
 
-    var packageType = validUrl.isUri(packagePath) ?
+    let packageType = validUrl.isUri(packagePath) ?
       Enums.SourcePackageType.CodeDeployRevision :
       Enums.SourcePackageType.DeploymentMap;
 
-    var command = {
+    let command = {
       name: 'DeployService',
       accountName: request.params.account,
       environmentName: request.params.environment,
@@ -66,22 +66,21 @@ module.exports = route.post('/:account/environments/:environment/services/:servi
       serviceSlice,
       packageType,
       packagePath,
-      serverRoleName: request.serverRoleName,
+      serverRoleName: request.serverRoleName
     };
 
-    //Location
-    var callback = adapt.callbackToExpress(request, response);
+    // Location
+    let callback = adapt.callbackToExpress(request, response);
 
-    sender.sendCommand({ command: command, user: request.user }).then(
-      deployment => {
+    sender.sendCommand({ command, user: request.user }).then(
+      (deployment) => {
         response.status(201);
         response.location(`/api/${deployment.accountName}/deployments/history/${deployment.id}`);
         callback(null, deployment);
       },
 
-      error => {
+      (error) => {
         callback(error);
       }
     );
-
   });

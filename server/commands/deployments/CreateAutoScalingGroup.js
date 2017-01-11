@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assert = require('assert');
@@ -22,7 +23,7 @@ module.exports = function CreateAutoScalingGroupCommandHandler(command) {
     logger.info(`Creating [${autoScalingGroupName}] AutoScalingGroup...`);
 
     let autoScalingGroupClient = yield autoScalingGroupClientFactory.create({
-      accountName: accountName,
+      accountName
     });
 
     let request = getCreateAutoScalingGroupRequest(template);
@@ -33,7 +34,7 @@ module.exports = function CreateAutoScalingGroupCommandHandler(command) {
 
     yield [
       attachNotificationsByTemplate(logger, autoScalingGroupClient, template),
-      attachLifecycleHooksByTemplate(logger, autoScalingGroupClient, template),
+      attachLifecycleHooksByTemplate(logger, autoScalingGroupClient, template)
     ];
 
     logger.info(`AutoScalingGroup [${autoScalingGroupName}] has been configured`);
@@ -102,7 +103,7 @@ function getCreateAutoScalingGroupRequest(template) {
     MinSize: template.size.min,
     VPCZoneIdentifier: template.subnets.join(','),
     DesiredCapacity: template.size.desired,
-    Tags: getAutoScalingGroupTags(template.tags),
+    Tags: getAutoScalingGroupTags(template.tags)
   };
 
   return request;
@@ -111,21 +112,23 @@ function getCreateAutoScalingGroupRequest(template) {
 function getAutoScalingGroupTags(tags) {
   let autoScalingGroupTags = [];
   for (let tag in tags) {
-    autoScalingGroupTags.push({
-      Key: tag,
-      Value: tags[tag],
-    });
+    if ({}.hasOwnProperty.call(tags, tag)) {
+      autoScalingGroupTags.push({
+        Key: tag,
+        Value: tags[tag]
+      });
+    }
   }
 
   return autoScalingGroupTags;
 }
 
 function getAttachNotificationsRequests(template) {
-  let requests = template.topicNotificationMapping.map(mapping => {
+  let requests = template.topicNotificationMapping.map((mapping) => {
     let request = {
       AutoScalingGroupName: template.autoScalingGroupName,
       TopicARN: mapping.topicArn,
-      NotificationTypes: mapping.notificationTypes,
+      NotificationTypes: mapping.notificationTypes
     };
 
     return request;
@@ -135,7 +138,7 @@ function getAttachNotificationsRequests(template) {
 }
 
 function getAttachLifecycleHookRequests(template) {
-  let requests = template.lifecycleHooks.map(hook => {
+  let requests = template.lifecycleHooks.map((hook) => {
     let request = {
       AutoScalingGroupName: template.autoScalingGroupName,
       LifecycleHookName: hook.name,
@@ -143,7 +146,7 @@ function getAttachLifecycleHookRequests(template) {
       RoleARN: hook.roleArn,
       NotificationTargetARN: hook.topicArn,
       HeartbeatTimeout: (ms(hook.heartbeatTimeout) / 1000),
-      DefaultResult: hook.defaultResult,
+      DefaultResult: hook.defaultResult
     };
 
     return request;

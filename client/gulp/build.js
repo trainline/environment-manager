@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 var path = require('path');
@@ -85,7 +86,7 @@ gulp.task('other', function () {
     './styles/**/*.css',
     './app/**/*.html',
     'login.html'
-  ], {base: '.'})
+  ], { base: '.' })
   .pipe(fileFilter)
   .pipe(gulp.dest(output));
 });

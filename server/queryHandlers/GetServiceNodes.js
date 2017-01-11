@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -8,7 +9,7 @@ let sender = require('modules/sender');
 
 function tagsToMap(tags) {
   let map = {};
-  tags.forEach(tag => {
+  tags.forEach((tag) => {
     let parts = tag.split(':');
     map[parts[0]] = parts[1];
   });
@@ -24,15 +25,15 @@ function* GetServiceNodesQueryHandler(query) {
       name: 'GetService',
       accountName,
       environment: query.environment,
-      serviceName: query.serviceName,
-    },
-  }).then(nodes => {
-    return nodes.map(node => {
+      serviceName: query.serviceName
+    }
+  }).then(nodes => (
+    nodes.map((node) => {
       let result = _.clone(node);
       result.ServiceTags = tagsToMap(node.ServiceTags);
       return result;
-    });
-  });
+    })
+  ));
 }
 
 module.exports = co.wrap(GetServiceNodesQueryHandler);

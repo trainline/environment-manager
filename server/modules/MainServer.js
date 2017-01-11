@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let express = require('express');
@@ -11,7 +12,7 @@ let config = require('config/');
 let compression = require('compression');
 let expressWinston = require('express-winston');
 
-let serverFactoryConfiguration = new(require('modules/serverFactoryConfiguration'))();
+let serverFactoryConfiguration = new (require('modules/serverFactoryConfiguration'))();
 let tokenAuthentication = require('modules/authentications/tokenAuthentication');
 let cookieAuthentication = require('modules/authentications/cookieAuthentication');
 let authentication = require('modules/authentication');
@@ -21,9 +22,8 @@ let apiV1 = require('api/v1');
 const APP_VERSION = require('config').get('APP_VERSION');
 
 module.exports = function MainServer() {
-
   let httpServerFactory = require('modules/http-server-factory');
-  let _server;
+  let serverInstance;
 
   this.start = function () {
     return createExpressApp()
@@ -32,18 +32,17 @@ module.exports = function MainServer() {
   };
 
   this.stop = function () {
-    _server.close();
+    serverInstance.close();
   };
 
   function createExpressApp() {
     return new Promise((resolve) => {
-
       let routeInstaller = require('modules/routeInstaller');
       let routes = {
         home: require('routes/home'),
         form: require('routes/form'),
         initialData: require('routes/initialData'),
-        deploymentNodeLogs: require('routes/deploymentNodeLogs'),
+        deploymentNodeLogs: require('routes/deploymentNodeLogs')
       };
 
       // start express
@@ -93,14 +92,14 @@ module.exports = function MainServer() {
 
       resolve(app);
     });
-  };
+  }
 
   function createServer(app) {
     let parameters = {
-      port: serverFactoryConfiguration.getPort(),
+      port: serverFactoryConfiguration.getPort()
     };
 
-    return httpServerFactory.create(app, parameters).then(server => {
+    return httpServerFactory.create(app, parameters).then((server) => {
       logger.info(`Main server created using ${httpServerFactory.constructor.name} service.`);
       logger.info(`Main server listening at port ${parameters.port}.`);
       return Promise.resolve(server);
@@ -108,7 +107,7 @@ module.exports = function MainServer() {
   }
 
   function initializeServer(server) {
-    _server = server;
+    serverInstance = server;
     deploymentMonitorScheduler.start();
     logger.info(`EnvironmentManager v.${APP_VERSION} started!`);
   }

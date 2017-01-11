@@ -1,22 +1,21 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
 let awsAccounts = require('modules/awsAccounts');
 
 function AccountResource(accounts) {
-  var _data = {
-    accounts: accounts.map(account => account.AccountName),
+  let data = {
+    accounts: accounts.map(account => account.AccountName)
   };
 
-  this.all = () => Promise.resolve(_data.accounts);
+  this.all = () => Promise.resolve(data.accounts);
 }
 
 function* create(resourceDescriptor, parameters) {
   let accounts = yield awsAccounts.all();
-  let resource = new AccountResource(accounts);
-
-  return resource;
+  return new AccountResource(accounts);
 }
 
 function canCreate(resourceDescriptor) {
@@ -24,6 +23,6 @@ function canCreate(resourceDescriptor) {
 }
 
 module.exports = {
-  canCreate: canCreate,
-  create: co.wrap(create),
+  canCreate,
+  create: co.wrap(create)
 };

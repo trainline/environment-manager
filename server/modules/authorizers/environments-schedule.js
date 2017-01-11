@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -15,10 +16,10 @@ function getCurrentEnvironment(name, user) {
     name: 'GetDynamoResource',
     key: name,
     resource: 'config/environments',
-    accountName: masterAccountName,
+    accountName: masterAccountName
   };
 
-  return sender.sendQuery({ query: query, user: user });
+  return sender.sendQuery({ query, user });
 }
 
 function* getRules(request) {

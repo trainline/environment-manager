@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -29,7 +30,7 @@ function getControllerDirectories(root) {
       return {
         fullname,
         isDirectory: stat.isDirectory(),
-        isFile: stat.isFile(),
+        isFile: stat.isFile()
       };
     });
 
@@ -58,11 +59,15 @@ function getControllerDirectories(root) {
 }
 
 let swaggerOptions = {
-  controllers: getControllerDirectories('api/controllers'),
+  controllers: getControllerDirectories('api/controllers')
 };
 
 function authorize(req, res, next) {
-  if (req.swagger === undefined) return next();
+  if (req.swagger === undefined) {
+    next();
+    return;
+  }
+
   let authorizerName = req.swagger.operation['x-authorizer'] || 'simple';
   let authorizer = require(`modules/authorizers/${authorizerName}`);
 
@@ -80,7 +85,7 @@ function authorize(req, res, next) {
 }
 
 function setup(app) {
-  swaggerTools.initializeMiddleware(apiSpec, function (middleware) {
+  swaggerTools.initializeMiddleware(apiSpec, (middleware) => {
     app.use(middleware.swaggerMetadata());
     app.use(middleware.swaggerValidator());
     app.use(API_BASE_PATH, authorize);

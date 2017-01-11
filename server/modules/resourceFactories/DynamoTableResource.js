@@ -1,4 +1,10 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* eslint no-underscore-dangle: 0 */
+/**
+ * TODO: This module uses _underscoredNames in many places
+ * Disabling eslint of this until it can be properly refactored
+ */
+
 'use strict';
 
 let util = require('util');
@@ -15,16 +21,20 @@ let logger = require('modules/logger');
 
 function removeEmptyStrings(data) {
   for (let property in data) {
-    let value = data[property];
-    let type = typeof value;
+    if ({}.hasOwnProperty.call(data, property)) {
+      let value = data[property];
+      let type = typeof value;
 
-    switch (type) {
-      case 'string':
-        if (value === '') delete data[property];
-        break;
-      case 'object':
-        removeEmptyStrings(value);
-        break;
+      switch (type) {
+        case 'string':
+          if (value === '') delete data[property];
+          break;
+        case 'object':
+          removeEmptyStrings(value);
+          break;
+        default:
+
+      }
     }
   }
 }
@@ -43,7 +53,7 @@ class DynamoTableResource {
       key: this._keyName,
       range: this._rangeName,
       version: config.auditingEnabled ? 'Audit.Version' : null,
-      dateField: config.dateField,
+      dateField: config.dateField
     });
   }
 
@@ -57,7 +67,7 @@ class DynamoTableResource {
 
   isAuditingEnabled() {
     return this._auditingEnabled;
-  } 
+  }
 
   _buildPrimaryKey(key, range) {
     let primaryKey = {};
@@ -72,10 +82,10 @@ class DynamoTableResource {
     let self = this;
     let request = {
       TableName: this._tableName,
-      Key: this._buildPrimaryKey(params.key, params.range),
+      Key: this._buildPrimaryKey(params.key, params.range)
     };
 
-    return this.client.get(request).promise().then(data => {
+    return this.client.get(request).promise().then((data) => {
       if (!data.Item) {
         let message = !params.range ?
           `No ${self._resourceName} found for ${self._keyName} ${params.key}.` :
@@ -86,7 +96,7 @@ class DynamoTableResource {
         let result = arrangeItem(data.Item, params.formatting);
         return result;
       }
-    }).catch(error => {
+    }).catch((error) => {
       throw standardifyError(error, request, params.suppressError);
     });
   }
@@ -97,18 +107,18 @@ class DynamoTableResource {
       TableName: this._tableName,
       KeyConditionExpression: `${this._keyName} = :key`,
       ExpressionAttributeValues: {
-        ":key": params.key
+        ':key': params.key
       }
     };
 
-    return this.client.query(request).promise().then(data => {
-      if (!_.isArray(data.Items) || data.Items.length === 0) {
+    return this.client.query(request).promise().then((data) => {
+      if (!Array.isArray(data.Items) || data.Items.length === 0) {
         let message = `No ${self._resourceName} items found for ${self._keyName} ${params.key}.`;
         throw new DynamoItemNotFoundError(message);
       } else {
         return data.Items;
       }
-    }).catch(error => {
+    }).catch((error) => {
       throw standardifyError(error, request, params.suppressError);
     });
   }
@@ -119,14 +129,14 @@ class DynamoTableResource {
     let items = [];
 
     function scan() {
-      return self.client.scan(request).promise().then(data => {
+      return self.client.scan(request).promise().then((data) => {
         items = items.concat(data.Items.map(item => arrangeItem(item, params.formatting)));
         if (request.Limit || !data.LastEvaluatedKey) return items;
 
         // Scan from next index
         request.ExclusiveStartKey = data.LastEvaluatedKey;
         return scan();
-      }).catch(error => {
+      }).catch((error) => {
         throw standardifyError(error, request, params.suppressError);
       });
     }
@@ -137,8 +147,8 @@ class DynamoTableResource {
   put(params) {
     let self = this;
     let item = params.item;
-    let key = (!!this._keyName) ? item[this._keyName] : null;
-    let range = (!!this._rangeName) ? item[this._rangeName] : null;
+    let key = (this._keyName) ? item[this._keyName] : null;
+    let range = (this._rangeName) ? item[this._rangeName] : null;
     let expectedVersion = params.expectedVersion;
 
     removeEmptyStrings(item);
@@ -153,10 +163,10 @@ class DynamoTableResource {
     function investigateOnErrorOccurred() {
       let request = {
         TableName: self._tableName,
-        Key: self._buildPrimaryKey(key, range),
+        Key: self._buildPrimaryKey(key, range)
       };
 
-      return self.client.get(request).promise().then(data => {
+      return self.client.get(request).promise().then((data) => {
         if (!data.Item) {
           let message = !params.range ?
             `No ${self._resourceName} found for ${self._keyName} ${key}.` :
@@ -173,48 +183,47 @@ class DynamoTableResource {
           let message = 'Item update has failed even if an item with the same key has been found.';
           throw new DynamoConditionCheckError(message);
         }
-      }).catch(error => {
+      }).catch((error) => {
         // Something went wrong
         throw standardifyError(error, request);
       });
     }
 
-    let request = !!this._auditingEnabled ?
+    let request = this._auditingEnabled ?
       this._builder.update().item(item).atVersion(expectedVersion).buildRequest() :
       this._builder.update().item(item).buildRequest();
 
-    return this.client.update(request).promise().then(function (data) {
+    return this.client.update(request).promise().then(data =>
       // Existing item succesfully updated
-      return data.Attributes;
-    }).catch(error => {
+       data.Attributes).catch((error) => {
       // Something went wrong...
-      let managedError = standardifyError(error, request);
+         let managedError = standardifyError(error, request);
 
       // I cannot furhter investigate on this error
-      if (managedError.name !== 'DynamoConditionCheckError') {
-        throw standardifyError(error, request);
-      }
+         if (managedError.name !== 'DynamoConditionCheckError') {
+           throw standardifyError(error, request);
+         }
 
       // I can further investigate...
-      return investigateOnErrorOccurred();
-    });
+         return investigateOnErrorOccurred();
+       });
   }
 
   post(params) {
     let self = this;
     let item = params.item;
-    let key = (!!this._keyName) ? item[this._keyName] : null;
-    let range = (!!this._rangeName) ? item[this._rangeName] : null;
+    let key = (this._keyName) ? item[this._keyName] : null;
+    let range = (this._rangeName) ? item[this._rangeName] : null;
 
     removeEmptyStrings(item);
 
     function investigateOnErrorOccurred() {
       let request = {
         TableName: self._tableName,
-        Key: self._buildPrimaryKey(key, range),
+        Key: self._buildPrimaryKey(key, range)
       };
 
-      return self.client.get(request).promise().then(data => {
+      return self.client.get(request).promise().then((data) => {
         if (data.Item) { // Found an item with the same key
           let message = 'Item cannot be created as an item with the same key already exists.';
           throw new DynamoItemAlreadyExistsError(message);
@@ -222,15 +231,14 @@ class DynamoTableResource {
           let message = 'Item creation has failed but no item with the same key has been found.';
           throw new DynamoConditionCheckError(message);
         }
-      }).catch(error => {
+      }).catch((error) => {
         throw standardifyError(error, request);
       });
     }
 
     let request = this._builder.insert().item(item).buildRequest();
     return this.client.put(request).promise().then(data => data.Attributes)
-      .catch(error => {
-
+      .catch((error) => {
         // Something went wrong...
         let managedError = standardifyError(error, request);
 
@@ -247,11 +255,11 @@ class DynamoTableResource {
   delete(params) {
     let request = {
       TableName: this._tableName,
-      Key: this._buildPrimaryKey(params.key, params.range),
+      Key: this._buildPrimaryKey(params.key, params.range)
     };
 
-    return this.client.delete(request).promise().then(data => {})
-      .catch(error => {
+    return this.client.delete(request).promise().then((data) => {})
+      .catch((error) => {
         throw standardifyError(error, request);
       });
   }

@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 const VERSION_INFO = 'version.txt';
@@ -15,5 +16,5 @@ function getVersion() {
 }
 
 module.exports = {
-  getVersion: getVersion
+  getVersion
 };

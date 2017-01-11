@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let through = require('through2');
@@ -14,31 +15,29 @@ inputs is an iterable of objects of the following form
 */
 
 function createEntryStream(input, filter, logger) {
-  if (!(filter instanceof Function)) {
-    filter = () => true;
-  }
+  let safeFilter = (filter instanceof Function) ? filter : () => true;
+
   let output = through.obj();
-  input.pipe(unzip.Parse())
-  .on('entry', entry => {
-    if (filter(entry.path)) {
-      output.push({path: entry.path, content: entry});
-    }
-    else {
+  input.pipe(unzip.Parse()) // eslint-disable-line new-cap
+  .on('entry', (entry) => {
+    if (safeFilter(entry.path)) {
+      output.push({ path: entry.path, content: entry });
+    } else {
       entry.autodrain();
     }
   })
-  .on('error', error => {
+  .on('error', (error) => {
     logger.error(`An error has occurred creating the zip package: ${error.message}`);
   })
   .once('close', () => {
-    logger.debug("zip stream closed")
+    logger.debug('zip stream closed');
     setTimeout(() => output.end(), 1000);
   });
   return output;
 }
 
 function mapS(fn) {
-  let results = through.obj(function(chunk, enc, callback) {
+  let results = through.obj((chunk, enc, callback) => {
     callback(null, fn(chunk));
   });
   return results;
@@ -60,11 +59,11 @@ function mergeS(inputs) {
 }
 
 function appendS(items) {
-  return through({ objectMode: true},
-    function(chunk, enc, callback) {
+  return through({ objectMode: true },
+    (chunk, enc, callback) => {
       callback(null, chunk);
     },
-    function(callback) {
+    function (callback) {
       for (let item of items) {
         this.push(item);
       }

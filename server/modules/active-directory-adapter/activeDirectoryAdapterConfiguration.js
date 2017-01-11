@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assertContract = require('modules/assertContract');
@@ -16,8 +17,8 @@ module.exports = function ActiveDirectoryAdapterConfiguration() {
           url: { Type: String, empty: false },
           baseDN: { Type: String, empty: false },
           username: { Type: String, empty: false },
-          password: { Type: String, empty: false },
-        },
+          password: { Type: String, empty: false }
+        }
       });
     }
 
