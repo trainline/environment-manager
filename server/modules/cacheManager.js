@@ -18,21 +18,26 @@ const EM_REDIS_ADDRESS = config.get('EM_REDIS_ADDRESS');
 const EM_REDIS_PORT = config.get('EM_REDIS_PORT');
 const caches = new Map();
 
-let redisStore = cacheManagerEncryptedRedis.create({
-  host: EM_REDIS_ADDRESS,
-  port: EM_REDIS_PORT,
-  valueTransform: {
-    toStore: fp.flow(JSON.stringify, str => new Buffer(str), emCrypto.encrypt.bind(null, EM_REDIS_CRYPTO_KEY)),
-    fromStore: fp.flow(emCrypto.decrypt.bind(null, EM_REDIS_CRYPTO_KEY), buf => buf.toString(), JSON.parse),
-  },
-});
+let redisCache = (() => {
+  if (EM_REDIS_CRYPTO_KEY && EM_REDIS_ADDRESS && EM_REDIS_PORT) {
+    let redisStore = cacheManagerEncryptedRedis.create({
+      host: EM_REDIS_ADDRESS,
+      port: EM_REDIS_PORT,
+      valueTransform: {
+        toStore: fp.flow(JSON.stringify, str => new Buffer(str), emCrypto.encrypt.bind(null, EM_REDIS_CRYPTO_KEY)),
+        fromStore: fp.flow(emCrypto.decrypt.bind(null, EM_REDIS_CRYPTO_KEY), buf => buf.toString(), JSON.parse),
+      },
+    });
+    logger.info(`Cache will use Redis. address=${EM_REDIS_ADDRESS} port=${EM_REDIS_PORT}`);
+    return [cacheManager.caching({ store: redisStore, db: 0, ttl: 600 })];
+  } else {
+    logger.warn('Cache will not use Redis because it has not been configured.');
+    return [];
+  }
+})();
 
 let memoryCache = cacheManager.caching({ store: 'memory', max: 256, ttl: 1 });
-let redisCache = cacheManager.caching({ store: redisStore, db: 0, ttl: 600 });
-let cache = cacheManager.multiCaching([
-  memoryCache,
-  redisCache,
-]);
+let cache = cacheManager.multiCaching([memoryCache].concat(redisCache));
 
 const myCacheManager = {
   /**
@@ -97,6 +102,11 @@ function createCache(name, fn) {
       throw new Error('Cache key must be a string.');
     }
 
+    /**
+     * The callback passed to cache.wrap cannot be an arrow function
+     * because its `this` argument is bound.
+     */
+    // eslint-disable-next-line prefer-arrow-callback
     return cache.wrap(cacheKey(key), function () {
       logger.debug(`Cache miss: namespace: "${name}", key: "${key}"`);
       return Promise.resolve().then(() => fn(key)).then(normalizeValue);
