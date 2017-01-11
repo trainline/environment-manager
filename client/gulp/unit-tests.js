@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 var path = require('path');
@@ -11,12 +12,12 @@ var pathSrcHtml = [
   path.join(conf.paths.src, '/**/*.html')
 ];
 
-function runTests (singleRun, done) {
+function runTests(singleRun, done) {
   var reporter = argv.c ? 'teamcity' : 'progress';
   var reporters = [reporter];
   var preprocessors = {};
 
-  pathSrcHtml.forEach(function(path) {
+  pathSrcHtml.forEach(function (path) {
     preprocessors[path] = ['ng-html2js'];
   });
 
@@ -32,10 +33,10 @@ function runTests (singleRun, done) {
   server.start();
 }
 
-gulp.task('test', [], function(done) {
+gulp.task('test', [], function (done) {
   runTests(true, done);
 });
 
-gulp.task('test:auto', ['watch'], function(done) {
+gulp.task('test:auto', ['watch'], function (done) {
   runTests(false, done);
 });

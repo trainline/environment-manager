@@ -46,7 +46,7 @@ const cacheManager = {
    */
   clear() {
     caches.clear();
-  },
+  }
 };
 
 function createCache(name, cache, fn, pending, instanceLogger, logHits) {
@@ -56,7 +56,7 @@ function createCache(name, cache, fn, pending, instanceLogger, logHits) {
     mget: cache.mget.bind(cache),
     keys: cache.keys.bind(cache),
     set: setInCache,
-    flushAll: cache.flushAll.bind(cache),
+    flushAll: cache.flushAll.bind(cache)
   };
 
   /**

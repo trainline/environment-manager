@@ -52,7 +52,7 @@ function* handler(command) {
     name: command.autoScalingGroupName,
     minSize: command.autoScalingGroupMinSize,
     desiredSize: command.autoScalingGroupDesiredSize,
-    maxSize: command.autoScalingGroupMaxSize,
+    maxSize: command.autoScalingGroupMaxSize
   };
 
   return resource.put(parameters);

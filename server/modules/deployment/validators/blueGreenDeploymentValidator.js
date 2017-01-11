@@ -18,5 +18,5 @@ module.exports = {
       'but current deployment slice is '}${
       deployment.serviceSlice ? `'${deployment.serviceSlice}'.` : 'empty.'}`
     ));
-  },
+  }
 };

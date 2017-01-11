@@ -13,7 +13,7 @@ module.exports = [
     let query = {
       name: 'GetAllNodes',
       accountName: request.params.account,
-      environment: getEnvironmentFrom(request),
+      environment: getEnvironmentFrom(request)
     };
 
     send.query(query, request, response);
@@ -26,11 +26,11 @@ module.exports = [
       name: 'GetService',
       accountName: request.params.account,
       environment: getEnvironmentFrom(request),
-      serviceName: request.params.service,
+      serviceName: request.params.service
     };
 
     send.query(query, request, response);
-  }),
+  })
 ];
 
 function getEnvironmentFrom(req) {

@@ -42,7 +42,7 @@ module.exports = function MainServer() {
         home: require('routes/home'),
         form: require('routes/form'),
         initialData: require('routes/initialData'),
-        deploymentNodeLogs: require('routes/deploymentNodeLogs'),
+        deploymentNodeLogs: require('routes/deploymentNodeLogs')
       };
 
       // start express
@@ -96,7 +96,7 @@ module.exports = function MainServer() {
 
   function createServer(app) {
     let parameters = {
-      port: serverFactoryConfiguration.getPort(),
+      port: serverFactoryConfiguration.getPort()
     };
 
     return httpServerFactory.create(app, parameters).then((server) => {

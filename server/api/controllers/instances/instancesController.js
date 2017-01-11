@@ -177,7 +177,7 @@ function connectToInstance(req, res, next) {
     res.status(200);
     res.set({
       'content-type': 'application/rdp',
-      'content-disposition': `attachment; filename*=UTF-8''${id}.rdp`,
+      'content-disposition': `attachment; filename*=UTF-8''${id}.rdp`
     });
     res.send(`full address:s:${instance.PrivateIpAddress}`);
   }).catch(next);
@@ -187,5 +187,5 @@ module.exports = {
   getInstances,
   getInstanceById,
   putInstanceMaintenance,
-  connectToInstance,
+  connectToInstance
 };

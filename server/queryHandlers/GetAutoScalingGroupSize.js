@@ -10,7 +10,7 @@ function convertToGroupSize(autoScalingGroup) {
     min: autoScalingGroup.MinSize,
     max: autoScalingGroup.MaxSize,
     desired: autoScalingGroup.DesiredCapacity,
-    current: autoScalingGroup.Instances.filter(isInstanceHealthy).length,
+    current: autoScalingGroup.Instances.filter(isInstanceHealthy).length
   };
 
   return result;

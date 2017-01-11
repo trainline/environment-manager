@@ -97,7 +97,7 @@ function RouteHandlerDescriptorBuilder(verb, url) {
       method: $verb,
       url: $url,
       action: $action,
-      allowsAnonymous: $allowsAnonymous,
+      allowsAnonymous: $allowsAnonymous
     };
 
     if ($roles.length) result.roles = $roles;
@@ -128,5 +128,5 @@ module.exports = {
 
   delete(url) {
     return new RouteHandlerDescriptorBuilder('DELETE', url);
-  },
+  }
 };

@@ -10,5 +10,5 @@ let encode = obj => new buffer.Buffer(JSON.stringify(obj), utf8).toString(base64
 
 module.exports = {
   decode,
-  encode,
+  encode
 };

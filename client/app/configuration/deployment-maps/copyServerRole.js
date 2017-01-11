@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.configuration').component('copyServerRole', {
@@ -6,7 +7,7 @@ angular.module('EnvironmentManager.configuration').component('copyServerRole', {
   bindings: {
     resolve: '<',
     dismiss: '&',
-    close: '&',
+    close: '&'
   },
   controllerAs: 'vm',
   controller: function (resources, cachedResources, modal, deploymentMapConverter) {
@@ -17,11 +18,11 @@ angular.module('EnvironmentManager.configuration').component('copyServerRole', {
 
     resources.config.deploymentMaps.all().then(function (dmps) {
       deploymentMaps = dmps;
-      
+
       vm.deploymentMapNames = _.map(deploymentMaps, 'DeploymentMapName').sort();
       _.pull(vm.deploymentMapNames, vm.resolve.srcDeploymentMapName);
 
-      var srcDeploymentMap = _.find(deploymentMaps, { DeploymentMapName: vm.resolve.srcDeploymentMapName});
+      var srcDeploymentMap = _.find(deploymentMaps, { DeploymentMapName: vm.resolve.srcDeploymentMapName });
       vm.serverRole = _.find(srcDeploymentMap.Value.DeploymentTarget, { ServerRoleName: vm.resolve.serverRoleName });
 
       vm.selected.deploymentMapName = vm.deploymentMapNames[0];
@@ -41,7 +42,7 @@ angular.module('EnvironmentManager.configuration').component('copyServerRole', {
           title: 'Overwrite a Server Role',
           message: 'This role already exists in target Deployment Map.<br/>Do you want to overwrite "<strong>' + dstServerRole.ServerRoleName + '</strong>" in "' + dstDeploymentMapName + '"?',
           action: 'Overwrite',
-          severity: 'Danger',
+          severity: 'Danger'
         }).then(function () {
           copyTo(dstDeploymentMap, true);
         });
@@ -51,7 +52,6 @@ angular.module('EnvironmentManager.configuration').component('copyServerRole', {
     };
 
     function copyTo(deploymentMap, overwriteServerRole) {
-
       if (overwriteServerRole === true) {
         var index = _.findIndex(deploymentMap.Value.DeploymentTarget, { ServerRoleName: vm.serverRole.ServerRoleName });
         deploymentMap.Value.DeploymentTarget[index] = vm.serverRole;
@@ -66,7 +66,7 @@ angular.module('EnvironmentManager.configuration').component('copyServerRole', {
       var params = {
         key: deploymentMap.DeploymentMapName,
         expectedVersion: deploymentMap.Version,
-        data: { DeploymentTarget: deploymentMapValue },
+        data: { DeploymentTarget: deploymentMapValue }
       };
 
       resources.config.deploymentMaps.put(params).then(function () {
@@ -74,6 +74,5 @@ angular.module('EnvironmentManager.configuration').component('copyServerRole', {
         vm.close();
       });
     }
-      
-  },
+  }
 });

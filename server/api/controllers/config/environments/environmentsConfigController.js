@@ -25,7 +25,7 @@ function getEnvironmentsConfig(req, res, next) {
 
   let filter = {
     'Value.OwningCluster': cluster,
-    'Value.EnvironmentType': environmentType,
+    'Value.EnvironmentType': environmentType
   };
   filter = _.omitBy(filter, _.isUndefined);
 
@@ -76,7 +76,7 @@ function deleteEnvironmentConfigByName(req, res, next) {
 
     yield [
       deleteLBSettingsForEnvironment(environmentName, accountName, user),
-      deleteLBUpstreamsForEnvironment(environmentName, accountName, user),
+      deleteLBUpstreamsForEnvironment(environmentName, accountName, user)
     ];
 
     yield deleteEnvironment(environmentName, accountName, user);
@@ -112,5 +112,5 @@ module.exports = {
   getEnvironmentConfigByName,
   postEnvironmentsConfig,
   putEnvironmentConfigByName,
-  deleteEnvironmentConfigByName,
+  deleteEnvironmentConfigByName
 };

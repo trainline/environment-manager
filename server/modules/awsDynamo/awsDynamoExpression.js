@@ -8,7 +8,7 @@ function Expression(data) {
   this.data = {
     operation: data.operation,
     names: data.name.split('.'),
-    value: null,
+    value: null
   };
 
   this.to = function (value) {
@@ -20,7 +20,7 @@ function Expression(data) {
     return $this.data.names.map(name => (
       {
         name,
-        alias: `#${name}`,
+        alias: `#${name}`
       }
     ));
   };
@@ -41,7 +41,7 @@ function Expression(data) {
 function AddExpression(name) {
   let $base = new Expression({
     operation: 'add',
-    name,
+    name
   });
 
   this.to = $base.to;
@@ -53,7 +53,7 @@ function AddExpression(name) {
 function SetExpression(name) {
   let $base = new Expression({
     operation: 'set',
-    name,
+    name
   });
 
   this.to = $base.to;
@@ -64,5 +64,5 @@ function SetExpression(name) {
 
 module.exports = {
   Add: AddExpression,
-  Set: SetExpression,
+  Set: SetExpression
 };

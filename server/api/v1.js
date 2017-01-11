@@ -30,7 +30,7 @@ function getControllerDirectories(root) {
       return {
         fullname,
         isDirectory: stat.isDirectory(),
-        isFile: stat.isFile(),
+        isFile: stat.isFile()
       };
     });
 
@@ -59,7 +59,7 @@ function getControllerDirectories(root) {
 }
 
 let swaggerOptions = {
-  controllers: getControllerDirectories('api/controllers'),
+  controllers: getControllerDirectories('api/controllers')
 };
 
 function authorize(req, res, next) {
@@ -96,5 +96,5 @@ function setup(app) {
 }
 
 module.exports = {
-  setup,
+  setup
 };

@@ -2,9 +2,7 @@
 
 'use strict';
 
-// TODO(filip): why do we even need this ugly rewrite? What's wrong with operating on AWS data?
-// Why add so much complexity to something that can be as simple as CRUD operation on AWS?
-
+// Note: considering simply operating on AWS data rather than mapping our structures
 let _ = require('lodash');
 
 const OS_DEVICE_NAME = '/dev/sda1';
@@ -12,7 +10,7 @@ const DATA_DEVICE_NAME = '/dev/sda2';
 
 const DEFAULT_VOLUME = {
   Type: 'SSD',
-  Size: 50,
+  Size: 50
 };
 
 module.exports = {
@@ -45,7 +43,7 @@ module.exports = {
       // sda1 before sda2 etc.
       vol1.Name < vol2.Name
     ));
-  },
+  }
 };
 
 function getDeviceByVolume(dataVolume, name, encrypted) {
@@ -55,8 +53,8 @@ function getDeviceByVolume(dataVolume, name, encrypted) {
       DeleteOnTermination: true,
       VolumeSize: dataVolume.Size,
       VolumeType: dataVolume.Type.toLowerCase() === 'ssd' ? 'gp2' : 'standard',
-      Encrypted: encrypted,
-    },
+      Encrypted: encrypted
+    }
   };
 }
 

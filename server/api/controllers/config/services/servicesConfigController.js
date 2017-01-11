@@ -69,5 +69,5 @@ module.exports = {
   getServiceConfigByName,
   postServicesConfig,
   putServiceConfigByName,
-  deleteServiceConfigByName,
+  deleteServiceConfigByName
 };

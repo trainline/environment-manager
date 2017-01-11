@@ -1,9 +1,9 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('DeploymentMapController',
   function ($scope, $routeParams, $location, $q, $uibModal, QuerySync, resources, cachedResources, modal, deploymentMapConverter, DeploymentMap) {
-
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -20,24 +20,24 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
     vm.dataFound = false;
     vm.dataLoading = true;
 
-    var deploymentMapName = $routeParams['deploymentmap'];
+    var deploymentMapName = $routeParams.deploymentmap;
 
     var querySync = new QuerySync(vm, {
       cluster: {
         property: 'selectedOwningCluster',
-        default: SHOW_ALL_OPTION,
+        default: SHOW_ALL_OPTION
       },
       service: {
         property: 'serviceName',
-        default: '',
+        default: ''
       },
       server: {
         property: 'serverRole',
-        default: '',
+        default: ''
       },
       open_server: {
         property: 'openServerRoleName',
-        default: null,
+        default: null
       }
     });
 
@@ -49,15 +49,15 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
       $q.all([
         cachedResources.config.clusters.all().then(function (clusters) {
           vm.owningClustersList = [SHOW_ALL_OPTION].concat(_.map(clusters, 'ClusterName')).sort();
-        }),
+        })
       ]).then(function () {
         return readDeploymentMap(deploymentMapName);
-      }).then(function() {
+      }).then(function () {
         if (vm.openServerRoleName !== null) {
           var target = _.find(vm.deploymentTargets, { ServerRoleName: vm.openServerRoleName });
           showTargetDialog(target, 'Edit');
-        }  
-      })
+        }
+      });
     }
 
     vm.canUser = function () {
@@ -65,12 +65,10 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
     };
 
     vm.search = function () {
-
       querySync.updateQuery();
 
       // Client side filter of Server Roles/targets based on user selections
       vm.deploymentTargets = vm.deploymentMap.Value.DeploymentTarget.filter(function (target) {
-
         var match = vm.selectedOwningCluster == SHOW_ALL_OPTION || target.OwningCluster == vm.selectedOwningCluster;
 
         if (match && vm.serverRole != '') {
@@ -127,21 +125,19 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
           },
           serverRoleName: function () {
             return target.ServerRoleName;
-          },
-        },
+          }
+        }
       });
     };
 
     vm.delete = function (target) {
-
       var name = target.ServerRoleName;
       modal.confirmation({
         title: 'Deleting a Server Role',
         message: 'Are you sure you want to delete the <strong>' + name + '</strong> Server Role from this Deployment Map?',
         action: 'Delete',
-        severity: 'Danger',
+        severity: 'Danger'
       }).then(function () {
-
         // Filter targets array to remove selected target
         vm.deploymentMap.Value.DeploymentTarget = vm.deploymentMap.Value.DeploymentTarget.filter(function (t) {
           // TODO: remove by server role and cluster, would like names to be unique across whole map but for now just per cluster
@@ -154,7 +150,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
         var params = {
           key: vm.deploymentMap.DeploymentMapName,
           expectedVersion: vm.deploymentMap.Version,
-          data: { DeploymentTarget: deploymentMapValue },
+          data: { DeploymentTarget: deploymentMapValue }
         };
 
         resources.config.deploymentMaps.put(params).then(function () {
@@ -185,8 +181,8 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
 
           displayMode: function () {
             return mode;
-          },
-        },
+          }
+        }
       });
 
       if (target !== null) {
@@ -194,7 +190,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
         querySync.updateQuery();
       }
 
-      instance.result['finally'](function() {
+      instance.result.finally(function () {
         vm.openServerRoleName = null;
         querySync.updateQuery();
       });
@@ -218,7 +214,6 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
         vm.dataFound = true;
         vm.search();
       }, function () {
-
         vm.dataFound = false;
       }).finally(function () {
         vm.dataLoading = false;

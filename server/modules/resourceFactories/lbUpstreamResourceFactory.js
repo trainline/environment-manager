@@ -83,9 +83,9 @@ module.exports = {
       key: resourceDescriptor.keyName,
       range: resourceDescriptor.rangeName,
       auditingEnabled: resourceDescriptor.enableAuditing,
-      dateField: resourceDescriptor.dateField,
+      dateField: resourceDescriptor.dateField
     };
 
     return new LBUpstreamTableResource(config, client);
-  }),
+  })
 };

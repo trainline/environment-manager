@@ -29,7 +29,7 @@ function* handleQuery(query, resourceName, upstreamFilter) {
   let subquery = {
     name: 'ScanDynamoResources',
     resource: 'config/lbupstream',
-    accountName: query.accountName,
+    accountName: query.accountName
   };
 
   let upstreams = yield sender.sendQuery({ query: subquery, parent: query });
@@ -55,7 +55,7 @@ function* handleQuery(query, resourceName, upstreamFilter) {
       Port: host.Port,
       OwningCluster: '',
       Name: 'Unknown',
-      State: host.State === 'up' ? 'Active' : 'Inactive',
+      State: host.State === 'up' ? 'Active' : 'Inactive'
     }));
   };
 
@@ -71,7 +71,7 @@ function* handleQuery(query, resourceName, upstreamFilter) {
       name: 'ScanDynamoResources',
       resource: 'config/services',
       accountName: masterAccountName,
-      filter: { ServiceName: serviceName },
+      filter: { ServiceName: serviceName }
     };
     return sender.sendQuery({ query: newSubquery, parent: query });
   });
@@ -111,8 +111,8 @@ function* handleQuery(query, resourceName, upstreamFilter) {
 let QUERYING = {
   upstream: {
     byUpstreamName: query => `Upstream named "${query.upstreamName}"`,
-    byServiceName: query => `Upstream for service "${query.serviceName}" in "${query.environmentName}" environment`,
-  },
+    byServiceName: query => `Upstream for service "${query.serviceName}" in "${query.environmentName}" environment`
+  }
 };
 
 let FILTER = {
@@ -123,13 +123,13 @@ let FILTER = {
 
     byServiceName: query =>
       upstream =>
-        upstream.Value.EnvironmentName === query.environmentName && upstream.Value.ServiceName === query.serviceName,
-  },
+        upstream.Value.EnvironmentName === query.environmentName && upstream.Value.ServiceName === query.serviceName
+  }
 
 };
 
 module.exports = {
   handleQuery: co.wrap(handleQuery),
   QUERYING,
-  FILTER,
+  FILTER
 };

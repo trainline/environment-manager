@@ -14,7 +14,7 @@ module.exports = (request, response) => {
     accountName: params.account,
     environment: params.environment,
     deploymentId: params.deploymentId,
-    instanceId: params.node,
+    instanceId: params.node
   };
 
   sender.sendQuery({ query, user: request.user }).then((data) => {

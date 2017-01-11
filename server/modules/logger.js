@@ -28,7 +28,7 @@ if (config.get('IS_PRODUCTION') === true) {
       name: 'environment-manager',
       eventtype,
       releaseversion: process.env.RELEASE_VERSION || config.get('APP_VERSION'),
-      meta: options.meta,
+      meta: options.meta
     };
     return JSON.stringify(entry);
   };
@@ -39,17 +39,17 @@ const logger = new (winston.Logger)({
     new (winston.transports.Console)({
       level: EM_LOG_LEVEL,
       showLevel: false,
-      formatter,
-    }),
-  ],
+      formatter
+    })
+  ]
 });
 
 if (config.get('IS_PRODUCTION') === true) {
   // Globally configure aws-sdk to log all activity.
   AWS.config.update({
     logger: {
-      log: logger.debug.bind(logger),
-    },
+      log: logger.debug.bind(logger)
+    }
   });
 }
 

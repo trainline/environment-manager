@@ -44,7 +44,7 @@ function getInstanceServiceHealthChecks(checks, serviceId) {
     CheckId: check.CheckID,
     Name: check.Name,
     Notes: check.Notes,
-    Status: check.Status,
+    Status: check.Status
   }));
 }
 
@@ -79,7 +79,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
   return co(function* () {
     let response = yield {
       checks: serviceDiscovery.getNodeHealth(environmentName, nodeName),
-      node: serviceDiscovery.getNode(environmentName, nodeName),
+      node: serviceDiscovery.getNode(environmentName, nodeName)
     };
     let checks = response.checks;
     let node = response.node;
@@ -119,7 +119,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
         OverallHealth: getInstanceServiceOverallHealth(instanceServiceHealthChecks),
         HealthChecks: instanceServiceHealthChecks,
         DiffWithTargetState: null,
-        Issues: { Warnings: [], Errors: [] },
+        Issues: { Warnings: [], Errors: [] }
       };
     }));
     // If false, it's not EM deployed service
@@ -149,7 +149,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
           LogLink: `/api/v1/deployments/${targetService.DeploymentId}/log?account=${accountName}&instance=${instanceId}`,
           OverallHealth: Enums.HEALTH_STATUS.Missing,
           DiffWithTargetState: (targetService.Action === Enums.ServiceAction.INSTALL ? DIFF_STATE.Missing : DIFF_STATE.Ignored),
-          Issues: { Warnings: [], Errors: [] },
+          Issues: { Warnings: [], Errors: [] }
         };
         if (targetService.Action === Enums.ServiceAction.INSTALL) {
           missingService.Issues.Warnings.push('Service that is in target state is missing');
@@ -187,7 +187,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
       DeploymentStatus: getInstanceDeploymentStatus(services),
       RunningServicesCount: runningServicesCount,
       MissingOrUnexpectedServices: missingOrUnexpectedServices,
-      Services: services,
+      Services: services
     };
   });
 };

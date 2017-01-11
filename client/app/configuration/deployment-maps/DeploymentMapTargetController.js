@@ -1,9 +1,9 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('DeploymentMapTargetController',
   function ($scope, $location, $uibModalInstance, $uibModal, $q, Image, resources, cachedResources, modal, deploymentMap, deploymentTarget, deploymentMapConverter, displayMode, awsService) {
-
     var vm = this;
 
     var userHasPermission;
@@ -28,7 +28,6 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
     vm.usePredefinedSubnet = false;
 
     function init() {
-
       userHasPermission = user.hasPermission({ access: 'PUT', resource: '/config/deploymentmaps/' + deploymentMap.DeploymentMapName });
 
       if (vm.pageMode == 'Clone') {
@@ -58,9 +57,8 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
           vm.awsInstanceTypesList = instanceTypes.filter(function (instanceType) {
             return !(_.startsWith(instanceType, 'c3') || _.startsWith(instanceType, 'm3'));
           });
-        }),
+        })
       ]).then(function () {
-
         if (vm.pageMode == 'New') {
           // Set defaults for new server roles
           var newTarget = {
@@ -82,24 +80,23 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
                   {
                     Name: 'OS',
                     Size: 50,
-                    Type: 'SSD',
+                    Type: 'SSD'
                   },
                   {
                     Name: 'Data',
                     Size: 50,
-                    Type: 'Disk',
-                  },
-                ],
+                    Type: 'Disk'
+                  }
+                ]
               },
               Tags: {
-                ContactEmail: vm.owningClustersList[0].Value.GroupEmailAddress,
-              },
+                ContactEmail: vm.owningClustersList[0].Value.GroupEmailAddress
+              }
             },
-            Services: [],
+            Services: []
           };
           vm.target = newTarget;
         } else {
-
           if (vm.target.ASG.AvailabilityZone) {
             vm.target.ASG.AvailabilityZoneSelection = 'some';
             vm.target.ASG.AvailabilityZone = _.toArray(vm.target.ASG.AvailabilityZone);
@@ -118,23 +115,24 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
     }
 
     vm.azSelectionIsValid = function () {
-        return vm.target.ASG.AvailabilityZoneSelection === 'all' || !!vm.target.ASG.AvailabilityZone.length;
-    }
+      return vm.target.ASG.AvailabilityZoneSelection === 'all' || !!vm.target.ASG.AvailabilityZone.length;
+    };
 
-    vm.isAZChecked = function(az) {
-      if (!_.isArray(vm.target.ASG.AvailabilityZone))
-         vm.target.ASG.AvailabilityZone = _.clone(vm.deploymentAzsList);
-      
+    vm.isAZChecked = function (az) {
+      if (!_.isArray(vm.target.ASG.AvailabilityZone)) {
+        vm.target.ASG.AvailabilityZone = _.clone(vm.deploymentAzsList);
+      }
+
       return _.includes(vm.target.ASG.AvailabilityZone, az);
-    }
+    };
 
-    vm.toggleAZSelection = function(az) {            
-        if (_.includes(vm.target.ASG.AvailabilityZone, az)) {
-            _.remove(vm.target.ASG.AvailabilityZone, function(item) { return item === az; })
-        } else {
-            vm.target.ASG.AvailabilityZone.push(az);
-        }
-    }
+    vm.toggleAZSelection = function (az) {
+      if (_.includes(vm.target.ASG.AvailabilityZone, az)) {
+        _.remove(vm.target.ASG.AvailabilityZone, function (item) { return item === az; });
+      } else {
+        vm.target.ASG.AvailabilityZone.push(az);
+      }
+    };
 
     vm.linkTo = function (docName) {
       return window.links.SECURITY_ZONES;
@@ -157,9 +155,8 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
     };
 
     vm.ok = function () {
-
       if (vm.target.ASG.AvailabilityZoneSelection === 'all') {
-          vm.target.ASG.AvailabilityZone = '';
+        vm.target.ASG.AvailabilityZone = '';
       }
 
       vm.target.ASG.Tags.Schedule = '';
@@ -169,7 +166,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
       if (valid.result == false) {
         modal.information({
           title: valid.errTitle,
-          message: valid.errMessage,
+          message: valid.errMessage
         });
         return;
       }
@@ -202,7 +199,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
       modal.confirmation({
         title: 'Navigate Away',
         message: 'Are you sure you want to navigate away from this dialog? Changes will not be saved.',
-        action: 'OK',
+        action: 'OK'
       }).then(function () {
         $uibModalInstance.dismiss('cancel');
         $location.path('/');
@@ -241,10 +238,10 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
           currentAmi: function () {
             return vm.target.ASG.LaunchConfig.AMI;
           },
-          context: function() {
+          context: function () {
             return 'serverRole';
-          },
-        },
+          }
+        }
       });
       instance.result.then(function (selectedAmi) {
         vm.target.ASG.LaunchConfig.AMI = selectedAmi.displayName;
@@ -276,7 +273,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
         valid = {
           result: false,
           errTitle: 'ASG Sizing Error',
-          errMessage: 'Desired capacity must be between min and max sizes',
+          errMessage: 'Desired capacity must be between min and max sizes'
         };
       }
 
@@ -284,11 +281,10 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
     }
 
     function updateAvailableServices() {
-      
       // Get all services that aren't used by this deployment map
       var availableServices = _.differenceBy(servicesList, vm.target.Services, 'ServiceName');
       _.sortBy(availableServices, 'ServiceName');
-      
+
       // Find in which other ServerRoles is service in
       vm.target.Services.forEach(function (service) {
         service.$otherServerRoles = [];

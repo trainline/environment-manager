@@ -35,7 +35,7 @@ function* handler(command) {
       TransactionID: command.commandId,
       User: command.username,
       LastChanged: command.timestamp,
-      Version: 0,
+      Version: 0
     };
   }
 
@@ -59,10 +59,10 @@ function* handler(command) {
       accountName: command.accountName,
       item: {
         EnvironmentName: item.EnvironmentName,
-        Value: {},
-      },
+        Value: {}
+      }
     },
-    parent: command,
+    parent: command
   });
 
   return result.add(childResult);

@@ -73,13 +73,13 @@ module.exports = {
       //                          [LaunchConfiguration_Backup] (deleting...)
       yield launchConfigurationClient.delete({ name: backupLaunchConfiguration.LaunchConfigurationName });
     });
-  },
+  }
 };
 
 function attachLaunchConfigurationToAutoScalingGroup(autoScalingGroupClient, autoScalingGroupName, launchConfiguration) {
   let parameters = {
     name: autoScalingGroupName,
-    launchConfigurationName: launchConfiguration.LaunchConfigurationName,
+    launchConfigurationName: launchConfiguration.LaunchConfigurationName
   };
 
   return autoScalingGroupClient.put(parameters);

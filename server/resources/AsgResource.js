@@ -9,6 +9,6 @@ module.exports = {
   queryable: true,
   docs: {
     description: 'Auto Scaling Group',
-    tags: ['Auto Scaling Groups'],
-  },
+    tags: ['Auto Scaling Groups']
+  }
 };

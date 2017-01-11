@@ -17,7 +17,7 @@ module.exports = resourceDescriptorProvider
   .filter(resource => resource.queryable)
   .map((resource) => {
     let url = make([resource.perAccount ? ':account' : null,
-      resource.name,
+      resource.name
     ]).uri();
 
     let docs;
@@ -38,7 +38,7 @@ module.exports = resourceDescriptorProvider
           resource: resource.name,
           filter: utilities.extractQuery(request),
           exposeAudit: 'version-only',
-          accountName: resource.perAccount ? request.params.account : masterAccountName,
+          accountName: resource.perAccount ? request.params.account : masterAccountName
         };
 
         send.query(query, request, response);

@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ManageEnvironmentSettingsController',
@@ -30,17 +31,16 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       OwningCluster: '',
       DeploymentMap: '',
       CodeDeployBucket: '',
-      Description: '',
+      Description: ''
     };
 
     vm.newSchedule = {
       Type: '',
-      DefaultSchedule: '',
+      DefaultSchedule: ''
     };
 
     function init() {
-
-      var defaultTab = $routeParams['tab'];
+      var defaultTab = $routeParams.tab;
       var environmentName = GetActiveEnvironment();
       vm.environment.EnvironmentName = environmentName;
 
@@ -60,7 +60,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
 
         cachedResources.config.deploymentMaps.all().then(function (deploymentMaps) {
           vm.deploymentMapsList = _.map(deploymentMaps, 'DeploymentMapName');
-        }),
+        })
       ]).then(function () {
         vm.refresh();
       });
@@ -71,11 +71,9 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
     };
 
     vm.refresh = function () {
-
       vm.dataLoading = true;
 
       function assignToTheScope(configuration, operations) {
-
         vm.environment = configuration;
         vm.environmentVersion = configuration.Version;
 
@@ -96,20 +94,18 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
 
         vm.newSchedule = {
           DefaultSchedule: operations.Value.DefaultSchedule,
-          Type: operations.Value.ScheduleAutomatically ? 'Automatic' : operations.Value.ManualScheduleUp ? 'On' : 'Off',
+          Type: operations.Value.ScheduleAutomatically ? 'Automatic' : operations.Value.ManualScheduleUp ? 'On' : 'Off'
         };
-
-      };
+      }
 
       // TODO: only do validation if tab active and on tab change. Will speed up page load a lot
       configValidation.ValidateEnvironmentSetupCache(vm.environment.EnvironmentName).then(function (validationNode) {
         vm.environmentValidationNode = validationNode;
         vm.refreshDependencies();
       }).then(function () {
-
         $q.all([
           resources.config.environments.get({ key: vm.environment.EnvironmentName }),
-          Environment.getSchedule(vm.environment.EnvironmentName),
+          Environment.getSchedule(vm.environment.EnvironmentName)
         ]).then(function (results) {
           var configuration = results[0];
           var operations = results[1];
@@ -117,12 +113,10 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
 
           vm.dataFound = true;
         }, function () {
-
           vm.dataFound = false;
         }).finally(function () {
           vm.dataLoading = false;
         });
-
       });
     };
 
@@ -153,7 +147,6 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
     };
 
     vm.save = function () {
-
       // Update Environment with form values
       vm.environment.Value.OwningCluster = vm.newEnvironment.OwningCluster;
       vm.environment.Value.DeploymentMap = vm.newEnvironment.DeploymentMap;
@@ -165,13 +158,13 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       var params = {
         key: vm.environment.EnvironmentName,
         expectedVersion: vm.environmentVersion,
-        data: vm.environment.Value,
+        data: vm.environment.Value
       };
       resources.config.environments.put(params).then(function () {
         cachedResources.config.environments.flush();
         modal.information({
           title: 'Environment Settings Saved',
-          message: 'Environment settings saved successfully.',
+          message: 'Environment settings saved successfully.'
         }).then(function () {
           vm.refresh();
         });
@@ -179,7 +172,6 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
     };
 
     vm.applySchedule = function () {
-
       // Update Environment with form values
       vm.operations.Value.ScheduleAutomatically = vm.newSchedule.Type == 'Automatic';
       vm.operations.Value.ManualScheduleUp = vm.newSchedule.Type == 'On';
@@ -189,14 +181,14 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
         key: vm.operations.EnvironmentName,
         expectedVersion: vm.operationsVersion,
         data: {
-          Value: vm.operations.Value,
-        },
+          Value: vm.operations.Value
+        }
       };
       resources.ops.environments.put(params).then(function () {
         cachedResources.config.environments.flush();
         modal.information({
           title: 'Environment Schedule Updated',
-          message: 'Environment schedule saved successfully.<br/><br/>Note: It may take up to 10 minutes for schedule changes to result in servers being turned on or off.',
+          message: 'Environment schedule saved successfully.<br/><br/>Note: It may take up to 10 minutes for schedule changes to result in servers being turned on or off.'
         }).then(function () {
           vm.refresh();
         });
@@ -269,7 +261,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
     }
 
     function GetActiveEnvironment() {
-      var environmentName = $routeParams['environment'];
+      var environmentName = $routeParams.environment;
       if (environmentName) {
         // Environment specified on URL, override active environment
         $rootScope.WorkingEnvironment.EnvironmentName = environmentName;

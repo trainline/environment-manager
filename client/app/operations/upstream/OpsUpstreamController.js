@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsUpstreamController',
@@ -27,19 +28,19 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
           querySync = new QuerySync(vm, {
             environment: {
               property: 'selectedEnvironment',
-              default: vm.environmentsList[0],
+              default: vm.environmentsList[0]
             },
             cluster: {
               property: 'selectedOwningCluster',
-              default: SHOW_ALL_OPTION,
+              default: SHOW_ALL_OPTION
             },
             state: {
               property: 'selectedState',
-              default: 'Up',
+              default: 'Up'
             },
             service: {
               property: 'selectedService',
-              default: '',
+              default: ''
             }
           });
 
@@ -52,7 +53,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
 
         cachedResources.config.clusters.all().then(function (clusters) {
           vm.owningClustersList = [SHOW_ALL_OPTION].concat(_.map(clusters, 'ClusterName')).sort();
-        }),
+        })
       ]).then(function () {
         vm.refresh();
       });
@@ -63,8 +64,12 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
       var params = { account: 'all' };
       resources.config.lbUpstream.all(params).then(function (data) {
         vm.fullUpstreamData = restructureUpstreams(data);
-        return updateLBStatus().then(function(){
+        return updateLBStatus().then(function () {
           vm.updateFilter();
+          vm.dataFound = true;
+        }, function () {
+          vm.updateFilter();
+          modal.error('Warning', 'Couldn\'t get load balancer info. Active state data of upstreams will not be shown.');
           vm.dataFound = true;
         });
       }).finally(function () {
@@ -74,7 +79,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
 
     vm.updateFilter = function () {
       querySync.updateQuery();
-      
+
       vm.data = vm.fullUpstreamData.filter(function (upstream) {
         if (upstream.Value.EnvironmentName !== vm.selectedEnvironment) {
           return false;
@@ -109,8 +114,6 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
 
         return true;
       });
-
-      
     };
 
     vm.showInstanceDetails = function (upstreamData) {
@@ -122,8 +125,8 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
         resolve: {
           upstream: function () {
             return upstreamData;
-          },
-        },
+          }
+        }
       });
     };
 
@@ -134,8 +137,8 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
         resolve: {
           environmentName: function () {
             return vm.selectedEnvironment;
-          },
-        },
+          }
+        }
       }).result.then(function (upstreamChanged) {
         if (!upstreamChanged) return;
         vm.refresh();
@@ -150,13 +153,13 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
         title: 'Toggling Upstream',
         message: 'Are you sure you want to toggle upstream <strong>' + upstreamName + '</strong> in <strong>' + environmentName + '</strong>?',
         details: ['Note: In most cases it is better to use <b>Toggle Service</b> instead when doing Blue/Green cutovers as this performs additional validation and copes with multiple upstreams.'],
-        action: 'Toggle Upstream',
+        action: 'Toggle Upstream'
       }).then(function () {
         $http({
           method: 'put',
           url: '/api/v1/upstreams/' + upstreamName + '/slices/toggle?environment=' + environmentName,
           data: {}
-        }).then(function() {
+        }).then(function () {
           vm.refresh();
         });
       });
@@ -165,7 +168,6 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
 
     // Convert to flat hosts array. Match port numbers to Blue/Green slice for corresponding service. Add NGINX status
     function restructureUpstreams(upstreams) {
-
       var flattenedUpstreams = [];
       upstreams.forEach(function (upstream) {
         var service = getServiceForUpstream(upstream.Value.ServiceName);
@@ -192,7 +194,6 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
         vm.servicesData.forEach(function (service) {
           if (service.ServiceName.localeCompare(serviceName) == 0) {
             foundService = service;
-            return;
           }
         });
       }
@@ -207,10 +208,8 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     }
 
     function updateLBStatus() {
-
       // Read LBs for this environment
       return accountMappingService.getEnvironmentLoadBalancers(vm.selectedEnvironment).then(function (lbs) {
-
         // Clear existing data
         vm.fullUpstreamData.forEach(function (upstreamHost) {
           upstreamHost.Value.LoadBalancerState.LBs = [];
@@ -235,13 +234,12 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
 
               upstreamHost.Value.LoadBalancerState.LBs.push(lbData);
 
-              var allLbServerStatusData = _.flatten(upstreamHost.Value.LoadBalancerState.LBs.map(function(lb){ return lb.ServerStatus; }));
+              var allLbServerStatusData = _.flatten(upstreamHost.Value.LoadBalancerState.LBs.map(function (lb) { return lb.ServerStatus; }));
               upstreamHost.Value.LoadBalancerState.State = getActualUpstreamState(allLbServerStatusData);
             });
-
           });
         });
-        
+
         return $q.all(promises);
       });
     }
@@ -292,7 +290,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
         UpCount: upCount,
         DownCount: downCount,
         UnhealthyCount: unhealthyCount,
-        Overall: state,
+        Overall: state
       };
 
       return upstreamState;

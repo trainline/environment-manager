@@ -11,7 +11,7 @@ let DmPacker = require('modules/dm-packer/DmPacker');
 
 const options = {
   allErrors: true,
-  format: 'fast',
+  format: 'fast'
 };
 
 let validate = ajv(options).compile(require('./PreparePackageCommand.schema'));

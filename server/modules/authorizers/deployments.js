@@ -15,8 +15,8 @@ module.exports = {
         resource: request.url.replace(/\/+$/, ''),
         access: request.method,
         clusters: [deployment.Value.OwningCluster],
-        environmentTypes: [deployment.Value.EnvironmentType],
+        environmentTypes: [deployment.Value.EnvironmentType]
       }];
     });
-  },
+  }
 };

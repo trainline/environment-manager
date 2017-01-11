@@ -13,7 +13,7 @@ function InsertRequestBuilder(parameters) {
     key: parameters.key,
     range: parameters.range,
     version: parameters.version,
-    item: null,
+    item: null
   };
 
   this.item = function (item) {
@@ -24,7 +24,7 @@ function InsertRequestBuilder(parameters) {
   this.buildRequest = function () {
     let request = {
       TableName: $data.table,
-      Item: $data.item,
+      Item: $data.item
     };
 
     let conditions = [];

@@ -10,6 +10,7 @@ let sender = require('modules/sender');
 let Environment = require('models/Environment');
 let AutoScalingGroup = require('models/AutoScalingGroup');
 let Instance = require('models/Instance');
+let serviceDiscovery = require('modules/service-discovery');
 
 module.exports = co.wrap(ScanServersStatusQueryHandler);
 
@@ -22,7 +23,7 @@ function* ScanServersStatusQueryHandler(query) {
   return Promise.all([
     AutoScalingGroup.getAllByEnvironment(environmentName),
     Instance.getAllByEnvironment(environmentName),
-    getAllImages(),
+    getAllImages()
   ]).then((results) => {
     let asgs = results[0];
     let allInstances = results[1];
@@ -42,7 +43,7 @@ function* ScanServersStatusQueryHandler(query) {
             instanceId: instance.InstanceId,
             name: instance.getTag('Name', ''),
             ami: image,
-            status: asgInstance.HealthStatus,
+            status: asgInstance.HealthStatus
           };
         } else {
           return null;
@@ -63,16 +64,16 @@ function* ScanServersStatusQueryHandler(query) {
           IsBeingDeleted: asg.Status === 'Delete in progress',
           Size: {
             Current: instanceCount,
-            Desired: asg.DesiredCapacity,
+            Desired: asg.DesiredCapacity
           },
           Services: services.map(getServiceView(environmentName)),
-          Ami: ami,
+          Ami: ami
         }));
     })).then((asgResults) => {
       let filteredAsgs = asgResults.filter(byStatus(query.filter.status));
       let result = {
         EnvironmentName: environmentName,
-        Value: filteredAsgs,
+        Value: filteredAsgs
       };
 
       let duration = moment.duration(moment.utc().diff(allStartTime)).asMilliseconds();
@@ -102,11 +103,13 @@ function getConsulServicesForNode(environment, nodeName) {
     query: {
       name: 'GetNode',
       environment,
-      nodeName,
-    },
+      nodeName
+    }
   }).then((consulNode) => {
     if (!consulNode) return [];
     return consulNode.Services;
+  }, () => {
+    return [];
   });
 }
 
@@ -120,7 +123,7 @@ function getServiceView(env) {
       Name: service.name,
       FriendlyName: name,
       Version: service.version,
-      Slice: service.slice,
+      Slice: service.slice
     };
   };
 }
@@ -137,7 +140,7 @@ function getAmi(instances) {
   return {
     Name: ami.name,
     Age: moment.utc().diff(moment(ami.created), 'days'),
-    IsLatestStable: ami.isLatestStable,
+    IsLatestStable: ami.isLatestStable
   };
 }
 
@@ -146,19 +149,19 @@ function getStatus(instances, desiredCapacity) {
   if (_.some(instances, instance => instance.status !== 'Healthy')) {
     return {
       Status: 'Error',
-      Reason: 'Not all instances are healthy',
+      Reason: 'Not all instances are healthy'
     };
   }
 
   if (instances.length < desiredCapacity) {
     return {
       Status: 'Warning',
-      Reason: 'The number of instances is lower than desired',
+      Reason: 'The number of instances is lower than desired'
     };
   }
 
   return {
-    Status: 'Healthy',
+    Status: 'Healthy'
   };
 }
 
@@ -167,7 +170,7 @@ function sanitizeConsulServices(consulServices) {
 
   return keys.map((key) => {
     let obj = {
-      name: consulServices[key].Service,
+      name: consulServices[key].Service
     };
 
     consulServices[key].Tags.forEach((tag) => {
@@ -188,7 +191,7 @@ function getImage(images, imageId) {
   return {
     name: image.Name,
     created: image.CreationDate,
-    isLatestStable: image.IsLatest && image.IsStable,
+    isLatestStable: image.IsLatest && image.IsStable
   };
 }
 
@@ -204,8 +207,8 @@ function getAllImages() {
 
   return sender.sendQuery({
     query: {
-      name: 'ScanCrossAccountImages',
-    },
+      name: 'ScanCrossAccountImages'
+    }
   }).then((result) => {
     let duration = moment.duration(moment.utc().diff(startTime)).asMilliseconds();
     logger.debug(`server-status-query: AllImagesQuery took ${duration}ms`);

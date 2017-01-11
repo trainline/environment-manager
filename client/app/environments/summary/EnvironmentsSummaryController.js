@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('EnvironmentsSummaryController',
@@ -25,19 +26,18 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
         displayName: '',
         field: 'EnvironmentName',
         cellClass: 'config-status',
-        cellTemplate: '<div class="ui-grid-cell-contents" title="{{grid.appScope.EnvironmentConfigValid[row.entity.EnvironmentName].Error}}"><a href="#/environment/settings?environment={{row.entity.EnvironmentName}}&tab=validation"><div class="config-status-{{grid.appScope.EnvironmentConfigValid[row.entity.EnvironmentName].Valid}}"></div></a></div>',
+        cellTemplate: '<div class="ui-grid-cell-contents" title="{{grid.appScope.EnvironmentConfigValid[row.entity.EnvironmentName].Error}}"><a href="#/environment/settings?environment={{row.entity.EnvironmentName}}&tab=validation"><div class="config-status-{{grid.appScope.EnvironmentConfigValid[row.entity.EnvironmentName].Valid}}"></div></a></div>'
       }, {
         name: 'environment',
         field: 'EnvironmentName',
-        cellTemplate: '<a href="#/environment/settings?environment={{row.entity.EnvironmentName}}">{{row.entity.EnvironmentName}} <small ng-if="row.entity.Configuration.EnvironmentType">({{row.entity.Configuration.EnvironmentType}})</small></a>',
+        cellTemplate: '<a href="#/environment/settings?environment={{row.entity.EnvironmentName}}">{{row.entity.EnvironmentName}} <small ng-if="row.entity.Configuration.EnvironmentType">({{row.entity.Configuration.EnvironmentType}})</small></a>'
       }, {
         name: 'owningCluster',
-        field: 'row.entity.Configuration.OwningCluster',
-      }],
+        field: 'row.entity.Configuration.OwningCluster'
+      }]
     };
 
     function init() {
-
       vm.userHasCreatePermission = user.hasPermission({ access: 'POST', resource: '/config/environments/**' });
       vm.userHasDeletePermission = user.hasPermission({ access: 'DELETE', resource: '/config/environments/**' });
 
@@ -48,7 +48,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
 
         cachedResources.config.environmentTypes.all().then(function (environmentTypes) {
           vm.environmentTypesList = [SHOW_ALL_OPTION].concat(_.map(environmentTypes, 'EnvironmentType').sort());
-        }),
+        })
       ]).then(function () {
         vm.selectedEnvironmentType = $routeParams.environmentType || SHOW_ALL_OPTION;
         vm.selectedOwningCluster = $routeParams.cluster || SHOW_ALL_OPTION;
@@ -61,7 +61,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
       vm.dataLoading = true;
       $location.search({
         environmentType: vm.selectedEnvironmentType,
-        cluster: vm.selectedOwningCluster,
+        cluster: vm.selectedOwningCluster
       });
 
       var query = {};
@@ -75,7 +75,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
 
       $q.all([
         Environment.all({ query: query, useCache: false }),
-        Environment.getAllOps(),
+        Environment.getAllOps()
       ]).then(function (results) {
         var configEnvironments = results[0];
         var opsEnvironments = results[1];
@@ -91,7 +91,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
             var result = {
               EnvironmentName: source.EnvironmentName,
               Configuration: source.Value,
-              Operation: target.Value || {},
+              Operation: target.Value || {}
             };
 
             var scheduleAction = target.Value.ScheduleStatus;
@@ -119,7 +119,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
       }).then(function () {
         return modal.information({
           title: 'Environment Deleted',
-          message: 'Environment ' + environment.EnvironmentName + ' was deleted successfully.',
+          message: 'Environment ' + environment.EnvironmentName + ' was deleted successfully.'
         });
       }).then(function () {
         cachedResources.config.environments.flush();
@@ -134,7 +134,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
     vm.newEnvironment = function () {
       var instance = $uibModal.open({
         templateUrl: '/app/environments/dialogs/env-create-environment-modal.html',
-        controller: 'CreateEnvironmentController as vm',
+        controller: 'CreateEnvironmentController as vm'
       });
       instance.result.then(function () {
         cachedResources.config.environments.flush();
@@ -158,7 +158,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
         cachedResources.config.services.all(),
         cachedResources.config.lbUpstream.all(),
         cachedResources.config.deploymentMaps.all(),
-        cachedResources.config.lbSettings.all(),
+        cachedResources.config.lbSettings.all()
       ]).then(function () {
         vm.data.forEach(function (env) { validateEnvironment(env); });
       });

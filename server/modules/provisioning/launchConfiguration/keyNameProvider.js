@@ -37,14 +37,14 @@ module.exports = {
             error))
         );
     }
-  },
+  }
 };
 
 function getKeyPairByName(keyName, accountName) {
   let query = {
     name: 'GetKeyPair',
     accountName,
-    keyName,
+    keyName
   };
 
   return sender.sendQuery({ query });

@@ -11,15 +11,15 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   }).do((request, response) => {
     let query = {
       name: 'GetAutoScalingGroupScheduledActions',
       accountName: request.params.account,
-      autoScalingGroupName: request.params.name,
+      autoScalingGroupName: request.params.name
     };
 
     send.query(query, request, response);
-  }),
+  })
 
 ];

@@ -21,5 +21,5 @@ function getStaticContent(directory) {
 }
 
 module.exports = {
-  getStaticContent,
+  getStaticContent
 };

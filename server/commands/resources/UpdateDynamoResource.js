@@ -48,7 +48,7 @@ function* handler(command) {
   // Updating existing item into the storage
   let params = {
     item,
-    expectedVersion: command.expectedVersion,
+    expectedVersion: command.expectedVersion
   };
 
   yield resource.put(params);

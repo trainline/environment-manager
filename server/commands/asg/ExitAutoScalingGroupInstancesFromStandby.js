@@ -34,7 +34,7 @@ module.exports = function ExitAutoScalingGroupInstancesFromStandby(command) {
       name: 'SetAutoScalingGroupSize',
       accountName: command.accountName,
       autoScalingGroupName: command.autoScalingGroupName,
-      autoScalingGroupMaxSize: expectedSize,
+      autoScalingGroupMaxSize: expectedSize
     };
     yield sender.sendCommand({ command: childCommand, parent: command });
 
@@ -42,7 +42,7 @@ module.exports = function ExitAutoScalingGroupInstancesFromStandby(command) {
     // are exited from standby
     parameters = {
       name: command.autoScalingGroupName,
-      instanceIds: command.instanceIds,
+      instanceIds: command.instanceIds
     };
     yield asgResource.exitInstancesFromStandby(parameters);
 
@@ -53,7 +53,7 @@ module.exports = function ExitAutoScalingGroupInstancesFromStandby(command) {
       name: 'SetAutoScalingGroupSize',
       accountName: command.accountName,
       autoScalingGroupName: command.autoScalingGroupName,
-      autoScalingGroupMinSize: expectedSize,
+      autoScalingGroupMinSize: expectedSize
     };
     yield sender.sendCommand({ command: childCommand, parent: command });
 

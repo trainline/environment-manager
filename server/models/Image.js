@@ -16,8 +16,8 @@ class Image {
     return co(function* () {
       let images = yield sender.sendQuery({
         query: {
-          name: 'ScanCrossAccountImages',
-        },
+          name: 'ScanCrossAccountImages'
+        }
       });
       let image = _.find(images, { ImageId: id });
       return new Image(image);

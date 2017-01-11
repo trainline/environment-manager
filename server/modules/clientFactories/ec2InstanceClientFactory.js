@@ -6,5 +6,5 @@ module.exports = {
   create(parameters) {
     let resourceProvider = require('modules/resourceProvider');
     return resourceProvider.getInstanceByName('instances', parameters);
-  },
+  }
 };

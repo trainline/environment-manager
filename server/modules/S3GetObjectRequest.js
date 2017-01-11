@@ -15,7 +15,7 @@ function S3GetObjectRequest(client, parameters) {
   self.execute = function (callback) {
     let request = {
       Bucket: parameters.bucketName,
-      Key: parameters.objectPath,
+      Key: parameters.objectPath
     };
 
     let promise = client.getObject(request)

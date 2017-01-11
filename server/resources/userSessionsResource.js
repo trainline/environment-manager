@@ -9,5 +9,5 @@ module.exports = {
   keyName: 'UserName',
   rangeName: null,
   perAccount: false,
-  docs: { disableDocs: true },
+  docs: { disableDocs: true }
 };

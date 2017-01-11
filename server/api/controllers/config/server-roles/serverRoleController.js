@@ -22,5 +22,5 @@ module.exports = {
   getServerRoleByName,
   postServerRole,
   putServerRoleByName,
-  deleteServerRoleByName,
+  deleteServerRoleByName
 };

@@ -8,6 +8,6 @@ module.exports = {
   queryable: true,
   docs: {
     description: 'Account',
-    tags: ['Accounts'],
-  },
+    tags: ['Accounts']
+  }
 };

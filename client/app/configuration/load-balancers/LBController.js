@@ -1,10 +1,10 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 // Manage specific LoadBalancer Setting
 angular.module('EnvironmentManager.configuration').controller('LBController',
   function ($scope, $routeParams, $location, $q, $http, resources, cachedResources, modal, accountMappingService) {
-
     $scope.LBSetting = {};
     $scope.LBUpstreamData = [];
     $scope.Version = 0;
@@ -24,7 +24,7 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
       EnvironmentName: '',
       VHostName: '',
       Listen: [
-        { IP: '', Port: '', SSL: true },
+        { IP: '', Port: '', SSL: true }
       ],
       SSLCertificate: '',
       SSLKey: '',
@@ -43,7 +43,7 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
           Interval: 0,
           Fails: 0,
           Passes: 0,
-          URI: '',
+          URI: ''
         },
         ProxyHttpVersion: '',
         AddHeaders: [''],
@@ -52,16 +52,16 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
         MoreHeaders: ['header:value'],
         RewriteCondition: '',
         RewriteURI: '',
-        RewriteState: '',
-      },],
+        RewriteState: ''
+      },]
     };
 
     var DefaultValue = JSON.stringify(configStructure, null, 4);
 
     function init() {
-      var mode = $routeParams['mode'];
-      var environment = $routeParams['lb_environment'];
-      var range = $routeParams['range'];
+      var mode = $routeParams.mode;
+      var environment = $routeParams.lb_environment;
+      var range = $routeParams.range;
 
       resources.config.lbUpstream.all({ account: 'all' }).then(function (upstreams) {
         $scope.LBUpstreamData = upstreams; // Used to validate upstreams exist
@@ -74,18 +74,15 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
 
         cachedResources.config.services.all().then(function (services) {
           $scope.ServicesList = _.map(services, 'ServiceName');
-        }),
+        })
       ]).then(function () {
-
         $scope.PageMode = mode ? mode : 'Edit';
         if ($scope.PageMode == 'Edit' || $scope.PageMode == 'Copy') {
-
           accountMappingService.getAccountForEnvironment(environment).then(function (accountName) {
-
             var params = {
               account: accountName,
               key: environment,
-              range: range,
+              range: range
             };
             resources.config.lbSettings.get(params).then(function (data) {
               if ($scope.PageMode == 'Copy') {
@@ -104,14 +101,12 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
                 $scope.userHasPermission = user.hasPermission({ access: 'POST', resource: '/*/config/lbsettings/**' });
               }
             });
-
           });
         } else { // Mode == New
           $scope.LBSetting.EnvironmentName = environment;
           $scope.LBSetting.Value = DefaultValue;
           $scope.userHasPermission = user.hasPermission({ access: 'POST', resource: '/*/config/lbsettings/**' });
         }
-
       });
     }
 
@@ -120,9 +115,7 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
     };
 
     $scope.Save = function () {
-
       accountMappingService.getAccountForEnvironment($scope.LBSetting.EnvironmentName).then(function (accountName) {
-
         var key = $scope.LBSetting.EnvironmentName;
         var range = $scope.LBSetting.VHostName;
         var value = JSON.parse($scope.LBSetting.Value);
@@ -152,16 +145,14 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
           cachedResources.config.lbSettings.flush();
           BackToSummary($scope.LBSetting.EnvironmentName);
         });
-
       });
     };
 
     $scope.Cancel = function () {
-      BackToSummary($routeParams['lb_environment']); // Go back to original environment selection
+      BackToSummary($routeParams.lb_environment); // Go back to original environment selection
     };
 
     $scope.ValidateJson = function (value) {
-
       var errors = [];
 
       // Validate syntax structure and mandatory attributes
@@ -171,7 +162,6 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
 
       // Validate Listen
       if (value.Listen) {
-
         var listenErrors = $scope.ValidateArrayField(value.Listen, 'Listen', true);
         errors = errors.concat(listenErrors);
 
@@ -191,7 +181,6 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
 
       // Validate Locations
       if (value.Locations) {
-
         var locationErrors = $scope.ValidateArrayField(value.Locations, 'Locations', true);
         errors = errors.concat(locationErrors);
 
@@ -270,7 +259,7 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
     function BackToSummary(environment) {
       $location.search('lb_environment', environment);
       $location.path(ReturnPath);
-    };
+    }
 
     $scope.$watch('LBSetting.EnvironmentName', function (newVal, oldVal) {
       // Keep JSON in sync with selected environment

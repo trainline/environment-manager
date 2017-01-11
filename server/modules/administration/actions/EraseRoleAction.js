@@ -51,12 +51,12 @@ function EraseRoleAction(environmentName) {
           let keysToErase = `${keySegments.join('/')}/installation`;
           serviceInstallationKeysToErase.push(keysToErase);
           return true;
-        },
+        }
       });
 
       let erasedServicesInstallationKeys = yield keyValueStoreEraser.scanAndDelete({
         keyPrefix: `environments/${environmentName}/services/`,
-        condition: key => serviceInstallationKeysToErase.indexOf(key) >= 0,
+        condition: key => serviceInstallationKeysToErase.indexOf(key) >= 0
       });
 
       let result = erasedServicesDefinitionKeys

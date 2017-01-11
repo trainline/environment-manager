@@ -11,10 +11,10 @@ module.exports = {
       description: 'The name of the account that owns the S3 bucket',
       type: 'string',
       minLength: 1,
-      maxLength: 255,
+      maxLength: 255
     },
     destination: { $ref: '#/definitions/s3destination' },
-    source: { $ref: '#/definitions/sourcePackage' },
+    source: { $ref: '#/definitions/sourcePackage' }
   },
   required: ['accountName', 'destination', 'source'],
 
@@ -24,8 +24,8 @@ module.exports = {
       type: 'object',
       oneOf: [
         { $ref: '#/definitions/codeDeployRevision' },
-        { $ref: '#/definitions/deploymentMap' },
-      ],
+        { $ref: '#/definitions/deploymentMap' }
+      ]
     },
     s3destination: {
       description: 'Describes an S3 location',
@@ -35,16 +35,16 @@ module.exports = {
           description: 'S3 bucket',
           type: 'string',
           minLength: 1,
-          maxLength: 255,
+          maxLength: 255
         },
         key: {
           description: 'S3 key',
           type: 'string',
           minLength: 1,
-          maxLength: 1024,
-        },
+          maxLength: 1024
+        }
       },
-      required: ['bucket', 'key'],
+      required: ['bucket', 'key']
     },
     codeDeployRevision: {
       description: 'Describes a CodeDeploy revision as a source package',
@@ -52,11 +52,11 @@ module.exports = {
       properties: {
         type: {
           type: 'string',
-          pattern: '^CodeDeployRevision$',
+          pattern: '^CodeDeployRevision$'
         },
-        url: { $ref: '#/definitions/url' },
+        url: { $ref: '#/definitions/url' }
       },
-      required: ['type', 'url'],
+      required: ['type', 'url']
     },
     deploymentMap: {
       description: 'Describes a Deployment Map as a source package',
@@ -64,27 +64,27 @@ module.exports = {
       properties: {
         type: {
           type: 'string',
-          pattern: '^DeploymentMap$',
+          pattern: '^DeploymentMap$'
         },
         id: {
           description: 'The name of the deployment map',
           type: 'string',
           minLength: 1,
-          maxLength: 127,
+          maxLength: 127
         },
-        version: { $ref: '#/definitions/semver' },
+        version: { $ref: '#/definitions/semver' }
       },
-      required: ['id', 'type', 'version'],
+      required: ['id', 'type', 'version']
     },
     semver: {
       type: 'string',
       minLength: 1,
       maxLength: 127,
-      pattern: '^[0-9]+\.[0-9]+\.[0-9]+(-.+)?', //TODO: Check redundant escapes in regex (eslint no-useless-escape)
+      pattern: '^[0-9]+\.[0-9]+\.[0-9]+(-.+)?' // TODO: Check redundant escapes in regex (eslint no-useless-escape)
     },
     url: {
       type: 'string',
-      pattern: '^https?://',
-    },
-  },
+      pattern: '^https?://'
+    }
+  }
 };
