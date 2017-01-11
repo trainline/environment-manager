@@ -56,7 +56,7 @@ function validateCommandAndCreateDeployment(command) {
       serviceName: command.serviceName,
       serviceVersion: command.serviceVersion,
       serviceSlice: command.serviceSlice || '',
-      serverRole: roleName, // TODO(filip): rename this to "serverRoleRuntimeName"
+      serverRole: roleName,
       serverRoleName: command.serverRoleName,
       clusterName: configuration.cluster.Name,
       accountName: command.accountName,
