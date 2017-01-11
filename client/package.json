@@ -8,8 +8,8 @@
   "scripts": {
     "test": "gulp test",
     "test-ci": "gulp test -c",
-    "lint": "eslint app/ --ext .js",
-    "lint-fix": "eslint app/ --ext .js --fix"
+    "lint": "eslint app/ gulp/ --ext .js",
+    "lint-fix": "eslint app/ gulp/ --ext .js --fix"
   },
   "devDependencies": {
     "angular-templatecache": "0.0.1",

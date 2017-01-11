@@ -33,22 +33,22 @@ module.exports = {
   /**
    *  Common implementation for an error handler of a Gulp plugin
    */
-  errorHandler: function(title) {
-    return function(err) {
-      console.error('[' + title + ']',  err.toString());
+  errorHandler: function (title) {
+    return function (err) {
+      console.error('[' + title + ']', err.toString());
       this.emit('end');
     };
   },
 
-  getTargetDirectory: function() {
+  getTargetDirectory: function () {
     return argv.o || 'dist/';
   },
 
-  getInjectedHTMLfileName: function() {
+  getInjectedHTMLfileName: function () {
     return argv.p ? 'index-build-temp.html' : 'index.html';
   },
 
-  isProductionBuild: function() {
+  isProductionBuild: function () {
     return argv.p !== undefined;
   }
 };
