@@ -73,6 +73,7 @@ function postDeployment(req, res, next) {
   const mode = body.mode || 'overwrite';
   const serviceSlice = body.slice || 'none';
   const serverRoleName = req.serverRoleName;
+  const isDryRun = req.swagger.params.dry_run.value;
 
   let command = {
     name: 'DeployService',
@@ -83,12 +84,18 @@ function postDeployment(req, res, next) {
     mode,
     packagePath,
     serverRoleName,
+    isDryRun,
   };
 
   sender.sendCommand({ command, user: req.user }).then((deployment) => {
-    res.status(202);
-    res.location(`/api/${deployment.accountName}/deployments/history/${deployment.id}`);
-    res.json(deployment);
+    if (deployment.isDryRun) {
+      res.status(200);
+      res.json(deployment);
+    } else {
+      res.status(202);
+      res.location(`/api/${deployment.accountName}/deployments/history/${deployment.id}`);
+      res.json(deployment);
+    }
   }).catch((error) => { next({ statusCode: 400, message: error.message }); });
 }
 

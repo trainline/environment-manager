@@ -37,6 +37,13 @@ module.exports = function DeployServiceCommandHandler(command) {
     let destination = yield packagePathProvider.getS3Path(deployment);
     let sourcePackage = getSourcePackageByCommand(command);
 
+    if (command.isDryRun) {
+      return {
+        isDryRun: true,
+        packagePath: command.packagePath,
+      };
+    }
+
     // Run asynchronously, we don't wait for deploy to finish intentionally
     deploy(deployment, destination, sourcePackage, command);
     let accountName = deployment.accountName;
