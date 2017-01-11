@@ -36,7 +36,7 @@ module.exports = function ActiveDirectoryAdapter() {
 
       let activeDirectoryUser = {
         name: username,
-        roles: groups.map(group => group.cn),
+        roles: groups.map(group => group.cn)
       };
 
       return activeDirectoryUser;

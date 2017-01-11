@@ -6,7 +6,7 @@ let later = require('later');
 
 const cronActions = {
   start: 'on',
-  stop: 'off',
+  stop: 'off'
 };
 
 function tryParseSchedule(serialisedSchedule) {
@@ -62,7 +62,7 @@ function parseCronSchedule(serialisedCronSchedule) {
 
   return {
     success: true,
-    schedule,
+    schedule
   };
 }
 

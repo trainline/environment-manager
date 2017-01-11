@@ -16,8 +16,8 @@ module.exports = function SNSTopicClient(accountName) {
   this.get = function (parameters) {
     assertContract(parameters, 'parameters', {
       properties: {
-        topicName: { type: String, empty: false },
-      },
+        topicName: { type: String, empty: false }
+      }
     });
 
     return co(function* () {

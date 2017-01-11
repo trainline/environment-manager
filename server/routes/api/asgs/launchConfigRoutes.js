@@ -12,12 +12,12 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   }).do((request, response) => {
     let query = {
       name: 'GetLaunchConfiguration',
       accountName: request.params.account,
-      autoScalingGroupName: request.params.name,
+      autoScalingGroupName: request.params.name
     };
 
     send.query(query, request, response);
@@ -27,7 +27,7 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   })
   .withAuthorizer(authorizer)
   .do((request, response) => {
@@ -35,10 +35,10 @@ module.exports = [
       name: 'SetLaunchConfiguration',
       accountName: request.params.account,
       autoScalingGroupName: request.params.name,
-      data: request.body,
+      data: request.body
     };
 
     send.query(query, request, response);
-  }),
+  })
 
 ];

@@ -18,7 +18,7 @@ module.exports = route.put('/ops/environments/:key')
       key: request.params.key,
       item: request.body,
       expectedVersion: request.headers['expected-version'],
-      accountName: masterAccountName,
+      accountName: masterAccountName
     };
 
     send.command(command, request, response);

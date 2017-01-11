@@ -14,5 +14,5 @@ function* setInstanceMaintenanceMode(accountName, host, environment, enable) {
 }
 
 module.exports = {
-  setInstanceMaintenanceMode: co.wrap(setInstanceMaintenanceMode),
+  setInstanceMaintenanceMode: co.wrap(setInstanceMaintenanceMode)
 };

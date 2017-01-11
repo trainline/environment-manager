@@ -64,5 +64,5 @@ module.exports = {
   getServiceById,
   getServiceHealthById,
   getServiceSlices,
-  putServiceSlicesToggle,
+  putServiceSlicesToggle
 };

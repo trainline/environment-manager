@@ -11,7 +11,7 @@ const FEATURE_DISABLE_SERVICE = true;
 module.exports = function (request, response) {
   let data = {
     user: JSON.stringify(request.user.toJson()),
-    version: APP_VERSION,
+    version: APP_VERSION
   };
 
   // TODO(filip): refactor front code so we can send single data object rather than code

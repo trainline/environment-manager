@@ -6,23 +6,23 @@ module.exports = {
 
   SourcePackageType: {
     CodeDeployRevision: 'CodeDeployRevision',
-    DeploymentMap: 'DeploymentMap',
+    DeploymentMap: 'DeploymentMap'
   },
 
   DeploymentMode: {
     Overwrite: 'overwrite',
-    BlueGreen: 'bg',
+    BlueGreen: 'bg'
   },
 
   SliceName: {
     Blue: 'blue',
-    Green: 'green',
+    Green: 'green'
   },
 
   DIFF_STATE: {
     Ignored: 'Ignored',
     Missing: 'Missing',
-    Unexpected: 'Unexpected',
+    Unexpected: 'Unexpected'
   },
 
   HEALTH_STATUS: {
@@ -31,18 +31,18 @@ module.exports = {
     Error: 'Error',
     NoData: 'NoData',
     Unknown: 'Unknown',
-    Missing: 'Missing',
+    Missing: 'Missing'
   },
 
   ASGLifecycleState: {
-    IN_SERVICE: 'InService',
+    IN_SERVICE: 'InService'
   },
 
   NodeDeploymentStatus: {
     NotStarted: 'Not Started',
     InProgress: 'In Progress',
     Success: 'Success',
-    Failed: 'Failed',
+    Failed: 'Failed'
   },
 
   DEPLOYMENT_STATUS: {
@@ -50,28 +50,28 @@ module.exports = {
     Success: 'Success',
     Failed: 'Failed',
     Cancelled: 'Cancelled',
-    Unknown: 'Unknown',
+    Unknown: 'Unknown'
   },
 
   AutoScalingNotificationType: {
     InstanceLaunch: 'autoscaling:EC2_INSTANCE_LAUNCH',
     InstanceLaunchError: 'autoscaling:EC2_INSTANCE_LAUNCH_ERROR',
     InstanceTerminate: 'autoscaling:EC2_INSTANCE_TERMINATE',
-    InstanceTerminateError: 'autoscaling:EC2_INSTANCE_TERMINATE_ERROR',
+    InstanceTerminateError: 'autoscaling:EC2_INSTANCE_TERMINATE_ERROR'
   },
 
   LifecycleHookType: {
     InstanceLaunching: 'autoscaling:EC2_INSTANCE_LAUNCHING',
-    InstanceTerminating: 'autoscaling:EC2_INSTANCE_TERMINATING',
+    InstanceTerminating: 'autoscaling:EC2_INSTANCE_TERMINATING'
   },
 
   LifecycleHookDefaultResult: {
     Continue: 'CONTINUE',
-    Abandon: 'ABANDON',
+    Abandon: 'ABANDON'
   },
 
   ServiceAction: {
     INSTALL: 'Install',
-    IGNORE: 'Ignore',
-  },
+    IGNORE: 'Ignore'
+  }
 };

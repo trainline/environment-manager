@@ -18,7 +18,7 @@ module.exports = function DeploymentLogsStreamer() {
       },
       deploymentIds: () => Array.from(state.keys()),
       getByDeploymentId: deploymentId => state.get(deploymentId) || [],
-      removeByDeploymentId: deploymentId => state.delete(deploymentId),
+      removeByDeploymentId: deploymentId => state.delete(deploymentId)
     };
   })();
 

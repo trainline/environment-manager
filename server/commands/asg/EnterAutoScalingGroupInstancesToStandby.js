@@ -43,7 +43,7 @@ module.exports = function EnterAutoScalingGroupInstancesToStandbyCommandHandler(
     yield setAutoScalingGroupSize({ max: expectedSize }, command);
 
     return {
-      InstancesEnteredToStandby: command.instanceIds,
+      InstancesEnteredToStandby: command.instanceIds
     };
   });
 };
@@ -54,7 +54,7 @@ function setAutoScalingGroupSize(size, parentCommand) {
     accountName: parentCommand.accountName,
     autoScalingGroupName: parentCommand.autoScalingGroupName,
     autoScalingGroupMinSize: size.min,
-    autoScalingGroupMaxSize: size.max,
+    autoScalingGroupMaxSize: size.max
   };
 
   return sender.sendCommand({ command, parent: parentCommand });

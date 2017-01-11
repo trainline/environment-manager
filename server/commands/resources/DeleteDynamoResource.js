@@ -33,7 +33,7 @@ function* handler(command) {
       '__Deleted': true,
       'Audit.TransactionID': command.commandId,
       'Audit.User': command.username,
-      'Audit.LastChanged': command.timestamp,
+      'Audit.LastChanged': command.timestamp
     };
 
     if (keyName) item[keyName] = params.key;

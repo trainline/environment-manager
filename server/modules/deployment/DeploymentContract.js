@@ -21,8 +21,8 @@ class DeploymentContract {
         serviceSlice: { type: String, empty: true },
         clusterName: { type: String, empty: false },
         accountName: { type: String, empty: false },
-        username: { type: String, empty: false },
-      },
+        username: { type: String, empty: false }
+      }
     });
 
     _.assign(this, data);

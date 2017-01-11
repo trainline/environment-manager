@@ -15,6 +15,6 @@ module.exports = route.get('/all/deployments')
     let callback = adapt.callbackToExpress(request, response);
 
     return deployments.scan({
-      filter: utilities.extractQuery(request),
+      filter: utilities.extractQuery(request)
     }).then(value => callback(null, value), err => callback(err));
   });

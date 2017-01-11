@@ -9,6 +9,6 @@ module.exports = {
   queryable: true,
   docs: {
     description: 'Image',
-    tags: ['Images (AMIs)'],
-  },
+    tags: ['Images (AMIs)']
+  }
 };

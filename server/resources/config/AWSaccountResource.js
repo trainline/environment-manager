@@ -9,5 +9,5 @@
   keyName: 'AccountNumber',
   queryable: true,
   perAccount: false,
-  disableAutoRoute: true,
+  disableAutoRoute: true
 };

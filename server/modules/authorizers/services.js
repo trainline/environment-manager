@@ -10,11 +10,11 @@ exports.getRules = (request) => {
   return Promise.resolve([{
     resource: request.url.replace(/\/+$/, ''),
     access: request.method,
-    clusters: [cluster.toLowerCase()],
+    clusters: [cluster.toLowerCase()]
   }]);
 };
 
 exports.docs = {
   requiresClusterPermissions: true,
-  requiresEnvironmentTypePermissions: false,
+  requiresEnvironmentTypePermissions: false
 };

@@ -10,7 +10,7 @@ module.exports = route.get('/accounts')
   .withDocs({ description: 'Account', tags: ['Accounts'] })
   .do((request, response) => {
     let query = {
-      name: 'ScanAccounts',
+      name: 'ScanAccounts'
     };
 
     send.query(query, request, response);

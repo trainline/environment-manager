@@ -17,9 +17,9 @@ function* QueryDynamoResourceQueryHandler(query) {
   let params = {
     key: query.key,
     formatting: {
-      exposeAudit: query.exposeAudit,
+      exposeAudit: query.exposeAudit
     },
-    suppressError: query.suppressError,
+    suppressError: query.suppressError
   };
 
   return resource.query(params);

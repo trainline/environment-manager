@@ -21,7 +21,7 @@ class DeploymentMap {
       name: 'GetDynamoResource',
       resource: 'config/deploymentmaps',
       accountName: masterAccountName,
-      key: deploymentMapName,
+      key: deploymentMapName
     };
 
     return sender

@@ -17,7 +17,7 @@ module.exports = {
       let safeIncludeUnstable = includeUnstable === undefined ? false : includeUnstable;
       return getLatestImageByType(imageNameOrType, safeIncludeUnstable);
     }
-  },
+  }
 };
 
 function doesSpecifyVersion(imageNameOrType) {
@@ -28,8 +28,8 @@ function getImageByName(imageName) {
   let query = {
     name: 'ScanCrossAccountImages',
     filter: {
-      name: imageName,
-    },
+      name: imageName
+    }
   };
 
   return sender
@@ -44,7 +44,7 @@ function getImageByName(imageName) {
 
 function getLatestImageByType(imageType, includeUnstable) {
   let query = {
-    name: 'ScanCrossAccountImages',
+    name: 'ScanCrossAccountImages'
   };
 
   return sender

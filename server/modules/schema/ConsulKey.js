@@ -7,5 +7,5 @@ module.exports = {
   description: 'Consul Key-Value Store Key',
   type: 'string',
   minLength: 1,
-  maxLength: 255,
+  maxLength: 255
 };

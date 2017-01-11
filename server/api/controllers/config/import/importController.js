@@ -34,12 +34,12 @@ function putResourceImport(req, res, next) {
     name: commandName,
     resource,
     items: _.concat(value),
-    accountName,
+    accountName
   };
 
   sender.sendCommand({ command, user }).then(data => res.json(data)).catch(next);
 }
 
 module.exports = {
-  putResourceImport,
+  putResourceImport
 };

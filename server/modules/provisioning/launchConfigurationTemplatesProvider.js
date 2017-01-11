@@ -46,13 +46,13 @@ module.exports = {
           iamInstanceProfile,
           securityGroups,
           devices,
-          userData,
+          userData
         });
       }
 
       return templates;
     });
-  },
+  }
 };
 
 function isDetailedMonitoringEnabled(configuration) {

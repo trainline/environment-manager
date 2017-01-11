@@ -5,7 +5,7 @@
 let _ = require('lodash');
 
 let valid = {
-  isValid: true,
+  isValid: true
 };
 
 let invalid = err => ({ isValid: false, err });

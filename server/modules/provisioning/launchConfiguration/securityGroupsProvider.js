@@ -36,7 +36,7 @@ module.exports = {
     let securityGroupNamesAndReasons = getSecurityGroupsNamesAndReasons(configuration, image);
 
     return this.getFromSecurityGroupNames(accountName, vpcId, securityGroupNamesAndReasons, logger);
-  },
+  }
 
 };
 
@@ -76,31 +76,31 @@ function getSecurityGroupsNamesAndReasons(configuration, image) {
   if (customSecurityGroups.length) {
     customSecurityGroups.forEach(group => securityGroupNamesAndReasons.push({
       name: group,
-      reason: 'It is assigned because specified in the server role configuration.',
+      reason: 'It is assigned because specified in the server role configuration.'
     }));
   } else {
     securityGroupNamesAndReasons.push({
       name: getSecurityGroupNameByServerRole(cluster, serverRoleName),
       reason: 'It is assigned by default given server role and cluster. It can be overwritten ' +
-              'by specifying one or more security groups in the server role configuration.',
+              'by specifying one or more security groups in the server role configuration.'
     });
   }
 
   if (securityZone === 'Secure') {
     securityGroupNamesAndReasons.push({
       name: getSecurityGroupNameBySecurityZone(securityZone),
-      reason: 'It is assigned by default because server role security zone is Secure.',
+      reason: 'It is assigned by default because server role security zone is Secure.'
     });
 
     securityGroupNamesAndReasons.push({
       name: getSecurityGroupNameByPlatformSecure(image, securityZone),
       reason: `It is assigned by default because instances image is ${imagePlatform} based in ` +
-              'Secure security zone.',
+              'Secure security zone.'
     });
   } else {
     securityGroupNamesAndReasons.push({
       name: getSecurityGroupNameByPlatform(image, securityZone),
-      reason: `It is assigned by default because instances image is ${imagePlatform} based.`,
+      reason: `It is assigned by default because instances image is ${imagePlatform} based.`
     });
   }
 

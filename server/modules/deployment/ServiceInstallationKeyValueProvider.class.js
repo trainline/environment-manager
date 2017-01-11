@@ -20,8 +20,8 @@ module.exports = function ServiceInstallationKeyValueProvider() {
       value: {
         PackageBucket: s3Path.bucket,
         PackageKey: s3Path.key,
-        InstallationTimeout: 20, // Todo: Should be read from the service definition
-      },
+        InstallationTimeout: 20 // Todo: Should be read from the service definition
+      }
     };
 
     return Promise.resolve(serviceInstallationKeyValue);

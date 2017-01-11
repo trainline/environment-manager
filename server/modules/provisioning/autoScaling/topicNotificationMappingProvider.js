@@ -6,7 +6,7 @@ let AutoScalingNotificationType = require('Enums').AutoScalingNotificationType;
 let sender = require('modules/sender');
 
 const TopicsToNotify = [
-  'InfraAsgLambdaScale',
+  'InfraAsgLambdaScale'
 ];
 
 module.exports = {
@@ -16,7 +16,7 @@ module.exports = {
     );
 
     return Promise.all(mappings);
-  },
+  }
 };
 
 function getMappingsByTopicName(topicName, accountName) {
@@ -28,8 +28,8 @@ function getMappingsByTopicName(topicName, accountName) {
         AutoScalingNotificationType.InstanceLaunch,
         AutoScalingNotificationType.InstanceLaunchError,
         AutoScalingNotificationType.InstanceTerminate,
-        AutoScalingNotificationType.InstanceTerminateError,
-      ],
+        AutoScalingNotificationType.InstanceTerminateError
+      ]
     };
     return Promise.resolve(mapping);
   });
@@ -39,7 +39,7 @@ function getTopicByName(topicName, accountName) {
   let query = {
     name: 'GetTopic',
     accountName,
-    topicName,
+    topicName
   };
 
   return sender.sendQuery({ query });

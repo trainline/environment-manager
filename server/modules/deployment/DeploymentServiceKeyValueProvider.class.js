@@ -21,8 +21,8 @@ module.exports = function DeploymentServiceKeyValueProvider() {
         Version: serviceVersion,
         ServerRole: deployment.serverRole,
         Environment: environmentName,
-        Action: 'Install',
-      },
+        Action: 'Install'
+      }
     };
 
     return Promise.resolve(deploymentServiceKeyValue);

@@ -11,6 +11,6 @@ module.exports = {
     resourceDescriptor.type.toLowerCase() === 'ec2/sg',
 
   create: (resourceDescriptor, parameters) =>
-    amazonClientFactory.createEC2Client(parameters.accountName).then(client => new SecurityGroupResource(client)),
+    amazonClientFactory.createEC2Client(parameters.accountName).then(client => new SecurityGroupResource(client))
 
 };

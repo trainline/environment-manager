@@ -7,7 +7,7 @@ module.exports = {
   description: 'Set data required to connect to Consul',
   type: 'object',
   properties: {
-    environment: { $ref: 'EnvironmentName' },
+    environment: { $ref: 'EnvironmentName' }
   },
-  required: ['environment'],
+  required: ['environment']
 };

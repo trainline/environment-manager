@@ -57,5 +57,5 @@ module.exports = {
   getPermissionConfigByName,
   postPermissionsConfig,
   putPermissionConfigByName,
-  deletePermissionConfigByName,
+  deletePermissionConfigByName
 };

@@ -21,7 +21,7 @@ class SecurityGroup {
       name: 'ScanSecurityGroups',
       accountName,
       vpcId,
-      groupIds,
+      groupIds
     };
 
     return sender.sendQuery({ query }).then(list => list.map(item => new SecurityGroup(item)));
@@ -32,7 +32,7 @@ class SecurityGroup {
       name: 'ScanSecurityGroups',
       accountName,
       vpcId,
-      groupNames,
+      groupNames
     };
 
     return sender.sendQuery({ query }).then(list => list.map(item => new SecurityGroup(item)));

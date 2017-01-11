@@ -16,7 +16,7 @@ module.exports = function DmPacker(logger) {
 
   this.buildCodeDeployPackage = function (deploymentMap) {
     let options = {
-      nugetRootUrl: config.getUserValue('local').nugetRootUrl,
+      nugetRootUrl: config.getUserValue('local').nugetRootUrl
     };
 
     return retry(tryDownload).then(archive => archive, (error) => {
@@ -85,7 +85,7 @@ module.exports = function DmPacker(logger) {
         s3client.upload({
           Bucket: destination.bucket,
           Key: destination.key,
-          Body: stream,
+          Body: stream
         }, (err, data) => {
           if (err) {
             reject(err);
@@ -114,7 +114,7 @@ module.exports = function DmPacker(logger) {
       return {
         id: item.id,
         version: item.version,
-        contentStream: responseStream,
+        contentStream: responseStream
       };
     });
   }

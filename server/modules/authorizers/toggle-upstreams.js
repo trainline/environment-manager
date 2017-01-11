@@ -10,7 +10,7 @@ function getSlicesByUpstream(upstreamName, environmentName, accountName, user) {
       name: 'GetSlicesByUpstream',
       accountName,
       upstreamName,
-      environmentName,
+      environmentName
     };
 
     sender.sendQuery({ query, user }, (err, result) => {
@@ -37,12 +37,12 @@ exports.getRules = (request) => {
     [{
       resource: request.url.replace(/\/+$/, ''),
       access: request.method,
-      clusters: [sliceCluster],
+      clusters: [sliceCluster]
     }]
   ));
 };
 
 exports.docs = {
   requiresClusterPermissions: true,
-  requiresEnvironmentTypePermissions: false,
+  requiresEnvironmentTypePermissions: false
 };

@@ -18,7 +18,7 @@ module.exports = {
       Role: roleName,
       SecurityZone: configuration.serverRole.SecurityZone,
       Schedule: configuration.serverRole.ScheduleTag || '',
-      ContactEmail: configuration.serverRole.ContactEmailTag,
+      ContactEmail: configuration.serverRole.ContactEmailTag
     };
 
     if (!tags.ContactEmail) {
@@ -26,5 +26,5 @@ module.exports = {
     }
 
     return Promise.resolve(tags);
-  },
+  }
 };

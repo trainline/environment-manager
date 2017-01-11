@@ -5,5 +5,5 @@
 module.exports = {
   name: 'instanceprofiles',
   type: 'iam/instanceprofiles',
-  perAccount: true,
+  perAccount: true
 };

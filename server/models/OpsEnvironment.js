@@ -37,7 +37,7 @@ class OpsEnvironment {
 
       let ret = {
         EnvironmentName: self.EnvironmentName,
-        Value: value,
+        Value: value
       };
 
       ret.Value.ScheduleStatus = self.getScheduleStatus();
@@ -59,7 +59,7 @@ class OpsEnvironment {
       name: 'GetDynamoResource',
       resource: 'ops/environments',
       key: environmentName,
-      accountName: masterAccountName,
+      accountName: masterAccountName
     };
 
     return sender.sendQuery({ query: childQuery }).then(obj => new OpsEnvironment(obj));

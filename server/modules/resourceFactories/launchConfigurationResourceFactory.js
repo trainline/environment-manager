@@ -92,5 +92,5 @@ module.exports = {
     resourceDescriptor.type.toLowerCase() === 'launchconfig',
 
   create: (resourceDescriptor, parameters) =>
-    amazonClientFactory.createASGClient(parameters.accountName).then(client => new LaunchConfigurationResource(client)),
+    amazonClientFactory.createASGClient(parameters.accountName).then(client => new LaunchConfigurationResource(client))
 };
