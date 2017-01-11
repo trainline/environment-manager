@@ -6,6 +6,7 @@ require('should');
 let emCrypto = require('modules/emCrypto');
 let fp = require('lodash/fp');
 let proxyquire = require('proxyquire');
+let timers = require('timers');
 
 let silent = {
     debug: () => undefined,
@@ -15,22 +16,40 @@ let silent = {
 }
 
 let TTL = 30;
-
-let sut = proxyquire('modules/data-access/cacheManagerEncryptedRedis', {
-    'modules/logger': silent,
-});
+let defaultOptions = {
+    host: 'localhost',
+    port: 6379,
+    readTimeout: 10,
+    writeTimeout: 10,
+}
 
 describe('encrypted Redis cache manager', function () {
     describe('set then get returns the input unmodified', function () {
+        let sut;
+        before(function () {
+            function fakeRedis() {
+                let db = new Map();
+                return {
+                    on: () => { },
+                    del: k => db.delete(k),
+                    getBuffer: k => db.get(k),
+                    reset: () => db.clear(),
+                    setBuffer: (k, v) => db.set(k, v),
+                    setexBuffer: (k, ttl, v) => db.set(k, v),
+                };
+            }
+
+            sut = proxyquire('modules/data-access/cacheManagerEncryptedRedis', {
+                'ioredis': fakeRedis,
+                'modules/logger': silent,
+            });
+        });
+
         context('when no encryption transformation is specified', function () {
             let inputs = [null, false, 0, 'A', { a: 'A' }];
             inputs.forEach(input => {
                 it(`${input}`, function () {
-                    let options = {
-                        host: 'localhost',
-                        port: 6379,
-                    };
-                    let redis = sut.create(options);
+                    let redis = sut.create(defaultOptions);
                     return redis.set('a', input, { ttl: TTL })
                         .then(() => redis.get('a'))
                         .should.finally.eql(input);
@@ -45,20 +64,88 @@ describe('encrypted Redis cache manager', function () {
                     let encrypt = fp.flow(JSON.stringify, str => new Buffer(str), emCrypto.encrypt.bind(null, password));
                     let decrypt = fp.flow(emCrypto.decrypt.bind(null, password), buf => buf.toString(), JSON.parse);
 
-                    let options = {
-                        host: 'localhost',
-                        port: 6379,
+                    let options = Object.assign({}, defaultOptions, {
                         valueTransform: {
                             toStore: encrypt,
                             fromStore: decrypt,
                         },
-                    };
+                    });
                     let redis = sut.create(options);
                     return redis.set('a', input, { ttl: TTL })
                         .then(() => redis.get('a'))
                         .should.finally.eql(input);
                 });
             });
+        });
+    });
+    describe('when Redis is unavailable', function () {
+        let sut;
+        before(function () {
+            let noresponse = () => new Promise((_, reject) => { timers.setTimeout(reject, 3000) });
+            function fakeRedis() {
+                return {
+                    on: () => { },
+                    del: noresponse,
+                    flushdb: noresponse,
+                    getBuffer: noresponse,
+                    reset: noresponse,
+                    setBuffer: noresponse,
+                    setexBuffer: noresponse,
+                };
+            }
+
+            sut = proxyquire('modules/data-access/cacheManagerEncryptedRedis', {
+                'ioredis': fakeRedis,
+                'modules/logger': silent,
+            });
+        });
+
+        it('del returns a fulfilled promise of undefined', function () {
+            return sut.create(defaultOptions).del('key').should.finally.be.undefined();
+        });
+        it('get returns a fulfilled promise of undefined', function () {
+            return sut.create(defaultOptions).get('key').should.finally.be.undefined();
+        });
+        it('reset returns a fulfilled promise of undefined', function () {
+            return sut.create(defaultOptions).reset().should.finally.be.undefined();
+        });
+        it('set returns a fulfilled promise of undefined', function () {
+            return sut.create(defaultOptions).set('key', 'value').should.finally.be.undefined();
+        });
+    });
+    describe('when Redis throws an error', function () {
+        let sut;
+        before(function () {
+            let reject = () => Promise.reject(new Error('snap'));
+            function fakeRedis() {
+                return {
+                    on: () => { },
+                    del: reject,
+                    flushdb: reject,
+                    getBuffer: reject,
+                    reset: reject,
+                    setBuffer: reject,
+                    setexBuffer: reject,
+                };
+            }
+
+            sut = proxyquire('modules/data-access/cacheManagerEncryptedRedis', {
+                'ioredis': fakeRedis,
+                'modules/logger': silent,
+            });
+        });
+
+        it('del returns a fulfilled promise of undefined', function () {
+            return sut.create(defaultOptions).del('key').should.finally.be.undefined();
+        });
+        it('get returns a fulfilled promise of undefined', function () {
+            return sut.create(defaultOptions).get('key').should.finally.be.undefined();
+        });
+        it('reset returns a fulfilled promise of undefined', function () {
+            return sut.create(defaultOptions).reset().should.finally.be.undefined();
+        });
+        it('set returns a fulfilled promise of undefined', function () {
+            return sut.create(defaultOptions).set('key', 'value').should.finally.be.undefined();
         });
     });
 })
