@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 const RESOURCE = 'config/notification-settings';
@@ -35,7 +36,7 @@ function postNotificationSettings(req, res, next) {
  */
 function putNotificationSettingsById(req, res, next) {
   let body = req.swagger.params.body.value;
-  let key = req.swagger.params.id.value
+  let key = req.swagger.params.id.value;
   let expectedVersion = req.swagger.params['expected-version'].value;
   let user = req.user;
 
@@ -46,7 +47,7 @@ function putNotificationSettingsById(req, res, next) {
  * DELETE /config/notification-settings/{id}
  */
 function deleteNotificationSettingsById(req, res, next) {
-  let key = req.swagger.params.id.value
+  let key = req.swagger.params.id.value;
   let user = req.user;
   return dynamoHelper.delete(key, user).then(data => res.json(data)).catch(next);
 }
@@ -56,5 +57,5 @@ module.exports = {
   getNotificationSettingsById,
   postNotificationSettings,
   putNotificationSettingsById,
-  deleteNotificationSettingsById
+  deleteNotificationSettingsById,
 };
