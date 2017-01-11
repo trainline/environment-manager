@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assert = require('assert');
@@ -22,7 +23,7 @@ module.exports = function CreateAutoScalingGroupCommandHandler(command) {
     logger.info(`Creating [${autoScalingGroupName}] AutoScalingGroup...`);
 
     let autoScalingGroupClient = yield autoScalingGroupClientFactory.create({
-      accountName: accountName,
+      accountName,
     });
 
     let request = getCreateAutoScalingGroupRequest(template);
@@ -111,17 +112,19 @@ function getCreateAutoScalingGroupRequest(template) {
 function getAutoScalingGroupTags(tags) {
   let autoScalingGroupTags = [];
   for (let tag in tags) {
-    autoScalingGroupTags.push({
-      Key: tag,
-      Value: tags[tag],
-    });
+    if ({}.hasOwnProperty.call(tags, tag)) {
+      autoScalingGroupTags.push({
+        Key: tag,
+        Value: tags[tag],
+      });
+    }
   }
 
   return autoScalingGroupTags;
 }
 
 function getAttachNotificationsRequests(template) {
-  let requests = template.topicNotificationMapping.map(mapping => {
+  let requests = template.topicNotificationMapping.map((mapping) => {
     let request = {
       AutoScalingGroupName: template.autoScalingGroupName,
       TopicARN: mapping.topicArn,
@@ -135,7 +138,7 @@ function getAttachNotificationsRequests(template) {
 }
 
 function getAttachLifecycleHookRequests(template) {
-  let requests = template.lifecycleHooks.map(hook => {
+  let requests = template.lifecycleHooks.map((hook) => {
     let request = {
       AutoScalingGroupName: template.autoScalingGroupName,
       LifecycleHookName: hook.name,

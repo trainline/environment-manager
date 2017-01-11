@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -6,7 +7,7 @@ let sender = require('modules/sender');
 let taggable = require('./taggable');
 
 class SecurityGroup {
-  
+
   constructor(data) {
     _.assign(this, data);
   }
@@ -23,9 +24,7 @@ class SecurityGroup {
       groupIds,
     };
 
-    return sender.sendQuery({ query }).then((list) => {
-      return list.map((item) => new SecurityGroup(item));
-    });
+    return sender.sendQuery({ query }).then(list => list.map(item => new SecurityGroup(item)));
   }
 
   static getAllByNames(accountName, vpcId, groupNames) {
@@ -36,11 +35,9 @@ class SecurityGroup {
       groupNames,
     };
 
-    return sender.sendQuery({ query }).then((list) => {
-      return list.map((item) => new SecurityGroup(item));
-    });
+    return sender.sendQuery({ query }).then(list => list.map(item => new SecurityGroup(item)));
   }
-  
+
 }
 
 taggable(SecurityGroup);

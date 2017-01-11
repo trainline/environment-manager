@@ -1,4 +1,5 @@
-﻿/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let send = require('modules/helpers/send');
@@ -15,7 +16,7 @@ let scheduleStatusRoute =
       tags: ['Environments'],
     })
     .do((request, response) => {
-      var query = {
+      let query = {
         name: 'GetEnvironmentScheduleStatus',
         environmentName: request.params.environment,
       };
@@ -30,7 +31,7 @@ let timedScheduleStatusRoute =
       tags: ['Environments'],
     })
     .do((request, response) => {
-      var query = {
+      let query = {
         name: 'GetEnvironmentScheduleStatus',
         environmentName: request.params.environment,
         date: request.params.date,
@@ -42,32 +43,32 @@ let timedScheduleStatusRoute =
 let accountLookupRoute =
   route.get('/environments/:environment/accountName')
     .inOrderTo('Get the account name associated with the given environment')
-    .withDocs({ description:'Environment', tags:['Environments'] })
+    .withDocs({ description: 'Environment', tags: ['Environments'] })
     .do((request, response) => {
       let callback = adapt.callbackToExpress(request, response);
       let success = result => callback(null, result);
       let failure = error => callback(error);
       let command = {
         name: 'GetAccountByEnvironment',
-        environment: request.params.environment
+        environment: request.params.environment,
       };
-      sender.sendCommand({ command, user: request.user }).then(success, failure)
+      sender.sendCommand({ command, user: request.user }).then(success, failure);
     });
 
 let protectedActionRoute =
   route.get('/environments/:environment/protected')
     .inOrderTo('Do something')
-    .withDocs({ description:'Environment', tags:['Environments'] })
+    .withDocs({ description: 'Environment', tags: ['Environments'] })
     .do((request, response) => {
       let environment = request.params.environment;
       let action = request.query.action;
       environmentProtection.isActionProtected(environment, action)
-        .then(isProtected => response.json({isProtected}));
+        .then(isProtected => response.json({ isProtected }));
     });
 
 module.exports = [
   scheduleStatusRoute,
   timedScheduleStatusRoute,
   accountLookupRoute,
-  protectedActionRoute
+  protectedActionRoute,
 ];

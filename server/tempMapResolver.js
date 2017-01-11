@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let fs = require('fs');
@@ -6,8 +7,9 @@ let fs = require('fs');
 function createMap(directory) {
   let obj = {};
 
-  fs.readdirSync(directory).filter(function (file) {
-    let pattern = new RegExp(`(.*).js$`);
+  // eslint-disable-next-line array-callback-return
+  fs.readdirSync(directory).filter((file) => {
+    let pattern = new RegExp('(.*).js$');
     let match = file.match(pattern);
     if (match !== null) {
       obj[match[1]] = require(`${directory}/${file}`);

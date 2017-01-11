@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -16,10 +17,10 @@ function* handler(query) {
     formatting: {
       exposeAudit: query.exposeAudit,
     },
-    suppressError: query.suppressError
+    suppressError: query.suppressError,
   };
 
   return resource.all(params);
-};
+}
 
 module.exports = co.wrap(handler);

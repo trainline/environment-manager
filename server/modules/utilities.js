@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let querystring = require('querystring');
@@ -36,17 +37,17 @@ function offsetMilliseconds(date, offset) {
 function make(target) {
   return {
 
-    uri: function() {
-      var result = '';
+    uri() {
+      let result = '';
 
-      target.forEach(function(segment) {
-        if(!segment) return;
-        result += '/' + segment;
+      target.forEach((segment) => {
+        if (!segment) return;
+        result += `/${segment}`;
       });
 
       return result;
-    }
-  }
+    },
+  };
 }
 
 /**
@@ -54,7 +55,7 @@ function make(target) {
  * @returns {null}
  */
 function extractQuery(request) {
-  var parsedUrl = url.parse(request.url);
+  let parsedUrl = url.parse(request.url);
   return parsedUrl.query ? querystring.parse(parsedUrl.query) : null;
 }
 

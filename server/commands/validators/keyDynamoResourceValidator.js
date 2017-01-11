@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let resourceDescriptorProvider = require('modules/resourceDescriptorProvider');
@@ -21,7 +22,7 @@ function getSchemaError(item, resourceName) {
 function validate(resource, command) {
   let resourceName = command.resource;
   let error = getSchemaError(resource, resourceName);
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     if (error !== null) {
       reject(new InvalidItemSchemaError(error));
     } else {

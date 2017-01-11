@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let send = require('modules/helpers/send');
@@ -29,7 +30,8 @@ module.exports = [
       tags: ['Images (AMIs)'],
     }).do((request, response, next) => {
       if (request.params.account === 'v1') {
-        return next();
+        next();
+        return;
       }
 
       let query = {

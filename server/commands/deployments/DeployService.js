@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -11,7 +12,7 @@ let UnknownSourcePackageTypeError = require('modules/errors/UnknownSourcePackage
 let sender = require('modules/sender');
 let infrastructureConfigurationProvider = require('modules/provisioning/infrastructureConfigurationProvider');
 let namingConventionProvider = require('modules/provisioning/namingConventionProvider');
-let packagePathProvider = new(require('modules/PackagePathProvider'))();
+let packagePathProvider = new (require('modules/PackagePathProvider'))();
 let deploymentLogger = require('modules/DeploymentLogger');
 
 module.exports = function DeployServiceCommandHandler(command) {
@@ -43,7 +44,6 @@ module.exports = function DeployServiceCommandHandler(command) {
 
 function validateCommandAndCreateDeployment(command) {
   return co(function* () {
-    
     let configuration = yield infrastructureConfigurationProvider.get(
       command.environmentName, command.serviceName, command.serverRoleName
     );
@@ -63,7 +63,7 @@ function validateCommandAndCreateDeployment(command) {
       username: command.username,
     });
 
-    yield deploymentContract.validate(configuration);    
+    yield deploymentContract.validate(configuration);
     return deploymentContract;
   });
 }
@@ -79,8 +79,7 @@ function deploy(deployment, destination, sourcePackage, command) {
       deployment.accountName,
       'Waiting for nodes to perform service deployment...'
     );
-
-  }).catch(error => {
+  }).catch((error) => {
     let deploymentStatus = {
       deploymentId: deployment.id,
       accountName: deployment.accountName,

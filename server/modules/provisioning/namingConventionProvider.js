@@ -1,25 +1,26 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-var assert = require('assert');
+let assert = require('assert');
 
 function getAutoScalingGroupName(configuration, sliceName) {
-  assert(configuration, "Expected 'configuration' argument not to be null.");
-  
-  var segments = [
+  assert(configuration, 'Expected \'configuration\' argument not to be null.');
+
+  let segments = [
     configuration.environmentName,
     configuration.cluster.ShortName.toLowerCase(),
     getRoleName(configuration, sliceName),
   ];
-  var autoScalingGroupName = segments.join('-');
+  let autoScalingGroupName = segments.join('-');
   return autoScalingGroupName;
 }
 
 function getLaunchConfigurationName(configuration, sliceName) {
-  assert(configuration, "Expected 'configuration' argument not to be null.");
+  assert(configuration, 'Expected \'configuration\' argument not to be null.');
 
-  var autoScalingGroupName = getAutoScalingGroupName(configuration, sliceName);
-  var launchConfigurationName = `LaunchConfig_${autoScalingGroupName}`;
+  let autoScalingGroupName = getAutoScalingGroupName(configuration, sliceName);
+  let launchConfigurationName = `LaunchConfig_${autoScalingGroupName}`;
   return launchConfigurationName;
 }
 
@@ -30,9 +31,9 @@ function getLaunchConfigurationName(configuration, sliceName) {
  *
  */
 function getRoleName(configuration, sliceName) {
-  assert(configuration, "Expected 'configuration' argument not to be null.");
+  assert(configuration, 'Expected \'configuration\' argument not to be null.');
 
-  var roleName = isAutoScalingGroupPerSlice(configuration)
+  let roleName = isAutoScalingGroupPerSlice(configuration)
     ? `${configuration.serverRole.ServerRoleName}-${sliceName}`
     : configuration.serverRole.ServerRoleName;
   return roleName;

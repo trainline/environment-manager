@@ -1,7 +1,9 @@
 /* Copyright (c) Trainline Limited. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-let co = require("co");
+
+let co = require('co');
 let assertContract = require('modules/assertContract');
 let DeploymentCommandHandlerLogger = require('commands/deployments/DeploymentCommandHandlerLogger');
 let DeploymentContract = require('modules/deployment/DeploymentContract');
@@ -14,10 +16,10 @@ let _ = require('lodash');
 module.exports = function ProvideInfrastructureCommandHandler(command) {
   let logger = new DeploymentCommandHandlerLogger(command);
 
-  assertContract(command, "command", {
+  assertContract(command, 'command', {
     properties: {
       deployment: { type: DeploymentContract, null: false },
-    }
+    },
   });
 
   return co(function* () {
@@ -54,8 +56,8 @@ module.exports = function ProvideInfrastructureCommandHandler(command) {
     yield autoScalingTemplatesToCreate.map(
       template => provideAutoScalingGroup(template, accountName, command)
     );
-  }).catch(error => {
-    logger.error("An error has occurred providing the expected infrastructure", error);
+  }).catch((error) => {
+    logger.error('An error has occurred providing the expected infrastructure', error);
     return Promise.reject(error);
   });
 };
@@ -68,7 +70,7 @@ function getAutoScalingTemplatesToCreate(logger, configuration, accountName) {
     let autoScalingGroupNames = autoScalingTemplates.map(template =>
       template.autoScalingGroupName
     );
-    let autoScalingGroupNamesToCreate = yield getAutoScalingGroupNamesToCreate( 
+    let autoScalingGroupNamesToCreate = yield getAutoScalingGroupNamesToCreate(
       logger, autoScalingGroupNames, accountName
     );
     let autoScalingTemplatesToCreate = autoScalingTemplates.filter(template =>
@@ -81,22 +83,22 @@ function getAutoScalingTemplatesToCreate(logger, configuration, accountName) {
 
 function getAutoScalingGroupNamesToCreate(logger, autoScalingGroupNames, accountName) {
   return co(function* () {
-    logger.info(`Following AutoScalingGroups are expected: [${autoScalingGroupNames.join(", ")}]`);
+    logger.info(`Following AutoScalingGroups are expected: [${autoScalingGroupNames.join(', ')}]`);
 
     let query = {
       name: 'ScanAutoScalingGroups',
       accountName,
-      autoScalingGroupNames
+      autoScalingGroupNames,
     };
 
-    let autoScalingGroups = yield sender.sendQuery({ query: query });
+    let autoScalingGroups = yield sender.sendQuery({ query });
 
     let existingAutoScalingGroupNames = autoScalingGroups.map(group =>
       group.AutoScalingGroupName
     );
 
     if (existingAutoScalingGroupNames.length) {
-      logger.info(`Following AutoScalingGroups already exist: [${existingAutoScalingGroupNames.join(", ")}]`);
+      logger.info(`Following AutoScalingGroups already exist: [${existingAutoScalingGroupNames.join(', ')}]`);
     }
 
     let missingAutoScalingGroupNames = autoScalingGroupNames.filter(name =>
@@ -104,9 +106,9 @@ function getAutoScalingGroupNamesToCreate(logger, autoScalingGroupNames, account
     );
 
     if (missingAutoScalingGroupNames.length) {
-      logger.info(`Following AutoScalingGroups have to be created: [${missingAutoScalingGroupNames.join(", ")}]`);
+      logger.info(`Following AutoScalingGroups have to be created: [${missingAutoScalingGroupNames.join(', ')}]`);
     } else {
-      logger.info(`No AutoScalingGroup has to be created`);
+      logger.info('No AutoScalingGroup has to be created');
     }
 
     return missingAutoScalingGroupNames;
@@ -141,12 +143,12 @@ function getLaunchConfigurationTemplatesToCreate(logger, configuration, autoScal
 
 function getLaunchConfigurationNamesToCreate(logger, launchConfigurationNames, accountName) {
   return co(function* () {
-    logger.info(`Following LaunchConfigurations are expected: [${launchConfigurationNames.join(", ")}]`);
+    logger.info(`Following LaunchConfigurations are expected: [${launchConfigurationNames.join(', ')}]`);
 
     let query = {
-      name: "ScanLaunchConfigurations",
-      accountName: accountName,
-      launchConfigurationNames: launchConfigurationNames
+      name: 'ScanLaunchConfigurations',
+      accountName,
+      launchConfigurationNames,
     };
 
     let launchConfigurations = yield sender.sendQuery({ query });
@@ -156,7 +158,7 @@ function getLaunchConfigurationNamesToCreate(logger, launchConfigurationNames, a
     );
 
     if (existingLaunchConfigurationNames.length) {
-      logger.info(`Following LaunchConfigurations already exist: [${existingLaunchConfigurationNames.join(", ")}]`);
+      logger.info(`Following LaunchConfigurations already exist: [${existingLaunchConfigurationNames.join(', ')}]`);
     }
 
     let missingLaunchConfigurationNames = launchConfigurationNames.filter(name =>
@@ -164,9 +166,9 @@ function getLaunchConfigurationNamesToCreate(logger, launchConfigurationNames, a
     );
 
     if (missingLaunchConfigurationNames.length) {
-      logger.info(`Following LaunchConfigurations have to be created: [${missingLaunchConfigurationNames.join(", ")}]`);
+      logger.info(`Following LaunchConfigurations have to be created: [${missingLaunchConfigurationNames.join(', ')}]`);
     } else {
-      logger.info(`No LaunchConfiguration has to be created`);
+      logger.info('No LaunchConfiguration has to be created');
     }
 
     return missingLaunchConfigurationNames;
@@ -176,28 +178,27 @@ function getLaunchConfigurationNamesToCreate(logger, launchConfigurationNames, a
 function provideLaunchConfiguration(launchConfigurationTemplate, accountName, parentCommand) {
   let command = {
     name: 'CreateLaunchConfiguration',
-    accountName: accountName,
-    template: launchConfigurationTemplate
+    accountName,
+    template: launchConfigurationTemplate,
   };
 
-  return sender.sendCommand({ command, parent: parentCommand }).catch(error =>
+  return sender.sendCommand({ command, parent: parentCommand }).catch(error => (
       error.name === 'LaunchConfigurationAlreadyExistsError' ?
         Promise.resolve() :
         Promise.reject(error)
-    );
+  ));
 }
 
 function provideAutoScalingGroup(autoScalingTemplate, accountName, parentCommand) {
   let command = {
     name: 'CreateAutoScalingGroup',
-    accountName: accountName,
-    template: autoScalingTemplate
+    accountName,
+    template: autoScalingTemplate,
   };
 
-  return sender.sendCommand({ command, parent: parentCommand }).catch(error =>
+  return sender.sendCommand({ command, parent: parentCommand }).catch(error => (
       error.name === 'AutoScalingGroupAlreadyExistsError' ?
         Promise.resolve() :
         Promise.reject(error)
-    );
-
+  ));
 }

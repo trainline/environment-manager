@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let winston = require('winston');
@@ -11,10 +12,9 @@ const EM_LOG_LEVEL = config.get('EM_LOG_LEVEL').toLowerCase();
 // Set up formatter - if local, leave undefined
 let formatter;
 if (config.get('IS_PRODUCTION') === true) {
-
   formatter = function (options) {
     let eventtype = 'default';
-    
+
     // eventtype can be used in Kibana to filter logs for AWS / HTTP logs
     if (options.message.startsWith('[AWS')) {
       eventtype = 'aws';
@@ -34,9 +34,9 @@ if (config.get('IS_PRODUCTION') === true) {
   };
 }
 
-const logger = new(winston.Logger)({
+const logger = new (winston.Logger)({
   transports: [
-    new(winston.transports.Console)({
+    new (winston.transports.Console)({
       level: EM_LOG_LEVEL,
       showLevel: false,
       formatter,

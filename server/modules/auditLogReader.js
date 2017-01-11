@@ -32,6 +32,8 @@ function createQuery(date, limit, options, exclusiveStartKey) {
   return result;
 }
 
+// TODO: Double-check usage of this function
+// eslint-disable-next-line no-unused-vars
 function key(item) {
   return {
     AuditID: item.AuditID,
@@ -80,7 +82,7 @@ function getLogs(params) {
   }
 
   function hasMore(partitionKey) {
-    let hasMoreQuery = t => {
+    let hasMoreQuery = (t) => {
       let remaining = query(1, t);
       remaining.Select = 'COUNT';
       return remaining;
@@ -103,7 +105,7 @@ function getLogs(params) {
     acc.LastEvaluatedKey = lastEvaluatedKey(acc.LastEvaluatedKey, response);
     let limit = params.limit - acc.Items.length;
     let nextKey = nextPartitionKey(partitionKey);
-    if (!response.hasOwnProperty('LastEvaluatedKey') && (!inQueryDomain(nextKey) || !hasMore(nextKey))) {
+    if (!{}.hasOwnProperty.call(response, 'LastEvaluatedKey') && (!inQueryDomain(nextKey) || !hasMore(nextKey))) {
       delete acc.LastEvaluatedKey;
       return Promise.resolve(acc);
     }

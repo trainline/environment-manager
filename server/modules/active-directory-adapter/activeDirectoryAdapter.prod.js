@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -21,6 +22,7 @@ module.exports = function ActiveDirectoryAdapter() {
     }
   }
 
+  // eslint-disable-next-line arrow-body-style
   this.authorizeUser = (credentials) => {
     return co(function* () {
       // Authenticate ActiveDirectory via its credentials
@@ -38,6 +40,8 @@ module.exports = function ActiveDirectoryAdapter() {
       };
 
       return activeDirectoryUser;
-    }).catch((error) => { throw standardizeError(error); });
+    }).catch((error) => {
+      throw standardizeError(error);
+    });
   };
 };

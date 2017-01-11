@@ -1,7 +1,7 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-let _ = require('lodash');
 let logger = require('modules/logger');
 let ms = require('ms');
 let sender = require('modules/sender');
@@ -46,13 +46,13 @@ function validateServiceNotCurrentlyBeingDeployed(deployment) {
       'Value.EnvironmentName': deployment.environmentName,
       'Value.ServiceName': deployment.serviceName,
       'Value.ServerRoleName': deployment.serverRoleName,
-      $date_from: minimumRangeDate,
-      $date_to: maximumRangeDate,
+      '$date_from': minimumRangeDate,
+      '$date_to': maximumRangeDate,
       'Value.SchemaVersion': 2,
     },
   };
 
-  return sender.sendQuery({ query }).then(deployments => {
+  return sender.sendQuery({ query }).then((deployments) => {
     if (deployments.length) {
       return Promise.reject(new DeploymentValidationError(
         `The '${deployment.serviceName}' service is already being deployed to '${deployment.serverRoleName}' at this time.`
@@ -78,8 +78,7 @@ function validateServiceAndVersionNotDeployed(deployment) {
 
   return sender.sendQuery({ query })
     .then((deployedService) => {
-      if (canDeployToSlice(slice, deployedService)) {
-      } else {
+      if (!canDeployToSlice(slice, deployedService)) {
         let message = 'Each version of a service may only be deployed to slices of one colour per environment.'
           + ` You attempted to deploy ${service} ${version} to a ${slice} slice of ${environment}.`
           + ' Perhaps it is already deployed to another slice in this environment?';

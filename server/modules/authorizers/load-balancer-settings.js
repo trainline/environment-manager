@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 ﻿let _ = require('lodash');
@@ -7,9 +8,9 @@ let config = require('config');
 
 function getEnvironment(name, user) {
   const masterAccountName = config.getUserValue('masterAccountName');
-  var sender = require('modules/sender');
+  let sender = require('modules/sender');
 
-  var query = {
+  let query = {
     name: 'GetDynamoResource',
     key: name,
     resource: 'config/environments',
@@ -20,15 +21,15 @@ function getEnvironment(name, user) {
 }
 
 function getModifyPermissionsForEnvironment(environmentName, user) {
-  return getEnvironment(environmentName, user).then(environment => {
+  return getEnvironment(environmentName, user).then((environment) => {
     if (environment) {
       return {
         cluster: environment.Value.OwningCluster.toLowerCase(),
-        environmentType: environment.Value.EnvironmentType.toLowerCase()
+        environmentType: environment.Value.EnvironmentType.toLowerCase(),
       };
     }
 
-    throw `Could not find environment: ${environmentName}`;
+    throw new Error(`Could not find environment: ${environmentName}`);
   });
 }
 
@@ -38,19 +39,17 @@ exports.getRules = (request) => {
   if (environmentName === undefined) {
     // Environment is in the body
     let body = request.params.body || request.body;
-    environmentName = body.EnvironmentName || body.Value.EnvironmentName
+    environmentName = body.EnvironmentName || body.Value.EnvironmentName;
   }
-  return getModifyPermissionsForEnvironment(environmentName, request.user).then(envPermissions => {
-    return [{
-      resource: request.url.replace(/\/+$/, ''),
-      access: request.method,
-      clusters: [envPermissions.cluster],
-      environmentTypes: [envPermissions.environmentType]
-    }];
-  });
+  return getModifyPermissionsForEnvironment(environmentName, request.user).then(envPermissions => [{
+    resource: request.url.replace(/\/+$/, ''),
+    access: request.method,
+    clusters: [envPermissions.cluster],
+    environmentTypes: [envPermissions.environmentType],
+  }]);
 };
 
 exports.docs = {
-    requiresClusterPermissions: true,
-    requiresEnvironmentTypePermissions: true
+  requiresClusterPermissions: true,
+  requiresEnvironmentTypePermissions: true,
 };

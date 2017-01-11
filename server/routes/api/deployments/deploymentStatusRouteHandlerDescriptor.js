@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let route = require('modules/helpers/route');
@@ -14,5 +15,5 @@ module.exports = route.get('/:account/deployments/:key')
     return deployments.get({
       key: request.params.key,
       account: request.params.account,
-    }).then((value) => callback(null, value), (err) => callback(err));
+    }).then(value => callback(null, value), err => callback(err));
   });

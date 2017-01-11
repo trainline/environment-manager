@@ -1,8 +1,9 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let {
-  setInstanceMaintenanceMode
+  setInstanceMaintenanceMode,
 } = require('./consulMacroManager');
 
 let {
@@ -12,7 +13,7 @@ let {
   removeRuntimeServerRoleTargetState,
   getAllServiceTargets,
   getServiceDeploymentCause,
-  getInstanceServiceDeploymentInfo
+  getInstanceServiceDeploymentInfo,
 } = require('./keyValueStore');
 
 module.exports = {
@@ -23,5 +24,5 @@ module.exports = {
   setInstanceMaintenanceMode,
   getAllServiceTargets,
   getServiceDeploymentCause,
-  getInstanceServiceDeploymentInfo
+  getInstanceServiceDeploymentInfo,
 };

@@ -1,5 +1,12 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
+
+/* eslint no-underscore-dangle: 0 */
+/**
+ * TODO: This module uses _underscoredNames in many places
+ * Disabling eslint of this until it can be properly refactored
+ */
 
 let utils = require('modules/utilities');
 let amazonClientFactory = require('modules/amazon-client/childAccountClient');
@@ -62,7 +69,7 @@ function LBUpstreamTableResource(config, client) {
 
 
 module.exports = {
-  canCreate: (resourceDescriptor) =>
+  canCreate: resourceDescriptor =>
 
     // NOTE: Find a better way to specialize factories
     resourceDescriptor.type.toLowerCase() === 'dynamodb/table' &&
@@ -70,14 +77,13 @@ module.exports = {
 
   create: (resourceDescriptor, parameters) =>
   amazonClientFactory.createDynamoClient(parameters.accountName).then((client) => {
-
     let config = {
-      resourceName:    resourceDescriptor.name,
-      table:           resourceDescriptor.tableName,
-      key:             resourceDescriptor.keyName,
-      range:           resourceDescriptor.rangeName,
+      resourceName: resourceDescriptor.name,
+      table: resourceDescriptor.tableName,
+      key: resourceDescriptor.keyName,
+      range: resourceDescriptor.rangeName,
       auditingEnabled: resourceDescriptor.enableAuditing,
-      dateField:       resourceDescriptor.dateField,
+      dateField: resourceDescriptor.dateField,
     };
 
     return new LBUpstreamTableResource(config, client);

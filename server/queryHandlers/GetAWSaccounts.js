@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let config = require('config');
@@ -10,9 +11,9 @@ function getAwsAccounts(query) {
   let dynamoQuery = {
     name: 'ScanDynamoResources',
     resource: 'config/accounts',
-    accountName: masterAccountName
+    accountName: masterAccountName,
   };
-  let childQuery = { query:dynamoQuery, parent:query };
+  let childQuery = { query: dynamoQuery, parent: query };
   if (query.user) childQuery.user = query.user;
 
   return sender.sendQuery(childQuery);

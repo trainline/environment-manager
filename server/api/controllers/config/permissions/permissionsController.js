@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 const RESOURCE = 'config/permissions';
@@ -35,7 +36,7 @@ function postPermissionsConfig(req, res, next) {
  */
 function putPermissionConfigByName(req, res, next) {
   let body = req.swagger.params.body.value;
-  let key = req.swagger.params.name.value
+  let key = req.swagger.params.name.value;
   let expectedVersion = req.swagger.params['expected-version'].value;
   let user = req.user;
 
@@ -46,7 +47,7 @@ function putPermissionConfigByName(req, res, next) {
  * DELETE /config/permissions/{name}
  */
 function deletePermissionConfigByName(req, res, next) {
-  let key = req.swagger.params.name.value
+  let key = req.swagger.params.name.value;
   let user = req.user;
   return dynamoHelper.delete(key, user).then(data => res.json(data)).catch(next);
 }
@@ -56,5 +57,5 @@ module.exports = {
   getPermissionConfigByName,
   postPermissionsConfig,
   putPermissionConfigByName,
-  deletePermissionConfigByName
+  deletePermissionConfigByName,
 };

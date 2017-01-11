@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let config = require('config');
@@ -19,9 +20,7 @@ function getEnvironments(req, res, next) {
   const masterAccountName = config.getUserValue('masterAccountName');
 
   let filter = {};
-  OpsEnvironment.getAll().then((list) => {
-    return Promise.map(list, (env) => env.toAPIOutput())
-  }).then((data) => res.json(data)).catch(next);
+  OpsEnvironment.getAll().then(list => Promise.map(list, env => env.toAPIOutput())).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -30,8 +29,8 @@ function getEnvironments(req, res, next) {
 function getEnvironmentByName(req, res, next) {
   const environmentName = req.swagger.params.name.value;
 
-  OpsEnvironment.getByName(environmentName).then((env) => env.toAPIOutput())
-    .then((data) => res.json(data)).catch(next);
+  OpsEnvironment.getByName(environmentName).then(env => env.toAPIOutput())
+    .then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -51,7 +50,7 @@ function isEnvironmentProtectedFromAction(req, res, next) {
 function getEnvironmentServers(req, res, next) {
   const environmentName = req.swagger.params.name.value;
 
-  ScanServersStatus({ environmentName, filter: {} }).then((data) => res.json(data)).catch(next);
+  ScanServersStatus({ environmentName, filter: {} }).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -61,7 +60,7 @@ function getEnvironmentServerByName(req, res, next) {
   const environmentName = req.swagger.params.name.value;
   const asgName = req.swagger.params.asgName.value;
 
-  GetASGState({ environmentName, asgName }).then((data) => res.json(data)).catch(next);
+  GetASGState({ environmentName, asgName }).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -105,7 +104,7 @@ function putEnvironmentSchedule(req, res, next) {
     accountName: masterAccountName,
   };
 
-  sender.sendCommand({ command, user }).then((data) => res.json(data)).catch(next);
+  sender.sendCommand({ command, user }).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -115,9 +114,7 @@ function getEnvironmentScheduleStatus(req, res, next) {
   const environmentName = req.swagger.params.name.value;
   const at = req.swagger.params.at.value;
 
-  OpsEnvironment.getByName(environmentName).then((env) => {
-    return { Status: env.getScheduleStatus(at) };
-  }).then((data) => res.json(data)).catch(next);
+  OpsEnvironment.getByName(environmentName).then(env => ({ Status: env.getScheduleStatus(at) })).then(data => res.json(data)).catch(next);
 }
 
 module.exports = {
@@ -129,5 +126,5 @@ module.exports = {
   getEnvironmentScheduleStatus,
   putEnvironmentSchedule,
   getEnvironmentSchedule,
-  isEnvironmentProtectedFromAction
+  isEnvironmentProtectedFromAction,
 };

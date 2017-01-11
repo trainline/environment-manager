@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let awsMasterClient = require('modules/amazon-client/masterAccountClient');
@@ -13,7 +14,7 @@ cacheManager.create('ConsulToken', createToken, { stdTTL: 10 });
 function getToken(s3Location) {
   let cacheKey = JSON.stringify(s3Location);
   return cacheManager.get('ConsulToken').get(cacheKey)
-    .then(function (response) {
+    .then((response) => {
       let buffer = response.Body;
       let str = buffer.toString('utf8');
       return JSON.parse(str);

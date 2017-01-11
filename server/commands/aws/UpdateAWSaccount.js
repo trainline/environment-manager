@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let config = require('config');
@@ -11,7 +12,7 @@ function UpdateAWSAccount(command) {
     const masterAccountName = config.getUserValue('masterAccountName');
     let account = command.account;
 
-    return accountValidator.validate(account).then(_ => {
+    return accountValidator.validate(account).then((_) => {
       let dynamoCommand = {
         name: 'UpdateDynamoResource',
         resource: 'config/accounts',

@@ -15,11 +15,13 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
+    "lint": "eslint . --ext .js --quiet",
+    "lint-rule": "eslint . --ext .js --quiet --parser-options {ecmaVersion:6} --rule ",
+    "lint-and-test": "npm run lint -s && npm test -s",
     "test": "mocha --recursive ./test --EM_PROFILE test/test-profile.json",
     "test-watch": "mocha --watch --recursive ./test --EM_PROFILE test/test-profile.json",
     "test-ci": "npm test -- --reporter mocha-teamcity-reporter --timeout 4000",
     "mocha": "mocha",
-    "lint": "eslint . --ext .js",
     "acceptance-tests": "mocha --recursive ./acceptance-tests --EM_PROFILE acceptance-tests/test-profile.json"
   },
   "author": {

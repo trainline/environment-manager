@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let send = require('modules/helpers/send');
@@ -13,7 +14,7 @@ module.exports = [
     tags: ['Instances'],
   })
   .withPriority(10).do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanCrossAccountInstances',
       filter: utilities.extractQuery(request),
     };
@@ -28,7 +29,7 @@ module.exports = [
     tags: ['Instances'],
   })
   .withPriority(10).do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanCrossAccountInstances',
       filter: utilities.extractQuery(request),
     };
@@ -47,7 +48,7 @@ module.exports = [
     tags: ['Instances'],
   })
   .do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanInstances',
       accountName: request.params.account,
       filter: utilities.extractQuery(request),
@@ -59,10 +60,10 @@ module.exports = [
   route.get('/:account/instances/schedule-actions')
   .inOrderTo('List instances changes needed due to scheduling')
   .withDocs({
-    disableDocs: true
+    disableDocs: true,
   })
   .do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanInstancesScheduleStatus',
       accountName: request.params.account,
       filter: utilities.extractQuery(request),
@@ -74,14 +75,14 @@ module.exports = [
   route.get('/:account/instances/schedule-actions/:dateTime')
   .inOrderTo('List instances changes needed due to scheduling as of a particular date and time')
   .withDocs({
-    disableDocs: true
+    disableDocs: true,
   })
   .do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanInstancesScheduleStatus',
       accountName: request.params.account,
       filter: utilities.extractQuery(request),
-      dateTime: request.params.dateTime
+      dateTime: request.params.dateTime,
     };
 
     send.query(query, request, response);
@@ -95,7 +96,7 @@ module.exports = [
     tags: ['Instances'],
   })
   .do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanInstances',
       accountName: request.params.account,
       filter: utilities.extractQuery(request),

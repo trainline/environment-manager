@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -9,16 +10,14 @@ let DynamoItemNotFoundError = require('modules/errors/DynamoItemNotFoundError.cl
 let config = require('config');
 let sender = require('modules/sender');
 let imageProvider = require('modules/provisioning/launchConfiguration/imageProvider');
-let logger = require('modules/logger');
 let Environment = require('models/Environment');
 let EnvironmentType = require('models/EnvironmentType');
 
 module.exports = {
-  get: function (environmentName, serviceName, serverRoleName) {
-
-    assert(environmentName, "Expected 'environmentName' argument not to be null or empty");
-    assert(serviceName, "Expected 'serviceName' argument not to be null or empty");
-    assert(serverRoleName, "Expected 'serviceName' argument not to be null or empty");
+  get(environmentName, serviceName, serverRoleName) {
+    assert(environmentName, 'Expected \'environmentName\' argument not to be null or empty');
+    assert(serviceName, 'Expected \'serviceName\' argument not to be null or empty');
+    assert(serverRoleName, 'Expected \'serviceName\' argument not to be null or empty');
 
     return co(function* () {
       let environment = yield Environment.getByName(environmentName);
@@ -62,15 +61,14 @@ function getServiceByName(serviceName) {
   };
 
   return sender
-    .sendQuery({ query: query })
-    .then(
-      services => services.length ?
-      Promise.resolve(services[0].Value) :
-      Promise.reject(new ConfigurationError(`Service "${serviceName}" not found.`)),
-      error => Promise.reject(
-        new Error(`An error has occurred retrieving "${serviceName}" service: ${error.message}`)
-      )
-    );
+    .sendQuery({ query })
+    .then(services =>
+      (services.length ?
+        Promise.resolve(services[0].Value) :
+        Promise.reject(new ConfigurationError(`Service "${serviceName}" not found.`))))
+    .catch((error) => {
+      throw new Error(`An error has occurred retrieving "${serviceName}" service: ${error.message}`);
+    });
 }
 
 function getClusterByName(clusterName) {
@@ -84,7 +82,7 @@ function getClusterByName(clusterName) {
   };
 
   return sender
-    .sendQuery({ query: query })
+    .sendQuery({ query })
     .then(
       cluster => Promise.resolve({
         Name: cluster.ClusterName,

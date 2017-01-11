@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -63,7 +64,7 @@ function getAsgReadyByName(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
 
   return getASGReady({ autoScalingGroupName, environmentName })
-    .then((data) => res.json(data)).catch(next);
+    .then(data => res.json(data)).catch(next);
 }
 
 
@@ -86,7 +87,7 @@ function getAsgIps(req, res, next) {
  */
 function getAsgLaunchConfig(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
-  const autoScalingGroupName = req.swagger.params.name.value
+  const autoScalingGroupName = req.swagger.params.name.value;
 
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
@@ -130,10 +131,10 @@ function deleteAsg(req, res, next) {
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     AutoScalingGroup.getByName(accountName, autoScalingGroupName)
-      .then((asg) => asg.deleteASG())
+      .then(asg => asg.deleteASG())
       .then((status) => {
         res.json({
-          Ok: status
+          Ok: status,
         });
       }).catch(next);
   });
@@ -174,8 +175,11 @@ function putAsgSize(req, res, next) {
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     SetAutoScalingGroupSize({
-      accountName, autoScalingGroupName,
-      autoScalingGroupMinSize, autoScalingGroupDesiredSize, autoScalingGroupMaxSize
+      accountName,
+      autoScalingGroupName,
+      autoScalingGroupMinSize,
+      autoScalingGroupDesiredSize,
+      autoScalingGroupMaxSize,
     })
       .then(data => res.json(data)).catch(next);
   });
@@ -186,12 +190,12 @@ function putAsgSize(req, res, next) {
  */
 function putAsgLaunchConfig(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
-  const data = req.swagger.params.body.value
-  const autoScalingGroupName = req.swagger.params.name.value
+  const value = req.swagger.params.body.value;
+  const autoScalingGroupName = req.swagger.params.name.value;
 
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    SetLaunchConfiguration({ accountName, autoScalingGroupName, data }).then(data => res.json(data)).catch(next);
+    SetLaunchConfiguration({ accountName, autoScalingGroupName, value }).then(data => res.json(data)).catch(next);
   });
 }
 
@@ -206,5 +210,5 @@ module.exports = {
   deleteAsg,
   putAsg,
   putAsgSize,
-  putAsgLaunchConfig
+  putAsgLaunchConfig,
 };

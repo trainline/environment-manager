@@ -93,6 +93,7 @@ module.exports = [
       let minDate = paramOrDefault('minDate', parseDate, now);
       let maxDate = paramOrDefault('maxDate', parseDate, now);
       let exclusiveStartKey = paramOrDefault('exclusiveStartKey', base64.decode, undefined);
+
       function sendResponse(auditLog) {
         logger.debug('Audit History: Constructing navigation links');
         query.minDate = minDate.toString();

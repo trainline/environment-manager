@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -7,7 +8,7 @@ let DeploymentMap = require('./DeploymentMap');
 let EnvironmentType = require('./EnvironmentType');
 
 class Environment {
-  
+
   constructor(data) {
     _.assign(this, data);
   }
@@ -21,7 +22,7 @@ class Environment {
   }
 
   getAccountName() {
-    return EnvironmentType.getByName(this.EnvironmentType).then((data) => data.AWSAccountName);
+    return EnvironmentType.getByName(this.EnvironmentType).then(data => data.AWSAccountName);
   }
 
   static getAccountNameForEnvironment(name) {
@@ -29,7 +30,7 @@ class Environment {
   }
 
   static getByName(name) {
-    return environmentDatabase.getEnvironmentByName(name).then((obj) => new Environment(obj));
+    return environmentDatabase.getEnvironmentByName(name).then(obj => new Environment(obj));
   }
 }
 

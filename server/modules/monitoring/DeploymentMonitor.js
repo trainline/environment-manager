@@ -1,8 +1,8 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
-
 let fs = require('fs');
 let co = require('co');
 let ms = require('ms');
@@ -12,12 +12,10 @@ let activeDeploymentsStatusProvider = require('modules/monitoring/activeDeployme
 let DEFAULT_INFRASTRUCTURE_PROVISIONING_TIMEOUT = '60m';
 let Enums = require('Enums');
 let NodeDeploymentStatus = require('Enums').NodeDeploymentStatus;
-let deploymentRepository = require('modules/deployment/deploymentRepository');
 let deploymentLogger = require('modules/DeploymentLogger');
 
-
 module.exports = {
-  monitorActiveDeployments: function () {
+  monitorActiveDeployments() {
     try {
       let stats = fs.lstatSync('DONT_RUN_DEPLOYMENT_MONITOR');
       if (stats.isFile()) {
@@ -31,7 +29,7 @@ module.exports = {
         throw err;
       }
     }
-    
+
     return co(function* () {
       let activeDeployments = yield activeDeploymentsStatusProvider.all();
       let activeDeploymentsStatus = yield activeDeploymentsStatusProvider.getActiveDeploymentsFullStatus(activeDeployments);
@@ -47,9 +45,7 @@ module.exports = {
 
 function monitorActiveDeploymentStatus(deploymentStatus) {
   return co(function* () {
-
     if (deploymentStatus.error) {
-              
       if (deploymentStatus.error.indexOf('Missing credentials in config') !== -1) {
         // That is to not modify deployment if we catch mysterious 'Missing credentials' from AWS
         return;
@@ -67,7 +63,6 @@ function monitorActiveDeploymentStatus(deploymentStatus) {
     // This execution time takes into account creation of AWS expected infrastructure,
     // EC2 Instances bootstrapping, and service installation on them.
     if (isOverallDeploymentTimedOut(deploymentStatus.startTime)) {
-
       let newStatus = {
         name: Enums.DEPLOYMENT_STATUS.Failed,
         reason: `Deployment failed because exceeded overall timeout of ${DEFAULT_INFRASTRUCTURE_PROVISIONING_TIMEOUT}`,
@@ -88,16 +83,15 @@ function monitorActiveDeploymentStatus(deploymentStatus) {
     if (newStatus.name === Enums.DEPLOYMENT_STATUS.Success || newStatus.name === Enums.DEPLOYMENT_STATUS.Failed) {
       deploymentLogger.updateStatus(deploymentStatus, newStatus);
     }
-
   });
 }
 
 function isOverallDeploymentTimedOut(deploymentStartTime) {
-  var initialTime = new Date(deploymentStartTime);
-  var currentTime = new Date();
-  var elapsedMs = currentTime.getTime() - initialTime.getTime();
+  let initialTime = new Date(deploymentStartTime);
+  let currentTime = new Date();
+  let elapsedMs = currentTime.getTime() - initialTime.getTime();
 
-  var timedOut = elapsedMs > ms(DEFAULT_INFRASTRUCTURE_PROVISIONING_TIMEOUT);
+  let timedOut = elapsedMs > ms(DEFAULT_INFRASTRUCTURE_PROVISIONING_TIMEOUT);
 
   return timedOut;
 }
@@ -114,7 +108,7 @@ function detectNodesDeploymentStatus(nodes) {
     // Deployment succeeded on every node.
     return {
       name: Enums.DEPLOYMENT_STATUS.Success,
-      reason: `Deployed all nodes successfully`,
+      reason: 'Deployed all nodes successfully',
     };
   }
 
@@ -139,7 +133,7 @@ function detectNodesDeploymentStatus(nodes) {
 }
 
 function timeOutNodes(nodesDeployment, installationTimeout) {
-  nodesDeployment.forEach(nodeDeployment => {
+  nodesDeployment.forEach((nodeDeployment) => {
     if (isNodeDeploymentTimedOut(nodeDeployment, installationTimeout)) {
       nodeDeployment.Status = NodeDeploymentStatus.Failed;
       nodeDeployment.LastCompletedStage = 'Timed Out';
@@ -150,11 +144,11 @@ function timeOutNodes(nodesDeployment, installationTimeout) {
 function isNodeDeploymentTimedOut(nodeDeployment, installationTimeout) {
   if (nodeDeployment.Status !== NodeDeploymentStatus.InProgress) return false;
 
-  var initialTime = new Date(nodeDeployment.StartTime);
-  var currentTime = new Date();
-  var elapsedMs = currentTime.getTime() - initialTime.getTime();
+  let initialTime = new Date(nodeDeployment.StartTime);
+  let currentTime = new Date();
+  let elapsedMs = currentTime.getTime() - initialTime.getTime();
 
-  var timedOut = elapsedMs > installationTimeout;
+  let timedOut = elapsedMs > installationTimeout;
 
   return timedOut;
 }

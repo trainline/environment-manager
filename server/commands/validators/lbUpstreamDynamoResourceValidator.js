@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let upstreamValidator = require('./lbUpstreamValidator');
@@ -28,7 +29,7 @@ function* validate(resource, command) {
   let logger = require('modules/logger');
   let account = yield awsAccounts.getByName(command.accountName);
 
-  return getService(resource.Value.ServiceName, command).then(services => {
+  return getService(resource.Value.ServiceName, command).then((services) => {
     let validationResult = upstreamValidator.validate(resource, account, services);
 
     if (!validationResult.isValid) {
@@ -37,11 +38,10 @@ function* validate(resource, command) {
     } else {
       return null;
     }
-
   });
 }
 
 module.exports = {
   canValidate,
-  validate: co.wrap(validate)
+  validate: co.wrap(validate),
 };

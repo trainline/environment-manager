@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 const RESOURCE = 'config/lbsettings';
@@ -33,7 +34,7 @@ function getLBSettingConfigByName(req, res, next) {
   const range = req.swagger.params.vHostName.value;
   co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(key);
-    return dynamoHelper.getBySortKey(key, range, { accountName })
+    return dynamoHelper.getBySortKey(key, range, { accountName });
   }).then(data => res.json(data)).catch(next);
 }
 
@@ -78,7 +79,7 @@ function deleteLBSettingConfigByName(req, res, next) {
 
   co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    return dynamoHelper.deleteWithSortKey(environmentName, vHostName, user , { accountName });
+    return dynamoHelper.deleteWithSortKey(environmentName, vHostName, user, { accountName });
   }).then(_ => res.status(200).end()).catch(next);
 }
 
@@ -87,5 +88,5 @@ module.exports = {
   getLBSettingConfigByName,
   postLBSettingsConfig,
   putLBSettingConfigByName,
-  deleteLBSettingConfigByName
+  deleteLBSettingConfigByName,
 };

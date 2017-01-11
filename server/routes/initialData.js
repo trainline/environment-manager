@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let config = require('config');
@@ -14,7 +15,7 @@ module.exports = function (request, response) {
   };
 
   // TODO(filip): refactor front code so we can send single data object rather than code
-  let str = ``;
+  let str = '';
   str += `window.user = new User(${data.user}); `;
   str += `window.version = '${data.version}'; `;
   str += `window.links = ${JSON.stringify(links)}; `;
