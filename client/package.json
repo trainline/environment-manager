@@ -7,7 +7,9 @@
   },
   "scripts": {
     "test": "gulp test",
-    "test-ci": "gulp test -c"
+    "test-ci": "gulp test -c",
+    "lint": "eslint app/ --ext .js",
+    "lint-fix": "eslint app/ --ext .js --fix"
   },
   "devDependencies": {
     "angular-templatecache": "0.0.1",
