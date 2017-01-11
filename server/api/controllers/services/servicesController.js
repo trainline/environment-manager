@@ -28,29 +28,27 @@ function getServices(req, res, next) {
 function getASGsByService(req, res, next) {
   const environment = req.swagger.params.environment.value;
   const serviceName = req.swagger.params.service.value;
-  
+
   const sliceName = req.swagger.params.slice.value;
 
   return co(function* () {
-
     let slice = sliceName ? `-${sliceName}` : '';
     let service = serviceName + slice;
 
     let nodes = _.castArray(yield serviceDiscovery.getService(environment, service));
     let accountName = yield Environment.getAccountNameForEnvironment(environment);
 
-    let asgs = yield nodes.map(node => {
+    let asgs = yield nodes.map((node) => {
       return co(function* () {
         let filter = {}; filter['tag:Name'] = node.Node;
         let instance = _.first(yield ScanInstances({ accountName, filter }));
-        if (instance) return instance.getTag('aws:autoscaling:groupName');
+        return instance ? instance.getTag('aws:autoscaling:groupName') : null;
       });
     });
 
-    return _.chain(asgs).compact().uniq().map(asg => {
+    return _.chain(asgs).compact().uniq().map((asg) => {
       return { AutoScalingGroupName: asg };
     }).value();
-
   }).then(data => res.json(data)).catch(next);
 }
 
