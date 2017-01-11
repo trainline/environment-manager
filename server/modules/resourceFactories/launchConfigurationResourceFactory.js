@@ -36,7 +36,7 @@ class LaunchConfigurationResource {
     this.client = client;
   }
 
-  _describeLaunchConfigurations(names) {
+  describeLaunchConfigurations(names) {
     let self = this;
     let launchconfigs = [];
     let request = {};
@@ -61,11 +61,11 @@ class LaunchConfigurationResource {
   }
 
   get(parameters) {
-    return this._describeLaunchConfigurations([parameters.name]).then(data => data[0]);
+    return this.describeLaunchConfigurations([parameters.name]).then(data => data[0]);
   }
 
   all(parameters) {
-    return this._describeLaunchConfigurations(parameters.names || []);
+    return this.describeLaunchConfigurations(parameters.names || []);
   }
 
   delete({ name }) {

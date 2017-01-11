@@ -23,7 +23,7 @@ function serveLoginPage(response, error, username) {
     data: {
       error: error ? error.message : undefined,
       version: APP_VERSION,
-      username: username
+      username,
     },
   };
 
