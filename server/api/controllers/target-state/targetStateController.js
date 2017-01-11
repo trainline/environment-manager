@@ -38,5 +38,5 @@ module.exports = {
   getTargetState,
   deleteTargetStateByEnvironment,
   deleteTargetStateByService,
-  deleteTargetStateByServiceVersion,
+  deleteTargetStateByServiceVersion
 };

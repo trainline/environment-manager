@@ -14,5 +14,5 @@ module.exports = {
   command(command, req, res) {
     let callback = adapt.callbackToExpress(req, res);
     sender.sendCommand({ command, user: req.user }, callback);
-  },
+  }
 };

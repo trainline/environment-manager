@@ -60,5 +60,5 @@ module.exports = {
   getDeploymentMapConfigByName,
   postDeploymentMapsConfig,
   putDeploymentMapConfigByName,
-  deleteDeploymentMapConfigByName,
+  deleteDeploymentMapConfigByName
 };

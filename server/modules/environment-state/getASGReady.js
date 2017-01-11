@@ -19,7 +19,7 @@ function* getASGReady({ autoScalingGroupName, environmentName }) {
       return {
         ReadyToDeploy: instancesInService.length === instances.length,
         InstancesByLifecycleState: instancesByLifecycleState,
-        InstancesTotalCount: instances.length,
+        InstancesTotalCount: instances.length
       };
     });
   });

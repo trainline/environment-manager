@@ -36,5 +36,5 @@ let all = Object.assign(
 );
 
 module.exports = {
-  all,
+  all
 };

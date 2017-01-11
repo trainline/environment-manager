@@ -12,46 +12,46 @@ module.exports = {
       type: 'string',
       minLength: 36,
       maxLength: 36,
-      pattern: '[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}',
+      pattern: '[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}'
     },
     environmentTypeName: {
       description: 'The type of environment in which deploy the service',
-      type: 'string',
+      type: 'string'
     },
     environmentName: {
       description: 'The name of environment in which deploy the service',
-      type: 'string',
+      type: 'string'
     },
     serverRole: {
       description: 'The name of the logical serverRole in which deploy the service',
-      type: 'string',
+      type: 'string'
     },
     serviceName: {
       description: 'The name of the service to deploy',
-      type: 'string',
+      type: 'string'
     },
     serviceVersion: {
       description: 'The version of the service to deploy',
       type: 'string',
-      pattern: '^[0-9]+\.[0-9]+\.[0-9]+(-.+)?', //TODO: Check redundant escapes in regex (eslint no-useless-escape)
+      pattern: '^[0-9]+\.[0-9]+\.[0-9]+(-.+)?' // TODO: Check redundant escapes in regex (eslint no-useless-escape)
     },
     serviceSlice: {
       description: 'The name of the slice of the service to deploy',
       type: 'string',
-      pattern: '^(blue|green)$',
+      pattern: '^(blue|green)$'
     },
     clusterName: {
       description: 'The name of the owning cluster',
-      type: 'string',
+      type: 'string'
     },
     accountName: {
       description: 'The name of the AWS account',
-      type: 'string',
+      type: 'string'
     },
     username: {
       description: 'The name of the user',
-      type: 'string',
-    },
+      type: 'string'
+    }
   },
   required: [
     'id',
@@ -62,6 +62,6 @@ module.exports = {
     'serviceVersion',
     'clusterName',
     'accountName',
-    'username',
-  ],
+    'username'
+  ]
 };

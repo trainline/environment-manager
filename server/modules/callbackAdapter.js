@@ -54,5 +54,5 @@ function promiseToExpress(req, res) {
 
 module.exports = {
   callbackToExpress,
-  promiseToExpress,
+  promiseToExpress
 };

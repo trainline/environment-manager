@@ -12,7 +12,7 @@ function getEnvironment(name, user) {
     name: 'GetDynamoResource',
     key: name,
     resource: 'config/environments',
-    accountName: masterAccountName,
+    accountName: masterAccountName
   };
 
   return sender.sendQuery({ query, user });
@@ -23,7 +23,7 @@ function getModifyPermissionsForEnvironment(environmentName, user) {
     if (environment) {
       return {
         cluster: environment.Value.OwningCluster.toLowerCase(),
-        environmentType: environment.Value.EnvironmentType.toLowerCase(),
+        environmentType: environment.Value.EnvironmentType.toLowerCase()
       };
     }
     throw new Error(`Could not find environment: ${environmentName}`);
@@ -40,7 +40,7 @@ exports.getRules = (request) => {
         resource: request.url.replace(/\/+$/, ''),
         access: request.method,
         clusters: [envPermissions.cluster],
-        environmentTypes: [envPermissions.environmentType],
+        environmentTypes: [envPermissions.environmentType]
       }]
     ));
   }
@@ -50,5 +50,5 @@ exports.getRules = (request) => {
 
 exports.docs = {
   requiresClusterPermissions: true,
-  requiresEnvironmentTypePermissions: true,
+  requiresEnvironmentTypePermissions: true
 };

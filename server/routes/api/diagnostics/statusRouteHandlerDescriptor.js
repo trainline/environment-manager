@@ -13,6 +13,6 @@ module.exports = route
   .do((request, response) => {
     response.send({
       status: 'OK',
-      version: APP_VERSION,
+      version: APP_VERSION
     });
   });

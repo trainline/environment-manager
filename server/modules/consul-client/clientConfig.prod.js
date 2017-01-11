@@ -26,8 +26,8 @@ function* getConsulClientOptions(parameters) {
     port: consul.Port,
     defaults: {
       dc: consul.DataCenter,
-      token,
-    },
+      token
+    }
   };
 
   options.promisify = parameters.promisify;

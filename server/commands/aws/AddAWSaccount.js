@@ -17,7 +17,7 @@ function AddAWSAccount(command) {
         name: 'CreateDynamoResource',
         resource: 'config/accounts',
         item: account,
-        accountName: masterAccountName,
+        accountName: masterAccountName
       };
 
       return sender.sendCommand({ command: dynamoCommand, parent: command }).then(awsAccounts.flush);

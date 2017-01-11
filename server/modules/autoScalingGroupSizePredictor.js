@@ -81,5 +81,5 @@ function predictSizeAfterExitingInstancesFromStandby(autoScalingGroup, instances
 
 module.exports = {
   predictSizeAfterEnteringInstancesToStandby,
-  predictSizeAfterExitingInstancesFromStandby,
+  predictSizeAfterExitingInstancesFromStandby
 };

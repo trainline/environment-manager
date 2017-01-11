@@ -13,8 +13,8 @@ function KeyPairResource(client) {
   this.get = function (parameters) {
     let request = {
       KeyNames: [
-        parameters.keyName,
-      ],
+        parameters.keyName
+      ]
     };
 
     return client.describeKeyPairs(request).promise().then((response) => {
@@ -34,5 +34,5 @@ module.exports = {
     resourceDescriptor.type.toLowerCase() === 'ec2/keypair',
 
   create: (resourceDescriptor, parameters) =>
-    amazonClientFactory.createEC2Client(parameters.accountName).then(client => new KeyPairResource(client)),
+    amazonClientFactory.createEC2Client(parameters.accountName).then(client => new KeyPairResource(client))
 };

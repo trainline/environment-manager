@@ -11,5 +11,5 @@ module.exports = {
   createEC2Client: _ => common.create(AWS.EC2, common.getOptions()),
   createIAMClient: _ => common.create(AWS.IAM, common.getOptions()),
   createS3Client: _ => common.create(AWS.S3, common.getOptions()),
-  createSNSClient: _ => common.create(AWS.SNS, common.getOptions()),
+  createSNSClient: _ => common.create(AWS.SNS, common.getOptions())
 };

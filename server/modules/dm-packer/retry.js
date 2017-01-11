@@ -38,9 +38,9 @@ let defaults = {
     debug: console.log.bind(console),
     info: console.log.bind(console),
     warn: console.warn.bind(console),
-    error: console.error.bind(console),
+    error: console.error.bind(console)
   },
   maxAttempts: 5,
-  wait: milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds)),
+  wait: milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds))
 };
 

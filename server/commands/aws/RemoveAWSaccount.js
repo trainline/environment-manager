@@ -18,7 +18,7 @@ function RemoveAWSAccount(command) {
       name: 'DeleteDynamoResource',
       resource: 'config/accounts',
       key: accountNumber,
-      accountName: masterAccountName,
+      accountName: masterAccountName
     };
     return sender.sendCommand({ command: dynamoCommand, parent: command }).then(awsAccounts.flush);
   } catch (error) {

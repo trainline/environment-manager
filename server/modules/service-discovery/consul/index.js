@@ -7,7 +7,7 @@ let {
   getService,
   getAllNodes,
   getNode,
-  getNodeHealth,
+  getNodeHealth
 } = require('./consulCatalog');
 
 module.exports = {
@@ -15,5 +15,5 @@ module.exports = {
   getService,
   getAllNodes,
   getNode,
-  getNodeHealth,
+  getNodeHealth
 };

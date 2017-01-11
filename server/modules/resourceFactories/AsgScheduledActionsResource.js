@@ -19,9 +19,9 @@ function AsgScheduledActionsResource(client) {
               MinSize: action.MinSize,
               MaxSize: action.MaxSize,
               DesiredCapacity: action.DesiredCapacity,
-              Recurrence: action.Recurrence,
+              Recurrence: action.Recurrence
             }
-          )),
+          ))
         };
       }
       throw new AutoScalingGroupNotFoundError(`AutoScalingGroup "${parameters.name}" not found.`);

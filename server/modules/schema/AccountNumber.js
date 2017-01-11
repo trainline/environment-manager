@@ -8,5 +8,5 @@ module.exports = {
   type: 'string',
   minLength: 12,
   maxLength: 12,
-  pattern: '^[0-9]+$',
+  pattern: '^[0-9]+$'
 };

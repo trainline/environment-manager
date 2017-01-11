@@ -9,7 +9,7 @@ let RequestHelper = require('./awsDynamoRequestHelper');
 
 let DATE_FORMAT = {
   ISO: 'ISO',
-  UNIX: 'UNIX',
+  UNIX: 'UNIX'
 };
 
 function tryParseDate(value, format) {
@@ -50,7 +50,7 @@ function ScanRequestBuilder(parameters) {
     range: parameters.range,
     dateField: parameters.dateField,
     filter: null,
-    resultsLimit: null,
+    resultsLimit: null
   };
 
   this.filterBy = function (filter) {
@@ -65,7 +65,7 @@ function ScanRequestBuilder(parameters) {
 
   this.buildRequest = function () {
     let request = {
-      TableName: $data.table,
+      TableName: $data.table
     };
 
     if ($data.filter) {

@@ -31,5 +31,5 @@ function getConsulConfig(environmentName) {
 module.exports = {
   getEnvironmentByName,
   getEnvironmentTypeByName,
-  getConsulConfig,
+  getConsulConfig
 };

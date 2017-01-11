@@ -66,10 +66,10 @@ function* handler(command) {
       serverRole: {
         SecurityZone: asg.getTag('SecurityZone'),
         SubnetTypeName: currentSubnetType.name,
-        AvailabilityZoneName: network.availabilityZoneName,
+        AvailabilityZoneName: network.availabilityZoneName
       },
       environmentType,
-      environmentTypeName: environment.EnvironmentType,
+      environmentTypeName: environment.EnvironmentType
     });
   }
 
@@ -78,7 +78,7 @@ function* handler(command) {
     minSize: size.min,
     desiredSize: size.desired,
     maxSize: size.max,
-    subnets,
+    subnets
   };
 
   return resource.put(parameters);
@@ -97,14 +97,14 @@ function unMapSubnetType(subnetTypeName, subnetType) {
     .filter(key => key.startsWith('AvailabilityZone'))
     .map(key => ({
       name: key,
-      subnet: subnetType[key],
+      subnet: subnetType[key]
     }));
 
   return {
     name: subnetTypeName,
     availabilityZones: azs,
     secure: !!subnetType.Secure,
-    hasSubnet: subnet => _.some(azs, az => az.subnet === subnet),
+    hasSubnet: subnet => _.some(azs, az => az.subnet === subnet)
   };
 }
 

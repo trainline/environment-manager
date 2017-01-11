@@ -11,13 +11,13 @@ const actions = {
   switchOff: 'switchOff',
   putInService: 'putInService',
   putOutOfService: 'putOutOfService',
-  skip: 'skip',
+  skip: 'skip'
 };
 
 const sources = {
   instance: 'instance',
   asg: 'asg',
-  environment: 'environment',
+  environment: 'environment'
 };
 
 const skipReasons = {
@@ -28,18 +28,18 @@ const skipReasons = {
   asgTransitioning: 'This instance is currently transitioning between ASG lifecycle states',
   asgLifecycleMismatches: 'The ASG has instances in different lifecycle states',
   maintenanceMode: 'This instance is currently in Maintenance Mode',
-  stateIsCorrect: 'The instance is already in the correct state',
+  stateIsCorrect: 'The instance is already in the correct state'
 };
 
 const lifeCycleStates = {
   inService: 'InService',
-  outOfService: 'Standby',
+  outOfService: 'Standby'
 };
 
 const states = {
   on: 'on',
   off: 'off',
-  transitioning: 'transitioning',
+  transitioning: 'transitioning'
 };
 
 function actionForInstance(instance, dateTime) {
@@ -176,7 +176,7 @@ function expectedStateFromSchedule(schedules, dateTime) {
 
   let scheduleStates = schedules.map(schedule => ({
     dateTime: later.schedule(schedule.recurrence).prev(1, dateTime),
-    state: schedule.state,
+    state: schedule.state
   }));
 
   let latest = _.maxBy(scheduleStates, scheduleState => scheduleState.dateTime);
@@ -213,5 +213,5 @@ module.exports = {
   actions,
   sources,
   skipReasons,
-  actionForInstance,
+  actionForInstance
 };

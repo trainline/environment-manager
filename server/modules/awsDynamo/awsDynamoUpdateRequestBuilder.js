@@ -14,7 +14,7 @@ function UpdateRequestBuilder(parameters) {
     range: parameters.range,
     version: parameters.version,
     expectedVersion: null,
-    item: null,
+    item: null
   };
 
   this.item = function (item) {
@@ -30,7 +30,7 @@ function UpdateRequestBuilder(parameters) {
   this.buildRequest = function () {
     let request = {
       TableName: $data.table,
-      Key: {},
+      Key: {}
     };
 
     let keyName = $data.key;

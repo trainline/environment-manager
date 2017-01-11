@@ -12,8 +12,8 @@ module.exports = function IAMRoleClient(accountName) {
   this.get = function (parameters) {
     assertContract(parameters, 'parameters', {
       properties: {
-        roleName: { type: String, empty: false },
-      },
+        roleName: { type: String, empty: false }
+      }
     });
 
     return co(function* () {

@@ -53,7 +53,7 @@ class DynamoTableResource {
       key: this._keyName,
       range: this._rangeName,
       version: config.auditingEnabled ? 'Audit.Version' : null,
-      dateField: config.dateField,
+      dateField: config.dateField
     });
   }
 
@@ -82,7 +82,7 @@ class DynamoTableResource {
     let self = this;
     let request = {
       TableName: this._tableName,
-      Key: this._buildPrimaryKey(params.key, params.range),
+      Key: this._buildPrimaryKey(params.key, params.range)
     };
 
     return this.client.get(request).promise().then((data) => {
@@ -107,8 +107,8 @@ class DynamoTableResource {
       TableName: this._tableName,
       KeyConditionExpression: `${this._keyName} = :key`,
       ExpressionAttributeValues: {
-        ':key': params.key,
-      },
+        ':key': params.key
+      }
     };
 
     return this.client.query(request).promise().then((data) => {
@@ -163,7 +163,7 @@ class DynamoTableResource {
     function investigateOnErrorOccurred() {
       let request = {
         TableName: self._tableName,
-        Key: self._buildPrimaryKey(key, range),
+        Key: self._buildPrimaryKey(key, range)
       };
 
       return self.client.get(request).promise().then((data) => {
@@ -220,7 +220,7 @@ class DynamoTableResource {
     function investigateOnErrorOccurred() {
       let request = {
         TableName: self._tableName,
-        Key: self._buildPrimaryKey(key, range),
+        Key: self._buildPrimaryKey(key, range)
       };
 
       return self.client.get(request).promise().then((data) => {
@@ -255,7 +255,7 @@ class DynamoTableResource {
   delete(params) {
     let request = {
       TableName: this._tableName,
-      Key: this._buildPrimaryKey(params.key, params.range),
+      Key: this._buildPrimaryKey(params.key, params.range)
     };
 
     return this.client.delete(request).promise().then((data) => {})

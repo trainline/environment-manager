@@ -23,5 +23,5 @@ function getResourceExport(req, res, next) {
 }
 
 module.exports = {
-  getResourceExport,
+  getResourceExport
 };

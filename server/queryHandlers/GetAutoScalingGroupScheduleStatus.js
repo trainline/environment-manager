@@ -9,7 +9,7 @@ function getAutoScalingGroup(query) {
   let childQuery = {
     name: 'GetAutoScalingGroup',
     accountName: query.accountName,
-    autoScalingGroupName: query.autoScalingGroupName,
+    autoScalingGroupName: query.autoScalingGroupName
   };
   return sender.sendQuery({ query: childQuery });
 }
@@ -19,7 +19,7 @@ function getAutoScalingGroupScheduledActions(query) {
   let childQuery = {
     name: 'GetAutoScalingGroupScheduledActions',
     accountName: query.accountName,
-    autoScalingGroupName: query.autoScalingGroupName,
+    autoScalingGroupName: query.autoScalingGroupName
   };
   return sender.sendQuery({ query: childQuery });
 }
@@ -27,7 +27,7 @@ function getAutoScalingGroupScheduledActions(query) {
 function maybeGetEnvironmentDefaultSchedule(schedule, query) {
   if (schedule) {
     return Promise.resolve({
-      status: cronService.getActionBySchedule(schedule, query.date),
+      status: cronService.getActionBySchedule(schedule, query.date)
     });
   }
 
@@ -36,7 +36,7 @@ function maybeGetEnvironmentDefaultSchedule(schedule, query) {
   let childQuery = {
     name: 'GetEnvironmentScheduleStatus',
     environmentName: getEnvironment(query.autoScalingGroupName),
-    date: query.date,
+    date: query.date
   };
 
   return sender.sendQuery({ query: childQuery });
@@ -52,7 +52,7 @@ function getEnvironment(asgName) {
 function handler(query) {
   return Promise.all([
     getAutoScalingGroup(query),
-    getAutoScalingGroupScheduledActions(query),
+    getAutoScalingGroupScheduledActions(query)
   ]).then((results) => {
     let asg = results[0];
     let scheduledActions = results[1];
@@ -60,7 +60,7 @@ function handler(query) {
     if (scheduledActions.length) {
       return {
         status: 'ON',
-        size: cronService.getSizeBySchedule(scheduledActions, query.date),
+        size: cronService.getSizeBySchedule(scheduledActions, query.date)
       };
     }
 

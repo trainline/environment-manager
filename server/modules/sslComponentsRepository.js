@@ -46,21 +46,21 @@ module.exports = function SSLComponentsRepository() {
       (client, callback) => {
         let privateKeyRequestParameters = {
           bucketName: sslComponentsRepositoryConfiguration.getBucketName(),
-          objectPath: sslComponentsRepositoryConfiguration.getPrivateKeyObjectPath(),
+          objectPath: sslComponentsRepositoryConfiguration.getPrivateKeyObjectPath()
         };
 
         let privateKeyRequest = new S3GetObjectRequest(client, privateKeyRequestParameters);
 
         let certificateRequestParameters = {
           bucketName: sslComponentsRepositoryConfiguration.getBucketName(),
-          objectPath: sslComponentsRepositoryConfiguration.getCertificateObjectPath(),
+          objectPath: sslComponentsRepositoryConfiguration.getCertificateObjectPath()
         };
 
         let certificateRequest = new S3GetObjectRequest(client, certificateRequestParameters);
 
         async.parallel({
           privateKeyS3Object: privateKeyRequest.execute,
-          certificateS3Object: certificateRequest.execute,
+          certificateS3Object: certificateRequest.execute
         }, callback);
       },
 
@@ -69,9 +69,9 @@ module.exports = function SSLComponentsRepository() {
       (response, callback) => {
         callback(null, {
           privateKey: response.privateKeyS3Object.Body.toString('utf8'),
-          certificate: response.certificateS3Object.Body.toString('utf8'),
+          certificate: response.certificateS3Object.Body.toString('utf8')
         });
-      },
+      }
     ], mainCallback);
   }
 };

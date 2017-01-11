@@ -25,7 +25,7 @@ module.exports = function SSLComponentsRepositoryConfiguration() {
     return {
       bucketName: localConfig.server.ssl.S3.bucket,
       privateKeyObjectPath: localConfig.server.ssl.S3.key,
-      certificateObjectPath: localConfig.server.ssl.S3.cert,
+      certificateObjectPath: localConfig.server.ssl.S3.cert
     };
   }
 };

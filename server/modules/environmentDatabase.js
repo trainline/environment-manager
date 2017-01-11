@@ -14,7 +14,7 @@ function getEnvironmentByName(environmentName) {
     name: 'GetDynamoResource',
     resource: 'config/environments',
     accountName: masterAccountName,
-    key: environmentName,
+    key: environmentName
   };
 
   return sender
@@ -34,7 +34,7 @@ function getEnvironmentTypeByName(environmentTypeName) {
     name: 'GetDynamoResource',
     resource: 'config/environmenttypes',
     accountName: masterAccountName,
-    key: environmentTypeName,
+    key: environmentTypeName
   };
 
   return sender
@@ -49,5 +49,5 @@ function getEnvironmentTypeByName(environmentTypeName) {
 
 module.exports = {
   getEnvironmentByName,
-  getEnvironmentTypeByName,
+  getEnvironmentTypeByName
 };

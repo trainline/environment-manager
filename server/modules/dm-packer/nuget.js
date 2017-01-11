@@ -8,7 +8,7 @@ let dom = require('xmldom');
 const namespaces = {
   atom: 'http://www.w3.org/2005/Atom',
   md: 'http://schemas.microsoft.com/ado/2007/08/dataservices/metadata',
-  ds: 'http://schemas.microsoft.com/ado/2007/08/dataservices',
+  ds: 'http://schemas.microsoft.com/ado/2007/08/dataservices'
 };
 
 function getPackageMetadataPath(id, version) {
@@ -57,5 +57,5 @@ module.exports = {
   getPackageMetadataPath,
   getDownloadLink,
   getDependencies,
-  parsePackageSpecs,
+  parsePackageSpecs
 };

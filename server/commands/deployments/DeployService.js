@@ -28,8 +28,8 @@ module.exports = function DeployServiceCommandHandler(command) {
       serviceSlice: { type: String, empty: false },
       mode: { type: String, empty: false },
       packagePath: { type: String, empty: false },
-      serverRoleName: { type: String, empty: false },
-    },
+      serverRoleName: { type: String, empty: false }
+    }
   });
 
   return co(function* () {
@@ -40,7 +40,7 @@ module.exports = function DeployServiceCommandHandler(command) {
     if (command.isDryRun) {
       return {
         isDryRun: true,
-        packagePath: command.packagePath,
+        packagePath: command.packagePath
       };
     }
 
@@ -70,7 +70,7 @@ function validateCommandAndCreateDeployment(command) {
       const s3Package = yield s3PackageLocator.findDownloadUrl({
         environment: environmentName,
         service: serviceName,
-        version: serviceVersion,
+        version: serviceVersion
       });
       if (!s3Package) {
         throw new Error('Deployment package was not found. Please specify a location or upload the package to S3');
@@ -103,7 +103,7 @@ function validateCommandAndCreateDeployment(command) {
       serverRoleName: command.serverRoleName,
       clusterName: configuration.cluster.Name,
       accountName: command.accountName,
-      username: command.username,
+      username: command.username
     });
 
     yield deploymentContract.validate(configuration);
@@ -125,12 +125,12 @@ function deploy(deployment, destination, sourcePackage, command) {
   }).catch((error) => {
     let deploymentStatus = {
       deploymentId: deployment.id,
-      accountName: deployment.accountName,
+      accountName: deployment.accountName
     };
 
     let newStatus = {
       name: Enums.DEPLOYMENT_STATUS.Failed,
-      reason: error.toString(true),
+      reason: error.toString(true)
     };
 
     deploymentLogger.updateStatus(deploymentStatus, newStatus);
@@ -142,7 +142,7 @@ function provideInfrastructure(accountName, deployment, parentCommand) {
   let command = {
     name: 'ProvideInfrastructure',
     accountName,
-    deployment,
+    deployment
   };
 
   return sender.sendCommand({ command, parent: parentCommand });
@@ -153,7 +153,7 @@ function preparePackage(accountName, destination, source, parentCommand) {
     name: 'PreparePackage',
     accountName,
     destination,
-    source,
+    source
   };
 
   return sender.sendCommand({ command, parent: parentCommand });
@@ -164,7 +164,7 @@ function pushDeployment(accountName, deployment, s3Path, parentCommand) {
     name: 'PushDeployment',
     accountName,
     deployment,
-    s3Path,
+    s3Path
   };
 
   return sender.sendCommand({ command, parent: parentCommand });
@@ -175,13 +175,13 @@ function getSourcePackageByCommand(command) {
     case Enums.SourcePackageType.CodeDeployRevision:
       return {
         type: Enums.SourcePackageType.CodeDeployRevision,
-        url: command.packagePath,
+        url: command.packagePath
       };
     case Enums.SourcePackageType.DeploymentMap:
       return {
         type: Enums.SourcePackageType.DeploymentMap,
         id: command.packagePath,
-        version: command.serviceVersion,
+        version: command.serviceVersion
       };
     default:
       throw new UnknownSourcePackageTypeError(`Unknown "${command.sourcePackageType}" source package type.`);

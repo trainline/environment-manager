@@ -17,8 +17,8 @@ module.exports = route.post('/:account/environments/:environment/services/:servi
       { in: ['query', 'body'], type: 'string', required: true, name: 'Mode', description: 'Todo: Describe "Mode" parameter' },
       { in: ['query', 'body'], type: 'string', required: true, name: 'Slice', description: 'Todo: Describe "Slice" parameter' },
       { in: ['query', 'body'], type: 'string', required: true, name: 'PackagePath', description: 'Todo: Describe "PackagePath" parameter' },
-      { in: ['query'], type: 'string', required: false, name: 'server_role', description: 'Target server role for service deployment, if multiple are possible' },
-    ],
+      { in: ['query'], type: 'string', required: false, name: 'server_role', description: 'Target server role for service deployment, if multiple are possible' }
+    ]
   })
   .withAuthorizer(deployAuthorizer)
   .do((request, response) => {
@@ -42,7 +42,7 @@ module.exports = route.post('/:account/environments/:environment/services/:servi
       serviceSlice,
       mode,
       packagePath,
-      serverRoleName: request.serverRoleName,
+      serverRoleName: request.serverRoleName
     };
 
     // Location

@@ -18,6 +18,6 @@ module.exports = {
   importable: true,
   docs: {
     description: 'Service',
-    tags: ['Services'],
-  },
+    tags: ['Services']
+  }
 };

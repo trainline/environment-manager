@@ -17,9 +17,9 @@ module.exports = {
     assertContract(parameters, 'parameters', {
       command: {
         properties: {
-          name: { type: String, empty: false },
-        },
-      },
+          name: { type: String, empty: false }
+        }
+      }
     });
 
     let command = commandMetadata.createFromParameters(parameters);
@@ -36,17 +36,17 @@ module.exports = {
       properties: {
         query: {
           properties: {
-            name: { type: String, empty: false },
-          },
-        },
-      },
+            name: { type: String, empty: false }
+          }
+        }
+      }
     });
 
     let query = prepareQuery(parameters);
     let type = QUERY_TYPE;
     let promise = sendCommandOrQuery(query);
     return promiseOrCallback(promise, query, type, callback);
-  },
+  }
 };
 
 function prepareQuery(parameters) {
@@ -76,10 +76,10 @@ function promiseOrCallback(promise, commandOrQuery, type, callback) {
         error: {
           name: error.name,
           message: error.message,
-          stack: error.toString(true),
+          stack: error.toString(true)
         },
         command: type === COMMAND_TYPE ? commandOrQuery : undefined,
-        query: type === QUERY_TYPE ? commandOrQuery : undefined,
+        query: type === QUERY_TYPE ? commandOrQuery : undefined
       });
     }
   });
@@ -103,7 +103,7 @@ function getLogMessage(commandOrQuery) {
     THICK_SEPARATOR,
     `[${commandOrQuery.name}]`,
     JSON.stringify(commandOrQuery, null, '  '),
-    THICK_SEPARATOR,
+    THICK_SEPARATOR
   ].join('\n');
 
   return message;
@@ -119,7 +119,7 @@ function getErrorMessage(commandOrQuery, error) {
     error.toString(true),
     THIN_SEPARATOR,
     JSON.stringify(error),
-    THICK_SEPARATOR,
+    THICK_SEPARATOR
   ].join('\n');
 
   return message;

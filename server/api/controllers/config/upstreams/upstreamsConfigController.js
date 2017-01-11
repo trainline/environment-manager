@@ -69,5 +69,5 @@ module.exports = {
   getUpstreamConfigByName,
   postUpstreamsConfig,
   putUpstreamConfigByName,
-  deleteUpstreamConfigByName,
+  deleteUpstreamConfigByName
 };

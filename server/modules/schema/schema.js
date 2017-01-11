@@ -20,7 +20,7 @@ const options = {
     } catch (error) {
       callback(error);
     }
-  },
+  }
 };
 
 const ajv = new Ajv(options);
@@ -42,7 +42,7 @@ function validator(schemaId) {
     };
 
     return {
-      conform,
+      conform
     };
   });
 }

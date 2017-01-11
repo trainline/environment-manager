@@ -35,7 +35,7 @@ function NginxUpstreamsResource() {
     let upstreamItem = {
       Server: nginxUpstreamPeer.server,
       State: nginxUpstreamPeer.state,
-      HealthChecks: nginxUpstreamPeer.health_checks,
+      HealthChecks: nginxUpstreamPeer.health_checks
     };
 
     return upstreamItem;
@@ -45,7 +45,7 @@ function NginxUpstreamsResource() {
     let uri = url.format({
       protocol: 'http',
       hostname: parameters.instanceDomainName,
-      pathname: '/status/upstreams',
+      pathname: '/status/upstreams'
     });
 
     return new Promise((resolve, reject) => {
@@ -69,7 +69,7 @@ function NginxUpstreamsResource() {
 
             let upstream = {
               Name: upstreamName,
-              Hosts: nginxUpstream.peers.filter(isNotNginxUpstreamPeerBackup).map(asUpstreamItem),
+              Hosts: nginxUpstream.peers.filter(isNotNginxUpstreamPeerBackup).map(asUpstreamItem)
             };
 
             upstreams.push(upstream);
@@ -84,5 +84,5 @@ function NginxUpstreamsResource() {
 
 module.exports = {
   canCreate: resourceDescriptor => resourceDescriptor.type.toLowerCase() === 'nginx/upstreams',
-  create: (resourceDescriptor, parameters) => Promise.resolve(new NginxUpstreamsResource()),
+  create: (resourceDescriptor, parameters) => Promise.resolve(new NginxUpstreamsResource())
 };

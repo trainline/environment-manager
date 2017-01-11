@@ -19,17 +19,17 @@ module.exports = {
         roleArn: role.Arn,
         topicArn: topic.TopicArn,
         defaultResult: LifecycleHookDefaultResult.Continue,
-        heartbeatTimeout: '10m',
+        heartbeatTimeout: '10m'
       }];
     });
-  },
+  }
 };
 
 function getRoleByName(roleName, accountName) {
   let query = {
     name: 'GetRole',
     accountName,
-    roleName,
+    roleName
   };
 
   return sender.sendQuery({ query });
@@ -39,7 +39,7 @@ function getTopicByName(topicName, accountName) {
   let query = {
     name: 'GetTopic',
     accountName,
-    topicName,
+    topicName
   };
 
   return sender.sendQuery({ query });

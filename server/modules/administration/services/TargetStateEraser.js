@@ -29,7 +29,7 @@ function TargetStateEraser(environmentName) {
       name: 'GetTargetState',
       environment: environmentName,
       recurse: true,
-      key,
+      key
     };
 
     return sender.sendQuery({ query });
@@ -39,7 +39,7 @@ function TargetStateEraser(environmentName) {
     let command = {
       name: 'DeleteTargetState',
       environment: environmentName,
-      key,
+      key
     };
 
     return sender.sendCommand({ command, user: systemUser });

@@ -12,12 +12,12 @@ function getLoadBalancer(req, res, next) {
 
   let query = {
     name: 'ScanNginxUpstreams',
-    instanceDomainName: fqdn,
+    instanceDomainName: fqdn
   };
 
   return sender.sendQuery({ query }).then(data => res.json(data)).catch(next);
 }
 
 module.exports = {
-  getLoadBalancer,
+  getLoadBalancer
 };

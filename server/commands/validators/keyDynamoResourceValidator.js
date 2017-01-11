@@ -37,5 +37,5 @@ function canValidate(resourceName) {
 
 module.exports = {
   canValidate,
-  validate,
+  validate
 };

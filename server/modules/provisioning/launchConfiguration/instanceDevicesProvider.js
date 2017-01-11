@@ -10,7 +10,7 @@ const DATA_DEVICE_NAME = '/dev/sda2';
 
 const DEFAULT_VOLUME = {
   Type: 'SSD',
-  Size: 50,
+  Size: 50
 };
 
 module.exports = {
@@ -43,7 +43,7 @@ module.exports = {
       // sda1 before sda2 etc.
       vol1.Name < vol2.Name
     ));
-  },
+  }
 };
 
 function getDeviceByVolume(dataVolume, name, encrypted) {
@@ -53,8 +53,8 @@ function getDeviceByVolume(dataVolume, name, encrypted) {
       DeleteOnTermination: true,
       VolumeSize: dataVolume.Size,
       VolumeType: dataVolume.Type.toLowerCase() === 'ssd' ? 'gp2' : 'standard',
-      Encrypted: encrypted,
-    },
+      Encrypted: encrypted
+    }
   };
 }
 

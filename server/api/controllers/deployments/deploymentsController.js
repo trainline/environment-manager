@@ -22,7 +22,7 @@ function getDeployments(req, res, next) {
   const cluster = req.swagger.params.cluster.value;
 
   deploymentsHelper.scan({
-    since, environment, status, cluster,
+    since, environment, status, cluster
   }).then(data => res.json(data)).catch(next);
 }
 
@@ -52,7 +52,7 @@ function getDeploymentLog(req, res, next) {
       accountName,
       environment,
       deploymentId: key,
-      instanceId,
+      instanceId
     };
 
     return GetNodeDeploymentLog(query).then((data) => {
@@ -84,7 +84,7 @@ function postDeployment(req, res, next) {
     mode,
     packagePath,
     serverRoleName,
-    isDryRun,
+    isDryRun
   };
 
   sender.sendCommand({ command, user: req.user }).then((deployment) => {
@@ -124,7 +124,7 @@ function patchDeployment(req, res, next) {
 
       let newStatus = {
         name: Enums.DEPLOYMENT_STATUS.Cancelled,
-        reason: `The deployment was cancelled manually by user: ${req.user.getName()}`,
+        reason: `The deployment was cancelled manually by user: ${req.user.getName()}`
       };
       let deploymentStatuses = yield activeDeploymentsStatusProvider.getActiveDeploymentsFullStatus([deployment]);
       let deploymentStatus = deploymentStatuses[0];
@@ -170,5 +170,5 @@ module.exports = {
   getDeploymentById,
   getDeploymentLog,
   postDeployment,
-  patchDeployment,
+  patchDeployment
 };

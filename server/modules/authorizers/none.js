@@ -6,5 +6,5 @@ exports.getRules = request => Promise.resolve([]);
 
 exports.docs = {
   requiresClusterPermissions: false,
-  requiresEnvironmentTypePermissions: false,
+  requiresEnvironmentTypePermissions: false
 };

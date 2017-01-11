@@ -59,5 +59,5 @@ module.exports = {
   getClusterConfigByName,
   postClustersConfig,
   putClusterConfigByName,
-  deleteClusterConfigByName,
+  deleteClusterConfigByName
 };

@@ -9,13 +9,13 @@ module.exports = {
   create(parameters) {
     assertContract(parameters, 'parameters', {
       properties: {
-        accountName: { type: String, empty: false },
-      },
+        accountName: { type: String, empty: false }
+      }
     });
 
     return new Promise((resolve) => {
       let client = new IAMRoleClient(parameters.accountName);
       resolve(client);
     });
-  },
+  }
 };

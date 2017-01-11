@@ -19,8 +19,8 @@ function ToggleUpstreamByServiceVerifier(toggleCommand) {
         resource: 'config/services',
         accountName: masterAccountName,
         filter: {
-          ServiceName: upstreams[0].Value.ServiceName,
-        },
+          ServiceName: upstreams[0].Value.ServiceName
+        }
       };
 
       let services = yield sender.sendQuery({ query, parent: toggleCommand });
@@ -101,7 +101,7 @@ function UpstreamProvider(senderInstance, toggleCommand, resourceName) {
     let query = {
       name: 'ScanDynamoResources',
       resource: 'config/lbupstream',
-      accountName: toggleCommand.accountName,
+      accountName: toggleCommand.accountName
     };
 
     let upstreams = yield senderInstance.sendQuery({ query, parent: toggleCommand });
@@ -130,7 +130,7 @@ function UpstreamToggler(senderInstance, toggleCommand) {
       resource: 'config/lbupstream',
       key: upstream.key,
       item: upstream,
-      accountName: toggleCommand.accountName,
+      accountName: toggleCommand.accountName
     };
     return senderInstance.sendCommand({ command, parent: toggleCommand });
   };
@@ -142,7 +142,7 @@ function* orchestrate(provider, verifier, toggler) {
   yield _.map(upstreams, toggler.toggleUpstream);
 
   return {
-    ToggledUpstreams: _.map(upstreams, 'Value.UpstreamName'),
+    ToggledUpstreams: _.map(upstreams, 'Value.UpstreamName')
   };
 }
 
@@ -151,5 +151,5 @@ module.exports = {
   UpstreamToggler,
   orchestrate: co.wrap(orchestrate),
   ToggleUpstreamByServiceVerifier,
-  ToggleUpstreamByNameVerifier,
+  ToggleUpstreamByNameVerifier
 };

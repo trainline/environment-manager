@@ -16,19 +16,19 @@ const masterAccountName = config.getUserValue('masterAccountName');
 function serviceExists(service) {
   let serviceNotFound = () => ({
     title: 'Service Not Found',
-    detail: `service name: ${service}`,
+    detail: `service name: ${service}`
   });
   let duplicateServiceFound = () => ({
     title: 'Duplicate Service Found',
-    detail: `service name: ${service}`,
+    detail: `service name: ${service}`
   });
   return sender.sendQuery({
     query: {
       accountName: masterAccountName,
       name: 'ScanDynamoResources',
       resource: 'config/services',
-      filter: { ServiceName: service },
-    },
+      filter: { ServiceName: service }
+    }
   }).then(
     (rsp) => {
       if (rsp.length === 1) {

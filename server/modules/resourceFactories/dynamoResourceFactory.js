@@ -25,7 +25,7 @@ function create(resourceDescriptor, parameters, callback) {
         key: resourceDescriptor.keyName,
         range: resourceDescriptor.rangeName,
         auditingEnabled: resourceDescriptor.enableAuditing,
-        dateField: resourceDescriptor.dateField,
+        dateField: resourceDescriptor.dateField
       };
       return new DynamoTableResource(config, client);
     }
@@ -35,5 +35,5 @@ function create(resourceDescriptor, parameters, callback) {
 
 module.exports = {
   canCreate,
-  create,
+  create
 };

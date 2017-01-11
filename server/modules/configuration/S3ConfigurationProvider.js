@@ -12,7 +12,7 @@ module.exports = function S3ConfigurationProvider() {
   this.get = function getConfigurationFromS3() {
     let parameters = {
       Bucket: S3_BUCKET,
-      Key: S3_KEY,
+      Key: S3_KEY
     };
 
     return masterAccountClient

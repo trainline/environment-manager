@@ -60,5 +60,5 @@ module.exports = {
   getEnvironmentTypeConfigByName,
   postEnvironmentTypesConfig,
   putEnvironmentTypeConfigByName,
-  deleteEnvironmentTypeConfigByName,
+  deleteEnvironmentTypeConfigByName
 };

@@ -48,8 +48,8 @@ function validateServiceNotCurrentlyBeingDeployed(deployment) {
       'Value.ServerRoleName': deployment.serverRoleName,
       '$date_from': minimumRangeDate,
       '$date_to': maximumRangeDate,
-      'Value.SchemaVersion': 2,
-    },
+      'Value.SchemaVersion': 2
+    }
   };
 
   return sender.sendQuery({ query }).then((deployments) => {
@@ -73,7 +73,7 @@ function validateServiceAndVersionNotDeployed(deployment) {
     name: 'GetTargetState',
     environment,
     recurse: true,
-    key: `environments/${environment}/services/${service}/${version}/definition`,
+    key: `environments/${environment}/services/${service}/${version}/definition`
   };
 
   return sender.sendQuery({ query })
@@ -92,7 +92,7 @@ module.exports = {
   validate(deployment) {
     return Promise.all([
       validateServiceNotCurrentlyBeingDeployed(deployment),
-      validateServiceAndVersionNotDeployed(deployment),
+      validateServiceAndVersionNotDeployed(deployment)
     ]);
-  },
+  }
 };

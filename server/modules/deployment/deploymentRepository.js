@@ -14,7 +14,7 @@ const day = (() => {
   return {
     after: dayAfter,
     before: dayBefore,
-    of: dayOf,
+    of: dayOf
   };
 })();
 
@@ -30,11 +30,11 @@ function getRunningDeployments() {
       FilterExpression: '#Value.#Status = :status',
       ExpressionAttributeNames: {
         '#Status': 'Status',
-        '#Value': 'Value',
+        '#Value': 'Value'
       },
       ExpressionAttributeValues: {
-        ':status': 'In Progress',
-      },
+        ':status': 'In Progress'
+      }
     };
     if (lastEvaluatedKey) {
       t.ExclusiveStartKey = lastEvaluatedKey;
@@ -55,11 +55,11 @@ function archiveRecentlyCompletedDeployments() {
       Limit: 50,
       ExpressionAttributeNames: {
         '#Status': 'Status',
-        '#Value': 'Value',
+        '#Value': 'Value'
       },
       ExpressionAttributeValues: {
-        ':status': 'In Progress',
-      },
+        ':status': 'In Progress'
+      }
     };
     if (lastEvaluatedKey) {
       t.ExclusiveStartKey = lastEvaluatedKey;
@@ -74,11 +74,11 @@ function archiveRecentlyCompletedDeployments() {
     deployment.StartDate = startTimestamp.substr(0, 10);
     return executePut({
       TableName: completedDeploymentsTableName,
-      Item: deployment,
+      Item: deployment
     })
       .then(() => executeDelete({
         TableName: recentDeploymentsTableName,
-        Key: { DeploymentID: deployment.DeploymentID },
+        Key: { DeploymentID: deployment.DeploymentID }
       }));
   };
 
@@ -97,7 +97,7 @@ function getDeploymentsStartedBetween(min, max) {
       Limit: 100,
       KeyConditionExpression: keyConditionExpression(['StartDate = :date', options.KeyConditionExpression]),
       ExpressionAttributeValues: Object.assign({ ':date': dateString }, options.ExpressionAttributeValues),
-      ScanIndexForward: false,
+      ScanIndexForward: false
     };
     if (options.FilterExpression) {
       t.FilterExpression = options.FilterExpression;
@@ -114,21 +114,21 @@ function getDeploymentsStartedBetween(min, max) {
     yield (lastEvaluatedKey => createQuery(max, {
       KeyConditionExpression: 'StartTimestamp <= :upperbound',
       ExpressionAttributeValues: {
-        ':upperbound': max.toISOString(),
-      },
+        ':upperbound': max.toISOString()
+      }
     }, lastEvaluatedKey));
 
     for (let t of daysBetween(day.before(max), day.after(min))) {
       yield (lastEvaluatedKey => createQuery(t, {
         KeyConditionExpression: undefined,
-        ExpressionAttributeValues: undefined,
+        ExpressionAttributeValues: undefined
       }, lastEvaluatedKey));
     }
 
     if (min < day.of(max)) {
       yield (lastEvaluatedKey => createQuery(min, {
         KeyConditionExpression: ':lowerbound <= StartTimestamp',
-        ExpressionAttributeValues: { ':lowerbound': min.toISOString() },
+        ExpressionAttributeValues: { ':lowerbound': min.toISOString() }
       }, lastEvaluatedKey));
     }
   };
@@ -147,7 +147,7 @@ function getDeploymentById(deploymentId) {
   let createGetRequestFromTableName = tableName => (
     {
       TableName: tableName,
-      Key: { DeploymentID: deploymentId },
+      Key: { DeploymentID: deploymentId }
     }
   );
 
@@ -230,5 +230,5 @@ module.exports = {
   archiveRecentlyCompletedDeployments,
   getDeploymentById,
   getDeploymentsStartedBetween,
-  getRunningDeployments,
+  getRunningDeployments
 };

@@ -17,8 +17,8 @@ module.exports = function ActiveDirectoryAdapterConfiguration() {
           url: { Type: String, empty: false },
           baseDN: { Type: String, empty: false },
           username: { Type: String, empty: false },
-          password: { Type: String, empty: false },
-        },
+          password: { Type: String, empty: false }
+        }
       });
     }
 

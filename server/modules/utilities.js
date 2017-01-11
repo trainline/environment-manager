@@ -46,7 +46,7 @@ function make(target) {
       });
 
       return result;
-    },
+    }
   };
 }
 
