@@ -22,12 +22,14 @@
                    class="form-control"
                    required
                    ng-disabled="vm.isBeingEdited"
+                   ng-pattern="'[A-Za-z0-9_\-]+'"
                    ng-model="vm.model.NotificationSettingsId" />
         </div>
         <span class="help-block"
               ng-if="form.NotificationSettingsId.$dirty && form.NotificationSettingsId.$error.required">
             Notification Settings id is required
         </span>
+        <span class="help-block" ng-if="form.NotificationSettingsId.$dirty && form.NotificationSettingsId.$error.pattern">Notification Settings id must match pattern [A-Za-z0-9_\-]+</span>
     </div>
     <div class="form-group" ng-class="{'has-error': form.NotificationEmail.$invalid && form.NotificationEmail.$dirty}">
         <label for="notification-email" class="col-md-2 control-label">Notification email:
@@ -47,8 +49,10 @@
                    name="NotificationEmail"
                    type="text"
                    class="form-control"
+                   multiple-emails
                    ng-model="vm.model.Value.NotificationEmail" ng-list />
         </div>
+        <span class="help-block" ng-if="form.NotificationEmail.$dirty && form.NotificationEmail.$error.multipleEmails">At least one email is invalid.</span>
     </div>
 
     <div class="form-group" ng-class="{'has-error': form.ChatChannel.$invalid && form.ChatChannel.$dirty}">
