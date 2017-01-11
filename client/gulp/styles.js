@@ -18,7 +18,7 @@ gulp.task('styles', function () {
   return buildStyles();
 });
 
-var buildStyles = function () {
+function buildStyles() {
   var sassOptions = {
     outputStyle: 'expanded',
     precision: 10
@@ -45,4 +45,4 @@ var buildStyles = function () {
     .pipe($.rename('app-generated.css'))
     .pipe(gulp.dest('./styles/'));
     // .pipe(gulp.dest(path.join(conf.paths.tmp, '/serve/app/')));
-};
+}
