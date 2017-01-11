@@ -1,4 +1,4 @@
-/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
 // TODO(filip): why do we even need this ugly rewrite? What's wrong with operating on AWS data?
