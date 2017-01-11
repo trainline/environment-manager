@@ -2,17 +2,10 @@
 
 'use strict';
 
-let validUrl = require('valid-url');
-let _ = require('lodash');
-
 let sender = require('modules/sender');
 let adapt = require('modules/callbackAdapter');
 let route = require('modules/helpers/route');
 let RequestData = require('modules/RequestData');
-
-let Enums = require('Enums');
-let SupportedSliceNames = _.values(Enums.SliceName);
-let SupportedDeploymentModes = _.values(Enums.DeploymentMode);
 let deployAuthorizer = require('modules/authorizers/deploy-authorizer');
 
 module.exports = route.post('/:account/environments/:environment/services/:service/:version/deploy')
@@ -31,21 +24,9 @@ module.exports = route.post('/:account/environments/:environment/services/:servi
   .do((request, response) => {
     let requestData = new RequestData(request);
 
-    let deploymentMode = requestData.get('Mode', 'overwrite').toLowerCase();
+    let mode = requestData.get('Mode', 'overwrite').toLowerCase();
     let serviceSlice = requestData.get('Slice', 'none').toLowerCase();
     let packagePath = requestData.get('PackagePath');
-
-    if (SupportedDeploymentModes.indexOf(deploymentMode.toLowerCase()) < 0) {
-      response.status(400);
-      response.send(`Unknown mode "${deploymentMode}". Supported modes are: ${SupportedDeploymentModes.join(', ')}`);
-      return;
-    }
-
-    if (deploymentMode === 'bg' && SupportedSliceNames.indexOf(serviceSlice) < 0) {
-      response.status(400);
-      response.send(`Unknown slice name "${serviceSlice}". Supported slice names are: ${SupportedSliceNames.join(', ')}`);
-      return;
-    }
 
     if (!packagePath) {
       response.status(400);
@@ -53,18 +34,13 @@ module.exports = route.post('/:account/environments/:environment/services/:servi
       return;
     }
 
-    let packageType = validUrl.isUri(packagePath) ?
-      Enums.SourcePackageType.CodeDeployRevision :
-      Enums.SourcePackageType.DeploymentMap;
-
     let command = {
       name: 'DeployService',
-      accountName: request.params.account,
       environmentName: request.params.environment,
       serviceName: request.params.service,
       serviceVersion: request.params.version,
       serviceSlice,
-      packageType,
+      mode,
       packagePath,
       serverRoleName: request.serverRoleName,
     };

@@ -355,6 +355,10 @@ paths:
         - Deployment
       x-authorizer: deploy-authorizer
       parameters:
+        - name: dry_run
+          type: boolean
+          in: query
+          required: false
         - name: body
           in: body
           required: true

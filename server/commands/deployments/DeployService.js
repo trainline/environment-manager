@@ -5,25 +5,28 @@
 let co = require('co');
 let Enums = require('Enums');
 let assertContract = require('modules/assertContract');
-
 let DeploymentContract = require('modules/deployment/DeploymentContract');
 let UnknownSourcePackageTypeError = require('modules/errors/UnknownSourcePackageTypeError.class');
-
 let sender = require('modules/sender');
 let infrastructureConfigurationProvider = require('modules/provisioning/infrastructureConfigurationProvider');
 let namingConventionProvider = require('modules/provisioning/namingConventionProvider');
 let packagePathProvider = new (require('modules/PackagePathProvider'))();
 let deploymentLogger = require('modules/DeploymentLogger');
+let _ = require('lodash');
+let SupportedSliceNames = _.values(Enums.SliceName);
+let SupportedDeploymentModes = _.values(Enums.DeploymentMode);
+let validUrl = require('valid-url');
+let s3PackageLocator = require('modules/s3PackageLocator');
+let Environment = require('models/Environment');
 
 module.exports = function DeployServiceCommandHandler(command) {
   assertContract(command, 'command', {
     properties: {
-      accountName: { type: String, empty: false },
       environmentName: { type: String, empty: false },
       serviceName: { type: String, empty: false },
       serviceVersion: { type: String, empty: false },
       serviceSlice: { type: String, empty: false },
-      packageType: { type: String, empty: false },
+      mode: { type: String, empty: false },
       packagePath: { type: String, empty: false },
       serverRoleName: { type: String, empty: false },
     },
@@ -44,6 +47,39 @@ module.exports = function DeployServiceCommandHandler(command) {
 
 function validateCommandAndCreateDeployment(command) {
   return co(function* () {
+    const { mode, packagePath, environmentName, serviceSlice, serviceName, serviceVersion } = command;
+
+    if (mode === 'overwrite' && serviceSlice !== undefined && serviceSlice !== 'none') {
+      throw new Error('Slice must be set to \'none\' in overwrite mode.');
+    }
+    if (SupportedDeploymentModes.indexOf(mode.toLowerCase()) < 0) {
+      throw new Error(`Unknown mode \'${mode}\'. Supported modes are: ${SupportedDeploymentModes.join(', ')}`);
+    }
+    if (mode === 'bg' && SupportedSliceNames.indexOf(serviceSlice) < 0) {
+      throw new Error(`Unknown slice \'${serviceSlice}\'. Supported slices are: ${SupportedSliceNames.join(', ')}`);
+    }
+
+    if (!packagePath) {
+      const s3Package = yield s3PackageLocator.findDownloadUrl({
+        environment: environmentName,
+        service: serviceName,
+        version: serviceVersion,
+      });
+      if (!s3Package) {
+        throw new Error('Deployment package was not found. Please specify a location or upload the package to S3');
+      } else {
+        command.packagePath = s3Package;
+      }
+    }
+
+    command.packageType = validUrl.isUri(packagePath) ?
+      Enums.SourcePackageType.CodeDeployRevision :
+      Enums.SourcePackageType.DeploymentMap;
+
+    const environment = yield Environment.getByName(command.environmentName);
+    const environmentType = yield environment.getEnvironmentType();
+    command.accountName = environmentType.AWSAccountName;
+
     let configuration = yield infrastructureConfigurationProvider.get(
       command.environmentName, command.serviceName, command.serverRoleName
     );
