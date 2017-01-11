@@ -50,12 +50,12 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="service in Data | orderBy : 'ServiceName' ">
-          <td><a href="#/config/services/{{service.ServiceName}}?Range={{service.OwningCluster}}">{{service.ServiceName}}</a></td>
-          <td>{{service.OwningCluster}}</td>
-          <td>{{service.Value.Description}}</td>
-          <td>{{service.Value.BluePort}}</td>
-          <td>{{service.Value.GreenPort}}</td>
+        <tr ng-repeat="service in ::Data | orderBy : 'ServiceName' ">
+          <td><a href="#/config/services/{{::service.ServiceName}}?Range={{::service.OwningCluster}}">{{::service.ServiceName}}</a></td>
+          <td>{{::service.OwningCluster}}</td>
+          <td>{{::service.Value.Description}}</td>
+          <td>{{::service.Value.BluePort}}</td>
+          <td>{{::service.Value.GreenPort}}</td>
           <td class="command command-viewDeployments"><span class="glyphicon glyphicon-log-in" ng-click="ViewDeployments(service)" title="View Deployments"></span></td>
           <td class="command command-viewHistory"><span class="glyphicon glyphicon-time" ng-click="ViewHistory(service)" title="View History"></span></td>
           <td ng-if="canUser('delete')" class="command command-delete"><span class="glyphicon glyphicon-remove" ng-click="Delete(service)" title="Delete"></span></td>
