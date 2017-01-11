@@ -1,8 +1,8 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 describe('QuerySync', function () {
-
   var $location;
   var querySync;
   var target;
@@ -13,45 +13,45 @@ describe('QuerySync', function () {
     $location = jasmine.createSpyObj('$location', ['search']);
     $location.search.and.callFake(function () { return {}; });
 
-    $provide.service('$location', function() {
+    $provide.service('$location', function () {
       return $location;
     });
   }));
 
-  beforeEach(inject(function(QuerySync) {
+  beforeEach(inject(function (QuerySync) {
     target = {};
     querySync = new QuerySync(target, {
       environment: {
         property: 'SelectedEnvironment',
-        default: 'pr1',
+        default: 'pr1'
       },
       cluster: {
         property: 'SelectedOwningCluster',
-        default: 'Any',
+        default: 'Any'
       },
       date_range: {
         property: 'DateRange',
         default: '2000',
-        castToInteger: true,
+        castToInteger: true
       }
     });
   }));
 
   describe('.init()', function () {
-    it('uses defaults', function() {
+    it('uses defaults', function () {
       querySync.init();
       expect(target.SelectedEnvironment).toEqual('pr1');
       expect(target.SelectedOwningCluster).toEqual('Any');
     });
 
-    it('casts to integer', function() {
+    it('casts to integer', function () {
       querySync.init();
       expect(target.DateRange).toEqual(2000);
     });
   });
 
-  describe('.updateQuery()', function() {
-    it('updates query', function() {
+  describe('.updateQuery()', function () {
+    it('updates query', function () {
       querySync.init();
       target.SelectedEnvironment = 'testval1';
       querySync.updateQuery();

@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.compare').component('serviceCell', {
@@ -11,12 +12,12 @@ angular.module('EnvironmentManager.compare').component('serviceCell', {
     var $ctrl = this;
 
     if (!this.data) {
-      $log.warn('No data passed to serviceCell!')
+      $log.warn('No data passed to serviceCell!');
       return;
     }
-    
+
     var html = '<table class="table service-hover-table">';
-    html += '<tr><th>Server role</th><th>Version</th></tr>'
+    html += '<tr><th>Server role</th><th>Version</th></tr>';
     _.forEach(this.data.serverRoles, function (deployments, serverRoleName) {
       deployments = deployments.sort(function (a, b) {
         return comparisons.semver(a.version, b.version);
@@ -32,8 +33,8 @@ angular.module('EnvironmentManager.compare').component('serviceCell', {
         html += '</tr>';
       });
     });
-    html += '</table>'
-    
+    html += '</table>';
+
     this.popoverHtml = $sce.trustAsHtml(html);
   }
 });

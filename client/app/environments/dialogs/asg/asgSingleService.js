@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.environments').component('asgSingleService', {
@@ -15,7 +16,7 @@ angular.module('EnvironmentManager.environments').component('asgSingleService', 
     this.$onInit = function () {
       var asg = vm.resolve.asg;
       var asgState = vm.resolve.asgState;
-      
+
       vm.service = _.find(asgState.Services, { Name: vm.resolve.service.Name, Slice: vm.resolve.service.Slice });
       var instances = _.filter(asgState.Instances, function (instance) {
         return _.some(instance.Services, { Name: vm.service.Name, Slice: vm.service.Slice });
@@ -28,6 +29,5 @@ angular.module('EnvironmentManager.environments').component('asgSingleService', 
       });
       vm.instances = instances;
     };
-
   }
 });

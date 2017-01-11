@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.common')
@@ -9,7 +10,6 @@ angular.module('EnvironmentManager.common')
       template: '<span class="health-status glyphicon"></span>',
       replace: true,
       link: function (scope, elm, attrs) {
-
         var statusMap = {
           Healthy: 'healthy',
           Error: 'error',
@@ -19,18 +19,18 @@ angular.module('EnvironmentManager.common')
           passing: 'healthy',
           critical: 'error'
         };
-        
+
         var classes = {
           warning: 'glyphicon-alert warning',
           healthy: 'glyphicon-ok-sign healthy',
           error: 'glyphicon-alert error',
-          noData: 'glyphicon-ok-sign no-data',
+          noData: 'glyphicon-ok-sign no-data'
         };
 
         var status = $parse(attrs.status)(scope);
         var cls = classes[statusMap[status]];
 
         elm.addClass(cls);
-      },
+      }
     };
   });

@@ -1,12 +1,12 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.common')
   .factory('schemaValidatorService', function ($http, $window, $log) {
-
     var options = {
       allErrors: true,
-      format: 'full',
+      format: 'full'
     };
 
     $log.log('Creating JSON Schema Validator...');
@@ -15,7 +15,7 @@ angular.module('EnvironmentManager.common')
 
     $log.log('Loading JSON Schemas...');
     [
-      'EnvironmentType',
+      'EnvironmentType'
     ].map(load);
 
     // Dont't know how to ensure all the schemas are loaded before returning.
@@ -58,13 +58,10 @@ angular.module('EnvironmentManager.common')
     }
 
     function makeErrorHumanReadable(validationError) {
-
       return [
         'Data',
         validationError.dataPath.replace(/^\./, ''),
-        validationError.message,
+        validationError.message
       ].join(' ');
-
     }
-
   });
