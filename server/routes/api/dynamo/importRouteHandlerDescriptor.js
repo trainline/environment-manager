@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -22,14 +23,12 @@ function asRouteHandlerDescriptor(resource, action, commandName) {
     docs.perAccount = resource.perAccount;
   }
   const masterAccountName = config.getUserValue('masterAccountName');
-  
+
   return route
     .put(url)
     .named(resource.name)
     .withDocs(docs)
-    .whenRequest((url, value) => {
-      return _.isNil(value) ? new Error.InvalidOperation('Expected one or more items to import.') : null;
-    })
+    .whenRequest((uri, value) => (_.isNil(value) ? new Error.InvalidOperation('Expected one or more items to import.') : null))
     .do((request, response) => {
       let command = {
         name: commandName,
@@ -44,14 +43,16 @@ function asRouteHandlerDescriptor(resource, action, commandName) {
 
 let replaceHandler;
 let mergeHandler;
+let importRoutes = [];
 
 resourceDescriptorProvider
   .all()
   .filter(resource => resource.type === 'dynamodb/table')
   .filter(resource => !!resource.importable)
-  .map((resource) => {
+  .forEach((resource) => {
     replaceHandler = asRouteHandlerDescriptor(resource, 'replace', 'ReplaceDynamoResources');
     mergeHandler = asRouteHandlerDescriptor(resource, 'merge', 'MergeDynamoResources');
+    importRoutes.push(replaceHandler, mergeHandler);
   });
 
-module.exports = [replaceHandler, mergeHandler];
+module.exports = importRoutes;

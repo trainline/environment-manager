@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let sender = require('modules/sender');
@@ -14,7 +15,6 @@ function getImages(req, res, next) {
       name: 'ScanCrossAccountImages',
       filter: {},
     };
-
   } else {
     query = {
       name: 'ScanImages',
@@ -22,15 +22,16 @@ function getImages(req, res, next) {
       filter: {},
     };
   }
-  
+
   sender.sendQuery({ query }).then((data) => {
     if (stable !== undefined) {
-      data = _.filter(data, { IsStable: stable });
+      res.json(_.filter(data, { IsStable: stable }));
+    } else {
+      res.json(data);
     }
-    res.json(data);
   }).catch(next);
 }
 
 module.exports = {
-  getImages
+  getImages,
 };

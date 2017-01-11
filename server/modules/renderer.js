@@ -1,36 +1,39 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* eslint-disable */
+/**
+ * TODO: This file needs some attention/simplifying
+ * Ignoring eslint until then.
+ */
 'use strict';
 
 let fileSystem = require('fs');
-let compiler   = require('es6-template-strings/compile');
-let resolver   = require('es6-template-strings/resolve-to-string');
+let compiler = require('es6-template-strings/compile');
+let resolver = require('es6-template-strings/resolve-to-string');
 
-var templateCatalog = [];
+let templateCatalog = [];
 
 function Template(name, path) {
-  var _name = name;
-  var _path = path;
-  var _template = null;
+  let _name = name;
+  let _path = path;
+  let _template = null;
 
-  function getName() { return _name; };
-
-  function getPath() { return _path; };
+  function getPath() { return _path; }
 
   function getTemplate() { return _template; }
 
   function setTemplate(value) { _template = value; }
 
   function render(data, callback) {
-    var executeTemplating = function() {
-      var result = resolver(getTemplate(), data);
+    let executeTemplating = function () {
+      let result = resolver(getTemplate(), data);
       callback(result);
     };
 
-    if(getTemplate()) {
+    if (getTemplate()) {
       executeTemplating();
     } else {
-      fileSystem.readFile(getPath(), 'utf8', function(error, content) {
-        if(error) throw error;
+      fileSystem.readFile(getPath(), 'utf8', (error, content) => {
+        if (error) throw error;
 
         setTemplate(compiler(content));
         executeTemplating();
@@ -39,15 +42,15 @@ function Template(name, path) {
   }
 
   return {
-    render: render
+    render,
   };
 }
 
 module.exports = {
-  register: function(name, path) {
+  register(name, path) {
     templateCatalog[name] = new Template(name, path);
   },
-  render: function(name, data, callback) {
+  render(name, data, callback) {
     templateCatalog[name].render(data, callback);
-  }
+  },
 };

@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 function createRequest(parameters) {
@@ -23,12 +24,10 @@ function createRequest(parameters) {
 }
 
 function SecurityGroupResource(client) {
-
   this.scan = function (parameters) {
     let request = createRequest(parameters);
     return client.describeSecurityGroups(request).promise().then(response => response.SecurityGroups);
   };
-  
 }
 
 module.exports = SecurityGroupResource;

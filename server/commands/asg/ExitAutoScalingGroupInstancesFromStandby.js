@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assert = require('assert');
@@ -6,7 +7,6 @@ let resourceProvider = require('modules/resourceProvider');
 let co = require('co');
 let sender = require('modules/sender');
 let autoScalingGroupSizePredictor = require('modules/autoScalingGroupSizePredictor');
-let logger = require('modules/logger');
 let AutoScalingGroup = require('models/AutoScalingGroup');
 
 module.exports = function ExitAutoScalingGroupInstancesFromStandby(command) {
@@ -17,9 +17,9 @@ module.exports = function ExitAutoScalingGroupInstancesFromStandby(command) {
   return co(function* () {
     let parameters;
     let childCommand;
-    
+
     let autoScalingGroup = yield AutoScalingGroup.getByName(command.accountName, command.autoScalingGroupName);
-    
+
     // Predict AutoScalingGroup size after exiting instances from standby
     let expectedSize = yield autoScalingGroupSizePredictor.predictSizeAfterExitingInstancesFromStandby(autoScalingGroup, command.instanceIds);
 

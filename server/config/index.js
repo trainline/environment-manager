@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let nconf = require('nconf');
@@ -22,18 +23,18 @@ if (profileOverride !== undefined) {
   if (fs.existsSync(profileOverride) === false) {
     throw Error(`File EM_PROFILE=${profileOverride} doesn't exist.`);
   }
-  nconf.file(profileOverride)
+  nconf.file(profileOverride);
 }
 
 /**
  * Defaults if not previously set via ENV, args or profile
  */
 nconf.defaults({
-  'EM_AWS_RESOURCE_PREFIX': '',
-  'EM_LOG_LEVEL': 'Debug',
-  'EM_AWS_S3_BUCKET': 'S3 Bucket value not set',
-  'EM_AWS_S3_KEY': 'S3 Key value not set',
-  'EM_PACKAGES_KEY_PREFIX': 'PACKAGES',
+  EM_AWS_RESOURCE_PREFIX: '',
+  EM_LOG_LEVEL: 'Debug',
+  EM_AWS_S3_BUCKET: 'S3 Bucket value not set',
+  EM_AWS_S3_KEY: 'S3 Key value not set',
+  EM_PACKAGES_KEY_PREFIX: 'PACKAGES',
 });
 
 /**
@@ -50,7 +51,7 @@ nconf.set('PUBLIC_DIR', publicDir);
 /**
  * Ensure required values are set
  */
-REQUIRED_VALUES.filter(v => nconf.get(v) === undefined).forEach(missing => {
+REQUIRED_VALUES.filter(v => nconf.get(v) === undefined).forEach((missing) => {
   throw new Error(`${missing} value is not set.`);
 });
 
@@ -70,11 +71,11 @@ function userGet(key) {
 
 module.exports = {
   logBootstrapValues: () => {
-    LOGGED_VALUES.forEach(key => {
+    LOGGED_VALUES.forEach((key) => {
       console.log(`${key}=${nconf.get(key)}`);
     });
   },
   get: nconf.get.bind(nconf),
   setUserValue: userSet,
-  getUserValue: userGet
+  getUserValue: userGet,
 };

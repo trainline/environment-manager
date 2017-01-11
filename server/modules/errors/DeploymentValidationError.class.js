@@ -1,7 +1,8 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-let BaseError = require("./BaseError.class");
+let BaseError = require('./BaseError.class');
 
 module.exports = class DeploymentValidationError extends BaseError {
 
@@ -14,4 +15,4 @@ module.exports = class DeploymentValidationError extends BaseError {
     Error.captureStackTrace(this, this.constructor);
   }
 
-}
+};

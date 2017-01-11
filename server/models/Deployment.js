@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -22,7 +23,7 @@ class Deployment {
       resource: 'deployments/history',
       accountName: this.AccountName,
       key: this.DeploymentID,
-      item: itemValue
+      item: itemValue,
     };
     return sender.sendCommand({ command, user: systemUser });
   }
@@ -35,10 +36,10 @@ class Deployment {
     this.Value.ExecutionLog = executionLogEntries.join('\n');
 
     return this.updateItemValue({
-      'Value.ExecutionLog': this.Value.ExecutionLog
+      'Value.ExecutionLog': this.Value.ExecutionLog,
     });
   }
-  
+
 }
 
 module.exports = Deployment;

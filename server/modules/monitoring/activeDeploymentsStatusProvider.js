@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -15,28 +16,26 @@ let sender = require('modules/sender');
 let infrastructureConfigurationProvider = require('modules/provisioning/infrastructureConfigurationProvider');
 let namingConventionProvider = require('modules/provisioning/namingConventionProvider');
 let logger = require('modules/logger');
-let deploymentRepository = require('modules/deployment/deploymentRepository');
 let utils = require('modules/utilities');
-
 let Environment = require('models/Environment');
 
 module.exports = {
 
-  all: function () {
+  all() {
     return co(function* () {
       let activeDeployments = yield getActiveDeploymentsFromHistoryTable();
       logger.debug(`DeploymentMonitor: ${activeDeployments.length} deployments found to monitor.`);
 
       return activeDeployments;
-    }).catch(error => {
-      var message = (error instanceof BaseError) ? error.toString(true) : error.stack;
-      logger.error('DeploymentMonitor: An error has occurred getting active deployments: ' + message);
+    }).catch((error) => {
+      let message = (error instanceof BaseError) ? error.toString(true) : error.stack;
+      logger.error(`DeploymentMonitor: An error has occurred getting active deployments: ${message}`);
 
       return Promise.reject(error);
     });
   },
 
-  getActiveDeploymentsFullStatus: function (activeDeployments) {
+  getActiveDeploymentsFullStatus(activeDeployments) {
     return Promise.all(activeDeployments.map(
       activeDeployment => getActiveDeploymentFullStatus(activeDeployment)
     ));
@@ -54,13 +53,13 @@ function getActiveDeploymentsFromHistoryTable() {
     resource: 'deployments/history',
     filter: {
       'Value.Status': expectedStatus,
-      $date_from: minimumRangeDate,
-      $date_to: maximumRangeDate,
+      '$date_from': minimumRangeDate,
+      '$date_to': maximumRangeDate,
       'Value.SchemaVersion': 2,
     },
   };
 
-  return sender.sendQuery({ query: query });
+  return sender.sendQuery({ query });
 }
 
 function getActiveDeploymentFullStatus(activeDeployment) {
@@ -71,7 +70,6 @@ function getActiveDeploymentFullStatus(activeDeployment) {
   let accountName = activeDeployment.AccountName;
 
   return co(function* () {
-
     let data = yield {
       nodesId: getExpectedNodesIdByDeployment(activeDeployment),
       serviceInstallation: getTargetState(
@@ -90,33 +88,32 @@ function getActiveDeploymentFullStatus(activeDeployment) {
     let installationTimeout = data.serviceInstallation.length ? data.serviceInstallation[0].value.InstallationTimeout : DEFAULT_SERVICE_INSTALLATION_TIMEOUT;
 
     let activeDeploymentFullStatus = {
-      deploymentId: deploymentId,
-      environmentName: environmentName,
-      accountName: accountName,
+      deploymentId,
+      environmentName,
+      accountName,
       installationTimeout: ms(`${installationTimeout}m`),
       startTime: new Date(activeDeployment.Value.StartTimestamp),
-      nodesDeployment: nodesDeployment,
+      nodesDeployment,
     };
 
     logger.debug(`DeploymentMonitor: Deployment '${deploymentId}' is going to affect following nodes ${JSON.stringify(nodesDeployment)}`);
 
     return activeDeploymentFullStatus;
-
   }).catch((error) => {
     let errorString = `An error has occurred getting deployment '${deploymentId}' status: ${error.toString(true)}`;
     logger.error(errorString);
 
     return Promise.resolve({
-      deploymentId: deploymentId,
+      deploymentId,
       error: errorString,
-      environmentName: environmentName,
-      accountName: accountName,
+      environmentName,
+      accountName,
     });
   });
 }
 
 function getNodesDeployment(nodesId, nodesDeployment) {
-  let mapping = nodesId.map(nodeId => {
+  let mapping = nodesId.map((nodeId) => {
     let nodeDeployment = nodesDeployment
       .filter(x => x.key.indexOf(`/nodes/${nodeId}`) >= 0)
       .map(x => x.value)[0];
@@ -129,9 +126,11 @@ function getNodesDeployment(nodesId, nodesDeployment) {
     if (!nodeDeployment) return result;
 
     for (let propertyName in nodeDeployment) {
-      let property = nodeDeployment[propertyName];
-      if (!property) continue;
-      result[propertyName] = property;
+      if ({}.hasOwnProperty.call(nodeDeployment, propertyName)) {
+        let property = nodeDeployment[propertyName];
+        if (!property) continue; // eslint-disable-line no-continue
+        result[propertyName] = property;
+      }
     }
 
     return result;
@@ -143,7 +142,6 @@ function getNodesDeployment(nodesId, nodesDeployment) {
 // TODO(filip): pass model rather than operate on raw DynamoDB data ffs!!!
 function getExpectedNodesIdByDeployment(deployment) {
   return co(function* () {
-
     let serverRoleName;
     // Old deployment - TODO(filip): remove that once we're successful
     if (deployment.Value.ServerRoleName === undefined) {
@@ -167,7 +165,7 @@ function getExpectedNodesIdByDeployment(deployment) {
     let query = {
       name: 'GetAutoScalingGroup',
       accountName: deployment.AccountName,
-      autoScalingGroupName: autoScalingGroupName,
+      autoScalingGroupName,
     };
 
     try {
@@ -177,21 +175,20 @@ function getExpectedNodesIdByDeployment(deployment) {
         .map(instance => instance.InstanceId);
       return nodeIds;
     } catch (err) {
-      logger.error(`Couldn't find AutoScalingGroup - it's not in cached array?`);
+      logger.error('Couldn\'t find AutoScalingGroup - it\'s not in cached array?');
       logger.error(err);
       return [];
     }
-    
   });
 }
 
 function getTargetState(key, environmentName, recurse) {
-  var query = {
+  let query = {
     name: 'GetTargetState',
     environment: environmentName,
-    key: key,
-    recurse: recurse,
+    key,
+    recurse,
   };
 
-  return sender.sendQuery({ query: query });
+  return sender.sendQuery({ query });
 }

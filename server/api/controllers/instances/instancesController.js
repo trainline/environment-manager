@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -65,9 +66,7 @@ function getInstances(req, res, next) {
     // Note: be wary of performance - this filters instances AFTER fetching all from AWS
     if (since !== undefined) {
       let sinceDate = new Date(since);
-      list = _.filter(list, (instance) => {
-        return sinceDate.getTime() < new Date(instance.LaunchTime).getTime();
-      })
+      list = _.filter(list, instance => sinceDate.getTime() < new Date(instance.LaunchTime).getTime());
     }
 
     if (includeDeploymentsStatus === true) {
@@ -98,7 +97,7 @@ function getInstances(req, res, next) {
 
       // Remove instances without Environment tag
       list = _.compact(list);
-      list = _.sortBy(list, (instance) => new Date(instance.LaunchTime)).reverse();
+      list = _.sortBy(list, instance => new Date(instance.LaunchTime)).reverse();
       res.json(list);
     } else {
       res.json(list);
@@ -123,7 +122,6 @@ function putInstanceMaintenance(req, res, next) {
   const enable = body.enable;
 
   co(function* () {
-
     let instance = yield Instance.getById(id);
     const instanceIds = [id];
     const accountName = instance.AccountName;
@@ -138,7 +136,7 @@ function putInstanceMaintenance(req, res, next) {
     let entry = yield dynamoHelper.getByKey('MAINTENANCE_MODE', { accountName });
     let ips = JSON.parse(entry.IPs);
     if (enable === true) {
-      ips.push(instance.PrivateIpAddress)
+      ips.push(instance.PrivateIpAddress);
       ips = _.uniq(ips);
     } else {
       _.pull(ips, instance.PrivateIpAddress);
@@ -153,7 +151,7 @@ function putInstanceMaintenance(req, res, next) {
       yield handler({ accountName, autoScalingGroupName, instanceIds });
     } catch (err) {
       if (err.message.indexOf('is not in Standby') !== -1 || err.message.indexOf('cannot be exited from standby as its LifecycleState is InService') !== -1) {
-        logger.warn(`ASG ${autoScalingGroupName} instance ${id} is already in desired state for ASG Standby: ${enable}`)
+        logger.warn(`ASG ${autoScalingGroupName} instance ${id} is already in desired state for ASG Standby: ${enable}`);
       } else {
         throw err;
       }
@@ -175,11 +173,11 @@ function putInstanceMaintenance(req, res, next) {
  */
 function connectToInstance(req, res, next) {
   const id = req.swagger.params.id.value;
-  Instance.getById(id).then(instance => {
+  Instance.getById(id).then((instance) => {
     res.status(200);
     res.set({
       'content-type': 'application/rdp',
-      'content-disposition': `attachment; filename*=UTF-8''${id}.rdp`
+      'content-disposition': `attachment; filename*=UTF-8''${id}.rdp`,
     });
     res.send(`full address:s:${instance.PrivateIpAddress}`);
   }).catch(next);
@@ -189,5 +187,5 @@ module.exports = {
   getInstances,
   getInstanceById,
   putInstanceMaintenance,
-  connectToInstance
+  connectToInstance,
 };

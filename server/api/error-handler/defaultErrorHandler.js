@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 const IS_PROD = require('config').get('IS_PRODUCTION');
@@ -24,9 +25,9 @@ function defaultErrorHandler(err, req, res, next) {
   }
 
   if (IS_PROD && res.statusCode === 500) {
-    friendlyError.error = 'An internal error has occurred.'
+    friendlyError.error = 'An internal error has occurred.';
   } else if (res.statusCode === 409) {
-    friendlyError.error = 'The item you are attempting to update has already been modified. Check your expected-version.'
+    friendlyError.error = 'The item you are attempting to update has already been modified. Check your expected-version.';
   }
 
   logger.error(err.stack);
@@ -34,7 +35,7 @@ function defaultErrorHandler(err, req, res, next) {
 }
 
 function getStatusByErrorType(error) {
-  switch(error.name) {
+  switch (error.name) {
     case 'AutoScalingGroupNotFoundError':
     case 'ImageNotFoundError':
     case 'InstanceNotFoundError':
@@ -43,10 +44,10 @@ function getStatusByErrorType(error) {
     case 'RoleNotFoundError':
     case 'SecurityGroupNotFoundError':
     case 'TopicNotFoundError':
-    case 'DynamoItemNotFoundError':     return 404;   break;
+    case 'DynamoItemNotFoundError': return 404;
 
-    case 'DynamoConcurrencyError':      return 409;   break;
-    
+    case 'DynamoConcurrencyError': return 409;
+
     case 'EvalError':
     case 'InternalError':
     case 'RangeError':
@@ -54,9 +55,9 @@ function getStatusByErrorType(error) {
     case 'SyntaxError':
     case 'TypeError':
     case 'URIError':
-    case 'AssertionError':              return 500;   break;
+    case 'AssertionError': return 500;
 
-    default:                            return 400;   break;
+    default: return 400;
   }
 }
 

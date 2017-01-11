@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let notImplemented = require('api/api-utils/notImplemented');
@@ -86,7 +87,7 @@ function getAuditLogs(request, response, next) {
   let filter = createFilter(query);
   let auditLogQuery = createAuditLogQuery(since, until, exclusiveStartKey, query.per_page, filter);
   return auditLogReader.getLogs(auditLogQuery)
-    .then(auditLog => {
+    .then((auditLog) => {
       logger.debug('Audit History: Constructing navigation links');
       query.since = since.toString();
       query.until = until.toString();
@@ -103,10 +104,10 @@ function getAuditLogs(request, response, next) {
  * GET /audit/{key}
  */
 function getAuditLogByKey(req, res, next) {
-  notImplemented(res, 'Getting a specific audit log by key')
+  notImplemented(res, 'Getting a specific audit log by key');
 }
 
 module.exports = {
   getAuditLogs,
-  getAuditLogByKey
+  getAuditLogByKey,
 };

@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assertContract = require('modules/assertContract');
@@ -7,15 +8,14 @@ let DeploymentContract = require('modules/deployment/DeploymentContract');
 
 module.exports = function ServiceInstallationKeyValueProvider() {
   this.get = function (deployment, s3Path) {
-
     assertContract(deployment, 'deployment', { type: DeploymentContract, null: false });
     assertContract(s3Path, 's3Path', { type: S3PathContract, null: false });
 
-    var environmentName = deployment.environmentName;
-    var serviceName = deployment.serviceName;
-    var serviceVersion = deployment.serviceVersion;
+    let environmentName = deployment.environmentName;
+    let serviceName = deployment.serviceName;
+    let serviceVersion = deployment.serviceVersion;
 
-    var serviceInstallationKeyValue = {
+    let serviceInstallationKeyValue = {
       key: `environments/${environmentName}/services/${serviceName}/${serviceVersion}/installation`,
       value: {
         PackageBucket: s3Path.bucket,

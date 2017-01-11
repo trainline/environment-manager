@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assert = require('assert');
@@ -13,9 +14,9 @@ let keyNameProvider = require('modules/provisioning/launchConfiguration/keyNameP
 let imageProvider = require('modules/provisioning/launchConfiguration/imageProvider');
 
 module.exports = {
-  get: function (configuration, accountName, logger) {
-    assert(configuration, "Expected 'configuration' argument not to be null.");
-    assert(accountName, "Expected 'accountName' argument not to be null.");
+  get(configuration, accountName, logger) {
+    assert(configuration, 'Expected \'configuration\' argument not to be null.');
+    assert(accountName, 'Expected \'accountName\' argument not to be null.');
 
     return co(function* () {
       let sliceNames = configuration.serverRole.FleetPerSlice ? ['blue', 'green'] : [null];

@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -14,19 +15,19 @@ module.exports = resourceDescriptorProvider
   .filter(resource => resource.disableAutoRoute !== true)
   .filter(resource => !!resource.exportable)
   .map((resource) => {
-    var url = make([
+    let url = make([
       resource.perAccount ? ':account' : null,
       resource.name,
       'export',
     ]).uri();
 
-    var docs;
+    let docs;
     if (resource.docs) {
       docs = _.clone(resource.docs);
       docs.verb = 'export';
       docs.perAccount = resource.perAccount;
     }
-    
+
     const masterAccountName = config.getUserValue('masterAccountName');
 
     return route
@@ -34,7 +35,7 @@ module.exports = resourceDescriptorProvider
       .named(resource.name)
       .withDocs(docs)
       .do((request, response) => {
-        var query = {
+        let query = {
           name: 'ScanDynamoResources',
           resource: resource.name,
           exposeAudit: 'full',

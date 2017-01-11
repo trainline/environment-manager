@@ -1,11 +1,11 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let Promise = require('bluebird');
 
 function transformToCallbackLast(fn, context) {
-  return function () {
-    let args = Array.from(arguments);
+  return function (...args) {
     let lastIndex = args.length - 1;
     let fixedArgs = args.slice(lastIndex, args.length).concat(args.slice(0, lastIndex));
     return fn.apply(context, fixedArgs);
@@ -21,6 +21,6 @@ module.exports = {
       context = params.context;
     }
 
-    return Promise.promisify(transformToCallbackLast(fn, context), { context: context });
+    return Promise.promisify(transformToCallbackLast(fn, context), { context });
   },
 };

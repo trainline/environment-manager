@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -26,8 +27,8 @@ module.exports = function SNSTopicClient(accountName) {
       let topic = yield client.getTopicAttributes({ TopicArn: topicArn }).promise().then(
 
         response => Promise.resolve(response.Attributes),
-        error => Promise.reject(error.code === 'NotFound' ? 
-          new TopicNotFoundError(`Topic '${parameters.topicName}' not found.`) 
+        error => Promise.reject(error.code === 'NotFound' ?
+          new TopicNotFoundError(`Topic '${parameters.topicName}' not found.`)
           : new AwsError(error.message))
       );
       return topic;

@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assertContract = require('modules/assertContract');
@@ -12,8 +13,8 @@ module.exports = function GetInstanceProfile(query) {
     },
   });
 
-  var parameters = { accountName: query.accountName };
-  return resourceProvider.getInstanceByName('instanceprofiles', parameters).then((resource) => {
-    return resource.get({ instanceProfileName: query.instanceProfileName });
-  });
+  let parameters = { accountName: query.accountName };
+  return resourceProvider.getInstanceByName('instanceprofiles', parameters).then(resource =>
+    resource.get({ instanceProfileName: query.instanceProfileName })
+  );
 };

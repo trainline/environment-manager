@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -11,8 +12,8 @@ const masterAccountName = config.getUserValue('masterAccountName');
  * PUT /config/import/{resource}
  */
 function putResourceImport(req, res, next) {
-  const resource = 'config/' + req.swagger.params.resource.value;
-  const data = req.swagger.params.data.value;
+  const resource = `config/${req.swagger.params.resource.value}`;
+  const value = req.swagger.params.data.value;
   const mode = req.swagger.params.mode.value;
   const user = req.user;
 
@@ -25,13 +26,14 @@ function putResourceImport(req, res, next) {
   } else if (mode === 'merge') {
     commandName = 'MergeDynamoResources';
   } else {
-    return next(new Error(`Unknown mode "${mode}"`));
+    next(new Error(`Unknown mode "${mode}"`));
+    return;
   }
 
   let command = {
     name: commandName,
     resource,
-    items: _.concat(data),
+    items: _.concat(value),
     accountName,
   };
 
@@ -39,5 +41,5 @@ function putResourceImport(req, res, next) {
 }
 
 module.exports = {
-  putResourceImport
+  putResourceImport,
 };

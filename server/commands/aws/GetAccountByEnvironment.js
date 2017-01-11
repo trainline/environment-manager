@@ -1,7 +1,9 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* eslint-disable no-unreachable */
+// eslint doesn't understand returning early in switch statements
+
 'use strict';
 
-let config = require('config');
 let configCache = require('modules/configurationCache');
 
 /**
@@ -20,8 +22,8 @@ function getAccountByEnvironment(command) {
     .then(getEnvType)
     .then(configCache.getEnvironmentTypeByName)
     .then(getAccountName)
-    .then((account) => validateAccount(command.environment, account))
-    .catch(e => { throw new Error(getErrorMsg(command, e)) });
+    .then(account => validateAccount(command.environment, account))
+    .catch((e) => { throw new Error(getErrorMsg(command, e)); });
 }
 
 /**
@@ -32,10 +34,10 @@ function getAccountByEnvironment(command) {
  * @returns {String} The API specific error description
  */
 function getErrorMsg(command, error) {
-  switch(error.message.substring(22, error.message.length -9)) {
-    case 'EnvironmentType':     return `Could not find environment ${command.environment}`;  break;
-    case 'AWSAccountName':      return `Could not find environment type for ${command.environment}`; break;
-    default:                    return error.message;
+  switch (error.message.substring(22, error.message.length - 9)) {
+    case 'EnvironmentType': return `Could not find environment ${command.environment}`; break;
+    case 'AWSAccountName': return `Could not find environment type for ${command.environment}`; break;
+    default: return error.message;
   }
 }
 

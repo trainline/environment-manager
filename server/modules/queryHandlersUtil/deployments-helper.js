@@ -1,4 +1,4 @@
-﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
 
@@ -121,9 +121,9 @@ function queryDeploymentNodeStates(environment, key, accountName) {
 
 module.exports = {
 
-  get: (query) => queryDeployment(query).then(mapDeployment),
+  get: query => queryDeployment(query).then(mapDeployment),
 
-  scan: (query) => queryDeployments(query)
+  scan: query => queryDeployments(query)
     .then((deployments) => {
       let deploymentsWithNodes = deployments.map(mapDeployment);
       return Promise.all(deploymentsWithNodes);

@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assert = require('assert');
@@ -14,7 +15,7 @@ module.exports = function ToggleSlicesByService(command) {
   assert.equal(typeof command.environmentName, 'string');
   assert.equal(typeof command.serviceName, 'string');
 
-  return Environment.getAccountNameForEnvironment(command.environmentName).then(account => {
+  return Environment.getAccountNameForEnvironment(command.environmentName).then((account) => {
     command.accountName = account;
 
     let resourceName = `Upstream for "${command.serviceName}" service in "${command.environmentName}" environment`;

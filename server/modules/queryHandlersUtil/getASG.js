@@ -1,8 +1,8 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
-let assert = require('assert');
 let resourceProvider = require('modules/resourceProvider');
 
 function* handleQuery(query) {
@@ -13,6 +13,6 @@ function* handleQuery(query) {
 
   // Get AutoScalingGroup by name
   return resource.get({ name: query.autoScalingGroupName, clearCache: query.clearCache });
-};
+}
 
 module.exports = co.wrap(handleQuery);

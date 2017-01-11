@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
-let assert = require("assert");
-let co = require("co"); 
+let assert = require('assert');
+let co = require('co');
 let DeploymentCommandHandlerLogger = require('commands/deployments/DeploymentCommandHandlerLogger');
 let resourceProvider = require('modules/resourceProvider');
 let _ = require('lodash');
@@ -27,11 +27,9 @@ module.exports = function CreateLaunchConfigurationCommandHandler(command) {
 
     logger.info(`LaunchConfiguration [${launchConfigurationName}] has been created`);
   });
-
 };
 
 function getCreateLaunchConfigurationRequest(template) {
-
   return {
     LaunchConfigurationName: template.launchConfigurationName,
     AssociatePublicIpAddress: false,
@@ -39,12 +37,11 @@ function getCreateLaunchConfigurationRequest(template) {
     InstanceType: template.instanceType,
     KeyName: template.keyName,
     InstanceMonitoring: {
-      Enabled: template.detailedMonitoring
+      Enabled: template.detailedMonitoring,
     },
     IamInstanceProfile: template.iamInstanceProfile,
     SecurityGroups: _.map(template.securityGroups, 'GroupId'),
     UserData: template.userData,
-    BlockDeviceMappings: template.devices
+    BlockDeviceMappings: template.devices,
   };
-
 }

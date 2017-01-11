@@ -1,13 +1,13 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-var CREATED_RESOURCES = 'created-resources';
-var UPDATED_RESOURCES = 'updated-resources';
-var DELETED_RESOURCES = 'deleted-resources';
+let CREATED_RESOURCES = 'created-resources';
+let UPDATED_RESOURCES = 'updated-resources';
+let DELETED_RESOURCES = 'deleted-resources';
 
 function OperationResult(data) {
-
-  var $this = this;
+  let $this = this;
 
   $this[CREATED_RESOURCES] = [];
   $this[UPDATED_RESOURCES] = [];
@@ -26,7 +26,6 @@ function OperationResult(data) {
   };
 
   $this.add = function (childResult) {
-
     if (!childResult) return $this;
 
     if (Object.prototype.toString.call(childResult) === '[object Array]') {
@@ -45,15 +44,14 @@ function OperationResult(data) {
     if (data.updated) data.updated.forEach($this.updatedResource);
     if (data.deleted) data.deleted.forEach($this.deletedResource);
   }
-
 }
 
 OperationResult.resourceUri = function (resource, key, range) {
-  var segments = resource.split('/');
+  let segments = resource.split('/');
   if (key) segments.push(key);
   if (range) segments.push(range);
 
-  return '/' + segments.join('/') + '/';
+  return `/${segments.join('/')}/`;
 };
 
 module.exports = OperationResult;

@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -24,8 +25,8 @@ function getServicesSummary(services) {
     return diff !== DIFF_STATE.Extra && diff !== DIFF_STATE.Ignored;
   });
 
-  let healthy = _.filter(services, (s) => s.OverallHealth === HEALTH_STATUS.Healthy);
-  let expectedAndHealthy = _.filter(expected, (s) => s.OverallHealth === HEALTH_STATUS.Healthy);
+  let healthy = _.filter(services, s => s.OverallHealth === HEALTH_STATUS.Healthy);
+  let expectedAndHealthy = _.filter(expected, s => s.OverallHealth === HEALTH_STATUS.Healthy);
 
 
   let unexpected = _.filter(services, { DiffWithTargetState: DIFF_STATE.Extra });
@@ -39,10 +40,10 @@ function getServicesSummary(services) {
       Expected: expected.length,
       Unexpected: unexpected.length,
       Missing: missing.length,
-      Ignored: ignored.length
+      Ignored: ignored.length,
     },
     ExpectedServices: fp.map(fp.pick(['Name', 'Slice', 'Version']), expected),
-    MissingServices: fp.map(fp.pick(['Name', 'Slice', 'Version']), missing)
+    MissingServices: fp.map(fp.pick(['Name', 'Slice', 'Version']), missing),
   };
 }
 
@@ -78,7 +79,7 @@ module.exports = function getASGState(environmentName, asgName) {
     let response = getServicesSummary(services);
     _.assign(response, {
       Services: services,
-      Instances: instances
+      Instances: instances,
     });
 
     return response;

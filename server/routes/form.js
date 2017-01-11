@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let ms = require('ms');
@@ -25,8 +26,8 @@ function serveLoginPage(response, error) {
     },
   };
 
-  renderer.render('login', content, (content) => {
-    response.send(content);
+  renderer.render('login', content, (renderedContent) => {
+    response.send(renderedContent);
   });
 }
 

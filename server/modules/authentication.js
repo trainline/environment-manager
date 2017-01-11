@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let querystring = require('querystring');
@@ -10,22 +11,22 @@ function isUserAuthenticated(user) {
 
 function getRedirectUrl(request) {
   let returnUrl = request.url;
-  let qs = querystring.stringify({ returnUrl: returnUrl });
-  return cookieAuthenticationConfiguration.getLoginUrl() + '?' + qs;
+  let qs = querystring.stringify({ returnUrl });
+  return `${cookieAuthenticationConfiguration.getLoginUrl()}?${qs}`;
 }
 
 module.exports = {
-  allowUnknown: function (request, response, next) {
+  allowUnknown(request, response, next) {
     return next();
   },
 
-  denyUnauthorized: function (request, response, next) {
+  denyUnauthorized(request, response, next) {
     // User not authenticated
     if (!isUserAuthenticated(request.user)) {
       let redirectUrl = getRedirectUrl(request);
       response.redirect(redirectUrl);
     } else {
-      return next();
+      next();
     }
   },
 };

@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let resourceProvider = require('modules/resourceProvider');
@@ -18,7 +19,7 @@ function* QueryDynamoResourceQueryHandler(query) {
     formatting: {
       exposeAudit: query.exposeAudit,
     },
-    suppressError: query.suppressError
+    suppressError: query.suppressError,
   };
 
   return resource.query(params);

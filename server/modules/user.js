@@ -1,5 +1,13 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
+
+/* eslint-disable */
+/**
+ * TODO: This file is used across both client and server.
+ * Not only is this a bad idea but it makes it impossible to lint.
+ * We should refactor the shared aspects of this module.
+ */
 
 var User = function(data) {
 
@@ -38,24 +46,24 @@ var User = function(data) {
   };
 
   this.getPermissions = function () {
-      return _data.permissions;
+    return _data.permissions;
   };
 
   this.hasPermission = function (requiredPermission) {
-      return _data.permissions.some(function(userPermission) {
-        if (userPermission.Resource && userPermission.Access) {
-          var matchingResources = globIntersection(requiredPermission.resource.toLowerCase(), userPermission.Resource.toLowerCase());
-          var matchingAccess = (userPermission.Access.toLowerCase() == requiredPermission.access.toLowerCase()) || userPermission.Access == 'ADMIN';
+    return _data.permissions.some(function(userPermission) {
+      if (userPermission.Resource && userPermission.Access) {
+        var matchingResources = globIntersection(requiredPermission.resource.toLowerCase(), userPermission.Resource.toLowerCase());
+        var matchingAccess = (userPermission.Access.toLowerCase() == requiredPermission.access.toLowerCase()) || userPermission.Access == 'ADMIN';
 
-          if (matchingAccess && matchingResources) {
-              return true;
-          }
+        if (matchingAccess && matchingResources) {
+          return true;
         }
-      });
+      }
+    });
   };
 
   this.getGroups = function () {
-      return _data.groups;
+    return _data.groups;
   };
 
   this.toString = function() {
@@ -80,11 +88,11 @@ if(typeof module !== 'undefined' && module.exports) {
 
     new: function(name, roles, expiration, groups, permissions) {
       return new User({
-          name: name,
-          roles: roles,
-          expiration: expiration,
-          groups: groups,
-          permissions: permissions
+        name: name,
+        roles: roles,
+        expiration: expiration,
+        groups: groups,
+        permissions: permissions
       });
     },
 

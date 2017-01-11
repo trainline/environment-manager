@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let send = require('modules/helpers/send');
@@ -8,7 +9,7 @@ module.exports =
   route.get('/nginx/:fqdn')
   .withDocs({ disableDocs: true })
   .do((request, response) => {
-    var query = {
+    let query = {
       name: 'ScanNginxUpstreams',
       instanceDomainName: request.params.fqdn,
     };
