@@ -144,6 +144,10 @@ angular.module('EnvironmentManager.common').controller('MainController',
         errorMessage = response.data.error;
       }
 
+      if (response.data.details) {
+        errorMessage += '<hr>' + angular.toJson(response.data.details);
+      }
+
       modal.error(title, errorMessage);
     });
 
