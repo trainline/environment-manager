@@ -10,7 +10,7 @@ angular.module('EnvironmentManager.common').factory('resources',
       { Name: 'Blue/Green', Value: 'bg' }
     ];
     var deploymentStatus = ['In Progress', 'Success', 'Failed', 'Cancelled'];
-    var awsInstanceTypes = ['t2.nano', 't2.micro', 't2.small', 't2.medium', 't2.large', 'm4.large', 'm4.xlarge', 'm4.2xlarge', 'm4.4xlarge', 'm3.medium', 'm3.large', 'm3.xlarge', 'm3.2xlarge', 'c4.large', 'c4.xlarge', 'c4.2xlarge', 'c4.4xlarge', 'c4.8xlarge', 'c3.large', 'c3.xlarge', 'c3.2xlarge', 'c3.4xlarge', 'c3.8xlarge', 'r3.large', 'r3.xlarge', 'r3.2xlarge', 'r3.4xlarge', 'r3.8xlarge', 'i2.xlarge', 'i2.2xlarge', 'i2.4xlarge', 'i2.8xlarge', 'd2.xlarge', 'd2.2xlarge', 'd2.4xlarge', 'd2.8xlarge'].sort();
+    var awsInstanceTypes = ['c3.2xlarge', ' c3.4xlarge', 'c3.large', 'c3.xlarge', 'c4.2xlarge', 'c4.4xlarge', 'c4.8xlarge', 'c4.large', 'c4.xlarge', 'd2.2xlarge', 'd2.4xlarge', 'd2.8xlarge', 'd2.xlarge', 'i2.2xlarge', 'i2.4xlarge', 'i2.8xlarge', 'i2.xlarge', ' m3.2xlarge', 'm3.large', 'm3.medium', 'm3.xlarge', 'm4.2xlarge', 'm4.4xlarge', 'm4.large', 'm4.xlarge', 'r3.2xlarge', ' r3.4xlarge', ' r3.large', ' r3.xlarge', 'r4.large', 'r4.xlarge', 'r4.2xlarge', 'r4.4xlarge', 't2.2xlarge', 't2.large', 't2.medium', 't2.micro', 't2.small', 't2.xlarge'].sort();
     var auditChangeTypes = ['Created', 'Deleted', 'Updated', 'Renamed'];
     var auditEntityTypes = [
       { Name: 'Deployment Map', Value: 'ConfigDeploymentMaps' },
