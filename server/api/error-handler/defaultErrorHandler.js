@@ -3,16 +3,19 @@
 'use strict';
 
 const IS_PROD = require('config').get('IS_PRODUCTION');
-
+let _ = require('lodash');
 let logger = require('modules/logger');
 
 function defaultErrorHandler(err, req, res, next) {
   let friendlyError = {};
+
   if (res.statusCode >= 400 && res.statusCode < 500) {
     try {
       friendlyError.error = err.message;
-      if (err.results && err.results.errors) {
-        friendlyError.details = err.results.errors.map(e => e.message);
+      friendlyError.details = {
+        code: err.code,
+        errors: _.get(err, 'results.errors'),
+        warnings: _.get(err, 'results.warnings')
       }
     } catch (error) {
       friendlyError = err;
