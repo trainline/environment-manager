@@ -67,11 +67,17 @@ function validateCommandAndCreateDeployment(command) {
     }
 
     if (!packagePath) {
-      const s3Package = yield s3PackageLocator.findDownloadUrl({
-        environment: environmentName,
-        service: serviceName,
-        version: serviceVersion
-      });
+      let s3Package;
+      try {
+        s3Package = yield s3PackageLocator.findDownloadUrl({
+          environment: environmentName,
+          service: serviceName,
+          version: serviceVersion
+        });
+      } catch (error) {
+        throw new Error(`An attempt to locate the following package in S3 was forbidden: ${serviceName} version ${serviceVersion}`);
+      }
+
       if (!s3Package) {
         throw new Error('Deployment package was not found. Please specify a location or upload the package to S3');
       } else {

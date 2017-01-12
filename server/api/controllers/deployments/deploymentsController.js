@@ -96,7 +96,7 @@ function postDeployment(req, res, next) {
       res.location(`/api/${deployment.accountName}/deployments/history/${deployment.id}`);
       res.json(deployment);
     }
-  }).catch((error) => { next({ statusCode: 400, message: error.message }); });
+  }).catch(next);
 }
 
 /**
