@@ -190,12 +190,12 @@ function putAsgSize(req, res, next) {
  */
 function putAsgLaunchConfig(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
-  const value = req.swagger.params.body.value;
+  const data = req.swagger.params.body.value;
   const autoScalingGroupName = req.swagger.params.name.value;
 
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    SetLaunchConfiguration({ accountName, autoScalingGroupName, value }).then(data => res.json(data)).catch(next);
+    SetLaunchConfiguration({ accountName, autoScalingGroupName, data }).then(res.json.bind(res)).catch(next);
   });
 }
 
