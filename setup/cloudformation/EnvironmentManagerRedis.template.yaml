@@ -1,0 +1,69 @@
+AWSTemplateFormatVersion: "2010-09-09"
+# A template for a stack that contains an ElastiCache Redis Cluster
+# and a Security Group that allows network access to the cluster.
+Description: Environment Manager Resources
+Parameters:
+  pVpcBase:
+    Type: "AWS::EC2::VPC::Id"
+    Description: "VPC ID, syntax vpc-xxxxxxxx"
+  pRedisSubnets:
+    Type: "List<AWS::EC2::Subnet::Id>"
+    Description: Redis Access Subnets
+  pRedisPort:
+    Description: Redis port number
+    Type: String
+    Default: "6379"
+Resources:
+  sgEnvironmentManagerRedisAccess:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: Security Group for access to Redis Cluster
+      VpcId: !Ref pVpcBase
+      Tags:
+        - Key: Name
+          Value: sgEnvironmentManagerRedisAccess
+  sgEnvironmentManagerRedisHost:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: Security Group for hosting Redis Cluster
+      VpcId: !Ref pVpcBase
+      Tags:
+        - Key: Name
+          Value: sgEnvironmentManagerRedisHost
+  sgiEnvironmentManagerRedisHost:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref sgEnvironmentManagerRedisHost
+      IpProtocol: tcp
+      SourceSecurityGroupId: !Ref sgEnvironmentManagerRedisAccess
+      FromPort: !Ref pRedisPort
+      ToPort: !Ref pRedisPort
+  sngEnvironmentManagerRedisHost:
+    Type: "AWS::ElastiCache::SubnetGroup"
+    Properties:
+      Description: Environment Manager Redis Subnet Group
+      SubnetIds: !Ref pRedisSubnets
+  redisEnvironmentManager:
+    Type: "AWS::ElastiCache::CacheCluster"
+    Properties:
+      CacheNodeType: cache.t2.micro
+      CacheSubnetGroupName: !Ref sngEnvironmentManagerRedisHost
+      Engine: redis
+      NumCacheNodes: "1"
+      Port: !Ref pRedisPort
+      Tags:
+        - Key: Role
+          Value: EnvironmentManager
+      VpcSecurityGroupIds:
+        - !Ref sgEnvironmentManagerRedisHost
+Outputs:
+  RedisAddress:
+    Description: Redis Address
+    Value:
+      !GetAtt redisEnvironmentManager.RedisEndpoint.Address
+  RedisPort:
+    Description: Redis Port
+    Value: !GetAtt redisEnvironmentManager.RedisEndpoint.Port
+  RedisSecurityGroup:
+    Description: Security Group Granting Access to Redis
+    Value: !GetAtt sgEnvironmentManagerRedisAccess.GroupId
