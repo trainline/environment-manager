@@ -15,7 +15,7 @@ function getRedisEncryptionKey() {
   if (EM_REDIS_CRYPTO_KEY_S3_BUCKET && EM_REDIS_CRYPTO_KEY_S3_KEY) {
     return masterAccountClient.createS3Client().then(s3 => s3.getObject({
       Bucket: EM_REDIS_CRYPTO_KEY_S3_BUCKET,
-      Key: EM_REDIS_CRYPTO_KEY_S3_KEY,
+      Key: EM_REDIS_CRYPTO_KEY_S3_KEY
     }).promise()).then(rsp => rsp.Body);
   } else {
     return Promise.resolve();

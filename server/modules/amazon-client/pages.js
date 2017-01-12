@@ -61,5 +61,5 @@ function flatten(callback, awsRequest) {
 
 module.exports = {
   reduce,
-  flatten,
+  flatten
 };

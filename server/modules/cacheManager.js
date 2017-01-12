@@ -25,8 +25,8 @@ let redisCache = (() => {
       port: EM_REDIS_PORT,
       valueTransform: {
         toStore: fp.flow(JSON.stringify, str => new Buffer(str), emCrypto.encrypt.bind(null, EM_REDIS_CRYPTO_KEY)),
-        fromStore: fp.flow(emCrypto.decrypt.bind(null, EM_REDIS_CRYPTO_KEY), buf => buf.toString(), JSON.parse),
-      },
+        fromStore: fp.flow(emCrypto.decrypt.bind(null, EM_REDIS_CRYPTO_KEY), buf => buf.toString(), JSON.parse)
+      }
     });
     logger.info(`Cache will use Redis. address=${EM_REDIS_ADDRESS} port=${EM_REDIS_PORT}`);
     return [cacheManager.caching({ store: redisStore, db: 0, ttl: 600 })];
@@ -78,7 +78,7 @@ const myCacheManager = {
   clear() {
     caches.clear();
     cache.reset();
-  },
+  }
 };
 
 function createCache(name, fn) {
@@ -128,7 +128,7 @@ function createCache(name, fn) {
     get,
     del,
     // keys: cache.keys.bind(cache),
-    set: setInCache,
+    set: setInCache
     // flushAll: cache.flushAll.bind(cache),
   };
 }

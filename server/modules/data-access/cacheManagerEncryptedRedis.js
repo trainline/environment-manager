@@ -152,10 +152,10 @@ function encryptedRedisStore(args) {
     get,
     keys,
     reset,
-    set,
+    set
   };
 }
 
 module.exports = {
-  create: memoize(encryptedRedisStore),
+  create: memoize(encryptedRedisStore)
 };

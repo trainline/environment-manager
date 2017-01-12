@@ -78,5 +78,5 @@ function decrypt(key, ciphertext) {
 
 module.exports = {
   decrypt,
-  encrypt,
+  encrypt
 };

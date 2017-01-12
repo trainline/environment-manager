@@ -67,5 +67,5 @@ function canCreate(resourceDescriptor) {
 
 module.exports = {
   canCreate,
-  create,
+  create
 };
