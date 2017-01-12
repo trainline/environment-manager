@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.environments').component('asgServices', {
@@ -32,8 +33,8 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
           resolve: {
             deployment: function () {
               return deployment;
-            },
-          },
+            }
+          }
         });
       });
     };
@@ -46,13 +47,13 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
           asg: function () {
             return vm.asg;
           },
-          asgState: function() {
+          asgState: function () {
             return vm.asgState;
           },
           service: function () {
             return service;
-          },
-        },
+          }
+        }
       });
     };
 
@@ -62,7 +63,7 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
           title: 'Delete Auto Scaling Group?',
           message: 'There are no longer any active services for this ASG. Would you like ' +
             'to delete the ASG and it\'s associated Launch Configuration?',
-          severity: 'Warning',
+          severity: 'Warning'
         }).then(function () {
           vm.asg.delete().then(function () {
             vm.closeModal();
@@ -82,7 +83,7 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
             'being deployed to new instances from now on. It will NOT affect any existing machines.' +
             'You can use this option to effectively uninstall this service by scaling the ASG to create a new set of servers.<br/>' +
             'Are you sure you want to continue?',
-          severity: 'Warning',
+          severity: 'Warning'
         });
       }
       promise.then(function () {

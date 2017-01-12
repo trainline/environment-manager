@@ -61,7 +61,7 @@ module.exports = function UserRolesProvider() {
       accountName: masterAccountName,
       name: 'ScanDynamoResources',
       resource: 'config/permissions',
-      filter: { Name: name },
+      filter: { Name: name }
     };
 
     return sender.sendQuery({ query });

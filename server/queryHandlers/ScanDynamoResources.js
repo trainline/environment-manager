@@ -15,9 +15,9 @@ function* handler(query) {
   let params = {
     filter: query.filter,
     formatting: {
-      exposeAudit: query.exposeAudit,
+      exposeAudit: query.exposeAudit
     },
-    suppressError: query.suppressError,
+    suppressError: query.suppressError
   };
 
   return resource.all(params);

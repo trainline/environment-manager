@@ -20,7 +20,7 @@ module.exports = route
     let credentials = {
       username: request.body.username,
       password: request.body.password,
-      scope: 'api',
+      scope: 'api'
     };
 
     let callback = adapt.callbackToExpress(request, response);

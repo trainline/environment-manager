@@ -23,7 +23,7 @@ module.exports = [
   route.get('/all/asgs')
   .withDocs({ description: 'Auto Scaling Group', verb: 'crossScan', tags: ['Auto Scaling Groups'] }).withPriority(10).do((request, response) => {
     let query = {
-      name: 'ScanCrossAccountAutoScalingGroups',
+      name: 'ScanCrossAccountAutoScalingGroups'
     };
 
     send.query(query, request, response);
@@ -37,7 +37,7 @@ module.exports = [
 
     let query = {
       name: 'ScanAutoScalingGroups',
-      accountName: request.params.account,
+      accountName: request.params.account
     };
 
     send.query(query, request, response);
@@ -46,12 +46,12 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   }).do((request, response, next) => {
     let query = {
       name: 'GetAutoScalingGroup',
       accountName: request.params.account,
-      autoScalingGroupName: request.params.name,
+      autoScalingGroupName: request.params.name
     };
 
     send.query(query, request, response);
@@ -60,12 +60,12 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   }).do((request, response) => {
     let query = {
       name: 'GetAutoScalingGroupSize',
       accountName: request.params.account,
-      autoScalingGroupName: request.params.name,
+      autoScalingGroupName: request.params.name
     };
 
     send.query(query, request, response);
@@ -74,7 +74,7 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   })
   .withAuthorizer(authorizer).whenRequest((url, value) => {
     let min = getPropertyByName(value, 'Min');
@@ -93,7 +93,7 @@ module.exports = [
       autoScalingGroupName: request.params.name,
       autoScalingGroupMinSize: getPropertyByName(request.body, 'Min'),
       autoScalingGroupDesiredSize: getPropertyByName(request.body, 'Desired'),
-      autoScalingGroupMaxSize: getPropertyByName(request.body, 'Max'),
+      autoScalingGroupMaxSize: getPropertyByName(request.body, 'Max')
     };
 
     send.command(command, request, response);
@@ -102,12 +102,12 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   }).do((request, response) => {
     let query = {
       name: 'GetAutoScalingGroupScheduleStatus',
       accountName: request.params.account,
-      autoScalingGroupName: request.params.name,
+      autoScalingGroupName: request.params.name
     };
 
     send.query(query, request, response);
@@ -116,13 +116,13 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   }).do((request, response) => {
     let query = {
       name: 'GetAutoScalingGroupScheduleStatus',
       accountName: request.params.account,
       autoScalingGroupName: request.params.name,
-      date: request.params.date,
+      date: request.params.date
     };
 
     send.query(query, request, response);
@@ -131,7 +131,7 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   })
   .withAuthorizer(authorizer).whenRequest((url, value) => {
     let imageId = getPropertyByName(value, 'ImageId');
@@ -150,7 +150,7 @@ module.exports = [
       name: 'SetLaunchConfigurationImageId',
       accountName: request.params.account,
       autoScalingGroupName: request.params.name,
-      imageId: getPropertyByName(request.body, 'ImageId'),
+      imageId: getPropertyByName(request.body, 'ImageId')
     };
 
     send.command(command, request, response);
@@ -159,7 +159,7 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   })
   .withAuthorizer(authorizer).whenRequest((url, value) => {
     let instanceType = getPropertyByName(value, 'InstanceType');
@@ -178,7 +178,7 @@ module.exports = [
       name: 'SetLaunchConfigurationInstanceType',
       accountName: request.params.account,
       autoScalingGroupName: request.params.name,
-      instanceType: getPropertyByName(request.body, 'InstanceType'),
+      instanceType: getPropertyByName(request.body, 'InstanceType')
     };
 
     send.command(command, request, response);
@@ -188,7 +188,7 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   })
   .whenRequest((url, value) => {
     let schedule = getPropertyByName(value, 'schedule');
@@ -203,7 +203,7 @@ module.exports = [
       accountName: request.params.account,
       autoScalingGroupName: request.params.name,
       schedule,
-      propagateToInstances,
+      propagateToInstances
     };
 
     send.command(command, request, response);
@@ -212,7 +212,7 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   })
   .withAuthorizer(authorizer)
   .whenRequest((url, value) => {
@@ -229,7 +229,7 @@ module.exports = [
       name: 'EnterAutoScalingGroupInstancesToStandby',
       accountName: request.params.account,
       autoScalingGroupName: request.params.name,
-      instanceIds,
+      instanceIds
     };
 
     send.command(command, request, response);
@@ -238,7 +238,7 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   })
   .withAuthorizer(authorizer)
   .whenRequest((url, value) => {
@@ -255,9 +255,9 @@ module.exports = [
       name: 'ExitAutoScalingGroupInstancesFromStandby',
       accountName: request.params.account,
       autoScalingGroupName: request.params.name,
-      instanceIds,
+      instanceIds
     };
 
     send.command(command, request, response);
-  }),
+  })
 ];

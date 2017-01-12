@@ -22,7 +22,7 @@ module.exports = routeHelper
         parameters.push({ in: 'path',
           name: matches[1],
           type: 'string',
-          required: true,
+          required: true
         });
       }
 
@@ -98,12 +98,12 @@ module.exports = routeHelper
           description: getDescription(summary, route),
           responses: {
             200: {
-              description: 'Success',
+              description: 'Success'
             },
             500: {
-              description: 'Unexpected error',
-            },
-          },
+              description: 'Unexpected error'
+            }
+          }
         };
 
         definition.tags = route.docs && route.docs.tags ? route.docs.tags : ['Other'];
@@ -143,14 +143,14 @@ module.exports = routeHelper
     let swagger = {
       swagger: '2.0',
       info: {
-        title: 'Environment Manager API',
+        title: 'Environment Manager API'
       },
       schemes,
       basePath: '/api',
       produces: [
-        'application/json',
+        'application/json'
       ],
-      paths: getPathsFromRoutes(routes),
+      paths: getPathsFromRoutes(routes)
     };
 
     response.send(swagger);

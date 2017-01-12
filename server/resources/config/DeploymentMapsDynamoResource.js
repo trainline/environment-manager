@@ -14,6 +14,6 @@ module.exports = {
   importable: true,
   docs: {
     description: 'Deployment Map',
-    tags: ['Deployment Maps'],
-  },
+    tags: ['Deployment Maps']
+  }
 };

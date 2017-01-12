@@ -9,6 +9,6 @@ module.exports = {
   queryable: true,
   docs: {
     description: 'Instance',
-    tags: ['Instances'],
-  },
+    tags: ['Instances']
+  }
 };

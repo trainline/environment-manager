@@ -8,6 +8,6 @@ module.exports = {
   perAccount: true,
   queryable: false,
   docs: {
-    disableDocs: true,
-  },
+    disableDocs: true
+  }
 };

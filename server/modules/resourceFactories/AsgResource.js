@@ -77,8 +77,8 @@ function AsgResource(accountId) {
         PropagateAtLaunch: true,
         ResourceId: parameters.name,
         ResourceType: 'auto-scaling-group',
-        Value: parameters.tagValue,
-      }],
+        Value: parameters.tagValue
+      }]
     };
     return asgClient().then(client => client.createOrUpdateTags(request).promise()).catch((error) => {
       throw standardifyError(error, parameters.name);
@@ -92,7 +92,7 @@ function AsgResource(accountId) {
 
   this.put = function (parameters) {
     let request = {
-      AutoScalingGroupName: parameters.name,
+      AutoScalingGroupName: parameters.name
     };
 
     if (!_.isNil(parameters.minSize)) {
@@ -126,7 +126,7 @@ function AsgResource(accountId) {
     let request = {
       AutoScalingGroupName: parameters.name,
       ShouldDecrementDesiredCapacity: true,
-      InstanceIds: parameters.instanceIds,
+      InstanceIds: parameters.instanceIds
     };
     return asgClient().then(client => client.enterStandby(request).promise());
   };
@@ -134,7 +134,7 @@ function AsgResource(accountId) {
   this.exitInstancesFromStandby = (parameters) => {
     let request = {
       AutoScalingGroupName: parameters.name,
-      InstanceIds: parameters.instanceIds,
+      InstanceIds: parameters.instanceIds
     };
     return asgClient().then(client => client.exitStandby(request).promise());
   };

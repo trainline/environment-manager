@@ -10,7 +10,7 @@ function getAutoScalingGroupName(configuration, sliceName) {
   let segments = [
     configuration.environmentName,
     configuration.cluster.ShortName.toLowerCase(),
-    getRoleName(configuration, sliceName),
+    getRoleName(configuration, sliceName)
   ];
   let autoScalingGroupName = segments.join('-');
   return autoScalingGroupName;
@@ -46,5 +46,5 @@ function isAutoScalingGroupPerSlice(configuration) {
 module.exports = {
   getAutoScalingGroupName,
   getLaunchConfigurationName,
-  getRoleName,
+  getRoleName
 };

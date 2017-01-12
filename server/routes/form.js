@@ -18,12 +18,13 @@ const PUBLIC_DIR = config.get('PUBLIC_DIR');
 
 renderer.register('login', `${PUBLIC_DIR}/login.html`);
 
-function serveLoginPage(response, error) {
+function serveLoginPage(response, error, username) {
   let content = {
     data: {
       error: error ? error.message : undefined,
       version: APP_VERSION,
-    },
+      username
+    }
   };
 
   renderer.render('login', content, (renderedContent) => {
@@ -36,7 +37,7 @@ module.exports = {
     get: (request, response) => {
       response.clearCookie(cookieConfiguration.getCookieName());
       response.redirect('/');
-    },
+    }
   },
   login: {
     get: (request, response) => {
@@ -50,7 +51,7 @@ module.exports = {
         let credentials = {
           username: request.body.username,
           password: request.body.password,
-          scope: 'ui',
+          scope: 'ui'
         };
 
         let token = yield userService.authenticateUser(credentials, duration);
@@ -65,8 +66,8 @@ module.exports = {
         response.redirect(targetUrl);
       }).catch((error) => {
         logger.warn(error);
-        serveLoginPage(response, error);
+        serveLoginPage(response, error, request.body.username);
       });
-    },
-  },
+    }
+  }
 };

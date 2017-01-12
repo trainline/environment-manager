@@ -20,7 +20,7 @@ function* handler(command) {
     name: 'ScanDynamoResources',
     resource: command.resource,
     accountName: command.accountName,
-    exposeAudit: 'none',
+    exposeAudit: 'none'
   };
   let currentItems = yield sender.sendQuery({ query, parent: command });
 
@@ -43,14 +43,14 @@ function* handler(command) {
         name: 'UpdateDynamoResource',
         resource: command.resource,
         accountName: command.accountName,
-        item,
+        item
       });
     } else {
       childCommands.push({
         name: 'CreateDynamoResource',
         resource: command.resource,
         accountName: command.accountName,
-        item,
+        item
       });
     }
   });
@@ -61,7 +61,7 @@ function* handler(command) {
   let resultPromises = childCommands.map((childCommand) => {
     let parameters = {
       command: childCommand,
-      parent: command,
+      parent: command
     };
     return sender.sendCommand(parameters).then(childResult => result.add(childResult));
   });

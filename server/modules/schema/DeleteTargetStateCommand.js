@@ -8,7 +8,7 @@ module.exports = {
   type: 'object',
   allOf: [
     { $ref: 'ConsulConnectCommon' },
-    { $ref: '#/definitions/self' },
+    { $ref: '#/definitions/self' }
   ],
   definitions: {
     self: {
@@ -17,10 +17,10 @@ module.exports = {
         key: { $ref: 'ConsulKey' },
         name: {
           type: 'string',
-          pattern: '^DeleteTargetState$',
-        },
+          pattern: '^DeleteTargetState$'
+        }
       },
-      required: ['key', 'name'],
-    },
-  },
+      required: ['key', 'name']
+    }
+  }
 };

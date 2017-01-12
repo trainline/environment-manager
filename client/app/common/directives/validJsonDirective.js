@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.common').directive('validJson', function () {
@@ -6,9 +7,8 @@ angular.module('EnvironmentManager.common').directive('validJson', function () {
     require: 'ngModel',
     restrict: 'A',
     link: function (scope, elm, attrs, ctrl) {
-
       var formFieldName = ctrl.$name;
-      var validationMethodName = attrs['validJson'];
+      var validationMethodName = attrs.validJson;
       var validationMethod = null;
 
       if (validationMethodName) {
@@ -17,7 +17,6 @@ angular.module('EnvironmentManager.common').directive('validJson', function () {
       }
 
       var verifyJson = function (jsonString) {
-
         if (attrs.disabled || attrs.readonly) return;
 
         var validationError = null;
@@ -30,7 +29,6 @@ angular.module('EnvironmentManager.common').directive('validJson', function () {
               var result = validationMethod(json);
               validationError = result;
             }
-
           } catch (ex) { validationError = ['Invalid Json']; }
         }
 
@@ -41,10 +39,9 @@ angular.module('EnvironmentManager.common').directive('validJson', function () {
           delete scope.form[formFieldName].$error.invalid;
           ctrl.$setValidity(formFieldName, true);
         }
-
       };
 
-      scope.$watch(attrs['ngModel'], verifyJson);
-    },
+      scope.$watch(attrs.ngModel, verifyJson);
+    }
   };
 });

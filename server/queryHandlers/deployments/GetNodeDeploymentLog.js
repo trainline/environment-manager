@@ -12,7 +12,7 @@ function getNode({ deploymentId, instanceId, accountName, environment }) {
     key: `deployments/${deploymentId}/nodes/${instanceId}`,
     accountName,
     environment,
-    recurse: false,
+    recurse: false
   };
 
   return sender.sendQuery({ query }).then((node) => {
@@ -40,7 +40,7 @@ function parseBucketAndPathFromS3Url(url) {
   if (matches) {
     return {
       bucketName: matches[1],
-      objectPath: matches[2],
+      objectPath: matches[2]
     };
   } else {
     return null;

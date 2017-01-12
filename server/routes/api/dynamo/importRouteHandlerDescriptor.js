@@ -13,7 +13,7 @@ function asRouteHandlerDescriptor(resource, action, commandName) {
   let url = make([
     resource.perAccount ? ':account' : null,
     resource.name,
-    action,
+    action
   ]).uri();
 
   let docs;
@@ -34,7 +34,7 @@ function asRouteHandlerDescriptor(resource, action, commandName) {
         name: commandName,
         resource: resource.name,
         items: _.concat(request.body),
-        accountName: resource.perAccount ? request.params.account : masterAccountName,
+        accountName: resource.perAccount ? request.params.account : masterAccountName
       };
 
       send.command(command, request, response);

@@ -1,4 +1,5 @@
-﻿/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 /**
@@ -8,7 +9,6 @@
  */
 angular.module('EnvironmentManager.common').factory('awsService',
   function ($q, resources, cachedResources) {
-
     function AwsService() {
       var self = this;
       self.asgs = new AsgService();
@@ -33,21 +33,21 @@ angular.module('EnvironmentManager.common').factory('awsService',
           AvailabilityZone: instance.Placement.AvailabilityZone,
           Status: _.capitalize(instance.State.Name),
           ImageId: instance.ImageId,
-          LaunchTime: instance.LaunchTime,
+          LaunchTime: instance.LaunchTime
         };
         instance.Tags.forEach(function (tag) {
           instanceSummary[tag.Key] = tag.Value;
         });
 
         return instanceSummary;
-      }
+      };
 
       self.GetInstanceDetails = function (params) {
         return resources.aws.instances.all(params).then(function (instances) {
           return instances.map(self.getSummaryFromInstance, params.account);
         });
       };
-    };
+    }
 
     function ImageService() {
       var self = this;
@@ -58,7 +58,8 @@ angular.module('EnvironmentManager.common').factory('awsService',
 
       self.RestructureImagesByType = function (amiData, onlyStable) {
         var filteredAmiData = amiData.filter(function (ami) {
-          return ami.IsCompatibleImage && (onlyStable ? ami.IsStable : true); });
+          return ami.IsCompatibleImage && (onlyStable ? ami.IsStable : true);
+        });
 
         var amiTypes = groupBy(function (ami) { return ami.AmiType; }, filteredAmiData)
           .map(function (group) {
@@ -66,7 +67,7 @@ angular.module('EnvironmentManager.common').factory('awsService',
             return {
               Name: group.key,
               Versions: versions,
-              LatestVersion: versions[0],
+              LatestVersion: versions[0]
             };
           });
 
@@ -145,22 +146,10 @@ angular.module('EnvironmentManager.common').factory('awsService',
       };
 
       self.GetLatestAmiVersionByType = function (amiType, amiData, onlyStable) {
-        var latestVersion = null;
-        amiData.forEach(function (ami) {
-          if (ami.AmiType && ami.AmiType == amiType) {
-            if (latestVersion) {
-              if (!onlyStable || (onlyStable && ami.IsStable)) {
-                if (ami.CreationDate > latestVersion.CreationDate) {
-                  latestVersion = ami;
-                }
-              }
-            } else {
-              latestVersion = ami;
-            }
-          }
-        });
-
-        return latestVersion;
+        var latestProperty = 'IsLatest' + (onlyStable ? 'Stable' : '');
+        return _.head(amiData
+          .filter(function(ami) { return ami.AmiType && ami.AmiType == amiType; })
+          .filter(function(ami) { return !!ami[latestProperty]; }));
       };
 
       self.SortByVersion = function (amiData) {
@@ -202,10 +191,9 @@ angular.module('EnvironmentManager.common').factory('awsService',
 
 // TODO(filip): use Lodash instead
 function groupBy(fn, array) {
-
   array.sort(compare);
 
-  if (array && 0 < array.length) {
+  if (array && array.length > 0) {
     var prev = array[0];
     var group = { key: fn(prev), items: [prev] };
     var groups = [group];

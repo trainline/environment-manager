@@ -27,7 +27,7 @@ let modules = [
   '../resources',
   '../resources/config',
   '../resources/deployments',
-  '../resources/ops',
+  '../resources/ops'
 ]
 .map(directoryPath => _.values(requireDirectory(module, directoryPath, { include: /Resource\.js/, recurse: false })));
 

@@ -1,9 +1,9 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.common').factory('cachedResources',
   function ($q, resources) {
-
     var cachedData = [];
     var cachedResources = {
       config: {
@@ -14,24 +14,27 @@ angular.module('EnvironmentManager.common').factory('cachedResources',
         lbSettings: cachedResource('lbSettings', 'config', true),
         lbUpstream: cachedResource('lbUpstream', 'config', true),
         clusters: cachedResource('clusters', 'config'),
-        accounts: cachedResource('accounts', 'config'),
+        accounts: cachedResource('accounts', 'config')
       },
       aws: {
         accounts: cachedResource('accounts', 'aws'),
-        images: cachedResource('images', 'aws', true),
-      },
+        images: cachedResource('images', 'aws', true)
+      }
     };
 
     function cachedResource(resourceName, section, crossAccount) {
       return {
         all: function () {
-          return getFromCache(resourceName, resources[section][resourceName], crossAccount); },
+          return getFromCache(resourceName, resources[section][resourceName], crossAccount);
+        },
 
         flush: function () {
-          return flushCache(resourceName); },
+          return flushCache(resourceName);
+        },
 
         getByName: function (nameValue, nameAttrib, data) {
-          return getByName(nameValue, nameAttrib, data); },
+          return getByName(nameValue, nameAttrib, data);
+        }
       };
     }
 

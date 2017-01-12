@@ -1,11 +1,11 @@
-﻿/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular
   .module('EnvironmentManager.configuration')
   .factory('arrayItemHashDetector',
     function () {
-
       function has(value) {
         return undefined !== value;
       }
@@ -14,35 +14,39 @@ angular
         DeploymentMaps: {
           DeploymentTarget: {
             Array: function (object) {
-              return has(object.ServerRoleName); },
+              return has(object.ServerRoleName);
+            },
 
             Services: {
               Array: function (object) {
-                return has(object.ServiceName); },
-            },
-          },
+                return has(object.ServiceName);
+              }
+            }
+          }
         },
         LBUpstream: {
           Hosts: {
             Array: function (object) {
-              return has(object.DnsName); },
-          },
+              return has(object.DnsName);
+            }
+          }
         },
         LBSettings: {
           Listen: {
             Array: function (object) {
-              return has(object.Port); },
+              return has(object.Port);
+            }
           },
           Locations: {
             Array: function (object) {
-              return has(object.Path) && has(object.IfCondition); },
-          },
-        },
+              return has(object.Path) && has(object.IfCondition);
+            }
+          }
+        }
       };
 
       return {
         objectHash: function (object, index) {
-
           if (is.DeploymentMaps.DeploymentTarget.Array(object)) {
             return object.ServerRoleName;
           }
@@ -64,6 +68,6 @@ angular
           }
 
           return object;
-        },
+        }
       };
     });

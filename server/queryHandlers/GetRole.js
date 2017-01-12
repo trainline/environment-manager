@@ -9,8 +9,8 @@ module.exports = function GetRoleQueryHandler(query) {
   assertContract(query, 'query', {
     properties: {
       accountName: { type: String, empty: false },
-      roleName: { type: String, empty: false },
-    },
+      roleName: { type: String, empty: false }
+    }
   });
 
   return iamRoleClientFactory

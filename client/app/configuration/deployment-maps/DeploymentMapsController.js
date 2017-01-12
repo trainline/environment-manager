@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('DeploymentMapsController',
@@ -8,7 +9,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapsCon
     vm.data = [];
 
     function init() {
-      vm.dataLoading = true
+      vm.dataLoading = true;
       vm.canPost = user.hasPermission({ access: 'POST', resource: '/config/deploymentmaps/*' });
       vm.refresh();
     }
@@ -30,7 +31,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapsCon
 
         cachedResources.config.environments.all().then(function (envData) {
           environments = envData;
-        }),
+        })
       ]).then(function () {
         environments.forEach(function (env) {
           var map = _.find(vm.data, { DeploymentMapName: env.Value.DeploymentMap });
@@ -50,7 +51,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapsCon
     vm.newItem = function () {
       var instance = $uibModal.open({
         templateUrl: '/app/configuration/deployment-maps/deployment-maps-create-modal.html',
-        controller: 'DeploymentMapCreateController as vm',
+        controller: 'DeploymentMapCreateController as vm'
       });
       instance.result.then(function () {
         vm.refresh();
@@ -63,7 +64,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapsCon
         title: 'Deleting a Deployment Map',
         message: 'Are you sure you want to delete the <strong>' + name + '</strong> Deployment Map?',
         action: 'Delete',
-        severity: 'Danger',
+        severity: 'Danger'
       }).then(function () {
         DeploymentMap.deleteByName(name).then(function () {
           cachedResources.config.deploymentMaps.flush();

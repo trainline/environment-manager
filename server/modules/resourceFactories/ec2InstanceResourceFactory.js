@@ -48,9 +48,9 @@ function InstanceResource(client) {
       Tags: [
         {
           Key: parameters.tagKey,
-          Value: parameters.tagValue,
-        },
-      ],
+          Value: parameters.tagValue
+        }
+      ]
     };
 
     return client.createTags(request).promise().catch((error) => {
@@ -70,6 +70,6 @@ module.exports = {
     resourceDescriptor.type.toLowerCase() === 'ec2/instance',
 
   create: (resourceDescriptor, parameters) =>
-    amazonClientFactory.createEC2Client(parameters.accountName).then(client => new InstanceResource(client)),
+    amazonClientFactory.createEC2Client(parameters.accountName).then(client => new InstanceResource(client))
 
 };

@@ -51,7 +51,7 @@ function scheduledActionsForInstances(instances, dateTime) {
       id: instance.InstanceId,
       name: getInstanceTagValue(instance, 'name'),
       role: getInstanceTagValue(instance, 'role'),
-      environment: getInstanceTagValue(instance, 'environment'),
+      environment: getInstanceTagValue(instance, 'environment')
     };
 
     if (instance.AutoScalingGroup) {
@@ -100,8 +100,8 @@ function getAllInstances(query) {
       accountName: query.accountName,
       queryId: query.queryId,
       username: query.username,
-      timestamp: query.timestamp,
-    },
+      timestamp: query.timestamp
+    }
   });
 }
 
@@ -114,8 +114,8 @@ function getAllEnvironments(query) {
       resource: 'ops/environments',
       queryId: query.queryId,
       username: query.username,
-      timestamp: query.timestamp,
-    },
+      timestamp: query.timestamp
+    }
   });
 }
 
@@ -126,7 +126,7 @@ function getAllASGs(query) {
       accountName: query.accountName,
       queryId: query.queryId,
       username: query.username,
-      timestamp: query.timestamp,
-    },
+      timestamp: query.timestamp
+    }
   });
 }

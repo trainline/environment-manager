@@ -16,7 +16,7 @@ class KeyPairResource {
   get({ keyName }) {
     let self = this;
     let request = {
-      KeyNames: [keyName],
+      KeyNames: [keyName]
     };
 
     return self.client.describeKeyPairs(request).promise().then((response) => {
@@ -32,5 +32,5 @@ class KeyPairResource {
 }
 
 module.exports = {
-  create: parameters => amazonClientFactory.createEC2Client(parameters.accountName).then(client => new KeyPairResource(client)),
+  create: parameters => amazonClientFactory.createEC2Client(parameters.accountName).then(client => new KeyPairResource(client))
 };

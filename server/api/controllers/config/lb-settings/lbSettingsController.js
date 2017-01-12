@@ -88,5 +88,5 @@ module.exports = {
   getLBSettingConfigByName,
   postLBSettingsConfig,
   putLBSettingConfigByName,
-  deleteLBSettingConfigByName,
+  deleteLBSettingConfigByName
 };

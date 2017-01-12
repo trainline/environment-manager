@@ -12,7 +12,7 @@ module.exports = route.get('/:account/environments/:environment/roles/')
     let query = {
       name: 'GetServerRoles',
       accountName: request.params.account,
-      environmentName: request.params.environment,
+      environmentName: request.params.environment
     };
 
     send.query(query, request, response);

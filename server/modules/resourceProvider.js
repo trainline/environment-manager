@@ -28,5 +28,5 @@ function getInstanceByName(resourceName, parameters) {
 }
 
 module.exports = {
-  getInstanceByName,
+  getInstanceByName
 };

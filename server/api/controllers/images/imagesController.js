@@ -13,13 +13,13 @@ function getImages(req, res, next) {
   if (accountName === undefined) {
     query = {
       name: 'ScanCrossAccountImages',
-      filter: {},
+      filter: {}
     };
   } else {
     query = {
       name: 'ScanImages',
       accountName,
-      filter: {},
+      filter: {}
     };
   }
 
@@ -33,5 +33,5 @@ function getImages(req, res, next) {
 }
 
 module.exports = {
-  getImages,
+  getImages
 };

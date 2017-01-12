@@ -8,8 +8,8 @@ module.exports = function S3PathContract(options) {
   assertContract(options, 'S3PathContract', {
     properties: {
       bucket: { type: String, empty: false },
-      key: { type: String, empty: false },
-    },
+      key: { type: String, empty: false }
+    }
   });
 
   this.bucket = options.bucket;

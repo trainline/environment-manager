@@ -7,7 +7,7 @@ let awsAccounts = require('modules/awsAccounts');
 
 function AccountResource(accounts) {
   let data = {
-    accounts: accounts.map(account => account.AccountName),
+    accounts: accounts.map(account => account.AccountName)
   };
 
   this.all = () => Promise.resolve(data.accounts);
@@ -24,5 +24,5 @@ function canCreate(resourceDescriptor) {
 
 module.exports = {
   canCreate,
-  create: co.wrap(create),
+  create: co.wrap(create)
 };

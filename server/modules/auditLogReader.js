@@ -13,7 +13,7 @@ const dynamodbPromise = masterAccountClient.createDynamoClient();
 
 function createQuery(date, limit, options, exclusiveStartKey) {
   let expressions = {
-    KeyConditionExpression: ['=', ['attr', 'Date'], ['val', date]],
+    KeyConditionExpression: ['=', ['attr', 'Date'], ['val', date]]
   };
   if (options.filter) {
     expressions.FilterExpression = options.filter;
@@ -23,7 +23,7 @@ function createQuery(date, limit, options, exclusiveStartKey) {
     TableName: InfraChangeAudit,
     IndexName: InfraChangeAuditIndexName,
     Limit: limit,
-    ScanIndexForward: false,
+    ScanIndexForward: false
   };
   if (exclusiveStartKey) {
     t.ExclusiveStartKey = exclusiveStartKey;
@@ -38,7 +38,7 @@ function key(item) {
   return {
     AuditID: item.AuditID,
     Date: item.Date,
-    ISOTimestamp: item.ISOTimestamp,
+    ISOTimestamp: item.ISOTimestamp
   };
 }
 
@@ -63,7 +63,7 @@ function getLogs(params) {
   }
 
   let documentClient = {
-    queryAsync: queryParams => dynamodbPromise.then(client => client.query(queryParams).promise()),
+    queryAsync: queryParams => dynamodbPromise.then(client => client.query(queryParams).promise())
   };
 
   function inQueryDomain(partitionKey) {
@@ -121,5 +121,5 @@ function getLogs(params) {
 }
 
 module.exports = {
-  getLogs,
+  getLogs
 };

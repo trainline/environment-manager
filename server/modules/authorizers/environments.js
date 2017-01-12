@@ -12,7 +12,7 @@ function getCurrentEnvironment(name, user) {
     name: 'GetDynamoResource',
     key: name,
     resource: 'config/environments',
-    accountName: masterAccountName,
+    accountName: masterAccountName
   };
 
   return sender.sendQuery({ query, user });
@@ -23,7 +23,7 @@ exports.getRules = (request) => {
     resource: request.url.replace(/\/+$/, ''),
     access: request.method,
     clusters: [],
-    environmentTypes: [],
+    environmentTypes: []
   };
 
   if (request.method === 'POST') {
@@ -65,5 +65,5 @@ exports.getRules = (request) => {
 
 exports.docs = {
   requiresClusterPermissions: true,
-  requiresEnvironmentTypePermissions: true,
+  requiresEnvironmentTypePermissions: true
 };

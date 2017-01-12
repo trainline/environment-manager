@@ -1,9 +1,9 @@
-﻿/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.configuration').factory('deploymentMapConverter',
   function () {
-
     function findVolumeSize(volumes, name) {
       var volume = _.find(volumes, { Name: name });
       if (volume) return volume.Size;
@@ -18,7 +18,6 @@ angular.module('EnvironmentManager.configuration').factory('deploymentMapConvert
     // TODO: if schema is updated so each target is a separate record, this service will no longer be required
     return {
       toDeploymentTarget: function (data) {
-
         // Adjust schema to reflect preferred model
         var deploymentTarget = {
           ServerRoleName: data.ServerRoleName,
@@ -40,27 +39,26 @@ angular.module('EnvironmentManager.configuration').factory('deploymentMapConvert
               UI_UseSpecificKey: data.ClusterKeyName ? true : false, // UI helper
               UI_SecurityGroupsFlatList: data.SecurityGroups ? data.SecurityGroups.join(', ') : '', // UI Helper
               Volumes: [
-                _.find(data.Volumes, { Name: 'OS'}),
-                _.find(data.Volumes, { Name: 'Data'})
+                _.find(data.Volumes, { Name: 'OS' }),
+                _.find(data.Volumes, { Name: 'Data' })
               ],
-              PuppetRole: data.PuppetRole,
+              PuppetRole: data.PuppetRole
             },
             Tags: {
               ContactEmail: data.ContactEmailTag,
               Role: data.RoleTag,
               Schedule: data.ScheduleTag,
               RemovalDate: data.RemovalDateTag,
-              ProjectCode: data.ProjectCodeTag,
-            },
+              ProjectCode: data.ProjectCodeTag
+            }
           },
-          Services: data.Services,
+          Services: data.Services
         };
 
         return deploymentTarget;
       },
 
       toDynamoSchema: function (target) {
-
         var sgList = _.trim(target.ASG.LaunchConfig.UI_SecurityGroupsFlatList) || '';
         var sgs = sgList.length > 0 ? sgList.split(',').map(_.trim) : undefined;
 
@@ -72,7 +70,7 @@ angular.module('EnvironmentManager.configuration').factory('deploymentMapConvert
           AutoScalingSettings: {
             DesiredCapacity: target.ASG.DesiredCapacity || 0,
             MinCapacity: target.ASG.MinCapacity || 0,
-            MaxCapacity: target.ASG.MaxCapacity || 0,
+            MaxCapacity: target.ASG.MaxCapacity || 0
           },
           SubnetTypeName: target.ASG.SubnetTypeName,
           AvailabilityZoneName: (target.ASG.AvailabilityZone && target.ASG.AvailabilityZone != '') ? target.ASG.AvailabilityZone : undefined,
@@ -85,22 +83,21 @@ angular.module('EnvironmentManager.configuration').factory('deploymentMapConvert
           Volumes: [{
             Name: 'OS',
             Size: target.ASG.LaunchConfig.Volumes[0].Size || 50,
-            Type: 'SSD',
+            Type: 'SSD'
           }, {
             Name: 'Data',
             Size: target.ASG.LaunchConfig.Volumes[1].Size || 10,
-            Type: target.ASG.LaunchConfig.Volumes[1].Type || 'Disk',
+            Type: target.ASG.LaunchConfig.Volumes[1].Type || 'Disk'
           }],
           PuppetRole: target.ASG.LaunchConfig.PuppetRole,
           RoleTag: target.ASG.Tags.Role,
           ScheduleTag: target.ASG.Tags.Schedule,
           RemovalDateTag: target.ASG.Tags.RemovalDate,
           ProjectCodeTag: target.ASG.Tags.ProjectCode,
-          Services: target.Services,
+          Services: target.Services
         };
 
         return deploymentMapValue;
-      },
+      }
     };
-
   });

@@ -47,5 +47,5 @@ module.exports = {
     return buildUserDataByName(WINDOWS_USER_DATA_TEMPLATE, userData);
   },
   LINUX_USER_DATA_TEMPLATE,
-  WINDOWS_USER_DATA_TEMPLATE,
+  WINDOWS_USER_DATA_TEMPLATE
 };

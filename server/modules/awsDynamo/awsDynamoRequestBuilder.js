@@ -12,7 +12,7 @@ function RequestBuilder(parameters) {
     key: parameters.key,
     range: parameters.range,
     version: parameters.version,
-    dateField: parameters.dateField,
+    dateField: parameters.dateField
   };
 
   this.getTable = function () {

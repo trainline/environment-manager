@@ -22,7 +22,7 @@ module.exports = {
       throw new ConfigurationError(
             `Error retrieving subnet from "${configuration.environmentTypeName}": ${error.message}`);
     });
-  },
+  }
 };
 
 function validateSubnetType(configuration) {

@@ -1,9 +1,9 @@
-﻿/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
   function ($scope, $routeParams, $location, $uibModal, $q, resources, cachedResources, accountMappingService, awsService, modal, QuerySync) {
-
     var SHOW_ALL_OPTION = 'Any';
 
     $scope.EnvironmentsList = {};
@@ -29,19 +29,19 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
           querySync = new QuerySync($scope, {
             environment: {
               property: 'SelectedEnvironment',
-              default: environments[0].EnvironmentName,
+              default: environments[0].EnvironmentName
             },
             cluster: {
               property: 'SelectedOwningCluster',
-              default: SHOW_ALL_OPTION,
+              default: SHOW_ALL_OPTION
             },
             server: {
               property: 'SelectedServerRole',
-              default: '',
+              default: ''
             },
             ami: {
               property: 'SelectedAmi',
-              default: '',
+              default: ''
             }
           });
 
@@ -54,7 +54,7 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
 
         awsService.images.GetImageDetails().then(function (amiData) {
           $scope.AmiData = amiData;
-        }),
+        })
       ]).then(function () {
         $scope.Refresh();
       });
@@ -71,19 +71,17 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
         var params = {
           account: accountName,
           query: {
-            'environment': $scope.SelectedEnvironment,
-          },
+            environment: $scope.SelectedEnvironment
+          }
         };
 
         if ($scope.SelectedOwningCluster != SHOW_ALL_OPTION) {
-          params.query['cluster'] = $scope.SelectedOwningCluster;
+          params.query.cluster = $scope.SelectedOwningCluster;
         }
 
         awsService.instances.GetInstanceDetails(params).then(function (instanceData) {
-
           // Merge in AMI details against each instance
           $scope.FullData = awsService.images.MergeExtraImageDataToInstances(instanceData, $scope.AmiData);
-
         }).finally(function () {
           $scope.UpdateFilter();
           $scope.DataLoading = false;
@@ -92,7 +90,6 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
     };
 
     $scope.UpdateFilter = function () {
-
       querySync.updateQuery();
 
       $scope.Data = $scope.FullData.filter(function (server) {
@@ -109,7 +106,7 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
         // AMI filter (against image ID or AMI name/version)
         if ($scope.SelectedAmi) {
           var amiInfo = server.ImageId;
-          if (server.Ami && server.Ami.Name) amiInfo = amiInfo + server.Ami.Name;
+          if (server.Ami && server.Ami.Name) amiInfo += server.Ami.Name;
           match = match && angular.lowercase(amiInfo).indexOf(angular.lowercase($scope.SelectedAmi)) != -1;
         }
 
@@ -129,10 +126,10 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
                 groupName: groupName,
                 environment: $scope.EnvironmentsList[$scope.SelectedEnvironment],
                 accountName: $scope.SelectedAccount,
-                defaultAction: 'launchConfig',
+                defaultAction: 'launchConfig'
               };
-            },
-          },
+            }
+          }
         }).result.then(function () {
           $scope.Refresh();
         });
@@ -140,7 +137,7 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
         modal.information({
           title: 'Not part of ASG',
           message: 'This operation is not available as this AMI doesn\'t belong to an ASG.',
-          severity: 'Info',
+          severity: 'Info'
         });
       }
     };

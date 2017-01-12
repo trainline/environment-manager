@@ -12,14 +12,14 @@ function EraseServiceAction(environmentName) {
     return co(function* () {
       let erasedServicesKeys = yield keyValueStoreEraser.scanAndDelete({
         keyPrefix: `environments/${environmentName}/services/${serviceName}/`,
-        condition: () => true,
+        condition: () => true
       });
 
       let erasedRolesKeys = yield keyValueStoreEraser.scanAndDelete({
         keyPrefix: `environments/${environmentName}/roles/`,
 
         // TODO: Check redundant escapes in regex (eslint no-useless-escape)
-        condition: key => (key.match(`environments\/.*\/roles\/.*\/services\/${serviceName}\/`)),
+        condition: key => (key.match(`environments\/.*\/roles\/.*\/services\/${serviceName}\/`))
       });
 
       return erasedServicesKeys.concat(erasedRolesKeys);

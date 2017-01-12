@@ -14,7 +14,7 @@ module.exports = [
       name: 'ScanServersStatus',
       accountName: request.query.account,
       environmentName: request.params.environment,
-      filter: request.query,
+      filter: request.query
     };
 
     send.query(query, request, response);
@@ -27,9 +27,9 @@ module.exports = [
       name: 'GetASGState',
       accountName: request.query.account,
       environmentName: request.params.environment,
-      asgName: request.params.asgName,
+      asgName: request.params.asgName
     };
 
     send.query(query, request, response);
-  }),
+  })
 ];

@@ -41,11 +41,11 @@ module.exports = {
         serverRole,
         service,
         cluster,
-        image,
+        image
       };
       return Promise.resolve(configuration);
     });
-  },
+  }
 };
 
 function getServiceByName(serviceName) {
@@ -56,8 +56,8 @@ function getServiceByName(serviceName) {
     resource: 'config/services',
     accountName: masterAccountName,
     filter: {
-      ServiceName: serviceName,
-    },
+      ServiceName: serviceName
+    }
   };
 
   return sender
@@ -78,7 +78,7 @@ function getClusterByName(clusterName) {
     name: 'GetDynamoResource',
     resource: 'config/clusters',
     accountName: masterAccountName,
-    key: clusterName,
+    key: clusterName
   };
 
   return sender
@@ -87,7 +87,7 @@ function getClusterByName(clusterName) {
       cluster => Promise.resolve({
         Name: cluster.ClusterName,
         ShortName: cluster.Value.ShortName,
-        KeyPair: cluster.Value.KeyPair,
+        KeyPair: cluster.Value.KeyPair
       }),
       error => Promise.reject(error instanceof DynamoItemNotFoundError ?
         new ConfigurationError(`Cluster "${clusterName}" not found.`) :

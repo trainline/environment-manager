@@ -9,8 +9,8 @@ module.exports = function ScanSecurityGroupsQueryHandler(query) {
   assertContract(query, 'query', {
     properties: {
       accountName: { type: String, empty: false },
-      vpcId: { type: String, empty: false },
-    },
+      vpcId: { type: String, empty: false }
+    }
   });
 
   let parameters = { accountName: query.accountName };
@@ -19,7 +19,7 @@ module.exports = function ScanSecurityGroupsQueryHandler(query) {
     let request = {
       vpcId: query.vpcId,
       groupIds: query.groupIds,
-      groupNames: query.groupNames,
+      groupNames: query.groupNames
     };
 
     return resource.scan(request);

@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.common')
@@ -6,7 +7,7 @@ angular.module('EnvironmentManager.common')
     restrict: 'E',
     bindings: {
       schedule: '=',
-      showOnlyCronSchedules: '=',
+      showOnlyCronSchedules: '='
     },
     templateUrl: '/app/common/directives/scheduleViewer.html',
     controllerAs: 'vm',
@@ -37,10 +38,9 @@ angular.module('EnvironmentManager.common')
             }
           });
         }
-      };
+      }
 
       $scope.$watch('vm.schedule', update);
       update();
-
-    },
+    }
   });

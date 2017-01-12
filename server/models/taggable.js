@@ -20,7 +20,7 @@ module.exports = function (cls) {
     if (tag === undefined) {
       tag = {
         Key: key,
-        Value: value,
+        Value: value
       };
       this.Tags.push(tag);
     } else {

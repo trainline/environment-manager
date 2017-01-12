@@ -25,5 +25,5 @@ module.exports = {
       let asgResource = new AsgResource(accountId);
       return asgResource;
     });
-  },
+  }
 };

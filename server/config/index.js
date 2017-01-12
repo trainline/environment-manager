@@ -34,7 +34,7 @@ nconf.defaults({
   EM_LOG_LEVEL: 'Debug',
   EM_AWS_S3_BUCKET: 'S3 Bucket value not set',
   EM_AWS_S3_KEY: 'S3 Key value not set',
-  EM_PACKAGES_KEY_PREFIX: 'PACKAGES',
+  EM_PACKAGES_KEY_PREFIX: 'PACKAGES'
 });
 
 /**
@@ -78,5 +78,5 @@ module.exports = {
   get: nconf.get.bind(nconf),
   set: nconf.set.bind(nconf),
   setUserValue: userSet,
-  getUserValue: userGet,
+  getUserValue: userGet
 };

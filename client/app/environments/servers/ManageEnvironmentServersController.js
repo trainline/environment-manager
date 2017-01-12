@@ -1,4 +1,5 @@
-﻿/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.environments')
@@ -11,28 +12,28 @@ angular.module('EnvironmentManager.environments')
       var querySync = new QuerySync(vm, {
         environment: {
           property: 'selected.environment.EnvironmentName',
-          default: $rootScope.WorkingEnvironment.EnvironmentName,
+          default: $rootScope.WorkingEnvironment.EnvironmentName
         },
         status: {
           property: 'selected.status',
-          default: SHOW_ALL_OPTION,
+          default: SHOW_ALL_OPTION
         },
         cluster: {
           property: 'selected.cluster',
-          default: SHOW_ALL_OPTION,
+          default: SHOW_ALL_OPTION
         },
         server: {
           property: 'selected.serverRole',
-          default: '',
+          default: ''
         },
         service: {
           property: 'selected.serviceName',
-          default: '',
+          default: ''
         },
         asg_name: {
           property: 'openAsgName',
-          default: null,
-        },
+          default: null
+        }
       });
 
       function init() {
@@ -41,11 +42,11 @@ angular.module('EnvironmentManager.environments')
 
         vm.options = {
           statuses: [SHOW_ALL_OPTION, 'Healthy', 'Warning', 'Error'],
-          clusters: [SHOW_ALL_OPTION],
+          clusters: [SHOW_ALL_OPTION]
         };
 
         vm.selected = {
-          environment: {},
+          environment: {}
         };
 
         querySync.init();
@@ -66,9 +67,8 @@ angular.module('EnvironmentManager.environments')
 
           accountMappingService.getAccountForEnvironment(vm.selected.environment.EnvironmentName).then(function (account) {
             vm.selected.account = account;
-          }),
-        ]).then(function() {
-
+          })
+        ]).then(function () {
           if (vm.openAsgName !== null) {
             vm.showInstanceDetails(vm.openAsgName);
           }
@@ -82,17 +82,17 @@ angular.module('EnvironmentManager.environments')
 
         vm.dataLoading = true;
         var promise = $http({
-          url: '/api/v1/environments/' + vm.selected.environment.EnvironmentName + '/servers',
+          url: '/api/v1/environments/' + vm.selected.environment.EnvironmentName + '/servers'
         }).then(function (response) {
           var data = response.data;
           vm.data = data;
           vm.dataFound = data.Value && data.Value.length > 0;
 
           if (vm.dataFound) {
-            vm.update();            
+            vm.update();
           }
         });
-        promise['finally'](function() {
+        promise.finally(function () {
           vm.dataLoading = false;
         });
 
@@ -113,10 +113,10 @@ angular.module('EnvironmentManager.environments')
           resolve: {
             parameters: function () {
               return {
-                Environment: vm.selected.environment,
+                Environment: vm.selected.environment
               };
-            },
-          },
+            }
+          }
         });
       };
 
@@ -134,13 +134,13 @@ angular.module('EnvironmentManager.environments')
                 groupName: asgName,
                 environment: vm.selected.environment,
                 accountName: vm.selected.account,
-                defaultAction: action,
+                defaultAction: action
               };
-            },
-          },
+            }
+          }
         });
 
-        modal.result['finally'](function() {
+        modal.result.finally(function () {
           vm.openAsgName = null;
           querySync.updateQuery();
         });

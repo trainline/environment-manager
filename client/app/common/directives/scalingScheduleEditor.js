@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.common')
@@ -12,7 +13,6 @@ angular.module('EnvironmentManager.common')
       },
       templateUrl: '/app/common/directives/scalingScheduleEditor.html',
       controller: function ($scope) {
-
         if (!$scope.schedule) {
           $scope.schedule = [];
         }
@@ -59,7 +59,6 @@ angular.module('EnvironmentManager.common')
         });
 
         loadSchedule();
-
-      },
+      }
     };
   });

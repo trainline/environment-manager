@@ -22,5 +22,5 @@ function* isActionProtected(environmentName, action) {
 
 module.exports = {
   SCHEDULE_ENVIRONMENT,
-  isActionProtected: co.wrap(isActionProtected),
+  isActionProtected: co.wrap(isActionProtected)
 };

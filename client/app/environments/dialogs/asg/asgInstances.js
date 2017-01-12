@@ -1,11 +1,12 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.environments').component('asgInstances', {
   templateUrl: '/app/environments/dialogs/asg/asgInstances.html',
   bindings: {
     asg: '<',
-    asgState: '<',
+    asgState: '<'
   },
   controllerAs: 'vm',
   controller: function ($uibModal) {
@@ -19,8 +20,8 @@ angular.module('EnvironmentManager.environments').component('asgInstances', {
         resolve: {
           instance: function () {
             return instance;
-          },
-        },
+          }
+        }
       });
     };
   }

@@ -21,7 +21,7 @@ module.exports = {
   getCookieDuration: () => {
     loadConfiguration();
     return cookieConfig.cookieDuration;
-  },
+  }
 };
 
 function loadConfiguration() {
@@ -35,6 +35,6 @@ function loadConfiguration() {
   cookieConfig = {
     loginUrl: localConfig.authentication.loginUrl,
     cookieName: localConfig.authentication.cookieName,
-    cookieDuration: localConfig.authentication.cookieDuration,
+    cookieDuration: localConfig.authentication.cookieDuration
   };
 }

@@ -4,5 +4,5 @@
 
 module.exports = {
   name: 'nginx',
-  type: 'nginx/upstreams',
+  type: 'nginx/upstreams'
 };

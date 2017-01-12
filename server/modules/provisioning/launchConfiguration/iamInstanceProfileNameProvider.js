@@ -31,7 +31,7 @@ module.exports = {
             error))
         );
     }
-  },
+  }
 };
 
 function getInstanceProfileNameByConvention(configuration) {
@@ -46,7 +46,7 @@ function getInstanceProfileByName(instanceProfileName, accountName) {
   let query = {
     name: 'GetInstanceProfile',
     accountName,
-    instanceProfileName,
+    instanceProfileName
   };
 
   return sender.sendQuery({ query });

@@ -1,13 +1,15 @@
 {
   "name": "EnvironmentManager",
-  "version": "3.18.0",
+  "version": "3.18.3",
   "author": {
     "name": "Platform Development",
     "email": "platform.development@thetrainline.com"
   },
   "scripts": {
     "test": "gulp test",
-    "test-ci": "gulp test -c"
+    "test-ci": "gulp test -c",
+    "lint": "eslint app/ gulp/ --ext .js",
+    "lint-fix": "eslint app/ gulp/ --ext .js --fix"
   },
   "devDependencies": {
     "angular-templatecache": "0.0.1",

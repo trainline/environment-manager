@@ -40,16 +40,16 @@ module.exports = {
           size: {
             min: configuration.serverRole.AutoScalingSettings.MinCapacity,
             desired: configuration.serverRole.AutoScalingSettings.DesiredCapacity,
-            max: configuration.serverRole.AutoScalingSettings.MaxCapacity,
+            max: configuration.serverRole.AutoScalingSettings.MaxCapacity
           },
           subnets,
           tags,
           topicNotificationMapping,
-          lifecycleHooks,
+          lifecycleHooks
         });
       }
 
       return templates;
     });
-  },
+  }
 };
