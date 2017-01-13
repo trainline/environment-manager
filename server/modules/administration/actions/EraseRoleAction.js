@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -10,7 +11,7 @@ function EraseRoleAction(environmentName) {
   function fromTagsListToObject(tags) {
     let result = {};
 
-    tags.forEach(tag => {
+    tags.forEach((tag) => {
       let segments = tag.split(':');
       let key = segments[0];
       let value = segments[1];
@@ -50,12 +51,12 @@ function EraseRoleAction(environmentName) {
           let keysToErase = `${keySegments.join('/')}/installation`;
           serviceInstallationKeysToErase.push(keysToErase);
           return true;
-        },
+        }
       });
 
       let erasedServicesInstallationKeys = yield keyValueStoreEraser.scanAndDelete({
         keyPrefix: `environments/${environmentName}/services/`,
-        condition: (key) => serviceInstallationKeysToErase.indexOf(key) >= 0,
+        condition: key => serviceInstallationKeysToErase.indexOf(key) >= 0
       });
 
       let result = erasedServicesDefinitionKeys

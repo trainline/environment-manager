@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('AccountsController',
@@ -8,7 +9,7 @@ angular.module('EnvironmentManager.configuration').controller('AccountsControlle
     vm.attemptRemove = function (account) {
       getDependentAccounts(account).then(function (dependents) {
         if (dependents.length) {
-          var uses = dependents.map(function(e){ return '<li>' + e.EnvironmentType + '</li>'; }).join('');
+          var uses = dependents.map(function (e) { return '<li>' + e.EnvironmentType + '</li>'; }).join('');
           var plural = dependents.length > 1 ? 'Environment Types' : 'Environment Type';
           var pronoun = dependents.length > 1 ? 'these' : 'this';
           modal.information({
@@ -36,7 +37,7 @@ angular.module('EnvironmentManager.configuration').controller('AccountsControlle
 
     vm.loadData = function () {
       cachedResources.config.accounts.all().then(function (data) {
-        updateAccounts(data)
+        updateAccounts(data);
       });
     };
 

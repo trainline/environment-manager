@@ -1,4 +1,4 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
 
@@ -34,7 +34,7 @@ function s3location(req) {
 function respondWithPreSignedUrl(request) {
   let params = _.assign(s3location(request))({
     Expires: EM_PACKAGE_UPLOAD_TIMEOUT,
-    ContentType: 'application/zip',
+    ContentType: 'application/zip'
   });
   return masterAccountClient.createS3Client().then(s3 =>
     new Promise((resolve, reject) => {
@@ -81,7 +81,7 @@ function validate(validationRules) {
   let validationOptions = {
     rules: validationRules,
     validContinuation: respondWithPreSignedUrl,
-    invalidContinuation: respondWithErrors,
+    invalidContinuation: respondWithErrors
   };
   return makeValidationFunction(validationOptions);
 }
@@ -96,5 +96,5 @@ function getPackageUploadUrlByServiceVersionEnvironment(request, response, next)
 
 module.exports = {
   getPackageUploadUrlByServiceVersion,
-  getPackageUploadUrlByServiceVersionEnvironment,
+  getPackageUploadUrlByServiceVersionEnvironment
 };

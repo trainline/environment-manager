@@ -1,4 +1,4 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
 
@@ -18,7 +18,7 @@ module.exports = function DeploymentLogsStreamer() {
       },
       deploymentIds: () => Array.from(state.keys()),
       getByDeploymentId: deploymentId => state.get(deploymentId) || [],
-      removeByDeploymentId: deploymentId => state.delete(deploymentId),
+      removeByDeploymentId: deploymentId => state.delete(deploymentId)
     };
   })();
 

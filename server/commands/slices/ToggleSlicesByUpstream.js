@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assert = require('assert');
@@ -14,7 +15,7 @@ module.exports = function ToggleSlicesByUpstream(command) {
   assert.equal(typeof command.environmentName, 'string');
   assert.equal(typeof command.upstreamName, 'string');
 
-  return Environment.getAccountNameForEnvironment(command.environmentName).then(account => {
+  return Environment.getAccountNameForEnvironment(command.environmentName).then((account) => {
     command.accountName = account;
 
     let resourceName = `Upstream named "${command.upstreamName}" in "${command.environmentName}" environment`;

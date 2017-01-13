@@ -1,7 +1,8 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-let ip = require("ip");
+let ip = require('ip');
 
 /**
  * TODO: Permitting admin requests purely on the basis of a
@@ -12,10 +13,10 @@ function middleware(req, res, next) {
     next();
   } else {
     res.status(401);
-    res.send("Only local requests are allowed to this host.");
+    res.send('Only local requests are allowed to this host.');
   }
 }
 
 module.exports = {
-  middleware: middleware
+  middleware
 };

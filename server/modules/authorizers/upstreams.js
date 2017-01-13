@@ -1,7 +1,7 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-let _ = require('lodash');
 let config = require('config');
 let co = require('co');
 let Environment = require('models/Environment');
@@ -27,19 +27,17 @@ function getEnvironment(name) {
     name: 'GetDynamoResource',
     key: name,
     resource: 'config/environments',
-    accountName: masterAccountName,
+    accountName: masterAccountName
   };
 
   return sender.sendQuery({ query });
 }
 
 function getModifyPermissionsForEnvironment(environmentName) {
-  return getEnvironment(environmentName).then((environment) => {
-    return {
-      cluster: environment.Value.OwningCluster.toLowerCase(),
-      environmentType: environment.Value.EnvironmentType.toLowerCase()
-    };
-  });
+  return getEnvironment(environmentName).then(environment => ({
+    cluster: environment.Value.OwningCluster.toLowerCase(),
+    environmentType: environment.Value.EnvironmentType.toLowerCase()
+  }));
 }
 
 function getEnvironmentPermissionsPromise(upstreamName, environmentName, accountName, method) {
@@ -49,13 +47,12 @@ function getEnvironmentPermissionsPromise(upstreamName, environmentName, account
 
   return getUpstream(accountName, upstreamName)
     .then((upstream) => {
-
       if (upstream) {
-        let environmentName = upstream.Value.EnvironmentName;
-        return getModifyPermissionsForEnvironment(environmentName);
+        let envName = upstream.Value.EnvironmentName;
+        return getModifyPermissionsForEnvironment(envName);
       }
 
-      throw `Could not find upstream: ${upstreamName}`;
+      throw new Error(`Could not find upstream: ${upstreamName}`);
     });
 }
 
@@ -67,10 +64,10 @@ exports.getRules = (request) => {
 
   return co(function* () {
     let body = request.params.body || request.body;
-    logger.debug(`Upstreams authorizer`, { body, url: request.url });
+    logger.debug('Upstreams authorizer', { body, url: request.url });
     // TODO(Filip): remove this hack after we move all upstreams data into one account
     let environmentName = upstreamName.substr(1, 3);
-    
+
     if (accountName === undefined) {
       accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     }
@@ -79,19 +76,16 @@ exports.getRules = (request) => {
     let path = `/${request.params.account}/config/lbUpstream/${match[1]}`;
     let getEnvironmentPermissions = getEnvironmentPermissionsPromise(upstreamName, environmentName, accountName, request.method);
 
-    return getEnvironmentPermissions.then(envPermissions => {
-      return [{
-        resource: path,
-        access: request.method,
-        clusters: [ envPermissions.cluster ],
-        environmentTypes: [ envPermissions.environmentType ]
-      }];
-    });
-
+    return getEnvironmentPermissions.then(envPermissions => [{
+      resource: path,
+      access: request.method,
+      clusters: [envPermissions.cluster],
+      environmentTypes: [envPermissions.environmentType]
+    }]);
   });
 };
 
 exports.docs = {
   requiresClusterPermissions: true,
-  requiresEnvironmentTypePermissions: true,
+  requiresEnvironmentTypePermissions: true
 };

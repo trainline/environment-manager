@@ -1,4 +1,4 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
 
@@ -18,7 +18,7 @@ function key({ environment, service, version }) {
   let keyPathParts = [
     EM_PACKAGES_KEY_PREFIX,
     dynamicParts,
-    `${dynamicParts.join('-')}.zip`,
+    `${dynamicParts.join('-')}.zip`
   ];
   return fp.flow(fp.flatten, fp.filter(x => x !== undefined), fp.join('/'))(keyPathParts);
 }
@@ -31,7 +31,7 @@ function key({ environment, service, version }) {
 function exactLocation(packageRef) {
   return {
     Bucket: EM_PACKAGES_BUCKET,
-    Key: key(packageRef),
+    Key: key(packageRef)
   };
 }
 
@@ -43,7 +43,7 @@ function exactLocation(packageRef) {
 function s3GetLocations(packageRef) {
   let matches = [
     x => x,
-    fp.omit('environment'),
+    fp.omit('environment')
   ];
   return fp.flow(fp.map(x => exactLocation(x(packageRef))), fp.uniq)(matches);
 }
@@ -68,5 +68,5 @@ function findDownloadUrl(packageRef) {
 module.exports = {
   findDownloadUrl,
   s3GetLocations,
-  s3PutLocation: exactLocation,
+  s3PutLocation: exactLocation
 };

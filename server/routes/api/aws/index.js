@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let send = require('modules/helpers/send');
@@ -11,7 +12,7 @@ const GET_DESCRIPTION = 'Get all associated AWS accounts';
 const POST_DESCRIPTION = 'Add an AWS account';
 const PUT_DESCRIPTION = 'Update an AWS account';
 const DELETE_DESCRIPTION = 'Remove an AWS account';
-const DOCUMENTATION = { description:'AWS', tags:['AWS']};
+const DOCUMENTATION = { description: 'AWS', tags: ['AWS'] };
 const WRITE_ACCEPTS = 'application/json';
 
 /**
@@ -23,13 +24,13 @@ const WRITE_ACCOUNT_MODEL = {
   required: true,
   schema: {
     type: 'object',
-    required: ["AccountName", "AccountNumber", "IsProd", "IsMaster", "Impersonate"],
+    required: ['AccountName', 'AccountNumber', 'IsProd', 'IsMaster', 'Impersonate'],
     properties: {
       AccountName: { type: 'String' },
       AccountNumber: { type: 'Integer' },
       IsProd: { type: 'Boolean' },
       IsMaster: { type: 'Boolean' },
-      Impersonate: { type: 'Boolean' },
+      Impersonate: { type: 'Boolean' }
     }
   }
 };
@@ -41,9 +42,9 @@ const DELETE_ACCOUNT_PARAM = {
   name: 'accountNumber',
   in: 'query',
   required: true,
-  type: "integer",
+  type: 'integer',
   maxLength: 12,
-  minLength: 12,
+  minLength: 12
 };
 
 function requestAccounts(req, res) {

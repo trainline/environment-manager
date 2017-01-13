@@ -5,86 +5,108 @@
 
   <form name="form" class="form-horizontal">
 
-    <div class="form-group" ng-class="{'has-error': form.Service.$invalid}">
+    <div class="form-group" ng-class="{'has-error': form.Service.$invalid && form.Service.$dirty}">
       <label class="col-md-3 control-label text-left">Service: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
       <div class="col-md-5">
         <select class="form-control"
-          name="Service"
-          required=""
-          ng-model="vm.deploymentSettings.SelectedService"
-          ng-disabled="!canUser('edit')">
-          <option ng-repeat="service in vm.servicesList" ng-selected="{{service == vm.deploymentSettings.SelectedService}}" value="{{service}}">{{service}}</option>
-      </select>
+                name="Service"
+                required=""
+                ng-model="vm.deploymentSettings.SelectedService"
+                ng-disabled="!canUser('edit')">
+          <option ng-repeat="service in vm.servicesList" ng-selected="{{service == vm.deploymentSettings.SelectedService}}" value="{{service.ServiceName}}">{{service.ServiceName}}</option>
+        </select>
+      </div>
+      <span class="help-block" ng-if="form.Service.$error.required">Please select a service.</span>
     </div>
-    <span class="help-block" ng-if="form.Service.$error.required">Please select a service.</span>
-  </div>
-  <div class="form-group" ng-if="vm.deploymentSettings.SelectedService !='' && vm.selectedDeployInfo.length > 0">
-    <label class="col-md-3 control-label text-left">Currently Deployed:</label>
-    <div class="col-md-7">
-      <label ng-if="vm.selectedServiceDeployInfoMessage" class="control-label info">{{vm.selectedServiceDeployInfoMessage}}</label>
-      <ul class="form-list" ng-show="vm.selectedServiceDeployInfo.length">
-        <li ng-repeat="version in vm.selectedServiceDeployInfo">{{version}}</li>
-      </ul>
-    </div>
-  </div>
-  <div class="form-group" ng-class="{'has-error': form.Version.$invalid}">
-    <label class="col-md-3 control-label text-left ">Version: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
-    <div class="col-md-4">
-      <input type="text"
-        name="Version"
-        class="form-control"
-        required=""
-        maxlength="50"
-        ng-model="vm.deploymentSettings.Version" />
-    </div>
-    <span class="help-block" ng-if="form.Version.$dirty && form.Version.$error.required">Service version is mandatory.</span>
-  </div>
-  <div class="form-group">
-    <label class="col-md-3 control-label text-left">Mode:</label>
-    <div class="col-md-4">
-      <select class="form-control"
-        name="Mode"
-        required=""
-        ng-model="vm.deploymentSettings.Mode"
-        ng-options="m.Value as m.Name for m in vm.deploymentMethodsList"></select>
-    </div>
-  </div>
-  <div class="form-group" ng-if="vm.deploymentSettings.SelectedService && vm.deploymentSettings.Mode=='bg'">
-    <label class="col-md-3 control-label text-left">Current Slices:</label>
-    <div class="col-md-7">
-      <label ng-if="vm.selectedServiceActiveSliceMessage" class="control-label info">{{vm.selectedServiceActiveSliceMessage}}</label>
-      <ul class="form-list" ng-show="vm.selectedServiceActiveSlices.length">
-        <li ng-repeat="slice in vm.selectedServiceActiveSlices">{{slice}}</li>
-      </ul>
-    </div>
-  </div>
-  <div class="form-group" ng-if="vm.deploymentSettings.Mode=='bg'">
-    <label class="col-md-3 control-label text-left">Target Slice:</label>
-    <div class="col-md-4">
-      <select class="form-control"
-        name="Slice"
-        required=""
-        ng-model="vm.deploymentSettings.Slice">
-      <option value="blue">Blue</option>
-      <option value="green">Green</option>
-    </select>
-  </div>
-</div>
-<div class="form-group" ng-class="{'has-error': form.PackagePath.$invalid}">
-  <label class="col-md-3 control-label text-left ">Package Path: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
-  <div class="col-md-6">
-    <input type="text"
-      name="PackagePath"
-      class="form-control"
-      ng-model="vm.deploymentSettings.PackagePath" />
-    <p>e.g. https://s3.amazonaws.com/tl-deployment-test/binaries-internal/master/misc/package-3.4.3.zip</p>
-  </div>
-  <span class="help-block" ng-if="form.PackagePath.$dirty && form.PackagePath.$error.required">Package path is mandatory.</span>
-</div>
 
-</form>
+    <div class="form-group" ng-class="{'has-error': form.ServerRoleName.$invalid}" ng-if="vm.serverRoleNames.length > 1">
+      <label class="col-md-3 control-label text-left">Server Role: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+      <div class="col-md-5">
+        <select class="form-control"
+                name="ServerRoleName"
+                required=""
+                ng-model="vm.deploymentSettings.SelectedServerRoleName"
+                ng-disabled="!canUser('edit')">
+          <option ng-repeat="serverRoleName in vm.serverRoleNames" ng-selected="{{serverRoleName == vm.deploymentSettings.ServerRoleName}}" value="{{serverRoleName}}">{{serverRoleName}}</option>
+        </select>
+      </div>
+      <span class="help-block" ng-if="form.ServerRoleName.$error.required">Please select a server role.</span>
+    </div>
+    <div class="form-group" ng-if="vm.deploymentSettings.SelectedService !='' && vm.selectedDeployInfo.length > 0">
+      <label class="col-md-3 control-label text-left">Currently Deployed:</label>
+      <div class="col-md-7">
+        <label ng-if="vm.selectedServiceDeployInfoMessage" class="control-label info">{{vm.selectedServiceDeployInfoMessage}}</label>
+        <ul class="form-list" ng-show="vm.selectedServiceDeployInfo.length">
+          <li ng-repeat="version in vm.selectedServiceDeployInfo">{{version}}</li>
+        </ul>
+      </div>
+    </div>
+    <div class="form-group" ng-class="{'has-error': form.Version.$invalid && form.Version.$dirty}">
+      <label class="col-md-3 control-label text-left ">Version: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+      <div class="col-md-4">
+        <input type="text"
+               name="Version"
+               class="form-control"
+               required=""
+               maxlength="50"
+               ng-model="vm.deploymentSettings.Version" />
+      </div>
+      <span class="help-block" ng-if="form.Version.$dirty && form.Version.$error.required">Service version is mandatory.</span>
+    </div>
+    <div class="form-group">
+      <label class="col-md-3 control-label text-left">Mode:</label>
+      <div class="col-md-4">
+        <select class="form-control"
+                name="Mode"
+                required=""
+                ng-model="vm.deploymentSettings.Mode"
+                ng-options="m.Value as m.Name for m in vm.deploymentMethodsList"></select>
+      </div>
+    </div>
+    <div class="form-group" ng-if="vm.deploymentSettings.SelectedService && vm.deploymentSettings.Mode == 'bg'">
+      <label class="col-md-3 control-label text-left">Current Slices:</label>
+      <div class="col-md-7">
+        <label ng-if="vm.selectedServiceActiveSliceMessage" class="control-label info">{{vm.selectedServiceActiveSliceMessage}}</label>
+        <ul class="form-list" ng-show="vm.selectedServiceActiveSlices.length">
+          <li ng-repeat="slice in vm.selectedServiceActiveSlices">{{slice}}</li>
+        </ul>
+      </div>
+    </div>
+    <div class="form-group" ng-if="vm.deploymentSettings.Mode=='bg'">
+      <label class="col-md-3 control-label text-left">Target Slice:</label>
+      <div class="col-md-4">
+        <select class="form-control"
+                name="Slice"
+                required=""
+                ng-model="vm.deploymentSettings.Slice">
+          <option value="blue">Blue</option>
+          <option value="green">Green</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group" ng-class="{'has-error': form.PackagePath.$invalid}">
+      <label class="col-md-3 control-label text-left ">Package Path: </label>
+      <div class="col-md-6">
+        <input type="text"
+               name="PackagePath"
+               class="form-control"
+               ng-model="vm.deploymentSettings.PackagePath" />
+        <p>e.g. https://s3.amazonaws.com/tl-deployment-test/binaries-internal/master/misc/package-3.4.3.zip</p>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-md-6 col-md-offset-3">
+        <label>
+          <input type="checkbox" data-ng-model="vm.dryRunEnabled" name="dryRun" value="true"> Enable Dry Run?</label>
+        <p>
+          <em>Enabling a dry run will validate a configuration without triggering a deployment.</em>
+        </p>
+      </div>
+    </div>
+
+  </form>
 </div>
 <div class="modal-footer">
   <button class="btn btn-default" type="button" ng-click="vm.cancel()">Cancel</button>
-  <button class="btn btn-default" type="button" ng-click="vm.ok()" ng-disabled="form.$pristine || form.$invalid">Deploy...</button>
+  <button class="btn btn-default" type="button" ng-click="vm.ok()" ng-disabled="form.$pristine || form.$invalid || vm.isBusy">Deploy...</button>
 </div>

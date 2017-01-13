@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let deploymentValidators = require('modules/deployment/deploymentValidators');
@@ -20,8 +21,8 @@ class DeploymentContract {
         serviceSlice: { type: String, empty: true },
         clusterName: { type: String, empty: false },
         accountName: { type: String, empty: false },
-        username: { type: String, empty: false },
-      },
+        username: { type: String, empty: false }
+      }
     });
 
     _.assign(this, data);

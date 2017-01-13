@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 // Manage specific environment type
@@ -25,30 +26,30 @@ angular.module('EnvironmentManager.configuration').controller('EnvironmentTypeCo
         DataCenter: '',
         Port: 8500,
         Servers: [],
-        SecurityTokenPath: '',
+        SecurityTokenPath: ''
       },
       DeploymentBucket: '',
       LoadBalancers: [],
       Subnets: {
         PrivateApp: {
           AvailabilityZoneA: '',
-          AvailabilityZoneB: '',
-        },
+          AvailabilityZoneB: ''
+        }
       },
-      VpcId: '',
+      VpcId: ''
     };
     vm.DefaultValue = angular.toJson(configStructure, 4);
     vm.Cancel = navigateToList;
 
     $scope.rawNamePattern = '';
-    $scope.escapeNamingPattern = function() {
+    $scope.escapeNamingPattern = function () {
       var doc = angular.fromJson(vm.EnvironmentType.Value);
       doc.NamingPattern = $scope.rawNamePattern;
       vm.EnvironmentType.Value = angular.toJson(doc, 4);
     };
 
     function init() {
-      var environmentType = $routeParams['environmenttype'];
+      var environmentType = $routeParams.environmenttype;
       vm.EditMode = !(environmentType.toLowerCase() == 'new');
       var access = vm.EditMode ? 'PUT' : 'POST';
       var resource = vm.EditMode ? environmentType : '*';
@@ -60,7 +61,7 @@ angular.module('EnvironmentManager.configuration').controller('EnvironmentTypeCo
         resources.config.environmentTypes.all().then(function (environmentTypes) {
           vm.EnvironmentTypeNames = _.map(environmentTypes, 'EnvironmentType');
         }),
-        accountsResource.all().then(function(awsAccounts) {
+        accountsResource.all().then(function (awsAccounts) {
           vm.awsAccounts = awsAccounts;
         })
       ]).then(function () {
@@ -90,12 +91,12 @@ angular.module('EnvironmentManager.configuration').controller('EnvironmentTypeCo
           url: '/api/v1/config/clusters',
           data: {
             EnvironmentType: environmentTypeName,
-            Value: value,
+            Value: value
           },
           headers: { 'expected-version': vm.Version }
         });
       }
-      
+
       promise.then(function () {
         cachedResources.config.environmentTypes.flush();
         navigateToList();
@@ -107,7 +108,7 @@ angular.module('EnvironmentManager.configuration').controller('EnvironmentTypeCo
       return validator(value);
     };
 
-    vm.selectAccount = function() {
+    vm.selectAccount = function () {
       var doc = angular.fromJson(vm.EnvironmentType.Value);
       doc.AWSAccountNumber = String(vm.awsAccount.AccountNumber);
       doc.AWSAccountName = vm.awsAccount.AccountName;
@@ -131,7 +132,6 @@ angular.module('EnvironmentManager.configuration').controller('EnvironmentTypeCo
 
     function readItem(name) {
       resources.config.environmentTypes.get({ key: name }).then(function (data) {
-
         findAWSAccountFromConfig(data.Value);
 
         vm.DataFound = true;
@@ -139,7 +139,6 @@ angular.module('EnvironmentManager.configuration').controller('EnvironmentTypeCo
         vm.EnvironmentType.Value = angular.toJson(data.Value, 4);
         vm.Version = data.Version;
         $scope.rawNamePattern = JSON.parse(data.Value).NamingPattern;
-
       }, function () {
         vm.DataFound = false;
       });

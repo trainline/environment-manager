@@ -1,5 +1,6 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
-'use strict'
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
+'use strict';
 
 let co = require('co');
 let _ = require('lodash');
@@ -7,7 +8,7 @@ let OperationResult = require('../utils/operationResult');
 let resourceProvider = require('modules/resourceProvider');
 let InvalidOperationError = require('modules/errors/InvalidOperationError.class');
 let subnetsProvider = require('modules/provisioning/autoScaling/subnetsProvider');
-let sender = new require('modules/sender');
+let sender = require('modules/sender');
 let Environment = require('models/Environment');
 let EnvironmentType = require('models/EnvironmentType');
 
@@ -51,10 +52,9 @@ function* handler(command) {
   let resource = yield resourceProvider.getInstanceByName('asgs', { accountName });
 
   let subnets;
-  
+
   let network = command.parameters.network;
   if (!_.isNil(network)) {
-
     let environment = yield Environment.getByName(command.environmentName);
     let environmentType = yield EnvironmentType.getByName(environment.EnvironmentType);
     let asg = yield resource.get({ name: command.autoScalingGroupName });
@@ -68,10 +68,9 @@ function* handler(command) {
         SubnetTypeName: currentSubnetType.name,
         AvailabilityZoneName: network.availabilityZoneName
       },
-      environmentType: environmentType,
+      environmentType,
       environmentTypeName: environment.EnvironmentType
     });
-
   }
 
   let parameters = {
@@ -79,14 +78,14 @@ function* handler(command) {
     minSize: size.min,
     desiredSize: size.desired,
     maxSize: size.max,
-    subnets: subnets
+    subnets
   };
 
   return resource.put(parameters);
 }
 
 function getSubnetTypeBySubnet(subnetTypes, subnet) {
-  let subnetTypeArray = _.keys(subnetTypes).map(key => {
+  let subnetTypeArray = _.keys(subnetTypes).map((key) => {
     let subnetType = unMapSubnetType(key, subnetTypes[key]);
     return subnetType;
   });
@@ -96,20 +95,16 @@ function getSubnetTypeBySubnet(subnetTypes, subnet) {
 function unMapSubnetType(subnetTypeName, subnetType) {
   let azs = _.keys(subnetType)
     .filter(key => key.startsWith('AvailabilityZone'))
-    .map(key => {
-      return {
-        name: key,
-        subnet: subnetType[key]
-      }
-    });
+    .map(key => ({
+      name: key,
+      subnet: subnetType[key]
+    }));
 
   return {
     name: subnetTypeName,
     availabilityZones: azs,
     secure: !!subnetType.Secure,
-    hasSubnet: subnet => {
-      return _.some(azs, az => az.subnet === subnet);
-    }
+    hasSubnet: subnet => _.some(azs, az => az.subnet === subnet)
   };
 }
 

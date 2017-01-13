@@ -1,10 +1,10 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 // Manage Load Balancer settings
 angular.module('EnvironmentManager.configuration').controller('LBsController',
   function ($scope, $routeParams, $location, $q, $uibModal, modal, resources, cachedResources, accountMappingService, lbBulkOperationService) {
-
     var SHOW_ALL_OPTION = 'All';
 
     $scope.FullData = [];
@@ -18,7 +18,6 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
     $scope.SelectedServer = '';
 
     function init() {
-
       $scope.canPost = user.hasPermission({ access: 'POST', resource: '/*/config/lbsettings/**' });
 
       $location.search('range', null);
@@ -26,9 +25,9 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
       $location.search('returnPath', null);
       $location.search('key', null);
       $location.search('up_environment', null);
-      var env = $routeParams['lb_environment'];
-      var typeFilter = $routeParams['typeFilter'];
-      var serverFilter = $routeParams['serverFilter'];
+      var env = $routeParams.lb_environment;
+      var typeFilter = $routeParams.typeFilter;
+      var serverFilter = $routeParams.serverFilter;
 
       if (typeFilter) $scope.SelectedSettingType = typeFilter;
       if (serverFilter) $scope.SelectedServer = serverFilter;
@@ -41,7 +40,7 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
         cachedResources.config.accounts.all().then(function (accounts) {
           accounts = _.map(accounts, 'AccountName');
           $scope.AccountsList = [SHOW_ALL_OPTION].concat(accounts).sort();
-        }),
+        })
       ]).then(function () {
         $scope.SelectedEnvironment = env ? env : $scope.EnvironmentsList[0];
         $scope.Refresh();
@@ -55,15 +54,14 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
     };
 
     $scope.Refresh = function () {
-
       $scope.DataLoading = true;
 
       accountMappingService.getAccountForEnvironment($scope.SelectedEnvironment).then(function (accountName) {
         var params = {
           account: accountName,
           query: {
-            environment: $scope.SelectedEnvironment,
-          },
+            environment: $scope.SelectedEnvironment
+          }
         };
 
         if ($scope.SelectedSettingType != SHOW_ALL_OPTION) {
@@ -106,7 +104,7 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
         if (canDelete) {
           $scope.canDelete++;
         }
-      };
+      }
     };
 
     $scope.NewItem = function () {
@@ -138,9 +136,8 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
         title: 'Deleting a Load Balancer Setting',
         message: 'Are you sure you want to delete the <strong>' + hostName + '</strong> setting from ' + env + '?',
         action: 'Delete',
-        severity: 'Danger',
+        severity: 'Danger'
       }).then(function () {
-
         accountMappingService.getAccountForEnvironment(env).then(function (accountName) {
           DeleteLBSetting(accountName, env, hostName).then(function () {
             $scope.Refresh();
@@ -148,7 +145,6 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
             cachedResources.config.lbSettings.flush();
           });
         });
-
       });
     };
 
@@ -160,8 +156,8 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
         resolve: {
           sourceEnv: function () {
             return $scope.SelectedEnvironment;
-          },
-        },
+          }
+        }
       }).result.then(function () {
         $scope.Refresh();
       });
@@ -173,7 +169,7 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
         title: 'Delete All Settings for Environment',
         message: 'Are you sure you want to delete <strong>ALL</strong> Load Balancer settings for environment <strong>' + env + '</strong>? <br/><br/>This action cannot be undone.',
         action: 'Delete All Settings for ' + env,
-        severity: 'Danger',
+        severity: 'Danger'
       }).then(function () {
         DeleteAllLBSettings(env);
       });
@@ -236,7 +232,7 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
       var params = {
         account: accountName,
         key: environment,
-        range: vHostName,
+        range: vHostName
       };
       return resources.config.lbSettings.delete(params);
     }

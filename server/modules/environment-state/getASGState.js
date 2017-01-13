@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -24,8 +25,8 @@ function getServicesSummary(services) {
     return diff !== DIFF_STATE.Extra && diff !== DIFF_STATE.Ignored;
   });
 
-  let healthy = _.filter(services, (s) => s.OverallHealth === HEALTH_STATUS.Healthy);
-  let expectedAndHealthy = _.filter(expected, (s) => s.OverallHealth === HEALTH_STATUS.Healthy);
+  let healthy = _.filter(services, s => s.OverallHealth === HEALTH_STATUS.Healthy);
+  let expectedAndHealthy = _.filter(expected, s => s.OverallHealth === HEALTH_STATUS.Healthy);
 
 
   let unexpected = _.filter(services, { DiffWithTargetState: DIFF_STATE.Extra });

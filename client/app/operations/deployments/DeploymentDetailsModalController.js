@@ -1,16 +1,16 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 // TODO(filip): refactor
 function deploymentView(deploymentRecord, clusters) {
-
   function getDuration() {
     var startTime = moment(deployment.StartTimestamp);
 
     if (deployment.Status.toLowerCase() === 'in progress') {
       return {
         label: 'Started',
-        value: startTime.fromNow() + ' (' + startTime.format('YYYY-MM-DD HH:mm:ss') + ')',
+        value: startTime.fromNow() + ' (' + startTime.format('YYYY-MM-DD HH:mm:ss') + ')'
       };
     }
 
@@ -19,7 +19,7 @@ function deploymentView(deploymentRecord, clusters) {
 
     return {
       label: 'Duration',
-      value: diff + ' (' + startTime.format('YYYY-MM-DD, HH:mm:ss') + ' - ' + endTime.format('HH:mm:ss') + ')',
+      value: diff + ' (' + startTime.format('YYYY-MM-DD, HH:mm:ss') + ' - ' + endTime.format('HH:mm:ss') + ')'
     };
   }
 
@@ -27,7 +27,7 @@ function deploymentView(deploymentRecord, clusters) {
     if (deployment.ErrorReason) {
       return {
         error: deployment.ErrorReason,
-        detail: deployment.ErrorDetail,
+        detail: deployment.ErrorDetail
       };
     }
   }
@@ -37,7 +37,6 @@ function deploymentView(deploymentRecord, clusters) {
   }
 
   function getNodeDuration(node) {
-
     if (node.Status.toLowerCase() === 'not started' || !node.StartTime) return 'Not started';
 
     var startTime = moment(moment.utc(node.StartTime).toDate());
@@ -54,7 +53,6 @@ function deploymentView(deploymentRecord, clusters) {
     var nodes = deployment.Value.Nodes;
     if (nodes) {
       return nodes.map(function (node) {
-
         var logLink = '/api/v1/deployments/' + deployment.DeploymentID + '/log?account=' + deployment.AccountName + '&instance=' + node.InstanceId;
 
         return {
@@ -63,13 +61,12 @@ function deploymentView(deploymentRecord, clusters) {
           status: {
             status: node.Status,
             lastStage: node.LastCompletedStage,
-            class: getStatusClass(node.Status),
+            class: getStatusClass(node.Status)
           },
           duration: getNodeDuration(node),
           numberOfAttempts: node.NumberOfAttempts || 0,
-          logLink: logLink,
+          logLink: logLink
         };
-
       });
     }
   }
@@ -117,7 +114,7 @@ function deploymentView(deploymentRecord, clusters) {
     duration: duration,
     error: error,
     log: log,
-    nodes: nodes,
+    nodes: nodes
   });
 }
 
@@ -147,7 +144,7 @@ angular.module('EnvironmentManager.operations')
         return deployment.fetchNodesIps();
       }).then(updateView);
     }
-    
+
     function updateView(data) {
       vm.view = deploymentView(data, clusters);
 
@@ -190,5 +187,4 @@ angular.module('EnvironmentManager.operations')
     };
 
     init();
-
   });

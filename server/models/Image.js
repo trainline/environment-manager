@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -15,8 +16,8 @@ class Image {
     return co(function* () {
       let images = yield sender.sendQuery({
         query: {
-          name: 'ScanCrossAccountImages',
-        },
+          name: 'ScanCrossAccountImages'
+        }
       });
       let image = _.find(images, { ImageId: id });
       return new Image(image);

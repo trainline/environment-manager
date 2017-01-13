@@ -1,10 +1,10 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 // Manage all services
 angular.module('EnvironmentManager.configuration').controller('ServicesController',
   function ($scope, $routeParams, $location, $http, resources, cachedResources, modal) {
-
     var SHOW_ALL_OPTION = 'Any';
 
     $scope.FullData = [];
@@ -17,8 +17,8 @@ angular.module('EnvironmentManager.configuration').controller('ServicesControlle
       $scope.dataLoading = true;
       $scope.canPost = user.hasPermission({ access: 'POST', resource: '/config/services/**' });
 
-      var cluster = $routeParams['cluster'];
-      var service = $routeParams['service'];
+      var cluster = $routeParams.cluster;
+      var service = $routeParams.service;
 
       $scope.SelectedOwningCluster = cluster || SHOW_ALL_OPTION;
       $scope.SelectedService = service || '';
@@ -37,7 +37,7 @@ angular.module('EnvironmentManager.configuration').controller('ServicesControlle
     $scope.Refresh = function () {
       var query = {};
       if ($scope.SelectedOwningCluster != SHOW_ALL_OPTION) {
-        query['cluster'] = $scope.SelectedOwningCluster;
+        query.cluster = $scope.SelectedOwningCluster;
       }
 
       $http.get('/api/v1/config/services', { params: query }).then(function (response) {
@@ -56,7 +56,6 @@ angular.module('EnvironmentManager.configuration').controller('ServicesControlle
         }
 
         $scope.dataLoading = false;
-
       });
     };
 
@@ -82,7 +81,7 @@ angular.module('EnvironmentManager.configuration').controller('ServicesControlle
         message: 'Are you sure you want to delete the <strong>' + serviceName + '</strong> service?',
         action: 'Delete',
         severity: 'Danger',
-        details: ['NOTE: This will not delete the service from any Deployment Maps or Load Balancer Rules. It will also not clear any AWS resources associated with the service. Clean up of these needs to be done manually. Deleting services in Environment Manager before they are fully removed from AWS and Footplate is not a good idea! <strong>Please talk to the Server team if unsure</strong>.'], // TODO:
+        details: ['NOTE: This will not delete the service from any Deployment Maps or Load Balancer Rules. It will also not clear any AWS resources associated with the service. Clean up of these needs to be done manually. Deleting services in Environment Manager before they are fully removed from AWS and Footplate is not a good idea! <strong>Please talk to the Server team if unsure</strong>.'] // TODO:
       }).then(function () {
         var params = { key: serviceName, range: owningCluster };
         resources.config.services.delete(params).then(function () {

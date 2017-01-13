@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -7,7 +8,7 @@ let LifecycleHookDefaultResult = require('Enums').LifecycleHookDefaultResult;
 let sender = require('modules/sender');
 
 module.exports = {
-  get: function (accountName) {
+  get(accountName) {
     return co(function* () {
       let role = yield getRoleByName('roleInfraAsgScale', accountName);
       let topic = yield getTopicByName('InfraAsgLambdaScale', accountName);
@@ -18,17 +19,17 @@ module.exports = {
         roleArn: role.Arn,
         topicArn: topic.TopicArn,
         defaultResult: LifecycleHookDefaultResult.Continue,
-        heartbeatTimeout: '10m',
+        heartbeatTimeout: '10m'
       }];
     });
-  },
+  }
 };
 
 function getRoleByName(roleName, accountName) {
   let query = {
     name: 'GetRole',
-    accountName: accountName,
-    roleName: roleName,
+    accountName,
+    roleName
   };
 
   return sender.sendQuery({ query });
@@ -37,8 +38,8 @@ function getRoleByName(roleName, accountName) {
 function getTopicByName(topicName, accountName) {
   let query = {
     name: 'GetTopic',
-    accountName: accountName,
-    topicName: topicName,
+    accountName,
+    topicName
   };
 
   return sender.sendQuery({ query });

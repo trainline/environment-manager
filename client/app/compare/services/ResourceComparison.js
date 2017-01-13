@@ -1,10 +1,10 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.compare').factory('ResourceComparison',
   function () {
     return function (data, primaryEnvironmentName, secondaryEnvironmentNames) {
-
       var self = this;
 
       function init() {
@@ -19,7 +19,8 @@ angular.module('EnvironmentManager.compare').factory('ResourceComparison',
         });
 
         var keys = _.uniq(dataForEnvironments.map(function (data) {
-          return data.key; }));
+          return data.key;
+        }));
 
         return keys.sort();
       }
@@ -30,16 +31,17 @@ angular.module('EnvironmentManager.compare').factory('ResourceComparison',
           return {
             key: key,
             primary: getPrimaryView(primary),
-            comparisons: getComparisons(primary, key, secondaryEnvironmentNames),
+            comparisons: getComparisons(primary, key, secondaryEnvironmentNames)
           };
         });
       }
 
       function getPrimaryView(primary) {
-        var viewLabel, viewClass;
+        var viewLabel,
+          viewClass;
 
         if (primary) {
-          if (typeof (primary.Value) != 'object') {
+          if (typeof (primary.Value) !== 'object') {
             viewLabel = primary.Value;
           } else {
             viewLabel = '{ ... }';
@@ -52,7 +54,7 @@ angular.module('EnvironmentManager.compare').factory('ResourceComparison',
         return {
           label: viewLabel,
           class: viewClass,
-          data: primary,
+          data: primary
         };
       }
 
@@ -63,7 +65,7 @@ angular.module('EnvironmentManager.compare').factory('ResourceComparison',
           var difference = diff(primary, secondary);
           comparisons[environmentName] = {
             secondary: secondary,
-            difference: difference,
+            difference: difference
           };
         });
 
@@ -71,26 +73,26 @@ angular.module('EnvironmentManager.compare').factory('ResourceComparison',
       }
 
       function diff(primary, secondary) {
-
         if (!primary && !secondary) return same('None');
         if (primary && !secondary) return different('None', false);
 
         if (!primary && secondary) {
-          if (typeof (secondary.Value) != 'object')
+          if (typeof (secondary.Value) !== 'object') {
             return different(secondary.Value, false);
+          }
 
           return different('{ ... }', true);
         }
 
         if (!_.isEqual(primary.Value, secondary.Value)) {
-          if (typeof (secondary.Value) != 'object')
+          if (typeof (secondary.Value) !== 'object') {
             return different(secondary.Value, false);
+          }
 
           return different('{ ... }', true);
         }
 
         return same('Identical');
-
       }
 
       function same(description) {
@@ -98,7 +100,7 @@ angular.module('EnvironmentManager.compare').factory('ResourceComparison',
           same: true,
           description: description,
           showable: false,
-          class: 'same',
+          class: 'same'
         };
       }
 
@@ -107,7 +109,7 @@ angular.module('EnvironmentManager.compare').factory('ResourceComparison',
           same: false,
           description: description,
           showable: showable,
-          class: 'different',
+          class: 'different'
         };
 
         if (showable) result.class += ' showable';
@@ -123,7 +125,6 @@ angular.module('EnvironmentManager.compare').factory('ResourceComparison',
       }
 
       init();
-
     };
   }
 );

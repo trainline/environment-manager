@@ -19,7 +19,7 @@
           <th class="text-nowrap">Services</th>
           <th class="text-nowrap">AMI</th>
           <th class="text-nowrap">Out of Date</th>
-          <th class="text-nowrap" ng-if="vm.showRDC">Connect</th>
+          <th class="text-nowrap">Connect</th>
         </tr>
       </thead>
       <tbody>
@@ -53,8 +53,18 @@
             </span>
             <span ng-if="!instance.LatestAmi">-</span>
           </td>
-          <td ng-if="vm.showRDC">
+          <td ng-if="vm.asg.Ami.Platform === 'Windows'">
             <a href="/api/v1/instances/{{instance.InstanceId}}/connect">Remote Desktop</a>
+          </td>
+          <td style="width: 16em" ng-if="vm.asg.Ami.Platform === 'Linux'">
+            <div class="input-group">
+              <input type="text" class="form-control" id="sshlink-{{instance.InstanceId}}" readonly style="background-color:white;" value="ssh {{ instance.PrivateIpAddress }}">
+              <span class="input-group-btn">
+                <button class="btn btn-default" ngclipboard data-clipboard-target="#sshlink-{{instance.InstanceId}}">
+                  <img src="/assets/images/clippy.svg" alt="Copy to clipboard" width="13"></img>
+                </button>
+              </span>
+            </div>
           </td>
         </tr>
       </tbody>

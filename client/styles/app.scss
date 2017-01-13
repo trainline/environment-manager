@@ -1,4 +1,4 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 /**
  * Note: CSS file is generated! If you need to update CSS, please run either:
@@ -63,6 +63,19 @@ header {
   overflow: hidden;
   min-height: 300px;
   clear: none;
+}
+
+.loading-overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  background: rgba(0,20,10,0.5);
+  #spinner {
+    height: 100%;
+  }
 }
 
 /* Form Styles */
@@ -821,4 +834,8 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
 
   }
 
+}
+
+.deploy-dry-run-success.modal-dialog{
+  background: #FF0000
 }

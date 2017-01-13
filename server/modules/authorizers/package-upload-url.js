@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let Environment = require('models/Environment');
@@ -32,7 +33,7 @@ function getRules(request) {
 module.exports = {
   docs: {
     requiresClusterPermissions: true,
-    requiresEnvironmentTypePermissions: true,
+    requiresEnvironmentTypePermissions: true
   },
-  getRules,
+  getRules
 };

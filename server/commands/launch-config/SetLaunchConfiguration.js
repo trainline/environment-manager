@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assertContract = require('modules/assertContract');
@@ -12,7 +13,6 @@ let imageProvider = require('modules/provisioning/launchConfiguration/imageProvi
 let instanceDevicesProvider = require('modules/provisioning/launchConfiguration/instanceDevicesProvider');
 let securityGroupsProvider = require('modules/provisioning/launchConfiguration/securityGroupsProvider');
 
-let SecurityGroup = require('models/SecurityGroup');
 let AutoScalingGroup = require('models/AutoScalingGroup');
 
 module.exports = function SetLaunchConfiguration(command) {
@@ -25,13 +25,13 @@ module.exports = function SetLaunchConfiguration(command) {
           properties: {
             AMI: { type: String, empty: true },
             InstanceType: { type: String, empty: true },
-            InstanceProfileName: { type: String, empty: true},
+            InstanceProfileName: { type: String, empty: true },
             Volumes: { type: Array, empty: true },
             // KeyName: { type: String, empty: true },
-            SecurityGroups: { type: Array, empty: true },
+            SecurityGroups: { type: Array, empty: true }
           }
         }
-      },
+      }
     });
 
     let data = command.data;
@@ -56,27 +56,25 @@ module.exports = function SetLaunchConfiguration(command) {
     }
 
     if (data.SecurityGroups !== undefined) {
-      let securityGroupsNamesAndReasons = _.map(data.SecurityGroups, (name) => {
-        return {
-          name,
-          reason: 'It was set by user in LaunchConfig form'
-        };
-      });
+      let securityGroupsNamesAndReasons = _.map(data.SecurityGroups, name => ({
+        name,
+        reason: 'It was set by user in LaunchConfig form'
+      }));
       let securityGroups = yield securityGroupsProvider.getFromSecurityGroupNames(command.accountName, vpcId, securityGroupsNamesAndReasons, logger);
       updated.SecurityGroups = _.map(securityGroups, 'GroupId');
     }
 
     if (data.AMI !== undefined) {
       let image = yield imageProvider.get(data.AMI);
-      updated.ImageId = image.id
+      updated.ImageId = image.id;
     }
 
     if (data.UserData !== undefined) {
       updated.UserData = new Buffer(data.UserData).toString('base64');
     }
 
-    var accountName = command.accountName;
-    var autoScalingGroupName = command.autoScalingGroupName;
+    let accountName = command.accountName;
+    let autoScalingGroupName = command.autoScalingGroupName;
 
     logger.debug(`Updating ASG ${autoScalingGroupName} with: ${JSON.stringify(updated)}`);
 
@@ -92,10 +90,10 @@ module.exports = function SetLaunchConfiguration(command) {
 
 
 function getInstanceProfileByName(accountName, instanceProfileName) {
-  var query = {
+  let query = {
     name: 'GetInstanceProfile',
-    accountName: accountName,
-    instanceProfileName: instanceProfileName,
+    accountName,
+    instanceProfileName
   };
 
   return sender.sendQuery({ query });

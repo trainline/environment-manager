@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-let Ajv = require("ajv");
+let Ajv = require('ajv');
 
 function loadSchema(schemaId) {
   return require(`./${schemaId}`);
@@ -8,7 +8,7 @@ function loadSchema(schemaId) {
 
 const options = {
   allErrors: true,
-  format: "fast",
+  format: 'fast',
   loadSchema: (uri, callback) => {
     try {
       let schema = loadSchema(uri);
@@ -26,7 +26,7 @@ const options = {
 const ajv = new Ajv(options);
 
 function validator(schemaId) {
-  return getSchema(schemaId).then(validate => {
+  return getSchema(schemaId).then((validate) => {
     let conform = (value, callback) => {
       if (validate(value)) {
         return true;
@@ -42,7 +42,7 @@ function validator(schemaId) {
     };
 
     return {
-      conform: conform
+      conform
     };
   });
 }
@@ -58,9 +58,7 @@ function getSchema(schemaId) {
       ajv.compileAsync(rawSchema, (error, schema) => {
         if (error) {
           reject(error);
-        }
-        else {
-          // ajv.addSchema(schema);
+        } else {
           resolve(schema);
         }
       });

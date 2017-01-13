@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let amazonClientFactory = require('modules/amazon-client/childAccountClient');
@@ -14,14 +15,14 @@ function InstanceProfileResource(client) {
     assert(parameters.instanceProfileName);
 
     let request = {
-      InstanceProfileName: parameters.instanceProfileName,
+      InstanceProfileName: parameters.instanceProfileName
     };
 
-    return client.getInstanceProfile(request).promise().then(response => {
-      return response.InstanceProfile;
-    }).catch(error => {
-      throw prettifyError(error, request);
-    });
+    return client.getInstanceProfile(request).promise()
+      .then(response => response.InstanceProfile)
+      .catch((error) => {
+        throw prettifyError(error, request);
+      });
   };
 
   function prettifyError(error, request) {
@@ -31,14 +32,13 @@ function InstanceProfileResource(client) {
       return new AwsError(`An error has occurred getting Iam instance profile: ${error.message}`);
     }
   }
-
-};
+}
 
 module.exports = {
-  canCreate: (resourceDescriptor) =>
+  canCreate: resourceDescriptor =>
     resourceDescriptor.type.toLowerCase() === 'iam/instanceprofiles',
 
   create: (resourceDescriptor, parameters) =>
-    amazonClientFactory.createIAMClient(parameters.accountName).then(client => new InstanceProfileResource(client)),
+    amazonClientFactory.createIAMClient(parameters.accountName).then(client => new InstanceProfileResource(client))
 
 };

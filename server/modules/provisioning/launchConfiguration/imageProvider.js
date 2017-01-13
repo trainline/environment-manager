@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assert = require('assert');
@@ -8,15 +9,15 @@ let ImageNotFoundError = require('modules/errors/ImageNotFoundError.class');
 
 module.exports = {
 
-  get: function (imageNameOrType, includeUnstable) {
+  get(imageNameOrType, includeUnstable) {
     assert(imageNameOrType, 'Expected "imageNameOrType" argument not to be null');
     if (doesSpecifyVersion(imageNameOrType)) {
       return getImageByName(imageNameOrType);
     } else {
-      includeUnstable = includeUnstable === undefined ? false : includeUnstable;
-      return getLatestImageByType(imageNameOrType, includeUnstable);
+      let safeIncludeUnstable = includeUnstable === undefined ? false : includeUnstable;
+      return getLatestImageByType(imageNameOrType, safeIncludeUnstable);
     }
-  },
+  }
 };
 
 function doesSpecifyVersion(imageNameOrType) {
@@ -24,32 +25,33 @@ function doesSpecifyVersion(imageNameOrType) {
 }
 
 function getImageByName(imageName) {
-  var query = {
+  let query = {
     name: 'ScanCrossAccountImages',
     filter: {
-      name: imageName,
-    },
+      name: imageName
+    }
   };
 
   return sender
-    .sendQuery({ query: query })
-    .then(amiImages => amiImages.length ?
-      Promise.resolve(new Image(amiImages[0])) :
-      Promise.reject(new ImageNotFoundError(`No AMI image named "${imageName}" found.`))
+    .sendQuery({ query })
+    .then(amiImages =>
+      (amiImages.length ?
+        Promise.resolve(new Image(amiImages[0])) :
+        Promise.reject(new ImageNotFoundError(`No AMI image named "${imageName}" found.`))
+      )
     );
 }
 
 function getLatestImageByType(imageType, includeUnstable) {
-  var query = {
-    name: 'ScanCrossAccountImages',
+  let query = {
+    name: 'ScanCrossAccountImages'
   };
 
   return sender
-    .sendQuery({ query: query })
-    .then(amiImages => {
-
+    .sendQuery({ query })
+    .then((amiImages) => {
       let isLatest = includeUnstable ? image => image.IsLatest : image => image.IsLatestStable;
-      var latestImage = amiImages.find(image => image.AmiType === imageType && isLatest(image));
+      let latestImage = amiImages.find(image => image.AmiType === imageType && isLatest(image));
 
       if (latestImage) {
         return new Image(latestImage);

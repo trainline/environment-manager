@@ -1,9 +1,9 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
 let co = require('co');
-let config = require('config');
 let amazonClientFactory = require('modules/amazon-client/childAccountClient');
 let awsAccounts = require('modules/awsAccounts');
 let cacheManager = require('modules/cacheManager');
@@ -11,15 +11,14 @@ const imagesCache = cacheManager.create('ImagesCache', null, { stdTTL: 30 * 60 }
 const USE_CACHE = true;
 
 function ImageResource(client, account) {
-
   function getImagesOwners() {
     return awsAccounts.getAMIsharingAccounts()
       .then(accounts => _.uniq(accounts.concat(account.AccountNumber))
-      .map(n => '' + n));
+      .map(n => `${n}`));
   }
 
   function buildRequest(query) {
-    var Filters = [];
+    let Filters = [];
     if (query) {
       // {a:1, b:2} => [{Name:'a', Values:[1]}, {Name:'b', Values:[2]}]
       Filters = _.toPairs(query).map(q => ({ Name: q[0], Values: _.concat(q[1]) }));
@@ -29,7 +28,7 @@ function ImageResource(client, account) {
     Filters.push({ Name: 'is-public', Values: ['false'] });
     Filters.push({ Name: 'image-type', Values: ['machine'] });
 
-    return getImagesOwners().then(Owners => ({Filters, Owners}));
+    return getImagesOwners().then(Owners => ({ Filters, Owners }));
   }
 
   this.all = function (params) {
@@ -42,15 +41,15 @@ function ImageResource(client, account) {
     }
 
     let accountName = account.AccountName.toLowerCase();
-    return imagesCache.get(accountName).then(result => {
+    return imagesCache.get(accountName).then((result) => {
       if (result) {
         return result;
       } else {
-        return getAll(params).then(result => {
-          if (result) {
-            imagesCache.set(accountName, result);
+        return getAll(params).then((freshResult) => {
+          if (freshResult) {
+            imagesCache.set(accountName, freshResult);
           }
-          return result;
+          return freshResult;
         });
       }
     });
@@ -75,6 +74,6 @@ function canCreate(resourceDescriptor) {
 
 
 module.exports = {
-  canCreate: canCreate,
-  create: co.wrap(create),
+  canCreate,
+  create: co.wrap(create)
 };

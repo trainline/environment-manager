@@ -1,4 +1,5 @@
-﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.compare').factory('comparableResources',
@@ -8,14 +9,13 @@ angular.module('EnvironmentManager.compare').factory('comparableResources',
       name: 'Service Versions',
       keyName: 'Service Name',
       get: function (environments) {
-
         var environmentNames = environments.map(function (env) { return env.EnvironmentName; });
 
         return $q.all(environmentNames.map(function (environmentName) {
           return accountMappingService.getAccountForEnvironment(environmentName).then(function (accountName) {
             return {
               account: accountName,
-              environment: environmentName,
+              environment: environmentName
             };
           });
         })).then(function (environments) {
@@ -24,7 +24,6 @@ angular.module('EnvironmentManager.compare').factory('comparableResources',
           }));
         }).then(_.flatten).then(function (environments) {
           var results = _.flatMapDeep(environments, function (env) {
-
             var arr = env.Value.map(function (serverRole) {
               return serverRole.Services.map(function (service) {
                 var serverRoleName = serverRole.Role;
@@ -33,7 +32,7 @@ angular.module('EnvironmentManager.compare').factory('comparableResources',
                   serverRoleName: serverRoleName,
                   environmentName: env.EnvironmentName,
                   serviceVersion: service.Version,
-                  slice: service.Slice,
+                  slice: service.Slice
                 };
 
                 return obj;
@@ -43,8 +42,7 @@ angular.module('EnvironmentManager.compare').factory('comparableResources',
             var arr = _.flatten(arr);
             var grouped = _.groupBy(arr, 'serviceName');
 
-            return _.reduce(grouped, function(results, serverRoles, key) {
-
+            return _.reduce(grouped, function (results, serverRoles, key) {
               var obj = {
                 key: serverRoles[0].serviceName,
                 EnvironmentName: serverRoles[0].environmentName,
@@ -52,17 +50,17 @@ angular.module('EnvironmentManager.compare').factory('comparableResources',
                 serverRoles: {}
               };
 
-              _.forEach(serverRoles, function(item, key) {
+              _.forEach(serverRoles, function (item, key) {
                 if (obj.serverRoles[item.serverRoleName] === undefined) {
                   obj.serverRoles[item.serverRoleName] = [];
                 }
 
                 var deployment = {
                   version: item.serviceVersion,
-                  slice: item.slice,
+                  slice: item.slice
                 };
                 obj.serverRoles[item.serverRoleName].push(deployment);
-                
+
                 if (_.find(obj.deployments, { version: item.serviceVersion }) === undefined) {
                   obj.deployments.push(deployment);
                 }
@@ -78,15 +76,15 @@ angular.module('EnvironmentManager.compare').factory('comparableResources',
 
           return results;
         });
-      },
+      }
     }, {
       key: 'loadbalancers',
       name: 'Load Balancers',
       keyName: 'Host Name',
       get: function (environments) {
-
         var environmentNames = environments.map(function (env) {
-          return env.EnvironmentName; });
+          return env.EnvironmentName;
+        });
 
         return $q.all(environmentNames.map(function (environmentName) {
           return accountMappingService.getAccountForEnvironment(environmentName);
@@ -128,15 +126,15 @@ angular.module('EnvironmentManager.compare').factory('comparableResources',
             return lb;
           });
         });
-      },
+      }
     }, {
       key: 'upstreams',
       name: 'Upstreams',
       keyName: 'Upstream',
       get: function (environments) {
-
         var environmentNames = environments.map(function (env) {
-          return env.EnvironmentName; });
+          return env.EnvironmentName;
+        });
 
         return $q.all(environmentNames.map(function (environmentName) {
           return accountMappingService.getAccountForEnvironment(environmentName);
@@ -171,6 +169,6 @@ angular.module('EnvironmentManager.compare').factory('comparableResources',
             return upstream;
           });
         });
-      },
+      }
     },];
   });

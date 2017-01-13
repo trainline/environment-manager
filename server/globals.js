@@ -1,22 +1,25 @@
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* eslint-disable */
 
-Array.prototype.distinct = function(keySelector) {
+'use strict';
+/**
+ * TODO: Please kill this file with murder. Twice.
+ */
 
-  var result = [];
-  var defaultSelector = (item) => { return item; };
-  var keySelector = keySelector || defaultSelector;
+Array.prototype.distinct = function (keySelector) {
+  let result = [];
+  let defaultSelector = item => item;
+  keySelector = keySelector || defaultSelector;
 
-  for(var i = 0; i < this.length; i++) {
-
-    var target = this[i];
-    var key    = keySelector(target);
-    var exists = result.some((source) => { return keySelector(source) === key; });
+  for (let i = 0; i < this.length; i++) {
+    let target = this[i];
+    let key = keySelector(target);
+    let exists = result.some(source => keySelector(source) === key);
 
     if (exists) continue;
     result.push(target);
-
-  };
+  }
 
   return result;
-
 };
 

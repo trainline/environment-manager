@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.operations').component('opsDeploymentsInstances', {
@@ -28,7 +29,7 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsInstanc
           instance.hoverTitle = {
             Healthy: 'Instance service discovery healthy',
             Error: 'Instance service discovery unhealthy',
-            Unknown: 'Unknown state of instance service discovery',
+            Unknown: 'Unknown state of instance service discovery'
           }[instance.OverallHealth];
         });
 
@@ -47,8 +48,8 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsInstanc
         resolve: {
           instance: function () {
             return instance;
-          },
-        },
+          }
+        }
       });
     };
 

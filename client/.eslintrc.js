@@ -4,20 +4,35 @@ module.exports = {
     es6: false,
   },
   globals: {
-    angular: false
+    angular: false,
+    _: false,
+    moment: false,
+    it: false,
+    expect: false,
+    beforeEach: false
   },
 
   extends: "airbnb-base/legacy",
   plugins: ['angular'],
 
   rules: {
-    "angular/di": ['error', 'array'],
     "indent": ['error', 2],
+    "func-names": ['off', 'never'],
+    "comma-dangle": ["error", {
+      "arrays": "never",
+      "objects": "never",
+      "imports": "ignore",
+      "exports": "ignore",
+      "functions": "ignore",
+    }],
+    "max-len": [1, 150, 2, { ignoreComments: true }],
     "linebreak-style": ['off'],
-    "quotes": ['error', 'double', { avoidEscape: false, allowTemplateLiterals: true }],
+    "quotes": ['error', 'single', { avoidEscape: false, allowTemplateLiterals: true }],
     "semi": ['error', 'always'],
     "no-var": 'off', // We don't use ES6
+    "vars-on-top": 'off',
+    "no-plusplus": 'off',
     "no-param-reassign": ['error', { props: false }],
-
+    "no-use-before-define": 'off'
   },
 };

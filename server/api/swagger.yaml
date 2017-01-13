@@ -133,7 +133,7 @@ paths:
     x-swagger-router-controller: asgController
     get:
       operationId: getAsgIps
-      summary: Get IPs associated with an ASG under the given account.
+      summary: Get IPs associated with an ASG in the given environment.
       tags:
         - ASG
       parameters:
@@ -199,7 +199,7 @@ paths:
     x-swagger-router-controller: asgController
     put:
       operationId: putAsgSize
-      summary: Resize an ASG under the given account.
+      summary: Resize an ASG in the given environment.
       tags:
         - ASG
       x-authorizer: asgs
@@ -233,7 +233,7 @@ paths:
     x-swagger-router-controller: asgController
     get:
       operationId: getAsgLaunchConfig
-      summary: Get the launch config associated with an ASG under the given account.
+      summary: Get the launch config associated with an ASG in the given environment.
       tags:
         - ASG
       x-authorizer: asgs  
@@ -253,7 +253,7 @@ paths:
             $ref: '#/definitions/AWSLaunchConfig'
     put:
       operationId: putAsgLaunchConfig
-      summary: Update the launch config associated with an ASG under the given account.
+      summary: Update the launch config associated with an ASG in the given environment.
       tags:
         - ASG
       x-authorizer: asgs
@@ -355,6 +355,10 @@ paths:
         - Deployment
       x-authorizer: deploy-authorizer
       parameters:
+        - name: dry_run
+          type: boolean
+          in: query
+          required: false
         - name: body
           in: body
           required: true
@@ -2606,7 +2610,6 @@ definitions:
   LBSetting:
     type: object
     required:
-      - AccountName
       - EnvironmentName
       - VHostName
       - Value
@@ -2688,8 +2691,8 @@ definitions:
   UpstreamConfig:
     type: object
     required:
-      - AccountName
       - key
+      - Value
     properties:
       AccountName:
         type: string
@@ -2699,6 +2702,8 @@ definitions:
         $ref: '#/definitions/UpstreamConfigValue'
   UpstreamConfigValue:
     type: object
+    required:
+      - EnvironmentName
     properties:
       EnvironmentName:
         type: string
@@ -2769,6 +2774,10 @@ definitions:
       PackageType:
         type: string
       SchemaVersion:
+        type: integer
+      BluePort:
+        type: integer
+      GreenPort:
         type: integer
   Deployment:
     type: object

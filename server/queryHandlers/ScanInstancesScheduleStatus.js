@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let resourceProvider = require('modules/resourceProvider');
@@ -9,22 +10,16 @@ let config = require('config');
 let scheduling = require('modules/scheduling');
 
 module.exports = function ScanInstancesScheduleStatusQueryHandler(query) {
-  return co(function*() {
-
+  return co(function* () {
     let instances = yield getInstances(query);
 
     let dateTime = query.dateTime ? query.dateTime : new Date();
-    let scheduledActions = scheduledActionsForInstances(instances, query.dateTime);
-
-    return scheduledActions;
-
-  });  
+    return scheduledActionsForInstances(instances, dateTime);
+  });
 };
 
 function getInstances(query) {
-
-  return Promise.all([getAllInstances(query), getAllEnvironments(query), getAllASGs(query)]).then(data => {
-
+  return Promise.all([getAllInstances(query), getAllEnvironments(query), getAllASGs(query)]).then((data) => {
     let allInstances = data[0];
     let environments = buildEnvironmentIndex(data[1]);
     let asgData = data[2];
@@ -32,11 +27,12 @@ function getInstances(query) {
 
     let instances = [];
 
-    allInstances.forEach(instance => {
+    allInstances.forEach((instance) => {
       let environmentName = getInstanceTagValue(instance, 'environment');
 
-      if (environmentName)
+      if (environmentName) {
         instance.Environment = findInIndex(environments, environmentName.toLowerCase());
+      }
 
       let asgName = getInstanceTagValue(instance, 'aws:autoscaling:groupName');
       instance.AutoScalingGroup = findInIndex(asgs, asgName);
@@ -45,14 +41,11 @@ function getInstances(query) {
     });
 
     return instances;
-
   });
-
 }
 
 function scheduledActionsForInstances(instances, dateTime) {
-
-  return instances.map(instance => {
+  return instances.map((instance) => {
     let action = scheduling.actionForInstance(instance, dateTime);
     let instanceVM = {
       id: instance.InstanceId,
@@ -61,47 +54,43 @@ function scheduledActionsForInstances(instances, dateTime) {
       environment: getInstanceTagValue(instance, 'environment')
     };
 
-    if (instance.AutoScalingGroup)
+    if (instance.AutoScalingGroup) {
       instanceVM.asg = instance.AutoScalingGroup.AutoScalingGroupName;
+    }
 
     return { action, instance: instanceVM };
   });
-
 }
 
 function buildEnvironmentIndex(environmentData) {
-
   let environments = {};
 
-  environmentData.forEach(env => {
+  environmentData.forEach((env) => {
     let environment = env.Value;
     environment.Name = env.EnvironmentName.toLowerCase();
     environments[environment.Name] = environment;
   });
 
   return environments;
-
 }
 
 function buildASGIndex(asgData) {
-
   let asgs = {};
 
-  asgData.forEach(asg => {
+  asgData.forEach((asg) => {
     asgs[asg.AutoScalingGroupName] = asg;
   });
 
   return asgs;
-
 }
 
 function findInIndex(map, name) {
-  if (name) return map[name];
+  return name ? map[name] : undefined;
 }
 
 function getInstanceTagValue(instance, tagName) {
-  let tag = _.first(instance.Tags.filter(tag => tag.Key.toLowerCase() == tagName.toLowerCase()));
-  if (tag) return tag.Value;
+  let tag = _.first(instance.Tags.filter(t => t.Key.toLowerCase() === tagName.toLowerCase()));
+  return tag ? tag.Value : undefined;
 }
 
 function getAllInstances(query) {

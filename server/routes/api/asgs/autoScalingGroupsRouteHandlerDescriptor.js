@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let send = require('modules/helpers/send');
@@ -7,20 +8,22 @@ let route = require('modules/helpers/route');
 let _ = require('lodash');
 
 function getPropertyByName(object, name) {
-  if (!object) return;
-  var lowerCaseName = name.toLowerCase();
+  if (!object) return null;
+  let lowerCaseName = name.toLowerCase();
 
-  for (var propertyName in object) {
-    if (lowerCaseName !== propertyName.toLowerCase()) continue;
+  for (let propertyName in object) {
+    if (lowerCaseName !== propertyName.toLowerCase()) continue; // eslint-disable-line no-continue
     return object[propertyName];
   }
+
+  return null;
 }
 
 module.exports = [
   route.get('/all/asgs')
   .withDocs({ description: 'Auto Scaling Group', verb: 'crossScan', tags: ['Auto Scaling Groups'] }).withPriority(10).do((request, response) => {
-    var query = {
-      name: 'ScanCrossAccountAutoScalingGroups',
+    let query = {
+      name: 'ScanCrossAccountAutoScalingGroups'
     };
 
     send.query(query, request, response);
@@ -28,12 +31,13 @@ module.exports = [
   route.get('/:account/asgs')
   .withDocs({ description: 'Auto Scaling Group', perAccount: true, verb: 'scan', tags: ['Auto Scaling Groups'] }).do((request, response, next) => {
     if (request.params.account === 'v1') {
-      return next();
+      next();
+      return;
     }
 
-    var query = {
+    let query = {
       name: 'ScanAutoScalingGroups',
-      accountName: request.params.account,
+      accountName: request.params.account
     };
 
     send.query(query, request, response);
@@ -42,13 +46,12 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   }).do((request, response, next) => {
-
-    var query = {
+    let query = {
       name: 'GetAutoScalingGroup',
       accountName: request.params.account,
-      autoScalingGroupName: request.params.name,
+      autoScalingGroupName: request.params.name
     };
 
     send.query(query, request, response);
@@ -57,12 +60,12 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   }).do((request, response) => {
-    var query = {
+    let query = {
       name: 'GetAutoScalingGroupSize',
       accountName: request.params.account,
-      autoScalingGroupName: request.params.name,
+      autoScalingGroupName: request.params.name
     };
 
     send.query(query, request, response);
@@ -71,12 +74,12 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   })
   .withAuthorizer(authorizer).whenRequest((url, value) => {
-    var min = getPropertyByName(value, 'Min');
-    var desired = getPropertyByName(value, 'Desired');
-    var max = getPropertyByName(value, 'Max');
+    let min = getPropertyByName(value, 'Min');
+    let desired = getPropertyByName(value, 'Desired');
+    let max = getPropertyByName(value, 'Max');
 
     if (_.isNil(min) && _.isNil(desired) && _.isNil(max)) {
       return new Error('Request body must contain at least one of the following fields: Min, Desired or Max.');
@@ -84,13 +87,13 @@ module.exports = [
 
     return null;
   }).do((request, response, next) => {
-    var command = {
+    let command = {
       name: 'SetAutoScalingGroupSize',
       accountName: request.params.account,
       autoScalingGroupName: request.params.name,
       autoScalingGroupMinSize: getPropertyByName(request.body, 'Min'),
       autoScalingGroupDesiredSize: getPropertyByName(request.body, 'Desired'),
-      autoScalingGroupMaxSize: getPropertyByName(request.body, 'Max'),
+      autoScalingGroupMaxSize: getPropertyByName(request.body, 'Max')
     };
 
     send.command(command, request, response);
@@ -99,12 +102,12 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   }).do((request, response) => {
-    var query = {
+    let query = {
       name: 'GetAutoScalingGroupScheduleStatus',
       accountName: request.params.account,
-      autoScalingGroupName: request.params.name,
+      autoScalingGroupName: request.params.name
     };
 
     send.query(query, request, response);
@@ -113,13 +116,13 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   }).do((request, response) => {
-    var query = {
+    let query = {
       name: 'GetAutoScalingGroupScheduleStatus',
       accountName: request.params.account,
       autoScalingGroupName: request.params.name,
-      date: request.params.date,
+      date: request.params.date
     };
 
     send.query(query, request, response);
@@ -128,24 +131,26 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   })
   .withAuthorizer(authorizer).whenRequest((url, value) => {
-    var imageId = getPropertyByName(value, 'ImageId');
+    let imageId = getPropertyByName(value, 'ImageId');
 
-    if (imageId === undefined)
+    if (imageId === undefined) {
       return new Error('Request body must contain "ImageId" field.');
+    }
 
-    if (imageId === '')
+    if (imageId === '') {
       return new Error('Provided ImageId must be not empty.');
+    }
 
     return null;
   }).do((request, response) => {
-    var command = {
+    let command = {
       name: 'SetLaunchConfigurationImageId',
       accountName: request.params.account,
       autoScalingGroupName: request.params.name,
-      imageId: getPropertyByName(request.body, 'ImageId'),
+      imageId: getPropertyByName(request.body, 'ImageId')
     };
 
     send.command(command, request, response);
@@ -154,24 +159,26 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   })
   .withAuthorizer(authorizer).whenRequest((url, value) => {
-    var instanceType = getPropertyByName(value, 'InstanceType');
+    let instanceType = getPropertyByName(value, 'InstanceType');
 
-    if (instanceType === undefined)
+    if (instanceType === undefined) {
       return new Error('Request body must contain "InstanceType" field.');
+    }
 
-    if (instanceType === '')
+    if (instanceType === '') {
       return new Error('Provided InstanceType must be not empty.');
+    }
 
     return null;
   }).do((request, response) => {
-    var command = {
+    let command = {
       name: 'SetLaunchConfigurationInstanceType',
       accountName: request.params.account,
       autoScalingGroupName: request.params.name,
-      instanceType: getPropertyByName(request.body, 'InstanceType'),
+      instanceType: getPropertyByName(request.body, 'InstanceType')
     };
 
     send.command(command, request, response);
@@ -181,23 +188,22 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   })
   .whenRequest((url, value) => {
-    var schedule = getPropertyByName(value, 'schedule');
+    let schedule = getPropertyByName(value, 'schedule');
 
     return schedule === undefined ? new Error('Request body must contain "Schedule" field in request body.') : null;
-
   }).do((request, response) => {
-    var schedule = getPropertyByName(request.body, 'Schedule');
-    var propagateToInstances = getPropertyByName(request.body, 'PropagateToInstances') ? true : false;
+    let schedule = getPropertyByName(request.body, 'Schedule');
+    let propagateToInstances = !!getPropertyByName(request.body, 'PropagateToInstances');
 
-    var command = {
+    let command = {
       name: 'SetAutoScalingGroupSchedule',
       accountName: request.params.account,
       autoScalingGroupName: request.params.name,
-      schedule: schedule,
-      propagateToInstances: propagateToInstances,
+      schedule,
+      propagateToInstances
     };
 
     send.command(command, request, response);
@@ -206,27 +212,24 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   })
   .withAuthorizer(authorizer)
   .whenRequest((url, value) => {
-
-    var instanceIds = getPropertyByName(value, 'instanceids');
+    let instanceIds = getPropertyByName(value, 'instanceids');
 
     if (_.isNil(instanceIds)) return new Error('Expected "InstanceIds" field in request body.');
     if (_.isEmpty(instanceIds)) return new Error('Expected "InstanceIds" field not to be empty.');
 
     return null;
-
   }).do((request, response) => {
+    let instanceIds = getPropertyByName(request.body, 'instanceids');
 
-    var instanceIds = getPropertyByName(request.body, 'instanceids');
-
-    var command = {
+    let command = {
       name: 'EnterAutoScalingGroupInstancesToStandby',
       accountName: request.params.account,
       autoScalingGroupName: request.params.name,
-      instanceIds: instanceIds,
+      instanceIds
     };
 
     send.command(command, request, response);
@@ -235,29 +238,26 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   })
   .withAuthorizer(authorizer)
   .whenRequest((url, value) => {
-
-    var instanceIds = getPropertyByName(value, 'instanceids');
+    let instanceIds = getPropertyByName(value, 'instanceids');
 
     if (_.isNil(instanceIds)) return new Error('Expected "InstanceIds" field in request body.');
     if (_.isEmpty(instanceIds)) return new Error('Expected "InstanceIds" field not to be empty.');
 
     return null;
-
   }).do((request, response) => {
+    let instanceIds = getPropertyByName(request.body, 'instanceids');
 
-    var instanceIds = getPropertyByName(request.body, 'instanceids');
-
-    var command = {
+    let command = {
       name: 'ExitAutoScalingGroupInstancesFromStandby',
       accountName: request.params.account,
       autoScalingGroupName: request.params.name,
-      instanceIds: instanceIds,
+      instanceIds
     };
 
     send.command(command, request, response);
-  }),
+  })
 ];

@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('DeploymentMapCreateController',
@@ -23,9 +24,8 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCrea
     }
 
     vm.ok = function () {
-
       if (vm.cloneExisting) {
-        var selectedDeploymentMap = _.find(vm.deploymentMaps, { DeploymentMapName: vm.deploymentMapNameToClone});
+        var selectedDeploymentMap = _.find(vm.deploymentMaps, { DeploymentMapName: vm.deploymentMapNameToClone });
         if (selectedDeploymentMap !== undefined) {
           vm.deploymentMap.Value.DeploymentTarget = angular.copy(selectedDeploymentMap.Value.DeploymentTarget);
         }

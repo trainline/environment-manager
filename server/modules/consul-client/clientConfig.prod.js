@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -25,8 +26,8 @@ function* getConsulClientOptions(parameters) {
     port: consul.Port,
     defaults: {
       dc: consul.DataCenter,
-      token,
-    },
+      token
+    }
   };
 
   options.promisify = parameters.promisify;

@@ -1,10 +1,10 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 // Manage specific owning cluster
 angular.module('EnvironmentManager.configuration').controller('ClusterController',
   function ($scope, $routeParams, $location, $q, $http, resources, cachedResources) {
-
     var RETURN_PATH = '/config/clusters';
     var userHasPermission;
 
@@ -18,15 +18,14 @@ angular.module('EnvironmentManager.configuration').controller('ClusterController
       SchemaVersion: 1,
       ShortName: '',
       ADMembershipGroup: '',
-      GroupEmailAddress: '',
+      GroupEmailAddress: ''
     };
 
     $scope.DefaultValue = configStructure;
     $scope.Cancel = navigateToList;
 
     function init() {
-
-      var cluster = $routeParams['cluster'];
+      var cluster = $routeParams.cluster;
       $scope.EditMode = !(cluster.toLowerCase() == 'new');
 
       var access = $scope.EditMode ? 'PUT' : 'POST';
@@ -36,12 +35,12 @@ angular.module('EnvironmentManager.configuration').controller('ClusterController
       $q.all([
         resources.config.clusters.all().then(function (clusters) {
           $scope.ClusterNames = _.map(clusters, 'ClusterName');
-        }),
+        })
       ]).then(function () {
         if ($scope.EditMode) readItem(cluster);
         $scope.Cluster.Value = $scope.DefaultValue;
       });
-    };
+    }
 
     $scope.canUser = function () {
       return userHasPermission;
@@ -63,12 +62,12 @@ angular.module('EnvironmentManager.configuration').controller('ClusterController
           url: '/api/v1/config/clusters',
           data: {
             ClusterName: clusterName,
-            Value: $scope.Cluster.Value,
+            Value: $scope.Cluster.Value
           },
           headers: { 'expected-version': $scope.Version }
         });
       }
-      
+
       promise.then(function () {
         cachedResources.config.clusters.flush();
         navigateToList();
@@ -86,7 +85,6 @@ angular.module('EnvironmentManager.configuration').controller('ClusterController
         $scope.Cluster.Value = data.Value;
         $scope.Version = data.Version;
       }, function () {
-
         $scope.DataFound = false;
       });
     }

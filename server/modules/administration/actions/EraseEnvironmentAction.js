@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -11,12 +12,12 @@ function EraseEnvironmentAction(environmentName) {
     return co(function* () {
       let erasedServicesKeys = yield keyValueStoreEraser.scanAndDelete({
         keyPrefix: `environments/${environmentName}/services/`,
-        condition: () => true,
+        condition: () => true
       });
 
       let erasedRolesKeys = yield keyValueStoreEraser.scanAndDelete({
         keyPrefix: `environments/${environmentName}/roles/`,
-        condition: () => true,
+        condition: () => true
       });
 
       return erasedServicesKeys.concat(erasedRolesKeys);

@@ -1,11 +1,11 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let deploymentsHelper = require('modules/queryHandlersUtil/deployments-helper');
 let GetNodeDeploymentLog = require('queryHandlers/deployments/GetNodeDeploymentLog');
 let co = require('co');
 let sender = require('modules/sender');
-let validUrl = require('valid-url');
 let Enums = require('Enums');
 let Environment = require('models/Environment');
 let s3PackageLocator = require('modules/s3PackageLocator');
@@ -23,7 +23,7 @@ function getDeployments(req, res, next) {
 
   deploymentsHelper.scan({
     since, environment, status, cluster
-  }).then((data) => res.json(data)).catch(next);
+  }).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -33,7 +33,7 @@ function getDeploymentById(req, res, next) {
   const key = req.swagger.params.id.value;
 
   return deploymentsHelper.get({ key })
-    .then((data) => res.json(data)).catch(next);
+    .then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -52,10 +52,10 @@ function getDeploymentLog(req, res, next) {
       accountName,
       environment,
       deploymentId: key,
-      instanceId,
+      instanceId
     };
 
-    return GetNodeDeploymentLog(query).then(data => {
+    return GetNodeDeploymentLog(query).then((data) => {
       res.send(data.replace(/\n/g, '<br />'));
     });
   }).catch(next);
@@ -64,67 +64,38 @@ function getDeploymentLog(req, res, next) {
 /**
  * POST /deployments
  */
-function* postDeployment(req, res, next) {
-  // These are required
+function postDeployment(req, res, next) {
   const body = req.swagger.params.body.value;
   const environmentName = body.environment;
   const serviceName = body.service;
   const serviceVersion = body.version;
-  let packagePath = body.packageLocation;
-
-  if (!packagePath) {
-    packagePath = yield s3PackageLocator.findDownloadUrl({
-      environment: environmentName,
-      service: serviceName,
-      version: serviceVersion,
-    });
-  }
-
-  if (!packagePath) {
-    let error = {
-      title: 'The deployment package was not found.',
-      detail: 'Upload the package then try again or specify the location of the package in this request.',
-      status: '400',
-    };
-    res.status(400).json({ errors: [error] });
-    return;
-  }
-
-  // These are optional
+  const packagePath = body.packageLocation;
   const mode = body.mode || 'overwrite';
   const serviceSlice = body.slice || 'none';
-  const serverRoleName = req.serverRoleName; // This is attached in authorizer, TODO(filip): extract to new middleware
-
-  let packageType = validUrl.isUri(packagePath) ? Enums.SourcePackageType.CodeDeployRevision : Enums.SourcePackageType.DeploymentMap;
-
-  let environment = yield Environment.getByName(environmentName);
-  let environmentType = yield environment.getEnvironmentType();
-  let accountName = environmentType.AWSAccountName;
-
-  // Check for input errors
-  if (mode === 'overwrite' && serviceSlice !== undefined && serviceSlice !== 'none') {
-    let error = `Slice can be set only to 'none' in overwrite mode.`;
-    res.send({ error });
-    res.status(400);
-    return;
-  }
+  const serverRoleName = req.serverRoleName;
+  const isDryRun = req.swagger.params.dry_run.value;
 
   let command = {
     name: 'DeployService',
-    accountName,
     environmentName,
     serviceName,
     serviceVersion,
     serviceSlice,
-    packageType,
+    mode,
     packagePath,
     serverRoleName,
+    isDryRun
   };
 
   sender.sendCommand({ command, user: req.user }).then((deployment) => {
-    res.status(201);
-    res.location(`/api/${deployment.accountName}/deployments/history/${deployment.id}`);
-    res.json(deployment);
+    if (deployment.isDryRun) {
+      res.status(200);
+      res.json(deployment);
+    } else {
+      res.status(202);
+      res.location(`/api/${deployment.accountName}/deployments/history/${deployment.id}`);
+      res.json(deployment);
+    }
   }).catch(next);
 }
 
@@ -132,28 +103,28 @@ function* postDeployment(req, res, next) {
  * PATCH /deployments/{key}
  */
 function patchDeployment(req, res, next) {
-  return co(function *() {
+  return co(function* () {
     const body = req.swagger.params.body.value;
     const key = req.swagger.params.id.value;
     let status = body.Status;
     let action = body.Action;
-    
+
     if (status !== undefined && status !== Enums.DEPLOYMENT_STATUS.Cancelled) {
       let error = `You can only PATCH deployment with { Status: '${Enums.DEPLOYMENT_STATUS.Cancelled}' } to cancel it.`;
       res.send({ error });
       res.status(400);
-      return;
+      return null;
     }
 
     if (status === Enums.DEPLOYMENT_STATUS.Cancelled) {
-      let deployment = yield deploymentsHelper.get({ key })
+      let deployment = yield deploymentsHelper.get({ key });
       if (deployment.Value.Status !== Enums.DEPLOYMENT_STATUS.InProgress) {
-        throw new Error(`You can only cancel deployments that are In Progress`);
+        throw new Error('You can only cancel deployments that are In Progress');
       }
 
       let newStatus = {
         name: Enums.DEPLOYMENT_STATUS.Cancelled,
-        reason: `The deployment was cancelled manually by user: ${req.user.getName()}`,
+        reason: `The deployment was cancelled manually by user: ${req.user.getName()}`
       };
       let deploymentStatuses = yield activeDeploymentsStatusProvider.getActiveDeploymentsFullStatus([deployment]);
       let deploymentStatus = deploymentStatuses[0];
@@ -169,13 +140,14 @@ function patchDeployment(req, res, next) {
         throw new Error(`Invalid Action: "${action}", only "Install" and "Ignore" are allowed.`);
       }
       return switchDeployment(key, enable, req.user);
+    } else {
+      return null;
     }
-  }).then((data) => res.json(data)).catch(next);
+  }).then(data => res.json(data)).catch(next);
 }
 
 function switchDeployment(key, enable, user) {
   return deploymentsHelper.get({ key }).then((deployment) => {
-
     // Old deployments don't have 'ServerRoleName' field
     if (deployment.Value.ServerRoleName === undefined) {
       throw new Error('This operation is unsupported for Deployments started before 09.2016. If you would like to use this feature, please redeploy your service, or contact Platform Dev team.');
@@ -197,6 +169,6 @@ module.exports = {
   getDeployments,
   getDeploymentById,
   getDeploymentLog,
-  postDeployment: co.wrap(postDeployment),
+  postDeployment,
   patchDeployment
 };

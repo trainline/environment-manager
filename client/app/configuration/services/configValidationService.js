@@ -1,9 +1,9 @@
-﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.configuration').factory('configValidation',
   function ($q, resources, cachedResources) {
-
     var TYPE_ENV = 'Environment';
     var TYPE_SERVICE = 'Service';
     var TYPE_DEP_MAP = 'DeploymentMap';
@@ -21,7 +21,6 @@ angular.module('EnvironmentManager.configuration').factory('configValidation',
     }
 
     function ConfigValidator() {
-
       var self = this;
 
       self.ValidateEnvironmentSetupCache = function (envName) {
@@ -32,7 +31,7 @@ angular.module('EnvironmentManager.configuration').factory('configValidation',
           cachedResources.config.services.all(),
           cachedResources.config.lbUpstream.all(),
           cachedResources.config.deploymentMaps.all(),
-          cachedResources.config.lbSettings.all(),
+          cachedResources.config.lbSettings.all()
         ]).then(function () {
           self.ValidateEnvironment(envName).then(function (node) {
             deferred.resolve(node);
@@ -46,11 +45,11 @@ angular.module('EnvironmentManager.configuration').factory('configValidation',
       self.ValidateEnvironment = function (envName) {
         var deferred = $q.defer();
         BuildNode(TYPE_ENV, envName, 'EnvironmentName', 'environments', getEnvirommentDelegates, null).then(function (node) {
-
           // No link directly from Environments to LBSettings so load LB nodes and add to tree
           cachedResources.config.lbSettings.all().then(function (lbSettings) {
             var settingsForEnv = lbSettings.filter(function (lb) {
-              return lb.EnvironmentName == envName; });
+              return lb.EnvironmentName == envName;
+            });
 
             var delegates = [];
             settingsForEnv.forEach(function (lb) {
@@ -59,12 +58,12 @@ angular.module('EnvironmentManager.configuration').factory('configValidation',
 
             $q.all(delegates).then(function () {
               node.Valid = node.Children.every(function (childNode) {
-                return childNode.Valid; });
+                return childNode.Valid;
+              });
 
               deferred.resolve(node);
             });
           });
-
         });
 
         return deferred.promise;
@@ -114,11 +113,9 @@ angular.module('EnvironmentManager.configuration').factory('configValidation',
         var deferred = $q.defer();
         var node = new Node(nodeType, entityName);
         cachedResources.config[cacheResourceName].all().then(function (data) {
-
           var entity = cachedResources.config[cacheResourceName].getByName(entityName, nameAttrib, data);
           if (entity) {
             $q.all(getDelegatesFunction(entity, node)).then(function success() {
-
               // De-dupe children to get unique dependencies
               var uniqueNames = [];
               node.Children = node.Children.filter(function (childNode) {
@@ -129,13 +126,13 @@ angular.module('EnvironmentManager.configuration').factory('configValidation',
               });
 
               node.Valid = node.Children.every(function (childNode) {
-                return childNode.Valid; });
+                return childNode.Valid;
+              });
 
               if (!node.Valid) {
                 node.Error = 'Config missing dependencies';
               }
             }, function error(err) {
-
               node.Valid = false;
               node.Error = 'Error processing dependencies';
             }).finally(function () {
@@ -151,12 +148,10 @@ angular.module('EnvironmentManager.configuration').factory('configValidation',
             if (parentNode) parentNode.Children.push(node);
             deferred.resolve(node);
           }
-
         });
 
         return deferred.promise;
       }
-
     }
 
     return new ConfigValidator();

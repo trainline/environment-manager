@@ -1,9 +1,9 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.common').factory('modal',
   function ($uibModal, $http) {
-
     // configuration = {
     //    title : 'Window Title',
     //    message : 'Are you sure',
@@ -12,7 +12,7 @@ angular.module('EnvironmentManager.common').factory('modal',
     //    details: ['This operation cannot be reversed']
     //    infomode: false // true to hide cancel button for info only messages
     // }
-    
+
     return {
       confirmation: function (configuration) {
         var parameters = {
@@ -20,7 +20,7 @@ angular.module('EnvironmentManager.common').factory('modal',
           controller: 'CommonModalController as vm',
           resolve: {
             configuration: configuration
-          },
+          }
         };
 
         return $uibModal.open(parameters).result;
@@ -30,10 +30,10 @@ angular.module('EnvironmentManager.common').factory('modal',
         return this.information({
           title: title,
           message: errorMessage,
-          severity: 'Danger',
+          severity: 'Danger'
         });
       },
-      
+
       information: function (configuration) {
         configuration.infomode = true;
         configuration.action = 'OK';

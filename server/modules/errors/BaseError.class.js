@@ -1,13 +1,14 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-var stringifyError = function (error, detailed) {
-  return detailed ? error.stack + "/n" : `${error.name}: ${error.message}`;
+let stringifyError = function (error, detailed) {
+  return detailed ? `${error.stack}/n` : `${error.name}: ${error.message}`;
 };
 
 class BaseError extends Error {
-  
-  constructor (message, innerError) {
+
+  constructor(message, innerError) {
     super();
     this.name = this.constructor.name;
     this.message = message;
@@ -15,7 +16,7 @@ class BaseError extends Error {
     Error.captureStackTrace(this, this.constructor);
   }
 
-  toString (detailed) {
+  toString(detailed) {
     let errors = [];
     let currentError = this;
 
@@ -23,10 +24,11 @@ class BaseError extends Error {
       errors.push(currentError);
       currentError = currentError.innerError;
     }
-    return errors.map(error => stringifyError(error, detailed)).join("/n");
+    return errors.map(error => stringifyError(error, detailed)).join('/n');
   }
 }
 
+// eslint-disable-next-line no-extend-native
 Error.prototype.toString = function (detailed) {
   return stringifyError(this, detailed);
 };

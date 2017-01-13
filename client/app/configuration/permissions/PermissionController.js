@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('PermissionController',
@@ -8,8 +9,7 @@ angular.module('EnvironmentManager.configuration').controller('PermissionControl
     var RETURN_PATH = '/config/permissions';
 
     function init() {
-
-      var name = $routeParams['member'];
+      var name = $routeParams.member;
       vm.editMode = name.toLowerCase() !== 'new';
 
       var access = vm.editMode ? 'PUT' : 'POST';
@@ -21,7 +21,6 @@ angular.module('EnvironmentManager.configuration').controller('PermissionControl
       } else {
         vm.member = {};
       }
-
     }
 
     $scope.validateJson = permissionsValidation;
@@ -44,13 +43,13 @@ angular.module('EnvironmentManager.configuration').controller('PermissionControl
       } else {
         data = vm.member;
       }
-      
+
       $http({
         method: saveMethod,
         url: url,
         data: data,
         headers: { 'expected-version': vm.version }
-      }).then(function() {
+      }).then(function () {
         navigateToList();
       });
     };
@@ -72,5 +71,4 @@ angular.module('EnvironmentManager.configuration').controller('PermissionControl
     }
 
     init();
-
   });

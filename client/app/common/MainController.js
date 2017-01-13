@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.common').controller('MainController',
@@ -60,7 +61,6 @@ angular.module('EnvironmentManager.common').controller('MainController',
     // Validates JSON object (value) contains only expected attributes
     // TODO: remove once no longer editing JSON in UI?
     $scope.ValidateFields = function (value, mandatoryFields, optionalFields, pathPrefix) {
-
       var errors = [];
 
       pathPrefix = (typeof pathPrefix === 'undefined') ? '' : pathPrefix + '/';
@@ -114,10 +114,10 @@ angular.module('EnvironmentManager.common').controller('MainController',
     };
 
     function missingJSONValue(value) {
-      if (typeof value == 'undefined') return true;
+      if (typeof value === 'undefined') return true;
       if (value == null) return false; // nulls allowed
       if (value === false || value === true) return false;
-      return !(!!value);
+      return !(value);
     }
 
     $scope.ShowSchemaHelp = function () {
@@ -127,7 +127,7 @@ angular.module('EnvironmentManager.common').controller('MainController',
 
     $rootScope.$on('error', function (event, response) {
       var errorMessage;
-      var title = 'Error'
+      var title = 'Error';
       var errors = _.get(response, ['data', 'errors']);
       if (_.isString(response.data)) {
         errorMessage = response.data;
@@ -138,22 +138,26 @@ angular.module('EnvironmentManager.common').controller('MainController',
           errorMessage = errors[0].detail;
         } else {
           title = 'Errors';
-          errorMessage = _.join(_.map(errors, function (e) { return "<h2>" + e.title + "</h2><p>" + e.detail; }), "<hr>");
+          errorMessage = _.join(_.map(errors, function (e) { return '<h2>' + e.title + '</h2><p>' + e.detail; }), '<hr>');
         }
       } else {
         errorMessage = response.data.error;
+      }
+
+      if (response.data.details) {
+        errorMessage += '<hr>' + angular.toJson(response.data.details);
       }
 
       modal.error(title, errorMessage);
     });
 
     $rootScope.$on('cookie-expired', function () {
-      function navigateToLogin() { location.reload(); };
+      function navigateToLogin() { location.reload(); }
 
       modal.information({
         title: 'Your session has expired',
         message: 'You were signed out of your account. Please press [OK] to sign in to Environment Manager again.',
-        severity: 'Info',
+        severity: 'Info'
       }).then(navigateToLogin, navigateToLogin);
     });
 

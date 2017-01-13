@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
@@ -6,11 +7,8 @@ let _ = require('lodash');
 let OperationResult = require('../utils/operationResult');
 let resourceProvider = require('modules/resourceProvider');
 let InvalidOperationError = require('modules/errors/InvalidOperationError.class');
-let sender = new require('modules/sender');
 
 function* handler(command) {
-  const result = new OperationResult();
-
   // Validation
   let min = command.autoScalingGroupMinSize;
   let desired = command.autoScalingGroupDesiredSize;
@@ -54,7 +52,7 @@ function* handler(command) {
     name: command.autoScalingGroupName,
     minSize: command.autoScalingGroupMinSize,
     desiredSize: command.autoScalingGroupDesiredSize,
-    maxSize: command.autoScalingGroupMaxSize,
+    maxSize: command.autoScalingGroupMaxSize
   };
 
   return resource.put(parameters);

@@ -31,7 +31,7 @@ module.exports = {
     Error: 'Error',
     NoData: 'NoData',
     Unknown: 'Unknown',
-    Missing: 'Missing',
+    Missing: 'Missing'
   },
 
   ASGLifecycleState: {

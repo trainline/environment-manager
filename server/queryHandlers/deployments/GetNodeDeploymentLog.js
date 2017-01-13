@@ -1,4 +1,5 @@
-﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let S3GetObjectRequest = require('modules/S3GetObjectRequest');
@@ -11,11 +12,11 @@ function getNode({ deploymentId, instanceId, accountName, environment }) {
     key: `deployments/${deploymentId}/nodes/${instanceId}`,
     accountName,
     environment,
-    recurse: false,
+    recurse: false
   };
 
   return sender.sendQuery({ query }).then((node) => {
-    var s3Details = parseBucketAndPathFromS3Url(node.value.Log);
+    let s3Details = parseBucketAndPathFromS3Url(node.value.Log);
     return fetchS3Object(accountName, s3Details);
   }, (error) => {
     if (error.message.match(/Key.*has not been found/)) {
@@ -28,7 +29,7 @@ function fetchS3Object(account, s3Details) {
   return amazonClientFactory.createS3Client(account).then((client) => {
     let s3Request = new S3GetObjectRequest(client, s3Details);
     return s3Request.execute()
-      .then((result) => result.Body.toString());
+      .then(result => result.Body.toString());
   });
 }
 
@@ -39,8 +40,10 @@ function parseBucketAndPathFromS3Url(url) {
   if (matches) {
     return {
       bucketName: matches[1],
-      objectPath: matches[2],
+      objectPath: matches[2]
     };
+  } else {
+    return null;
   }
 }
 
