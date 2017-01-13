@@ -39,7 +39,7 @@ function getCodeDeploySpecialEntries(deploymentMap, options) {
   output.push({ path: 'appspec.yml', content: getAppSpec() });
   output.push({ path: 'ScriptArguments.ps1',
     content: getScriptArguments({
-      deploymentMap,
+      deploymentMap
     }) });
 
   co(function* () {
@@ -96,5 +96,5 @@ hooks:
 
 module.exports = {
   getCodeDeployEntries,
-  getCodeDeployFileName,
+  getCodeDeployFileName
 };

@@ -19,8 +19,8 @@ module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
     properties: {
       accountName: { type: String, empty: false },
       autoScalingGroupName: { type: String, empty: false },
-      propagateToInstances: { type: Boolean },
-    },
+      propagateToInstances: { type: Boolean }
+    }
   });
 
   return co(function* () {
@@ -46,7 +46,7 @@ module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
 
     let result = {
       ChangedAutoScalingGroups: undefined,
-      ChangedInstances: undefined,
+      ChangedInstances: undefined
     };
 
     result.ChangedAutoScalingGroups = yield setAutoScalingGroupSchedule(
@@ -86,7 +86,7 @@ function setAutoScalingGroupScheduleTag(client, autoScalingGroupName, schedule, 
   let parameters = {
     name: autoScalingGroupName,
     tagKey: 'Schedule',
-    tagValue: schedule,
+    tagValue: schedule
   };
 
   return client.setTag(parameters);
@@ -106,7 +106,7 @@ function setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, newSch
         MinSize: action.MinSize,
         MaxSize: action.MaxSize,
         DesiredCapacity: action.DesiredCapacity,
-        Recurrence: action.Recurrence,
+        Recurrence: action.Recurrence
       };
       return client.createScheduledAction(namedAction);
     });
@@ -115,7 +115,7 @@ function setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, newSch
 
 function getScheduledActions(client, autoScalingGroupName) {
   let parameters = {
-    AutoScalingGroupName: autoScalingGroupName,
+    AutoScalingGroupName: autoScalingGroupName
   };
   return client.describeScheduledActions(parameters);
 }
@@ -123,7 +123,7 @@ function getScheduledActions(client, autoScalingGroupName) {
 function deleteScheduledAction(client, action) {
   let parameters = {
     AutoScalingGroupName: action.AutoScalingGroupName,
-    ScheduledActionName: action.ScheduledActionName,
+    ScheduledActionName: action.ScheduledActionName
   };
   return client.deleteScheduledAction(parameters);
 }
@@ -134,7 +134,7 @@ function setEC2InstancesScheduleTag(instanceIds, schedule, accountName) {
     let parameters = {
       instanceIds,
       tagKey: 'Schedule',
-      tagValue: schedule,
+      tagValue: schedule
     };
 
     return client.setTag(parameters).then(() => instanceIds);

@@ -25,5 +25,5 @@ module.exports = {
         res.status(401);
         res.send(error.message);
       });
-  },
+  }
 };

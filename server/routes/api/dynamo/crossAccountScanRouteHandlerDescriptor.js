@@ -34,7 +34,7 @@ module.exports = resourceDescriptorProvider
         let query = {
           name: 'ScanCrossAccountDynamoResources',
           resource: resource.name,
-          filter: utilities.extractQuery(request),
+          filter: utilities.extractQuery(request)
         };
 
         send.query(query, request, response);

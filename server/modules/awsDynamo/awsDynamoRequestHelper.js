@@ -84,5 +84,5 @@ module.exports = {
   addFilterExpression: addFilterExpressionToRequest,
   addConditionExpression: addConditionExpressionToRequest,
   addUpdateExpression: addUpdateExpressionToRequest,
-  addResultsLimit,
+  addResultsLimit
 };

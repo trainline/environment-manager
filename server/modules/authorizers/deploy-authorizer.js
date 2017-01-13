@@ -49,7 +49,7 @@ module.exports = {
         resource: request.url.replace(/\/+$/, ''),
         access: request.method,
         clusters: [],
-        environmentTypes: [],
+        environmentTypes: []
       };
       requiredPermissions.push(requiredPermission);
 
@@ -63,7 +63,7 @@ module.exports = {
           if (isSecureServerRole(configuration)) {
             requiredPermissions.push({
               resource: '/permissions/securityzones/secure',
-              access: 'POST',
+              access: 'POST'
             });
           }
 
@@ -78,6 +78,6 @@ module.exports = {
   docs: {
     requiresClusterPermissions: true,
     requiresEnvironmentTypePermissions: true,
-    requiresSecurityZonePermissions: true,
-  },
+    requiresSecurityZonePermissions: true
+  }
 };

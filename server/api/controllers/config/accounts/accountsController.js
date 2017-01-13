@@ -50,5 +50,5 @@ module.exports = {
   getAccountsConfig,
   postAccountsConfig,
   putAccountConfigByName,
-  deleteAccountConfigByName,
+  deleteAccountConfigByName
 };

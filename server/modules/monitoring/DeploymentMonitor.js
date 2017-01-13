@@ -40,7 +40,7 @@ module.exports = {
 
       return activeDeploymentsStatus.length;
     });
-  },
+  }
 };
 
 function monitorActiveDeploymentStatus(deploymentStatus) {
@@ -53,7 +53,7 @@ function monitorActiveDeploymentStatus(deploymentStatus) {
 
       let newStatus = {
         name: Enums.DEPLOYMENT_STATUS.Failed,
-        reason: deploymentStatus.error,
+        reason: deploymentStatus.error
       };
       deploymentLogger.updateStatus(deploymentStatus, newStatus);
       return;
@@ -65,7 +65,7 @@ function monitorActiveDeploymentStatus(deploymentStatus) {
     if (isOverallDeploymentTimedOut(deploymentStatus.startTime)) {
       let newStatus = {
         name: Enums.DEPLOYMENT_STATUS.Failed,
-        reason: `Deployment failed because exceeded overall timeout of ${DEFAULT_INFRASTRUCTURE_PROVISIONING_TIMEOUT}`,
+        reason: `Deployment failed because exceeded overall timeout of ${DEFAULT_INFRASTRUCTURE_PROVISIONING_TIMEOUT}`
       };
       deploymentLogger.updateStatus(deploymentStatus, newStatus);
       return;
@@ -108,7 +108,7 @@ function detectNodesDeploymentStatus(nodes) {
     // Deployment succeeded on every node.
     return {
       name: Enums.DEPLOYMENT_STATUS.Success,
-      reason: 'Deployed all nodes successfully',
+      reason: 'Deployed all nodes successfully'
     };
   }
 
@@ -117,7 +117,7 @@ function detectNodesDeploymentStatus(nodes) {
     // Deployment completed on every node but did not succeeded on every node.
     return {
       name: Enums.DEPLOYMENT_STATUS.Failed,
-      reason: `Deployment failed: deployed ${succeededLength}/${nodes.length} nodes`,
+      reason: `Deployment failed: deployed ${succeededLength}/${nodes.length} nodes`
     };
   }
 

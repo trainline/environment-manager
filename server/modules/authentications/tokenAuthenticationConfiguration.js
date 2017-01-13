@@ -12,7 +12,7 @@ function loadConfiguration() {
   assert(localConfig.authentication.tokenDuration, 'missing \'authentication.tokenDuration\' field in configuration');
 
   return {
-    tokenDuration: localConfig.authentication.tokenDuration,
+    tokenDuration: localConfig.authentication.tokenDuration
   };
 }
 
@@ -20,5 +20,5 @@ module.exports = {
   getTokenDuration: () => {
     let configuration = loadConfiguration();
     return configuration.tokenDuration;
-  },
+  }
 };

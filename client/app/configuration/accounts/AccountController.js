@@ -1,10 +1,11 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('AccountController',
   function ($rootScope, $location, $routeParams, $http, cachedResources) {
     var vm = this;
-    var accountName = $routeParams['accountName'];
+    var accountName = $routeParams.accountName;
     var awsAccounts = cachedResources.config.accounts;
 
     function findAccount(accounts) {
@@ -19,13 +20,13 @@ angular.module('EnvironmentManager.configuration').controller('AccountController
         vm.awsAccountName = account.AccountName;
         vm.awsAccountNumber = account.AccountNumber;
         vm.isMaster = account.IsMaster;
-        vm.roleName = !account.IsMaster ? account.RoleArn.substr(31) : ''; //ARN format makes string length fixed
+        vm.roleName = !account.IsMaster ? account.RoleArn.substr(31) : ''; // ARN format makes string length fixed
         vm.includeAMIs = account.IncludeAMIs;
       }
     }
 
     vm.save = function (form) {
-      if(validate(form)) {
+      if (validate(form)) {
         var isMaster = !!vm.isMaster;
         var accountNumber = +vm.awsAccountNumber;
         var includeAMIs = vm.includeAMIs;
@@ -38,9 +39,9 @@ angular.module('EnvironmentManager.configuration').controller('AccountController
           Impersonate: !isMaster,
           IncludeAMIs: includeAMIs
         };
-        
+
         if (!isMaster) {
-          newAccount.RoleArn = 'arn:aws:iam::' + accountNumber + ':role/' + vm.roleName
+          newAccount.RoleArn = 'arn:aws:iam::' + accountNumber + ':role/' + vm.roleName;
         } else {
           // Our dynamo resources don't support deleting properties in updates.
           // This is the next best thing.
@@ -54,20 +55,20 @@ angular.module('EnvironmentManager.configuration').controller('AccountController
           promise = $http.post('/api/v1/config/accounts', newAccount);
         }
 
-        promise.then(function() {
+        promise.then(function () {
           awsAccounts.flush();
           $location.path('/config/accounts');
-        }).catch(function(error) {
-          $rootScope.$emit('error', error)
+        }).catch(function (error) {
+          $rootScope.$emit('error', error);
         });
       }
     };
 
-    vm.cancel = function() {
+    vm.cancel = function () {
       $location.path('/config/accounts');
     };
 
-    function validate(form){
+    function validate(form) {
       form.awsAccountName.$dirty = true;
       form.awsAccountNumber.$dirty = true;
       return !form.awsAccountName.$invalid && !form.awsAccountNumber.$invalid;

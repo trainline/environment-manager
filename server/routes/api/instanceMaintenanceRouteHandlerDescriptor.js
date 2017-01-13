@@ -15,7 +15,7 @@ module.exports =
   .withDocs({
     description: 'Instance',
     verb: 'scan',
-    tags: ['Instances'],
+    tags: ['Instances']
   })
   .do((request, response) => {
     let promise = co(function* () {
@@ -31,8 +31,8 @@ module.exports =
         name: 'ScanInstances',
         accountName,
         filter: {
-          'instance-id': instanceId,
-        },
+          'instance-id': instanceId
+        }
       };
 
       let instances = yield sender.sendQuery({ query });
@@ -47,7 +47,7 @@ module.exports =
         name,
         instance,
         accountName,
-        enable,
+        enable
       };
 
       return sender.sendCommand({ command, user }).then(() => {

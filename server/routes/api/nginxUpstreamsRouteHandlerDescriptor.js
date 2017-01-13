@@ -11,7 +11,7 @@ module.exports =
   .do((request, response) => {
     let query = {
       name: 'ScanNginxUpstreams',
-      instanceDomainName: request.params.fqdn,
+      instanceDomainName: request.params.fqdn
     };
 
     send.query(query, request, response);

@@ -81,14 +81,14 @@ function logRequestAndRequirements(request, requiredPermissions, usersPermission
   logger.info({
     method: request.method,
     url: request.url,
-    user: request.user.getName(),
+    user: request.user.getName()
   }, `Authorizing ${request.method} ${request.url} request`);
 
   if (requiredPermissions) {
     logger.info({
       requiredPermissions,
       usersPermissions,
-      user: request.user.getName(),
+      user: request.user.getName()
     }, `Authorizing ${request.user.getName()} user`);
   }
 }

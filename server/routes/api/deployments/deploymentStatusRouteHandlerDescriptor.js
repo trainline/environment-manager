@@ -14,6 +14,6 @@ module.exports = route.get('/:account/deployments/:key')
 
     return deployments.get({
       key: request.params.key,
-      account: request.params.account,
+      account: request.params.account
     }).then(value => callback(null, value), err => callback(err));
   });

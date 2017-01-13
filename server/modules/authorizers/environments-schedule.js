@@ -16,7 +16,7 @@ function getCurrentEnvironment(name, user) {
     name: 'GetDynamoResource',
     key: name,
     resource: 'config/environments',
-    accountName: masterAccountName,
+    accountName: masterAccountName
   };
 
   return sender.sendQuery({ query, user });
@@ -25,7 +25,7 @@ function getCurrentEnvironment(name, user) {
 function* getRules(request) {
   let requiredPermission = {
     resource: request.url.replace(/\/+$/, ''),
-    access: request.method,
+    access: request.method
   };
 
   // Need to check 'name' because of swagger
@@ -50,6 +50,6 @@ module.exports = {
   getRules: co.wrap(getRules),
   docs: {
     requiresClusterPermissions: true,
-    requiresEnvironmentTypePermissions: true,
-  },
+    requiresEnvironmentTypePermissions: true
+  }
 };

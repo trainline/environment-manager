@@ -101,7 +101,7 @@ function putEnvironmentSchedule(req, res, next) {
     key,
     item,
     expectedVersion: req.swagger.params['expected-version'].value,
-    accountName: masterAccountName,
+    accountName: masterAccountName
   };
 
   sender.sendCommand({ command, user }).then(data => res.json(data)).catch(next);
@@ -126,5 +126,5 @@ module.exports = {
   getEnvironmentScheduleStatus,
   putEnvironmentSchedule,
   getEnvironmentSchedule,
-  isEnvironmentProtectedFromAction,
+  isEnvironmentProtectedFromAction
 };

@@ -28,10 +28,10 @@ module.exports = function SetLaunchConfiguration(command) {
             InstanceProfileName: { type: String, empty: true },
             Volumes: { type: Array, empty: true },
             // KeyName: { type: String, empty: true },
-            SecurityGroups: { type: Array, empty: true },
-          },
-        },
-      },
+            SecurityGroups: { type: Array, empty: true }
+          }
+        }
+      }
     });
 
     let data = command.data;
@@ -58,7 +58,7 @@ module.exports = function SetLaunchConfiguration(command) {
     if (data.SecurityGroups !== undefined) {
       let securityGroupsNamesAndReasons = _.map(data.SecurityGroups, name => ({
         name,
-        reason: 'It was set by user in LaunchConfig form',
+        reason: 'It was set by user in LaunchConfig form'
       }));
       let securityGroups = yield securityGroupsProvider.getFromSecurityGroupNames(command.accountName, vpcId, securityGroupsNamesAndReasons, logger);
       updated.SecurityGroups = _.map(securityGroups, 'GroupId');
@@ -93,7 +93,7 @@ function getInstanceProfileByName(accountName, instanceProfileName) {
   let query = {
     name: 'GetInstanceProfile',
     accountName,
-    instanceProfileName,
+    instanceProfileName
   };
 
   return sender.sendQuery({ query });

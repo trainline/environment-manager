@@ -7,8 +7,8 @@ function createRequest(parameters) {
 
   let request = {
     Filters: [
-      { Name: 'vpc-id', Values: [parameters.vpcId] },
-    ],
+      { Name: 'vpc-id', Values: [parameters.vpcId] }
+    ]
   };
 
   if (parameters.groupIds) {

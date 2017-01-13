@@ -9,8 +9,8 @@ module.exports = function GetTopicQueryHandler(query) {
   assertContract(query, 'query', {
     properties: {
       accountName: { type: String, empty: false },
-      topicName: { type: String, empty: false },
-    },
+      topicName: { type: String, empty: false }
+    }
   });
 
   return snsTopicClientFactory

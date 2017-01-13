@@ -14,7 +14,7 @@ module.exports = route.get('/:account/deployments/:environment/:deploymentId/nod
       accountName: request.params.account,
       environment: request.params.environment,
       deploymentId: request.params.deploymentId,
-      instanceId: request.params.node,
+      instanceId: request.params.node
     };
 
     send.query(query, request, response);

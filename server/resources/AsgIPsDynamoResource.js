@@ -13,6 +13,6 @@ module.exports = {
   editable: true,
   docs: {
     description: 'Auto Scaling Group IPs',
-    tags: ['Auto Scaling Groups'],
-  },
+    tags: ['Auto Scaling Groups']
+  }
 };

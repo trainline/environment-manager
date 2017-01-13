@@ -134,7 +134,7 @@ function deleteAsg(req, res, next) {
       .then(asg => asg.deleteASG())
       .then((status) => {
         res.json({
-          Ok: status,
+          Ok: status
         });
       }).catch(next);
   });
@@ -179,7 +179,7 @@ function putAsgSize(req, res, next) {
       autoScalingGroupName,
       autoScalingGroupMinSize,
       autoScalingGroupDesiredSize,
-      autoScalingGroupMaxSize,
+      autoScalingGroupMaxSize
     })
       .then(data => res.json(data)).catch(next);
   });
@@ -210,5 +210,5 @@ module.exports = {
   deleteAsg,
   putAsg,
   putAsgSize,
-  putAsgLaunchConfig,
+  putAsgLaunchConfig
 };

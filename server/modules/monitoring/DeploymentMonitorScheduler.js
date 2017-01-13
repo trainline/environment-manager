@@ -49,5 +49,5 @@ function getDeploymentMonitorInterval(isPeakTime) {
 module.exports = {
   start() {
     scheduleDeploymentMonitor(false);
-  },
+  }
 };

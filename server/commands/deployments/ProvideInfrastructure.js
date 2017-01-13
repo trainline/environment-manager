@@ -18,8 +18,8 @@ module.exports = function ProvideInfrastructureCommandHandler(command) {
 
   assertContract(command, 'command', {
     properties: {
-      deployment: { type: DeploymentContract, null: false },
-    },
+      deployment: { type: DeploymentContract, null: false }
+    }
   });
 
   return co(function* () {
@@ -88,7 +88,7 @@ function getAutoScalingGroupNamesToCreate(logger, autoScalingGroupNames, account
     let query = {
       name: 'ScanAutoScalingGroups',
       accountName,
-      autoScalingGroupNames,
+      autoScalingGroupNames
     };
 
     let autoScalingGroups = yield sender.sendQuery({ query });
@@ -148,7 +148,7 @@ function getLaunchConfigurationNamesToCreate(logger, launchConfigurationNames, a
     let query = {
       name: 'ScanLaunchConfigurations',
       accountName,
-      launchConfigurationNames,
+      launchConfigurationNames
     };
 
     let launchConfigurations = yield sender.sendQuery({ query });
@@ -179,7 +179,7 @@ function provideLaunchConfiguration(launchConfigurationTemplate, accountName, pa
   let command = {
     name: 'CreateLaunchConfiguration',
     accountName,
-    template: launchConfigurationTemplate,
+    template: launchConfigurationTemplate
   };
 
   return sender.sendCommand({ command, parent: parentCommand }).catch(error => (
@@ -193,7 +193,7 @@ function provideAutoScalingGroup(autoScalingTemplate, accountName, parentCommand
   let command = {
     name: 'CreateAutoScalingGroup',
     accountName,
-    template: autoScalingTemplate,
+    template: autoScalingTemplate
   };
 
   return sender.sendCommand({ command, parent: parentCommand }).catch(error => (

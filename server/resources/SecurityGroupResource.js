@@ -6,5 +6,5 @@ module.exports = {
   name: 'sg',
   type: 'ec2/sg',
   perAccount: true,
-  queryable: true,
+  queryable: true
 };

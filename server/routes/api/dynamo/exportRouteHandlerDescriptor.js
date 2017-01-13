@@ -18,7 +18,7 @@ module.exports = resourceDescriptorProvider
     let url = make([
       resource.perAccount ? ':account' : null,
       resource.name,
-      'export',
+      'export'
     ]).uri();
 
     let docs;
@@ -39,7 +39,7 @@ module.exports = resourceDescriptorProvider
           name: 'ScanDynamoResources',
           resource: resource.name,
           exposeAudit: 'full',
-          accountName: resource.perAccount ? request.params.account : masterAccountName,
+          accountName: resource.perAccount ? request.params.account : masterAccountName
         };
 
         send.query(query, request, response);

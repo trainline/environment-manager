@@ -26,7 +26,7 @@ function decodeValue(encodedValue) {
 function asKeyValuePair(item) {
   return {
     key: item.Key,
-    value: decodeValue(item.Value),
+    value: decodeValue(item.Value)
   };
 }
 
@@ -112,7 +112,7 @@ function setTargetState(environment, parameters) {
 function removeRuntimeServerRoleTargetState(environmentName, runtimeServerRoleName) {
   return removeTargetState(environmentName, {
     key: `environments/${environmentName}/roles/${runtimeServerRoleName}`,
-    recurse: true,
+    recurse: true
   });
 }
 
@@ -140,7 +140,7 @@ function removeTargetState(environment, { key, recurse }) {
 function executeAction(promiseFactoryMethod) {
   let operation = retry.operation({
     retries: 3,
-    minTimeout: 1000,
+    minTimeout: 1000
   });
 
   return new Promise((resolve, reject) => {
@@ -170,5 +170,5 @@ module.exports = {
   removeRuntimeServerRoleTargetState,
   getAllServiceTargets,
   getServiceDeploymentCause,
-  getInstanceServiceDeploymentInfo,
+  getInstanceServiceDeploymentInfo
 };

@@ -40,10 +40,10 @@ function getServicesSummary(services) {
       Expected: expected.length,
       Unexpected: unexpected.length,
       Missing: missing.length,
-      Ignored: ignored.length,
+      Ignored: ignored.length
     },
     ExpectedServices: fp.map(fp.pick(['Name', 'Slice', 'Version']), expected),
-    MissingServices: fp.map(fp.pick(['Name', 'Slice', 'Version']), missing),
+    MissingServices: fp.map(fp.pick(['Name', 'Slice', 'Version']), missing)
   };
 }
 
@@ -79,7 +79,7 @@ module.exports = function getASGState(environmentName, asgName) {
     let response = getServicesSummary(services);
     _.assign(response, {
       Services: services,
-      Instances: instances,
+      Instances: instances
     });
 
     return response;

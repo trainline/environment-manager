@@ -1,17 +1,17 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 // Manage specific service
 angular.module('EnvironmentManager.configuration').controller('ServiceController',
   function ($scope, $routeParams, $location, $q, resources, cachedResources, modal, $http) {
-
     var vm = this;
     var RETURN_PATH = '/config/services';
     var userHasPermission;
 
     vm.service = {};
     vm.dataFound = false;
-    vm.editMode = $routeParams['service'] !== 'new';
+    vm.editMode = $routeParams.service !== 'new';
     vm.owningClustersList = [];
     vm.serviceNames = [];
     vm.version = 0;
@@ -19,9 +19,8 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
     vm.cancel = navigateToList;
 
     function init() {
-
-      var serviceName = $routeParams['service'];
-      var owningCluster = $routeParams['Range'];
+      var serviceName = $routeParams.service;
+      var owningCluster = $routeParams.Range;
       vm.editMode = serviceName.toLowerCase() !== 'new';
 
       var access = vm.editMode ? 'PUT' : 'POST';
@@ -35,9 +34,8 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
 
         resources.config.services.all().then(function (services) {
           vm.serviceNames = _.map(services, 'ServiceName');
-        }),
+        })
       ]).then(function () {
-
         if (vm.editMode) {
           readItem(serviceName, owningCluster);
         } else {
@@ -45,10 +43,9 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
             OwningCluster: vm.owningClustersList[0],
             Value: {
               SchemaVersion: 1
-            },
+            }
           };
         }
-
       });
     }
 
@@ -58,7 +55,6 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
         vm.service = readableService(data);
         vm.version = data.Version;
       }, function (err) {
-
         vm.dataFound = false;
       });
     }
@@ -94,7 +90,7 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       if (vm.editMode) {
         data = saveableService(vm.service).Value;
         saveMethod = 'put';
-        url += '/' + vm.service.ServiceName + '/' + vm.service.OwningCluster
+        url += '/' + vm.service.ServiceName + '/' + vm.service.OwningCluster;
       } else {
         data = saveableService(vm.service);
         saveMethod = 'post';

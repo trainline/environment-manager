@@ -24,7 +24,7 @@ function Condition(data) {
 
   this.data = {
     names: data.name.split('.'),
-    operator: data.operator,
+    operator: data.operator
   };
 
   this.to = function (value) {
@@ -40,7 +40,7 @@ function Condition(data) {
   this.getNames = function () {
     return $this.data.names.map(name => ({
       name,
-      alias: `#${name}`,
+      alias: `#${name}`
     }));
   };
 
@@ -56,7 +56,7 @@ function Condition(data) {
 function BinaryCondition(name, operator) {
   let $base = new Condition({
     name,
-    operator,
+    operator
   });
 
   this.to = $base.to;
@@ -96,5 +96,5 @@ module.exports = {
   Less,
   LessOrEqual,
   Greater,
-  GreaterOrEqual,
+  GreaterOrEqual
 };

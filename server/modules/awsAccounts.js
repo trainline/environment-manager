@@ -51,5 +51,5 @@ module.exports = {
   all: getAllAccounts,
   getByName,
   getMasterAccount,
-  getAMIsharingAccounts,
+  getAMIsharingAccounts
 };

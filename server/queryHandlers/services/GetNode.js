@@ -9,8 +9,8 @@ module.exports = function GetNode(query) {
   assertContract(query, 'query', {
     properties: {
       environment: { type: String, empty: false },
-      nodeName: { type: String, empty: false },
-    },
+      nodeName: { type: String, empty: false }
+    }
   });
 
   return serviceDiscovery.getNode(query.environment, query.nodeName);

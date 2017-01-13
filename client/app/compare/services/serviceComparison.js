@@ -1,10 +1,10 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.compare').factory('serviceComparison',
   function (comparisons) {
     return function (data, primaryEnvironmentName, secondaryEnvironmentNames) {
-
       function getKeys() {
         var environments = _.union([primaryEnvironmentName], secondaryEnvironmentNames);
         var dataForEnvironments = data.filter(function (item) {
@@ -22,7 +22,7 @@ angular.module('EnvironmentManager.compare').factory('serviceComparison',
           return {
             key: key,
             primary: getCellView(primary),
-            comparisons: getComparisons(primary, key),
+            comparisons: getComparisons(primary, key)
           };
         });
       }
@@ -32,7 +32,6 @@ angular.module('EnvironmentManager.compare').factory('serviceComparison',
       }
 
       function getCellView(data) {
-
         if (data !== undefined) {
           data.deployments = data.deployments.sort(function (a, b) {
             return comparisons.semver(a.version, b.version);

@@ -12,7 +12,7 @@ module.exports = (usersPermissions, requiredPermissions) => {
     return {
       authorized: false,
       protectedAction: protectedEnvironment.protectedAction,
-      environmentType: protectedEnvironment.environmentTypes[0],
+      environmentType: protectedEnvironment.environmentTypes[0]
     };
   }
 
@@ -22,7 +22,7 @@ module.exports = (usersPermissions, requiredPermissions) => {
 
   return {
     authorized: unsatisfiedPermissions.length === 0,
-    unsatisfiedPermissions: _.uniqWith(unsatisfiedPermissions, _.isEqual),
+    unsatisfiedPermissions: _.uniqWith(unsatisfiedPermissions, _.isEqual)
   };
 };
 
@@ -157,7 +157,7 @@ function toRequiredAttributes(attributes) {
   if (!(attributes && attributes.length > 0)) return [];
   return attributes.map(attribute => ({
     name: attribute.toLowerCase(),
-    satisfied: false,
+    satisfied: false
   }));
 }
 

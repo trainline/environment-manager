@@ -32,9 +32,9 @@ module.exports = {
           User: deployment.username,
           StartTimestamp: new Date().toISOString(),
           EndTimestamp: null,
-          ExecutionLog: null,
-        },
-      },
+          ExecutionLog: null
+        }
+      }
     };
 
     return sender.sendCommand({ command, user: systemUser }).then(() => {
@@ -58,9 +58,9 @@ module.exports = {
       Promise.resolve(deploymentLogsStreamer.log(deploymentStatus.deploymentId, deploymentStatus.accountName, newStatus.reason))
         .then(() => deploymentLogsStreamer.flush(deploymentStatus.deploymentId))
         .then(() => updateDeploymentDynamoTable(deploymentStatus, newStatus)),
-      updateDeploymentTargetState(deploymentStatus, newStatus),
+      updateDeploymentTargetState(deploymentStatus, newStatus)
     ]);
-  },
+  }
 };
 
 
@@ -82,8 +82,8 @@ function updateDeploymentDynamoTable(deploymentStatus, newStatus) {
       'Value.Status': newStatus.name,
       'Value.ErrorReason': errorReason,
       'Value.EndTimestamp': endTimestamp,
-      'Value.Nodes': deploymentStatus.nodesDeployment || [],
-    },
+      'Value.Nodes': deploymentStatus.nodesDeployment || []
+    }
   };
 
   return sender.sendCommand({ command, user: systemUser });
@@ -94,7 +94,7 @@ function updateDeploymentTargetState(deploymentStatus, newStatus) {
     name: 'UpdateTargetState',
     environment: deploymentStatus.environmentName,
     key: `deployments/${deploymentStatus.deploymentId}/overall_status`,
-    value: newStatus.name,
+    value: newStatus.name
   };
 
   return sender.sendCommand({ command, user: systemUser });

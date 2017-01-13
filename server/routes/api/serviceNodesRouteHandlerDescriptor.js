@@ -14,9 +14,9 @@ const TOGGLE_SERVICE_STATUS_MODEL = {
     properties: {
       slice: { type: 'String' },
       serverRole: { type: 'String' },
-      environment: { type: 'String' },
-    },
-  },
+      environment: { type: 'String' }
+    }
+  }
 };
 
 let getServiceNodes = route.get('/:account/environments/:environment/services/:service/nodes')
@@ -26,7 +26,7 @@ let getServiceNodes = route.get('/:account/environments/:environment/services/:s
     let query = {
       name: 'GetServiceNodes',
       environment: request.params.environment,
-      serviceName: request.params.service,
+      serviceName: request.params.service
     };
     send.query(query, request, response);
   });

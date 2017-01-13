@@ -15,7 +15,7 @@ module.exports = {
       getWindowsUserData(configuration, sliceName) :
       getLinuxUserData(configuration, sliceName);
     return userData;
-  },
+  }
 };
 
 function getLinuxUserData(configuration, sliceName) {
@@ -28,7 +28,7 @@ function getLinuxUserData(configuration, sliceName) {
     Role: roleName,
     ContactEmail: configuration.serverRole.ContactEmailTag,
     ProjectCode: configuration.serverRole.ProjectCodeTag,
-    PuppetRole: configuration.serverRole.PuppetRole,
+    PuppetRole: configuration.serverRole.PuppetRole
   };
 
   return userDataBuilder.buildLinuxUserData(parameters);
@@ -45,7 +45,7 @@ function getWindowsUserData(configuration, sliceName) {
     ContactEmail: configuration.serverRole.ContactEmailTag,
     ProjectCode: configuration.serverRole.ProjectCodeTag,
     RemovalDate: configuration.serverRole.RemovalDateTag,
-    PuppetRole: configuration.serverRole.PuppetRole,
+    PuppetRole: configuration.serverRole.PuppetRole
   };
 
   return userDataBuilder.buildWindowsUserData(parameters);

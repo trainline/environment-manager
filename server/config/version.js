@@ -16,5 +16,5 @@ function getVersion() {
 }
 
 module.exports = {
-  getVersion,
+  getVersion
 };

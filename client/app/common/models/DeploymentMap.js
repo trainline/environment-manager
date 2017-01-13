@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.common').factory('DeploymentMap',
@@ -16,18 +17,18 @@ angular.module('EnvironmentManager.common').factory('DeploymentMap',
     };
 
     DeploymentMap.getAll = function () {
-      return $http.get(baseUrl).then(function (response) { 
+      return $http.get(baseUrl).then(function (response) {
         return response.data;
       });
-    }
+    };
 
     DeploymentMap.createWithDefaults = function (environmentName) {
       var data = {
         DeploymentMapName: '',
         Value: {
           SchemaVersion: 1,
-          DeploymentTarget: [],
-        },
+          DeploymentTarget: []
+        }
       };
       return new DeploymentMap(data);
     };
@@ -43,7 +44,7 @@ angular.module('EnvironmentManager.common').factory('DeploymentMap',
         value.DeploymentTarget = value.DeploymentTarget.map(deploymentMapConverter.toDynamoSchema);
         return value;
       },
-      
+
       update: function () {
         return $http({
           method: 'put',

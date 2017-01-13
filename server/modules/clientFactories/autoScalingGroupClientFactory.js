@@ -8,5 +8,5 @@ let resourceProvider = require('modules/resourceProvider');
 module.exports = {
   create(parameters) {
     return resourceProvider.getInstanceByName('asgs', parameters);
-  },
+  }
 };

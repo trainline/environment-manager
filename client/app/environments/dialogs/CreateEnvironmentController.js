@@ -1,9 +1,9 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('CreateEnvironmentController',
   function ($scope, $uibModalInstance, $q, resources, cachedResources) {
-
     $scope.OwningClustersList = [];
     $scope.EnvironmentTypesList = [];
     $scope.DeploymentMapsList = [];
@@ -18,8 +18,8 @@ angular.module('EnvironmentManager.environments').controller('CreateEnvironmentC
     function init() {
       $scope.Environment = {
         Value: {
-          SchemaVersion: 1,
-        },
+          SchemaVersion: 1
+        }
       };
 
       $scope.userHasPermission = user.hasPermission({ access: 'POST', resource: '/config/environments/*' });
@@ -40,7 +40,7 @@ angular.module('EnvironmentManager.environments').controller('CreateEnvironmentC
             var typeName = type.EnvironmentType;
             var typeNamingPattern = type.Value.NamingPattern;
             if (typeNamingPattern !== undefined && typeNamingPattern !== '') {
-              nameValidators[typeName] = typeNamingPattern
+              nameValidators[typeName] = typeNamingPattern;
             }
             $scope.EnvironmentTypesList.push(typeName);
           });
@@ -53,7 +53,7 @@ angular.module('EnvironmentManager.environments').controller('CreateEnvironmentC
         cachedResources.config.deploymentMaps.all().then(function (deploymentMaps) {
           $scope.DeploymentMapsList = _.map(deploymentMaps, 'DeploymentMapName').sort();
           $scope.Environment.Value.DeploymentMap = $scope.DeploymentMapsList[0];
-        }),
+        })
       ]);
     }
 
@@ -76,8 +76,8 @@ angular.module('EnvironmentManager.environments').controller('CreateEnvironmentC
         expectedVersion: 0,
         data: {
           EnvironmentName: $scope.Environment.EnvironmentName,
-          Value: $scope.Environment.Value,
-        },
+          Value: $scope.Environment.Value
+        }
       };
 
       resources.config.environments.post(params).then(function (data) {

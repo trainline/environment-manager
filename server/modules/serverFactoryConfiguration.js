@@ -14,7 +14,7 @@ module.exports = function ServerFactoryConfiguration() {
     assert(configuration.server, 'missing \'server\' field in configuration');
     assert(configuration.server.port, 'missing \'server.port\' field in configuration');
     return {
-      port: configuration.server.port,
+      port: configuration.server.port
     };
   };
 

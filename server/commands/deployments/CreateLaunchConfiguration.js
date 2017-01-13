@@ -37,11 +37,11 @@ function getCreateLaunchConfigurationRequest(template) {
     InstanceType: template.instanceType,
     KeyName: template.keyName,
     InstanceMonitoring: {
-      Enabled: template.detailedMonitoring,
+      Enabled: template.detailedMonitoring
     },
     IamInstanceProfile: template.iamInstanceProfile,
     SecurityGroups: _.map(template.securityGroups, 'GroupId'),
     UserData: template.userData,
-    BlockDeviceMappings: template.devices,
+    BlockDeviceMappings: template.devices
   };
 }

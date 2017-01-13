@@ -23,11 +23,11 @@ module.exports = [
       name: 'GetTargetState',
       environment: getEnvironmentFrom(request),
       key: getKeyFromRequest(request),
-      recurse,
+      recurse
     };
 
     send.query(query, request, response);
-  }),
+  })
 
 ];
 

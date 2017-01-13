@@ -30,11 +30,11 @@ module.exports = function ServiceDefinitionKeyValueProvider() {
             `environment_type:${environmentTypeName}`,
             `environment:${environmentName}`,
             `owning_cluster:${clusterName}`,
-            `version:${serviceVersion}`,
+            `version:${serviceVersion}`
             // server_role and slice tags are set by Consul deployment agent
-          ],
-        },
-      },
+          ]
+        }
+      }
     };
 
     return Promise.resolve(serviceDefinitionKeyValue);
@@ -44,7 +44,7 @@ module.exports = function ServiceDefinitionKeyValueProvider() {
     let serviceId = [
       environmentName,
       serviceName,
-      serviceSlice !== 'none' ? serviceSlice : null,
+      serviceSlice !== 'none' ? serviceSlice : null
     ].filter(segment => !!segment)
       .join('-');
 

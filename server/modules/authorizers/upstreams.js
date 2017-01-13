@@ -14,7 +14,7 @@ function getUpstream(accountName, upstreamName) {
     name: 'GetDynamoResource',
     key: upstreamName,
     resource: 'config/lbupstream',
-    accountName,
+    accountName
   };
 
   return sender.sendQuery({ query });
@@ -27,7 +27,7 @@ function getEnvironment(name) {
     name: 'GetDynamoResource',
     key: name,
     resource: 'config/environments',
-    accountName: masterAccountName,
+    accountName: masterAccountName
   };
 
   return sender.sendQuery({ query });
@@ -36,7 +36,7 @@ function getEnvironment(name) {
 function getModifyPermissionsForEnvironment(environmentName) {
   return getEnvironment(environmentName).then(environment => ({
     cluster: environment.Value.OwningCluster.toLowerCase(),
-    environmentType: environment.Value.EnvironmentType.toLowerCase(),
+    environmentType: environment.Value.EnvironmentType.toLowerCase()
   }));
 }
 
@@ -80,12 +80,12 @@ exports.getRules = (request) => {
       resource: path,
       access: request.method,
       clusters: [envPermissions.cluster],
-      environmentTypes: [envPermissions.environmentType],
+      environmentTypes: [envPermissions.environmentType]
     }]);
   });
 };
 
 exports.docs = {
   requiresClusterPermissions: true,
-  requiresEnvironmentTypePermissions: true,
+  requiresEnvironmentTypePermissions: true
 };

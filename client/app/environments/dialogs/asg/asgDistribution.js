@@ -1,23 +1,23 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-angular.module('EnvironmentManager.environments').factory('asgDistributionService', function() {
-
+angular.module('EnvironmentManager.environments').factory('asgDistributionService', function () {
   function friendlyAZName(az) {
     return az.substring(az.length - 1).toUpperCase();
   }
 
-  function calcDistribution (allAZs, asg) {
-    var azs = allAZs.map(function(az){
-      var instances = asg.Instances.filter(function(instance) {
+  function calcDistribution(allAZs, asg) {
+    var azs = allAZs.map(function (az) {
+      var instances = asg.Instances.filter(function (instance) {
         return az == friendlyAZName(instance.AvailabilityZone);
       });
-      var active = asg.AvailabilityZones.some(function(usedAZ){ return az === friendlyAZName(usedAZ); });
+      var active = asg.AvailabilityZones.some(function (usedAZ) { return az === friendlyAZName(usedAZ); });
       return {
         name: az,
         active: active,
         projectedChanges: 0,
-        nodes: instances.map(function(instance){
+        nodes: instances.map(function (instance) {
           return {
             id: instance.InstanceId,
             isOld: !instance.LaunchConfigurationName,
@@ -37,5 +37,4 @@ angular.module('EnvironmentManager.environments').factory('asgDistributionServic
   return {
     calcDistribution: calcDistribution
   };
-
 });

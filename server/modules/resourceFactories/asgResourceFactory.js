@@ -54,7 +54,7 @@ module.exports = {
 
       return asgResource;
     });
-  },
+  }
 };
 
 function getAllAsgsInAccount(cacheKey) {

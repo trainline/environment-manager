@@ -25,8 +25,8 @@ function* GetServiceNodesQueryHandler(query) {
       name: 'GetService',
       accountName,
       environment: query.environment,
-      serviceName: query.serviceName,
-    },
+      serviceName: query.serviceName
+    }
   }).then(nodes => (
     nodes.map((node) => {
       let result = _.clone(node);

@@ -23,7 +23,7 @@ function getDeployments(req, res, next) {
   const cluster = req.swagger.params.cluster.value;
 
   deploymentsHelper.scan({
-    since, environment, status, cluster,
+    since, environment, status, cluster
   }).then(data => res.json(data)).catch(next);
 }
 
@@ -53,7 +53,7 @@ function getDeploymentLog(req, res, next) {
       accountName,
       environment,
       deploymentId: key,
-      instanceId,
+      instanceId
     };
 
     return GetNodeDeploymentLog(query).then((data) => {
@@ -77,7 +77,7 @@ function* postDeployment(req, res, next) {
     packagePath = yield s3PackageLocator.findDownloadUrl({
       environment: environmentName,
       service: serviceName,
-      version: serviceVersion,
+      version: serviceVersion
     });
   }
 
@@ -85,7 +85,7 @@ function* postDeployment(req, res, next) {
     let error = {
       title: 'The deployment package was not found.',
       detail: 'Upload the package then try again or specify the location of the package in this request.',
-      status: '400',
+      status: '400'
     };
     res.status(400).json({ errors: [error] });
     return;
@@ -119,7 +119,7 @@ function* postDeployment(req, res, next) {
     serviceSlice,
     packageType,
     packagePath,
-    serverRoleName,
+    serverRoleName
   };
 
   sender.sendCommand({ command, user: req.user }).then((deployment) => {
@@ -154,7 +154,7 @@ function patchDeployment(req, res, next) {
 
       let newStatus = {
         name: Enums.DEPLOYMENT_STATUS.Cancelled,
-        reason: `The deployment was cancelled manually by user: ${req.user.getName()}`,
+        reason: `The deployment was cancelled manually by user: ${req.user.getName()}`
       };
       let deploymentStatuses = yield activeDeploymentsStatusProvider.getActiveDeploymentsFullStatus([deployment]);
       let deploymentStatus = deploymentStatuses[0];
@@ -200,5 +200,5 @@ module.exports = {
   getDeploymentById,
   getDeploymentLog,
   postDeployment: co.wrap(postDeployment),
-  patchDeployment,
+  patchDeployment
 };
