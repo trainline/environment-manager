@@ -39,9 +39,7 @@ angular.module('EnvironmentManager.common').factory('cachedResources',
     }
 
     function getFromCache(dataType, resourceFunction, crossAccount) {
-      if (cachePromise[dataType]) {
-        return cachePromise[dataType];
-      } else {
+      if (cachePromise[dataType] === undefined) {
         var params = {};
         if (crossAccount) {
           params.account = 'all';
@@ -51,10 +49,8 @@ angular.module('EnvironmentManager.common').factory('cachedResources',
           console.log('Cache: new data retrieved for ' + dataType);
           return data;
         });
-        return cachePromise[dataType];
       }
-
-      return deferred.promise;
+      return cachePromise[dataType];
     }
 
     function flushCache(dataType) {
