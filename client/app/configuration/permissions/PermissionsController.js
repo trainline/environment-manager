@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('PermissionsController',
@@ -29,7 +30,7 @@ angular.module('EnvironmentManager.configuration').controller('PermissionsContro
             vm.canDelete = true;
             break;
           }
-        };
+        }
       });
     };
 
@@ -50,7 +51,7 @@ angular.module('EnvironmentManager.configuration').controller('PermissionsContro
         message: 'Are you sure you want to delete <strong>' + memberName + '</strong>?',
         action: 'Delete',
         severity: 'Danger',
-        details: ["NOTE: This will delete all permissions assignment for '" + memberName + "'. It will not delete '" + memberName + "' from the directory."],
+        details: ['NOTE: This will delete all permissions assignment for \'' + memberName + '\'. It will not delete \'' + memberName + '\' from the directory.']
       }).then(function () {
         $http.delete('/api/v1/config/permissions/' + memberName).then(function () {
           vm.refresh();
@@ -59,6 +60,5 @@ angular.module('EnvironmentManager.configuration').controller('PermissionsContro
     };
 
     init();
-
   });
 

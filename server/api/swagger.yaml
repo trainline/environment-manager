@@ -2775,6 +2775,10 @@ definitions:
         type: string
       SchemaVersion:
         type: integer
+      BluePort:
+        type: integer
+      GreenPort:
+        type: integer
   Deployment:
     type: object
     properties:

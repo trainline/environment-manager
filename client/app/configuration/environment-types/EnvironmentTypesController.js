@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 // Manage all environment types
@@ -47,7 +48,7 @@ angular.module('EnvironmentManager.configuration').controller('EnvironmentTypesC
         title: 'Deleting an Environment Type',
         message: 'Are you sure you want to delete the <strong>' + name + '</strong> Environment Type?',
         action: 'Delete',
-        severity: 'Danger',
+        severity: 'Danger'
       }).then(function () {
         resources.config.environmentTypes.delete({ key: name }).then(vm.Refresh);
         cachedResources.config.environmentTypes.flush();

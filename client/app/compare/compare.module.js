@@ -1,11 +1,12 @@
-﻿/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.compare', [
   'ngRoute',
   'ui.bootstrap',
   'ui.select',
-  'EnvironmentManager.common',
+  'EnvironmentManager.common'
 ]);
 
 angular.module('EnvironmentManager.compare').config(function ($routeProvider) {
@@ -14,6 +15,6 @@ angular.module('EnvironmentManager.compare').config(function ($routeProvider) {
       templateUrl: '/app/compare/compare.html',
       controller: 'CompareController as vm',
       menusection: '',
-      reloadOnSearch: false,
+      reloadOnSearch: false
     });
 });

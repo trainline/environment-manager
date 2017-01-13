@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('DeployModalController',
@@ -19,7 +20,7 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
       Mode: '',
       Version: '',
       PackagePath: '',
-      Slice: 'blue',
+      Slice: 'blue'
     };
 
     function init() {
@@ -55,7 +56,6 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
 
     $scope.$watch('vm.deploymentSettings.SelectedService', function (newVal, oldVal) {
       if (newVal) {
-
         var env = vm.deploymentSettings.Environment;
 
         vm.selectedServiceActiveSliceMessage = 'Loading...';
@@ -64,11 +64,11 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
           var slices = response.data;
           if (slices && slices.length > 0) {
             vm.selectedServiceActiveSliceMessage = null;
-            vm.selectedServiceActiveSlices = slices.map(function(slice){
+            vm.selectedServiceActiveSlices = slices.map(function (slice) {
               return 'Upstream: ' + slice.UpstreamName + ' Slice: ' + slice.Name + ' (' + slice.State + ')';
             });
           }
-        }).catch(function(err){
+        }).catch(function (err) {
           vm.selectedServiceActiveSliceMessage = (err.status === 404) ? 'None' : 'Unknown';
         });
 

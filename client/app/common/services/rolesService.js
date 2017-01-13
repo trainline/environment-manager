@@ -1,16 +1,15 @@
-﻿/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.common')
-  .factory('roles', function($http) {
-
+  .factory('roles', function ($http) {
     return {
-      get: function(accountName, environmentName) {
+      get: function (accountName, environmentName) {
         var url = '/api/v1/target-state/' + environmentName;
-        return $http.get(url).then(function(response) {
+        return $http.get(url).then(function (response) {
           return response.data;
         });
       }
     };
-
   });

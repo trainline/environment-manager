@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.common').directive('spinner', function () {
@@ -27,9 +28,9 @@ angular.module('EnvironmentManager.common').directive('spinner', function () {
         left: '50%', // Left position relative to parent
         shadow: false, // Whether to render a shadow
         hwaccel: false, // Whether to use hardware acceleration
-        position: 'absolute', // Element positioning
+        position: 'absolute' // Element positioning
       };
       new Spinner(opts).spin(elm[0]);
-    },
+    }
   };
 });
