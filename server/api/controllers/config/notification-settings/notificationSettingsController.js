@@ -57,5 +57,5 @@ module.exports = {
   getNotificationSettingsById,
   postNotificationSettings,
   putNotificationSettingsById,
-  deleteNotificationSettingsById,
+  deleteNotificationSettingsById
 };

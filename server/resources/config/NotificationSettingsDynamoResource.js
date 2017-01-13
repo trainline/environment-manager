@@ -15,6 +15,6 @@ module.exports = {
   importable: true,
   docs: {
     description: 'Notification Settings',
-    tags: ['Notification Settings'],
-  },
+    tags: ['Notification Settings']
+  }
 };
