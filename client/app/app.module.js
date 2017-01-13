@@ -32,7 +32,9 @@ app.config(function ($routeProvider) {
     });
 });
 
-app.config(function ($httpProvider) {
+app.config(function ($httpProvider, $locationProvider) {
+  $locationProvider.hashPrefix('');
+
   // Set default put request content type to JSON
   $httpProvider.defaults.headers.put['Content-Type'] = 'application/json;charset=utf-8';
 
