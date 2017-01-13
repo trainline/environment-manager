@@ -7,7 +7,7 @@ const rewire = require('rewire');
 const sinon = require('sinon');
 const _ = require('lodash');
 
-describe.only('DeployService', function() {
+describe('DeployService', function() {
   let sut;
   let s3PackageLocator;
   let EnvironmentHelper;
