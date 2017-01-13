@@ -13,6 +13,7 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
     vm.selectedServiceActiveSlice = 'N/A';
     vm.deploymentMethodsList = [];
     vm.dryRunEnabled = false;
+    vm.isBusy = false;
 
     vm.deploymentSettings = {
       Environment: parameters.Environment.EnvironmentName,
@@ -78,6 +79,8 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
     });
 
     function submitDeployment() {
+      vm.isBusy = true;
+
       var config = {
         url: '/api/v1/deployments',
         method: 'post',
@@ -96,6 +99,7 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
       }
 
       $http(config).then(function (response) {
+        vm.isBusy = false;
         var data = response.data;
 
         if (data.isDryRun) {
@@ -116,7 +120,9 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
           });
           $uibModalInstance.close();
         }
-      });
+      }).catch(function() {
+        vm.isBusy = false;
+      })
     }
 
     vm.ok = function () {

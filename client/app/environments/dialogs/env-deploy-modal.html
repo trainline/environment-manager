@@ -95,5 +95,5 @@
 </div>
 <div class="modal-footer">
   <button class="btn btn-default" type="button" ng-click="vm.cancel()">Cancel</button>
-  <button class="btn btn-default" type="button" ng-click="vm.ok()" ng-disabled="form.$pristine || form.$invalid">Deploy...</button>
+  <button class="btn btn-default" type="button" ng-click="vm.ok()" ng-disabled="form.$pristine || form.$invalid || vm.isBusy">Deploy...</button>
 </div>
