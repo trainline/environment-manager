@@ -12,7 +12,7 @@ function defaultErrorHandler(err, req, res, next) {
   if (res.statusCode >= 400 && res.statusCode < 500) {
     try {
       friendlyError.error = err.message;
-      friendlyError.details = _.map(_.get(err, 'results.errors'), err => `${err.path}: ${err.message}`)
+      friendlyError.details = _.map(_.get(err, 'results.errors'), error => `${error.path}: ${error.message}`);
     } catch (error) {
       friendlyError = err;
     }
