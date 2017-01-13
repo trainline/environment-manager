@@ -17,7 +17,7 @@ let SupportedSliceNames = _.values(Enums.SliceName);
 let SupportedDeploymentModes = _.values(Enums.DeploymentMode);
 let validUrl = require('valid-url');
 let s3PackageLocator = require('modules/s3PackageLocator');
-let Environment = require('models/Environment');
+let EnvironmentHelper = require('models/Environment');
 
 module.exports = function DeployServiceCommandHandler(command) {
   assertContract(command, 'command', {
@@ -27,7 +27,6 @@ module.exports = function DeployServiceCommandHandler(command) {
       serviceVersion: { type: String, empty: false },
       serviceSlice: { type: String, empty: false },
       mode: { type: String, empty: false },
-      packagePath: { type: String, empty: false },
       serverRoleName: { type: String, empty: false }
     }
   });
@@ -46,6 +45,7 @@ module.exports = function DeployServiceCommandHandler(command) {
 
     // Run asynchronously, we don't wait for deploy to finish intentionally
     deploy(deployment, destination, sourcePackage, command);
+
     let accountName = deployment.accountName;
     yield deploymentLogger.started(deployment, accountName);
     return deployment;
@@ -89,7 +89,7 @@ function validateCommandAndCreateDeployment(command) {
       Enums.SourcePackageType.CodeDeployRevision :
       Enums.SourcePackageType.DeploymentMap;
 
-    const environment = yield Environment.getByName(command.environmentName);
+    const environment = yield EnvironmentHelper.getByName(command.environmentName);
     const environmentType = yield environment.getEnvironmentType();
     command.accountName = environmentType.AWSAccountName;
 
@@ -98,6 +98,7 @@ function validateCommandAndCreateDeployment(command) {
     );
 
     let roleName = namingConventionProvider.getRoleName(configuration, command.serviceSlice);
+
     let deploymentContract = new DeploymentContract({
       id: command.commandId,
       environmentTypeName: configuration.environmentTypeName,
@@ -111,7 +112,6 @@ function validateCommandAndCreateDeployment(command) {
       accountName: command.accountName,
       username: command.username
     });
-
     yield deploymentContract.validate(configuration);
     return deploymentContract;
   });
@@ -123,6 +123,7 @@ function deploy(deployment, destination, sourcePackage, command) {
     yield provideInfrastructure(accountName, deployment, command);
     yield preparePackage(accountName, destination, sourcePackage, command);
     yield pushDeployment(accountName, deployment, destination, command);
+
     deploymentLogger.inProgress(
       deployment.id,
       deployment.accountName,
