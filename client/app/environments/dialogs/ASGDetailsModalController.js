@@ -3,7 +3,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ASGDetailsModalController',
-  function ($scope, $uibModal, $uibModalInstance, $q, modal, serviceDiscovery, Image, awsService, AutoScalingGroup, resources, cachedResources, deploymentMapConverter, asgDistributionService, parameters) {
+  function ($scope, $uibModal, $uibModalInstance, $q, modal, loading, serviceDiscovery, Image, awsService, AutoScalingGroup, resources, cachedResources, deploymentMapConverter, asgDistributionService, parameters) {
     var vm = this;
 
     vm.context = 'asg';
@@ -228,6 +228,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
     vm.updateAutoScalingGroup = function () {
       confirmAZChange().then(function () {
+        loading.lockPage(true);
         var updated = {
           size: {
             min: vm.asgUpdate.MinSize,
@@ -239,6 +240,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
           }
         };
         vm.asg.updateAutoScalingGroup(updated).then(function () {
+          loading.lockPage(false);
           modal.information({
             title: 'ASG Updated',
             message: 'ASG update successful. You can monitor instance changes by using the Refresh Icon in the top right of the window.<br/><br/><b>Note:</b> During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection draining before termination.'
@@ -313,14 +315,16 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         newSchedule = vm.asgUpdate.NewSchedule;
       }
 
-      AutoScalingGroup.updateSchedule(vm.environmentName, vm.asg.AsgName, newSchedule).then(function () {
-        resetForm();
+      return AutoScalingGroup.updateSchedule(vm.environmentName, vm.asg.AsgName, newSchedule).then(function () {
         modal.information({
           title: 'ASG Schedule Updated',
           message: 'ASG schedule updated successfully.'
-        }).then(function () {
-          vm.refresh();
         });
+      }).catch(function(err){      
+        modal.error('Error', 'An error has occurred: ' + err.data.error);
+      }).finally(function() {
+        resetForm();
+        vm.refresh();
       });
     };
 

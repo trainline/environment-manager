@@ -99,7 +99,7 @@ function setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, newSch
 
     if (!(newScheduledActions instanceof Array)) return Promise.resolve();
 
-    return newScheduledActions.map((action, index) => {
+    return yield newScheduledActions.map((action, index) => {
       let namedAction = {
         AutoScalingGroupName: autoScalingGroupName,
         ScheduledActionName: `EM-Scheduled-Action-${index + 1}`,

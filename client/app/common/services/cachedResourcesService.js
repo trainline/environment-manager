@@ -4,7 +4,7 @@
 
 angular.module('EnvironmentManager.common').factory('cachedResources',
   function ($q, resources) {
-    var cachedData = [];
+    var cachePromise = {};
     var cachedResources = {
       config: {
         environments: cachedResource('environments', 'config'),
@@ -39,28 +39,23 @@ angular.module('EnvironmentManager.common').factory('cachedResources',
     }
 
     function getFromCache(dataType, resourceFunction, crossAccount) {
-      var deferred = $q.defer();
-      if (cachedData[dataType]) {
-        deferred.resolve(cachedData[dataType]);
-      } else {
+      if (cachePromise[dataType] === undefined) {
         var params = {};
         if (crossAccount) {
           params.account = 'all';
         }
 
-        resourceFunction.all(params).then(function (data) {
+        cachePromise[dataType] = resourceFunction.all(params).then(function (data) {
           console.log('Cache: new data retrieved for ' + dataType);
-          cachedData[dataType] = data;
-          deferred.resolve(data);
+          return data;
         });
       }
-
-      return deferred.promise;
+      return cachePromise[dataType];
     }
 
     function flushCache(dataType) {
       console.log('Cache: flushing ' + dataType + ' data');
-      delete cachedData[dataType];
+      delete cachePromise[dataType];
     }
 
     function getByName(nameValue, nameAttrib, data) {

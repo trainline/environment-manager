@@ -7,7 +7,8 @@ angular.module('EnvironmentManager.common').directive('spinner', function () {
     restrict: 'E',
     template: '<div id="spinner"></div>',
     replace: true,
-    link: function (scope, elm) {
+    link: function (scope, elm, attrs) {
+
       var opts = {
         lines: 12,
         length: 10, // The length of each line
@@ -30,6 +31,12 @@ angular.module('EnvironmentManager.common').directive('spinner', function () {
         hwaccel: false, // Whether to use hardware acceleration
         position: 'absolute' // Element positioning
       };
+      if (attrs.overlay) {
+        _.assign(opts, {
+            scale: 2,
+            color: '#fff'
+        });
+      }
       new Spinner(opts).spin(elm[0]);
     }
   };
