@@ -12,6 +12,8 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
     vm.selectedServiceDeployInfo = '';
     vm.selectedServiceActiveSlice = 'N/A';
     vm.deploymentMethodsList = [];
+    vm.dryRunEnabled = false;
+    vm.isBusy = false;
 
     vm.deploymentSettings = {
       Environment: parameters.Environment.EnvironmentName,
@@ -91,34 +93,36 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
       }
     });
 
-    vm.ok = function () {
-      var service = vm.deploymentSettings.SelectedService;
-      var version = vm.deploymentSettings.Version;
-      var env = vm.deploymentSettings.Environment;
+    function submitDeployment() {
+      vm.isBusy = true;
 
-      // TODO: Call Deploy API in dry-run mode to perform basic validation first
-
-      var modalParameters = {
-        title: 'Deploy Service',
-        message: 'Are you sure you want to deploy ' + service + ' version ' + version + ' to ' + env + '?',
-        action: 'Deploy',
-        severity: 'Warning'
+      var config = {
+        url: '/api/v1/deployments',
+        method: 'post',
+        data: {
+          environment: vm.deploymentSettings.Environment,
+          version: vm.deploymentSettings.Version,
+          service: vm.deploymentSettings.SelectedService,
+          server_role: vm.deploymentSettings.SelectedServerRoleName,
+          mode: vm.deploymentSettings.Mode,
+          slice: vm.deploymentSettings.Mode === 'bg' ? vm.deploymentSettings.Slice : undefined,
+          packageLocation: vm.deploymentSettings.PackagePath
+        }
       };
-      modal.confirmation(modalParameters).then(function () {
-        $http({
-          url: '/api/v1/deployments',
-          method: 'post',
-          data: {
-            environment: env,
-            version: version,
-            service: service,
-            server_role: vm.deploymentSettings.SelectedServerRoleName,
-            mode: vm.deploymentSettings.Mode,
-            slice: vm.deploymentSettings.Mode === 'bg' ? vm.deploymentSettings.Slice : undefined,
-            packageLocation: vm.deploymentSettings.PackagePath
-          }
-        }).then(function (response) {
-          var data = response.data;
+
+      if (vm.dryRunEnabled === true) {
+        config.params = { dry_run:true };
+      }
+
+      $http(config).then(function (response) {
+        vm.isBusy = false;
+        var data = response.data;
+
+        if (data.isDryRun) {
+          $uibModal.open({
+            templateUrl: '/app/environments/dialogs/deployment-dry-run-result.html'
+          });
+        } else {
           $uibModal.open({
             templateUrl: '/app/operations/deployments/ops-deployment-details-modal.html',
             windowClass: 'deployment-summary',
@@ -131,8 +135,28 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
             }
           });
           $uibModalInstance.close();
-        });
-      });
+        }
+      }).catch(function() {
+        vm.isBusy = false;
+      })
+    }
+
+    vm.ok = function () {
+      var service = vm.deploymentSettings.SelectedService;
+      var version = vm.deploymentSettings.Version;
+      var env = vm.deploymentSettings.Environment;
+
+      if (vm.dryRunEnabled) {
+        submitDeployment();
+      } else {
+        var modalParameters = {
+          title: 'Deploy Service',
+          message: 'Are you sure you want to deploy ' + service + ' version ' + version + ' to ' + env + '?',
+          action: 'Deploy',
+          severity: 'Warning',
+        };
+        modal.confirmation(modalParameters).then(submitDeployment);
+      }
     };
 
     vm.cancel = function () {
