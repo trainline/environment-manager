@@ -38,12 +38,18 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
             var services = [];
             deployMap.Value.DeploymentTarget.forEach(function (target) {
               target.Services.forEach(function (service) {
-                services.push(service.ServiceName);
+                var obj = _.find(services, { ServiceName: service.ServiceName });
+                if (obj !== undefined) {
+                  obj.ServerRoleNames.push(target.ServerRoleName);
+                } else {
+                  services.push({
+                    ServiceName: service.ServiceName,
+                    ServerRoleNames: [target.ServerRoleName]
+                  });
+                }
               });
             });
-            services = _.uniq(services);
-
-            vm.servicesList = services.sort();
+            vm.servicesList = _.sortBy(services, 'ServiceName');
           }
         }
 
@@ -75,6 +81,15 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
 
         vm.selectedServiceDeployInfoMessage = 'Unknown';
         vm.selectedServiceDeployInfo = [];
+
+
+        var obj = _.find(vm.servicesList, { ServiceName: vm.deploymentSettings.SelectedService });
+        vm.serverRoleNames = obj.ServerRoleNames;
+        if (obj.ServerRoleNames.length === 1) {
+          vm.deploymentSettings.SelectedServerRoleName = obj.ServerRoleNames[0];
+        } else {
+          vm.deploymentSettings.SelectedServerRoleName = undefined;
+        }
       }
     });
 
@@ -88,9 +103,10 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
           environment: vm.deploymentSettings.Environment,
           version: vm.deploymentSettings.Version,
           service: vm.deploymentSettings.SelectedService,
+          server_role: vm.deploymentSettings.SelectedServerRoleName,
           mode: vm.deploymentSettings.Mode,
           slice: vm.deploymentSettings.Mode === 'bg' ? vm.deploymentSettings.Slice : undefined,
-          packageLocation: vm.deploymentSettings.PackagePath,
+          packageLocation: vm.deploymentSettings.PackagePath
         }
       };
 
