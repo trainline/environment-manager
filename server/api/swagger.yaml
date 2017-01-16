@@ -2276,9 +2276,13 @@ definitions:
         items:
           type: string
       ChatChannel:
-        type: string
+        type: array
+        items:
+          type: string
       Paging:
-        type: string
+        type: array
+        items:
+          type: string
       Ticketing:
         type: string
   EnvironmentSchedule:
