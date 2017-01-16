@@ -30,9 +30,7 @@ angular.module('EnvironmentManager.environments').controller('CreateEnvironmentC
 
       $q.all([
         $http.get('/api/v1/config/notification-settings').then(function (response) {
-
           vm.notificationSettingsList = _.map(response.data, 'NotificationSettingsId');
-          console.log(vm.notificationSettingsList);
         }),
 
         cachedResources.config.clusters.all().then(function (clusters) {

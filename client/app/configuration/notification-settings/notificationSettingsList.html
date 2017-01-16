@@ -13,13 +13,15 @@
   <div class="col-md-12" ng-if="!vm.dataLoading && vm.data.length == 0">
     <p>No Notification Settings found.</p>
   </div>
-  <div class="col-md-8" ng-if="!vm.dataLoading && vm.data.length > 0">
+  <div class="col-md-12" ng-if="!vm.dataLoading && vm.data.length > 0">
     <table class="table">
       <thead>
         <tr>
-          <th class="text-nowrap">Notification Settings Id</th>
+          <th class="text-nowrap">ID</th>
           <th class="text-nowrap">Chat Channel</th>
           <th class="text-nowrap">Notification Email</th>
+          <th class="text-nowrap">Paging</th>
+          <th class="text-nowrap">Ticketing</th>
           <th ng-if="vm.canDelete" class="text-nowrap command-header">Remove</th>
         </tr>
       </thead>
@@ -30,6 +32,8 @@
           </td>
           <td>{{::entry.Value.ChatChannel}}</td>
           <td>{{::entry.Value.NotificationEmail.join(', ')}}</td>
+          <td>{{::entry.Value.Paging}}</td>
+          <td>{{::entry.Value.Ticketing}}</td>
           <td ng-if="vm.canDelete" class="command command-delete">
             <span class="glyphicon glyphicon-remove" ng-click="vm.delete(entry)" title="Delete"></span>
           </td>

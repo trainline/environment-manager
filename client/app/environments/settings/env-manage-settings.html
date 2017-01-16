@@ -33,22 +33,37 @@
                         <span class="help-block" ng-if="form.OwningClusters.$dirty && form.OwningClusters.$error.required">Owning cluster is mandatory.</span>
                     </div>
                     <div class="form-group" ng-class="{'has-error': form.AlertSettings.$invalid}">
-                        <label class="col-md-3 control-label text-left nowrap">Alert Settings: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
-                        <div class="col-md-2">
-                            <select class="form-control"
-                                    name="AlertSettings"
-                                    required=""
-                                    ng-model="vm.newEnvironment.AlertSettings">
-                                <option ng-repeat="alertSettings in vm.alertSettingsList" ng-selected="{{alertSettings == Environment.Value.AlertSettings}}" value="{{alertSettings.Value}}">{{alertSettings.Name}}</option>
-                            </select>
+                        <label class="col-md-3 control-label text-left nowrap">Alert Notifications: <span class="glyphicon glyphicon-asterisk mandatory"></span>
+
+                        <span uib-popover
+                          popover-trigger="'mouseenter'"
+                          popover-append-to-body="true"
+                          uib-popover-template="'app/environments/popovers/alert-settings.html'"
+                          data-popover-placement="bottom"
+                          class="glyphicon glyphicon-question-sign help-icon"
+                          aria-hidden="true">
+                        </span>
+                        </label>
+                        <div class="col-md-8">
+                            <div class="btn-group">
+                                <label class="btn btn-default" ng-model="vm.newEnvironment.AlertSettings" uib-btn-radio="'EnvironmentOwner'">Environment Owner</label>
+                                <label class="btn btn-default" ng-model="vm.newEnvironment.AlertSettings" uib-btn-radio="'ServiceOwner'">Service Owner</label>
+                                <label class="btn btn-default" ng-model="vm.newEnvironment.AlertSettings" uib-btn-radio="'Custom'">Custom</label>
+
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="radio" name="group1" id="environment-owner" value="Environment Owner" /> <label for="environment-owner">Environment Owner</label><br/>
+                            <input type="radio" name="group1" id="service-owner" value="ServiceOwner" /> <label for="Service-owner">Service Owner</label>
+
                         </div>
                         
                         <span class="help-block" ng-if="form.AlertSettings.$dirty && form.AlertSettings.$error.required">Alert Settings is mandatory.</span>
                     </div>
 
                     <div class="form-group" ng-class="{'has-error': form.NotificationSettings.$invalid}" ng-if="vm.newEnvironment.AlertSettings == 'Custom'">
-                        <label class="col-md-3 control-label text-left nowrap"></label>
-                        <div class="col-md-2">
+                        <label class="col-md-4 control-label text-left nowrap">Notification Settings ID</label>
+                        <div class="col-md-4">
                             <select class="form-control"
                                     name="NotificationSettings"
                                     required=""
