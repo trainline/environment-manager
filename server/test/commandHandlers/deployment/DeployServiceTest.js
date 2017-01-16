@@ -2,12 +2,12 @@
 
 'use strict';
 
-const assert = require('assert')
+const assert = require('assert');
 const rewire = require('rewire');
 const sinon = require('sinon');
 const _ = require('lodash');
 
-describe('DeployService', function() {
+describe.only('DeployService', function() {
   let sut;
   let s3PackageLocator;
   let EnvironmentHelper;
@@ -17,7 +17,6 @@ describe('DeployService', function() {
   let namingConventionProvider;
   let DeploymentContract;
   let packagePathProvider;
-  let provideInfrastructure;
   let sender;
   let deploymentLogger;
 
@@ -79,12 +78,12 @@ describe('DeployService', function() {
     };
     sender = {
       sendCommand: sinon.stub().returns(Promise.resolve({}))
-    }
+    };
     deploymentLogger = {
       inProgress: sinon.stub(),
       updateStatus: sinon.stub(),
       started: sinon.stub().returns(Promise.resolve({}))
-    }
+    };
 
     sut.__set__({
       s3PackageLocator,
@@ -112,7 +111,7 @@ describe('DeployService', function() {
 
   describe('overwrite mode', function() {
     let command = createRequiredProps();
-    command.mode = 'overwrite'
+    command.mode = 'overwrite';
     command.serviceSlice = 'blue';
 
     it(`should throw if slice is not 'none'`, (done) => {
@@ -125,7 +124,7 @@ describe('DeployService', function() {
 
   describe('blue/green mode', function() {
     let command = createRequiredProps();
-    command.mode = 'bg'
+    command.mode = 'bg';
     command.serviceSlice = 'none';
 
     it(`should throw if slice is 'none'`, (done) => {
@@ -141,7 +140,7 @@ describe('DeployService', function() {
 
     beforeEach(() => {
       command = createCommand();
-    })
+    });
 
     it('should be obtained from S3 locator', (done) => {
       sut(command).then(() => {
@@ -169,9 +168,9 @@ describe('DeployService', function() {
     let expectedPayload;
 
     /**
-     * Note: Because the deployment is asynchronous (ie, we dont wait for
-     * the 'deploy()' method to return), any tests that depend on subcalls 
-     * of 'deploy 'should not rely on the sut().then() promise to gaurantee completion.
+     * Note: Because the deployment is asynchronous (ie, we don't wait for
+     * the 'deploy()' method to return), any tests that depend on sub-calls
+     * of 'deploy 'should not rely on the sut().then() promise to guarantee completion.
      */ 
     beforeEach(() => {
       command = createCommand();
@@ -180,7 +179,7 @@ describe('DeployService', function() {
         accountName: ACCOUNT_NAME,
         packageType: 'DeploymentMap'
       }, command);
-    })
+    });
 
     function createdExpectedCommandSpy(cmdName, done) {
       return function(arg) {
@@ -222,6 +221,18 @@ describe('DeployService', function() {
       };
       sut(command);
     });
+
+    describe('locked environments', function() {
+      beforeEach(() => { environment.IsLocked = true; });
+
+      it('should not allow deployments', (done) => {
+        sut(command).catch(error => {
+          assert.equal(error.message.indexOf(
+            `The environment ${command.environmentName} is currently locked for deployments`), 0);
+          done();
+        })
+      });
+    });
   });
 
   describe('dry run deployments', function() {
@@ -230,7 +241,7 @@ describe('DeployService', function() {
     beforeEach(() => {
       command = createCommand();
       command.isDryRun = true;
-    })
+    });
 
     it('should not call any sub commands', (done) => {
       sut(command).then(() => {

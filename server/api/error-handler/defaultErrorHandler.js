@@ -47,6 +47,8 @@ function getStatusByErrorType(error) {
 
     case 'DynamoConcurrencyError': return 409;
 
+    case 'ResourceLockedError': return 423;
+
     case 'EvalError':
     case 'InternalError':
     case 'RangeError':

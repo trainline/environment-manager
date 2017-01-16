@@ -367,6 +367,8 @@ paths:
       responses:
         202:
           description: The deployment ID
+        423:
+          description: The environment given is locked for deployments
   /deployments/{id}:
     x-swagger-router-controller: deploymentsController
     get:
