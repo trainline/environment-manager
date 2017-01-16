@@ -11,10 +11,39 @@ describe('consulCatalog', function() {
   let sut;
   let consulClient;
   let consul;
-  
+
+  const NODES = {
+    Node: {
+      Node: 'valid-and-invalid-services-node'
+    },
+    Services: {
+      'valid-service': {
+        Service:'a-valid-service',
+        Tags: [
+          'name:service-name',
+          'deployment_id:abc123'
+        ]
+      },
+      'invalid-service-no-deployment-id': {
+        Service:'invalid-service-1',
+        Tags: [
+          'name:service-name'
+        ]
+      },
+      'invalid-service-no-tags': {
+        Service:'invalid-service-2'
+      }
+    }
+  };
+
   beforeEach(() => {
     consul = {
-      catalog: { service: { list: sinon.stub().returns(require('./catalog-data.json')) }}
+      catalog: {
+        service: { list: sinon.stub().returns(require('./catalog-data.json')) },
+        node: {
+          services: sinon.stub().returns(NODES)
+        }
+      }
     };
     
     consulClient = {
@@ -36,4 +65,13 @@ describe('consulCatalog', function() {
       });
     });
   });
+
+  describe('getNode', function() {
+    it('filters out services with no tags or no deployment ID', () => {
+      return sut.getNode('environment', 'nodeName').then(nodes => {
+        assert.equal(nodes.Services.length, 1);
+      });
+    });
+  });
+
 });
