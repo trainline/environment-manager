@@ -26,7 +26,7 @@ function circuitBreaker(policy) {
   let failures = 0;
   function open() {
     state = 'OPEN';
-    timers.setTimeout(() => { state = 'HALF OPEN'; }, policy.resetTimeout);
+    timers.setTimeout(() => { state = 'HALF OPEN'; }, policy.resetperiod);
   }
   function close() {
     state = 'CLOSED';
@@ -39,8 +39,8 @@ function circuitBreaker(policy) {
     } else {
       return Promise.resolve(fn()).catch((e) => {
         failures += 1;
-        timers.setTimeout(() => { failures -= 1; }, policy.failureTimeout);
-        if (failures > policy.maxFailures) {
+        timers.setTimeout(() => { failures -= 1; }, policy.failurettl);
+        if (failures > policy.maxfailures) {
           open();
         }
         return Promise.reject(e);
@@ -65,11 +65,11 @@ function connectToRedis({ address, port }) {
 }
 
 function encryptedRedisStore(args) {
-  const WRITE_TIMEOUT = args.writeTimeout || 100;
-  const READ_TIMEOUT = args.readTimeout || 100;
+  const WRITE_TIMEOUT = args.writeTimeout || 1000;
+  const READ_TIMEOUT = args.readTimeout || 1000;
 
   let redis = connectToRedis({ address: args.host, port: args.port });
-  let breaker = circuitBreaker({ failureTimeout: 1000, maxFailures: 2, resetTimeout: 1000 });
+  let breaker = circuitBreaker({ failurettl: 1000, maxfailures: 2, resetperiod: 1000 });
   let id = x => x;
   let keyToStore = fp.get(['keyTransform', 'toStore'])(args) || id;
   let keyFromStore = fp.get(['keyTransform', 'fromStore'])(args) || id;
@@ -80,7 +80,11 @@ function encryptedRedisStore(args) {
     let cb = (typeof options === 'function') ? options : callback;
 
     let skey = keyToStore(key);
-    let promise = breaker(() => Promise.race([timeout(WRITE_TIMEOUT), redis.del(skey)])).catch(logError);
+    let promise = breaker(() => Promise.race([timeout(WRITE_TIMEOUT), redis.del(skey)]))
+      .catch((error) => {
+        logger.error(`Redis operation failed: DEL key=${key}`);
+        return logError(error);
+      });
 
     if (cb) {
       return promise.then(cb.bind(null, null), cb.bind(null));
@@ -95,7 +99,11 @@ function encryptedRedisStore(args) {
     let skey = keyToStore(key);
 
     let promise = breaker(() => Promise.race([timeout(READ_TIMEOUT), redis.getBuffer(skey)]))
-      .then(value => (value ? valueFromStore(value) : NOT_FOUND), logError);
+      .then(value => (value ? valueFromStore(value) : NOT_FOUND), logError)
+      .catch((error) => {
+        logger.error(`Redis operation failed: GET key=${key}`);
+        return logError(error);
+      });
 
     if (cb) {
       return promise.then(cb.bind(null, null), cb.bind(null));
@@ -114,7 +122,11 @@ function encryptedRedisStore(args) {
   }
 
   function reset(cb) {
-    let promise = breaker(() => Promise.race([timeout(WRITE_TIMEOUT), redis.flushdb()])).catch(logError);
+    let promise = breaker(() => Promise.race([timeout(WRITE_TIMEOUT), redis.flushdb()]))
+      .catch((error) => {
+        logger.error('Redis operation failed: FLUSHDB');
+        return logError(error);
+      });
 
     if (cb) {
       return promise.then(cb.bind(null, null), cb.bind(null));
@@ -130,7 +142,7 @@ function encryptedRedisStore(args) {
     let skey = keyToStore(key);
     let svalue = valueToStore(value);
     let redisOperation = (() => {
-      let ttl = fp.get('ttl')(opts);
+      let ttl = fp.get('ttl')(opts) || args.ttl;
       if (ttl) {
         return () => redis.setexBuffer(skey, ttl, svalue);
       } else {
@@ -138,7 +150,11 @@ function encryptedRedisStore(args) {
       }
     })();
 
-    let promise = breaker(() => Promise.race([timeout(WRITE_TIMEOUT), redisOperation()])).catch(logError);
+    let promise = breaker(() => Promise.race([timeout(WRITE_TIMEOUT), redisOperation()]))
+      .catch((error) => {
+        logger.error(`Redis operation failed: SET key=${key}`);
+        return logError(error);
+      });
 
     if (cb) {
       return promise.then(cb.bind(null, null), cb.bind(null));
