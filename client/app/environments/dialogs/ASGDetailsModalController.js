@@ -318,8 +318,12 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
           title: 'ASG Schedule Updated',
           message: 'ASG schedule updated successfully.'
         });
-      }).catch(function(err){      
-        modal.error('Error', 'An error has occurred: ' + err.data.error);
+      }).catch(function(err){
+        if (err.status === 404) {
+          modal.error('Error', 'An error has occurred: ' + err.data.error);
+        } else {
+          throw err;
+        }
       }).finally(function() {
         resetForm();
         vm.refresh();
