@@ -3,7 +3,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ManageEnvironmentSettingsController',
-  function ($rootScope, $routeParams, $location, $http, $q, modal, resources, cachedResources, configValidation, cron, Environment) {
+  function ($rootScope, $routeParams, $location, $http, $q, modal, resources, cachedResources, cron, Environment) {
     var vm = this;
 
     vm.environment = {};
@@ -14,17 +14,6 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
     vm.dataLoading = true;
     vm.owningClustersList = [];
     vm.deploymentMapsList = [];
-
-    vm.environmentValidationNode = {};
-    vm.validationModes = [{ Name: 'Validation errors only', Value: false }, { Name: 'All dependencies', Value: true }];
-    vm.selectedValidationMode = { Mode: false };
-
-    vm.dependentServices = [];
-    vm.dependentLBSettings = [];
-
-    vm.validationTabActive = false;
-    vm.scheduleTabActive = false;
-
     vm.alertSettingsList = resources.environmentAlertSettingsList;
 
     vm.newEnvironment = {
@@ -40,14 +29,10 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
     };
 
     function init() {
-      var defaultTab = $routeParams.tab;
-      var environmentName = GetActiveEnvironment();
+      var environmentName = getActiveEnvironment();
       vm.environment.EnvironmentName = environmentName;
 
       vm.userHasPermission = user.hasPermission({ access: 'PUT', resource: '/config/environments/' + environmentName });
-
-      if (defaultTab && defaultTab == 'validation') vm.validationTabActive = true;
-      if (defaultTab && defaultTab == 'schedule') vm.scheduleTabActive = true;
 
       $q.all([
         $http.get('/api/v1/config/notification-settings').then(function (response) {
@@ -80,7 +65,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
         vm.operations = operations;
         vm.operationsVersion = operations.Version;
 
-        var scheduleAction = GetScheduleAction(operations.Value);
+        var scheduleAction = getScheduleAction(operations.Value);
         vm.operations.getScheduleAction = function () { return scheduleAction; };
 
         vm.newEnvironment = {
@@ -97,26 +82,20 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
           Type: operations.Value.ScheduleAutomatically ? 'Automatic' : operations.Value.ManualScheduleUp ? 'On' : 'Off'
         };
       }
+      
+      $q.all([
+        resources.config.environments.get({ key: vm.environment.EnvironmentName }),
+        Environment.getSchedule(vm.environment.EnvironmentName)
+      ]).then(function (results) {
+        var configuration = results[0];
+        var operations = results[1];
+        assignToTheScope(configuration, operations);
 
-      // TODO: only do validation if tab active and on tab change. Will speed up page load a lot
-      configValidation.ValidateEnvironmentSetupCache(vm.environment.EnvironmentName).then(function (validationNode) {
-        vm.environmentValidationNode = validationNode;
-        vm.refreshDependencies();
-      }).then(function () {
-        $q.all([
-          resources.config.environments.get({ key: vm.environment.EnvironmentName }),
-          Environment.getSchedule(vm.environment.EnvironmentName)
-        ]).then(function (results) {
-          var configuration = results[0];
-          var operations = results[1];
-          assignToTheScope(configuration, operations);
-
-          vm.dataFound = true;
-        }, function () {
-          vm.dataFound = false;
-        }).finally(function () {
-          vm.dataLoading = false;
-        });
+        vm.dataFound = true;
+      }, function () {
+        vm.dataFound = false;
+      }).finally(function () {
+        vm.dataLoading = false;
       });
     };
 
@@ -195,59 +174,8 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       });
     };
 
-    vm.refreshDependencies = function () {
-      vm.dependentServices = GetDependentServices();
-      vm.dependentLBSettings = GetDependentLBs();
-    };
-
-    vm.browseToUpstream = function (upstreamNode) {
-      cachedResources.config.lbUpstream.all().then(function (upstreams) {
-        var upstream = upstreams.filter(function (up) {
-          return up.Value.UpstreamName == upstreamNode.EntityName;
-        });
-
-        if (upstream && upstream.length == 1) {
-          upstream = upstream[0];
-          $location.search('key', encodeURIComponent(upstream.key));
-          $location.search('up_environment', upstream.Value.EnvironmentName);
-          $location.search('returnPath', encodeURIComponent('/environment/settings/'));
-          $location.search('tab', 'validation');
-          $location.path('/config/upstream/');
-        }
-      });
-    };
-
-    function GetDependentServices() {
-      var nodes = vm.environmentValidationNode.Children;
-      var serviceNodes = [];
-      if (nodes) {
-        var deploymentMap = GetNodes(nodes, 'DeploymentMap', true)[0];
-        if (deploymentMap && deploymentMap.Children) {
-          serviceNodes = GetNodes(deploymentMap.Children, 'Service', vm.selectedValidationMode.Mode);
-        }
-      }
-
-      return serviceNodes;
-    }
-
-    function GetDependentLBs() {
-      var nodes = vm.environmentValidationNode.Children;
-      var lbNodes = [];
-      if (nodes) {
-        lbNodes = GetNodes(nodes, 'LBSetting', vm.selectedValidationMode.Mode);
-      }
-
-      return lbNodes;
-    }
-
-    function GetNodes(nodes, configType, includeValid) {
-      return nodes.filter(function (node) {
-        return node.EntityType == configType && (includeValid || node.Valid == false);
-      });
-    }
-
-    function GetScheduleAction(data) {
-      function GetCurrentSchedule() {
+    function getScheduleAction(data) {
+      function getCurrentSchedule() {
         if (data.ScheduleAutomatically === false) {
           if (data.ManualScheduleUp === true) return '247';
           if (data.ManualScheduleUp === false) return 'OFF';
@@ -256,11 +184,11 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
         return data.DefaultSchedule;
       }
 
-      var schedule = GetCurrentSchedule();
+      var schedule = getCurrentSchedule();
       return cron.getActionBySchedule(schedule);
     }
 
-    function GetActiveEnvironment() {
+    function getActiveEnvironment() {
       var environmentName = $routeParams.environment;
       if (environmentName) {
         // Environment specified on URL, override active environment

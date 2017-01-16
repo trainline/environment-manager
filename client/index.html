@@ -74,18 +74,24 @@
   <script src="app/environments/schedule/ManageEnvironmentScheduleController.js"></script>
   <script src="app/environments/servers/serversView.js"></script>
   <script src="app/environments/servers/ManageEnvironmentServersController.js"></script>
+<<<<<<< HEAD
   <script src="app/environments/directives/serviceDiffWithTargetState.js"></script>
   <script src="app/environments/directives/healthChecks.js"></script>
   <script src="app/environments/directives/currentDesiredTitle.js"></script>
+=======
+  <script src="app/environments/schedule/ManageEnvironmentScheduleController.js"></script>
+>>>>>>> ba6e291f96d57a844f02ad2b3094444f0ee63e95
   <script src="app/environments/dialogs/LaunchConfigConfirmationController.js"></script>
   <script src="app/environments/dialogs/DeployModalController.js"></script>
   <script src="app/environments/dialogs/CreateEnvironmentController.js"></script>
   <script src="app/environments/dialogs/ASGDetailsModalController.js"></script>
+  <script src="app/environments/directives/serviceDiffWithTargetState.js"></script>
+  <script src="app/environments/directives/healthChecks.js"></script>
+  <script src="app/environments/directives/currentDesiredTitle.js"></script>
   <script src="app/configuration/configuration.module.js"></script>
   <script src="app/configuration/services/permissionsValidationService.js"></script>
   <script src="app/configuration/services/lbBulkOperationService.js"></script>
   <script src="app/configuration/services/deploymentMapConverter.js"></script>
-  <script src="app/configuration/services/configValidationService.js"></script>
   <script src="app/configuration/services/arrayItemHashDetectorService.js"></script>
   <script src="app/configuration/pick-ami/PickAmiController.js"></script>
   <script src="app/configuration/permissions/PermissionsController.js"></script>
@@ -115,12 +121,16 @@
   <script src="app/configuration/audit/AuditCompareModalController.js"></script>
   <script src="app/configuration/accounts/AccountsController.js"></script>
   <script src="app/configuration/accounts/AccountController.js"></script>
+<<<<<<< HEAD
   <script src="app/compare/compare.module.js"></script>
   <script src="app/compare/services/serviceComparison.js"></script>
   <script src="app/compare/services/comparableResources.js"></script>
   <script src="app/compare/services/ResourceComparison.js"></script>
   <script src="app/compare/directives/serviceCell.js"></script>
   <script src="app/compare/diff-viewer/DiffViewerController.js"></script>
+=======
+  <script src="app/common/common.module.js"></script>
+>>>>>>> ba6e291f96d57a844f02ad2b3094444f0ee63e95
   <script src="app/common/utils/QuerySync.js"></script>
   <script src="app/common/services/targetStateService.js"></script>
   <script src="app/common/services/taggable.js"></script>
@@ -131,6 +141,7 @@
   <script src="app/common/services/remoteResourceFactoryService.js"></script>
   <script src="app/common/services/modalService.js"></script>
   <script src="app/common/services/localResourceFactoryService.js"></script>
+  <script src="app/common/services/loading.js"></script>
   <script src="app/common/services/linkHeaderService.js"></script>
   <script src="app/common/services/instancesService.js"></script>
   <script src="app/common/services/enumsService.js"></script>
@@ -152,22 +163,33 @@
   <script src="app/common/directives/scheduleEditor.js"></script>
   <script src="app/common/directives/scalingScheduleEditor.js"></script>
   <script src="app/common/directives/scalingCronEditor.js"></script>
+<<<<<<< HEAD
   <script src="app/common/directives/multipleEmails.js"></script>
+=======
+  <script src="app/common/directives/loadingOverlay.js"></script>
+>>>>>>> ba6e291f96d57a844f02ad2b3094444f0ee63e95
   <script src="app/common/directives/jsonDiffPatchDirective.js"></script>
   <script src="app/common/directives/healthStatus.js"></script>
   <script src="app/common/directives/defaultIfEmptyDirective.js"></script>
   <script src="app/common/directives/cronEditor.js"></script>
   <script src="app/common/common-modal/CommonModalController.js"></script>
+  <script src="app/compare/compare.module.js"></script>
+  <script src="app/compare/services/serviceComparison.js"></script>
+  <script src="app/compare/services/comparableResources.js"></script>
+  <script src="app/compare/services/ResourceComparison.js"></script>
+  <script src="app/compare/directives/serviceCell.js"></script>
+  <script src="app/compare/diff-viewer/DiffViewerController.js"></script>
   <script src="app/operations/ToggleServiceModalController.js"></script>
-  <script src="app/compare/CompareController.js"></script>
   <script src="app/common/utilities.js"></script>
   <script src="app/common/MainController.js"></script>
+  <script src="app/compare/CompareController.js"></script>
   <script src="app/app.module.js"></script>
   <!-- endinject -->
   <!-- endbuild -->
 
 </head>
 <body ng-controller="MainController as main">
+  <loading-overlay></loading-overlay>
   <header>
     <a href="#/"><img id="logo" src="assets/images/logo.jpg" height="30"/></a>
     <h1 title="Environment Manager {{appVersion}}"><a href="#/">Environment Manager</a></h1>
