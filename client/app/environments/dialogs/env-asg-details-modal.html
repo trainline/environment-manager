@@ -89,8 +89,11 @@
           </div>
         </form>
       </uib-tab>
-      <uib-tab heading="LB Status" index="'lb-status'">
-        <p>Under construction</p>
+      <uib-tab heading="Upstreams Status" index="'lb-status'">
+        <div>
+          <h2>Upstreams Status</h2>
+        </div>
+        <lb-status-view servers="vm.serversLBStatus"></lb-status-view>
       </uib-tab>
     </uib-tabset>
   </form>

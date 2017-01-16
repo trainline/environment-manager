@@ -275,42 +275,33 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
       return new Promise(function(resolve, reject){
         setTimeout(function(){
            resolve([{
-              "name": "c51-TestService99",
-              "hosts": [
+              "Name": "c50-test",
+              "Hosts": [
                 {
-                  "server": "10.248.151.171:40501",
-                  "state": "up",
-                  "health_checks": {
-                    "checks": 0,
-                    "fails": 0,
-                    "unhealthy": 0
-                  }
-                },
-                {
-                  "server": "10.248.173.203:40501",
-                  "state": "up",
-                  "health_checks": {
+                  "Server": "10.248.151.171:500",
+                  "State": "up",
+                  "HealthChecks": {
                     "checks": 0,
                     "fails": 0,
                     "unhealthy": 0
                   }
                 }
               ]},{
-              "name": "c51-TestService99",
-              "hosts": [
+              "Name": "c50-ConsulHealthcheckPassWinTest",
+              "Hosts": [
                 {
-                  "server": "10.248.151.171:40502",
-                  "state": "down",
-                  "health_checks": {
+                  "Server": "10.249.156.141:40500",
+                  "State": "down",
+                  "HealthChecks": {
                     "checks": 0,
                     "fails": 0,
                     "unhealthy": 0
                   }
                 },
                 {
-                  "server": "10.248.173.203:40502",
-                  "state": "down",
-                  "health_checks": {
+                  "Server": "10.248.173.203:40502",
+                  "State": "down",
+                  "HealthChecks": {
                     "checks": 0,
                     "fails": 0,
                     "unhealthy": 0
@@ -350,8 +341,9 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
         var promises = lbs.map(function (lb) {
           var url = ['api', 'v1', 'load-balancer', lb].join('/');
 
-          //return $http.get(url).then(function (response) {
-          return getDummyData().then(function (nginxData) {
+          //return getDummyData().then(function (nginxData) {
+          return $http.get(url).then(function (response) {
+            var nginxData = response.data;
             var lbName = lb.split('.')[0]; // Drop .prod/nonprod.local from name
 
             // Loop upstream hosts and associate LB status with each record
