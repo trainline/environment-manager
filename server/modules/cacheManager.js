@@ -12,32 +12,63 @@ let config = require('config');
 let emCrypto = require('modules/emCrypto');
 let fp = require('lodash/fp');
 let logger = require('modules/logger');
+let masterAccountClient = require('modules/amazon-client/masterAccountClient');
 
-const EM_REDIS_CRYPTO_KEY = config.get('EM_REDIS_CRYPTO_KEY');
-const EM_REDIS_ADDRESS = config.get('EM_REDIS_ADDRESS');
-const EM_REDIS_PORT = config.get('EM_REDIS_PORT');
+const DEFAULT_TTL_SECONDS = 10;
+const REDIS_READ_TIMEOUT = 1000;
+const REDIS_WRITE_TIMEOUT = 1000;
+
 const caches = new Map();
 
-let redisCache = (() => {
-  if (EM_REDIS_CRYPTO_KEY && EM_REDIS_ADDRESS && EM_REDIS_PORT) {
-    let redisStore = cacheManagerEncryptedRedis.create({
-      host: EM_REDIS_ADDRESS,
-      port: EM_REDIS_PORT,
-      valueTransform: {
-        toStore: fp.flow(JSON.stringify, str => new Buffer(str), emCrypto.encrypt.bind(null, EM_REDIS_CRYPTO_KEY)),
-        fromStore: fp.flow(emCrypto.decrypt.bind(null, EM_REDIS_CRYPTO_KEY), buf => buf.toString(), JSON.parse)
-      }
-    });
-    logger.info(`Cache will use Redis. address=${EM_REDIS_ADDRESS} port=${EM_REDIS_PORT}`);
-    return [cacheManager.caching({ store: redisStore, db: 0, ttl: 600 })];
-  } else {
-    logger.warn('Cache will not use Redis because it has not been configured.');
-    return [];
-  }
+let redisCachePromise = (() => {
+  const EM_REDIS_ADDRESS = config.get('EM_REDIS_ADDRESS');
+  const EM_REDIS_PORT = config.get('EM_REDIS_PORT');
+
+  let redisCryptoKeyPromise = (() => {
+    const EM_REDIS_CRYPTO_KEY = config.get('EM_REDIS_CRYPTO_KEY');
+    const EM_REDIS_CRYPTO_KEY_S3_BUCKET = config.get('EM_REDIS_CRYPTO_KEY_S3_BUCKET');
+    const EM_REDIS_CRYPTO_KEY_S3_KEY = config.get('EM_REDIS_CRYPTO_KEY_S3_KEY');
+
+    if (EM_REDIS_CRYPTO_KEY) {
+      return Promise.resolve(EM_REDIS_CRYPTO_KEY);
+    } else if (EM_REDIS_CRYPTO_KEY_S3_BUCKET && EM_REDIS_CRYPTO_KEY_S3_KEY) {
+      return masterAccountClient.createS3Client().then(s3 => s3.getObject({
+        Bucket: EM_REDIS_CRYPTO_KEY_S3_BUCKET,
+        Key: EM_REDIS_CRYPTO_KEY_S3_KEY
+      }).promise()).then(rsp => rsp.Body, (error) => {
+        logger.warn(`Failed to get Redis Crypto Key: Bucket=${EM_REDIS_CRYPTO_KEY_S3_BUCKET} Key=${EM_REDIS_CRYPTO_KEY_S3_KEY}`);
+        logger.error(error);
+        return Promise.resolve();
+      });
+    } else {
+      return Promise.resolve();
+    }
+  })();
+
+  return redisCryptoKeyPromise.then((cryptokey) => {
+    if (cryptokey && EM_REDIS_ADDRESS && EM_REDIS_PORT) {
+      let redisStore = cacheManagerEncryptedRedis.create({
+        host: EM_REDIS_ADDRESS,
+        port: EM_REDIS_PORT,
+        valueTransform: {
+          toStore: fp.flow(JSON.stringify, str => new Buffer(str), emCrypto.encrypt.bind(null, cryptokey)),
+          fromStore: fp.flow(emCrypto.decrypt.bind(null, cryptokey), buf => buf.toString(), JSON.parse)
+        },
+        readTimeout: REDIS_READ_TIMEOUT,
+        writeTimeout: REDIS_WRITE_TIMEOUT,
+        ttl: DEFAULT_TTL_SECONDS
+      });
+      logger.info(`Cache will use Redis. address=${EM_REDIS_ADDRESS} port=${EM_REDIS_PORT}`);
+      return [cacheManager.caching({ store: redisStore })];
+    } else {
+      logger.warn('Cache will not use Redis because it has not been configured.');
+      return [];
+    }
+  });
 })();
 
 let memoryCache = cacheManager.caching({ store: 'memory', max: 256, ttl: 1 });
-let cache = cacheManager.multiCaching([memoryCache].concat(redisCache));
+let cachePromise = redisCachePromise.then(redisCache => cacheManager.multiCaching([memoryCache].concat(redisCache)));
 
 const myCacheManager = {
   /**
@@ -54,7 +85,7 @@ const myCacheManager = {
       throw new Error(`Cache "${name}" already exists`);
     }
 
-    let result = createCache(name, fn);
+    let result = createCache(name, fn, options);
     caches.set(name, result);
     return result;
   },
@@ -77,11 +108,11 @@ const myCacheManager = {
    */
   clear() {
     caches.clear();
-    cache.reset();
+    return cachePromise.then(cache => cache.reset());
   }
 };
 
-function createCache(name, fn) {
+function createCache(name, fn, options) {
   function cacheKey(key) {
     return JSON.stringify({ ns: name, key });
   }
@@ -107,21 +138,21 @@ function createCache(name, fn) {
      * because its `this` argument is bound.
      */
     // eslint-disable-next-line prefer-arrow-callback
-    return cache.wrap(cacheKey(key), function () {
-      logger.debug(`Cache miss: namespace: "${name}", key: "${key}"`);
+    return cachePromise.then(cache => cache.wrap(cacheKey(key), function () {
+      logger.info(`Cache miss: namespace="${name}", key="${key}"`);
       return Promise.resolve().then(() => fn(key)).then(normalizeValue);
-    });
+    }, { ttl: fp.get('stdTTL')(options) || DEFAULT_TTL_SECONDS }));
   }
 
   /**
    * Evict an item from the cache.
    */
   function del(key) {
-    cache.del(cacheKey(key));
+    cachePromise.then(cache => cache.del(cacheKey(key)));
   }
 
   function setInCache(key, item) {
-    cache.set(key, normalizeValue(item));
+    cachePromise.then(cache => cache.set(key, normalizeValue(item)));
   }
 
   return {
