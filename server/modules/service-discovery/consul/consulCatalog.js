@@ -39,7 +39,17 @@ function getAllNodes(environment) {
 
 function getNode(environment, nodeName) {
   assert(nodeName, 'nodeName is required');
-  return executeConsul(environment, clientInstance => clientInstance.catalog.node.services(nodeName));
+  return executeConsul(environment, clientInstance => clientInstance.catalog.node.services(nodeName))
+    .then((nodes) => {
+      if (!nodes || !nodes.Services) {
+        return null;
+      } else {
+        // Filter out services that were not installed via environment manager
+        nodes.Services = _.filter(nodes.Services,
+          service => service.Tags && service.Tags.find(tag => tag.startsWith('deployment_id')));
+        return nodes;
+      }
+    });
 }
 
 function getNodeHealth(environment, nodeName) {
