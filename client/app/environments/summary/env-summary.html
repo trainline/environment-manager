@@ -39,7 +39,6 @@
     <table class="table">
       <thead>
         <tr>
-          <th></th>
           <th class="text-nowrap">Environment</th>
           <th class="text-nowrap">Owning Cluster</th>
           <th class="text-nowrap">Description</th>
@@ -53,11 +52,6 @@
       </thead>
       <tbody>
         <tr ng-repeat="env in vm.data | orderBy : 'EnvironmentName'">
-          <td class="config-status">
-            <a href="#/environment/settings?environment={{env.EnvironmentName}}&tab=validation">
-              <div class="config-status-{{vm.environmentConfigValid[env.EnvironmentName].Valid}}" title="{{vm.environmentConfigValid[env.EnvironmentName].Error}}"></div>
-            </a>
-          </td>
           <td><a href="#/environment/servers?environment={{env.EnvironmentName}}">{{env.EnvironmentName}} <small ng-if="env.Configuration.EnvironmentType">({{env.Configuration.EnvironmentType}})</small></a></td>
           <td>{{env.Configuration.OwningCluster}}</td>
           <td>{{env.Configuration.Description}}</td>
