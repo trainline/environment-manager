@@ -14,6 +14,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node index.js",
+    "debug": "nodemon --debug-brk index.js",
     "dev": "nodemon index.js",
     "lint": "eslint . --ext .js --quiet",
     "lint-rule": "eslint . --ext .js --quiet --parser-options {ecmaVersion:6} --rule ",
