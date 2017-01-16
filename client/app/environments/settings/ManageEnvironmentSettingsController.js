@@ -21,9 +21,9 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
 
     vm.dependentServices = [];
     vm.dependentLBSettings = [];
-
     vm.validationTabActive = false;
     vm.scheduleTabActive = false;
+    vm.enableLockChanges = false;
 
     vm.newEnvironment = {
       OwningCluster: '',
@@ -44,6 +44,12 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       vm.environment.EnvironmentName = environmentName;
 
       vm.userHasPermission = user.hasPermission({ access: 'PUT', resource: '/config/environments/' + environmentName });
+
+      // This is only exposed to ADMIN users
+      vm.enableLockChanges = user.hasPermission({
+        access:'PUT',
+        resource: '/config/environments/' + environmentName + '/locks'
+      });
 
       if (defaultTab && defaultTab == 'validation') vm.validationTabActive = true;
       if (defaultTab && defaultTab == 'schedule') vm.scheduleTabActive = true;

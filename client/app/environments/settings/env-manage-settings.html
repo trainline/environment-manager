@@ -72,7 +72,7 @@
                             <textarea ng-model="vm.newEnvironment.Description" ng-readonly="!vm.canUser('edit')"></textarea>
                         </div>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" data-ng-if="vm.enableLockChanges">
                         <label class="col-md-2 control-label text-left">&nbsp;</label>
                         <div class="col-md-3">
                           <label>
