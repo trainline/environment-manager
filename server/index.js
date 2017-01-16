@@ -25,6 +25,7 @@ function start() {
   co(function* () {
     let configurationProvider = new ConfigurationProvider();
     yield configurationProvider.init();
+    yield cacheManager.flush();
 
     if (config.getUserValue('masterAccountName') === undefined) {
       logger.error('No Master account found. Check the Accounts Dynamo Table.');
@@ -41,8 +42,6 @@ function start() {
       new MainServer(),
       new AdminServer()
     ];
-
-    yield cacheManager.clear();
 
     yield servers.map(server => server.start());
   }).catch((error) => {

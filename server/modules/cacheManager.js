@@ -109,6 +109,13 @@ const myCacheManager = {
   clear() {
     caches.clear();
     return cachePromise.then(cache => cache.reset());
+  },
+
+  /**
+   * Clear cache contents leaving cache-miss handler functions in place.
+   */
+  flush() {
+    return cachePromise.then(cache => cache.reset());
   }
 };
 
