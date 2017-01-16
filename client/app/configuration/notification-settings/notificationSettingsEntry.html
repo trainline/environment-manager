@@ -5,7 +5,7 @@
 <hr />
 
 <div ng-if="vm.loadFailed">
-    Could not find NotificationSettings: <strong>{{::vm.routeId}}</strong>
+    Could not find Notification Settings: <strong>{{::vm.routeId}}</strong>
     <div>
         <br />
         <a href="/#/config/notification-settings">&lt; Back to list of Notification Settings</a>
@@ -14,7 +14,7 @@
 
 <form ng-if="!vm.loadFailed" name="form" class="form-horizontal">
     <div class="form-group" ng-class="{'has-error': form.NotificationSettingsId.$invalid && form.NotificationSettingsId.$dirty}">
-        <label for="notification-settings-id" class="col-md-2 control-label">Notification Settings id:</label>
+        <label for="notification-settings-id" class="col-md-2 control-label">Name:</label>
         <div class="col-md-2">
             <input id="notification-settings-id"
                    name="NotificationSettingsId"
@@ -27,16 +27,16 @@
         </div>
         <span class="help-block"
               ng-if="form.NotificationSettingsId.$dirty && form.NotificationSettingsId.$error.required">
-            Notification Settings id is required
+            Notification Settings Name
         </span>
-        <span class="help-block" ng-if="form.NotificationSettingsId.$dirty && form.NotificationSettingsId.$error.pattern">Notification Settings id must match pattern [A-Za-z0-9_\-]+</span>
+        <span class="help-block" ng-if="form.NotificationSettingsId.$dirty && form.NotificationSettingsId.$error.pattern">Notification Settings name must match pattern [A-Za-z0-9_\-]+</span>
     </div>
     <div class="form-group" ng-class="{'has-error': form.NotificationEmail.$invalid && form.NotificationEmail.$dirty}">
         <label for="notification-email" class="col-md-2 control-label">Notification email:
           <span uib-popover
               popover-trigger="'mouseenter'"
               popover-append-to-body="true"
-              uib-popover-template="'app/configuration/popovers/notification-email.html'"
+              uib-popover-template="'app/configuration/popovers/multiple-values.html'"
               data-popover-placement="bottom"
               class="glyphicon glyphicon-question-sign help-icon"
               aria-hidden="true">
@@ -50,30 +50,53 @@
                    type="text"
                    class="form-control"
                    multiple-emails
-                   ng-model="vm.model.Value.NotificationEmail" ng-list />
+                   ng-model="vm.model.Value.NotificationEmail"
+                   ng-list="" />
         </div>
         <span class="help-block" ng-if="form.NotificationEmail.$dirty && form.NotificationEmail.$error.multipleEmails">At least one email is invalid.</span>
     </div>
 
     <div class="form-group" ng-class="{'has-error': form.ChatChannel.$invalid && form.ChatChannel.$dirty}">
-        <label for="chat-channel" class="col-md-2 control-label">Chat channel:</label>
+        <label for="chat-channel" class="col-md-2 control-label">Chat channel:
+          <span uib-popover
+              popover-trigger="'mouseenter'"
+              popover-append-to-body="true"
+              uib-popover-template="'app/configuration/popovers/multiple-values.html'"
+              data-popover-placement="bottom"
+              class="glyphicon glyphicon-question-sign help-icon"
+              aria-hidden="true">
+          </span>
+          
+        </label>
         <div class="col-md-2">
             <input id="chat-channel"
                    name="ChatChannel"
                    type="text"
                    class="form-control"
-                   ng-model="vm.model.Value.ChatChannel" />
+                   ng-model="vm.model.Value.ChatChannel"
+                   ng-list="" />
         </div>  
     </div>
 
     <div class="form-group" ng-class="{'has-error': form.Paging.$invalid && form.Paging.$dirty}">
-        <label for="paging" class="col-md-2 control-label">Paging:</label>
+        <label for="paging" class="col-md-2 control-label">Paging:
+          <span uib-popover
+              popover-trigger="'mouseenter'"
+              popover-append-to-body="true"
+              uib-popover-template="'app/configuration/popovers/multiple-values.html'"
+              data-popover-placement="bottom"
+              class="glyphicon glyphicon-question-sign help-icon"
+              aria-hidden="true">
+          </span>
+          
+        </label>
         <div class="col-md-2">
             <input id="paging"
                    name="Paging"
                    type="text"
                    class="form-control"
-                   ng-model="vm.model.Value.Paging" />
+                   ng-model="vm.model.Value.Paging"
+                   ng-list="" />
         </div>  
     </div>
 

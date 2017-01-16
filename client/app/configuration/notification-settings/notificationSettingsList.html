@@ -30,9 +30,9 @@
           <td>
             <a ng-href="/#/config/notification-settings/{{::entry.NotificationSettingsId}}">{{::entry.NotificationSettingsId}}</a>
           </td>
-          <td>{{::entry.Value.ChatChannel}}</td>
+          <td>{{::entry.Value.ChatChannel.join(', ')}}</td>
           <td>{{::entry.Value.NotificationEmail.join(', ')}}</td>
-          <td>{{::entry.Value.Paging}}</td>
+          <td>{{::entry.Value.Paging.join(', ')}}</td>
           <td>{{::entry.Value.Ticketing}}</td>
           <td ng-if="vm.canDelete" class="command command-delete">
             <span class="glyphicon glyphicon-remove" ng-click="vm.delete(entry)" title="Delete"></span>
