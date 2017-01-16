@@ -1,5 +1,7 @@
 ﻿<div class="row page-title">
-  <div class="col-md-12"><h2>Servers for {{vm.selected.environment.EnvironmentName}}</h2></div>
+  <div class="col-md-12">
+    <h2>Servers for {{vm.selected.environment.EnvironmentName}} <span class="glyphicon glyphicon-lock" data-ng-if="vm.selected.environment.Value.IsLocked"></span></h2>
+  </div>
   <div id="RefreshData">
     <span class="glyphicon glyphicon-refresh" ng-click="vm.refresh()" title="Refresh data"></span>
   </div>
