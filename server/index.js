@@ -11,6 +11,7 @@ let logger = require('modules/logger');
 // TODO conver to singleton
 let ConfigurationProvider = require('modules/configuration/ConfigurationProvider');
 let checkAppPrerequisites = require('modules/checkAppPrerequisites');
+let cacheManager = require('modules/cacheManager');
 let co = require('co');
 require('./globals');
 
@@ -40,6 +41,8 @@ function start() {
       new MainServer(),
       new AdminServer()
     ];
+
+    yield cacheManager.clear();
 
     yield servers.map(server => server.start());
   }).catch((error) => {
