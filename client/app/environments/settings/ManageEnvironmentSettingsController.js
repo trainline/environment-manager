@@ -29,7 +29,8 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       OwningCluster: '',
       DeploymentMap: '',
       CodeDeployBucket: '',
-      Description: ''
+      Description: '',
+      IsLocked: false
     };
 
     vm.newSchedule = {
@@ -81,7 +82,8 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
           OwningCluster: configuration.Value.OwningCluster,
           DeploymentMap: configuration.Value.DeploymentMap,
           CodeDeployBucket: configuration.Value.CodeDeployBucket,
-          Description: configuration.Value.Description
+          Description: configuration.Value.Description,
+          IsLocked: configuration.Value.IsLocked
         };
 
         vm.newSchedule = {
@@ -144,6 +146,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       vm.environment.Value.DeploymentMap = vm.newEnvironment.DeploymentMap;
       vm.environment.Value.CodeDeployBucket = vm.newEnvironment.CodeDeployBucket;
       vm.environment.Value.Description = vm.newEnvironment.Description;
+      vm.environment.Value.IsLocked = vm.newEnvironment.IsLocked;
 
       var params = {
         key: vm.environment.EnvironmentName,

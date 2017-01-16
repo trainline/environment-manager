@@ -2388,6 +2388,8 @@ definitions:
         type: string
       CodeDeployBucket:
         type: string
+      IsLocked:
+        type: boolean
   EnvironmentTypeConfig:
     type: object
     required:
