@@ -17,9 +17,9 @@
     <table class="table">
       <thead>
         <tr>
-          <th class="text-nowrap">ID</th>
-          <th class="text-nowrap">Chat Channel</th>
+          <th class="text-nowrap">Name</th>
           <th class="text-nowrap">Notification Email</th>
+          <th class="text-nowrap">Chat Channel</th>
           <th class="text-nowrap">Paging</th>
           <th class="text-nowrap">Ticketing</th>
           <th ng-if="vm.canDelete" class="text-nowrap command-header">Remove</th>
@@ -30,8 +30,8 @@
           <td>
             <a ng-href="/#/config/notification-settings/{{::entry.NotificationSettingsId}}">{{::entry.NotificationSettingsId}}</a>
           </td>
-          <td>{{::entry.Value.ChatChannel.join(', ')}}</td>
           <td>{{::entry.Value.NotificationEmail.join(', ')}}</td>
+          <td>{{::entry.Value.ChatChannel.join(', ')}}</td>
           <td>{{::entry.Value.Paging.join(', ')}}</td>
           <td>{{::entry.Value.Ticketing}}</td>
           <td ng-if="vm.canDelete" class="command command-delete">
