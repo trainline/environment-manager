@@ -48,10 +48,10 @@
 <div>
   <span style="margin-right: 10px" data-ng-repeat="(status, count) in vm.summary">
     <span class="glyphicon" data-ng-class="{
-      'status-in-progress glyphicon-refresh':   status === 'In Progress',
-      'status-success glyphicon-ok':            status === 'Success',
-      'status-failed glyphicon-remove':         status === 'Failed' ||
-                                                status === 'Cancelled'}">
+      'status-in-progress glyphicon-question-sign':   status === 'In Progress',
+      'status-success glyphicon-ok-sign':             status === 'Success',
+      'warning glyphicon-exclamation-sign':                      status === 'Cancelled',
+      'status-failed glyphicon-alert':                status === 'Failed'}">
     </span>
      {{status}}: <strong>{{count}}</strong> 
   </span>

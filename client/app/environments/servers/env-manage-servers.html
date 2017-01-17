@@ -1,6 +1,6 @@
-﻿<div class="row page-title">
+﻿<div class="row">
   <div class="col-md-12">
-    <h2>Servers for {{vm.selected.environment.EnvironmentName}}</h2>
+    <h2>Servers in {{vm.selected.environment.EnvironmentName}}</h2>
   </div>
   <div id="RefreshData">
     <span class="glyphicon glyphicon-refresh" ng-click="vm.refresh()" title="Refresh data"></span>
@@ -9,19 +9,6 @@
 <spinner ng-if="vm.dataLoading"></spinner>
 <div class="row env-servers" ng-if="!vm.dataLoading">
   <div class="col-md-12">
-
-    <div ng-if="vm.dataFound">
-      <div class="statusBar">
-        <div class="statusGroup">
-          <strong>Server Roles:</strong>
-          <span class="glyphicon glyphicon-ok-sign success"></span> {{vm.view.aggregations.servers.healthy.count}}
-          <span class="glyphicon glyphicon-alert warning"></span> {{vm.view.aggregations.servers.warning.count}}
-          <span class="glyphicon glyphicon-alert error"></span> {{vm.view.aggregations.servers.error.count}}
-        </div>
-      </div>
-      <br />
-    </div>
-
     <form id="SearchFilter" class="form-inline">
       <div class="form-group">
         <label class="control-label text-left">Status:</label>
@@ -30,7 +17,7 @@
         <select class="form-control" ng-model="vm.selected.status" ng-options="status for status in vm.options.statuses" ng-change="vm.update()"></select>
       </div>
       <div class="form-group">
-        <label class="control-label text-left">Owning Cluster:</label>
+        <label class="control-label text-left">Cluster:</label>
       </div>
       <div class="form-group">
         <select class="form-control" ng-model="vm.selected.cluster" ng-options="cluster for cluster in vm.options.clusters" ng-change="vm.update()">Any</select>
@@ -51,6 +38,23 @@
         <button class="btn btn-default deploy-button" ng-click="vm.loadDeployDialog()">Deploy...</button>
       </div>
     </form>
+
+    <hr />
+
+    <div>
+      <span class="glyphicon glyphicon-ok-sign success"></span> Healthy: <strong>{{vm.view.aggregations.servers.healthy.count}} </strong>
+      <span class="glyphicon glyphicon-exclamation-sign warning" style="margin-left: 10px;"></span> Warning: <strong>{{vm.view.aggregations.servers.warning.count}} </strong>
+      <span class="glyphicon glyphicon-alert error" style="margin-left: 10px;"></span> Error: <strong>{{vm.view.aggregations.servers.error.count}} </strong>
+    </div>
+    <!--
+    <div ng-if="vm.dataFound">
+      <div class="statusBar">
+      </div>
+      <br />
+    </div>
+    -->
+
+    <hr />
 
     <div ng-show="vm.view.hasRoles">
       <table class="table">
