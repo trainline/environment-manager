@@ -25,22 +25,13 @@
             <small>{{deployment.timestamp | amDateFormat:'DD/MM/YYYY HH:mm:ss'}}</small>
           </td>
           <td class="status-{{deployment.status.toLowerCase().replace(' ', '-')}}">
-            <span ng-if="deployment.status == 'In Progress'">
-              <span class="glyphicon glyphicon-refresh"></span>
-              <span>In progress</span>
+            <span class="glyphicon" data-ng-class="{
+              'glyphicon-refresh':  deployment.status === 'In Progress',
+              'glyphicon-ok':       deployment.status === 'Success',
+              'glyphicon-remove':   deployment.status === 'Failed' ||
+                                    deployment.status === 'Cancelled'}">
             </span>
-            <span ng-if="deployment.status == 'Success'">
-              <span class="glyphicon glyphicon-ok"></span>
-              <span>Success</span>
-            </span>
-            <span ng-if="deployment.status == 'Failed'">
-              <span class="glyphicon glyphicon-remove"></span>
-              <span>Failed</span>
-            </span>
-            <span ng-if="deployment.status == 'Cancelled'">
-              <span class="glyphicon glyphicon-remove"></span>
-              <span>Cancelled</span>
-            </span>
+            <span>{{deployment.status}}</span>
           </td>
           <td>
             <a ng-href='#/environment/servers/?environment={{deployment.environment.name}}'>{{deployment.environment.name}}<br>

@@ -13,6 +13,7 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
     vm.owningClustersList = [];
     vm.statusList = [];
     vm.selectedDeploymentId = null;
+    vm.summary = {};
 
     var dateRangeList = vm.dateRangeList = [
       { name: 'Last hour', value: 1 * enums.MILLISECONDS.PerHour },
@@ -156,6 +157,16 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
       if (!deployment.service.name) return false;
       return deployment.service.name.toLowerCase().indexOf(vm.serviceName.toLowerCase()) >= 0;
     };
+
+    vm.updateSummary = function showSummary(deployments) {
+      var emptySummary = { 'Success':0, 'In Progress':0, 'Cancelled':0, 'Failed':0 };
+
+      vm.summary = deployments.reduce(function(summary, d) {
+        summary[d.status]++;
+        return summary;
+      },
+      emptySummary);
+    }
 
     init();
   });

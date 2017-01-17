@@ -7,7 +7,8 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsList', 
   bindings: {
     query: '<',
     showDetails: '&',
-    foundServicesFilter: '&'
+    foundServicesFilter: '&',
+    updateSummary: '='
   },
   controllerAs: 'vm',
   controller: function ($scope, Deployment, $uibModal) {
@@ -17,11 +18,10 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsList', 
       vm.dataLoading = true;
       Deployment.getAll(vm.query).then(function (data) {
         vm.deployments = data.map(Deployment.convertToListView);
-
         vm.uniqueServices = _.uniq(data.map(function (d) { return d.Value.ServiceName; }));
-
         vm.dataLoading = false;
         vm.dataFound = true;
+        vm.updateSummary(vm.deployments);
       });
     }
 
