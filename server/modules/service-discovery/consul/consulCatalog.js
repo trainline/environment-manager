@@ -42,7 +42,7 @@ function getNode(environment, nodeName) {
   return executeConsul(environment, clientInstance => clientInstance.catalog.node.services(nodeName))
     .then((nodes) => {
       if (!nodes || !nodes.Services) {
-        return null;
+        return nodes;
       } else {
         // Filter out services that were not installed via environment manager
         nodes.Services = _.filter(nodes.Services,
