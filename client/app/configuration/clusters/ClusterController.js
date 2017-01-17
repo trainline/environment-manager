@@ -5,6 +5,8 @@
 // Manage specific owning cluster
 angular.module('EnvironmentManager.configuration').controller('ClusterController',
   function ($scope, $routeParams, $location, $q, $http, resources, cachedResources) {
+    var vm = this;
+
     var RETURN_PATH = '/config/clusters';
     var userHasPermission;
 
@@ -35,6 +37,9 @@ angular.module('EnvironmentManager.configuration').controller('ClusterController
       $q.all([
         resources.config.clusters.all().then(function (clusters) {
           $scope.ClusterNames = _.map(clusters, 'ClusterName');
+        }),
+        $http.get('/api/v1/config/notification-settings').then(function (response) {
+          vm.notificationSettingsList = _.map(response.data, 'NotificationSettingsId');
         })
       ]).then(function () {
         if ($scope.EditMode) readItem(cluster);

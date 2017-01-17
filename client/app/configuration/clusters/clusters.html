@@ -26,6 +26,7 @@
           <th class="text-nowrap">Short Name Code</th>
           <th class="text-nowrap">EC2 Key Pair</th>
           <th class="text-nowrap">Email</th>
+          <th class="text-nowrap">Notification Settings</th>
           <th class="text-nowrap">AD Membership Group</th>
           <th class="text-nowrap command-header">View History</th>
           <th ng-if="canUser('delete')" class="text-nowrap command-header">Delete</th>
@@ -42,6 +43,7 @@
             </span>
             <span ng-if="!cluster.Value.GroupEmailAddress">-</span>
           </td>
+          <td>{{cluster.Value.NotificationSettingsId}}</td>
           <td>{{cluster.Value.ADMembershipGroup || "-" }}</td>
           <td class="command command-viewHistory"><span class="glyphicon glyphicon-time" ng-click="ViewHistory(cluster)" title="View History"></span></td>
           <td ng-if="canUser('delete')" class="command command-delete"><span class="glyphicon glyphicon-remove" ng-click="Delete(cluster)" title="Delete"></span></td>
