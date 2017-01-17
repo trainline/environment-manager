@@ -15,7 +15,8 @@ var app = angular.module('EnvironmentManager', [
 ]);
 
 // Setup global routes
-app.config(function ($routeProvider) {
+app.config(function ($routeProvider, $compileProvider) {
+  $compileProvider.preAssignBindingsEnabled(true); 
   $routeProvider
     .when('/', {
       templateUrl: '/app/environments/summary/env-summary.html',
