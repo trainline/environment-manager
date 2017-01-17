@@ -1,7 +1,7 @@
 <div class="row">
   <div class="col-md-12"><h2>Services</h2></div>
   <div id="RefreshData">
-    <span class="glyphicon glyphicon-refresh" ng-click="Refresh()" title="Refresh data"></span>
+    <span class="glyphicon glyphicon-refresh" ng-click="vm.refresh()" title="Refresh data"></span>
   </div>
 </div>
 
@@ -10,32 +10,33 @@
     <label class="control-label text-left">Owning Cluster:</label>
   </div>
   <div class="form-group">
-    <select class="form-control" ng-model="SelectedOwningCluster" ng-change="Refresh()">
-      <option ng-repeat="c in OwningClustersList" ng-selected="{{c == SelectedOwningCluster}}" value="{{c}}">{{c}}</option>
+    <select class="form-control" ng-model="vm.selectedOwningCluster" ng-change="vm.refresh()">
+      <option ng-repeat="c in vm.owningClustersList" ng-selected="{{c == vm.selectedOwningCluster}}" value="{{c}}">{{c}}</option>
     </select>
   </div>
   <div class="form-group">
     <label class="control-label text-left">Name:</label>
   </div>
   <div class="form-group">
-    <input type="search" name="ServiceName" class="form-control" ng-model="SelectedService" ng-change="UpdateFilter()" />
+    <input type="search" name="ServiceName" class="form-control" ng-model="vm.selectedService" ng-change="vm.updateFilter()" />
   </div>
   <div class="form-group">
-    <button type="button" class="btn btn-default right" ng-click="NewItem()" ng-if="canUser('post')">Create New...</button>
+    <button type="button" class="btn btn-default right" ng-click="vm.newItem()" ng-if="canUser('post')">Create New...</button>
   </div>
 </form>
 
 <hr />
 
 <div class="row">
-  <div class="col-md-12" ng-if="dataLoading">
+  <div class="col-md-12" ng-if="vm.dataLoading">
     <spinner></spinner>
   </div>
 
-  <div class="col-md-12" ng-if="!dataLoading && Data.length == 0">
+  <div class="col-md-12" ng-if="!vm.dataLoading && vm.data.length == 0">
     <p>No services found.</p>
   </div>
-  <div class="col-md-12" ng-if="!dataLoading && Data.length > 0">
+  <div class="col-md-12" ng-if="!vm.dataLoading && vm.data.length > 0">
+    <ul style="margin: 3px 0px" uib-pagination total-items="vm.data.length" ng-model="vm.currentPage" items-per-page="vm.itemsPerPage" max-size="10" class="pagination-sm" boundary-link-numbers="true"></ul>
     <table class="table">
       <thead>
         <tr>
@@ -50,15 +51,15 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="service in ::Data | orderBy : 'ServiceName' ">
+        <tr ng-repeat="service in ::vm.data | orderBy : 'ServiceName'">
           <td><a href="#/config/services/{{::service.ServiceName}}?Range={{::service.OwningCluster}}">{{::service.ServiceName}}</a></td>
           <td>{{::service.OwningCluster}}</td>
           <td>{{::service.Value.Description}}</td>
           <td>{{::service.Value.BluePort}}</td>
           <td>{{::service.Value.GreenPort}}</td>
-          <td class="command command-viewDeployments"><span class="glyphicon glyphicon-log-in" ng-click="ViewDeployments(service)" title="View Deployments"></span></td>
-          <td class="command command-viewHistory"><span class="glyphicon glyphicon-time" ng-click="ViewHistory(service)" title="View History"></span></td>
-          <td ng-if="canUser('delete')" class="command command-delete"><span class="glyphicon glyphicon-remove" ng-click="Delete(service)" title="Delete"></span></td>
+          <td class="command command-viewDeployments"><span class="glyphicon glyphicon-log-in" ng-click="vm.viewDeployments(service)" title="View Deployments"></span></td>
+          <td class="command command-viewHistory"><span class="glyphicon glyphicon-time" ng-click="vm.viewHistory(service)" title="View History"></span></td>
+          <td ng-if="canUser('delete')" class="command command-delete"><span class="glyphicon glyphicon-remove" ng-click="vm.delete(service)" title="Delete"></span></td>
         </tr>
       </tbody>
     </table>
