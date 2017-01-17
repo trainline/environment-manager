@@ -17,7 +17,6 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     vm.data = [];
     vm.dataFound = false;
     vm.dataLoading = false;
-    vm.LBDataLoading = false;
     vm.ASGDataLoading = false;
 
     function init() {
@@ -62,28 +61,21 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     }
 
     vm.refresh = function () {
-      if (!vm.dataLoading && !vm.LBDataLoading) {
-          
-        vm.dataLoading = true;
-        vm.LBDataLoading = true;
-
-        var params = { account: 'all' };
-        resources.config.lbUpstream.all(params).then(function (data) {
-          vm.fullUpstreamData = restructureUpstreams(data);
-          vm.dataFound = true;
+      vm.dataLoading = true;
+      var params = { account: 'all' };
+      resources.config.lbUpstream.all(params).then(function (data) {
+        vm.fullUpstreamData = restructureUpstreams(data);
+        return updateLBStatus().then(function () {
           vm.updateFilter();
-          
-          updateLBStatus().catch(function(){
-            modal.error('Warning', 'Couldn\'t get load balancer info. Active state data of upstreams will not be shown.');
-          }).finally(function () {
-            vm.updateFilter();
-            vm.LBDataLoading = false;
-          });
-
-        }).finally(function () {
-          vm.dataLoading = false;
+          vm.dataFound = true;
+        }, function () {
+          vm.updateFilter();
+          modal.error('Warning', 'Couldn\'t get load balancer info. Active state data of upstreams will not be shown.');
+          vm.dataFound = true;
         });
-      }
+      }).finally(function () {
+        vm.dataLoading = false;
+      });
     };
 
     vm.updateFilter = function () {
