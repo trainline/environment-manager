@@ -612,6 +612,12 @@
                                                 "InfraConfigAccounts",
                                                 "StreamArn"
                                             ]
+                                        },
+                                        {
+                                            "Fn::GetAtt": [
+                                                "ConfigNotificationSettings",
+                                                "StreamArn"
+                                            ]
                                         }
                                     ]
                                 },
@@ -781,6 +787,24 @@
                 "EventSourceArn": {
                     "Fn::GetAtt": [
                         "InfraConfigAccounts",
+                        "StreamArn"
+                    ]
+                },
+                "FunctionName": {
+                    "Ref": "lambdaInfraEnvironmentManagerAudit"
+                },
+                "StartingPosition": "LATEST"
+            }
+        },
+        "auditTriggerConfigNotificationSettings": {
+            "Type": "AWS::Lambda::EventSourceMapping",
+            "Condition": "ThisIsMasterAccount",
+            "Properties": {
+                "BatchSize": 25,
+                "Enabled": true,
+                "EventSourceArn": {
+                    "Fn::GetAtt": [
+                        "ConfigNotificationSettings",
                         "StreamArn"
                     ]
                 },
