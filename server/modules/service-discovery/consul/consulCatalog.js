@@ -83,7 +83,7 @@ function executeAction(promiseFactoryMethod) {
 
   let errorHandler = (reject, error) => {
     logger.error(error.toString(true));
-    if ((error instanceof HttpRequestError) && operation.retry(error)) return;
+    if ((error instanceof HttpRequestError) && operation.retry(error)) reject(error);
     if (operation.mainError() !== null) {
       reject(operation.mainError());
     } else {
@@ -93,14 +93,14 @@ function executeAction(promiseFactoryMethod) {
 
   return new Promise((resolve, reject) => {
     operation.attempt(function () {
-      promiseFactoryMethod().then(resolve).catch(errorHandler.bind(this, reject));
+      promiseFactoryMethod().then(resolve).catch(error => errorHandler(reject, error));
     });
   });
 }
 
 function createConsulClient(environment) {
   assert(environment);
-  return consulClient.create({ environment, promisify: true }).catch(logger.error.bind(logger));
+  return consulClient.create({ environment, promisify: true });
 }
 
 module.exports = {

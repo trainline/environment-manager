@@ -71,7 +71,7 @@ function getInstances(req, res, next) {
 
     if (includeDeploymentsStatus === true) {
       if (list.length > Enums.DEPLOYMENT_INSTANCES_LIST_MAXIMUM_LENGTH) {
-        throw new Error('Too many results. Please refine your search query, ie. choose later since date, or limit query to one environment');
+        throw new Error(`Too many results: ${list.length}. Please refine your search query, ie. choose later since date, or limit query to one environment`);
       }
 
       list = yield _.map(list, (instance) => {
@@ -92,6 +92,9 @@ function getInstances(req, res, next) {
           .then((state) => {
             _.assign(instance, state);
             return instance;
+          }, (error) => {
+            logger.error(error);
+            return false;
           });
       });
 
