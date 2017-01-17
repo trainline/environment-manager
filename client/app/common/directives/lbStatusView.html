@@ -33,16 +33,16 @@
           </div>
           <div ng-if="lb.Hosts" ng-repeat="host in lb.Hosts">
             <div ng-if="host.State == 'up'">
-              <span class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> {{host.Upstream}}</span>
+              <span class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> {{host.Upstream}} (Port: {{host.Port}})</span>
             </div>
             <div ng-if="host.State == 'down'">
-              <span class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span> {{host.Upstream}}</span>
+              <span class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span> {{host.Upstream}} (Port: {{host.Port}})</span>
             </div>
             <div ng-if="host.State == 'unhealthy'">
-              <span class="status-error"><span class="glyphicon glyphicon-exclamation-sign"></span> {{host.Upstream}}</span>
+              <span class="status-error"><span class="glyphicon glyphicon-exclamation-sign"></span> {{host.Upstream}} (Port: {{host.Port}})</span>
             </div>
             <div ng-if="host.State == 'unknown'">
-              <span class="status-down"><span class="glyphicon glyphicon-question-sign"></span> {{host.Upstream}}</span>
+              <span class="status-down"><span class="glyphicon glyphicon-question-sign"></span> {{host.Upstream}} (Port: {{host.Port}})</span>
             </div>
           </div>
         </td>
