@@ -5,32 +5,17 @@
   <table class="table">
     <thead>
       <tr>
-        <th class="text-nowrap">IP</th>
-        <th class="text-nowrap">Instance Name</th>
-        <th class="text-nowrap">Instance Id</th>
-        <th class="text-nowrap">Instance Type</th>
-        <th class="text-nowrap">AWS Status</th>
+        <th class="text-nowrap">Instance</th>
         <th class="text-nowrap" ng-repeat="lb in servers[0].LoadBalancerServerState | orderBy : 'Name'">{{lb.Name}}</th>
       </tr>
     </thead>
     <tbody>
       <tr ng-repeat="server in servers | orderBy : ['Ip']">
-        <td>{{server.Ip}}</td>
-        <td>{{server.Name || '-'}}</td>
-        <td>{{server.InstanceId || '-'}}</td>
-        <td>{{server.InstanceType || '-'}}</td>
-        <td>{{server.Status || 'Not found'}}</td>
+        <td>
+          Name: {{server.Name}} <br />
+          {{server.InstanceId}} ({{server.Ip}})
+        </td>
         <td ng-repeat="lb in server.LoadBalancerServerState | orderBy : 'Name'">
-          <div ng-if="!lb.Hosts">
-            <div ng-if="lb.State == 'up'"><span class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> Up</span>
-            </div>
-            <div ng-if="lb.State == 'down'"><span class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span> Down</span>
-            </div>
-            <div ng-if="lb.State == 'unhealthy'"><span class="status-error"><span class="glyphicon glyphicon-exclamation-sign"></span> Unhealthy</span>
-            </div>
-            <div ng-if="lb.State == 'unknown'"><span class="status-down"><span class="glyphicon glyphicon-question-sign"></span> Unknown</span>
-            </div>
-          </div>
           <div ng-if="lb.Hosts" ng-repeat="host in lb.Hosts">
             <div ng-if="host.State == 'up'">
               <span class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> {{host.Upstream}} (Port: {{host.Port}})</span>
