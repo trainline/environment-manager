@@ -261,9 +261,9 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     function getASGsForHost(upstreamHost) {
       var environment = upstreamHost.Value.EnvironmentName;
       var service = upstreamHost.Value.ServiceName;
-      var slice = upstreamHost.Value.Slice === 'Unknown' ? '' : '&slice=' + upstreamHost.Value.Slice;
+      var slice = upstreamHost.Value.Slice !== 'Unknown' ? upstreamHost.Value.Slice : 'none';
 
-      var url = ['api', 'v1', 'services', service, "asgs"].join('/') + '?environment=' + environment + slice;
+      var url = ['api', 'v1', 'services', service, "asgs"].join('/') + '?environment=' + environment + '&slice=' + slice;
       return $http.get(url).then(function (response) {
         return response.data.map(function(asg){return asg.AutoScalingGroupName;});
       });

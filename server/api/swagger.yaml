@@ -831,7 +831,7 @@ paths:
         - name: slice
           in: query
           type: string
-          required: false
+          required: true
       responses:
         200:
           description: List of ASGs

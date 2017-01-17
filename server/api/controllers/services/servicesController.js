@@ -28,11 +28,10 @@ function getServices(req, res, next) {
 function getASGsByService(req, res, next) {
   const environment = req.swagger.params.environment.value;
   const serviceName = req.swagger.params.service.value;
-
   const sliceName = req.swagger.params.slice.value;
 
   return co(function* () {
-    let slice = sliceName ? `-${sliceName}` : '';
+    let slice = sliceName.toLowerCase() !== 'none' ? `-${sliceName}` : '';
     let service = serviceName + slice;
 
     let nodes = _.castArray(yield serviceDiscovery.getService(environment, service));
