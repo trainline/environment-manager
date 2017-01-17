@@ -16,14 +16,14 @@ function defaultErrorHandler(err, req, res, next) {
     } catch (error) {
       friendlyError = err;
     }
-
-    friendlyError.originalException = err;
   } else {
     if (res.statusCode === 200) {
       res.status(getStatusByErrorType(err));
     }
     friendlyError.error = err.message;
   }
+
+  friendlyError.originalException = err;
 
   if (IS_PROD && res.statusCode === 500) {
     friendlyError = {
