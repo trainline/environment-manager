@@ -63,9 +63,22 @@
                 <span class="help-block" ng-if="form.CodeDeployBucket.$dirty && form.CodeDeployBucket.$error.pattern">Bucket path must be a valid S3 location.</span>
             </div>
             <div class="form-group">
-                <label class="col-md-1 control-label text-left">Description:</label>
+                <label class="col-md-2 control-label text-left">Description:</label>
                 <div class="col-md-2">
-                    <textarea ng-model="vm.newEnvironment.Description" ng-readonly="!vm.canUser('edit')"></textarea>
+                    <textarea ng-model="vm.newEnvironment.Description" class="form-control" ng-readonly="!vm.canUser('edit')"></textarea>
+                </div>
+            </div>
+            <div class="form-group" data-ng-if="vm.enableLockChanges">
+                <label class="col-md-2 control-label text-left">&nbsp;</label>
+                <div class="col-md-3">
+                    <label>
+                        <input type="checkbox" data-ng-model="vm.newEnvironment.IsLocked" />
+                        <span class="glyphicon glyphicon-lock" aria-hidden="true"></span> Lock Deployments</label>
+                    <p>
+                        <em>
+                            This will prevent any further deployments to this environment until it is unlocked.
+                        </em>
+                    </p>
                 </div>
             </div>
             <div class="form-group">
