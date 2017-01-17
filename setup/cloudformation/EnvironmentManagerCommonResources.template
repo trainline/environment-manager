@@ -184,6 +184,7 @@
         },
         "ConfigNotificationSettings": {
             "Type": "AWS::DynamoDB::Table",
+            "Condition": "ThisIsMasterAccount",
             "Properties": {
                 "AttributeDefinitions": [
                     {
