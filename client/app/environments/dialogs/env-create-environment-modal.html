@@ -46,43 +46,6 @@
             </div>
             <span class="help-block" ng-if="form.OwningClusters.$dirty && form.OwningClusters.$error.required">Owning cluster is mandatory.</span>
         </div>
-        <div class="form-group" ng-class="{'has-error': form.AlertSettings.$invalid}">
-            <label class="col-md-4 control-label text-left nowrap">Alert Notifications: <span class="glyphicon glyphicon-asterisk mandatory"></span>
-
-                <span uib-popover
-                  popover-trigger="'mouseenter'"
-                  popover-append-to-body="true"
-                  uib-popover-template="'app/environments/popovers/alert-settings.html'"
-                  data-popover-placement="bottom"
-                  class="glyphicon glyphicon-question-sign help-icon"
-                  aria-hidden="true">
-                </span>
-
-            </label>
-            <div class="col-md-4">
-                <select class="form-control"
-                        name="AlertSettings"
-                        required=""
-                        ng-model="Environment.Value.AlertSettings">
-                    <option ng-repeat="alertSettings in vm.alertSettingsList" ng-selected="{{alertSettings == Environment.Value.AlertSettings}}" value="{{alertSettings.Value}}">{{alertSettings.Name}}</option>
-                </select>
-            </div>
-            
-            <span class="help-block" ng-if="form.AlertSettings.$dirty && form.AlertSettings.$error.required">Alert Settings is mandatory.</span>
-        </div>
-
-        <div class="form-group" ng-class="{'has-error': form.NotificationSettings.$invalid}" ng-if="Environment.Value.AlertSettings == 'Custom'">
-            <label class="col-md-4 control-label text-left nowrap">Notification Settings: <span class="glyphicon glyphicon-asterisk mandatory"></label>
-            <div class="col-md-4">
-                <select class="form-control"
-                        name="NotificationSettings"
-                        required=""
-                        ng-model="Environment.Value.NotificationSettingsId">
-                    <option ng-repeat="item in vm.notificationSettingsList" ng-selected="{{item == Environment.Value.NotificationSettingsId}}" value="{{item}}">{{item}}</option>
-                </select>
-            </div>
-            <span class="help-block" ng-if="form.NotificationSettingsId.$dirty && form.NotificationSettingsId.$error.required">Notification Settings name is mandatory.</span>
-        </div>
 
         <div class="form-group" ng-class="{'has-error': form.DeploymentMap.$invalid}">
             <label class="col-md-4 control-label text-left nowrap">Deployment Map: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
@@ -116,6 +79,45 @@
             <div class="col-md-6">
                 <textarea ng-model="Environment.Value.Description"></textarea>
             </div>
+        </div>
+
+        <div class="form-group" ng-class="{'has-error': form.AlertSettings.$invalid}">
+            <label class="col-md-4 control-label text-left nowrap">Default<br/>Alert Notifications: <span class="glyphicon glyphicon-asterisk mandatory"></span>
+
+                <span uib-popover
+                  popover-trigger="'mouseenter'"
+                  popover-append-to-body="true"
+                  uib-popover-template="'app/environments/popovers/alert-settings.html'"
+                  data-popover-placement="bottom"
+                  class="glyphicon glyphicon-question-sign help-icon"
+                  aria-hidden="true">
+                </span>
+
+            </label>
+            <div class="col-md-4">
+                <select class="form-control"
+                        name="AlertSettings"
+                        required=""
+                        ng-model="Environment.Value.AlertSettings">
+                    <option ng-repeat="alertSettings in vm.alertSettingsList" ng-selected="{{alertSettings == Environment.Value.AlertSettings}}" value="{{alertSettings.Value}}">{{alertSettings.Name}}</option>
+                </select>
+            </div>
+            
+            <span class="help-block" ng-if="form.AlertSettings.$dirty && form.AlertSettings.$error.required">Alert Settings is mandatory.</span>
+        </div>
+
+        
+        <div class="form-group" ng-class="{'has-error': form.NotificationSettings.$invalid}" ng-if="Environment.Value.AlertSettings == 'Custom'">
+            <label class="col-md-4 control-label text-left nowrap">Notification Settings: <span class="glyphicon glyphicon-asterisk mandatory"></label>
+            <div class="col-md-4">
+                <select class="form-control"
+                        name="NotificationSettings"
+                        required=""
+                        ng-model="Environment.Value.NotificationSettingsId">
+                    <option ng-repeat="item in vm.notificationSettingsList" ng-selected="{{item == Environment.Value.NotificationSettingsId}}" value="{{item}}">{{item}}</option>
+                </select>
+            </div>
+            <span class="help-block" ng-if="form.NotificationSettingsId.$dirty && form.NotificationSettingsId.$error.required">Notification Settings name is mandatory.</span>
         </div>
     </form>
 </div>

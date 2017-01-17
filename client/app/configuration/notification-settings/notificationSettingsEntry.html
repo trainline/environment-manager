@@ -95,8 +95,10 @@
                    name="Paging"
                    type="text"
                    class="form-control"
-                   ng-model="vm.model.Value.Paging" />
+                   ng-model="vm.model.Value.Paging"
+                   ng-list="" />
         </div>  
+        <span style="margin-top: 8px; display: inline-block"><em>Setting used for healthchecks that explicitly enable paging.</em></span>
     </div>
 
     <div class="form-group" ng-class="{'has-error': form.Ticketing.$invalid && form.Ticketing.$dirty}">
@@ -107,7 +109,9 @@
                    type="text"
                    class="form-control"
                    ng-model="vm.model.Value.Ticketing" />
-        </div>  
+
+        </div>
+        <span style="margin-top: 8px; display: inline-block"><em>Setting used for healthchecks that explicitly enable ticket creation.</em></span>
     </div>
 
     <div class="form-group" style="margin-top: 30px">
