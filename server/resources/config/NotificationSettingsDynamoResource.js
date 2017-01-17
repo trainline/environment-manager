@@ -13,6 +13,7 @@ module.exports = {
   enableAuditing: true,
   exportable: true,
   importable: true,
+  perAccount: false,
   docs: {
     description: 'Notification Settings',
     tags: ['Notification Settings']
