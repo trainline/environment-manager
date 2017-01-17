@@ -45,7 +45,7 @@ angular.module('EnvironmentManager.configuration').controller('ServicesControlle
 
       $http.get('/api/v1/config/services', { params: query }).then(function (response) {
         var data = response.data;
-        vm.fullData = data;
+        vm.fullData = _.sortBy(data, 'ServiceName');
         vm.updateFilter();
         $scope.canDelete = false;
 
@@ -67,15 +67,19 @@ angular.module('EnvironmentManager.configuration').controller('ServicesControlle
       if (action === 'delete') return $scope.canDelete;
     };
 
+    vm.updatePagedData = function () {
+      vm.data = vm.filteredData.slice(vm.itemsPerPage * (vm.currentPage - 1), vm.itemsPerPage * vm.currentPage);
+    };
+
     vm.updateFilter = function () {
-      vm.currentPage = 0;
+      vm.currentPage = 1;
       $location.search('cluster', vm.selectedOwningCluster);
       $location.search('service', vm.selectedService || null);
-      var data = vm.fullData.filter(function (service) {
+      vm.filteredData = vm.fullData.filter(function (service) {
         return (vm.selectedService === '' || angular.lowercase(service.ServiceName).indexOf(angular.lowercase(vm.selectedService)) != -1);
       });
 
-      vm.data = data.slice(vm.itemsPerPage * vm.currentPage, vm.itemsPerPage * (vm.currentPage + 1));
+      vm.updatePagedData();
     };
 
     vm.delete = function (service) {
