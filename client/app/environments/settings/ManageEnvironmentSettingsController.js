@@ -3,7 +3,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ManageEnvironmentSettingsController',
-  function ($rootScope, $routeParams, $location, $q, modal, resources, cachedResources, cron, Environment) {
+  function ($rootScope, $routeParams, $location, $http, $q, modal, resources, cachedResources, cron, Environment) {
     var vm = this;
 
     vm.environment = {};
@@ -14,6 +14,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
     vm.dataLoading = true;
     vm.owningClustersList = [];
     vm.deploymentMapsList = [];
+    vm.alertSettingsList = resources.environmentAlertSettingsList;
     vm.enableLockChanges = false;
 
     vm.newEnvironment = {
@@ -40,6 +41,10 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       });
 
       $q.all([
+        $http.get('/api/v1/config/notification-settings').then(function (response) {
+          vm.notificationSettingsList = response.data;
+        }),
+
         cachedResources.config.clusters.all().then(function (clusters) {
           vm.owningClustersList = _.map(clusters, 'ClusterName').sort();
         }),
@@ -74,6 +79,8 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
           DeploymentMap: configuration.Value.DeploymentMap,
           CodeDeployBucket: configuration.Value.CodeDeployBucket,
           Description: configuration.Value.Description,
+          AlertSettings: configuration.Value.AlertSettings,
+          NotificationSettingsId: configuration.Value.NotificationSettingsId,
           IsLocked: configuration.Value.IsLocked
         };
 
@@ -131,6 +138,8 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       vm.environment.Value.DeploymentMap = vm.newEnvironment.DeploymentMap;
       vm.environment.Value.CodeDeployBucket = vm.newEnvironment.CodeDeployBucket;
       vm.environment.Value.Description = vm.newEnvironment.Description;
+      vm.environment.Value.AlertSettings = vm.newEnvironment.AlertSettings;
+      vm.environment.Value.NotificationSettingsId = vm.newEnvironment.NotificationSettingsId;
       vm.environment.Value.IsLocked = vm.newEnvironment.IsLocked;
 
       var params = {

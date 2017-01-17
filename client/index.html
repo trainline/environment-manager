@@ -52,8 +52,6 @@
 
   <!-- build:js scripts/app.js -->
   <!-- inject:js -->
-  <script src="app/operations/operations.module.js"></script>
-  <script src="app/operations/upstream/directives/lbServersStatesCell.js"></script>
   <script src="app/environments/environments.module.js"></script>
   <script src="app/environments/dialogs/asg/asgSingleService.js"></script>
   <script src="app/environments/dialogs/asg/asgSingleInstance.js"></script>
@@ -70,26 +68,31 @@
   <script src="app/operations/deployments/OpsDeploymentsController.js"></script>
   <script src="app/operations/deployments/DeploymentDetailsModalController.js"></script>
   <script src="app/operations/amis/OpsAMIsController.js"></script>
+  <script src="app/operations/operations.module.js"></script>
+  <script src="app/operations/upstream/directives/lbServersStatesCell.js"></script>
   <script src="app/environments/summary/EnvironmentsSummaryController.js"></script>
   <script src="app/environments/settings/ManageEnvironmentSettingsController.js"></script>
   <script src="app/environments/servers/serversView.js"></script>
   <script src="app/environments/servers/ManageEnvironmentServersController.js"></script>
   <script src="app/environments/schedule/ManageEnvironmentScheduleController.js"></script>
-  <script src="app/environments/dialogs/LaunchConfigConfirmationController.js"></script>
-  <script src="app/environments/dialogs/DeployModalController.js"></script>
-  <script src="app/environments/dialogs/CreateEnvironmentController.js"></script>
-  <script src="app/environments/dialogs/ASGDetailsModalController.js"></script>
-  <script src="app/environments/directives/serviceDiffWithTargetState.js"></script>
-  <script src="app/environments/directives/healthChecks.js"></script>
-  <script src="app/environments/directives/currentDesiredTitle.js"></script>
   <script src="app/configuration/configuration.module.js"></script>
   <script src="app/configuration/services/permissionsValidationService.js"></script>
   <script src="app/configuration/services/lbBulkOperationService.js"></script>
   <script src="app/configuration/services/deploymentMapConverter.js"></script>
   <script src="app/configuration/services/arrayItemHashDetectorService.js"></script>
+  <script src="app/environments/directives/serviceDiffWithTargetState.js"></script>
+  <script src="app/environments/directives/healthChecks.js"></script>
+  <script src="app/environments/directives/currentDesiredTitle.js"></script>
+  <script src="app/environments/dialogs/LaunchConfigConfirmationController.js"></script>
+  <script src="app/environments/dialogs/DeployModalController.js"></script>
+  <script src="app/environments/dialogs/CreateEnvironmentController.js"></script>
+  <script src="app/environments/dialogs/ASGDetailsModalController.js"></script>
   <script src="app/configuration/pick-ami/PickAmiController.js"></script>
   <script src="app/configuration/permissions/PermissionsController.js"></script>
   <script src="app/configuration/permissions/PermissionController.js"></script>
+  <script src="app/common/common.module.js"></script>
+  <script src="app/configuration/notification-settings/notificationSettingsList.js"></script>
+  <script src="app/configuration/notification-settings/notificationSettingsEntry.js"></script>
   <script src="app/configuration/load-balancers/LBsController.js"></script>
   <script src="app/configuration/load-balancers/LBUpstreamsController.js"></script>
   <script src="app/configuration/load-balancers/LBUpstreamController.js"></script>
@@ -112,7 +115,21 @@
   <script src="app/configuration/audit/AuditCompareModalController.js"></script>
   <script src="app/configuration/accounts/AccountsController.js"></script>
   <script src="app/configuration/accounts/AccountController.js"></script>
-  <script src="app/common/common.module.js"></script>
+  <script src="app/operations/upstream/UpstreamDetailsModalController.js"></script>
+  <script src="app/operations/upstream/OpsUpstreamController.js"></script>
+  <script src="app/operations/maintenance/OpsMaintenanceController.js"></script>
+  <script src="app/operations/maintenance/MainteinanceAddServerModalController.js"></script>
+  <script src="app/operations/deployments/opsDeploymentsList.js"></script>
+  <script src="app/operations/deployments/opsDeploymentsInstances.js"></script>
+  <script src="app/operations/deployments/OpsDeploymentsController.js"></script>
+  <script src="app/operations/deployments/DeploymentDetailsModalController.js"></script>
+  <script src="app/operations/amis/OpsAMIsController.js"></script>
+  <script src="app/compare/compare.module.js"></script>
+  <script src="app/compare/services/serviceComparison.js"></script>
+  <script src="app/compare/services/comparableResources.js"></script>
+  <script src="app/compare/services/ResourceComparison.js"></script>
+  <script src="app/compare/directives/serviceCell.js"></script>
+  <script src="app/compare/diff-viewer/DiffViewerController.js"></script>
   <script src="app/common/utils/QuerySync.js"></script>
   <script src="app/common/services/targetStateService.js"></script>
   <script src="app/common/services/taggable.js"></script>
@@ -132,12 +149,6 @@
   <script src="app/common/services/cachedResourcesService.js"></script>
   <script src="app/common/services/awsService.js"></script>
   <script src="app/common/services/accountMappingService.js"></script>
-  <script src="app/common/models/UpstreamConfig.js"></script>
-  <script src="app/common/models/Image.js"></script>
-  <script src="app/common/models/Environment.js"></script>
-  <script src="app/common/models/DeploymentMap.js"></script>
-  <script src="app/common/models/Deployment.js"></script>
-  <script src="app/common/models/AutoScalingGroup.js"></script>
   <script src="app/common/directives/validJsonDirective.js"></script>
   <script src="app/common/directives/uniqueAmongDirective.js"></script>
   <script src="app/common/directives/spinner.js"></script>
@@ -145,23 +156,24 @@
   <script src="app/common/directives/scheduleEditor.js"></script>
   <script src="app/common/directives/scalingScheduleEditor.js"></script>
   <script src="app/common/directives/scalingCronEditor.js"></script>
+  <script src="app/common/directives/multipleEmails.js"></script>
   <script src="app/common/directives/loadingOverlay.js"></script>
   <script src="app/common/directives/lbStatusView.js"></script>
   <script src="app/common/directives/jsonDiffPatchDirective.js"></script>
   <script src="app/common/directives/healthStatus.js"></script>
   <script src="app/common/directives/defaultIfEmptyDirective.js"></script>
   <script src="app/common/directives/cronEditor.js"></script>
+  <script src="app/common/models/UpstreamConfig.js"></script>
+  <script src="app/common/models/Image.js"></script>
+  <script src="app/common/models/Environment.js"></script>
+  <script src="app/common/models/DeploymentMap.js"></script>
+  <script src="app/common/models/Deployment.js"></script>
+  <script src="app/common/models/AutoScalingGroup.js"></script>
   <script src="app/common/common-modal/CommonModalController.js"></script>
-  <script src="app/compare/compare.module.js"></script>
-  <script src="app/compare/services/serviceComparison.js"></script>
-  <script src="app/compare/services/comparableResources.js"></script>
-  <script src="app/compare/services/ResourceComparison.js"></script>
-  <script src="app/compare/directives/serviceCell.js"></script>
-  <script src="app/compare/diff-viewer/DiffViewerController.js"></script>
   <script src="app/operations/ToggleServiceModalController.js"></script>
+  <script src="app/compare/CompareController.js"></script>
   <script src="app/common/utilities.js"></script>
   <script src="app/common/MainController.js"></script>
-  <script src="app/compare/CompareController.js"></script>
   <script src="app/app.module.js"></script>
   <!-- endinject -->
   <!-- endbuild -->
@@ -196,6 +208,7 @@
           <li><a href="#/config/deploymentmaps" ng-class="{active: $route.current.menusection == 'DeploymentMaps'}">Deployment Maps</a></li>
           <li><a href="#/config/loadbalancers" ng-class="{active: $route.current.menusection == 'LBs'}">Load Balancer</a></li>
           <li><a href="#/config/upstreams" ng-class="{active: $route.current.menusection == 'LBUpstream'}">Upstreams</a></li>
+          <li><a href="#/config/notification-settings" ng-class="{active: $route.current.menusection == 'NotificationSettings'}">Notification Settings</a></li>
           <li><a href="#/config/clusters" ng-class="{active: $route.current.menusection == 'Clusters'}">Clusters</a></li>
           <li><a href="#/config/environmenttypes" ng-class="{active: $route.current.menusection == 'EnvironmentTypes'}">Environment Types</a></li>
           <li><a href="#/config/accounts" ng-class="{active: $route.current.menusection == 'Accounts'}">Accounts</a></li>
