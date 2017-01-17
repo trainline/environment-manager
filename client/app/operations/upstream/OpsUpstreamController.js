@@ -266,49 +266,6 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
       return 'Unknown';
     }
 
-    function getDummyData() {
-      return new Promise(function(resolve, reject){
-        setTimeout(function(){
-           resolve([{
-              "Name": "c50-test",
-              "Hosts": [
-                {
-                  "Server": "10.248.151.171:500",
-                  "State": "up",
-                  "HealthChecks": {
-                    "checks": 0,
-                    "fails": 0,
-                    "unhealthy": 0
-                  }
-                }
-              ]},{
-              "Name": "c50-ConsulHealthcheckPassWinTest",
-              "Hosts": [
-                {
-                  "Server": "10.249.156.141:40500",
-                  "State": "down",
-                  "HealthChecks": {
-                    "checks": 0,
-                    "fails": 0,
-                    "unhealthy": 0
-                  }
-                },
-                {
-                  "Server": "10.248.173.203:40502",
-                  "State": "down",
-                  "HealthChecks": {
-                    "checks": 0,
-                    "fails": 0,
-                    "unhealthy": 0
-                  }
-                }
-              ]
-            }
-            ]);
-        }, 2000);
-      });
-    }
-
     function getASGsForHost(upstreamHost) {
       var environment = upstreamHost.Value.EnvironmentName;
       var service = upstreamHost.Value.ServiceName;
@@ -332,7 +289,6 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
         var promises = lbs.map(function (lb) {
           var url = ['api', 'v1', 'load-balancer', lb].join('/');
 
-          //return getDummyData().then(function (nginxData) {
           return $http.get(url).then(function (response) {
             var nginxData = response.data;
             var lbName = lb.split('.')[0]; // Drop .prod/nonprod.local from name

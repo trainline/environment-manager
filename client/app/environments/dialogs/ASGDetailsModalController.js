@@ -187,49 +187,6 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       });
     };
 
-    vm.getDummyData = function() {
-      return new Promise(function(resolve, reject){
-        setTimeout(function(){
-           resolve([{
-              "Name": "c50-test",
-              "Hosts": [
-                {
-                  "Server": "10.248.151.171:500",
-                  "State": "up",
-                  "HealthChecks": {
-                    "checks": 0,
-                    "fails": 0,
-                    "unhealthy": 0
-                  }
-                }
-              ]},{
-              "Name": "c50-ConsulHealthcheckPassWinTest",
-              "Hosts": [
-                {
-                  "Server": "10.249.156.141:40500",
-                  "State": "down",
-                  "HealthChecks": {
-                    "checks": 0,
-                    "fails": 0,
-                    "unhealthy": 0
-                  }
-                },
-                {
-                  "Server": "10.248.173.203:40502",
-                  "State": "down",
-                  "HealthChecks": {
-                    "checks": 0,
-                    "fails": 0,
-                    "unhealthy": 0
-                  }
-                }
-              ]
-            }
-            ]);
-        }, 500);
-      });
-    }
-
     vm.getLBStatus = function() {
       var env = parameters.environment.EnvironmentName;
       return vm.getLBData(env).then(function(lbs){
@@ -276,7 +233,6 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         return $q.all(lbNames.map(function(lbName){
           var url = ['api', 'v1', 'load-balancer', lbName].join('/');
           
-          //return vm.getDummyData(lbName).then(function(upstreams){
           return $http.get(url).then(function (response) {
             var upstreams = response.data;
             return {
