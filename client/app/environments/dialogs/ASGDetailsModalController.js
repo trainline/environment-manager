@@ -190,7 +190,6 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     vm.getLBStatus = function() {
       var env = parameters.environment.EnvironmentName;
       return vm.getLBData(env).then(function(lbs){
-        console.log(lbs);
         vm.serversLBStatus = vm.asgState.Instances.map(function(instance){
           return {
             Ip: instance.PrivateIpAddress,
