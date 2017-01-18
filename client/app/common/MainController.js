@@ -3,7 +3,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.common').controller('MainController',
-  function ($rootScope, $scope, $route, $routeParams, $location, modal, Environment) {
+  function ($rootScope, $scope, $route, $routeParams, $location, modal, Environment, environmentDeploy) {
     var vm = this;
 
     $scope.appVersion = window.version;
@@ -112,6 +112,11 @@ angular.module('EnvironmentManager.common').controller('MainController',
 
       return errors;
     };
+
+    $scope.showDeployDialog = function() {
+      environmentDeploy.callDeployHandler();
+    }
+
 
     function missingJSONValue(value) {
       if (typeof value === 'undefined') return true;

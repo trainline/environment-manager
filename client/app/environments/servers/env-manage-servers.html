@@ -34,26 +34,15 @@
       <div class="form-group">
         <input type="search" class="form-control" ng-model="vm.selected.serviceName" uib-typeahead="serviceName for serviceName in vm.view.allServiceNames" ng-model-options="{debounce: 250}" ng-change="vm.update()" typeahead-on-select="vm.update()" />
       </div>
-      <div class="form-group">
-        <button class="btn btn-default deploy-button" ng-click="vm.loadDeployDialog()">Deploy...</button>
-      </div>
+
     </form>
 
     <hr />
-
     <div>
       <span class="glyphicon glyphicon-ok-sign success"></span> Healthy: <strong>{{vm.view.aggregations.servers.healthy.count}} </strong>
-      <span class="glyphicon glyphicon-exclamation-sign warning" style="margin-left: 10px;"></span> Warning: <strong>{{vm.view.aggregations.servers.warning.count}} </strong>
-      <span class="glyphicon glyphicon-alert error" style="margin-left: 10px;"></span> Error: <strong>{{vm.view.aggregations.servers.error.count}} </strong>
+      <span class="glyphicon glyphicon-exclamation-sign warning status-summary"></span> Warning: <strong>{{vm.view.aggregations.servers.warning.count}} </strong>
+      <span class="glyphicon glyphicon-alert error status-summary"></span> Error: <strong>{{vm.view.aggregations.servers.error.count}} </strong>
     </div>
-    <!--
-    <div ng-if="vm.dataFound">
-      <div class="statusBar">
-      </div>
-      <br />
-    </div>
-    -->
-
     <hr />
 
     <div ng-show="vm.view.hasRoles">

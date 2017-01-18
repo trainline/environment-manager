@@ -4,7 +4,7 @@
 
 angular.module('EnvironmentManager.environments')
   .controller('ManageEnvironmentServersController',
-    function ($rootScope, $routeParams, $http, $q, cachedResources, resources, $uibModal, accountMappingService, serversView, QuerySync) {
+    function ($rootScope, $routeParams, $http, $q, cachedResources, resources, $uibModal, accountMappingService, serversView, QuerySync, environmentDeploy, $scope) {
       var vm = this;
 
       var SHOW_ALL_OPTION = 'Any';
@@ -144,6 +144,13 @@ angular.module('EnvironmentManager.environments')
           vm.openAsgName = null;
           querySync.updateQuery();
         });
+      };
+
+      environmentDeploy.registerDeployHandler(vm.loadDeployDialog);
+
+      this.$onDestroy = function() {
+        console.log('it is destroyed');
+        environmentDeploy.destroyHandler();
       };
 
       init();

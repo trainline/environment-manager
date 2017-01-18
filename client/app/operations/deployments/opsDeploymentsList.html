@@ -50,6 +50,7 @@
                 <span ng-if="node.status.status.toLowerCase()=='in progress'" class="glyphicon glyphicon-question-sign"></span>
                 <span ng-if="node.status.status.toLowerCase()=='success'" class="glyphicon glyphicon-ok-sign"></span>
                 <span ng-if="node.status.status.toLowerCase()=='failed'" class="glyphicon glyphicon-alert"></span>
+                <span ng-if="node.status.status.toLowerCase()=='not started'" class="glyphicon glyphicon-info-sign"></span>
                 {{node.instanceId}}
               </li>
             </ul>
