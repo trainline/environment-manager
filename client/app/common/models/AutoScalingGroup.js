@@ -1,9 +1,9 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
   function ($q, $http, awsService, resources, roles, serviceDiscovery, taggable, accountMappingService) {
-
     function getSummaryFromAsg(asg) {
       var asgSummary = {
         AccountName: asg.AccountName,
@@ -14,8 +14,9 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
         DesiredCapacity: asg.DesiredCapacity,
         CurrentSize: asg.Instances.length,
         LaunchConfigurationName: (asg.LaunchConfigurationName) ? asg.LaunchConfigurationName.replace('LaunchConfig_', '') : null,
+        IsBeingDeleted: asg.Status === 'Delete in progress',
         Instances: asg.Instances,
-        Tags: asg.Tags,
+        Tags: asg.Tags
       };
       asg.Tags.forEach(function (tag) {
         asgSummary[tag.Key] = tag.Value;
@@ -33,9 +34,14 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
 
     _.assign(AutoScalingGroup.prototype, {
 
+      delete: function () {
+        var segments = ['api', 'v1', 'asgs', this.AsgName];
+        return $http.delete(segments.join('/'), { params: { environment: this.getTag('Environment') } });
+      },
+
       getLaunchConfig: function () {
         var self = this;
-        return $http.get('/api/v1/asgs/' + this.AsgName + '/launch-config', { params: { environment: this.getTag('Environment') }}).then(function(response) {
+        return $http.get('/api/v1/asgs/' + this.AsgName + '/launch-config', { params: { environment: this.getTag('Environment') } }).then(function (response) {
           self.LaunchConfig = response.data;
           return response.data;
         });
@@ -45,8 +51,8 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
         var self = this;
         var segments = ['api', 'v1', 'asgs', this.AsgName, 'scaling-schedule'];
         var url = segments.join('/');
-        
-        return $http.get(url, { params: { environment: this.getTag('Environment') } }).then(function(response) {
+
+        return $http.get(url, { params: { environment: this.getTag('Environment') } }).then(function (response) {
           self.ScalingSchedule = response.data;
           return response.data;
         });
@@ -63,14 +69,14 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
       getDeploymentMapTargetName: function () {
         var name = parseAutoScalingGroupName(this.AsgName);
         return name ? name.serverRole : null;
-      },
+      }
     });
 
     function getAsgDetails(asgName, environmentName) {
-      return $http.get('/api/v1/asgs/' + asgName, { params: { environment: environmentName }}).then(function (response) {
+      return $http.get('/api/v1/asgs/' + asgName, { params: { environment: environmentName } }).then(function (response) {
         return getSummaryFromAsg(response.data);
       });
-    };
+    }
 
     /**
      * This will fetch AutoScalingGroup along with AMI and LaunchConfig
@@ -80,7 +86,11 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
       return getAsgDetails(asgName, environmentName).then(function (asgDetails) {
         // Refresh ASG to get up to date list of instance IDs (changes after scaling)
         if (asgDetails) {
-          return new AutoScalingGroup(asgDetails, account);
+          if (asgDetails.IsBeingDeleted) {
+            throw new Error('This ASG is currently being deleted');
+          } else {
+            return new AutoScalingGroup(asgDetails, account);
+          }
         } else {
           throw new Error('ASG data not found');
         }
@@ -98,8 +108,8 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
             asg.Ami = awsService.images.GetAmiByID(lc.ImageId, amiData) || {};
 
             return asg.getScalingSchedule().then(function (ss) {
-                asg.ScalingSchedule = ss.ScheduledActions;
-                return asg;
+              asg.ScalingSchedule = ss.ScheduledActions;
+              return asg;
             });
           });
         });
@@ -113,7 +123,7 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
         data: {
           propagateToInstances: true,
           schedule: newSchedule
-        },
+        }
       });
     };
 
@@ -129,10 +139,9 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
         environment: segments[0] || null,
         clusterCode: segments[1] || null,
         serverRole: segments[2] || null,
-        slice: segments[3] || null,
+        slice: segments[3] || null
       };
     }
 
     return AutoScalingGroup;
-
   });

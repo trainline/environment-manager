@@ -78,6 +78,24 @@ paths:
       responses:
         200:
           description: Ok
+    delete:
+      operationId: deleteAsg
+      summary: Delete ASG and it's target state
+      tags:
+        - ASG
+      x-authorizer: asgs
+      parameters:
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: Ok
   /asgs/{name}/ready:
     x-swagger-router-controller: asgController
     get:
@@ -96,7 +114,7 @@ paths:
           required: true
       responses:
         200:
-          description: The matching ASG
+          description: The matching ASG ready state
           schema:
             type: object
             properties:
@@ -115,7 +133,7 @@ paths:
     x-swagger-router-controller: asgController
     get:
       operationId: getAsgIps
-      summary: Get IPs associated with an ASG under the given account.
+      summary: Get IPs associated with an ASG in the given environment.
       tags:
         - ASG
       parameters:
@@ -181,7 +199,7 @@ paths:
     x-swagger-router-controller: asgController
     put:
       operationId: putAsgSize
-      summary: Resize an ASG under the given account.
+      summary: Resize an ASG in the given environment.
       tags:
         - ASG
       x-authorizer: asgs
@@ -215,7 +233,7 @@ paths:
     x-swagger-router-controller: asgController
     get:
       operationId: getAsgLaunchConfig
-      summary: Get the launch config associated with an ASG under the given account.
+      summary: Get the launch config associated with an ASG in the given environment.
       tags:
         - ASG
       x-authorizer: asgs  
@@ -235,7 +253,7 @@ paths:
             $ref: '#/definitions/AWSLaunchConfig'
     put:
       operationId: putAsgLaunchConfig
-      summary: Update the launch config associated with an ASG under the given account.
+      summary: Update the launch config associated with an ASG in the given environment.
       tags:
         - ASG
       x-authorizer: asgs
@@ -337,6 +355,10 @@ paths:
         - Deployment
       x-authorizer: deploy-authorizer
       parameters:
+        - name: dry_run
+          type: boolean
+          in: query
+          required: false
         - name: body
           in: body
           required: true
@@ -345,6 +367,8 @@ paths:
       responses:
         202:
           description: The deployment ID
+        423:
+          description: The environment given is locked for deployments
   /deployments/{id}:
     x-swagger-router-controller: deploymentsController
     get:
@@ -1065,6 +1089,83 @@ paths:
       parameters:
         - name: accountNumber
           type: integer
+          required: true
+          in: path
+      responses:
+        200:
+          description: OK
+  /config/notification-settings:
+    x-swagger-router-controller: notificationSettingsController
+    get:
+      operationId: getAllNotificationSettings
+      summary: List Notification settings.
+      tags:
+        - Notification Settings
+      responses:
+        200:
+          description: The list of accounts
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NotificationSettings'
+    post:
+      operationId: postNotificationSettings
+      summary: Post new Notification settings.
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/NotificationSettings'
+      tags:
+        - Notification Settings
+      responses:
+        201:
+          description: OK
+  /config/notification-settings/{id}:
+    x-swagger-router-controller: notificationSettingsController
+    get:
+      operationId: getNotificationSettingsById
+      summary: Get Notification settings.
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      tags:
+        - Notification Settings
+      responses:
+        200:
+          description: The notification settings
+          schema:
+            $ref: '#/definitions/NotificationSettings'
+    put:
+      operationId: putNotificationSettingsById
+      summary: Update an associated AWS Account.
+      tags:
+        - Notification Settings
+      parameters:
+        - name: id
+          type: string
+          required: true
+          in: path
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/NotificationSettingsValue'
+        - $ref: '#/parameters/ExpectedVersionHeader'
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: deleteNotificationSettingsById
+      summary: Remove Notification settings.
+      tags:
+        - Notification Settings
+      parameters:
+        - name: id
+          type: string
           required: true
           in: path
       responses:
@@ -2154,6 +2255,38 @@ definitions:
         type: string
       ScheduleStatus:
         type: string
+  NotificationSettings:
+    type: object
+    required:
+      - NotificationSettingsId
+      - Version
+      - Value
+    properties:
+      NotificationSettingsId:
+        type: string
+        pattern: ^[A-Za-z0-9_\-]+$
+      Version:
+        type: integer
+      Value:
+        $ref: '#/definitions/NotificationSettingsValue'
+
+  NotificationSettingsValue:
+    type: object
+    properties:
+      NotificationEmail:
+        type: array
+        items:
+          type: string
+      ChatChannel:
+        type: array
+        items:
+          type: string
+      Paging:
+        type: array
+        items:
+          type: string
+      Ticketing:
+        type: string
   EnvironmentSchedule:
     type: object
     required:
@@ -2356,6 +2489,14 @@ definitions:
     properties:
       OwningCluster:
         type: string
+      AlertSettings:
+        type: string
+        enum:
+          - EnvironmentOwner
+          - ServiceOwner
+          - Custom
+      NotificationSettingsId:
+        type: string
       Description:
         type: string
       EnvironmentType:
@@ -2366,6 +2507,8 @@ definitions:
         type: string
       CodeDeployBucket:
         type: string
+      IsLocked:
+        type: boolean
   EnvironmentTypeConfig:
     type: object
     required:
@@ -2588,7 +2731,6 @@ definitions:
   LBSetting:
     type: object
     required:
-      - AccountName
       - EnvironmentName
       - VHostName
       - Value
@@ -2670,8 +2812,8 @@ definitions:
   UpstreamConfig:
     type: object
     required:
-      - AccountName
       - key
+      - Value
     properties:
       AccountName:
         type: string
@@ -2681,6 +2823,8 @@ definitions:
         $ref: '#/definitions/UpstreamConfigValue'
   UpstreamConfigValue:
     type: object
+    required:
+      - EnvironmentName
     properties:
       EnvironmentName:
         type: string
@@ -2751,6 +2895,10 @@ definitions:
       PackageType:
         type: string
       SchemaVersion:
+        type: integer
+      BluePort:
+        type: integer
+      GreenPort:
         type: integer
   Deployment:
     type: object

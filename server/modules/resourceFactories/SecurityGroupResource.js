@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 function createRequest(parameters) {
@@ -6,8 +7,8 @@ function createRequest(parameters) {
 
   let request = {
     Filters: [
-      { Name: 'vpc-id', Values: [parameters.vpcId] },
-    ],
+      { Name: 'vpc-id', Values: [parameters.vpcId] }
+    ]
   };
 
   if (parameters.groupIds) {
@@ -23,12 +24,10 @@ function createRequest(parameters) {
 }
 
 function SecurityGroupResource(client) {
-
   this.scan = function (parameters) {
     let request = createRequest(parameters);
     return client.describeSecurityGroups(request).promise().then(response => response.SecurityGroups);
   };
-  
 }
 
 module.exports = SecurityGroupResource;

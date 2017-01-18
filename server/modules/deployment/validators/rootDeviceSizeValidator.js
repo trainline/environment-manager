@@ -1,13 +1,13 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let DeploymentValidationError = require('modules/errors/DeploymentValidationError.class');
 
 module.exports = {
-  validate: function (deployment, configuration) {
-    
+  validate(deployment, configuration) {
     let requiredSize = configuration.image.rootVolumeSize;
-    let rootDevice = configuration.serverRole.Volumes.find(v => v.Name === "OS");
+    let rootDevice = configuration.serverRole.Volumes.find(v => v.Name === 'OS');
     let serverRole = configuration.serverRole.ServerRoleName;
 
     if (!rootDevice) {

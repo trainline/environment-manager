@@ -1,5 +1,7 @@
 ﻿<div class="row page-title">
-  <div class="col-md-12"><h2>Servers for {{vm.selected.environment.EnvironmentName}}</h2></div>
+  <div class="col-md-12">
+    <h2>Servers for {{vm.selected.environment.EnvironmentName}}</h2>
+  </div>
   <div id="RefreshData">
     <span class="glyphicon glyphicon-refresh" ng-click="vm.refresh()" title="Refresh data"></span>
   </div>
@@ -67,7 +69,9 @@
           <tr ng-repeat="role in vm.view.roles">
             <td style="white-space: nowrap">
               <span uib-tooltip="{{ role.serverRole.status.reason }}" tooltip-placement="top-right" class="serverRoleName glyphicon {{role.serverRole.status.class}}"></span>
-              <a ng-click="vm.showInstanceDetails(role.asgName)">{{role.serverRole.name}}</a>
+
+              <a ng-click="vm.showInstanceDetails(role.asgName)" ng-if="!role.isBeingDeleted">{{role.serverRole.name}}</a>
+              <span ng-if="role.isBeingDeleted">{{role.serverRole.name}} (being deleted)</span>
             </td>
             <td>{{role.owningCluster}}</td>
             <td>
@@ -84,11 +88,11 @@
             <td><a ng-click="vm.showInstanceDetails(role.asgName, 'launchConfig')">{{::role.ami.name}}</a></td>
             <td>
                 <a ng-click="vm.showInstanceDetails(role.asgName, 'launchConfig')">
-                    <span data-ng-if="role.ami.isLatestStable">
+                    <span ng-if="role.ami.isLatestStable">
                         <span class="glyphicon glyphicon-ok-sign ok"></span> Up to date
                     </span>
-                    <span data-ng-if="!role.ami.isLatestStable">
-                        <span data-ng-if="role.ami.age !== '-'" class="glyphicon glyphicon-exclamation-sign warning"></span> {{::role.ami.age}}
+                    <span ng-if="!role.ami.isLatestStable">
+                        <span ng-if="role.ami.age !== '-'" class="glyphicon glyphicon-exclamation-sign warning"></span> {{::role.ami.age}}
                     </span>
                 </a>
             </td>

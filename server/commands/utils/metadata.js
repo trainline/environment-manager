@@ -1,4 +1,4 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
 
@@ -37,7 +37,7 @@ function addMetadata(command) {
   let overrides = {
     commandId: createCommandId(),
     username: getUsername(command.user),
-    timestamp: createTimestamp(),
+    timestamp: createTimestamp()
   };
 
   let result = Object.assign({}, command, overrides);
@@ -47,5 +47,5 @@ function addMetadata(command) {
 
 module.exports = {
   createFromParameters,
-  addMetadata,
+  addMetadata
 };

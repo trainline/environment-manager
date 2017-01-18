@@ -1,13 +1,13 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.environments').factory('serversView',
   function () {
-
     var statusClasses = {
       healthy: 'glyphicon-ok-sign success',
       warning: 'glyphicon-alert warning',
-      error: 'glyphicon-alert error',
+      error: 'glyphicon-alert error'
     };
 
     function serversView(data, selections) {
@@ -38,7 +38,7 @@ angular.module('EnvironmentManager.environments').factory('serversView',
         roles: roleViews,
         aggregations: aggregateViews,
         allServerRoles: allServerRoles,
-        allServiceNames: allServiceNames,
+        allServiceNames: allServiceNames
       };
     }
 
@@ -50,9 +50,10 @@ angular.module('EnvironmentManager.environments').factory('serversView',
           status: {
             status: role.Status.Status,
             reason: role.Status.Reason,
-            class: statusClasses[role.Status.Status.toLowerCase()],
-          },
+            class: statusClasses[role.Status.Status.toLowerCase()]
+          }
         },
+        isBeingDeleted: role.IsBeingDeleted,
         owningCluster: role.Cluster,
         services: role.Services.map(toServiceView),
         size: toSizeView(role.Size),
@@ -60,14 +61,14 @@ angular.module('EnvironmentManager.environments').factory('serversView',
         sizeDesired: role.Size.Desired,
         hasScalingSchedule: role.Schedule === 'NOSCHEDULE',
         ami: toAmiView(role.Ami),
-        schedule: role.Schedule,
+        schedule: role.Schedule
       };
     }
 
     function toServiceView(service) {
       return {
         name: getServiceName(service),
-        version: service.Version,
+        version: service.Version
       };
     }
 
@@ -92,13 +93,13 @@ angular.module('EnvironmentManager.environments').factory('serversView',
         servers: {
           healthy: { count: 0 },
           warning: { count: 0 },
-          error: { count: 0 },
+          error: { count: 0 }
         },
         services: {
           healthy: { count: 0 },
           warning: { count: 0 },
-          error: { count: 0 },
-        },
+          error: { count: 0 }
+        }
       };
 
       roles.forEach(function (role) {
@@ -129,13 +130,14 @@ angular.module('EnvironmentManager.environments').factory('serversView',
 
       return {
         name: '-',
-        age: '-',
+        age: '-'
       };
     }
 
     function toSizeView(size) {
-      if (size.Current !== size.Desired)
+      if (size.Current !== size.Desired) {
         return size.Current + '/' + size.Desired;
+      }
 
       return size.Current;
     }

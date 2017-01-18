@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 const TEN_MINUTES = 10 * 60;
@@ -7,14 +8,14 @@ const CACHE_KEY = 'AWSAccounts';
 let _ = require('lodash');
 let config = require('config');
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
-let fetchAccounts  = require('queryHandlers/GetAWSaccounts');
+let fetchAccounts = require('queryHandlers/GetAWSaccounts');
 let cacheManager = require('modules/cacheManager');
-let accountsCache = cacheManager.create(CACHE_KEY, fetchAccounts, { stdTTL: TEN_MINUTES, logHits:false });
+let accountsCache = cacheManager.create(CACHE_KEY, fetchAccounts, { stdTTL: TEN_MINUTES, logHits: false });
 
 function getByName(accountName) {
   let matches = val => accountName.toLowerCase() === val.toString().toLowerCase();
 
-  return getAllAccounts().then(accounts => {
+  return getAllAccounts().then((accounts) => {
     let matchingAccounts = [].concat(
       accounts.filter(account => matches(account.AccountNumber)),
       accounts.filter(account => matches(account.AccountName))
@@ -25,7 +26,7 @@ function getByName(accountName) {
     } else {
       throw new ResourceNotFoundError(`AWS account ${accountName} not found`);
     }
-  })
+  });
 }
 
 function getMasterAccount() {
@@ -33,7 +34,7 @@ function getMasterAccount() {
 }
 
 function getAMIsharingAccounts() {
-  return getAllAccounts().then(accounts => accounts.filter(a => a.IncludeAMIs).map(a => a.AccountNumber))
+  return getAllAccounts().then(accounts => accounts.filter(a => a.IncludeAMIs).map(a => a.AccountNumber));
 }
 
 function getAllAccounts() {

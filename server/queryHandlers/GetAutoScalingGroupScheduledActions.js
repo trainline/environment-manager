@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assert = require('assert');
@@ -17,6 +18,6 @@ function* GetAutoScalingGroupScheduledActions(query) {
 
   // Get AutoScalingGroup's Scheduled Actions by name
   return resource.get({ name: query.autoScalingGroupName });
-};
+}
 
 module.exports = co.wrap(GetAutoScalingGroupScheduledActions);

@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -21,9 +22,9 @@ function* getAWSInstances(accountName, instancesIds) {
       AvailabilityZone: instance.Placement.AvailabilityZone,
       State: _.capitalize(instance.State.Name),
       ImageId: instance.ImageId,
-      LaunchTime: instance.LaunchTime,
+      LaunchTime: instance.LaunchTime
     };
-    instance.Tags.forEach(function (tag) {
+    instance.Tags.forEach((tag) => {
       ret[tag.Key] = tag.Value;
     });
     return ret;

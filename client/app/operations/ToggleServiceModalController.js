@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('ToggleServiceModalController',
@@ -31,18 +32,18 @@ angular.module('EnvironmentManager.operations').controller('ToggleServiceModalCo
         vm.upstreamChanged = true;
       }, function (error) {
         vm.errorMessage = error.data;
-      })
+      });
     };
 
     function init() {
       $q.all([
         cachedResources.config.environments.all(),
-        cachedResources.config.services.all(),
+        cachedResources.config.services.all()
       ]).then(function (results) {
         vm.environmentNames = _.map(results[0], 'EnvironmentName').sort();
         vm.serviceNames = _.map(results[1], 'ServiceName').sort();
       });
-    };
+    }
 
     init();
   });

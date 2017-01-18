@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsDeploymentsController',
@@ -20,38 +21,38 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
       { name: 'Last 3 days', value: 3 * enums.MILLISECONDS.PerDay },
       { name: 'Last 7 days', value: 7 * enums.MILLISECONDS.PerDay },
       { name: 'Last 30 days', value: 30 * enums.MILLISECONDS.PerDay },
-      { name: 'Last 60 days', value: 60 * enums.MILLISECONDS.PerDay },
+      { name: 'Last 60 days', value: 60 * enums.MILLISECONDS.PerDay }
     ];
 
     var querySync = vm.querySync = new QuerySync(vm, {
       date_range: {
         property: 'selectedDateRangeValue',
         default: dateRangeList[0].value,
-        castToInteger: true,
+        castToInteger: true
       },
       environment: {
         property: 'selectedEnvironment',
-        default: SHOW_ALL_OPTION,
+        default: SHOW_ALL_OPTION
       },
       status: {
         property: 'selectedStatus',
-        default: SHOW_ALL_OPTION,
+        default: SHOW_ALL_OPTION
       },
       cluster: {
         property: 'selectedOwningCluster',
-        default: SHOW_ALL_OPTION,
+        default: SHOW_ALL_OPTION
       },
       service: {
         property: 'serviceName',
-        default: '',
+        default: ''
       },
       deployment_id: {
         property: 'selectedDeploymentId',
-        default: null,
+        default: null
       },
       deployment_account: {
         property: 'selectedDeploymentAccount',
-        default: null,
+        default: null
       },
       selected_tab: {
         property: 'selectedTab',
@@ -80,7 +81,7 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
 
         resources.deployment.statuses.all().then(function (deploymentStatuses) {
           vm.statusList = [SHOW_ALL_OPTION].concat(deploymentStatuses);
-        }),
+        })
       ]).then(function () {
         // Show default results
         vm.refresh();
@@ -101,11 +102,11 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
         resolve: {
           deployment: function () {
             return deployment;
-          },
-        },
+          }
+        }
       });
 
-      modal.result['finally'](function() {
+      modal.result.finally(function () {
         vm.selectedDeploymentId = null;
         vm.selectedDeploymentAccount = null;
 
@@ -146,7 +147,7 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
       if (vm.selectedStatus !== 'Any' && instance.DeploymentStatus !== vm.selectedStatus) {
         return false;
       }
-      return _.some(_.map(instance.Services, function (s) { return s.Name.toLowerCase() }), function (name) { return name.indexOf(vm.serviceName.toLowerCase()) >= 0; });
+      return _.some(_.map(instance.Services, function (s) { return s.Name.toLowerCase(); }), function (name) { return name.indexOf(vm.serviceName.toLowerCase()) >= 0; });
     };
 
     vm.foundServicesFilter = function (deployment) {

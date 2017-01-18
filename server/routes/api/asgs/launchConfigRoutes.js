@@ -1,10 +1,10 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let send = require('modules/helpers/send');
 let authorizer = require('modules/authorizers/asgs');
 let route = require('modules/helpers/route');
-let _ = require('lodash');
 
 module.exports = [
 
@@ -12,12 +12,12 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   }).do((request, response) => {
-    var query = {
+    let query = {
       name: 'GetLaunchConfiguration',
       accountName: request.params.account,
-      autoScalingGroupName: request.params.name,
+      autoScalingGroupName: request.params.name
     };
 
     send.query(query, request, response);
@@ -27,15 +27,15 @@ module.exports = [
   .withDocs({
     description: 'Auto Scaling Group',
     perAccount: true,
-    tags: ['Auto Scaling Groups'],
+    tags: ['Auto Scaling Groups']
   })
   .withAuthorizer(authorizer)
   .do((request, response) => {
-    var query = {
+    let query = {
       name: 'SetLaunchConfiguration',
       accountName: request.params.account,
       autoScalingGroupName: request.params.name,
-      data: request.body,
+      data: request.body
     };
 
     send.query(query, request, response);

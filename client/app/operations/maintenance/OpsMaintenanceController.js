@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsMaintenanceController',
@@ -9,7 +10,7 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
     var SHOW_ALL_OPTION = 'All';
     var IP_LIST_TYPE = {
       InMaintenance: 'InMaintenance',
-      NotFound: 'NotFound',
+      NotFound: 'NotFound'
     };
 
     vm.accountIPList = []; // [{ AccountName, Ip }]
@@ -26,10 +27,9 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
       }).then(function () {
         vm.refresh();
       });
-    };
+    }
 
     vm.refresh = function () {
-
       vm.accountIPList = [];
       vm.data = [];
       vm.IPsNotFound = [];
@@ -56,7 +56,7 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
         title: 'Remove Out of Date Records',
         message: 'This will remove the selected out of date records.',
         action: 'Confirm',
-        severity: 'Info',
+        severity: 'Info'
       }).then(function () {
         removingIPsFromMaintenance(IP_LIST_TYPE.NotFound);
       });
@@ -68,7 +68,7 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
         message: 'Are you sure you want to bring the selected servers back into service?',
         action: 'Confirm',
         severity: 'Warning',
-        details: ['Note: This action may take up to 5 minutes to take effect in DNS'],
+        details: ['Note: This action may take up to 5 minutes to take effect in DNS']
       }).then(function () {
         removingIPsFromMaintenance(IP_LIST_TYPE.InMaintenance);
       });
@@ -81,8 +81,8 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
         resolve: {
           defaultAccount: function () {
             return vm.selectedAccount;
-          },
-        },
+          }
+        }
       }).result.then(function () {
         vm.refresh();
       });
@@ -107,14 +107,13 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
     };
 
     function ProcessMaintenanceIpsByAccount(account) {
-
       if (account == SHOW_ALL_OPTION) return $q.when([]);
 
       var params = {
         account: account,
-        key: RECORD_KEY,
+        key: RECORD_KEY
       };
-      return $http.get('/api/v1/instances', { params: { maintenance: true }}).then(function (response) {
+      return $http.get('/api/v1/instances', { params: { maintenance: true } }).then(function (response) {
         var data = response.data;
 
         var ipList = [];
@@ -134,12 +133,10 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
         return _.map(data, function (instance) {
           return awsService.instances.getSummaryFromInstance(instance, vm.selectedAccount);
         });
-
       });
     }
 
     function getTasksForRemovingInstancesFromMaintenance(account, ipListTypeToManage) {
-
       var exitMaintenanceList = []; // IP list to remove from "MAINTENANCE_MODE" record in AsgIps DynamoDB table
       var asgForWhichPutInstancesInService = {}; // AutoScalingGroup for which move instances from Standby to InService
 
@@ -148,12 +145,10 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
       }
 
       vm.data.forEach(function (item) {
-
         // Item must belong to the target AWS account
         if (!isItemBelongingToAccount(item, account)) return;
 
         if (ipListTypeToManage === IP_LIST_TYPE.InMaintenance && item.Selected) {
-
           // Adding to list of instances removed from maintenance
           exitMaintenanceList.push(item);
 
@@ -167,12 +162,10 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
       });
 
       vm.IPsNotFound.forEach(function (item) {
-
         // Item must belong to the target AWS account
         if (!isItemBelongingToAccount(item, account)) return;
 
         if (ipListTypeToManage === IP_LIST_TYPE.NotFound && item.Selected) {
-
           // Adding to list of instances removed from maintenance
           exitMaintenanceList.push(item);
         }
@@ -180,7 +173,7 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
 
       var tasks = [];
 
-      exitMaintenanceList.forEach(function(instance) {
+      exitMaintenanceList.forEach(function (instance) {
         var task = instancesService.setMaintenanceMode(account, instance.InstanceId, false);
         tasks.push(task);
       });
@@ -189,7 +182,6 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
     }
 
     function removingIPsFromMaintenance(ipListTypeToManage) {
-
       var tasks = [];
       var accounts = vm.selectedAccount === SHOW_ALL_OPTION ? vm.accountsList : [vm.selectedAccount];
 
@@ -203,5 +195,4 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
     }
 
     init();
-
   });

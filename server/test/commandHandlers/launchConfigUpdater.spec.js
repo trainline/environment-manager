@@ -1,4 +1,4 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
 let should = require('should');
@@ -17,16 +17,20 @@ describe('launchConfigUpdater: ', () => {
     delete: sinon.stub().returns(Promise.resolve()),
   };
 
-  let launchConfigurationClientFactoryMock = {
-    create: sinon.stub().returns(Promise.resolve(launchConfigurationClientMock)),
-  };
+  let index;
+
+  let resourceProvider = { getInstanceByName: () => null };
+
+  sinon.stub(resourceProvider, 'getInstanceByName', () => {
+    if (index++ === 0) {
+      return Promise.resolve(launchConfigurationClientMock);
+    } else {
+      return Promise.resolve(autoScalingGroupClientMock)
+    }
+  });
 
   let autoScalingGroupClientMock = {
     put: sinon.stub().returns(Promise.resolve()),
-  };
-
-  let autoScalingGroupClientFactoryMock = {
-    create: sinon.stub().returns(Promise.resolve(autoScalingGroupClientMock)),
   };
 
   let expectedLaunchConfiguration = {
@@ -42,9 +46,9 @@ describe('launchConfigUpdater: ', () => {
   let promise = null;
 
   before('Setting the launch configuration', () => {
+    index = 0;
 
-    target.__set__('launchConfigurationClientFactory', launchConfigurationClientFactoryMock);
-    target.__set__('autoScalingGroupClientFactory', autoScalingGroupClientFactoryMock);
+    target.__set__('resourceProvider', resourceProvider);
 
     promise = target.set(AccountName, autoScalingGroup, UpdateAction);
 
@@ -54,15 +58,11 @@ describe('launchConfigUpdater: ', () => {
 
     promise.then(() => {
 
-      launchConfigurationClientFactoryMock.create.called.should.be.true();
-      launchConfigurationClientFactoryMock.create.getCall(0).args.should.match([
-        { accountName: AccountName },
-      ]);
+      resourceProvider.getInstanceByName.called.should.be.true();
+      resourceProvider.getInstanceByName.getCall(0).args.should.match([ 'launchconfig', { accountName: AccountName }]);
 
-      launchConfigurationClientFactoryMock.create.called.should.be.true();
-      launchConfigurationClientFactoryMock.create.getCall(0).args.should.match([
-        { accountName: AccountName },
-      ]);
+      resourceProvider.getInstanceByName.called.should.be.true();
+      resourceProvider.getInstanceByName.getCall(0).args.should.match([ 'launchconfig', { accountName: AccountName }]);
 
     })
 

@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let send = require('modules/helpers/send');
@@ -9,10 +10,10 @@ module.exports = [
   route.get('/:account/consul/catalog/nodes').whenUserCan('view')
   .withDocs({ disableDocs: true })
   .do((request, response) => {
-    var query = {
+    let query = {
       name: 'GetAllNodes',
       accountName: request.params.account,
-      environment: getEnvironmentFrom(request),
+      environment: getEnvironmentFrom(request)
     };
 
     send.query(query, request, response);
@@ -21,22 +22,22 @@ module.exports = [
   route.get('/:account/consul/catalog/services/:service').whenUserCan('view')
   .withDocs({ disableDocs: true })
   .do((request, response) => {
-    var query = {
+    let query = {
       name: 'GetService',
       accountName: request.params.account,
       environment: getEnvironmentFrom(request),
-      serviceName: request.params.service,
+      serviceName: request.params.service
     };
 
     send.query(query, request, response);
-  }),
+  })
 ];
 
 function getEnvironmentFrom(req) {
-  let environment = req.query['environment'];
+  let environment = req.query.environment;
   if (environment) {
     return environment;
   }
 
-  throw new Error("the 'environment' query string parameter is required.");
+  throw new Error('the \'environment\' query string parameter is required.');
 }

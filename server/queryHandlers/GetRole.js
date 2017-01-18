@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assertContract = require('modules/assertContract');
@@ -8,8 +9,8 @@ module.exports = function GetRoleQueryHandler(query) {
   assertContract(query, 'query', {
     properties: {
       accountName: { type: String, empty: false },
-      roleName: { type: String, empty: false },
-    },
+      roleName: { type: String, empty: false }
+    }
   });
 
   return iamRoleClientFactory

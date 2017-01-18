@@ -1,0 +1,123 @@
+<div class="row">
+    <div class="col-md-12" ng-if="!vm.isBeingEdited"><h2>Add a Notification Settings entry</h2></div>
+    <div class="col-md-12" ng-if="vm.isBeingEdited"><h2>Edit Notification Settings</h2></div>
+</div>
+<hr />
+
+<div ng-if="vm.loadFailed">
+    Could not find Notification Settings: <strong>{{::vm.routeId}}</strong>
+    <div>
+        <br />
+        <a href="/#/config/notification-settings">&lt; Back to list of Notification Settings</a>
+    </div>
+</div>
+
+<form ng-if="!vm.loadFailed" name="form" class="form-horizontal">
+    <div class="form-group" ng-class="{'has-error': form.NotificationSettingsId.$invalid && form.NotificationSettingsId.$dirty}">
+        <label for="notification-settings-id" class="col-md-2 control-label">Name:</label>
+        <div class="col-md-2">
+            <input id="notification-settings-id"
+                   name="NotificationSettingsId"
+                   type="text"
+                   class="form-control"
+                   required
+                   ng-disabled="vm.isBeingEdited"
+                   ng-pattern="'[A-Za-z0-9_\-]+'"
+                   ng-model="vm.model.NotificationSettingsId" />
+        </div>
+        <span class="help-block"
+              ng-if="form.NotificationSettingsId.$dirty && form.NotificationSettingsId.$error.required">
+            Notification Settings Name
+        </span>
+        <span class="help-block" ng-if="form.NotificationSettingsId.$dirty && form.NotificationSettingsId.$error.pattern">Notification Settings name must match pattern [A-Za-z0-9_\-]+</span>
+    </div>
+    <div class="form-group" ng-class="{'has-error': form.NotificationEmail.$invalid && form.NotificationEmail.$dirty}">
+        <label for="notification-email" class="col-md-2 control-label">Notification email:
+          <span uib-popover
+              popover-trigger="'mouseenter'"
+              popover-append-to-body="true"
+              uib-popover-template="'app/configuration/popovers/multiple-values.html'"
+              data-popover-placement="bottom"
+              class="glyphicon glyphicon-question-sign help-icon"
+              aria-hidden="true">
+          </span>
+        
+
+        </label>
+        <div class="col-md-2">
+            <input id="notification-email"
+                   name="NotificationEmail"
+                   type="text"
+                   class="form-control"
+                   multiple-emails
+                   ng-model="vm.model.Value.NotificationEmail"
+                   ng-list="" />
+        </div>
+        <span class="help-block" ng-if="form.NotificationEmail.$dirty && form.NotificationEmail.$error.multipleEmails">At least one email is invalid.</span>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': form.ChatChannel.$invalid && form.ChatChannel.$dirty}">
+        <label for="chat-channel" class="col-md-2 control-label">Chat channel:
+          <span uib-popover
+              popover-trigger="'mouseenter'"
+              popover-append-to-body="true"
+              uib-popover-template="'app/configuration/popovers/multiple-values.html'"
+              data-popover-placement="bottom"
+              class="glyphicon glyphicon-question-sign help-icon"
+              aria-hidden="true">
+          </span>
+          
+        </label>
+        <div class="col-md-2">
+            <input id="chat-channel"
+                   name="ChatChannel"
+                   type="text"
+                   class="form-control"
+                   ng-model="vm.model.Value.ChatChannel"
+                   ng-list="" />
+        </div>  
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': form.Paging.$invalid && form.Paging.$dirty}">
+        <label for="paging" class="col-md-2 control-label">Paging:
+          <span uib-popover
+              popover-trigger="'mouseenter'"
+              popover-append-to-body="true"
+              uib-popover-template="'app/configuration/popovers/notification-settings-paging.html'"
+              data-popover-placement="bottom"
+              class="glyphicon glyphicon-question-sign help-icon"
+              aria-hidden="true">
+          </span>
+          
+        </label>
+        <div class="col-md-2">
+            <input id="paging"
+                   name="Paging"
+                   type="text"
+                   class="form-control"
+                   ng-model="vm.model.Value.Paging"
+                   ng-list="" />
+        </div>  
+        <span style="margin-top: 8px; display: inline-block"><em>Setting used for healthchecks that explicitly enable paging.</em></span>
+    </div>
+
+    <div class="form-group" ng-class="{'has-error': form.Ticketing.$invalid && form.Ticketing.$dirty}">
+        <label for="ticketing" class="col-md-2 control-label">Ticketing:</label>
+        <div class="col-md-2">
+            <input id="ticketing"
+                   name="Ticketing"
+                   type="text"
+                   class="form-control"
+                   ng-model="vm.model.Value.Ticketing" />
+
+        </div>
+        <span style="margin-top: 8px; display: inline-block"><em>Setting used for healthchecks that explicitly enable ticket creation.</em></span>
+    </div>
+
+    <div class="form-group" style="margin-top: 30px">
+        <div class="col-md-offset-2 col-md-2">
+            <a class="btn btn-default" ng-href="#/config/notification-settings">Cancel</a>
+            <button type="button" class="btn btn-default" ng-click="vm.save(form)" ng-disabled="!form.$valid">Save</button>
+        </div>
+    </div>
+</form>

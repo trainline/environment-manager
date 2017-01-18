@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -16,7 +17,7 @@ function isSecureServerRole(configuration) {
 }
 
 module.exports = {
-  getRules: function (request) {
+  getRules(request) {
     return co(function* () {
       // TODO(filip): clean these when dropping old API (switching to v1)
       let environmentName = request.params.environment || request.body.environment;
@@ -34,12 +35,10 @@ module.exports = {
         if (serverRoles.indexOf(serverRoleName) === -1) {
           return Promise.reject(new BadRequestError(`"${serverRoleName}" is not a potential target for deploy of "${serviceName}", available roles: ${serverRoles.join(', ')}`));
         }
+      } else if (serverRoles.length !== 1) {
+        return Promise.reject(new BadRequestError(`"server_role" param required, available server roles for "${serviceName}": ${serverRoles.join(', ')}`));
       } else {
-        if (serverRoles.length !== 1) {
-          return Promise.reject(new BadRequestError(`"server_role" param required, available server roles for "${serviceName}": ${serverRoles.join(', ')}`));
-        } else {
-          serverRoleName = serverRoles[0];
-        }
+        serverRoleName = serverRoles[0];
       }
 
       // Attach serverRoles to request object
@@ -50,37 +49,35 @@ module.exports = {
         resource: request.url.replace(/\/+$/, ''),
         access: request.method,
         clusters: [],
-        environmentTypes: [],
+        environmentTypes: []
       };
       requiredPermissions.push(requiredPermission);
 
       return infrastructureConfigurationProvider
         .get(environmentName, serviceName, serverRoleName)
-        .then(configuration => {
-
+        .then((configuration) => {
           requiredPermission.clusters.push(configuration.cluster.Name.toLowerCase());
 
           requiredPermission.environmentTypes.push(configuration.environmentTypeName.toLowerCase());
 
           if (isSecureServerRole(configuration)) {
             requiredPermissions.push({
-              resource: `/permissions/securityzones/secure`,
-              access: 'POST',
+              resource: '/permissions/securityzones/secure',
+              access: 'POST'
             });
           }
 
           return requiredPermissions;
-        }).catch(error => {
+        }).catch((error) => {
           logger.warn(error.toString(true));
           return Promise.reject(new BadRequestError(error.toString()));
-        })
-
+        });
     });
   },
 
   docs: {
     requiresClusterPermissions: true,
     requiresEnvironmentTypePermissions: true,
-    requiresSecurityZonePermissions: true,
-  },
+    requiresSecurityZonePermissions: true
+  }
 };

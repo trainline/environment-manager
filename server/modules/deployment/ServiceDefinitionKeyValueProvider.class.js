@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assertContract = require('modules/assertContract');
@@ -8,16 +9,16 @@ module.exports = function ServiceDefinitionKeyValueProvider() {
   this.get = function (deployment) {
     assertContract(deployment, 'deployment', { type: DeploymentContract, null: false });
 
-    var environmentName = deployment.environmentName;
-    var environmentTypeName = deployment.environmentTypeName;
-    var serviceName = deployment.serviceName;
-    var serviceVersion = deployment.serviceVersion;
-    var serviceSlice = deployment.serviceSlice;
-    var clusterName = deployment.clusterName;
+    let environmentName = deployment.environmentName;
+    let environmentTypeName = deployment.environmentTypeName;
+    let serviceName = deployment.serviceName;
+    let serviceVersion = deployment.serviceVersion;
+    let serviceSlice = deployment.serviceSlice;
+    let clusterName = deployment.clusterName;
 
-    var serviceId = getServiceId(environmentName, serviceName, serviceSlice);
+    let serviceId = getServiceId(environmentName, serviceName, serviceSlice);
 
-    var serviceDefinitionKeyValue = {
+    let serviceDefinitionKeyValue = {
       key: `environments/${environmentName}/services/${serviceName}/${serviceVersion}/definition`,
       value: {
         Service: {
@@ -26,26 +27,25 @@ module.exports = function ServiceDefinitionKeyValueProvider() {
           Address: '',
           Port: 0,
           Tags: [
-            'environment_type:' + environmentTypeName,
-            'environment:' + environmentName,
-            'owning_cluster:' + clusterName,
-            'version:' + serviceVersion,
+            `environment_type:${environmentTypeName}`,
+            `environment:${environmentName}`,
+            `owning_cluster:${clusterName}`,
+            `version:${serviceVersion}`
             // server_role and slice tags are set by Consul deployment agent
-          ],
-        },
-      },
+          ]
+        }
+      }
     };
 
     return Promise.resolve(serviceDefinitionKeyValue);
-
   };
 
   function getServiceId(environmentName, serviceName, serviceSlice) {
-    var serviceId = [
-        environmentName,
-        serviceName,
-        serviceSlice !== 'none' ? serviceSlice : null,
-      ].filter(segment => !!segment)
+    let serviceId = [
+      environmentName,
+      serviceName,
+      serviceSlice !== 'none' ? serviceSlice : null
+    ].filter(segment => !!segment)
       .join('-');
 
     return serviceId;

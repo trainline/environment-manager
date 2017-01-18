@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 var path = require('path');
@@ -8,23 +9,23 @@ var conf = require('./conf');
 var browserSync = require('browser-sync');
 var $ = require('gulp-load-plugins')();
 
-gulp.task('styles-reload', ['styles'], function() {
+gulp.task('styles-reload', ['styles'], function () {
   return buildStyles()
     .pipe(browserSync.stream());
 });
 
-gulp.task('styles', function() {
+gulp.task('styles', function () {
   return buildStyles();
 });
 
-var buildStyles = function() {
+function buildStyles() {
   var sassOptions = {
     outputStyle: 'expanded',
     precision: 10
   };
 
   var injectOptions = {
-    transform: function(filePath) {
+    transform: function (filePath) {
       filePath = filePath.replace(conf.paths.src + '/app/', '');
       return '@import "' + filePath + '";';
     },
@@ -44,4 +45,4 @@ var buildStyles = function() {
     .pipe($.rename('app-generated.css'))
     .pipe(gulp.dest('./styles/'));
     // .pipe(gulp.dest(path.join(conf.paths.tmp, '/serve/app/')));
-};
+}

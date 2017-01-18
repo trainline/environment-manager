@@ -1,18 +1,18 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 const IS_PROD = require('config').get('IS_PRODUCTION');
-
+let _ = require('lodash');
 let logger = require('modules/logger');
 
 function defaultErrorHandler(err, req, res, next) {
   let friendlyError = {};
+
   if (res.statusCode >= 400 && res.statusCode < 500) {
     try {
       friendlyError.error = err.message;
-      if (err.results && err.results.errors) {
-        friendlyError.details = err.results.errors.map(e => e.message);
-      }
+      friendlyError.details = _.map(_.get(err, 'results.errors'), error => `${error.path}: ${error.message}`);
     } catch (error) {
       friendlyError = err;
     }
@@ -23,10 +23,16 @@ function defaultErrorHandler(err, req, res, next) {
     friendlyError.error = err.message;
   }
 
+  friendlyError.originalException = err;
+
   if (IS_PROD && res.statusCode === 500) {
-    friendlyError.error = 'An internal error has occurred.'
+    friendlyError = {
+      error: 'An internal error has occurred.'
+    };
   } else if (res.statusCode === 409) {
-    friendlyError.error = 'The item you are attempting to update has already been modified. Check your expected-version.'
+    friendlyError = {
+      error: 'The item you are attempting to update has already been modified. Check your expected-version.'
+    };
   }
 
   logger.error(err.stack);
@@ -34,7 +40,7 @@ function defaultErrorHandler(err, req, res, next) {
 }
 
 function getStatusByErrorType(error) {
-  switch(error.name) {
+  switch (error.name) {
     case 'AutoScalingGroupNotFoundError':
     case 'ImageNotFoundError':
     case 'InstanceNotFoundError':
@@ -43,10 +49,12 @@ function getStatusByErrorType(error) {
     case 'RoleNotFoundError':
     case 'SecurityGroupNotFoundError':
     case 'TopicNotFoundError':
-    case 'DynamoItemNotFoundError':     return 404;   break;
+    case 'DynamoItemNotFoundError': return 404;
 
-    case 'DynamoConcurrencyError':      return 409;   break;
-    
+    case 'DynamoConcurrencyError': return 409;
+
+    case 'ResourceLockedError': return 423;
+
     case 'EvalError':
     case 'InternalError':
     case 'RangeError':
@@ -54,9 +62,9 @@ function getStatusByErrorType(error) {
     case 'SyntaxError':
     case 'TypeError':
     case 'URIError':
-    case 'AssertionError':              return 500;   break;
+    case 'AssertionError': return 500;
 
-    default:                            return 400;   break;
+    default: return 400;
   }
 }
 

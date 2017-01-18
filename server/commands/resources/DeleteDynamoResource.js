@@ -1,10 +1,11 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
 let OperationResult = require('../utils/operationResult');
 let resourceProvider = require('modules/resourceProvider');
-let sender = new require('modules/sender');
+let sender = require('modules/sender');
 
 function* handler(command) {
   // Create an instance of the resource to work with based on the resource
@@ -14,8 +15,6 @@ function* handler(command) {
 
   // Prepare request for deletion
   let params = {};
-  let keyName = resource.getKeyName();
-  let rangeName = resource.getRangeName();
 
   if (command.key) params.key = command.key;
   if (command.range) params.range = command.range;
@@ -25,17 +24,16 @@ function* handler(command) {
   // Mark item as deleted in order to trace the right audit
   // Run this step only if auditing is enabled
   if (resource.isAuditingEnabled()) {
-
     let keyName = resource.getKeyName();
     let rangeName = resource.getRangeName();
 
     // __Deleted property is needed by lambda script to recognise this change
     // as made for a delete operation.
     let item = {
-      __Deleted: true,
+      '__Deleted': true,
       'Audit.TransactionID': command.commandId,
       'Audit.User': command.username,
-      'Audit.LastChanged': command.timestamp,
+      'Audit.LastChanged': command.timestamp
     };
 
     if (keyName) item[keyName] = params.key;

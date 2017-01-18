@@ -1,55 +1,47 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
 
 function getSlicesByService(serviceName, environmentName, accountName, user) {
-
   return new Promise((resolve, reject) => {
+    let sender = require('modules/sender');
 
-    var sender = require('modules/sender');
-
-    var query = {
+    let query = {
       name: 'GetSlicesByService',
-      accountName: accountName,
-      serviceName: serviceName,
-      environmentName: environmentName
+      accountName,
+      serviceName,
+      environmentName
     };
 
-    sender.sendQuery({ query: query, user: user }, (err, result) => {
+    sender.sendQuery({ query, user }, (err, result) => {
       if (err) reject(err);
       else resolve(result);
     });
-
   });
-
 }
 
 function getModifyPermissions(serviceName, environmentName, accountName, user) {
-
-  return getSlicesByService(serviceName, environmentName, accountName, user).then(slices => {
-
+  return getSlicesByService(serviceName, environmentName, accountName, user).then((slices) => {
     if (slices && slices.length) {
-      var slice = slices[0];
+      let slice = slices[0];
       return slice.OwningCluster.toLowerCase();
     }
 
-    throw `Could not find environment: ${environmentName}`;
-
+    throw new Error(`Could not find environment: ${environmentName}`);
   });
-
 }
 
-exports.getRules = request => {
-
-  return getModifyPermissions(request.params.service, request.params.environment, request.params.account, request.user).then(sliceCluster => {
-    return [{
+// eslint-disable-next-line arrow-body-style
+exports.getRules = (request) => {
+  return getModifyPermissions(request.params.service, request.params.environment, request.params.account, request.user).then(sliceCluster => (
+    [{
       resource: request.url.replace(/\/+$/, ''),
       access: request.method,
       clusters: [sliceCluster]
-    }];
-  });
-
+    }]
+  ));
 };
 
 exports.docs = {

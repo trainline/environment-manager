@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.common').factory('UpstreamConfig',
@@ -17,10 +18,10 @@ angular.module('EnvironmentManager.common').factory('UpstreamConfig',
     };
 
     UpstreamConfig.getAll = function () {
-      return $http.get(baseUrl).then(function (response) { 
+      return $http.get(baseUrl).then(function (response) {
         return response.data;
       });
-    }
+    };
 
     UpstreamConfig.deleteByKey = function (key, account) {
       return $http.delete(baseUrl + '/' + encodeURIComponent(key), { params: { account: account } });
@@ -34,12 +35,12 @@ angular.module('EnvironmentManager.common').factory('UpstreamConfig',
           EnvironmentName: environmentName,
           ZoneSize: '128k',
           LoadBalancingMethod: 'least_conn',
-          Hosts: [],
+          Hosts: []
         },
         Version: 0
       };
       return new UpstreamConfig(data);
-    }
+    };
 
     _.assign(UpstreamConfig.prototype, {
       update: function (key) {

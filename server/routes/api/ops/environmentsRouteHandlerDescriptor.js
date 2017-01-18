@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let send = require('modules/helpers/send');
@@ -11,13 +12,13 @@ module.exports = route.put('/ops/environments/:key')
   .withAuthorizer(authorizer)
   .do((request, response) => {
     const masterAccountName = config.getUserValue('masterAccountName');
-    var command = {
+    let command = {
       name: 'UpdateDynamoResource',
       resource: 'ops/environments',
       key: request.params.key,
       item: request.body,
       expectedVersion: request.headers['expected-version'],
-      accountName: masterAccountName,
+      accountName: masterAccountName
     };
 
     send.command(command, request, response);

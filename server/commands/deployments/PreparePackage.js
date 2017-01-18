@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let ajv = require('ajv');
@@ -10,7 +11,7 @@ let DmPacker = require('modules/dm-packer/DmPacker');
 
 const options = {
   allErrors: true,
-  format: 'fast',
+  format: 'fast'
 };
 
 let validate = ajv(options).compile(require('./PreparePackageCommand.schema'));
@@ -18,15 +19,13 @@ let validate = ajv(options).compile(require('./PreparePackageCommand.schema'));
 const MAX_DM_PACKER_TASK_TIME_LIMIT_IN_MS = 10 * 60 * 1000;
 const MAX_DM_PACKER_CALLS_AT_A_TIME = 3;
 
-var q = async.queue((task, callback) => {
-
+let q = async.queue((task, callback) => {
   Promise.race([task(), timeout(MAX_DM_PACKER_TASK_TIME_LIMIT_IN_MS)])
     .then(result => callback(null, result), error => callback(error));
 
   function timeout(t) {
     return delay(t).then(() => Promise.reject(`Packaging timed out after ${MAX_DM_PACKER_TASK_TIME_LIMIT_IN_MS} milliseconds.`));
   }
-
 }, MAX_DM_PACKER_CALLS_AT_A_TIME);
 
 function queueTask(fn) {
@@ -44,15 +43,14 @@ function queueTask(fn) {
 module.exports = function PreparePackageCommandHandler(command) {
   let logger = new DeploymentCommandHandlerLogger(command);
   let dmPacker = new DmPacker(logger);
-  return preparePackage(dmPacker, command).catch(error => {
+  return preparePackage(dmPacker, command).catch((error) => {
     let msg = 'An error has occurred preparing the package';
     logger.error(msg, error);
     return Promise.reject(error);
   });
 };
 
-var preparePackage = function (dmPacker, command) {
-
+let preparePackage = function (dmPacker, command) {
   if (!validate(command)) return Promise.reject(validate.errors);
 
   let destination = command.destination;
@@ -63,7 +61,7 @@ var preparePackage = function (dmPacker, command) {
     amazonClientFactory.createS3Client(accountName)
       .then(s3 => dmPacker.uploadCodeDeployPackage(destination, archive, s3));
 
-  let fetchPackage = pkg => {
+  let fetchPackage = (pkg) => {
     switch (pkg.type) {
       case 'DeploymentMap':
         return dmPacker.buildCodeDeployPackage(pkg);
@@ -80,7 +78,7 @@ var preparePackage = function (dmPacker, command) {
 };
 
 function delay(milliseconds) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(resolve, milliseconds);
   });
 }

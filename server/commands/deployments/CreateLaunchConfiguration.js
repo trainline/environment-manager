@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 
-let assert = require("assert");
-let co = require("co"); 
+let assert = require('assert');
+let co = require('co');
 let DeploymentCommandHandlerLogger = require('commands/deployments/DeploymentCommandHandlerLogger');
-let launchConfigurationClientFactory = require('modules/clientFactories/launchConfigurationClientFactory');
+let resourceProvider = require('modules/resourceProvider');
 let _ = require('lodash');
 
 module.exports = function CreateLaunchConfigurationCommandHandler(command) {
@@ -20,18 +20,16 @@ module.exports = function CreateLaunchConfigurationCommandHandler(command) {
 
     logger.info(`Creating [${launchConfigurationName}] LaunchConfiguration...`);
 
-    let launchConfigurationClient = yield launchConfigurationClientFactory.create({ accountName });
+    let launchConfigurationClient = yield resourceProvider.getInstanceByName('launchconfig', { accountName });
 
     let request = getCreateLaunchConfigurationRequest(template);
     yield launchConfigurationClient.post(request);
 
     logger.info(`LaunchConfiguration [${launchConfigurationName}] has been created`);
   });
-
 };
 
 function getCreateLaunchConfigurationRequest(template) {
-
   return {
     LaunchConfigurationName: template.launchConfigurationName,
     AssociatePublicIpAddress: false,
@@ -46,5 +44,4 @@ function getCreateLaunchConfigurationRequest(template) {
     UserData: template.userData,
     BlockDeviceMappings: template.devices
   };
-
 }

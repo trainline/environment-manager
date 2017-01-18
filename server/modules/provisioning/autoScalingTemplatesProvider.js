@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assert = require('assert');
@@ -10,8 +11,8 @@ let subnetsProvider = require('modules/provisioning/autoScaling/subnetsProvider'
 let tagsProvider = require('modules/provisioning/autoScaling/tagsProvider');
 
 module.exports = {
-  get: function (configuration, accountName) {
-    assert(configuration, "Expected 'configuration' argument not to be null.");
+  get(configuration, accountName) {
+    assert(configuration, 'Expected \'configuration\' argument not to be null.');
 
     return co(function* () {
       let sliceNames = configuration.serverRole.FleetPerSlice ? ['blue', 'green'] : [null];
@@ -21,7 +22,6 @@ module.exports = {
       let templates = [];
 
       for (let index = 0; index < sliceNames.length; index++) {
-
         let sliceName = sliceNames[index];
 
         let autoScalingGroupName = namingConventionProvider.getAutoScalingGroupName(
@@ -40,16 +40,16 @@ module.exports = {
           size: {
             min: configuration.serverRole.AutoScalingSettings.MinCapacity,
             desired: configuration.serverRole.AutoScalingSettings.DesiredCapacity,
-            max: configuration.serverRole.AutoScalingSettings.MaxCapacity,
+            max: configuration.serverRole.AutoScalingSettings.MaxCapacity
           },
           subnets,
           tags,
           topicNotificationMapping,
-          lifecycleHooks,
+          lifecycleHooks
         });
       }
 
       return templates;
     });
-  },
+  }
 };

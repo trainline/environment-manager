@@ -3,7 +3,7 @@
   "version": "3.0.0",
   "dependencies": {
     "moment": "~2.10.6",
-    "angular": "~1.5.9",
+    "angular": "~1.6.1",
     "jsondiffpatch": "^0.1.43",
     "lodash": "^4.13.1",
     "prettycron": "^0.10.0",
@@ -12,12 +12,13 @@
     "angular-ui-grid": "ui-grid#^3.2.1",
     "select": "^1.0.6",
     "later": "^1.2.0",
-    "angular-route": "^1.5.9"
+    "angular-route": "^1.6.1",
+    "ngclipboard": "^1.1.1"
   },
   "devDependencies": {
-    "angular-mocks": "~1.5.9"
+    "angular-mocks": "~1.6.1"
   },
   "resolutions": {
-    "angular": "~1.5.9"
+    "angular": "~1.6.1"
   }
 }

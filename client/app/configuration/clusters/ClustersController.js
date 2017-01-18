@@ -1,10 +1,10 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 // Manage all owning clusters
 angular.module('EnvironmentManager.configuration').controller('ClustersController',
   function ($scope, $routeParams, $location, resources, cachedResources, modal) {
-
     $scope.Data = [];
 
     function init() {
@@ -44,7 +44,7 @@ angular.module('EnvironmentManager.configuration').controller('ClustersControlle
         title: 'Delete Cluster',
         message: 'Are you sure you want to delete the <strong>' + name + '</strong> Cluster?',
         action: 'Delete',
-        severity: 'Danger',
+        severity: 'Danger'
       }).then(function () {
         resources.config.clusters.delete({ key: name }).then($scope.Refresh);
         cachedResources.config.clusters.flush();

@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let DynamoTableResource = require('./DynamoTableResource');
@@ -13,18 +14,18 @@ function canCreate(resourceDescriptor) {
 }
 
 function create(resourceDescriptor, parameters, callback) {
-  let isMasterResource = resourceDescriptor.hasOwnProperty('perAccount') && resourceDescriptor.perAccount === false;
+  let isMasterResource = {}.hasOwnProperty.call(resourceDescriptor, 'perAccount') && resourceDescriptor.perAccount === false;
   let amazonClientFactory = isMasterResource ? masterAccountClientFactory : childAccountClientFactory;
 
   return amazonClientFactory.createDynamoClient(parameters.accountName).then(
-    client => {
-      var config = {
+    (client) => {
+      let config = {
         resourceName: resourceDescriptor.name,
         table: resourceDescriptor.tableName,
         key: resourceDescriptor.keyName,
         range: resourceDescriptor.rangeName,
         auditingEnabled: resourceDescriptor.enableAuditing,
-        dateField: resourceDescriptor.dateField,
+        dateField: resourceDescriptor.dateField
       };
       return new DynamoTableResource(config, client);
     }

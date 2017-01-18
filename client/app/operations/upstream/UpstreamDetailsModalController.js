@@ -1,21 +1,19 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('UpstreamDetailsModalController',
   function ($scope, $uibModalInstance, $q, awsService, accountMappingService, upstream) {
-
     $scope.Upstream = upstream;
     $scope.ServerData = [];
     $scope.DataLoading = true;
 
     function init() {
-
       // Get list of unique IPs being used by all Load Balancers in relation to this upstream (should be the same, but just in case)
       var uniqueIPs = GetUniqueIPs();
       var servers = [];
 
       getAWSData(uniqueIPs).then(function (data) {
-
         servers = data;
 
         // Check for IPs that don't have matching Instances in AWS - probably already removed by scaling or manual change
@@ -41,7 +39,6 @@ angular.module('EnvironmentManager.operations').controller('UpstreamDetailsModal
         $scope.ServerData = servers;
         $scope.DataLoading = false;
       });
-
     }
 
     $scope.Ok = function () {
@@ -74,11 +71,11 @@ angular.module('EnvironmentManager.operations').controller('UpstreamDetailsModal
           var params = {
             account: accountName,
             query: {
-              'ip_address': [],
-            },
+              ip_address: []
+            }
           };
           uniqueIPs.forEach(function (ip) {
-            params.query['ip_address'].push(ip);
+            params.query.ip_address.push(ip);
           });
 
           awsService.instances.GetInstanceDetails(params).then(function (data) {
@@ -87,7 +84,6 @@ angular.module('EnvironmentManager.operations').controller('UpstreamDetailsModal
         } else {
           deferred.resolve([]);
         }
-
       });
 
       return deferred.promise;

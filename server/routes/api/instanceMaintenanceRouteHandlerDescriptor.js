@@ -1,10 +1,9 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let co = require('co');
-let send = require('modules/helpers/send');
 let route = require('modules/helpers/route');
-let utilities = require('modules/utilities');
 let callbackAdapter = require('modules/callbackAdapter');
 let sender = require('modules/sender');
 let logger = require('modules/logger');
@@ -16,7 +15,7 @@ module.exports =
   .withDocs({
     description: 'Instance',
     verb: 'scan',
-    tags: ['Instances'],
+    tags: ['Instances']
   })
   .do((request, response) => {
     let promise = co(function* () {
@@ -25,15 +24,15 @@ module.exports =
       let enable = request.body.enable;
 
       if (enable === undefined) {
-        throw new Error(`'enable' JSON param needs to be specified`);
+        throw new Error('\'enable\' JSON param needs to be specified');
       }
 
       let query = {
         name: 'ScanInstances',
-        accountName: accountName,
+        accountName,
         filter: {
-          'instance-id': instanceId,
-        },
+          'instance-id': instanceId
+        }
       };
 
       let instances = yield sender.sendQuery({ query });

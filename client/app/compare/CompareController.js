@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.compare').controller('CompareController',
@@ -26,7 +27,7 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
         }),
         resources.config.services.all().then(function (s) {
           services = s;
-        }),
+        })
       ]).then(function () {
         setStateFromUrl();
       });
@@ -46,9 +47,8 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
       vm.selected.comparable = _.find(vm.comparableResources, { key: res });
 
       if (vm.environments && vm.environments.length > 0) {
-
         vm.selected.primaryEnvironment = _.find(vm.environments, { EnvironmentName: compare });
-        
+
         var searchEnvs = to.split(',');
         var foundEnvs = _.filter(vm.environments, function (env) {
           return _.includes(searchEnvs, env.EnvironmentName);
@@ -67,7 +67,6 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
             vm.dataLoading = false;
           });
       }
-
     }
 
     vm.notPrimary = function () {
@@ -82,8 +81,8 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
         controller: 'DiffViewerController',
         resolve: {
           primary: function () { return primary; },
-          secondary: function () { return secondary; },
-        },
+          secondary: function () { return secondary; }
+        }
       });
     };
 
@@ -104,12 +103,12 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
       var filterCluster = vm.selected.cluster === SHOW_ALL_OPTION ? null : vm.selected.cluster;
 
       if (vm.selected.comparable.key === 'versions') {
-        vm.view = serviceComparison(data, primaryEnvironment, secondaryEnvironments)
+        vm.view = serviceComparison(data, primaryEnvironment, secondaryEnvironments);
         if (filterCluster !== null) {
           vm.view.items = _.filter(vm.view.items, function (row) {
             var service = _.find(services, { ServiceName: row.key });
             if (service === undefined) {
-              $log.warn('Service ' + row.key + ' not found!')
+              $log.warn('Service ' + row.key + ' not found!');
               return false;
             }
             return service.OwningCluster === filterCluster;
@@ -122,5 +121,4 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
     }
 
     init();
-
   });

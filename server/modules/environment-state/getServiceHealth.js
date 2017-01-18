@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -18,7 +19,7 @@ function* getServiceHealth({ environmentName, serviceName }) {
   });
 
   // Remove from the list roles that don't contain requested service
-  serviceRoles = _.filter(serviceRoles, (role) => _.isEmpty(role.Services) === false);
+  serviceRoles = _.filter(serviceRoles, role => _.isEmpty(role.Services) === false);
 
   let list = [];
   for (let role of serviceRoles) {
@@ -31,13 +32,13 @@ function* getServiceHealth({ environmentName, serviceName }) {
       } catch (error) {
         // If AutoScalingGroup is not found (old consul data), don't include it in the results
         if (error.name === 'AutoScalingGroupNotFoundError') {
-          state = 'not found ' + asg.AutoScalingGroupName;
+          state = `not found ${asg.AutoScalingGroupName}`;
           // continue;
         } else {
           throw error;
         }
       }
-      let instances = _.filter(state.Instances, (instance) => _.some(instance.Services, { Name: serviceName }));
+      let instances = _.filter(state.Instances, instance => _.some(instance.Services, { Name: serviceName }));
       let services = _.filter(state.Services, { Name: serviceName });
 
       // Filter services on instances info to return only queried service
@@ -52,14 +53,14 @@ function* getServiceHealth({ environmentName, serviceName }) {
     }
   }
 
-  function aggregateHealth(list) {
-    if (_.every(list, { OverallHealth: HEALTH_STATUS.Healthy })) {
+  function aggregateHealth(statusList) {
+    if (_.every(statusList, { OverallHealth: HEALTH_STATUS.Healthy })) {
       return HEALTH_STATUS.Healthy;
-    } else if (_.some(list, { OverallHealth: HEALTH_STATUS.Missing })) {
+    } else if (_.some(statusList, { OverallHealth: HEALTH_STATUS.Missing })) {
       return HEALTH_STATUS.Missing;
-    } else if (_.some(list, { OverallHealth: HEALTH_STATUS.Error })) {
+    } else if (_.some(statusList, { OverallHealth: HEALTH_STATUS.Error })) {
       return HEALTH_STATUS.Error;
-    } else if (_.some(list, { OverallHealth: HEALTH_STATUS.Warning })) {
+    } else if (_.some(statusList, { OverallHealth: HEALTH_STATUS.Warning })) {
       return HEALTH_STATUS.Warning;
     } else {
       return HEALTH_STATUS.Unknown;

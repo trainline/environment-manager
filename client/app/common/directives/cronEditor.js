@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.common')
@@ -8,7 +9,6 @@ angular.module('EnvironmentManager.common')
       scope: { cron: '=' },
       templateUrl: '/app/common/directives/cronEditor.html',
       controller: function ($scope, $rootScope, $attrs) {
-
         var parseDays = function (daysStr) {
           if (!daysStr) {
             return [1, 2, 3, 4, 5];
@@ -38,7 +38,7 @@ angular.module('EnvironmentManager.common')
             action: replaceIfNull(parts[0], 'start:').toLowerCase(),
             minute: parseInt(replaceIfNull(parts[1], '0')).toString(),
             hour: parseInt(replaceIfNull(parts[2], '0')).toString(),
-            days: parseDays(parts[5]),
+            days: parseDays(parts[5])
           };
         };
 
@@ -47,10 +47,8 @@ angular.module('EnvironmentManager.common')
 
           if (index === -1) {
             array.push(value);
-          } else {
-            if (array.length > 1) {
-              array.splice(index, 1);
-            }
+          } else if (array.length > 1) {
+            array.splice(index, 1);
           }
         };
 
@@ -71,7 +69,7 @@ angular.module('EnvironmentManager.common')
         $scope.options = {
           actions: [
             { value: 'start:', label: 'Start' },
-            { value: 'stop:', label: 'Stop' },
+            { value: 'stop:', label: 'Stop' }
           ],
           days: [
             { value: 1, label: 'Mon' },
@@ -80,10 +78,10 @@ angular.module('EnvironmentManager.common')
             { value: 4, label: 'Thu' },
             { value: 5, label: 'Fri' },
             { value: 6, label: 'Sat' },
-            { value: 0, label: 'Sun' },
+            { value: 0, label: 'Sun' }
           ],
           hours: getNumberOptions(0, 24),
-          minutes: getNumberOptions(0, 60, 1),
+          minutes: getNumberOptions(0, 60, 1)
         };
 
         $scope.isDaySelected = function (dayOption) {
@@ -115,6 +113,6 @@ angular.module('EnvironmentManager.common')
         });
 
         loadCron();
-      },
+      }
     };
   });

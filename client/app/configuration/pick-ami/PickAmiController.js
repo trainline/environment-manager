@@ -1,15 +1,14 @@
 angular.module('EnvironmentManager.configuration').controller('PickAmiController',
   function ($scope, $uibModalInstance, awsService, currentAmi, context) {
-
     var vm = this;
     vm.context = context;
-    vm.links = _.pick(window.links, [ 'LIST_OF_IMAGES', 'LINUX_PUPPET_REPO' ]);
-    
+    vm.links = _.pick(window.links, ['LIST_OF_IMAGES', 'LINUX_PUPPET_REPO']);
+
     $scope.ImagesByType = [];
     $scope.SelectedImageType = null;
     $scope.Version = {
       UseLatest: true,
-      SelectedVersion: null,
+      SelectedVersion: null
     };
 
     $scope.DataLoading = true;
@@ -17,7 +16,6 @@ angular.module('EnvironmentManager.configuration').controller('PickAmiController
 
     function init() {
       awsService.images.GetImageDetails().then(function (amiData) {
-
         var images = awsService.images.RestructureImagesByType(amiData);
 
         $scope.ImagesByType = images.map(function sortVersions(image) {
@@ -62,10 +60,10 @@ angular.module('EnvironmentManager.configuration').controller('PickAmiController
       }
 
       var selectedImageInfo = {
-        displayName:selectedAmiName + versionSuffix,
+        displayName: selectedAmiName + versionSuffix,
         rootVolumeSize: selectedImage.RootVolumeSize
       };
-      
+
       $uibModalInstance.close(selectedImageInfo);
     };
 
@@ -83,15 +81,13 @@ angular.module('EnvironmentManager.configuration').controller('PickAmiController
           $scope.SelectedImageType.Versions[0];
         $scope.Version.SelectedVersion = initialAmiVersion;
         $scope.InitialVersionSet = true;
-      } else {
-        if ($scope.SelectedImageType && $scope.SelectedImageType.Versions) {
-          $scope.Version.SelectedVersion = firstStable($scope.SelectedImageType.Versions) || $scope.SelectedImageType.Versions[0];
-        }
+      } else if ($scope.SelectedImageType && $scope.SelectedImageType.Versions) {
+        $scope.Version.SelectedVersion = firstStable($scope.SelectedImageType.Versions) || $scope.SelectedImageType.Versions[0];
       }
     });
 
     function firstStable(versions) {
-      return _.find(versions, function (version){
+      return _.find(versions, function (version) {
         return version.IsStable === true;
       });
     }

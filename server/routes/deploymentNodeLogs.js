@@ -1,4 +1,5 @@
-﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let url = require('url');
@@ -13,12 +14,12 @@ module.exports = (request, response) => {
     accountName: params.account,
     environment: params.environment,
     deploymentId: params.deploymentId,
-    instanceId: params.node,
+    instanceId: params.node
   };
 
-  sender.sendQuery({ query: query, user: request.user }).then(data => {
+  sender.sendQuery({ query, user: request.user }).then((data) => {
     response.send(data.replace(/\n/g,  '<br />'));
-  }).catch(err => {
+  }).catch((err) => {
     response.status(500).send('An error occurred. The log file might not be available. Please see logs for more details.');
     logger.error('Error fetching node deployment log file.', err);
   });

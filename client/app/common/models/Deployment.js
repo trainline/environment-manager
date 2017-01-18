@@ -1,9 +1,9 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.common').factory('Deployment',
   function ($q, resources, $log, awsService, $http) {
-
     var baseUrl = '/api/v1/deployments';
 
     function Deployment(data) {
@@ -12,7 +12,7 @@ angular.module('EnvironmentManager.common').factory('Deployment',
 
     _.assign(Deployment.prototype, {
 
-      fetchNodesIps: function() {
+      fetchNodesIps: function () {
         var self = this;
         if (self.Value.Nodes === undefined || self.Value.Nodes.length === 0) {
           return self;
@@ -22,13 +22,13 @@ angular.module('EnvironmentManager.common').factory('Deployment',
         var params = {
           account: this.AccountName,
           query: {
-            'instance_id': instanceIds,
-          },
+            instance_id: instanceIds
+          }
         };
 
         return awsService.instances.GetInstanceDetails(params).then(function (instances) {
           instances.forEach(function (node) {
-            var tmp = _.find(self.Value.Nodes, {InstanceId: node.InstanceId});
+            var tmp = _.find(self.Value.Nodes, { InstanceId: node.InstanceId });
             if (tmp === undefined) {
               $log.warn('Error while mapping instance ' + node.InstanceId + ' to IP');
               return;
@@ -86,33 +86,33 @@ angular.module('EnvironmentManager.common').factory('Deployment',
         log: data.Value.ExecutionLog,
         environment: {
           name: data.Value.EnvironmentName,
-          type: data.Value.EnvironmentType,
+          type: data.Value.EnvironmentType
         },
         service: {
           name: data.Value.ServiceName,
-          version: data.Value.ServiceVersion,
+          version: data.Value.ServiceVersion
         },
         nodes: nodes,
-        error: null,
+        error: null
       };
 
       if (data.Value.ErrorReason) {
         deployment.error = {
           reason: data.Value.ErrorReason,
-          detail: data.Value.ErrorDetail,
+          detail: data.Value.ErrorDetail
         };
       }
 
       return deployment;
     };
-    
+
     function convertToNode(node) {
       return {
         instanceId: node.InstanceId,
         status: {
           status: node.Status,
-          class: 'status-' + node.Status.toLowerCase().replace(' ', '-'),
-        },
+          class: 'status-' + node.Status.toLowerCase().replace(' ', '-')
+        }
       };
     }
 

@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
@@ -7,6 +8,7 @@ let co = require('co');
 let getAllASGs = require('queryHandlers/ScanCrossAccountAutoScalingGroups');
 let getAccountASGs = require('queryHandlers/ScanAutoScalingGroups');
 let getASG = require('queryHandlers/GetAutoScalingGroup');
+let AutoScalingGroup = require('models/AutoScalingGroup');
 let getDynamo = require('queryHandlers/GetDynamoResource');
 let GetLaunchConfiguration = require('queryHandlers/GetLaunchConfiguration');
 let SetLaunchConfiguration = require('commands/launch-config/SetLaunchConfiguration');
@@ -62,7 +64,7 @@ function getAsgReadyByName(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
 
   return getASGReady({ autoScalingGroupName, environmentName })
-    .then((data) => res.json(data)).catch(next);
+    .then(data => res.json(data)).catch(next);
 }
 
 
@@ -85,7 +87,7 @@ function getAsgIps(req, res, next) {
  */
 function getAsgLaunchConfig(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
-  const autoScalingGroupName = req.swagger.params.name.value
+  const autoScalingGroupName = req.swagger.params.name.value;
 
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
@@ -117,6 +119,25 @@ function putAsg(req, res, next) {
 
   UpdateAutoScalingGroup({ environmentName, autoScalingGroupName, parameters })
     .then(data => res.json(data)).catch(next);
+}
+
+/**
+ * PUT /asgs/{name}
+ */
+function deleteAsg(req, res, next) {
+  const environmentName = req.swagger.params.environment.value;
+  const autoScalingGroupName = req.swagger.params.name.value;
+
+  return co(function* () {
+    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+    AutoScalingGroup.getByName(accountName, autoScalingGroupName)
+      .then(asg => asg.deleteASG())
+      .then((status) => {
+        res.json({
+          Ok: status
+        });
+      }).catch(next);
+  });
 }
 
 /**
@@ -154,8 +175,11 @@ function putAsgSize(req, res, next) {
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     SetAutoScalingGroupSize({
-      accountName, autoScalingGroupName,
-      autoScalingGroupMinSize, autoScalingGroupDesiredSize, autoScalingGroupMaxSize
+      accountName,
+      autoScalingGroupName,
+      autoScalingGroupMinSize,
+      autoScalingGroupDesiredSize,
+      autoScalingGroupMaxSize
     })
       .then(data => res.json(data)).catch(next);
   });
@@ -166,12 +190,12 @@ function putAsgSize(req, res, next) {
  */
 function putAsgLaunchConfig(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
-  const data = req.swagger.params.body.value
-  const autoScalingGroupName = req.swagger.params.name.value
+  const data = req.swagger.params.body.value;
+  const autoScalingGroupName = req.swagger.params.name.value;
 
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    SetLaunchConfiguration({ accountName, autoScalingGroupName, data }).then(data => res.json(data)).catch(next);
+    SetLaunchConfiguration({ accountName, autoScalingGroupName, data }).then(res.json.bind(res)).catch(next);
   });
 }
 
@@ -183,6 +207,7 @@ module.exports = {
   getAsgLaunchConfig,
   putScalingSchedule,
   getScalingSchedule,
+  deleteAsg,
   putAsg,
   putAsgSize,
   putAsgLaunchConfig

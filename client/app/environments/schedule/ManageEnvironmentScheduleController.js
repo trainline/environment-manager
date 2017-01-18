@@ -1,9 +1,9 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ManageEnvironmentScheduleController',
-  function ($rootScope, $routeParams, $location, $q, modal, resources, $http, cachedResources, configValidation, cron, Environment) {
-
+  function ($rootScope, $routeParams, $location, $q, modal, resources, $http, cachedResources, cron, Environment) {
     var PROTECTED_ACTION = 'SCHEDULE_ENVIRONMENT';
 
     var vm = this;
@@ -17,14 +17,14 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
 
     vm.NewSchedule = {
       Type: '',
-      DefaultSchedule: '',
+      DefaultSchedule: ''
     };
 
     function init() {
       var environmentName = GetActiveEnvironment();
       vm.Environment.EnvironmentName = environmentName;
 
-      $http.get('/api/v1/environments/' + environmentName + '/protected', { params: { action: PROTECTED_ACTION } }).then(function(result) {
+      $http.get('/api/v1/environments/' + environmentName + '/protected', { params: { action: PROTECTED_ACTION } }).then(function (result) {
         vm.schedulingProtected = result.data.isProtected;
         vm.Refresh();
       });
@@ -42,16 +42,15 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
 
         vm.NewSchedule = {
           DefaultSchedule: operations.Value.DefaultSchedule,
-          Type: operations.Value.ScheduleAutomatically ? 'Automatic' : operations.Value.ManualScheduleUp ? 'On' : 'Off',
+          Type: operations.Value.ScheduleAutomatically ? 'Automatic' : operations.Value.ManualScheduleUp ? 'On' : 'Off'
         };
-      };
+      }
 
       Environment.getSchedule(vm.Environment.EnvironmentName)
         .then(function (operations) {
           assignToTheScope(operations);
           vm.DataFound = true;
         }, function () {
-
           vm.DataFound = false;
         }).finally(function () {
           vm.DataLoading = false;
@@ -85,7 +84,6 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
     };
 
     vm.ApplySchedule = function () {
-
       // Update Environment with form values
       vm.Operations.Value.ScheduleAutomatically = vm.NewSchedule.Type == 'Automatic';
       vm.Operations.Value.ManualScheduleUp = vm.NewSchedule.Type == 'On';
@@ -95,7 +93,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
         cachedResources.config.environments.flush();
         modal.information({
           title: 'Environment Schedule Updated',
-          message: 'Environment schedule saved successfully.<br/><br/>Note: It may take up to 10 minutes for schedule changes to result in servers being turned on or off.',
+          message: 'Environment schedule saved successfully.<br/><br/>Note: It may take up to 10 minutes for schedule changes to result in servers being turned on or off.'
         }).then(function () {
           vm.Refresh();
         });
@@ -117,7 +115,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
     }
 
     function GetActiveEnvironment() {
-      var environmentName = $routeParams['environment'];
+      var environmentName = $routeParams.environment;
       if (environmentName) {
         // Environment specified on URL, override active environment
         $rootScope.WorkingEnvironment.EnvironmentName = environmentName;

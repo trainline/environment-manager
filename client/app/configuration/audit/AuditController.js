@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 
@@ -33,7 +34,7 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
       { Name: 'Last 2 days', Value: 1 * enums.MILLISECONDS.PerDay },
       { Name: 'Last 3 days', Value: 2 * enums.MILLISECONDS.PerDay },
       { Name: 'Last 7 days', Value: 6 * enums.MILLISECONDS.PerDay },
-      { Name: 'Last 30 days', Value: 29 * enums.MILLISECONDS.PerDay },
+      { Name: 'Last 30 days', Value: 29 * enums.MILLISECONDS.PerDay }
     ];
 
     $scope.SelectedEntityType = SHOW_ALL_OPTION;
@@ -49,9 +50,9 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
     $scope.DiffOptions = arrayItemHashDetector;
 
     function init() {
-      var entityType = $routeParams['entityType'];
-      var key = $routeParams['key'];
-      var range = $routeParams['range'];
+      var entityType = $routeParams.entityType;
+      var key = $routeParams.key;
+      var range = $routeParams.range;
 
       if (key) { $scope.SelectedEntityKey = decodeURIComponent(key); }
 
@@ -73,7 +74,7 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
 
         resources.audit.changeTypes.all().then(function (changeTypes) {
           $scope.ChangeTypesList = [SHOW_ALL_OPTION].concat(changeTypes).sort();
-        }),
+        })
       ]).then(function () {
         vm.refresh();
       });
@@ -85,13 +86,12 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
         controller: 'AuditCompareModalController',
         size: 'lg',
         resolve: {
-          audit: function () { return audit; },
-        },
+          audit: function () { return audit; }
+        }
       });
     };
 
     vm.refresh = function () {
-
       $scope.DataLoading = true;
       $scope.SearchPerformed = true;
 
@@ -102,7 +102,7 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
       }
 
       if ($scope.SelectedChangeType != SHOW_ALL_OPTION) {
-        query['ChangeType'] = $scope.SelectedChangeType;
+        query.ChangeType = $scope.SelectedChangeType;
       }
 
       if ($scope.SelectedEntityKey) {
@@ -121,7 +121,7 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
 
       var params = {
         account: 'all', // Always retrieve audit for all accounts
-        query: query,
+        query: query
       };
       resources.audit.history.all(params).then(function (data) {
         displayResults(data);
@@ -133,9 +133,9 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
      * Any property values that are valid JSON representations
      * of composite objects (Object or Array) are parsed before
      * converting the root object to JSON.
-     * 
+     *
      * @param obj {Object} any object
-     * @returns {String} JSON representation of object 
+     * @returns {String} JSON representation of object
      */
     function diffableRepresentationOf(obj) {
       function replacer(key, value) {
@@ -170,13 +170,13 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
       $scope.DataLoading = false;
     }
 
-    $scope.getPage = function (pageData){
+    $scope.getPage = function (pageData) {
       $scope.DataLoading = true;
       $http.get(pageData).then(function (response) {
-          displayResults({ items:response.data, headers:response.headers });
-          $scope.DataLoading = false;
+        displayResults({ items: response.data, headers: response.headers });
+        $scope.DataLoading = false;
       });
-    }
+    };
 
     $scope.Restore = function (audit) {
       var modalParameters = {
@@ -184,10 +184,9 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
         message: 'Are you sure you want to restore <strong>' + audit.Entity.Type + '</strong> data?',
         action: 'Restore',
         severity: 'Warning',
-        details: ['<pre style="height:450px; overflow-y:scroll">' + audit.OldValueDisplay + '</pre>'],
+        details: ['<pre style="height:450px; overflow-y:scroll">' + audit.OldValueDisplay + '</pre>']
       };
       modal.confirmation(modalParameters).then(function () {
-
         $scope.DataLoading = true;
         var type = $scope.EntityTypeFromTable(audit.Entity.Type).toLowerCase();
 
@@ -198,22 +197,21 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
           params: {
             account: audit.AccountName,
             mode: 'merge'
-          },
+          }
         }).then(function () {
           return delay(1000);
         }).finally(vm.refresh);
-
       });
     };
 
     $scope.EntityTypeFromTable = function (tableName) {
       return tableName.substring(tableName.indexOf('Config') + 6);
-    }
+    };
 
     function delay(ms) {
-        var deferred = $q.defer();
-        setTimeout(deferred.resolve, ms);
-        return deferred.promise;
+      var deferred = $q.defer();
+      setTimeout(deferred.resolve, ms);
+      return deferred.promise;
     }
 
     $scope.SelectedEntityHasRange = function () {

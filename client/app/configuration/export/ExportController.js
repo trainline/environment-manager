@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('ExportController',
@@ -20,7 +21,7 @@ angular.module('EnvironmentManager.configuration').controller('ExportController'
         var asResourceDescriptor = function (resource) {
           return {
             name: resource.Value.name(),
-            description: resource.Value.description(),
+            description: resource.Value.description()
           };
         };
 
@@ -33,7 +34,7 @@ angular.module('EnvironmentManager.configuration').controller('ExportController'
     vm.export = function () {
       var params = {};
       if (vm.isSelectedResourceCrossAccount()) {
-        params['account'] = vm.selectedAccount;
+        params.account = vm.selectedAccount;
       }
 
       vm.dataLoading = true;
@@ -48,7 +49,7 @@ angular.module('EnvironmentManager.configuration').controller('ExportController'
     vm.download = function () {
       var params = {};
       if (vm.isSelectedResourceCrossAccount()) {
-        params['account'] = vm.selectedAccount;
+        params.account = vm.selectedAccount;
       }
 
       var resource = resources.config[vm.selectedResource];

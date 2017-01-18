@@ -1,10 +1,11 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assert = require('assert');
 let validators = [
   require('commands/validators/keyDynamoResourceValidator'),
-  require('commands/validators/lbUpstreamDynamoResourceValidator'),
+  require('commands/validators/lbUpstreamDynamoResourceValidator')
 ];
 
 function validate(resource, command) {
@@ -22,5 +23,5 @@ function validate(resource, command) {
 }
 
 module.exports = {
-  validate,
+  validate
 };

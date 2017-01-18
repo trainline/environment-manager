@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let route = require('modules/helpers/route');
@@ -13,17 +14,18 @@ module.exports = route
   .allowAnonymous()
   .whenRequest((url, value) => {
     if (value.grant_type !== 'password') return new Error('unsupported_grant_type');
+    else return null;
   })
   .do((request, response) => {
     let credentials = {
       username: request.body.username,
       password: request.body.password,
-      scope: 'api',
+      scope: 'api'
     };
 
     let callback = adapt.callbackToExpress(request, response);
     let duration = tokenConfiguration.getTokenDuration();
 
     userService.authenticateUser(credentials, duration)
-      .then((value) => callback(null, value), (err) => callback(err));
+      .then(value => callback(null, value), err => callback(err));
   });

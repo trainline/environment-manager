@@ -1,39 +1,43 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let _ = require('lodash');
 let amazonClientFactory = require('modules/amazon-client/childAccountClient');
 
-var AwsError = require('modules/errors/AwsError.class');
-var LaunchConfigurationAlreadyExistsError = require('modules/errors/LaunchConfigurationAlreadyExistsError.class');
+let AwsError = require('modules/errors/AwsError.class');
+let LaunchConfigurationAlreadyExistsError = require('modules/errors/LaunchConfigurationAlreadyExistsError.class');
 
-// TODO(filip): don't define methods in constructor, convert to class
-function LaunchConfigurationResource(client) {
-  this.client = client;
+function standardifyError(error, launchConfigurationName) {
+  if (!error) return null;
 
-  function cleanup(launchconfig) {
-    delete launchconfig.LaunchConfigurationARN;
-    delete launchconfig.CreatedTime;
+  let awsError = new AwsError(error.message);
 
-    if (_.isNull(launchconfig.KernelId) || _.isEmpty(launchconfig.KernelId)) delete launchconfig.KernelId;
-    if (_.isNull(launchconfig.RamdiskId) || _.isEmpty(launchconfig.RamdiskId)) delete launchconfig.RamdiskId;
+  if (error.code === 'AlreadyExists') {
+    return new LaunchConfigurationAlreadyExistsError(
+      `LaunchConfiguration "${launchConfigurationName}" already exists`, awsError
+    );
   }
 
-  function standardifyError(error, launchConfigurationName) {
-    if (!error) return null;
+  return awsError;
+}
 
-    var awsError = new AwsError(error.message);
+function cleanup(launchconfig) {
+  delete launchconfig.LaunchConfigurationARN;
+  delete launchconfig.CreatedTime;
 
-    if (error.code === 'AlreadyExists') {
-      return new LaunchConfigurationAlreadyExistsError(
-        `LaunchConfiguration "${launchConfigurationName}" already exists`, awsError
-      );
-    }
+  if (_.isNull(launchconfig.KernelId) || _.isEmpty(launchconfig.KernelId)) delete launchconfig.KernelId;
+  if (_.isNull(launchconfig.RamdiskId) || _.isEmpty(launchconfig.RamdiskId)) delete launchconfig.RamdiskId;
+}
 
-    return awsError;
+class LaunchConfigurationResource {
+
+  constructor(client) {
+    this.client = client;
   }
 
-  function describeLaunchConfigurations(names) {
+  describeLaunchConfigurations(names) {
+    let self = this;
     let launchconfigs = [];
     let request = {};
 
@@ -42,7 +46,7 @@ function LaunchConfigurationResource(client) {
     }
 
     function query() {
-      return client.describeLaunchConfigurations(request).promise().then(data => {
+      return self.client.describeLaunchConfigurations(request).promise().then((data) => {
         launchconfigs = launchconfigs.concat(data.LaunchConfigurations);
 
         if (!data.NextToken) return launchconfigs;
@@ -56,37 +60,37 @@ function LaunchConfigurationResource(client) {
     return query();
   }
 
-  this.get = function (parameters) {
-    return describeLaunchConfigurations([parameters.name]).then(data => data[0]);
-  };
+  get(parameters) {
+    return this.describeLaunchConfigurations([parameters.name]).then(data => data[0]);
+  }
 
-  this.all = function (parameters) {
-    return describeLaunchConfigurations(parameters.names || []);
-  };
+  all(parameters) {
+    return this.describeLaunchConfigurations(parameters.names || []);
+  }
 
-  this.delete = function (parameters) {
-    let request = { LaunchConfigurationName: parameters.name };
+  delete({ name }) {
+    let request = { LaunchConfigurationName: name };
 
-    return client.deleteLaunchConfiguration(request).promise().catch(error => {
-      throw standardifyError(error, parameters.name);
+    return this.client.deleteLaunchConfiguration(request).promise().catch((error) => {
+      throw standardifyError(error, name);
     });
-  };
+  }
 
-  this.post = function (parameters) {
+  post(parameters) {
     cleanup(parameters);
 
     let request = parameters;
-    return client.createLaunchConfiguration(request).promise().catch(error => {
+    return this.client.createLaunchConfiguration(request).promise().catch((error) => {
       throw standardifyError(error, parameters.LaunchConfigurationName);
     });
-  };
+  }
 }
 
 module.exports = {
 
-  canCreate: (resourceDescriptor) =>
-    resourceDescriptor.type.toLowerCase() == 'launchconfig',
+  canCreate: resourceDescriptor =>
+    resourceDescriptor.type.toLowerCase() === 'launchconfig',
 
   create: (resourceDescriptor, parameters) =>
-    amazonClientFactory.createASGClient(parameters.accountName).then(client => new LaunchConfigurationResource(client)),
+    amazonClientFactory.createASGClient(parameters.accountName).then(client => new LaunchConfigurationResource(client))
 };

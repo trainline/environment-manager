@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let guid = require('node-uuid');
@@ -6,14 +7,14 @@ let assertContract = require('modules/assertContract');
 let logger = require('modules/logger');
 let commandMetadata = require('commands/utils/metadata');
 
-const COMMAND_TYPE = "Command";
-const QUERY_TYPE = "Query";
-const THIN_SEPARATOR  = new Array(50).join('-');
+const COMMAND_TYPE = 'Command';
+const QUERY_TYPE = 'Query';
+const THIN_SEPARATOR = new Array(50).join('-');
 const THICK_SEPARATOR = new Array(50).join('=');
 
 module.exports = {
-  sendCommand: function (parameters, callback) {
-    assertContract(parameters, "parameters", {
+  sendCommand(parameters, callback) {
+    assertContract(parameters, 'parameters', {
       command: {
         properties: {
           name: { type: String, empty: false }
@@ -30,8 +31,8 @@ module.exports = {
     return promiseOrCallback(promise, command, type, callback);
   },
 
-  sendQuery: function (parameters, callback) {
-    assertContract(parameters, "parameters", {
+  sendQuery(parameters, callback) {
+    assertContract(parameters, 'parameters', {
       properties: {
         query: {
           properties: {
@@ -52,12 +53,12 @@ function prepareQuery(parameters) {
   let query = Object.assign({}, parameters.query);
 
   if (parameters.parent) {
-    query.queryId  = parameters.parent.queryId;
+    query.queryId = parameters.parent.queryId;
     query.username = parameters.parent.username;
   }
 
   if (parameters.user) {
-    query.queryId  = guid.v1();
+    query.queryId = guid.v1();
     query.username = parameters.user.getName();
   }
 
@@ -68,8 +69,7 @@ function prepareQuery(parameters) {
 }
 
 function promiseOrCallback(promise, commandOrQuery, type, callback) {
-
-  promise.catch(error => {
+  promise.catch((error) => {
     if (commandOrQuery.suppressError !== true) {
       let errorMessage = getErrorMessage(commandOrQuery, error);
       logger.error(errorMessage, {
@@ -86,7 +86,7 @@ function promiseOrCallback(promise, commandOrQuery, type, callback) {
 
   if (!callback) return promise;
 
-  promise.then(
+  return promise.then(
     result => callback(null, result),
     error => callback(error)
   );
@@ -99,18 +99,18 @@ function sendCommandOrQuery(commandOrQuery) {
 }
 
 function getLogMessage(commandOrQuery) {
-  var message = [
+  let message = [
     THICK_SEPARATOR,
     `[${commandOrQuery.name}]`,
     JSON.stringify(commandOrQuery, null, '  '),
-    THICK_SEPARATOR,
+    THICK_SEPARATOR
   ].join('\n');
 
   return message;
 }
 
 function getErrorMessage(commandOrQuery, error) {
-  var message = [
+  let message = [
     'Error executing:',
     THICK_SEPARATOR,
     `[${commandOrQuery.name}]`,

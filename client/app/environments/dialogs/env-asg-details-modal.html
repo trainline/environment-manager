@@ -29,14 +29,14 @@
           </div>
         </form>
       </uib-tab>
-      <uib-tab heading="Launch Configuration" index="'launchConfig'">
-        <form name="form" class="form-horizontal">
-          <div>
+      <uib-tab heading="Launch Configuration" index="'launchConfig'" >
+        <form name="form" class="form-horizontal asg-launch-configuration">
+          <div ng-init="vm.setLaunchConfigForm(form)">
             <div ng-include="'/app/common/launch-config/launch-config.html'" style="width: 900px"></div>
             <div class="form-group">
               <label class="col-md-1 control-label text-left" style="width: 180px"></label>
               <div class="col-md-8">
-                <button class="btn btn-default" type="button" ng-click="vm.updateLaunchConfig()" ng-if="vm.canUser('edit')" ng-disabled="!vm.formIsValid(form)">Update Launch Configuration</button>
+                <button class="btn btn-default submit" type="button" ng-click="vm.updateLaunchConfig()" ng-if="vm.canUser('edit')" ng-disabled="!vm.formIsValid(form)">Update Launch Configuration</button>
               </div>
             </div>
           </div>
@@ -52,7 +52,7 @@
         </form>
       </uib-tab>
       <uib-tab heading="Services" index="'services'">
-        <asg-services asg="vm.asg" asg-state="vm.asgState" refresh="vm.refresh()" environment="vm.environmentName" role="vm.asg.Role" ng-if="vm.asgState"></asg-services>
+        <asg-services asg="vm.asg" asg-state="vm.asgState" refresh="vm.refresh()" environment="vm.environmentName" role="vm.asg.Role" close-modal="vm.closeModal()" ng-if="vm.asgState"></asg-services>
       </uib-tab>
       <uib-tab heading="Schedule &amp; Scaling" index="'schedule'">
         <form name="formScaling" class="form-horizontal">

@@ -1,4 +1,4 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
 
@@ -17,7 +17,7 @@ function environmentExists(environment) {
       log.warn(err);
       return {
         title: 'Environment Not Found',
-        detail: `environment name: ${environment}`,
+        detail: `environment name: ${environment}`
       };
     });
 }

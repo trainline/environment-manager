@@ -41,6 +41,8 @@
   <script type="text/javascript" src="bower_components/prettycron/prettycron.js"></script>
   <script type="text/javascript" src="assets/lib/glob-intersection.js"></script>
   <script type="text/javascript" src="assets/lib/select.min.js"></script>
+  <script type="text/javascript" src="bower_components/clipboard/dist/clipboard.min.js"></script>
+  <script type="text/javascript" src="bower_components/ngclipboard/dist/ngclipboard.min.js"></script>
   <!-- endbuild -->
 
   <script type="text/javascript" src="user.js"></script>
@@ -50,35 +52,40 @@
 
   <!-- build:js scripts/app.js -->
   <!-- inject:js -->
-  <script src="app/operations/operations.module.js"></script>
-  <script src="app/operations/upstream/directives/lbServersStatesCell.js"></script>
   <script src="app/environments/environments.module.js"></script>
   <script src="app/environments/dialogs/asg/asgSingleService.js"></script>
   <script src="app/environments/dialogs/asg/asgSingleInstance.js"></script>
   <script src="app/environments/dialogs/asg/asgServices.js"></script>
   <script src="app/environments/dialogs/asg/asgInstances.js"></script>
   <script src="app/environments/dialogs/asg/asgDistribution.js"></script>
-  <script src="app/operations/upstream/UpstreamDetailsModalController.js"></script>
-  <script src="app/operations/upstream/OpsUpstreamController.js"></script>
-  <script src="app/operations/maintenance/OpsMaintenanceController.js"></script>
-  <script src="app/operations/maintenance/MainteinanceAddServerModalController.js"></script>
-  <script src="app/operations/deployments/opsDeploymentsList.js"></script>
-  <script src="app/operations/deployments/opsDeploymentsInstances.js"></script>
-  <script src="app/operations/deployments/OpsDeploymentsController.js"></script>
-  <script src="app/operations/deployments/DeploymentDetailsModalController.js"></script>
+  <script src="app/operations/operations.module.js"></script>
+  <script src="app/operations/upstream/directives/lbServersStatesCell.js"></script>
+  <script src="app/environments/summary/EnvironmentsSummaryController.js"></script>
+  <script src="app/environments/settings/ManageEnvironmentSettingsController.js"></script>
+  <script src="app/environments/servers/serversView.js"></script>
+  <script src="app/environments/servers/ManageEnvironmentServersController.js"></script>
+  <script src="app/environments/schedule/ManageEnvironmentScheduleController.js"></script>
   <script src="app/configuration/configuration.module.js"></script>
   <script src="app/configuration/services/permissionsValidationService.js"></script>
   <script src="app/configuration/services/lbBulkOperationService.js"></script>
   <script src="app/configuration/services/deploymentMapConverter.js"></script>
-  <script src="app/configuration/services/configValidationService.js"></script>
   <script src="app/configuration/services/arrayItemHashDetectorService.js"></script>
-  <script src="app/operations/amis/OpsAMIsController.js"></script>
+  <script src="app/environments/directives/serviceDiffWithTargetState.js"></script>
+  <script src="app/environments/directives/healthChecks.js"></script>
+  <script src="app/environments/directives/currentDesiredTitle.js"></script>
+  <script src="app/environments/dialogs/LaunchConfigConfirmationController.js"></script>
+  <script src="app/environments/dialogs/DeployModalController.js"></script>
+  <script src="app/environments/dialogs/CreateEnvironmentController.js"></script>
+  <script src="app/environments/dialogs/ASGDetailsModalController.js"></script>
   <script src="app/configuration/pick-ami/PickAmiController.js"></script>
   <script src="app/configuration/permissions/PermissionsController.js"></script>
   <script src="app/configuration/permissions/PermissionController.js"></script>
+  <script src="app/common/common.module.js"></script>
+  <script src="app/configuration/notification-settings/notificationSettingsList.js"></script>
+  <script src="app/configuration/notification-settings/notificationSettingsEntry.js"></script>
+  <script src="app/configuration/load-balancers/LBsController.js"></script>
   <script src="app/configuration/load-balancers/LBUpstreamsController.js"></script>
   <script src="app/configuration/load-balancers/LBUpstreamController.js"></script>
-  <script src="app/configuration/load-balancers/LBsController.js"></script>
   <script src="app/configuration/load-balancers/LBController.js"></script>
   <script src="app/configuration/load-balancers/LBCloneController.js"></script>
   <script src="app/configuration/import/ImportController.js"></script>
@@ -87,36 +94,32 @@
   <script src="app/configuration/environment-types/EnvironmentTypeController.js"></script>
   <script src="app/configuration/em-services/ServicesController.js"></script>
   <script src="app/configuration/em-services/ServiceController.js"></script>
-  <script src="app/configuration/deployment-maps/DeploymentMapTargetController.js"></script>
+  <script src="app/configuration/deployment-maps/copyServerRole.js"></script>
   <script src="app/configuration/deployment-maps/DeploymentMapsController.js"></script>
+  <script src="app/configuration/deployment-maps/DeploymentMapTargetController.js"></script>
   <script src="app/configuration/deployment-maps/DeploymentMapCreateController.js"></script>
   <script src="app/configuration/deployment-maps/DeploymentMapController.js"></script>
-  <script src="app/configuration/deployment-maps/copyServerRole.js"></script>
-  <script src="app/configuration/audit/AuditController.js"></script>
-  <script src="app/configuration/audit/AuditCompareModalController.js"></script>
   <script src="app/configuration/clusters/ClustersController.js"></script>
   <script src="app/configuration/clusters/ClusterController.js"></script>
+  <script src="app/configuration/audit/AuditController.js"></script>
+  <script src="app/configuration/audit/AuditCompareModalController.js"></script>
   <script src="app/configuration/accounts/AccountsController.js"></script>
   <script src="app/configuration/accounts/AccountController.js"></script>
-  <script src="app/environments/summary/EnvironmentsSummaryController.js"></script>
-  <script src="app/environments/servers/serversView.js"></script>
-  <script src="app/environments/servers/ManageEnvironmentServersController.js"></script>
-  <script src="app/environments/settings/ManageEnvironmentSettingsController.js"></script>
-  <script src="app/environments/schedule/ManageEnvironmentScheduleController.js"></script>
-  <script src="app/environments/directives/serviceDiffWithTargetState.js"></script>
-  <script src="app/environments/directives/healthChecks.js"></script>
-  <script src="app/environments/directives/currentDesiredTitle.js"></script>
+  <script src="app/operations/upstream/UpstreamDetailsModalController.js"></script>
+  <script src="app/operations/upstream/OpsUpstreamController.js"></script>
+  <script src="app/operations/maintenance/OpsMaintenanceController.js"></script>
+  <script src="app/operations/maintenance/MainteinanceAddServerModalController.js"></script>
+  <script src="app/operations/deployments/opsDeploymentsList.js"></script>
+  <script src="app/operations/deployments/opsDeploymentsInstances.js"></script>
+  <script src="app/operations/deployments/OpsDeploymentsController.js"></script>
+  <script src="app/operations/deployments/DeploymentDetailsModalController.js"></script>
+  <script src="app/operations/amis/OpsAMIsController.js"></script>
   <script src="app/compare/compare.module.js"></script>
   <script src="app/compare/services/serviceComparison.js"></script>
-  <script src="app/compare/services/ResourceComparison.js"></script>
   <script src="app/compare/services/comparableResources.js"></script>
-  <script src="app/environments/dialogs/LaunchConfigConfirmationController.js"></script>
-  <script src="app/environments/dialogs/DeployModalController.js"></script>
-  <script src="app/environments/dialogs/CreateEnvironmentController.js"></script>
-  <script src="app/environments/dialogs/ASGDetailsModalController.js"></script>
+  <script src="app/compare/services/ResourceComparison.js"></script>
   <script src="app/compare/directives/serviceCell.js"></script>
   <script src="app/compare/diff-viewer/DiffViewerController.js"></script>
-  <script src="app/common/common.module.js"></script>
   <script src="app/common/utils/QuerySync.js"></script>
   <script src="app/common/services/targetStateService.js"></script>
   <script src="app/common/services/taggable.js"></script>
@@ -127,6 +130,7 @@
   <script src="app/common/services/remoteResourceFactoryService.js"></script>
   <script src="app/common/services/modalService.js"></script>
   <script src="app/common/services/localResourceFactoryService.js"></script>
+  <script src="app/common/services/loading.js"></script>
   <script src="app/common/services/linkHeaderService.js"></script>
   <script src="app/common/services/instancesService.js"></script>
   <script src="app/common/services/enumsService.js"></script>
@@ -135,12 +139,6 @@
   <script src="app/common/services/cachedResourcesService.js"></script>
   <script src="app/common/services/awsService.js"></script>
   <script src="app/common/services/accountMappingService.js"></script>
-  <script src="app/common/models/UpstreamConfig.js"></script>
-  <script src="app/common/models/Image.js"></script>
-  <script src="app/common/models/Environment.js"></script>
-  <script src="app/common/models/DeploymentMap.js"></script>
-  <script src="app/common/models/Deployment.js"></script>
-  <script src="app/common/models/AutoScalingGroup.js"></script>
   <script src="app/common/directives/validJsonDirective.js"></script>
   <script src="app/common/directives/uniqueAmongDirective.js"></script>
   <script src="app/common/directives/spinner.js"></script>
@@ -148,10 +146,18 @@
   <script src="app/common/directives/scheduleEditor.js"></script>
   <script src="app/common/directives/scalingScheduleEditor.js"></script>
   <script src="app/common/directives/scalingCronEditor.js"></script>
+  <script src="app/common/directives/multipleEmails.js"></script>
+  <script src="app/common/directives/loadingOverlay.js"></script>
   <script src="app/common/directives/jsonDiffPatchDirective.js"></script>
   <script src="app/common/directives/healthStatus.js"></script>
   <script src="app/common/directives/defaultIfEmptyDirective.js"></script>
   <script src="app/common/directives/cronEditor.js"></script>
+  <script src="app/common/models/UpstreamConfig.js"></script>
+  <script src="app/common/models/Image.js"></script>
+  <script src="app/common/models/Environment.js"></script>
+  <script src="app/common/models/DeploymentMap.js"></script>
+  <script src="app/common/models/Deployment.js"></script>
+  <script src="app/common/models/AutoScalingGroup.js"></script>
   <script src="app/common/common-modal/CommonModalController.js"></script>
   <script src="app/operations/ToggleServiceModalController.js"></script>
   <script src="app/compare/CompareController.js"></script>
@@ -162,16 +168,18 @@
   <!-- endbuild -->
 
 </head>
-<body ng-controller="MainController">
+<body ng-controller="MainController as main">
+  <loading-overlay></loading-overlay>
   <header>
     <a href="#/"><img id="logo" src="assets/images/logo.jpg" height="30"/></a>
     <h1 title="Environment Manager {{appVersion}}"><a href="#/">Environment Manager</a></h1>
     <nav>
       <ul>
-        <li><a href="#/environments" ng-class="{active: GetSection()=='environments'}">Environments</a></li>
-        <li><a href="#/operations/deployments" ng-class="{active: GetSection()=='operations'}">Operations</a></li>
-        <li><a href="#/compare" ng-class="{active: GetSection()=='compare'}">Compare</a></li>
-        <li><a href="#/config/services" ng-class="{active: GetSection()=='config'}">Configuration</a></li>
+        <li><a href="#/environments" ng-class="{active: main.getSection()=='environments'}">Environments</a></li>
+        <li><a href="#/operations/deployments" ng-class="{active: main.getSection()=='operations'}">Operations</a></li>
+        <li><a href="#/compare" ng-class="{active: main.getSection()=='compare'}">Compare</a></li>
+        <li><a href="#/config/services" ng-class="{active: main.getSection()=='config'}">Configuration</a></li>
+        <li><a href="/docs" target="_blank">API</a></li>
       </ul>
     </nav>
     <div id="userinfo">
@@ -181,7 +189,7 @@
   </header>
 
   <div>
-    <div id="sidebar" ng-if="GetSection()=='config'">
+    <div id="sidebar" ng-if="main.getSection()=='config'">
       <h3>Configuration:</h3>
       <nav>
         <ul>
@@ -189,6 +197,7 @@
           <li><a href="#/config/deploymentmaps" ng-class="{active: $route.current.menusection == 'DeploymentMaps'}">Deployment Maps</a></li>
           <li><a href="#/config/loadbalancers" ng-class="{active: $route.current.menusection == 'LBs'}">Load Balancer</a></li>
           <li><a href="#/config/upstreams" ng-class="{active: $route.current.menusection == 'LBUpstream'}">Upstreams</a></li>
+          <li><a href="#/config/notification-settings" ng-class="{active: $route.current.menusection == 'NotificationSettings'}">Notification Settings</a></li>
           <li><a href="#/config/clusters" ng-class="{active: $route.current.menusection == 'Clusters'}">Clusters</a></li>
           <li><a href="#/config/environmenttypes" ng-class="{active: $route.current.menusection == 'EnvironmentTypes'}">Environment Types</a></li>
           <li><a href="#/config/accounts" ng-class="{active: $route.current.menusection == 'Accounts'}">Accounts</a></li>
@@ -208,7 +217,7 @@
         </ul>
       </nav>
     </div>
-    <div id="sidebar" ng-if="GetSection()=='operations'">
+    <div id="sidebar" ng-if="main.getSection()=='operations'">
       <h3>Operations:</h3>
       <nav>
         <ul>
@@ -219,7 +228,7 @@
         </ul>
       </nav>
     </div>
-    <div id="sidebar" ng-if="GetSection()=='environments' && $route.current.menusection != ''">
+    <div id="sidebar" ng-if="main.getSection()=='environments' && $route.current.menusection != ''">
       <h3>Environment</h3>
       <form name="form">
         <select id="SelectEnvironment" class="form-control" ng-model="WorkingEnvironment.EnvironmentName" ng-change="ChangeEnvironment()">

@@ -1,4 +1,4 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 /**
  * @typedef {Object} S3Location
@@ -29,7 +29,7 @@ function parse(url) {
       endpoint: t[1],
       Bucket: t[2],
       Key: t[3],
-      VersionId: t[4],
+      VersionId: t[4]
     };
   }
 
@@ -43,7 +43,7 @@ function parse(url) {
       endpoint: t[1] + t[3],
       Bucket: t[2],
       Key: t[4],
-      VersionId: t[5],
+      VersionId: t[5]
     };
   }
 
@@ -81,5 +81,5 @@ function getObject(url, options) {
 module.exports = {
   format,
   getObject,
-  parse,
+  parse
 };

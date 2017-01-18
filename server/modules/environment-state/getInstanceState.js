@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let serviceDiscovery = require('modules/service-discovery');
@@ -11,8 +12,8 @@ let DEPLOYMENT_STATUS = Enums.DEPLOYMENT_STATUS;
 let logger = require('modules/logger');
 
 function mapConsulTags(tags) {
-  return _.reduce(tags, function (result, tag) {
-    var spl = tag.split(':');
+  return _.reduce(tags, (result, tag) => {
+    let spl = tag.split(':');
     result[spl[0]] = spl[1];
     return result;
   }, {});
@@ -38,35 +39,29 @@ function getInstanceServiceOverallHealth(checks) {
 }
 
 function getInstanceServiceHealthChecks(checks, serviceId) {
-  checks = _.filter(checks, { ServiceID: serviceId });
-  return _.map(checks, (check) => {
-    return {
-      CheckId: check.CheckID,
-      Name: check.Name,
-      Notes: check.Notes,
-      Status: check.Status,
-    };
-  });
+  let filteredChecks = _.filter(checks, { ServiceID: serviceId });
+  return _.map(filteredChecks, check => ({
+    CheckId: check.CheckID,
+    Name: check.Name,
+    Notes: check.Notes,
+    Status: check.Status
+  }));
 }
 
 function getInstanceDeploymentStatus(services) {
   let instanceDeploymentStatus;
-  let expectedServices = _.filter(services, (service) => {
-    return service.DiffWithTargetState !== DIFF_STATE.Unexpected;
-  });
+  let expectedServices = _.filter(services, service => service.DiffWithTargetState !== DIFF_STATE.Unexpected);
 
-  if (_.some(expectedServices, (service) => {
+  if (_.some(expectedServices, service =>
     // If any service deployment is unsuccessful, instance deployment status is also unsuccessful
-    return service.DeploymentStatus === DEPLOYMENT_STATUS.Failed;
-  })) {
+     service.DeploymentStatus === DEPLOYMENT_STATUS.Failed)) {
     return DEPLOYMENT_STATUS.Failed;
-  } else if(_.every(services, { DeploymentStatus: DEPLOYMENT_STATUS.Success })) {
+  } else if (_.every(services, { DeploymentStatus: DEPLOYMENT_STATUS.Success })) {
     return DEPLOYMENT_STATUS.Success;
   } else {
     // This should happen if there's no "Failed" and at least one "In Progress" deployment
     return DEPLOYMENT_STATUS.InProgress;
   }
-
 }
 
 /**
@@ -77,14 +72,14 @@ function getSimpleServiceName(name) {
 }
 
 function getServiceAndSlice(obj) {
-  return obj.Name + (obj.Slice !== 'none' ? '-' + obj.Slice : '');
+  return obj.Name + (obj.Slice !== 'none' ? `-${obj.Slice}` : '');
 }
 
 module.exports = function getInstanceState(accountName, environmentName, nodeName, instanceId, runtimeServerRoleName, instanceLaunchTime) {
   return co(function* () {
     let response = yield {
       checks: serviceDiscovery.getNodeHealth(environmentName, nodeName),
-      node: serviceDiscovery.getNode(environmentName, nodeName),
+      node: serviceDiscovery.getNode(environmentName, nodeName)
     };
     let checks = response.checks;
     let node = response.node;
@@ -124,20 +119,19 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
         OverallHealth: getInstanceServiceOverallHealth(instanceServiceHealthChecks),
         HealthChecks: instanceServiceHealthChecks,
         DiffWithTargetState: null,
-        Issues: { Warnings: [], Errors: [] },
+        Issues: { Warnings: [], Errors: [] }
       };
     }));
-    // If false, it's not EM deployed service        
+    // If false, it's not EM deployed service
     services = _.compact(services);
 
     // Now make a diff with target state of Instance services
     // Primo, find any services that are in target state, but not on instance
     _.each(targetServiceStates, (targetService) => {
       if (_.find(services, { Name: targetService.Name, Slice: targetService.Slice }) === undefined) {
-
         // Give service 60 minutes as 'missing' before concluding that service won't get installed on instance for whatever reasons
         let deploymentStatus;
-        let timeoutDateMs = new Date(instanceLaunchTime).getTime() + (60*60*1000);
+        let timeoutDateMs = new Date(instanceLaunchTime).getTime() + (60 * 60 * 1000);
         if (timeoutDateMs > new Date().getTime()) {
           deploymentStatus = DEPLOYMENT_STATUS.InProgress;
         } else {
@@ -158,7 +152,7 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
           Issues: { Warnings: [], Errors: [] }
         };
         if (targetService.Action === Enums.ServiceAction.INSTALL) {
-          missingService.Issues.Warnings.push(`Service that is in target state is missing`);
+          missingService.Issues.Warnings.push('Service that is in target state is missing');
         }
         services.push(missingService);
       }
@@ -185,15 +179,15 @@ module.exports = function getInstanceState(accountName, environmentName, nodeNam
       return service;
     });
 
-    let runningServicesCount = _.filter(services, (s) => s.DiffWithTargetState !== DIFF_STATE.Missing).length;
-    let missingOrUnexpectedServices = _.filter(services, (s) => s.DiffWithTargetState === DIFF_STATE.Missing || s.DiffWithTargetState === DIFF_STATE.Unexpected).length > 0;
+    let runningServicesCount = _.filter(services, s => s.DiffWithTargetState !== DIFF_STATE.Missing).length;
+    let missingOrUnexpectedServices = _.filter(services, s => s.DiffWithTargetState === DIFF_STATE.Missing || s.DiffWithTargetState === DIFF_STATE.Unexpected).length > 0;
 
     return {
       OverallHealth: getOverallHealth(checks),
       DeploymentStatus: getInstanceDeploymentStatus(services),
       RunningServicesCount: runningServicesCount,
       MissingOrUnexpectedServices: missingOrUnexpectedServices,
-      Services: services,
+      Services: services
     };
   });
-}
+};

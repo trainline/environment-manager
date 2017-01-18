@@ -1,16 +1,16 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.common').factory('resources',
   function (localResourceFactory, remoteResourceFactory, roles) {
-
     var securityZones = ['Other', 'Public', 'Sensitive', 'Management', 'Secure'];
     var deploymentMethods = [
       { Name: 'Overwrite', Value: 'overwrite' },
-      { Name: 'Blue/Green', Value: 'bg' },
+      { Name: 'Blue/Green', Value: 'bg' }
     ];
     var deploymentStatus = ['In Progress', 'Success', 'Failed', 'Cancelled'];
-    var awsInstanceTypes = ['t2.nano', 't2.micro', 't2.small', 't2.medium', 't2.large', 'm4.large', 'm4.xlarge', 'm4.2xlarge', 'm4.4xlarge', 'm3.medium', 'm3.large', 'm3.xlarge', 'm3.2xlarge', 'c4.large', 'c4.xlarge', 'c4.2xlarge', 'c4.4xlarge', 'c4.8xlarge', 'c3.large', 'c3.xlarge', 'c3.2xlarge', 'c3.4xlarge', 'c3.8xlarge', 'r3.large', 'r3.xlarge', 'r3.2xlarge', 'r3.4xlarge', 'r3.8xlarge', 'i2.xlarge', 'i2.2xlarge', 'i2.4xlarge', 'i2.8xlarge', 'd2.xlarge', 'd2.2xlarge', 'd2.4xlarge', 'd2.8xlarge'].sort();
+    var awsInstanceTypes = ['c3.2xlarge', ' c3.4xlarge', 'c3.large', 'c3.xlarge', 'c4.2xlarge', 'c4.4xlarge', 'c4.8xlarge', 'c4.large', 'c4.xlarge', 'd2.2xlarge', 'd2.4xlarge', 'd2.8xlarge', 'd2.xlarge', 'i2.2xlarge', 'i2.4xlarge', 'i2.8xlarge', 'i2.xlarge', ' m3.2xlarge', 'm3.large', 'm3.medium', 'm3.xlarge', 'm4.2xlarge', 'm4.4xlarge', 'm4.large', 'm4.xlarge', 'r3.2xlarge', ' r3.4xlarge', ' r3.large', ' r3.xlarge', 'r4.large', 'r4.xlarge', 'r4.2xlarge', 'r4.4xlarge', 't2.2xlarge', 't2.large', 't2.medium', 't2.micro', 't2.small', 't2.xlarge'].sort();
     var auditChangeTypes = ['Created', 'Deleted', 'Updated', 'Renamed'];
     var auditEntityTypes = [
       { Name: 'Deployment Map', Value: 'ConfigDeploymentMaps' },
@@ -21,7 +21,13 @@ angular.module('EnvironmentManager.common').factory('resources',
       { Name: 'Service', Value: 'ConfigServices' },
       { Name: 'Cluster', Value: 'InfraConfigClusters' },
       { Name: 'Permissions', Value: 'InfraConfigPermissions' },
-      { Name: 'Accounts', Value: 'InfraConfigAccounts' },
+      { Name: 'Accounts', Value: 'InfraConfigAccounts' }
+    ];
+
+    var environmentAlertSettingsList = [
+      { Name: 'Environment Owner', Value: 'EnvironmentOwner' },
+      { Name: 'Service Owner', Value: 'ServiceOwner' },
+      { Name: 'Custom', Value: 'Custom' },
     ];
 
     var resources = {
@@ -30,96 +36,96 @@ angular.module('EnvironmentManager.common').factory('resources',
           name: 'accounts',
           description: 'AWS Accounts',
           section: 'config',
-          perAccount: true,
+          perAccount: true
         }),
         environments: remoteResourceFactory.getFullAccess({
           name: 'environments',
           description: 'Environments',
           section: 'config',
-          perAccount: false,
+          perAccount: false
         }),
         environmentTypes: remoteResourceFactory.getFullAccess({
           name: 'environment-types',
           description: 'Environment Types',
           section: 'config',
-          perAccount: false,
+          perAccount: false
         }),
         deploymentMaps: remoteResourceFactory.getFullAccess({
           name: 'deployment-maps',
           description: 'Deployment Maps',
           section: 'config',
-          perAccount: false,
+          perAccount: false
         }),
         services: remoteResourceFactory.getFullAccess({
           name: 'services',
           description: 'Services',
           section: 'config',
-          perAccount: false,
+          perAccount: false
         }),
         permissions: remoteResourceFactory.getFullAccess({
           name: 'permissions',
           description: 'Permissions',
           section: 'config',
-          perAccount: false,
+          perAccount: false
         }),
         lbSettings: remoteResourceFactory.getFullAccess({
           name: 'lb-settings',
           description: 'Load Balancer Settings',
           section: 'config',
-          perAccount: true,
+          perAccount: true
         }),
         lbUpstream: remoteResourceFactory.getFullAccess({
           name: 'upstreams',
           description: 'Load Balancer Upstream',
           section: 'config',
-          perAccount: true,
+          perAccount: true
         }),
         clusters: remoteResourceFactory.getFullAccess({
           name: 'clusters',
           description: 'Clusters',
           section: 'config',
-          perAccount: false,
-        }),
+          perAccount: false
+        })
 
       },
       aws: {
         instances: remoteResourceFactory.getReadOnly({
           name: 'instances',
           description: 'EC2 Instances',
-          perAccount: true,
+          perAccount: true
         }),
         images: remoteResourceFactory.getReadOnly({
           name: 'images',
           description: 'AWS Images',
-          perAccount: true,
+          perAccount: true
         }),
-        instanceTypes: localResourceFactory(awsInstanceTypes),
+        instanceTypes: localResourceFactory(awsInstanceTypes)
       },
       asgips: remoteResourceFactory.getFullAccess({
         name: 'asgips',
         description: 'Auto Scaling Group IPs',
-        perAccount: true,
+        perAccount: true
       }),
       audit: {
         history: remoteResourceFactory.getReadOnly({
           name: 'audit',
-          perAccount: true,
+          perAccount: true
         }),
         entityTypes: localResourceFactory(auditEntityTypes),
-        changeTypes: localResourceFactory(auditChangeTypes),
+        changeTypes: localResourceFactory(auditChangeTypes)
       },
       deployments: remoteResourceFactory.getReadOnly({
         name: 'deployments',
-        perAccount: true,
+        perAccount: true
       }),
       deployment: {
         methods: localResourceFactory(deploymentMethods),
-        statuses: localResourceFactory(deploymentStatus),
+        statuses: localResourceFactory(deploymentStatus)
       },
+      environmentAlertSettingsList: environmentAlertSettingsList,
       securityZones: localResourceFactory(securityZones),
       roles: roles
     };
 
     return resources;
-
   });

@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let systemUser = require('modules/systemUser');
@@ -9,11 +10,11 @@ let Enums = require('Enums');
 let logger = require('modules/logger');
 
 module.exports = {
-  started: function (deployment, accountName) {
-    var command = {
+  started(deployment, accountName) {
+    let command = {
       name: 'CreateDynamoResource',
       resource: 'deployments/history',
-      accountName: accountName,
+      accountName,
       key: deployment.id,
       item: {
         Value: {
@@ -25,26 +26,27 @@ module.exports = {
           ServiceName: deployment.serviceName,
           ServiceSlice: deployment.serviceSlice,
           ServiceVersion: deployment.serviceVersion,
+          RuntimeServerRoleName: deployment.serverRole,
           ServerRoleName: deployment.serverRoleName,
           Status: 'In Progress',
           User: deployment.username,
           StartTimestamp: new Date().toISOString(),
           EndTimestamp: null,
-          ExecutionLog: null,
-        },
-      },
+          ExecutionLog: null
+        }
+      }
     };
 
-    return sender.sendCommand({ command: command, user: systemUser }).then(() => {
+    return sender.sendCommand({ command, user: systemUser }).then(() => {
       deploymentLogsStreamer.log(deployment.id, accountName, 'Deployment started');
     });
   },
 
-  inProgress: function (deploymentId, accountName, message) {
+  inProgress(deploymentId, accountName, message) {
     deploymentLogsStreamer.log(deploymentId, accountName, message);
   },
 
-  updateStatus: function(deploymentStatus, newStatus) {
+  updateStatus(deploymentStatus, newStatus) {
     logger.debug(`Updating deployment '${deploymentStatus.deploymentId}' status to '${newStatus.name}'`);
 
     /**
@@ -56,9 +58,9 @@ module.exports = {
       Promise.resolve(deploymentLogsStreamer.log(deploymentStatus.deploymentId, deploymentStatus.accountName, newStatus.reason))
         .then(() => deploymentLogsStreamer.flush(deploymentStatus.deploymentId))
         .then(() => updateDeploymentDynamoTable(deploymentStatus, newStatus)),
-      updateDeploymentTargetState(deploymentStatus, newStatus),
+      updateDeploymentTargetState(deploymentStatus, newStatus)
     ]);
-  },
+  }
 };
 
 
@@ -80,8 +82,8 @@ function updateDeploymentDynamoTable(deploymentStatus, newStatus) {
       'Value.Status': newStatus.name,
       'Value.ErrorReason': errorReason,
       'Value.EndTimestamp': endTimestamp,
-      'Value.Nodes': deploymentStatus.nodesDeployment || [],
-    },
+      'Value.Nodes': deploymentStatus.nodesDeployment || []
+    }
   };
 
   return sender.sendCommand({ command, user: systemUser });
@@ -92,7 +94,7 @@ function updateDeploymentTargetState(deploymentStatus, newStatus) {
     name: 'UpdateTargetState',
     environment: deploymentStatus.environmentName,
     key: `deployments/${deploymentStatus.deploymentId}/overall_status`,
-    value: newStatus.name,
+    value: newStatus.name
   };
 
   return sender.sendCommand({ command, user: systemUser });

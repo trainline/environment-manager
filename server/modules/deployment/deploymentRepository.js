@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let awsMasterClient = require('modules/amazon-client/masterAccountClient');
@@ -13,30 +14,27 @@ const day = (() => {
   return {
     after: dayAfter,
     before: dayBefore,
-    of: dayOf,
+    of: dayOf
   };
 })();
 
-const qualifiedName = (() => {
-  return awsResourceNameProvider.getTableName;
-})();
+const qualifiedName = (() => awsResourceNameProvider.getTableName)();
 
 const recentDeploymentsTableName = qualifiedName('ConfigDeploymentExecutionStatus');
 const completedDeploymentsTableName = qualifiedName('ConfigCompletedDeployments');
 
 function getRunningDeployments() {
-
   function createScan(lastEvaluatedKey) {
     let t = {
       TableName: recentDeploymentsTableName,
       FilterExpression: '#Value.#Status = :status',
       ExpressionAttributeNames: {
         '#Status': 'Status',
-        '#Value': 'Value',
+        '#Value': 'Value'
       },
       ExpressionAttributeValues: {
-        ':status': 'In Progress',
-      },
+        ':status': 'In Progress'
+      }
     };
     if (lastEvaluatedKey) {
       t.ExclusiveStartKey = lastEvaluatedKey;
@@ -50,7 +48,6 @@ function getRunningDeployments() {
 }
 
 function archiveRecentlyCompletedDeployments() {
-
   function createScan(lastEvaluatedKey) {
     let t = {
       TableName: recentDeploymentsTableName,
@@ -58,11 +55,11 @@ function archiveRecentlyCompletedDeployments() {
       Limit: 50,
       ExpressionAttributeNames: {
         '#Status': 'Status',
-        '#Value': 'Value',
+        '#Value': 'Value'
       },
       ExpressionAttributeValues: {
-        ':status': 'In Progress',
-      },
+        ':status': 'In Progress'
+      }
     };
     if (lastEvaluatedKey) {
       t.ExclusiveStartKey = lastEvaluatedKey;
@@ -71,17 +68,17 @@ function archiveRecentlyCompletedDeployments() {
     return t;
   }
 
-  let archive = deployment => {
+  let archive = (deployment) => {
     let startTimestamp = new Date(deployment.Value.StartTimestamp).toISOString();
     deployment.StartTimestamp = startTimestamp;
     deployment.StartDate = startTimestamp.substr(0, 10);
     return executePut({
-        TableName: completedDeploymentsTableName,
-        Item: deployment,
-      })
+      TableName: completedDeploymentsTableName,
+      Item: deployment
+    })
       .then(() => executeDelete({
         TableName: recentDeploymentsTableName,
-        Key: { DeploymentID: deployment.DeploymentID },
+        Key: { DeploymentID: deployment.DeploymentID }
       }));
   };
 
@@ -91,7 +88,6 @@ function archiveRecentlyCompletedDeployments() {
 }
 
 function getDeploymentsStartedBetween(min, max) {
-
   let createQuery = (date, options, lastEvaluatedKey) => {
     let keyConditionExpression = array => array.filter(x => x).join(' and ');
     let dateString = date.toISOString().substring(0, 10);
@@ -101,7 +97,7 @@ function getDeploymentsStartedBetween(min, max) {
       Limit: 100,
       KeyConditionExpression: keyConditionExpression(['StartDate = :date', options.KeyConditionExpression]),
       ExpressionAttributeValues: Object.assign({ ':date': dateString }, options.ExpressionAttributeValues),
-      ScanIndexForward: false,
+      ScanIndexForward: false
     };
     if (options.FilterExpression) {
       t.FilterExpression = options.FilterExpression;
@@ -115,52 +111,51 @@ function getDeploymentsStartedBetween(min, max) {
   };
 
   let createQueries = function* () {
-
-    yield(lastEvaluatedKey => createQuery(max, {
+    yield (lastEvaluatedKey => createQuery(max, {
       KeyConditionExpression: 'StartTimestamp <= :upperbound',
       ExpressionAttributeValues: {
-        ':upperbound': max.toISOString(),
-      },
+        ':upperbound': max.toISOString()
+      }
     }, lastEvaluatedKey));
 
     for (let t of daysBetween(day.before(max), day.after(min))) {
-      yield(lastEvaluatedKey => createQuery(t, {
+      yield (lastEvaluatedKey => createQuery(t, {
         KeyConditionExpression: undefined,
-        ExpressionAttributeValues: undefined,
+        ExpressionAttributeValues: undefined
       }, lastEvaluatedKey));
     }
 
     if (min < day.of(max)) {
-      yield(lastEvaluatedKey => createQuery(min, {
+      yield (lastEvaluatedKey => createQuery(min, {
         KeyConditionExpression: ':lowerbound <= StartTimestamp',
-        ExpressionAttributeValues: { ':lowerbound': min.toISOString() },
+        ExpressionAttributeValues: { ':lowerbound': min.toISOString() }
       }, lastEvaluatedKey));
     }
   };
 
   let runningDeploymentsPromise = getRunningDeployments();
   let completedDeploymentsPromises = Array.from(createQueries())
-    .map(createQuery => getAllPages(lastEvaluatedKey => executeQuery(createQuery(lastEvaluatedKey)))
-      .then(pages => flatten(pages.map(page => page.Items))));
+    .map(createLocalQuery => getAllPages(lastEvaluatedKey => executeQuery(createLocalQuery(lastEvaluatedKey)))
+    .then(pages => flatten(pages.map(page => page.Items))));
+
   let allDeploymentsPromises = flatten([runningDeploymentsPromise, completedDeploymentsPromises]);
 
   return Promise.all(allDeploymentsPromises).then(deploymentLists => flatten(deploymentLists));
 }
 
 function getDeploymentById(deploymentId) {
-
-  let createGetRequestFromTableName = tableName => {
-    return {
+  let createGetRequestFromTableName = tableName => (
+    {
       TableName: tableName,
-      Key: { DeploymentID: deploymentId },
-    };
-  };
+      Key: { DeploymentID: deploymentId }
+    }
+  );
 
   let resultPromises = [completedDeploymentsTableName, recentDeploymentsTableName]
     .map(createGetRequestFromTableName)
     .map(executeGet);
 
-  return Promise.all(resultPromises).then(results => {
+  return Promise.all(resultPromises).then((results) => {
     let result = results.find(x => x.Item);
     return (result) ? result.Item : {};
   });
@@ -201,7 +196,7 @@ function getAllPages(getPage) {
 }
 
 function forAllPages(fn, getPage) {
-  let doRest = lastEvaluatedKey => {
+  let doRest = (lastEvaluatedKey) => {
     if (!lastEvaluatedKey) {
       return Promise.resolve();
     }
@@ -235,5 +230,5 @@ module.exports = {
   archiveRecentlyCompletedDeployments,
   getDeploymentById,
   getDeploymentsStartedBetween,
-  getRunningDeployments,
+  getRunningDeployments
 };

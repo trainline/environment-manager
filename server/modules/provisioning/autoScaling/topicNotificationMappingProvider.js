@@ -1,50 +1,46 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let AutoScalingNotificationType = require('Enums').AutoScalingNotificationType;
 let sender = require('modules/sender');
 
 const TopicsToNotify = [
-  'InfraAsgLambdaScale',
+  'InfraAsgLambdaScale'
 ];
 
 module.exports = {
-  get: function (accountName) {
-    var mappings = TopicsToNotify.map(topicName =>
+  get(accountName) {
+    let mappings = TopicsToNotify.map(topicName =>
       getMappingsByTopicName(topicName, accountName)
     );
 
     return Promise.all(mappings);
-  },
+  }
 };
 
 function getMappingsByTopicName(topicName, accountName) {
-
-  return getTopicByName(topicName, accountName).then(topic => {
-
-    var mapping = {
-      topicName: topicName,
+  return getTopicByName(topicName, accountName).then((topic) => {
+    let mapping = {
+      topicName,
       topicArn: topic.TopicArn,
       notificationTypes: [
         AutoScalingNotificationType.InstanceLaunch,
         AutoScalingNotificationType.InstanceLaunchError,
         AutoScalingNotificationType.InstanceTerminate,
-        AutoScalingNotificationType.InstanceTerminateError,
-      ],
+        AutoScalingNotificationType.InstanceTerminateError
+      ]
     };
     return Promise.resolve(mapping);
   });
-
-  return [mapping];
 }
 
 function getTopicByName(topicName, accountName) {
-
-  var query = {
+  let query = {
     name: 'GetTopic',
-    accountName: accountName,
-    topicName: topicName,
+    accountName,
+    topicName
   };
 
-  return sender.sendQuery({ query: query });
+  return sender.sendQuery({ query });
 }

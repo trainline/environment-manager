@@ -1,4 +1,5 @@
-/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let retry = require('retry');
@@ -9,7 +10,7 @@ let _ = require('lodash');
 let assert = require('assert');
 
 function getAllServices(environment) {
-  let getServiceList = consulClient => consulClient.catalog.service.list();
+  let getServiceList = clientInstance => clientInstance.catalog.service.list();
   let filterByDeploymentId = list => _.pickBy(list, s => s.some(tag => tag.indexOf('deployment_id:') === 0));
 
   let promiseFactoryMethod = () =>
@@ -22,28 +23,38 @@ function getAllServices(environment) {
 }
 
 function getService(environment, serviceQuery) {
-  serviceQuery = `${environment}-${serviceQuery}`;
-  return executeConsul(environment, consulClient => consulClient.catalog.service.nodes(serviceQuery))
-    .then(service => {
+  let nodeKey = `${environment}-${serviceQuery}`;
+  return executeConsul(environment, clientInstance => clientInstance.catalog.service.nodes(nodeKey))
+    .then((service) => {
       if (!service.length) return service;
-      service = service[0];
-      service.ServiceTags = unravelTags(service.ServiceTags);
-      return service;
-    })
+      let firstService = service[0];
+      firstService.ServiceTags = unravelTags(firstService.ServiceTags);
+      return firstService;
+    });
 }
 
 function getAllNodes(environment) {
-  return executeConsul(environment, consulClient => consulClient.catalog.node.list());
+  return executeConsul(environment, clientInstance => clientInstance.catalog.node.list());
 }
 
 function getNode(environment, nodeName) {
   assert(nodeName, 'nodeName is required');
-  return executeConsul(environment, consulClient => consulClient.catalog.node.services(nodeName));
+  return executeConsul(environment, clientInstance => clientInstance.catalog.node.services(nodeName))
+    .then((nodes) => {
+      if (!nodes || !nodes.Services) {
+        return nodes;
+      } else {
+        // Filter out services that were not installed via environment manager
+        nodes.Services = _.filter(nodes.Services,
+          service => service.Tags && service.Tags.find(tag => tag.startsWith('deployment_id')));
+        return nodes;
+      }
+    });
 }
 
 function getNodeHealth(environment, nodeName) {
   assert(nodeName, 'nodeName is required');
-  return executeConsul(environment, consulClient => consulClient.health.node(nodeName));
+  return executeConsul(environment, clientInstance => clientInstance.health.node(nodeName));
 }
 
 function executeConsul(environment, fn) {
@@ -67,13 +78,17 @@ function unravelTags(service) {
 function executeAction(promiseFactoryMethod) {
   let operation = retry.operation({
     retries: 3,
-    minTimeout: 1000,
+    minTimeout: 1000
   });
 
   let errorHandler = (reject, error) => {
     logger.error(error.toString(true));
     if ((error instanceof HttpRequestError) && operation.retry(error)) return;
-    reject(operation.mainError());
+    if (operation.mainError() !== null) {
+      reject(operation.mainError());
+    } else {
+      reject(error.toString(true));
+    }
   };
 
   return new Promise((resolve, reject) => {

@@ -1,4 +1,5 @@
-﻿/* Copyright (c) Trainline Limited, 2016. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('MaintenanceAddServerModalController',
@@ -28,7 +29,6 @@ angular.module('EnvironmentManager.operations').controller('MaintenanceAddServer
       instancesService.setMaintenanceMode(vm.selectedAccount, newServer.InstanceId, true).then(function () {
         $uibModalInstance.close();
       });
-
     };
 
     vm.cancel = function () {
@@ -36,7 +36,6 @@ angular.module('EnvironmentManager.operations').controller('MaintenanceAddServer
     };
 
     vm.search = function () {
-
       vm.searchPerformed = true;
       vm.serverSearch = vm.serverSearch.trim();
 
@@ -54,7 +53,7 @@ angular.module('EnvironmentManager.operations').controller('MaintenanceAddServer
       }
 
       var params = {
-        account: vm.selectedAccount,
+        account: vm.selectedAccount
       };
       params[filterType] = vm.serverSearch;
 
@@ -63,11 +62,9 @@ angular.module('EnvironmentManager.operations').controller('MaintenanceAddServer
         vm.serverDetails = awsService.instances.getSummaryFromInstance(response.data[0]) || {};
         vm.dataFound = (response.data.length > 0);
       }, function (error) {
-
         vm.serverDetails = {};
         vm.dataFound = false;
       });
-
     };
 
     function IsIPv4(value) {
