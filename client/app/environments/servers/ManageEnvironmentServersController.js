@@ -147,9 +147,5 @@ angular.module('EnvironmentManager.environments')
 
       environmentDeploy.registerDeployHandler(vm.loadDeployDialog);
 
-      this.$onDestroy = function() {
-        environmentDeploy.destroyHandler();
-      };
-
       init();
     });
