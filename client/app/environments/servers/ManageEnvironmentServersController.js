@@ -103,6 +103,9 @@ angular.module('EnvironmentManager.environments')
         querySync.updateQuery();
 
         vm.view = serversView(vm.data, vm.selected);
+
+        console.dir(vm.view);
+
       };
 
       vm.loadDeployDialog = function () {
@@ -149,7 +152,6 @@ angular.module('EnvironmentManager.environments')
       environmentDeploy.registerDeployHandler(vm.loadDeployDialog);
 
       this.$onDestroy = function() {
-        console.log('it is destroyed');
         environmentDeploy.destroyHandler();
       };
 
