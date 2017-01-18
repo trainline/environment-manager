@@ -3,7 +3,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('EnvironmentsSummaryController',
-  function ($scope, $routeParams, $location, $uibModal, $http, $q, modal, resources, cachedResources, configValidation, cron, Environment) {
+  function ($scope, $routeParams, $location, $uibModal, $http, $q, modal, resources, cachedResources, cron, Environment) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -15,27 +15,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
     vm.selectedEnvironmentType = SHOW_ALL_OPTION;
     vm.selectedOwningCluster = SHOW_ALL_OPTION;
 
-    vm.environmentConfigValid = {};
-
     vm.dataLoading = false;
-
-    vm.gridOptions = {
-      data: 'Data',
-      columnDefs: [{
-        name: 'statusIcon',
-        displayName: '',
-        field: 'EnvironmentName',
-        cellClass: 'config-status',
-        cellTemplate: '<div class="ui-grid-cell-contents" title="{{grid.appScope.EnvironmentConfigValid[row.entity.EnvironmentName].Error}}"><a href="#/environment/settings?environment={{row.entity.EnvironmentName}}&tab=validation"><div class="config-status-{{grid.appScope.EnvironmentConfigValid[row.entity.EnvironmentName].Valid}}"></div></a></div>'
-      }, {
-        name: 'environment',
-        field: 'EnvironmentName',
-        cellTemplate: '<a href="#/environment/settings?environment={{row.entity.EnvironmentName}}">{{row.entity.EnvironmentName}} <small ng-if="row.entity.Configuration.EnvironmentType">({{row.entity.Configuration.EnvironmentType}})</small></a>'
-      }, {
-        name: 'owningCluster',
-        field: 'row.entity.Configuration.OwningCluster'
-      }]
-    };
 
     function init() {
       vm.userHasCreatePermission = user.hasPermission({ access: 'POST', resource: '/config/environments/**' });
@@ -101,7 +81,6 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
           });
 
         vm.dataLoading = false;
-        setTimeout(validateEnvironments, 5000); // Don't call unless user is waiting on page to prevent excessive dynamo load
       });
     };
 
@@ -134,7 +113,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
     vm.newEnvironment = function () {
       var instance = $uibModal.open({
         templateUrl: '/app/environments/dialogs/env-create-environment-modal.html',
-        controller: 'CreateEnvironmentController'
+        controller: 'CreateEnvironmentController as vm'
       });
       instance.result.then(function () {
         cachedResources.config.environments.flush();
@@ -150,27 +129,6 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
     vm.viewHistory = function (environment) {
       $scope.ViewAuditHistory('Environment', environment.EnvironmentName);
     };
-
-    function validateEnvironments() {
-      $q.all([
-        // Make sure cache populated to avoid async multiple hits
-        Environment.all(),
-        cachedResources.config.services.all(),
-        cachedResources.config.lbUpstream.all(),
-        cachedResources.config.deploymentMaps.all(),
-        cachedResources.config.lbSettings.all()
-      ]).then(function () {
-        vm.data.forEach(function (env) { validateEnvironment(env); });
-      });
-    }
-
-    function validateEnvironment(environment) {
-      if (!vm.environmentConfigValid[environment.EnvironmentName]) {
-        configValidation.ValidateEnvironment(environment.EnvironmentName).then(function (node) {
-          vm.environmentConfigValid[environment.EnvironmentName] = node;
-        });
-      }
-    }
 
     init();
   });

@@ -1,6 +1,6 @@
 {
   "name": "environmentmanager",
-  "version": "3.19.0",
+  "version": "3.20.1",
   "dependencies": {
     "accepts": {
       "version": "1.3.3",

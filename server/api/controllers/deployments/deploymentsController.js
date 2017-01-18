@@ -6,7 +6,6 @@ let deploymentsHelper = require('modules/queryHandlersUtil/deployments-helper');
 let GetNodeDeploymentLog = require('queryHandlers/deployments/GetNodeDeploymentLog');
 let co = require('co');
 let sender = require('modules/sender');
-let validUrl = require('valid-url');
 let Enums = require('Enums');
 let Environment = require('models/Environment');
 let s3PackageLocator = require('modules/s3PackageLocator');
@@ -65,67 +64,38 @@ function getDeploymentLog(req, res, next) {
 /**
  * POST /deployments
  */
-function* postDeployment(req, res, next) {
-  // These are required
+function postDeployment(req, res, next) {
   const body = req.swagger.params.body.value;
   const environmentName = body.environment;
   const serviceName = body.service;
   const serviceVersion = body.version;
-  let packagePath = body.packageLocation;
-
-  if (!packagePath) {
-    packagePath = yield s3PackageLocator.findDownloadUrl({
-      environment: environmentName,
-      service: serviceName,
-      version: serviceVersion
-    });
-  }
-
-  if (!packagePath) {
-    let error = {
-      title: 'The deployment package was not found.',
-      detail: 'Upload the package then try again or specify the location of the package in this request.',
-      status: '400'
-    };
-    res.status(400).json({ errors: [error] });
-    return;
-  }
-
-  // These are optional
+  const packagePath = body.packageLocation;
   const mode = body.mode || 'overwrite';
   const serviceSlice = body.slice || 'none';
-  const serverRoleName = req.serverRoleName; // This is attached in authorizer, TODO(filip): extract to new middleware
-
-  let packageType = validUrl.isUri(packagePath) ? Enums.SourcePackageType.CodeDeployRevision : Enums.SourcePackageType.DeploymentMap;
-
-  let environment = yield Environment.getByName(environmentName);
-  let environmentType = yield environment.getEnvironmentType();
-  let accountName = environmentType.AWSAccountName;
-
-  // Check for input errors
-  if (mode === 'overwrite' && serviceSlice !== undefined && serviceSlice !== 'none') {
-    let error = 'Slice can be set only to \'none\' in overwrite mode.';
-    res.send({ error });
-    res.status(400);
-    return;
-  }
+  const serverRoleName = req.serverRoleName;
+  const isDryRun = req.swagger.params.dry_run.value;
 
   let command = {
     name: 'DeployService',
-    accountName,
     environmentName,
     serviceName,
     serviceVersion,
     serviceSlice,
-    packageType,
+    mode,
     packagePath,
-    serverRoleName
+    serverRoleName,
+    isDryRun
   };
 
   sender.sendCommand({ command, user: req.user }).then((deployment) => {
-    res.status(201);
-    res.location(`/api/${deployment.accountName}/deployments/history/${deployment.id}`);
-    res.json(deployment);
+    if (deployment.isDryRun) {
+      res.status(200);
+      res.json(deployment);
+    } else {
+      res.status(202);
+      res.location(`/api/${deployment.accountName}/deployments/history/${deployment.id}`);
+      res.json(deployment);
+    }
   }).catch(next);
 }
 
@@ -199,6 +169,6 @@ module.exports = {
   getDeployments,
   getDeploymentById,
   getDeploymentLog,
-  postDeployment: co.wrap(postDeployment),
+  postDeployment,
   patchDeployment
 };

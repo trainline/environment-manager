@@ -23,10 +23,16 @@ function defaultErrorHandler(err, req, res, next) {
     friendlyError.error = err.message;
   }
 
+  friendlyError.originalException = err;
+
   if (IS_PROD && res.statusCode === 500) {
-    friendlyError.error = 'An internal error has occurred.';
+    friendlyError = {
+      error: 'An internal error has occurred.'
+    };
   } else if (res.statusCode === 409) {
-    friendlyError.error = 'The item you are attempting to update has already been modified. Check your expected-version.';
+    friendlyError = {
+      error: 'The item you are attempting to update has already been modified. Check your expected-version.'
+    };
   }
 
   logger.error(err.stack);
@@ -46,6 +52,8 @@ function getStatusByErrorType(error) {
     case 'DynamoItemNotFoundError': return 404;
 
     case 'DynamoConcurrencyError': return 409;
+
+    case 'ResourceLockedError': return 423;
 
     case 'EvalError':
     case 'InternalError':

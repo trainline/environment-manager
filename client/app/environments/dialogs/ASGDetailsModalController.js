@@ -315,14 +315,20 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         newSchedule = vm.asgUpdate.NewSchedule;
       }
 
-      AutoScalingGroup.updateSchedule(vm.environmentName, vm.asg.AsgName, newSchedule).then(function () {
-        resetForm();
+      return AutoScalingGroup.updateSchedule(vm.environmentName, vm.asg.AsgName, newSchedule).then(function () {
         modal.information({
           title: 'ASG Schedule Updated',
           message: 'ASG schedule updated successfully.'
-        }).then(function () {
-          vm.refresh();
         });
+      }).catch(function(err){
+        if (err.status === 404) {
+          modal.error('Error', 'An error has occurred: ' + err.data.error);
+        } else {
+          throw err;
+        }
+      }).finally(function() {
+        resetForm();
+        vm.refresh();
       });
     };
 

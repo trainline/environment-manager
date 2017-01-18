@@ -69,6 +69,31 @@
         </div>
         <span class="help-block" ng-if="form.GroupEmailAddress.$dirty && form.GroupEmailAddress.$error.email">Email address is not valid.</span>
     </div>
+
+    <div class="form-group" ng-class="{'has-error': form.NotificationSettings.$invalid}">
+        <label class="col-md-4 control-label text-left nowrap">Notification Settings: <span class="glyphicon glyphicon-asterisk mandatory"></span>
+
+          <span uib-popover
+            popover-trigger="'mouseenter'"
+            popover-append-to-body="true"
+            uib-popover-template="'app/configuration/popovers/notification-settings.html'"
+            data-popover-placement="bottom"
+            class="glyphicon glyphicon-question-sign help-icon"
+            aria-hidden="true">
+          </span>
+
+        </label>
+        <div class="col-md-2">
+            <select class="form-control"
+                    name="NotificationSettings"
+                    required=""
+                    ng-model="Cluster.Value.NotificationSettingsId">
+                <option ng-repeat="item in vm.notificationSettingsList" ng-selected="{{item == Cluster.Value.NotificationSettingsId}}" value="{{item}}">{{item}}</option>
+            </select>
+        </div>
+        <span class="help-block" ng-if="form.NotificationSettingsId.$dirty && form.NotificationSettingsId.$error.required">Notification Settings id is mandatory.</span>
+    </div>
+
     <div class="form-group" ng-class="{'has-error': form.ADMembershipGroup.$invalid}">
         <label class="col-md-1 control-label text-left nowrap">AD Membership Group:</label>
         <div class="col-md-2">

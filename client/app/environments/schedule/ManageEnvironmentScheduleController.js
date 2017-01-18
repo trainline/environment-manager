@@ -3,7 +3,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ManageEnvironmentScheduleController',
-  function ($rootScope, $routeParams, $location, $q, modal, resources, $http, cachedResources, configValidation, cron, Environment) {
+  function ($rootScope, $routeParams, $location, $q, modal, resources, $http, cachedResources, cron, Environment) {
     var PROTECTED_ACTION = 'SCHEDULE_ENVIRONMENT';
 
     var vm = this;

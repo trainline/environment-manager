@@ -24,6 +24,12 @@ angular.module('EnvironmentManager.common').factory('resources',
       { Name: 'Accounts', Value: 'InfraConfigAccounts' }
     ];
 
+    var environmentAlertSettingsList = [
+      { Name: 'Environment Owner', Value: 'EnvironmentOwner' },
+      { Name: 'Service Owner', Value: 'ServiceOwner' },
+      { Name: 'Custom', Value: 'Custom' },
+    ];
+
     var resources = {
       config: {
         accounts: remoteResourceFactory.getFullAccess({
@@ -116,6 +122,7 @@ angular.module('EnvironmentManager.common').factory('resources',
         methods: localResourceFactory(deploymentMethods),
         statuses: localResourceFactory(deploymentStatus)
       },
+      environmentAlertSettingsList: environmentAlertSettingsList,
       securityZones: localResourceFactory(securityZones),
       roles: roles
     };

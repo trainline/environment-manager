@@ -88,7 +88,7 @@ angular.module('EnvironmentManager.configuration').controller('EnvironmentTypeCo
       } else {
         promise = $http({
           method: 'post',
-          url: '/api/v1/config/clusters',
+          url: '/api/v1/config/environment-types',
           data: {
             EnvironmentType: environmentTypeName,
             Value: value

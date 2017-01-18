@@ -283,6 +283,11 @@ span.status-error span { color: red; }
   input[name="DnsName"] { width: 350px; }
 }
 
+.env-settings-alert-settings {
+  padding: 10px 15px;
+  padding-bottom: 0px;
+}
+
 .onoffswitch {
   position: relative;
   width: 90px;
@@ -510,19 +515,6 @@ form#EnvironmentDetails label { width: 175px; }
   background-color: rgb(169, 68, 66);
   background-image: radial-gradient(red, rgb(169, 68, 66));
 }
-
-/* Details page */
-#EnvironmentConfigValidation {
-  float: left;
-  .ValidationBlock { float: left; margin-right: 30px; margin-bottom: 10px; }
-  h3 { margin-top: 10px; }
-}
-
-#EnvironmentDependentServices, #EnvironmentDependentLBSettings { border: 1px solid lightgrey; height: 400px; overflow-y: scroll; }
-#EnvironmentDependentServices { width: 475px; }
-#EnvironmentDependentLBSettings { width: 550px; }
-#EnvironmentDependentServices table td.command, #EnvironmentDependentLBSettings table td.command { padding-left: 20px; }
-#EnvironmentDependentLBSettings table td.upstream { padding-left: 30px; }
 
 /* Infrastructure page */
 div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin-right: 100px; }
@@ -834,4 +826,8 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
 
   }
 
+}
+
+.deploy-dry-run-success.modal-dialog{
+  background: #FF0000
 }

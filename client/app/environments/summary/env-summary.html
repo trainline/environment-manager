@@ -39,7 +39,7 @@
     <table class="table">
       <thead>
         <tr>
-          <th></th>
+          <th class="text-nowrap"></th>
           <th class="text-nowrap">Environment</th>
           <th class="text-nowrap">Owning Cluster</th>
           <th class="text-nowrap">Description</th>
@@ -48,17 +48,16 @@
           <th class="text-nowrap command-header">View Deployments</th>
           <th class="text-nowrap command-header">View History</th>
           <th ng-if="vm.userHasDeletePermission" class="text-nowrap command-header">Delete</th>
-          <!--<th></th>-->
         </tr>
       </thead>
       <tbody>
         <tr ng-repeat="env in vm.data | orderBy : 'EnvironmentName'">
-          <td class="config-status">
-            <a href="#/environment/settings?environment={{env.EnvironmentName}}&tab=validation">
-              <div class="config-status-{{vm.environmentConfigValid[env.EnvironmentName].Valid}}" title="{{vm.environmentConfigValid[env.EnvironmentName].Error}}"></div>
-            </a>
+          <td>
+            <span class="glyphicon glyphicon-lock" data-ng-if="env.Configuration.IsLocked"></span>
           </td>
-          <td><a href="#/environment/servers?environment={{env.EnvironmentName}}">{{env.EnvironmentName}} <small ng-if="env.Configuration.EnvironmentType">({{env.Configuration.EnvironmentType}})</small></a></td>
+          <td>
+            <a href="#/environment/servers?environment={{env.EnvironmentName}}">{{env.EnvironmentName}} <small ng-if="env.Configuration.EnvironmentType">({{env.Configuration.EnvironmentType}})</small></a>
+          </td>
           <td>{{env.Configuration.OwningCluster}}</td>
           <td>{{env.Configuration.Description}}</td>
           <td><a href="#/config/deploymentmaps/{{env.Configuration.DeploymentMap}}" target="_blank">{{env.Configuration.DeploymentMap}}</a></td>
