@@ -101,11 +101,7 @@ angular.module('EnvironmentManager.environments')
 
       vm.update = function () {
         querySync.updateQuery();
-
         vm.view = serversView(vm.data, vm.selected);
-
-        console.dir(vm.view);
-
       };
 
       vm.loadDeployDialog = function () {

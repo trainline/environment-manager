@@ -38,10 +38,19 @@
     </form>
 
     <hr />
-    <div>
-      <span class="glyphicon glyphicon-ok-sign success"></span> Healthy: <strong>{{vm.view.aggregations.servers.healthy.count}} </strong>
-      <span class="glyphicon glyphicon-exclamation-sign warning status-summary"></span> Warning: <strong>{{vm.view.aggregations.servers.warning.count}} </strong>
-      <span class="glyphicon glyphicon-alert error status-summary"></span> Error: <strong>{{vm.view.aggregations.servers.error.count}} </strong>
+     <div class="server-status-container">
+      <span data-ng-if="vm.selected.status === 'Any' || vm.selected.status === 'Healthy'" class="status-summary">
+        <span class="glyphicon glyphicon-ok-sign success"></span> Healthy: <strong>{{vm.view.aggregations.servers.healthy.count}} </strong>
+      </span>
+
+     <span data-ng-if="vm.selected.status === 'Any' || vm.selected.status === 'Warning'" class="status-summary">
+        <span class="glyphicon glyphicon-exclamation-sign warning"></span> Warning: <strong>{{vm.view.aggregations.servers.warning.count}} </strong>
+      </span>
+
+      <span data-ng-if="vm.selected.status === 'Any' || vm.selected.status === 'Error'" class="status-summary">
+        <span class="glyphicon glyphicon-alert error"></span> Error: <strong>{{vm.view.aggregations.servers.error.count}} </strong>
+      </span>
+
     </div>
     <hr />
 

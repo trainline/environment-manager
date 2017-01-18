@@ -701,19 +701,26 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
     float: right;
   }
 
-  .statusBar {
-    border: 1px solid #ddd;
-    height: 38px;
-    padding: 8px;
+  .status-summary {
+    margin-right: 10px;
   }
 
-  .status-summary {
-    margin-left: 10px;
+  .filtered-summary {
+    opacity: 0.4;
   }
 
   .deploy-group {
     margin-top: -8px;
     margin-bottom: 0;
+  }
+
+  .server-status-container {
+    margin-left: 8px;
+  }
+
+  hr {
+    margin-top: 6px;
+    margin-bottom: 6px;
   }
 }
 
