@@ -226,7 +226,6 @@
       </nav>
     </div>
     <div id="sidebar" ng-if="main.getSection()=='environments' && $route.current.menusection != ''">
-      <h3>Environment</h3>
       <form name="form">
         <select id="SelectEnvironment" class="form-control" ng-model="WorkingEnvironment.EnvironmentName" ng-change="ChangeEnvironment()">
           <option ng-repeat="env in $parent.ParentEnvironmentsList" ng-selected="{{env == WorkingEnvironment.EnvironmentName}}" value="{{env}}">{{env}}</option>
