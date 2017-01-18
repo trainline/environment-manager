@@ -159,13 +159,12 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
     };
 
     vm.updateSummary = function showSummary(deployments) {
-      var emptySummary = { 'Success':0, 'In Progress':0, 'Cancelled':0, 'Failed':0 };
-
+      var emptysummary = { 'success':0, 'in progress':0, 'cancelled':0, 'failed':0 };
       vm.summary = deployments.reduce(function(summary, d) {
         summary[d.status]++;
         return summary;
       },
-      emptySummary);
+      emptysummary);
     }
 
     init();

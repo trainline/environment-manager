@@ -1,10 +1,24 @@
 
 <spinner ng-show="vm.dataLoading"></spinner>
 
-<div class="row" ng-show="vm.dataFound && !vm.dataLoading">
-  <div class="col-md-12" ng-if="vm.deployments.length == 0">
-    <p>No deployments found<span ng-if="vm.selectedDateRangeValue > 0"> within selected date range</span>.</p>
+<div class="row" ng-show="vm.dataFound && !vm.dataLoading">  
+  <div>
+    <span data-ng-if="!vm.query.status || vm.query.status === status" class="deployment-status-summary" data-ng-class="{'empty-deployments-summary': vm.deployments.length === 0}" data-ng-repeat="(status, count) in vm.summary">
+      <span class="glyphicon" data-ng-class="{
+        'status-in-progress glyphicon-question-sign':   status === 'In Progress',
+        'status-success glyphicon-ok-sign':             status === 'Success',
+        'warning glyphicon-exclamation-sign':           status === 'Cancelled',
+        'status-failed glyphicon-alert':                status === 'Failed'}">
+      </span>
+       {{status}}: <strong>{{count}}</strong> 
+    </span>
   </div>
+  <hr style="margin: 12px 0 8px 0" />
+
+  <div class="col-md-12" ng-if="vm.deployments.length == 0">
+    <h1 class="empty-deployments">No deployments found</h1>
+  </div>
+
   <div class="col-md-12" ng-if="vm.deployments.length > 0">
     <table class="table" id="DeploymentHistory">
       <thead>

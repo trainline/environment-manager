@@ -43,24 +43,9 @@
   <input type="search" name="ServiceName" class="form-control" ng-model="vm.serviceName" uib-typeahead="s for s in vm.uniqueServices" ng-model-options="{debounce: 200}" />
   </div>
 </form>
-
-<hr />
-<div>
-  <span style="margin-right: 10px" data-ng-repeat="(status, count) in vm.summary">
-    <span class="glyphicon" data-ng-class="{
-      'status-in-progress glyphicon-question-sign':   status === 'In Progress',
-      'status-success glyphicon-ok-sign':             status === 'Success',
-      'warning glyphicon-exclamation-sign':           status === 'Cancelled',
-      'status-failed glyphicon-alert':                status === 'Failed'}">
-    </span>
-     {{status}}: <strong>{{count}}</strong> 
-  </span>
-</div>
-<hr />
-
 <uib-tabset active="vm.selectedTab">
   <uib-tab heading="Deployments" ng-click="vm.chooseTab(0)">
-    <ops-deployments-list query="vm.query" update-summary="vm.updateSummary" show-details="vm.showDetails" found-services-filter="vm.foundServicesFilter" ng-if="$parent.tabset.active === 0"></ops-deployments-list>
+    <ops-deployments-list query="vm.query" show-details="vm.showDetails" found-services-filter="vm.foundServicesFilter" ng-if="$parent.tabset.active === 0"></ops-deployments-list>
   </uib-tab>
   <uib-tab heading="New instances" ng-click="vm.chooseTab(1)">
     <ops-deployments-instances query="vm.query" instances-filter="vm.instancesFilter" ng-if="$parent.tabset.active == 1"></ops-deployments-instances>

@@ -202,6 +202,20 @@ td.actions-button a { color: inherit; }
 .status-not-started { color: #848484; }
 .error-description { max-height: 200px; }
 
+.empty-deployments {
+  margin: 30px 0;
+  color: #848484;
+}
+
+.deployment-status-summary {
+  margin-right: 10px;
+  margin-left: 23px;
+}
+
+.empty-deployments-summary {
+  opacity: 0.3;
+}
+
 /* Config Deployment Maps page */
 #configDeploymentMapValue { height: 500px; }
 
@@ -286,11 +300,6 @@ span.status-error span { color: red; }
   td { vertical-align: middle; }
   .form-control { width: auto; }
   input[name="DnsName"] { width: 350px; }
-}
-
-.env-settings-alert-settings {
-  padding: 10px 15px;
-  padding-bottom: 0px;
 }
 
 .onoffswitch {
