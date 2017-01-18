@@ -17,9 +17,9 @@ angular.module('EnvironmentManager.operations').controller('UpstreamDetailsModal
         servers = data;
 
         // Check for IPs that don't have matching Instances in AWS - probably already removed by scaling or manual change
-        if (data.length != uniqueIPs.length) {
+        if (data.length !== uniqueIPs.length) {
           var ipsNotFound = uniqueIPs.filter(function awsDataNotFound(ip) {
-            return getAWSDataByIP(ip, data) == null;
+            return getAWSDataByIP(ip, data) === null;
           });
 
           ipsNotFound.forEach(function (ip) {
@@ -52,7 +52,7 @@ angular.module('EnvironmentManager.operations').controller('UpstreamDetailsModal
         if (lb.ServerStatus) {
           lb.ServerStatus.forEach(function (serverState) {
             var ip = serverState.Server.split(':')[0]; // Truncate port
-            if (uniqueIPs.indexOf(ip) == -1) {
+            if (uniqueIPs.indexOf(ip) === -1) {
               uniqueIPs.push(ip);
             }
           });
@@ -91,7 +91,7 @@ angular.module('EnvironmentManager.operations').controller('UpstreamDetailsModal
 
     function getAWSDataByIP(ip, data) {
       for (var i = 0; i < data.length; i++) {
-        if (data[i].Ip == ip) {
+        if (data[i].Ip === ip) {
           return data[i];
         }
       }
@@ -103,7 +103,7 @@ angular.module('EnvironmentManager.operations').controller('UpstreamDetailsModal
       for (var i = 0; i < lb.ServerStatus.length; i++) {
         if (lb.ServerStatus[i].Server) {
           var serverIp = lb.ServerStatus[i].Server.split(':')[0]; // remove port
-          if (serverIp == ip) {
+          if (serverIp === ip) {
             return lb.ServerStatus[i].State;
           }
         }

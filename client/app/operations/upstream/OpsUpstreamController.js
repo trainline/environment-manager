@@ -92,11 +92,11 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
           var upstreamMatch = false;
           if (!serviceName && !upstreamName) return false;
           if (serviceName) {
-            serviceMatch = serviceName.indexOf(angular.lowercase(vm.selectedService)) != -1;
+            serviceMatch = serviceName.indexOf(angular.lowercase(vm.selectedService)) !== -1;
           }
 
           if (upstreamName) {
-            upstreamMatch = upstreamName.indexOf(angular.lowercase(vm.selectedService)) != -1;
+            upstreamMatch = upstreamName.indexOf(angular.lowercase(vm.selectedService)) !== -1;
           }
 
           if (!(serviceMatch || upstreamMatch)) {
@@ -266,17 +266,17 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
       if (_.isArray(lbServerStatusData) && lbServerStatusData.length > 0) {
         lbServerStatusData.forEach(function (server) {
           if (server) {
-            if (server.State == 'up') { upCount++; }
-            if (server.State == 'down') { downCount++; }
-            if (server.State == 'unhealthy') { unhealthyCount++; }
+            if (server.State === 'up') { upCount++; }
+            if (server.State === 'down') { downCount++; }
+            if (server.State === 'unhealthy') { unhealthyCount++; }
           }
         });
 
         if (upCount == lbServerStatusData.length) {
           state = 'Up';
-        } else if (downCount == lbServerStatusData.length) {
+        } else if (downCount === lbServerStatusData.length) {
           state = 'Down';
-        } else if (unhealthyCount == lbServerStatusData.length) {
+        } else if (unhealthyCount === lbServerStatusData.length) {
           state = 'Unhealthy';
         } else if (upCount > 0 && unhealthyCount > 0 && downCount == 0) {
           state = 'UpUnhealthy';

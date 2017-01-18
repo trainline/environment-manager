@@ -10,7 +10,7 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsList', 
     foundServicesFilter: '&'
   },
   controllerAs: 'vm',
-  controller: function ($scope, Deployment, $uibModal) {
+  controller: function ($scope, Deployment) {
     var vm = this;
 
     function refresh() {

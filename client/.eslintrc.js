@@ -32,7 +32,7 @@ module.exports = {
     "no-var": 'off', // We don't use ES6
     "vars-on-top": 'off',
     "no-plusplus": 'off',
-    "no-param-reassign": ['error', { props: false }],
+    "no-param-reassign": ['off', { props: false }],
     "no-use-before-define": 'off'
   },
 };
