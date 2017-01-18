@@ -158,14 +158,5 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
       return deployment.service.name.toLowerCase().indexOf(vm.serviceName.toLowerCase()) >= 0;
     };
 
-    vm.updateSummary = function showSummary(deployments) {
-      var emptysummary = { 'success':0, 'in progress':0, 'cancelled':0, 'failed':0 };
-      vm.summary = deployments.reduce(function(summary, d) {
-        summary[d.status]++;
-        return summary;
-      },
-      emptysummary);
-    }
-
     init();
   });
