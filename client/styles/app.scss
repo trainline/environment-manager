@@ -288,6 +288,11 @@ span.status-error span { color: red; }
   input[name="DnsName"] { width: 350px; }
 }
 
+.env-settings-alert-settings {
+  padding: 10px 15px;
+  padding-bottom: 0px;
+}
+
 .onoffswitch {
   position: relative;
   width: 90px;

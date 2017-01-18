@@ -28,15 +28,15 @@
         <span class="help-block" ng-if="form.EnvironmentType.$dirty && form.EnvironmentType.$error.pattern">Environment Type name must contain only alphanumeric characters.</span>
     </div>
 
-    <div class="form-group em-envType-input" data-ng-class="{'has-error': accountNotFound}">
+    <div class="form-group em-envType-input" ng-class="{'has-error': accountNotFound}">
         <label for="awsAccount" class="col-md-1 control-label text-left">AWS Account:</label>
         <div class="col-md-5">
-            <select id="awsAccount" class="form-control" data-ng-options="a.AccountName for a in awsAccounts" data-ng-model="awsAccount" data-ng-change="selectAccount()"></select>
-            <span data-ng-if="accountNotFound" class="error">
+            <select id="awsAccount" class="form-control" ng-options="a.AccountName for a in awsAccounts" ng-model="awsAccount" ng-change="selectAccount()"></select>
+            <span ng-if="accountNotFound" class="error">
                 There are no registered accounts that match the current Environment Type config.<br />
                 Select an account above or <a href="/#/config/accounts/add">Add an AWS Account</a> that matches the config below.
             </span>
-            <span data-ng-hide="accountNotFound"><small>The AWS account will be associated with all Environments assigned to this Environment Type.</small></span>
+            <span ng-hide="accountNotFound"><small>The AWS account will be associated with all Environments assigned to this Environment Type.</small></span>
         </div>
     </div>
 

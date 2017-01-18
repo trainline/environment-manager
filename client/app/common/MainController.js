@@ -49,15 +49,6 @@ angular.module('EnvironmentManager.common').controller('MainController',
       $location.path('/config/audit/');
     };
 
-    $scope.ValidateNumberRange = function (value, min, max) {
-      return (value >= min && value <= max);
-    };
-
-    $scope.GetDaysBetweenDates = function (date1, date2) {
-      var diff = new Date(date1).getTime() - new Date(date2).getTime();
-      return Math.round(diff / (1000 * 60 * 60 * 24));
-    };
-
     // Validates JSON object (value) contains only expected attributes
     // TODO: remove once no longer editing JSON in UI?
     $scope.ValidateFields = function (value, mandatoryFields, optionalFields, pathPrefix) {

@@ -1,0 +1,44 @@
+<div class="row">
+  <div class="col-md-12"><h2>Notification Settings</h2></div>
+</div>
+<form id="SearchFilter" class="form-inline" ng-if="vm.canPost">
+  <div class="form-group">
+    <a class="btn btn-default" ng-href="#/config/notification-settings/add" ng-if="vm.canPost">Add New...</a>
+  </div>
+</form>
+<div class="row">
+  <div class="col-md-12" ng-if="vm.dataLoading">
+    <spinner></spinner>
+  </div>
+  <div class="col-md-12" ng-if="!vm.dataLoading && vm.data.length == 0">
+    <p>No Notification Settings found.</p>
+  </div>
+  <div class="col-md-12" ng-if="!vm.dataLoading && vm.data.length > 0">
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="text-nowrap">Name</th>
+          <th class="text-nowrap">Notification Email</th>
+          <th class="text-nowrap">Chat Channel</th>
+          <th class="text-nowrap">Paging</th>
+          <th class="text-nowrap">Ticketing</th>
+          <th ng-if="vm.canDelete" class="text-nowrap command-header">Remove</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="entry in vm.data">
+          <td>
+            <a ng-href="/#/config/notification-settings/{{::entry.NotificationSettingsId}}">{{::entry.NotificationSettingsId}}</a>
+          </td>
+          <td>{{::entry.Value.NotificationEmail.join(', ')}}</td>
+          <td>{{::entry.Value.ChatChannel.join(', ')}}</td>
+          <td>{{::entry.Value.Paging.join(', ')}}</td>
+          <td>{{::entry.Value.Ticketing}}</td>
+          <td ng-if="vm.canDelete" class="command command-delete">
+            <span class="glyphicon glyphicon-remove" ng-click="vm.delete(entry)" title="Delete"></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
