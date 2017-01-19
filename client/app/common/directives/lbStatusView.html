@@ -7,6 +7,8 @@
       <tr>
         <th class="text-nowrap">Instance</th>
         <th class="text-nowrap">Upstream</th>
+        <th class="text-nowrap">Service</th>
+        <th class="text-nowrap">Configured State</th>
         <th class="text-nowrap" ng-repeat="lb in servers.lbs">{{lb.split('.')[0]}}</th>
       </tr>
     </thead>
@@ -17,7 +19,20 @@
           {{server.instanceId}} ({{server.ip}})
         </td>
         <td>
-          <div ng-repeat="host in server.hosts">{{host.name}} (Port: {{host.port}})</div>
+          <div ng-repeat="host in server.hosts">{{host.upstream}} (Port: {{host.port}})</div>
+        </td>
+        <td>
+          <div ng-repeat="host in server.hosts">{{host.service}} ({{host.slice}})</div>
+        </td>
+        <td>
+          <div ng-repeat="host in server.hosts">
+            <div ng-if="host.state == 'up'">
+              <span class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> Up</span>
+            </div>
+            <div ng-if="host.state == 'down'">
+              <span class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span> Down</span>
+            </div>
+          </div>
         </td>
         <td ng-repeat="lb in servers.lbs">
           <div ng-repeat="host in server.hosts">

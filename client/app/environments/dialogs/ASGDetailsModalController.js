@@ -187,27 +187,26 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       });
     };
 
-    vm.getDummyInstances = function() {
-      return [
-        { Name: 'pr1-vn-5a60c5d1', InstanceId: 'i-5a60c5d1', PrivateIpAddress: '10.248.150.116' },
-        { Name: 'pr1-vn-7f4c86f2', InstanceId: 'i-7f4c86f2', PrivateIpAddress: '10.248.178.68' }
-      ];
-    };
-
     vm.getLBStatus = function() {
       var env = parameters.environment.EnvironmentName;
-      return vm.getLBData(env).then(function(lbs){
-        var viewModel = {
-          lbs: lbs.map(function(lb){ return lb.name; }),
-          instances: vm.toInstanceViewModels(vm.getDummyInstances(), lbs) // vm.asgState.Instances
-        }
-        vm.serversLBStatus = viewModel;
+      var params = { account: 'all' };
+      //return getDummyUpstreamsData().then(function(upstreams) {
+      return resources.config.lbUpstream.all(params).then(function(upstreams) {
+        console.log(upstreams);
+        return vm.getLBData(env).then(function(lbs) {
+          var viewModel = {
+            lbs: lbs.map(function(lb){ return lb.name; }),
+            //instances: vm.toInstanceViewModels(getDummyInstances(), lbs, upstreams)
+            instances: vm.toInstanceViewModels(vm.asgState.Instances, lbs, upstreams)
+          }
+          vm.serversLBStatus = viewModel;
+        });
       });
     }
 
-    vm.toInstanceViewModels = function(instances, lbs) {
+    vm.toInstanceViewModels = function(instances, lbs, upstreams) {
       return instances.map(function(instance){
-        var hosts = vm.getHosts(instance, lbs);
+        var hosts = vm.getHosts(instance, lbs, upstreams);
         return {
           ip: instance.PrivateIpAddress,
           name: instance.Name,
@@ -217,9 +216,9 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       });
     }
 
-    vm.getHosts = function(instance, lbs) {
+    vm.getHosts = function(instance, lbs, upstreams) {
       var hosts = vm.getHostsForInstance(instance, lbs);
-      return vm.groupHostsByHostAndLbStates(hosts);
+      return vm.toViewableHosts(hosts, upstreams);
     }
 
     vm.getHostsForInstance = function(instance, lbs) {
@@ -239,15 +238,37 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       return hosts;
     }
 
-    vm.groupHostsByHostAndLbStates = function(hosts) {
-      var groupedHosts = _.groupBy(hosts, function(host){ return host.Upstream + '/' + host.Port; });
+    vm.toViewableHosts = function(hosts, upstreams) {
+      var groupedHosts = _.groupBy(hosts, function(host){ return host.Upstream + host.Port; });
       return vm.mapPropertyValues(groupedHosts, function(hostsInGroup) {
+
         var firstHostInGroup = _.head(hostsInGroup);
+        var upstreamName = firstHostInGroup.Upstream;
+        var port = firstHostInGroup.Port;
+
+        var upstreamConfig = _.find(upstreams, function(upstream){ return upstream.Value.UpstreamName === upstreamName; });
+
+        var serviceName, slice, configuredState;
+        if (upstreamConfig) {
+          serviceName = upstreamConfig.Value.ServiceName;
+          var host = _.find(upstreamConfig.Value.Hosts, function(host) { return host.Port == port; });
+
+          if (host) {
+            configuredState = host.State;
+            var colour = _.last(host.DnsName.split('-'));
+            slice = colour || 'unknown';
+          }
+        }
+
         return {
-          name: firstHostInGroup.Upstream,
-          port: firstHostInGroup.Port,
+          upstream: upstreamName,
+          service: serviceName,
+          state: configuredState,
+          slice: slice,
+          port: port,
           hosts: _.keyBy(hostsInGroup, function(item) { return item.LB; })
         }
+
       });
     }
 
@@ -263,9 +284,9 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         return $q.all(lbNames.map(function(lbName){
           var url = ['api', 'v1', 'load-balancer', lbName].join('/');
           
-          return getDummyData().then(function(upstreams) {
-          //return $http.get(url).then(function (response) {
-            //var upstreams = response.data;
+          //return getDummyNGINXData().then(function(upstreams) {
+          return $http.get(url).then(function (response) {
+            var upstreams = response.data;
             return {
               name: lbName,
               upstreams: upstreams
