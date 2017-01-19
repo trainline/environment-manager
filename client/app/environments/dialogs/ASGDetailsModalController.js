@@ -199,22 +199,30 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       return vm.getLBData(env).then(function(lbs){
         var viewModel = {
           lbs: lbs.map(function(lb){ return lb.name; }),
-          instances: vm.getDummyInstances().map(function(instance){ // vm.asgState.Instances
-            var hosts = vm.getHosts(instance, lbs);
-            return {
-              ip: instance.PrivateIpAddress,
-              name: instance.Name,
-              instanceId: instance.InstanceId,
-              hosts: hosts
-            }
-          })
+          instances: vm.toInstanceViewModels(vm.getDummyInstances(), lbs) // vm.asgState.Instances
         }
         vm.serversLBStatus = viewModel;
-        console.log(vm.serversLBStatus);
+      });
+    }
+
+    vm.toInstanceViewModels = function(instances, lbs) {
+      return instances.map(function(instance){
+        var hosts = vm.getHosts(instance, lbs);
+        return {
+          ip: instance.PrivateIpAddress,
+          name: instance.Name,
+          instanceId: instance.InstanceId,
+          hosts: hosts
+        }
       });
     }
 
     vm.getHosts = function(instance, lbs) {
+      var hosts = vm.getHostsForInstance(instance, lbs);
+      return vm.groupHostsByHostAndLbStates(hosts);
+    }
+
+    vm.getHostsForInstance = function(instance, lbs) {
       var hosts = [];
 
       lbs.forEach(function(lb) {
@@ -228,34 +236,26 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         });
       });
 
-      var groups = _.groupBy(hosts, function(host){ return host.Upstream + '/' + host.Port; });
+      return hosts;
+    }
 
-      _.keys(groups).forEach(function(key){
-        var keyParts = key.split('/');
-        var upstream = keyParts[0];
-        var port = keyParts[1];
-
-        groups[key] = {
-          name: upstream,
-          port: port,
-          hosts: groups[key]
+    vm.groupHostsByHostAndLbStates = function(hosts) {
+      var groupedHosts = _.groupBy(hosts, function(host){ return host.Upstream + '/' + host.Port; });
+      return vm.mapPropertyValues(groupedHosts, function(hostsInGroup) {
+        var firstHostInGroup = _.head(hostsInGroup);
+        return {
+          name: firstHostInGroup.Upstream,
+          port: firstHostInGroup.Port,
+          hosts: _.keyBy(hostsInGroup, function(item) { return item.LB; })
         }
       });
-
-      var results = _.values(groups);
-
-      results.forEach(function(result){
-        result.hosts = _.groupBy(result.hosts, function(host) {
-          return host.LB;
-        });
-        _.keys(result.hosts).forEach(function(key) {
-          result.hosts[key] = _.head(result.hosts[key]);
-        })
-      });
-
-      return results;
-
     }
+
+    vm.mapPropertyValues = function(o, fn) {
+      return _.keys(o).map(function(key) {
+        return fn(o[key]);
+      });
+    };
 
     vm.getLBData = function(env) {
       return accountMappingService.getEnvironmentLoadBalancers(env).then(function(lbNames){
