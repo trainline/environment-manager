@@ -17,8 +17,7 @@ angular.module('EnvironmentManager.environments').factory('serversView',
         .map(toRoleView)
         .filter(rolesMatchingSelections(selections));
 
-      var aggregateViews = toAggregationsView(data.Value);
-
+      var aggregateViews = toAggregationsView(roleViews);
       var allServerRoles = _.uniq(roles.map(function (role) {
         return role.Role;
       }));
@@ -103,7 +102,7 @@ angular.module('EnvironmentManager.environments').factory('serversView',
       };
 
       roles.forEach(function (role) {
-        result.servers[role.Status.Status.toLowerCase()].count += 1;
+        result.servers[role.serverRole.status.status.toLowerCase()].count += 1;
       });
 
       return result;
