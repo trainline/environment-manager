@@ -192,7 +192,6 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       var params = { account: 'all' };
       //return getDummyUpstreamsData().then(function(upstreams) {
       return resources.config.lbUpstream.all(params).then(function(upstreams) {
-        console.log(upstreams);
         return vm.getLBData(env).then(function(lbs) {
           var viewModel = {
             lbs: lbs.map(function(lb){ return lb.name; }),
