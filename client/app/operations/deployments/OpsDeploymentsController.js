@@ -13,6 +13,7 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
     vm.owningClustersList = [];
     vm.statusList = [];
     vm.selectedDeploymentId = null;
+    vm.summary = {};
 
     var dateRangeList = vm.dateRangeList = [
       { name: 'Last hour', value: 1 * enums.MILLISECONDS.PerHour },

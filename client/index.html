@@ -139,6 +139,7 @@
   <script src="app/common/services/cachedResourcesService.js"></script>
   <script src="app/common/services/awsService.js"></script>
   <script src="app/common/services/accountMappingService.js"></script>
+  <script src="app/common/services/environmentDeployService.js"></script>
   <script src="app/common/directives/validJsonDirective.js"></script>
   <script src="app/common/directives/uniqueAmongDirective.js"></script>
   <script src="app/common/directives/spinner.js"></script>
@@ -229,7 +230,6 @@
       </nav>
     </div>
     <div id="sidebar" ng-if="main.getSection()=='environments' && $route.current.menusection != ''">
-      <h3>Environment</h3>
       <form name="form">
         <select id="SelectEnvironment" class="form-control" ng-model="WorkingEnvironment.EnvironmentName" ng-change="ChangeEnvironment()">
           <option ng-repeat="env in $parent.ParentEnvironmentsList" ng-selected="{{env == WorkingEnvironment.EnvironmentName}}" value="{{env}}">{{env}}</option>
@@ -243,6 +243,10 @@
           <!--<li><a href="#/environment/infrastructure?environment={{WorkingEnvironment.EnvironmentName}}" ng-class="{active: $route.current.menusection == 'EnvInfrastructure'}">Infrastructure</a></li>-->
         </ul>
       </nav>
+
+      <div class="form-group env-deploy">
+        <button class="btn btn-primary" ng-click="$parent.showDeployDialog()">Deploy a Service...</button>
+      </div>
     </div>
     <div id="content" ng-class="{sidebar: $route.current.menusection != ''}" ng-view></div>
   </div>
