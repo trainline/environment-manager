@@ -187,53 +187,85 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       });
     };
 
+    vm.getDummyInstances = function() {
+      return [
+        { Name: 'pr1-vn-5a60c5d1', InstanceId: 'i-5a60c5d1', PrivateIpAddress: '10.248.150.116' },
+        { Name: 'pr1-vn-7f4c86f2', InstanceId: 'i-7f4c86f2', PrivateIpAddress: '10.248.178.68' }
+      ];
+    };
+
     vm.getLBStatus = function() {
       var env = parameters.environment.EnvironmentName;
       return vm.getLBData(env).then(function(lbs){
-        vm.serversLBStatus = vm.asgState.Instances.map(function(instance){
-          return {
-            Ip: instance.PrivateIpAddress,
-            Name: instance.Name,
-            InstanceId: instance.InstanceId,
-            InstanceType: instance.InstanceType,
-            Status: instance.State,
-            LoadBalancerServerState: vm.getLBServerStatus(instance, lbs)
-          }
+        var viewModel = {
+          lbs: lbs.map(function(lb){ return lb.name; }),
+          instances: vm.getDummyInstances().map(function(instance){ // vm.asgState.Instances
+            var hosts = vm.getHosts(instance, lbs);
+            return {
+              ip: instance.PrivateIpAddress,
+              name: instance.Name,
+              instanceId: instance.InstanceId,
+              hosts: hosts
+            }
+          })
+        }
+        vm.serversLBStatus = viewModel;
+        console.log(vm.serversLBStatus);
+      });
+    }
+
+    vm.getHosts = function(instance, lbs) {
+      var hosts = [];
+
+      lbs.forEach(function(lb) {
+        lb.upstreams.forEach(function(upstream){
+          upstream.Hosts.forEach(function(host) {
+            var ipAndPort = host.Server.split(':');
+            if (instance.PrivateIpAddress === ipAndPort[0]) {
+              hosts.push({ LB: lb.name, Upstream: upstream.Name, Port: ipAndPort[1], State: host.State})
+            }
+          })
         });
       });
-    }
 
-    vm.getLBServerStatus = function(instance, lbs) {
-      var result = lbs.map(function(lb) {
-        return {
-          Name: lb.name,
-          Hosts: vm.getHostsForInstance(instance, lb.upstreams)
-        };
+      var groups = _.groupBy(hosts, function(host){ return host.Upstream + '/' + host.Port; });
+
+      _.keys(groups).forEach(function(key){
+        var keyParts = key.split('/');
+        var upstream = keyParts[0];
+        var port = keyParts[1];
+
+        groups[key] = {
+          name: upstream,
+          port: port,
+          hosts: groups[key]
+        }
       });
 
-      return result;
-    }
+      var results = _.values(groups);
 
-    vm.getHostsForInstance = function(instance, upstreams) {
-      var hosts = [];
-      upstreams.forEach(function(upstream){
-        upstream.Hosts.forEach(function(host) {
-          var ipAndPort = host.Server.split(':');
-          if (instance.PrivateIpAddress === ipAndPort[0]) {
-            hosts.push({ Upstream: upstream.Name, Port: ipAndPort[1], State: host.State})
-          }
+      results.forEach(function(result){
+        result.hosts = _.groupBy(result.hosts, function(host) {
+          return host.LB;
+        });
+        _.keys(result.hosts).forEach(function(key) {
+          result.hosts[key] = _.head(result.hosts[key]);
         })
       });
-      return hosts;
+
+      return results;
+
     }
 
     vm.getLBData = function(env) {
       return accountMappingService.getEnvironmentLoadBalancers(env).then(function(lbNames){
+        lbNames = ['pr1-in-nginx01a.prod.local', 'pr1-in-nginx02b.prod.local', 'pr1-in-nginx03a.prod.local', 'pr1-in-nginx04b.prod.local'];
         return $q.all(lbNames.map(function(lbName){
           var url = ['api', 'v1', 'load-balancer', lbName].join('/');
           
-          return $http.get(url).then(function (response) {
-            var upstreams = response.data;
+          return getDummyData().then(function(upstreams) {
+          //return $http.get(url).then(function (response) {
+            //var upstreams = response.data;
             return {
               name: lbName,
               upstreams: upstreams
