@@ -8,7 +8,7 @@ angular.module('EnvironmentManager.configuration').controller('ServicesControlle
     var vm = this;
     var SHOW_ALL_OPTION = 'Any';
 
-    vm.itemsPerPage = 10;
+    vm.itemsPerPage = 20;
 
     vm.fullData = [];
     vm.data = [];
