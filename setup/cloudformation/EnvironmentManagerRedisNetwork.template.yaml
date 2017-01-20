@@ -1,0 +1,56 @@
+AWSTemplateFormatVersion: "2010-09-09"
+# A template for a stack that contains a subnet group and a pair
+# of security groups for an ElastiCache Redis cluster.
+Description: Environment Manager Resources
+Parameters:
+  pVpcBase:
+    Type: "AWS::EC2::VPC::Id"
+    Description: "VPC ID, syntax vpc-xxxxxxxx"
+  pRedisSubnets:
+    Type: "List<AWS::EC2::Subnet::Id>"
+    Description: Redis Access Subnets
+  pRedisPort:
+    Description: Redis port number
+    Type: String
+    Default: "6379"
+Resources:
+  sgEnvironmentManagerRedisAccess:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: Security Group for access to Redis Cluster
+      VpcId: !Ref pVpcBase
+      Tags:
+        - Key: Name
+          Value: sgEnvironmentManagerRedisAccess
+  sgEnvironmentManagerRedisHost:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: Security Group for hosting Redis Cluster
+      VpcId: !Ref pVpcBase
+      Tags:
+        - Key: Name
+          Value: sgEnvironmentManagerRedisHost
+  sgiEnvironmentManagerRedisHost:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      GroupId: !Ref sgEnvironmentManagerRedisHost
+      IpProtocol: tcp
+      SourceSecurityGroupId: !Ref sgEnvironmentManagerRedisAccess
+      FromPort: !Ref pRedisPort
+      ToPort: !Ref pRedisPort
+  sngEnvironmentManagerRedisHost:
+    Type: "AWS::ElastiCache::SubnetGroup"
+    Properties:
+      Description: Environment Manager Redis Subnet Group
+      SubnetIds: !Ref pRedisSubnets
+
+Outputs:
+  RedisClusterSubnetGroup:
+    Description: Subnet Group for Redis Cluster
+    Value: !Ref sngEnvironmentManagerRedisHost
+  RedisHostSecurityGroup:
+    Description: Security Group for Redis Cluster Hosts
+    Value: !GetAtt sgEnvironmentManagerRedisHost.GroupId
+  RedisAccessSecurityGroup:
+    Description: Security Group Granting Access to Redis
+    Value: !GetAtt sgEnvironmentManagerRedisAccess.GroupId
