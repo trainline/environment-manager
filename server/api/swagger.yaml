@@ -367,6 +367,8 @@ paths:
       responses:
         202:
           description: The deployment ID
+        423:
+          description: The environment given is locked for deployments
   /deployments/{id}:
     x-swagger-router-controller: deploymentsController
     get:
@@ -1087,6 +1089,83 @@ paths:
       parameters:
         - name: accountNumber
           type: integer
+          required: true
+          in: path
+      responses:
+        200:
+          description: OK
+  /config/notification-settings:
+    x-swagger-router-controller: notificationSettingsController
+    get:
+      operationId: getAllNotificationSettings
+      summary: List Notification settings.
+      tags:
+        - Notification Settings
+      responses:
+        200:
+          description: The list of accounts
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NotificationSettings'
+    post:
+      operationId: postNotificationSettings
+      summary: Post new Notification settings.
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/NotificationSettings'
+      tags:
+        - Notification Settings
+      responses:
+        201:
+          description: OK
+  /config/notification-settings/{id}:
+    x-swagger-router-controller: notificationSettingsController
+    get:
+      operationId: getNotificationSettingsById
+      summary: Get Notification settings.
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+      tags:
+        - Notification Settings
+      responses:
+        200:
+          description: The notification settings
+          schema:
+            $ref: '#/definitions/NotificationSettings'
+    put:
+      operationId: putNotificationSettingsById
+      summary: Update an associated AWS Account.
+      tags:
+        - Notification Settings
+      parameters:
+        - name: id
+          type: string
+          required: true
+          in: path
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/NotificationSettingsValue'
+        - $ref: '#/parameters/ExpectedVersionHeader'
+      responses:
+        200:
+          description: OK
+    delete:
+      operationId: deleteNotificationSettingsById
+      summary: Remove Notification settings.
+      tags:
+        - Notification Settings
+      parameters:
+        - name: id
+          type: string
           required: true
           in: path
       responses:
@@ -2176,6 +2255,38 @@ definitions:
         type: string
       ScheduleStatus:
         type: string
+  NotificationSettings:
+    type: object
+    required:
+      - NotificationSettingsId
+      - Version
+      - Value
+    properties:
+      NotificationSettingsId:
+        type: string
+        pattern: ^[A-Za-z0-9_\-]+$
+      Version:
+        type: integer
+      Value:
+        $ref: '#/definitions/NotificationSettingsValue'
+
+  NotificationSettingsValue:
+    type: object
+    properties:
+      NotificationEmail:
+        type: array
+        items:
+          type: string
+      ChatChannel:
+        type: array
+        items:
+          type: string
+      Paging:
+        type: array
+        items:
+          type: string
+      Ticketing:
+        type: string
   EnvironmentSchedule:
     type: object
     required:
@@ -2378,6 +2489,14 @@ definitions:
     properties:
       OwningCluster:
         type: string
+      AlertSettings:
+        type: string
+        enum:
+          - EnvironmentOwner
+          - ServiceOwner
+          - Custom
+      NotificationSettingsId:
+        type: string
       Description:
         type: string
       EnvironmentType:
@@ -2388,6 +2507,8 @@ definitions:
         type: string
       CodeDeployBucket:
         type: string
+      IsLocked:
+        type: boolean
   EnvironmentTypeConfig:
     type: object
     required:

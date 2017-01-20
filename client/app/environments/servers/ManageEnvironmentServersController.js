@@ -4,7 +4,7 @@
 
 angular.module('EnvironmentManager.environments')
   .controller('ManageEnvironmentServersController',
-    function ($rootScope, $routeParams, $http, $q, cachedResources, resources, $uibModal, accountMappingService, serversView, QuerySync) {
+    function ($rootScope, $routeParams, $http, $q, cachedResources, resources, $uibModal, accountMappingService, serversView, QuerySync, environmentDeploy, $scope) {
       var vm = this;
 
       var SHOW_ALL_OPTION = 'Any';
@@ -101,7 +101,6 @@ angular.module('EnvironmentManager.environments')
 
       vm.update = function () {
         querySync.updateQuery();
-
         vm.view = serversView(vm.data, vm.selected);
       };
 
@@ -145,6 +144,8 @@ angular.module('EnvironmentManager.environments')
           querySync.updateQuery();
         });
       };
+
+      environmentDeploy.registerDeployHandler(vm.loadDeployDialog);
 
       init();
     });

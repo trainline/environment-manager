@@ -18,6 +18,7 @@ let DynamoTableNotFoundError = require('modules/errors/DynamoTableNotFoundError.
 let DynamoConditionCheckError = require('modules/errors/DynamoConditionCheckError.class');
 let DynamoItemAlreadyExistsError = require('modules/errors/DynamoItemAlreadyExistsError.class');
 let logger = require('modules/logger');
+let _ = require('lodash');
 
 function removeEmptyStrings(data) {
   for (let property in data) {

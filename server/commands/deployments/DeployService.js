@@ -18,6 +18,7 @@ let SupportedDeploymentModes = _.values(Enums.DeploymentMode);
 let validUrl = require('valid-url');
 let s3PackageLocator = require('modules/s3PackageLocator');
 let EnvironmentHelper = require('models/Environment');
+let ResourceLockedError = require('modules/errors/ResourceLockedError');
 
 module.exports = function DeployServiceCommandHandler(command) {
   assertContract(command, 'command', {
@@ -92,6 +93,10 @@ function validateCommandAndCreateDeployment(command) {
     const environment = yield EnvironmentHelper.getByName(command.environmentName);
     const environmentType = yield environment.getEnvironmentType();
     command.accountName = environmentType.AWSAccountName;
+
+    if (environment.IsLocked) {
+      throw new ResourceLockedError(`The environment ${environmentName} is currently locked for deployments. Contact the environment owner.`);
+    }
 
     let configuration = yield infrastructureConfigurationProvider.get(
       command.environmentName, command.serviceName, command.serverRoleName

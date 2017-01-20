@@ -43,9 +43,6 @@
   <input type="search" name="ServiceName" class="form-control" ng-model="vm.serviceName" uib-typeahead="s for s in vm.uniqueServices" ng-model-options="{debounce: 200}" />
   </div>
 </form>
-
-<hr />
-
 <uib-tabset active="vm.selectedTab">
   <uib-tab heading="Deployments" ng-click="vm.chooseTab(0)">
     <ops-deployments-list query="vm.query" show-details="vm.showDetails" found-services-filter="vm.foundServicesFilter" ng-if="$parent.tabset.active === 0"></ops-deployments-list>

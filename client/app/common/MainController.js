@@ -3,7 +3,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.common').controller('MainController',
-  function ($rootScope, $scope, $route, $routeParams, $location, modal, Environment) {
+  function ($rootScope, $scope, $route, $routeParams, $location, modal, Environment, environmentDeploy) {
     var vm = this;
 
     $scope.appVersion = window.version;
@@ -47,15 +47,6 @@ angular.module('EnvironmentManager.common').controller('MainController',
       if (range) { $location.search('range', range); }
 
       $location.path('/config/audit/');
-    };
-
-    $scope.ValidateNumberRange = function (value, min, max) {
-      return (value >= min && value <= max);
-    };
-
-    $scope.GetDaysBetweenDates = function (date1, date2) {
-      var diff = new Date(date1).getTime() - new Date(date2).getTime();
-      return Math.round(diff / (1000 * 60 * 60 * 24));
     };
 
     // Validates JSON object (value) contains only expected attributes
@@ -112,6 +103,11 @@ angular.module('EnvironmentManager.common').controller('MainController',
 
       return errors;
     };
+
+    $scope.showDeployDialog = function() {
+      environmentDeploy.callDeployHandler();
+    }
+
 
     function missingJSONValue(value) {
       if (typeof value === 'undefined') return true;

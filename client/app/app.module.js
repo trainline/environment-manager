@@ -15,7 +15,8 @@ var app = angular.module('EnvironmentManager', [
 ]);
 
 // Setup global routes
-app.config(function ($routeProvider) {
+app.config(function ($routeProvider, $compileProvider) {
+  $compileProvider.preAssignBindingsEnabled(true); 
   $routeProvider
     .when('/', {
       templateUrl: '/app/environments/summary/env-summary.html',
@@ -32,11 +33,14 @@ app.config(function ($routeProvider) {
     });
 });
 
-app.config(function ($httpProvider, $locationProvider) {
+app.config(function ($httpProvider, $locationProvider, $qProvider) {
   $locationProvider.hashPrefix('');
 
   // Set default put request content type to JSON
   $httpProvider.defaults.headers.put['Content-Type'] = 'application/json;charset=utf-8';
+
+  // Suppress 'possibly unhandled rejection' errors
+  $qProvider.errorOnUnhandledRejections(false);
 
   // Set up error pop up on HTTP errors
   $httpProvider.interceptors.push(function ($q, $rootScope) {
