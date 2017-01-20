@@ -3,7 +3,8 @@
 'use strict';
 
 angular.module('EnvironmentManager.compare').controller('CompareController',
-  function ($scope, $routeParams, serviceComparison, $location, $q, $uibModal, resources, cachedResources, comparableResources, ResourceComparison, accountMappingService) {
+  function ($scope, $routeParams, serviceComparison, $location, $q, $uibModal,
+  resources, cachedResources, comparableResources, ResourceComparison, $log) {
     var vm = this;
     var SHOW_ALL_OPTION = 'Any';
     var services;
