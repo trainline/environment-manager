@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /**
  *  This file contains the variables used in other gulp files
  *  which defines tasks
@@ -52,3 +54,4 @@ module.exports = {
     return argv.p !== undefined;
   }
 };
+

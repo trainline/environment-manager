@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
@@ -61,3 +63,4 @@ app.run(function ($rootScope, $timeout) {
     $rootScope.$broadcast('cookie-expired');
   }, (window.user.getExpiration() - new Date().getTime()));
 });
+

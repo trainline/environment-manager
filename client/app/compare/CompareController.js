@@ -122,3 +122,4 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
 
     init();
   });
+
