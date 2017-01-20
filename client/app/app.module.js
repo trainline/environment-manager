@@ -39,9 +39,6 @@ app.config(function ($httpProvider, $locationProvider, $qProvider) {
   // Set default put request content type to JSON
   $httpProvider.defaults.headers.put['Content-Type'] = 'application/json;charset=utf-8';
 
-  // Suppress 'possibly unhandled rejection' errors
-  $qProvider.errorOnUnhandledRejections(false);
-
   // Set up error pop up on HTTP errors
   $httpProvider.interceptors.push(function ($q, $rootScope) {
     return {
