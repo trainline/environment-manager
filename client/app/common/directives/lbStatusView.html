@@ -1,53 +1,51 @@
 <div ng-show="servers.instances.length == 0">
   <p>No matching servers found.</p>
 </div>
-<div ng-show="servers.instances.length > 0">
+<div ng-repeat="instance in servers.instances" ng-show="servers.instances.length > 0">
+  <div style="padding-bottom: 10px;">
+    <strong>Instance: {{instance.name}}</strong> {{instance.instanceId}} ({{instance.ip}})
+  </div>
   <table class="table">
     <thead>
       <tr>
-        <th class="text-nowrap">Instance</th>
         <th class="text-nowrap">Upstream</th>
         <th class="text-nowrap">Service</th>
+        <th class="text-nowrap">Slice</th>
         <th class="text-nowrap">Configured State</th>
         <th class="text-nowrap" ng-repeat="lb in servers.lbs">{{lb.split('.')[0]}}</th>
       </tr>
     </thead>
     <tbody>
-      <tr ng-repeat="server in servers.instances">
+      <tr ng-repeat="host in instance.hosts">
         <td>
-          Name: {{server.name}} <br />
-          {{server.instanceId}} ({{server.ip}})
+          {{host.upstream}} (Port: {{host.port}})
         </td>
         <td>
-          <div ng-repeat="host in server.hosts">{{host.upstream}} (Port: {{host.port}})</div>
+          {{host.service}}
         </td>
         <td>
-          <div ng-repeat="host in server.hosts">{{host.service}} ({{host.slice}})</div>
+          <span class="slice-symbol" ng-class="host.slice" style="display: inline-block;"></span>{{ host.slice }}
         </td>
         <td>
-          <div ng-repeat="host in server.hosts">
-            <div ng-if="host.state == 'up'">
-              <span class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> Up</span>
-            </div>
-            <div ng-if="host.state == 'down'">
-              <span class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span> Down</span>
-            </div>
+          <div ng-if="host.state == 'up'">
+            <span class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> Up</span>
+          </div>
+          <div ng-if="host.state == 'down'">
+            <span class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span> Down</span>
           </div>
         </td>
         <td ng-repeat="lb in servers.lbs">
-          <div ng-repeat="host in server.hosts">
-            <div ng-if="host.hosts[lb].State == 'up'">
-              <span class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> Up</span>
-            </div>
-            <div ng-if="host.hosts[lb].State == 'down'">
-              <span class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span> Down</span>
-            </div>
-            <div ng-if="host.hosts[lb].State == 'unhealthy'">
-              <span class="status-error"><span class="glyphicon glyphicon-exclamation-sign"></span> Unhealthy</span>
-            </div>
-            <div ng-if="host.hosts[lb].State == 'unknown'">
-              <span class="status-down"><span class="glyphicon glyphicon-question-sign"></span> Unknown</span>
-            </div>
+          <div ng-if="host.hosts[lb].State == 'up'">
+            <span class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> Up</span>
+          </div>
+          <div ng-if="host.hosts[lb].State == 'down'">
+            <span class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span> Down</span>
+          </div>
+          <div ng-if="host.hosts[lb].State == 'unhealthy'">
+            <span class="status-error"><span class="glyphicon glyphicon-exclamation-sign"></span> Unhealthy</span>
+          </div>
+          <div ng-if="host.hosts[lb].State == 'unknown'">
+            <span class="status-down"><span class="glyphicon glyphicon-question-sign"></span> Unknown</span>
           </div>
         </td>
       </tr>
