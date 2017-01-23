@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ASGDetailsModalController',
-  function ($scope, $uibModal, $uibModalInstance, $q, modal, loading, serviceDiscovery, Image, awsService, AutoScalingGroup, resources, cachedResources, deploymentMapConverter, asgDistributionService, parameters) {
+  function ($http, $scope, $uibModal, $uibModalInstance, $q, modal, loading, serviceDiscovery, Image, awsService, AutoScalingGroup, resources, cachedResources, deploymentMapConverter, asgDistributionService, accountMappingService, parameters) {
     var vm = this;
 
     vm.context = 'asg';
@@ -42,6 +42,8 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       type: 'scaling',
       label: 'Scheduled server scaling'
     }];
+
+    vm.upstreamStatusData = {};
 
     function init() {
       resources.aws.instanceTypes.all().then(function (instanceTypes) {
@@ -126,6 +128,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
     vm.refresh = function (onInitialization) {
       vm.dataLoading = true;
+      vm.loadingUpstreamStatus = true;
 
       $q.all([
         serviceDiscovery.getASGState(parameters.environment.EnvironmentName, parameters.groupName),
@@ -174,6 +177,9 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
           }
 
           vm.currentDistribution = asgDistributionService.calcDistribution(vm.deploymentAzsList, vm.asg);
+          vm.getLBStatus().finally(function(){
+            vm.loadingUpstreamStatus = false;
+          });
 
           vm.dataLoading = false;
         }).then(function () {
@@ -187,6 +193,36 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         vm.closeModal();
       });
     };
+
+    vm.getLBStatus = function() {
+      var env = parameters.environment.EnvironmentName;
+      var params = { account: 'all' };
+
+      return resources.config.lbUpstream.all(params).then(function(upstreams) {
+        return vm.getLBData(env).then(function(lbs) {
+          var instances = vm.asgState.Instances;
+
+          vm.upstreamStatusData.lbs = lbs;
+          vm.upstreamStatusData.upstreams = upstreams;
+          vm.upstreamStatusData.instances = instances;
+        });
+      });
+    }
+
+    vm.getLBData = function(env) {
+      return accountMappingService.getEnvironmentLoadBalancers(env).then(function(lbNames){
+        return $q.all(lbNames.map(function(lbName){
+          var url = ['api', 'v1', 'load-balancer', lbName].join('/');
+          return $http.get(url).then(function (response) {
+            var upstreams = response.data;
+            return {
+              name: lbName,
+              upstreams: upstreams
+            };
+          });
+        }));
+      });
+    }
 
     vm.canResize = function () {
       var somethingHasChanged = (vm.asg.DesiredCapacity != vm.asgUpdate.DesiredCapacity ||
