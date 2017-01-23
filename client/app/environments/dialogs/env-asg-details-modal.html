@@ -55,7 +55,7 @@
         <asg-services asg="vm.asg" asg-state="vm.asgState" refresh="vm.refresh()" environment="vm.environmentName" role="vm.asg.Role" close-modal="vm.closeModal()" ng-if="vm.asgState"></asg-services>
       </uib-tab>
       <uib-tab heading="Upstreams Status" index="'lb-status'">
-        <lb-status-view servers="vm.serversLBStatus"></lb-status-view>
+        <lb-status-view data="vm.upstreamStatusData"></lb-status-view>
       </uib-tab>
       <uib-tab heading="Schedule &amp; Scaling" index="'schedule'">
         <form name="formScaling" class="form-horizontal">

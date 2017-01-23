@@ -41,6 +41,8 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       label: 'Scheduled server scaling'
     }];
 
+    vm.upstreamStatusData = {};
+
     function init() {
       resources.aws.instanceTypes.all().then(function (instanceTypes) {
         vm.awsInstanceTypesList = instanceTypes.filter(function (instanceType) {
@@ -190,102 +192,28 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     vm.getLBStatus = function() {
       var env = parameters.environment.EnvironmentName;
       var params = { account: 'all' };
-      //return getDummyUpstreamsData().then(function(upstreams) {
-      return resources.config.lbUpstream.all(params).then(function(upstreams) {
+
+      return getDummyUpstreamsData().then(function(upstreams) {
+      //return resources.config.lbUpstream.all(params).then(function(upstreams) {
         return vm.getLBData(env).then(function(lbs) {
-          var viewModel = {
-            lbs: lbs.map(function(lb){ return lb.name; }),
-            //instances: vm.toInstanceViewModels(getDummyInstances(), lbs, upstreams)
-            instances: vm.toInstanceViewModels(vm.asgState.Instances, lbs, upstreams)
-          }
-          vm.serversLBStatus = viewModel;
+          var instances = getDummyInstances();
+          //var instances = vm.asgState.Instances;
+
+          vm.upstreamStatusData.lbs = lbs;
+          vm.upstreamStatusData.upstreams = upstreams;
+          vm.upstreamStatusData.instances = instances;
         });
       });
     }
-
-    vm.toInstanceViewModels = function(instances, lbs, upstreams) {
-      return instances.map(function(instance){
-        var hosts = vm.getHosts(instance, lbs, upstreams);
-        return {
-          ip: instance.PrivateIpAddress,
-          name: instance.Name,
-          instanceId: instance.InstanceId,
-          hosts: hosts
-        }
-      });
-    }
-
-    vm.getHosts = function(instance, lbs, upstreams) {
-      var hosts = vm.getHostsForInstance(instance, lbs);
-      return vm.toViewableHosts(hosts, upstreams);
-    }
-
-    vm.getHostsForInstance = function(instance, lbs) {
-      var hosts = [];
-
-      lbs.forEach(function(lb) {
-        lb.upstreams.forEach(function(upstream){
-          upstream.Hosts.forEach(function(host) {
-            var ipAndPort = host.Server.split(':');
-            if (instance.PrivateIpAddress === ipAndPort[0]) {
-              hosts.push({ LB: lb.name, Upstream: upstream.Name, Port: ipAndPort[1], State: host.State})
-            }
-          })
-        });
-      });
-
-      return hosts;
-    }
-
-    vm.toViewableHosts = function(hosts, upstreams) {
-      var groupedHosts = _.groupBy(hosts, function(host){ return host.Upstream + host.Port; });
-      return vm.mapPropertyValues(groupedHosts, function(hostsInGroup) {
-
-        var firstHostInGroup = _.head(hostsInGroup);
-        var upstreamName = firstHostInGroup.Upstream;
-        var port = firstHostInGroup.Port;
-
-        var upstreamConfig = _.find(upstreams, function(upstream){ return upstream.Value.UpstreamName === upstreamName; });
-
-        var serviceName, slice, configuredState;
-        if (upstreamConfig) {
-          serviceName = upstreamConfig.Value.ServiceName;
-          var host = _.find(upstreamConfig.Value.Hosts, function(host) { return host.Port == port; });
-
-          if (host) {
-            configuredState = host.State;
-            var colour = _.last(host.DnsName.split('-'));
-            slice = colour || 'unknown';
-          }
-        }
-
-        return {
-          upstream: upstreamName,
-          service: serviceName,
-          state: configuredState,
-          slice: slice,
-          port: port,
-          hosts: _.keyBy(hostsInGroup, function(item) { return item.LB; })
-        }
-
-      });
-    }
-
-    vm.mapPropertyValues = function(o, fn) {
-      return _.keys(o).map(function(key) {
-        return fn(o[key]);
-      });
-    };
 
     vm.getLBData = function(env) {
       return accountMappingService.getEnvironmentLoadBalancers(env).then(function(lbNames){
-        lbNames = ['pr1-in-nginx01a.prod.local', 'pr1-in-nginx02b.prod.local', 'pr1-in-nginx03a.prod.local', 'pr1-in-nginx04b.prod.local'];
+        lbNames = getDummyLbNames(); //
         return $q.all(lbNames.map(function(lbName){
           var url = ['api', 'v1', 'load-balancer', lbName].join('/');
-          
-          //return getDummyNGINXData().then(function(upstreams) {
-          return $http.get(url).then(function (response) {
-            var upstreams = response.data;
+          return getDummyNGINXData().then(function(upstreams) {
+          //return $http.get(url).then(function (response) {
+            //var upstreams = response.data;
             return {
               name: lbName,
               upstreams: upstreams
