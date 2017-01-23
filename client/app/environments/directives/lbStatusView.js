@@ -78,7 +78,7 @@ angular.module('EnvironmentManager.environments')
               if (hostConfig) {
                 configuredState = hostConfig.State;
                 var colour = _.last(hostConfig.DnsName.split('-'));
-                slice = colour || 'unknown';
+                slice = (colour === 'green' || colour === 'blue') ? colour : 'unknown';
               }
             }
 
