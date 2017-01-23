@@ -11,22 +11,29 @@ angular.module('EnvironmentManager.environments')
       },
       templateUrl: '/app/environments/directives/lbStatusView.html',
       controller: function ($scope) {
-        $scope.$watch('data', function (data) {
-          $scope.vm = {
-            lbs: toLbViewModels(data.lbs),
-            instances: toInstanceViewModels(data.instances, data.lbs, data.upstreams)
-          };
+        $scope.statesList = ['All', 'Up', 'Down'];
+        $scope.selectedState = 'All';
+
+        $scope.$watch('data', function () {
+          $scope.updateView();
         }, true);
+
+        $scope.updateView = function () {
+          $scope.vm = {
+            lbs: toLbViewModels($scope.data.lbs),
+            instances: toInstanceViewModels($scope.data.instances, $scope.data.lbs, $scope.data.upstreams, $scope.selectedState)
+          };
+        };
 
         function toLbViewModels(lbs) {
           if (!lbs) { return null; }
           return lbs.map(function (lb) { return lb.name; });
         }
 
-        function toInstanceViewModels(instances, lbs, upstreams) {
+        function toInstanceViewModels(instances, lbs, upstreams, filterState) {
           if (!instances) { return null; }
           return instances.map(function (instance) {
-            var hosts = getHosts(instance, lbs, upstreams);
+            var hosts = getHosts(instance, lbs, upstreams, filterState);
             return {
               ip: instance.PrivateIpAddress,
               name: instance.Name,
@@ -36,9 +43,12 @@ angular.module('EnvironmentManager.environments')
           });
         }
 
-        function getHosts(instance, lbs, upstreams) {
+        function getHosts(instance, lbs, upstreams, filterState) {
           var hosts = getHostsForInstance(instance, lbs);
-          return toViewableHosts(hosts, upstreams);
+          return toViewableHosts(hosts, upstreams).filter(function (host) {
+            if (filterState === 'All') { return true; }
+            return host.state === filterState.toLowerCase();
+          });
         }
 
         function getHostsForInstance(instance, lbs) {

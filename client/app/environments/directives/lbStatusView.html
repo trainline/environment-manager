@@ -1,3 +1,15 @@
+<form id="SearchFilter" class="form-inline">
+    <div class="form-group">
+        <label class="control-label text-left">Configured State:</label>
+    </div>
+    <div class="form-group">
+        <select class="form-control" ng-model="selectedState" ng-change="updateView()">
+            <option ng-repeat="s in statesList" ng-selected="{{s == selectedState}}" value="{{s}}">{{s}}</option>
+        </select>
+    </div>
+</form>
+<hr />
+
 <div ng-show="!vm.instances || vm.instances.length == 0">
   <p>No matching servers found.</p>
 </div>
