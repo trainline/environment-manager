@@ -8,7 +8,7 @@ angular.module('EnvironmentManager.common')
       scope: {
         data: '<'
       },
-      templateUrl: '/app/common/directives/lbStatusView.html',
+      templateUrl: '/app/environments/directives/lbStatusView.html',
       controller: function ($scope, $rootScope, $attrs) {
 
         $scope.$watch('data', function(data) {
