@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
@@ -39,9 +41,6 @@ app.config(function ($httpProvider, $locationProvider, $qProvider) {
   // Set default put request content type to JSON
   $httpProvider.defaults.headers.put['Content-Type'] = 'application/json;charset=utf-8';
 
-  // Suppress 'possibly unhandled rejection' errors
-  $qProvider.errorOnUnhandledRejections(false);
-
   // Set up error pop up on HTTP errors
   $httpProvider.interceptors.push(function ($q, $rootScope) {
     return {
@@ -64,3 +63,4 @@ app.run(function ($rootScope, $timeout) {
     $rootScope.$broadcast('cookie-expired');
   }, (window.user.getExpiration() - new Date().getTime()));
 });
+
