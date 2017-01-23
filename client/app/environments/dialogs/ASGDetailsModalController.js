@@ -193,11 +193,9 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       var env = parameters.environment.EnvironmentName;
       var params = { account: 'all' };
 
-      return getDummyUpstreamsData().then(function(upstreams) {
-      //return resources.config.lbUpstream.all(params).then(function(upstreams) {
+      return resources.config.lbUpstream.all(params).then(function(upstreams) {
         return vm.getLBData(env).then(function(lbs) {
-          var instances = getDummyInstances();
-          //var instances = vm.asgState.Instances;
+          var instances = vm.asgState.Instances;
 
           vm.upstreamStatusData.lbs = lbs;
           vm.upstreamStatusData.upstreams = upstreams;
@@ -208,12 +206,10 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
     vm.getLBData = function(env) {
       return accountMappingService.getEnvironmentLoadBalancers(env).then(function(lbNames){
-        lbNames = getDummyLbNames(); //
         return $q.all(lbNames.map(function(lbName){
           var url = ['api', 'v1', 'load-balancer', lbName].join('/');
-          return getDummyNGINXData().then(function(upstreams) {
-          //return $http.get(url).then(function (response) {
-            //var upstreams = response.data;
+          return $http.get(url).then(function (response) {
+            var upstreams = response.data;
             return {
               name: lbName,
               upstreams: upstreams
