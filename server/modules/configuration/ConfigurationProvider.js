@@ -6,19 +6,26 @@ let config = require('config/');
 let LocalConfigurationProvider = require('./LocalConfigurationProvider');
 let S3ConfigurationProvider = require('./S3ConfigurationProvider');
 let awsAccounts = require('modules/awsAccounts');
+let logger = require('modules/logger');
+
 
 module.exports = function ConfigurationProvider() {
   this.init = function () {
-    let configurationProvider;
-    if (config.get('IS_PRODUCTION')) {
-      configurationProvider = new S3ConfigurationProvider();
-    } else {
-      configurationProvider = new LocalConfigurationProvider();
+    let configurationProvider = (() => {
+      if (config.get('IS_PRODUCTION')) {
+        return new S3ConfigurationProvider();
+      } else {
+        return new LocalConfigurationProvider();
+      }
+    })();
+
+    function loadConfiguration() {
+      return configurationProvider.get()
+        .then(configuration => config.setUserValue('local', configuration), logger.error.bind(logger));
     }
 
     return awsAccounts.getMasterAccount()
       .then(account => config.setUserValue('masterAccountName', account.AccountName))
-      .then(configurationProvider.get)
-      .then(configuration => config.setUserValue('local', configuration));
+      .then(loadConfiguration());
   };
 };

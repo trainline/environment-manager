@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 angular.module('EnvironmentManager.configuration').controller('PickAmiController',
   function ($scope, $uibModalInstance, awsService, currentAmi, context) {
     var vm = this;
@@ -114,3 +116,4 @@ angular.module('EnvironmentManager.configuration').controller('PickAmiController
 
     init();
   });
+

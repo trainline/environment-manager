@@ -33,6 +33,7 @@ module.exports = {
     "vars-on-top": 'off',
     "no-plusplus": 'off',
     "no-param-reassign": ['error', { props: false }],
-    "no-use-before-define": 'off'
+    "no-use-before-define": 'off',
+    "no-warning-comments": 1
   },
 };
