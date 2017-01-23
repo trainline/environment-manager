@@ -126,6 +126,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
     vm.refresh = function (onInitialization) {
       vm.dataLoading = true;
+      vm.loadingUpstreamStatus = true;
 
       $q.all([
         serviceDiscovery.getASGState(parameters.environment.EnvironmentName, parameters.groupName),
@@ -174,7 +175,9 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
           }
 
           vm.currentDistribution = asgDistributionService.calcDistribution(vm.deploymentAzsList, vm.asg);
-          vm.getLBStatus();
+          vm.getLBStatus().finally(function(){
+            vm.loadingUpstreamStatus = false;
+          });
 
           vm.dataLoading = false;
         }).then(function () {
