@@ -40,7 +40,7 @@ var expectedConfiguration = {
   serverRole: { FleetPerSlice: false }
 };
 
-describe.only('ProvideInfrastructureCommandHandler:', () => {
+describe('ProvideInfrastructureCommandHandler:', () => {
   let mocks;
 
   function createTarget() {
