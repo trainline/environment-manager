@@ -4,9 +4,8 @@
 let should = require('should');
 let sinon = require('sinon');
 let sinonHelper = require('test/utils/sinonHelper');
-let guid = require('node-uuid');
-
 let proxyquire = require('proxyquire');
+let assert = require('assert');
 
 let LaunchConfigurationAlreadyExistsError = require('modules/errors/LaunchConfigurationAlreadyExistsError.class');
 let AutoScalingGroupAlreadyExistsError = require('modules/errors/AutoScalingGroupAlreadyExistsError.class');
@@ -24,7 +23,7 @@ var deployment = new Deployment({
   serverRoleName: 'Web',
   serviceName: SERVICE_NAME,
   serviceVersion: '1.2.3',
-  serviceSlice: '',
+  serviceSlice: 'blue',
   clusterName: 'Tango',
   accountName: ACCOUNT_NAME,
   username: 'test-user',
@@ -38,9 +37,10 @@ var COMMAND = {
 
 var expectedConfiguration = {
   environmentName: ENVIRONMENT_NAME,
+  serverRole: { FleetPerSlice: false }
 };
 
-describe('ProvideInfrastructureCommandHandler:', () => {
+describe.only('ProvideInfrastructureCommandHandler:', () => {
   let mocks;
 
   function createTarget() {
@@ -49,14 +49,14 @@ describe('ProvideInfrastructureCommandHandler:', () => {
         get: sinon.stub().returns(Promise.resolve()),
       },
       launchConfigurationTemplatesProvider: {
-        get: sinon.stub().returns(Promise.resolve()),
+        get: sinon.stub().returns(Promise.resolve([])),
       },
       autoScalingTemplatesProvider: {
         get: sinon.stub().returns(Promise.resolve()),
       },
       sender: {
-        sendQuery: sinon.stub().returns(Promise.resolve()),
-        sendCommand: sinon.stub().returns(Promise.resolve()),
+        sendQuery: sinon.stub().returns(Promise.resolve([])),
+        sendCommand: sinon.stub().returns(Promise.resolve([])),
       },
     };
 
@@ -68,6 +68,46 @@ describe('ProvideInfrastructureCommandHandler:', () => {
     });
     return mod;
   }
+
+  describe('Multi ASG mode deployment', () => {
+    let promise = null;
+
+    const BLUE_ASG = 'pr1-ta-Web-blue';
+    const GREEN_ASG = 'pr1-ta-Web-green';
+
+    before(() => {
+      let target = createTarget();
+      expectedConfiguration.serverRole.FleetPerSlice = true;
+
+      mocks.infrastructureConfigurationProvider.get
+        .returns(Promise.resolve(expectedConfiguration));
+
+      mocks.autoScalingTemplatesProvider.get
+        .returns(Promise.resolve([{autoScalingGroupName:GREEN_ASG}, {autoScalingGroupName:BLUE_ASG}]));
+
+      promise = target(COMMAND);
+    });
+
+    after(() => {
+      expectedConfiguration.serverRole.FleetPerSlice = false;
+    });
+
+    it('should only query the target ASG', () =>
+      promise.then(() => {
+        let scanASGsQuery = mocks.sender.sendQuery.getCalls()[0].args[0].query;
+        assert.equal(scanASGsQuery.autoScalingGroupNames.length, 1);
+        assert.equal(scanASGsQuery.autoScalingGroupNames[0], BLUE_ASG);
+      })
+    );
+
+    it('should only create the target ASG', () =>
+      promise.then(() => {
+        let createASGcalls = mocks.sender.sendCommand.getCalls();
+        assert.equal(createASGcalls.length, 1);
+        assert.equal(createASGcalls[0].args[0].command.template.autoScalingGroupName, BLUE_ASG);
+      })
+    );
+  });
 
   describe('when an AutoScalingGroup and its LaunchConfiguration are expected', () => {
 
@@ -90,15 +130,15 @@ describe('ProvideInfrastructureCommandHandler:', () => {
 
         // Mocking ConfigurationProvider
         mocks.infrastructureConfigurationProvider.get
-          .returns(Promise.resolve(expectedConfiguration));
+        .returns(Promise.resolve(expectedConfiguration));
 
 
         mocks.autoScalingTemplatesProvider.get
-          .returns(Promise.resolve([expectedAutoScalingTemplate]));
+        .returns(Promise.resolve([expectedAutoScalingTemplate]));
 
         // Mocking LaunchConfigurationTemplatesProvider
         mocks.launchConfigurationTemplatesProvider.get
-          .returns(Promise.resolve([expectedLaunchConfigurationTemplate]));
+        .returns(Promise.resolve([expectedLaunchConfigurationTemplate]));
 
         // Mocking Sender
         var expectedAutoScalingGroup = {
@@ -106,11 +146,11 @@ describe('ProvideInfrastructureCommandHandler:', () => {
         };
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
-          .returns(Promise.resolve([expectedAutoScalingGroup]));
+        .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
+        .returns(Promise.resolve([expectedAutoScalingGroup]));
 
         mocks.sender.sendCommand
-          .returns(Promise.resolve());
+        .returns(Promise.resolve());
 
         promise = target(COMMAND);
 
@@ -121,35 +161,35 @@ describe('ProvideInfrastructureCommandHandler:', () => {
       })
 
       it('should get configuration for environment and service', () => {
-          mocks.infrastructureConfigurationProvider.get
-            .called.should.be.true();
+        mocks.infrastructureConfigurationProvider.get
+        .called.should.be.true();
 
-          mocks.infrastructureConfigurationProvider.get
-            .getCall(0).args.should.match([ENVIRONMENT_NAME, SERVICE_NAME]);
+        mocks.infrastructureConfigurationProvider.get
+        .getCall(0).args.should.match([ENVIRONMENT_NAME, SERVICE_NAME]);
       });
 
       it('should get AutoScaling templates for configuration', () => {
         mocks.autoScalingTemplatesProvider.get
-          .called.should.be.true();
+        .called.should.be.true();
 
         mocks.autoScalingTemplatesProvider.get
-          .getCall(0).args.should.match([expectedConfiguration, ACCOUNT_NAME]);
+        .getCall(0).args.should.match([expectedConfiguration, ACCOUNT_NAME]);
       });
 
       it('should not get LaunchConfiguration templates', () => {
         mocks.launchConfigurationTemplatesProvider.get
-          .called.should.be.false()
+        .called.should.be.false()
       });
 
       it('should check the AutoScalingGroup presence', () => {
-          let calls = sinonHelper.getCalls(mocks.sender.sendQuery);
-          calls.map(call => call.args[0]).should.matchAny({
-            query: {
-              name: 'ScanAutoScalingGroups',
-              accountName: ACCOUNT_NAME,
-              autoScalingGroupNames: [expectedAutoScalingTemplate.autoScalingGroupName],
-            },
-          });
+        let calls = sinonHelper.getCalls(mocks.sender.sendQuery);
+        calls.map(call => call.args[0]).should.matchAny({
+          query: {
+            name: 'ScanAutoScalingGroups',
+            accountName: ACCOUNT_NAME,
+            autoScalingGroupNames: [expectedAutoScalingTemplate.autoScalingGroupName],
+          },
+        });
       });
 
       it('should not check the LaunchConfiguration presence', () => {
@@ -187,27 +227,27 @@ describe('ProvideInfrastructureCommandHandler:', () => {
         // Mocking ConfigurationProvider
 
         mocks.infrastructureConfigurationProvider.get
-          .returns(Promise.resolve(expectedConfiguration));
+        .returns(Promise.resolve(expectedConfiguration));
 
         // Mocking AutoScalingTemplatesProvider
 
         mocks.autoScalingTemplatesProvider.get
-          .returns(Promise.resolve([expectedAutoScalingTemplate]));
+        .returns(Promise.resolve([expectedAutoScalingTemplate]));
 
         // Mocking LaunchConfigurationTemplatesProvider
 
         mocks.launchConfigurationTemplatesProvider.get
-          .returns(Promise.resolve([expectedLaunchConfigurationTemplate]));
+        .returns(Promise.resolve([expectedLaunchConfigurationTemplate]));
 
         // Mocking Sender
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
-          .returns(Promise.resolve([]));
+        .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
+        .returns(Promise.resolve([]));
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
-          .returns(Promise.resolve([]));
+        .withArgs(sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
+        .returns(Promise.resolve([]));
 
         mocks.sender.sendCommand.returns(Promise.resolve());
 
@@ -219,7 +259,7 @@ describe('ProvideInfrastructureCommandHandler:', () => {
         promise.then(() => {
           mocks.autoScalingTemplatesProvider.get.called.should.be.true();
           mocks.autoScalingTemplatesProvider.get.getCall(0).args
-            .should.match([expectedConfiguration, ACCOUNT_NAME]);
+          .should.match([expectedConfiguration, ACCOUNT_NAME]);
 
         })
 
@@ -262,21 +302,21 @@ describe('ProvideInfrastructureCommandHandler:', () => {
         promise.then(() => {
           mocks.launchConfigurationTemplatesProvider.get.called.should.be.true();
           mocks.launchConfigurationTemplatesProvider.get.getCall(0).args
-            .should.match([expectedConfiguration, ACCOUNT_NAME]);
+          .should.match([expectedConfiguration, ACCOUNT_NAME]);
         })
       );
 
       it('should provide a new LaunchConfiguration by template', () =>
         promise.then(() => {
           mocks.sender.sendCommand.getCall(0).args[0]
-            .should.match({
-              command: {
-                name: 'CreateLaunchConfiguration',
-                accountName: ACCOUNT_NAME,
-                template: expectedLaunchConfigurationTemplate,
-              },
-              parent: COMMAND,
-            });
+          .should.match({
+            command: {
+              name: 'CreateLaunchConfiguration',
+              accountName: ACCOUNT_NAME,
+              template: expectedLaunchConfigurationTemplate,
+            },
+            parent: COMMAND,
+          });
         })
       );
 
@@ -284,13 +324,13 @@ describe('ProvideInfrastructureCommandHandler:', () => {
 
         promise.then(() => {
           mocks.sender.sendCommand.getCall(1).args[0]
-            .should.match({
-              command: {
-                name: 'CreateAutoScalingGroup',
-                accountName: ACCOUNT_NAME,
-                template: expectedAutoScalingTemplate,
-              },
-            });
+          .should.match({
+            command: {
+              name: 'CreateAutoScalingGroup',
+              accountName: ACCOUNT_NAME,
+              template: expectedAutoScalingTemplate,
+            },
+          });
         })
 
       );
@@ -309,11 +349,11 @@ describe('ProvideInfrastructureCommandHandler:', () => {
 
         // Mocking ConfigurationProvider
         mocks.infrastructureConfigurationProvider.get
-          .returns(Promise.resolve(expectedConfiguration));
+        .returns(Promise.resolve(expectedConfiguration));
 
         // Mocking AutoScalingTemplatesProvider
         mocks.autoScalingTemplatesProvider.get
-          .returns(Promise.resolve([expectedAutoScalingTemplate]));
+        .returns(Promise.resolve([expectedAutoScalingTemplate]));
 
         // Mocking LaunchConfigurationTemplatesProvider
         var expectedLaunchConfigurationTemplate = {
@@ -321,7 +361,7 @@ describe('ProvideInfrastructureCommandHandler:', () => {
         };
 
         mocks.launchConfigurationTemplatesProvider.get
-          .returns(Promise.resolve([expectedLaunchConfigurationTemplate]));
+        .returns(Promise.resolve([expectedLaunchConfigurationTemplate]));
 
         // Mocking Sender
         var expectedLaunchConfiguration = {
@@ -329,12 +369,12 @@ describe('ProvideInfrastructureCommandHandler:', () => {
         };
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
-          .returns(Promise.resolve([]));
+        .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
+        .returns(Promise.resolve([]));
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
-          .returns(Promise.resolve([expectedLaunchConfiguration]));
+        .withArgs(sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
+        .returns(Promise.resolve([expectedLaunchConfiguration]));
 
         mocks.sender.sendCommand.returns(Promise.resolve());
 
@@ -349,7 +389,7 @@ describe('ProvideInfrastructureCommandHandler:', () => {
           mocks.autoScalingTemplatesProvider.get.called.should.be.true();
 
           mocks.autoScalingTemplatesProvider.get.getCall(0).args
-            .should.match([expectedConfiguration, ACCOUNT_NAME]);
+          .should.match([expectedConfiguration, ACCOUNT_NAME]);
 
         })
 
@@ -448,34 +488,34 @@ describe('ProvideInfrastructureCommandHandler:', () => {
         // Mocking ConfigurationProvider
 
         mocks.infrastructureConfigurationProvider.get
-          .returns(Promise.resolve(expectedConfiguration));
+        .returns(Promise.resolve(expectedConfiguration));
 
         // Mocking AutoScalingTemplatesProvider
 
 
         mocks.autoScalingTemplatesProvider.get
-          .returns(Promise.resolve([expectedAutoScalingTemplate]));
+        .returns(Promise.resolve([expectedAutoScalingTemplate]));
 
         // Mocking LaunchConfigurationTemplatesProvider
 
         mocks.launchConfigurationTemplatesProvider.get
-          .returns(Promise.resolve([expectedLaunchConfigurationTemplate]));
+        .returns(Promise.resolve([expectedLaunchConfigurationTemplate]));
 
         // Mocking Sender
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
-          .returns(Promise.resolve([]));
+        .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
+        .returns(Promise.resolve([]));
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
-          .returns(Promise.resolve([]));
+        .withArgs(sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
+        .returns(Promise.resolve([]));
 
         mocks.sender.sendCommand.returns(Promise.resolve());
 
         mocks.sender.sendCommand
-          .withArgs(sinon.match({ command: { name: 'CreateLaunchConfiguration' } }))
-          .returns(Promise.reject(new LaunchConfigurationAlreadyExistsError()));
+        .withArgs(sinon.match({ command: { name: 'CreateLaunchConfiguration' } }))
+        .returns(Promise.reject(new LaunchConfigurationAlreadyExistsError()));
 
         promise = target(COMMAND);
 
@@ -516,12 +556,12 @@ describe('ProvideInfrastructureCommandHandler:', () => {
         // Mocking ConfigurationProvider
 
         mocks.infrastructureConfigurationProvider.get
-          .returns(Promise.resolve(expectedConfiguration));
+        .returns(Promise.resolve(expectedConfiguration));
 
         // Mocking AutoScalingTemplatesProvider
 
         mocks.autoScalingTemplatesProvider.get
-          .returns(Promise.resolve([expectedAutoScalingTemplate]));
+        .returns(Promise.resolve([expectedAutoScalingTemplate]));
 
         // Mocking LaunchConfigurationTemplatesProvider
 
@@ -530,23 +570,23 @@ describe('ProvideInfrastructureCommandHandler:', () => {
         };
 
         mocks.launchConfigurationTemplatesProvider.get
-          .returns(Promise.resolve([expectedLaunchConfigurationTemplate]));
+        .returns(Promise.resolve([expectedLaunchConfigurationTemplate]));
 
         // Mocking Sender
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
-          .returns(Promise.resolve([]));
+        .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
+        .returns(Promise.resolve([]));
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
-          .returns(Promise.resolve([]));
+        .withArgs(sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
+        .returns(Promise.resolve([]));
 
         mocks.sender.sendCommand.returns(Promise.resolve());
 
         mocks.sender.sendCommand
-          .withArgs(sinon.match({ command: { name: 'CreateAutoScalingGroup' } }))
-          .returns(Promise.reject(new AutoScalingGroupAlreadyExistsError()));
+        .withArgs(sinon.match({ command: { name: 'CreateAutoScalingGroup' } }))
+        .returns(Promise.reject(new AutoScalingGroupAlreadyExistsError()));
 
         promise = target(COMMAND);
 
@@ -592,19 +632,19 @@ describe('ProvideInfrastructureCommandHandler:', () => {
         // Mocking ConfigurationProvider
 
         mocks.infrastructureConfigurationProvider.get
-          .returns(Promise.resolve(expectedConfiguration));
+        .returns(Promise.resolve(expectedConfiguration));
 
         // Mocking AutoScalingTemplatesProvider
 
 
         mocks.autoScalingTemplatesProvider.get
-          .returns(Promise.resolve([expectedAutoScalingBlueTemplate, expectedAutoScalingGreenTemplate]));
+        .returns(Promise.resolve([expectedAutoScalingBlueTemplate, expectedAutoScalingGreenTemplate]));
 
         mocks.launchConfigurationTemplatesProvider.get
-          .returns(Promise.resolve([
-            expectedLaunchConfigurationBlueTemplate,
-            expectedLaunchConfigurationGreenTemplate,
-          ]));
+        .returns(Promise.resolve([
+          expectedLaunchConfigurationBlueTemplate,
+          expectedLaunchConfigurationGreenTemplate,
+        ]));
 
         // Mocking Sender
 
@@ -617,11 +657,11 @@ describe('ProvideInfrastructureCommandHandler:', () => {
         };
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
-          .returns(Promise.resolve([
-            expectedAutoScalingGroupBlue,
-            expectedAutoScalingGroupGreen,
-          ]));
+        .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
+        .returns(Promise.resolve([
+          expectedAutoScalingGroupBlue,
+          expectedAutoScalingGroupGreen,
+        ]));
 
         mocks.sender.sendCommand.returns(Promise.resolve());
 
@@ -711,19 +751,19 @@ describe('ProvideInfrastructureCommandHandler:', () => {
         // Mocking ConfigurationProvider
 
         mocks.infrastructureConfigurationProvider.get
-          .returns(Promise.resolve(expectedConfiguration));
+        .returns(Promise.resolve(expectedConfiguration));
 
         mocks.autoScalingTemplatesProvider.get
-          .returns(Promise.resolve([
-            expectedAutoScalingBlueTemplate,
-            expectedAutoScalingGreenTemplate,
-          ]));
+        .returns(Promise.resolve([
+          expectedAutoScalingBlueTemplate,
+          expectedAutoScalingGreenTemplate,
+        ]));
 
         mocks.launchConfigurationTemplatesProvider.get
-          .returns(Promise.resolve([
-            expectedLaunchConfigurationBlueTemplate,
-            expectedLaunchConfigurationGreenTemplate,
-          ]));
+        .returns(Promise.resolve([
+          expectedLaunchConfigurationBlueTemplate,
+          expectedLaunchConfigurationGreenTemplate,
+        ]));
 
         // Mocking Sender
 
@@ -736,12 +776,12 @@ describe('ProvideInfrastructureCommandHandler:', () => {
         };
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
-          .returns(Promise.resolve([expectedAutoScalingGroupBlue]));
+        .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
+        .returns(Promise.resolve([expectedAutoScalingGroupBlue]));
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
-          .returns(Promise.resolve([expectedLaunchConfigurationBlue]));
+        .withArgs(sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
+        .returns(Promise.resolve([expectedLaunchConfigurationBlue]));
 
         mocks.sender.sendCommand.returns(Promise.resolve());
 
@@ -853,29 +893,29 @@ describe('ProvideInfrastructureCommandHandler:', () => {
 
         // Mocking ConfigurationProvider
         mocks.infrastructureConfigurationProvider.get
-          .returns(Promise.resolve(expectedConfiguration));
+        .returns(Promise.resolve(expectedConfiguration));
 
         mocks.autoScalingTemplatesProvider.get
-          .returns(Promise.resolve([
-            expectedAutoScalingBlueTemplate,
-            expectedAutoScalingGreenTemplate,
-          ]));
+        .returns(Promise.resolve([
+          expectedAutoScalingBlueTemplate,
+          expectedAutoScalingGreenTemplate,
+        ]));
 
         mocks.launchConfigurationTemplatesProvider.get
-          .returns(Promise.resolve([
-            expectedLaunchConfigurationBlueTemplate,
-            expectedLaunchConfigurationGreenTemplate,
-          ]));
+        .returns(Promise.resolve([
+          expectedLaunchConfigurationBlueTemplate,
+          expectedLaunchConfigurationGreenTemplate,
+        ]));
 
         // Mocking Sender
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
-          .returns(Promise.resolve([]));
+        .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
+        .returns(Promise.resolve([]));
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
-          .returns(Promise.resolve([]));
+        .withArgs(sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
+        .returns(Promise.resolve([]));
 
         mocks.sender.sendCommand.returns(Promise.resolve());
         promise = target(COMMAND);
