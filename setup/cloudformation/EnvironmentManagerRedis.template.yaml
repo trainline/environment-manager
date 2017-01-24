@@ -1,0 +1,36 @@
+AWSTemplateFormatVersion: "2010-09-09"
+# A template for a stack that contains an ElastiCache Redis Cluster.
+Description: Environment Manager Resources
+Parameters:
+  pRedisSubnetGroupName:
+    Type: "String"
+    Description: Redis Cluster Subnet Group
+  pRedisSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup::Id"
+    Description: Redis Cluster Security Group
+  pRedisPort:
+    Description: Redis port number
+    Type: String
+    Default: "6379"
+Resources:
+  redisEnvironmentManager:
+    Type: "AWS::ElastiCache::CacheCluster"
+    Properties:
+      CacheNodeType: cache.t2.micro
+      CacheSubnetGroupName: !Ref pRedisSubnetGroupName
+      Engine: redis
+      NumCacheNodes: "1"
+      Port: !Ref pRedisPort
+      Tags:
+        - Key: Role
+          Value: EnvironmentManager
+      VpcSecurityGroupIds:
+        - !Ref pRedisSecurityGroup
+Outputs:
+  RedisAddress:
+    Description: Redis Address
+    Value:
+      !GetAtt redisEnvironmentManager.RedisEndpoint.Address
+  RedisPort:
+    Description: Redis Port
+    Value: !GetAtt redisEnvironmentManager.RedisEndpoint.Port

@@ -39,6 +39,10 @@ header {
   hr { margin-right: 10px; }
   #SelectEnvironment { width: 150px; margin-bottom: 10px; }
   .selector { width: 150px; margin-bottom: 10px; }
+
+  .env-deploy {
+    margin-top: 16px;
+  }
 }
 
 #content {
@@ -195,7 +199,22 @@ td.actions-button a { color: inherit; }
 .status-success { color: green; }
 .status-in-progress { color: blue; }
 .status-failed, .status-Failed { color: rgb(169, 68, 66); }
+.status-not-started { color: #848484; }
 .error-description { max-height: 200px; }
+
+.empty-deployments {
+  margin: 23px 0;
+  color: #848484;
+}
+
+.deployment-status-summary {
+  margin-right: 10px;
+  margin-left: 23px;
+}
+
+.empty-deployments-summary {
+  opacity: 0.3;
+}
 
 /* Config Deployment Maps page */
 #configDeploymentMapValue { height: 500px; }
@@ -281,11 +300,6 @@ span.status-error span { color: red; }
   td { vertical-align: middle; }
   .form-control { width: auto; }
   input[name="DnsName"] { width: 350px; }
-}
-
-.env-settings-alert-settings {
-  padding: 10px 15px;
-  padding-bottom: 0px;
 }
 
 .onoffswitch {
@@ -424,7 +438,7 @@ json-diff-patch > pre { overflow-y: scroll; }
   position: relative;
   top: 4px;
 
-  &.none, &.Unknown {
+  &.none, &.unknown, &.Unknown {
     background-color: #EEEEEE;
     background-image: radial-gradient(#EEEEEE, #BBBBBB);
   }
@@ -701,15 +715,31 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
     float: right;
   }
 
-  #SearchFilter {
-    margin-top: 5px;
+  .status-summary {
+    margin-right: 10px;
+  }
+
+  .empty-summary {
+    opacity: 0.2;
+  }
+
+  .empty-servers {
+    margin: 23px 0;
+    color: #848484;
+  }
+
+  .deploy-group {
+    margin-top: -8px;
+    margin-bottom: 0;
+  }
+
+  .server-status-container {
     margin-left: 8px;
   }
 
-  .statusBar {
-    border: 1px solid #ddd;
-    height: 38px;
-    padding: 8px;
+  hr {
+    margin-top: 6px;
+    margin-bottom: 6px;
   }
 }
 

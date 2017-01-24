@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
@@ -8,7 +10,7 @@ angular.module('EnvironmentManager.configuration').controller('ServicesControlle
     var vm = this;
     var SHOW_ALL_OPTION = 'Any';
 
-    vm.itemsPerPage = 10;
+    vm.itemsPerPage = 20;
 
     vm.fullData = [];
     vm.data = [];
@@ -112,3 +114,4 @@ angular.module('EnvironmentManager.configuration').controller('ServicesControlle
 
     init();
   });
+

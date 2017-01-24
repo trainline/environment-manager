@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
@@ -17,8 +19,7 @@ angular.module('EnvironmentManager.environments').factory('serversView',
         .map(toRoleView)
         .filter(rolesMatchingSelections(selections));
 
-      var aggregateViews = toAggregationsView(data.Value);
-
+      var aggregateViews = toAggregationsView(roleViews);
       var allServerRoles = _.uniq(roles.map(function (role) {
         return role.Role;
       }));
@@ -103,7 +104,7 @@ angular.module('EnvironmentManager.environments').factory('serversView',
       };
 
       roles.forEach(function (role) {
-        result.servers[role.Status.Status.toLowerCase()].count += 1;
+        result.servers[role.serverRole.status.status.toLowerCase()].count += 1;
       });
 
       return result;
@@ -144,3 +145,4 @@ angular.module('EnvironmentManager.environments').factory('serversView',
 
     return serversView;
   });
+
