@@ -77,7 +77,6 @@ module.exports = function UserService() {
   }
 
   function getUserByToken(token) {
-    // TODO(filip): remove async use
     return new Promise((resolve, reject) => {
       let mainCallback = (err, result) => {
         if (err) reject(err);

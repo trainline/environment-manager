@@ -4,7 +4,6 @@
 
 let resourceProvider = require('modules/resourceProvider');
 
-// TODO(Filip): get rid of this
 module.exports = {
   create(parameters) {
     return resourceProvider.getInstanceByName('asgs', parameters);

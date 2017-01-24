@@ -191,7 +191,6 @@ angular.module('EnvironmentManager.common').factory('awsService',
     return new AwsService();
   });
 
-// TODO(filip): use Lodash instead
 function groupBy(fn, array) {
   array.sort(compare);
 

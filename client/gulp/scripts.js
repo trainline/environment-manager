@@ -22,7 +22,6 @@ gulp.task('scripts', function () {
 
 function buildScripts() {
   return gulp.src('app/**/*.js')
-    // TODO(filip): fix linting
     .pipe($.eslint())
     .pipe($.eslint.format())
     .pipe($.size());
