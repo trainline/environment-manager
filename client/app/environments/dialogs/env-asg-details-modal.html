@@ -54,6 +54,12 @@
       <uib-tab heading="Services" index="'services'">
         <asg-services asg="vm.asg" asg-state="vm.asgState" refresh="vm.refresh()" environment="vm.environmentName" role="vm.asg.Role" close-modal="vm.closeModal()" ng-if="vm.asgState"></asg-services>
       </uib-tab>
+      <uib-tab heading="Upstreams Status" index="'lb-status'">
+        <div ng-if="vm.loadingUpstreamStatus">
+          <p>Loading data..</p>
+        </div>
+        <lb-status-view ng-if="!vm.loadingUpstreamStatus" data="vm.upstreamStatusData"></lb-status-view>
+      </uib-tab>
       <uib-tab heading="Schedule &amp; Scaling" index="'schedule'">
         <form name="formScaling" class="form-horizontal">
           <div class="form-group">

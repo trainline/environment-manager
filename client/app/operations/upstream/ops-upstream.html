@@ -63,14 +63,14 @@
             <tbody>
                 <tr ng-repeat="host in vm.data | orderBy : ['Value.ServiceName', 'Value.DnsName']" class="upstream-slice">
                     <td ng-click="vm.showInstanceDetails(host)">
-                        {{host.Value.ServiceName || "-"}}<br/>
-                        ({{host.Value.UpstreamName}})
+                      {{host.Value.ServiceName || "-"}}<br />
+                      ({{host.Value.UpstreamName}})
                     </td>
                     <td ng-click="vm.showInstanceDetails(host)">
                       {{host.Value.OwningCluster}}
                     </td>
                     <td ng-click="vm.showInstanceDetails(host)">
-                      {{host.Value.DnsName}}
+                      {{host.Value.DnsName}}<br />
                     </td>
                     <td>
                       <span class="slice-symbol" ng-class="host.Value.Slice" style="display: inline-block;"></span>{{ host.Value.Slice | lowercase }}

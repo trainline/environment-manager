@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
@@ -13,6 +15,7 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
     vm.owningClustersList = [];
     vm.statusList = [];
     vm.selectedDeploymentId = null;
+    vm.summary = {};
 
     var dateRangeList = vm.dateRangeList = [
       { name: 'Last hour', value: 1 * enums.MILLISECONDS.PerHour },
@@ -159,3 +162,4 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
 
     init();
   });
+
