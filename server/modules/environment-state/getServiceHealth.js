@@ -12,7 +12,7 @@ let getASGState = require('./getASGState');
 let AutoScalingGroup = require('models/AutoScalingGroup');
 
 function* getServiceHealth({ environmentName, serviceName }) {
-  let service = yield serviceDiscovery.getService(environmentName, serviceName);
+  yield serviceDiscovery.getService(environmentName, serviceName);
   let serviceRoles = (yield GetServerRoles({ environmentName })).Value;
   _.each(serviceRoles, (role) => {
     role.Services = _.filter(role.Services, { Name: serviceName });

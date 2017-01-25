@@ -7,16 +7,13 @@ let co = require('co');
 let moment = require('moment');
 let logger = require('modules/logger');
 let sender = require('modules/sender');
-let Environment = require('models/Environment');
 let AutoScalingGroup = require('models/AutoScalingGroup');
 let Instance = require('models/Instance');
-let serviceDiscovery = require('modules/service-discovery');
 
 module.exports = co.wrap(ScanServersStatusQueryHandler);
 
 function* ScanServersStatusQueryHandler(query) {
   const environmentName = query.environmentName;
-  const accountName = yield Environment.getAccountNameForEnvironment(environmentName);
 
   let allStartTime = moment.utc();
 

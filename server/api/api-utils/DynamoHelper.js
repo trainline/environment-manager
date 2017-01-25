@@ -2,7 +2,6 @@
 
 'use strict';
 
-let _ = require('lodash');
 const masterAccountName = require('config').getUserValue('masterAccountName');
 const exposeAudit = 'version-only';
 

@@ -2,7 +2,6 @@
 
 'use strict';
 
-let Expression = require('./awsDynamoExpression');
 let Condition = require('./awsDynamoCondition');
 let RequestHelper = require('./awsDynamoRequestHelper');
 

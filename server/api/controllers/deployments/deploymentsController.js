@@ -7,8 +7,6 @@ let GetNodeDeploymentLog = require('queryHandlers/deployments/GetNodeDeploymentL
 let co = require('co');
 let sender = require('modules/sender');
 let Enums = require('Enums');
-let Environment = require('models/Environment');
-let s3PackageLocator = require('modules/s3PackageLocator');
 let activeDeploymentsStatusProvider = require('modules/monitoring/activeDeploymentsStatusProvider');
 let deploymentLogger = require('modules/DeploymentLogger');
 
@@ -128,7 +126,7 @@ function patchDeployment(req, res, next) {
       };
       let deploymentStatuses = yield activeDeploymentsStatusProvider.getActiveDeploymentsFullStatus([deployment]);
       let deploymentStatus = deploymentStatuses[0];
-      let result = yield deploymentLogger.updateStatus(deploymentStatus, newStatus);
+      yield deploymentLogger.updateStatus(deploymentStatus, newStatus);
       return switchDeployment(key, false, req.user);
     } else if (action !== undefined) {
       let enable;

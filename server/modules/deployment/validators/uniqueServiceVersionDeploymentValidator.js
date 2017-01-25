@@ -7,7 +7,6 @@ let ms = require('ms');
 let sender = require('modules/sender');
 let utils = require('modules/utilities');
 let DeploymentValidationError = require('modules/errors/DeploymentValidationError.class');
-let deploymentLogger = require('modules/DeploymentLogger');
 
 const DEPLOYMENT_MAXIMUM_THRESHOLD = ms('65m');
 

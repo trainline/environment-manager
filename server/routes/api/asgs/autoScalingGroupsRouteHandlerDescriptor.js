@@ -47,7 +47,7 @@ module.exports = [
     description: 'Auto Scaling Group',
     perAccount: true,
     tags: ['Auto Scaling Groups']
-  }).do((request, response, next) => {
+  }).do((request, response) => {
     let query = {
       name: 'GetAutoScalingGroup',
       accountName: request.params.account,
@@ -86,7 +86,7 @@ module.exports = [
     }
 
     return null;
-  }).do((request, response, next) => {
+  }).do((request, response) => {
     let command = {
       name: 'SetAutoScalingGroupSize',
       accountName: request.params.account,

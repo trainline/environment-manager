@@ -78,12 +78,6 @@ describe('ScanServersStatus', function() {
     }
   };
 
-  let Environment = {
-    getAccountNameForEnvironment: function () {
-      return Promise.resolve();
-    }
-  };
-
   let InstanceMock = {
     getAllByEnvironment: function () {
       return Promise.resolve([mockInstance_1, mockInstance_2]);
@@ -108,7 +102,6 @@ describe('ScanServersStatus', function() {
     sut = rewire('queryHandlers/ScanServersStatus');
     sut.__set__({
       sender,
-      Environment,
       Instance: InstanceMock,
       AutoScalingGroup: AutoScalingGroupMock
     });
