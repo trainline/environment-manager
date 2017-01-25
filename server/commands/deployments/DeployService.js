@@ -142,12 +142,17 @@ function deploy(deployment, destination, sourcePackage, command) {
 
     let newStatus = {
       name: Enums.DEPLOYMENT_STATUS.Failed,
-      reason: error.toString(true)
+      reason: sanitiseError(error)
     };
 
     deploymentLogger.updateStatus(deploymentStatus, newStatus);
     throw error;
   });
+}
+
+function sanitiseError(error) {
+  if (_.isObjectLike(error)) { return JSON.stringify(error); }
+  return error.toString(true);
 }
 
 function provideInfrastructure(accountName, deployment, parentCommand) {
