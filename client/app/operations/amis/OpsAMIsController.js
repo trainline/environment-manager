@@ -18,7 +18,7 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
 
     vm.selectedAccount = '';
 
-    vm.agesList = [1, 7, 14];
+    vm.agesList = [1, 7, 30];
 
     var querySync;
 
@@ -47,10 +47,19 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
             ami: {
               property: 'selectedAmi',
               default: ''
+            },
+            age: {
+              property: 'selectedAge',
+              default: '0'
             }
           });
 
           querySync.init();
+
+          if (vm.selectedAge === true) {
+            vm.selectedAge = '0';
+            querySync.updateQuery();
+          }
         }),
 
         cachedResources.config.clusters.all().then(function (clusters) {
@@ -98,24 +107,39 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
       querySync.updateQuery();
 
       vm.data = vm.fullData.filter(function (server) {
-        var match = true;
-
-        if ($scope.SelectedServerRole) {
+        if (vm.selectedServerRole) {
           if (!server.Role) {
-            match = false;
+            return false;
           } else {
-            match = match && angular.lowercase(server.Role).indexOf(angular.lowercase($scope.SelectedServerRole)) != -1;
+            if (angular.lowercase(server.Role).indexOf(angular.lowercase(vm.selectedServerRole)) === -1) {
+              return false;
+            }
           }
         }
 
         // AMI filter (against image ID or AMI name/version)
-        if ($scope.SelectedAmi) {
+        if (vm.selectedAmi) {
           var amiInfo = server.ImageId;
           if (server.Ami && server.Ami.Name) amiInfo += server.Ami.Name;
-          match = match && angular.lowercase(amiInfo).indexOf(angular.lowercase($scope.SelectedAmi)) != -1;
+          if (angular.lowercase(amiInfo).indexOf(angular.lowercase(vm.selectedAmi)) === -1) {
+            return false;
+          }
         }
 
-        return match;
+        var selectedAge = Number(vm.selectedAge);
+        if (selectedAge !== 0) {
+          if (server.UsingLatestAmi === true) {
+            return false;
+          }
+          // console.log(server.DaysOutOfDate);
+          if (server.DaysOutOfDate === undefined) {
+            return false;
+          } else if (server.DaysOutOfDate < selectedAge) {
+            return false;
+          }
+        }
+
+        return true;
       });
     };
 
