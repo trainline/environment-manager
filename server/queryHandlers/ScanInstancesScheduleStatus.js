@@ -2,7 +2,6 @@
 
 'use strict';
 
-let resourceProvider = require('modules/resourceProvider');
 let co = require('co');
 let _ = require('lodash');
 let sender = require('modules/sender');
