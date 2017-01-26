@@ -41,7 +41,7 @@
   <div class="form-group">
     <select class="form-control" ng-model="vm.selectedAge" ng-change="vm.updateFilter()">
       <option ng-selected="{{0 == vm.selectedAge}}" value="0">Any</option>
-      <option ng-repeat="c in vm.agesList" ng-selected="{{c == vm.selectedAge}}" value="{{c}}">Older than {{c}} days</option>
+      <option ng-repeat="c in vm.agesList" ng-selected="{{c == vm.selectedAge}}" value="{{c}}">Older than {{c}} days <span ng-if="vm.countOlderThanDays[c]">({{ vm.countOlderThanDays[c] }})</span></option>
     </select>
   </div>
 </form>
@@ -56,6 +56,9 @@
   </div>
   <div class="col-md-12" ng-if="vm.data.length > 0">
     <!-- TODO: UI Grid control -->
+    <div style="margin: 5px; margin-top: 0px">
+      {{ vm.data.length }} servers found. 
+    </div>
     <table class="table">
       <thead>
         <tr>

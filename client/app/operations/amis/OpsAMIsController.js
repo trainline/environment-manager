@@ -18,7 +18,7 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
 
     vm.selectedAccount = '';
 
-    vm.agesList = [1, 7, 30];
+    vm.agesList = [1, 7, 30, 60];
 
     var querySync;
 
@@ -103,8 +103,27 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
       });
     };
 
+    function isOlderThan(days, server) {
+      if (server.UsingLatestAmi === true) {
+        return false;
+      }
+      // console.log(server.DaysOutOfDate);
+      if (server.DaysOutOfDate === undefined) {
+        return false;
+      } else if (server.DaysOutOfDate < days) {
+        return false;
+      }
+      return true;
+    }
+
     vm.updateFilter = function () {
       querySync.updateQuery();
+
+      vm.countOlderThanDays = _.reduce(vm.agesList, function (result, value, key) {
+        result[value] = 0;
+        return result;
+      }, {});
+      vm.countOlderThanDays[0] = 0;
 
       vm.data = vm.fullData.filter(function (server) {
         if (vm.selectedServerRole) {
@@ -126,15 +145,17 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
           }
         }
 
+        vm.countOlderThanDays[0] += 1;
+
+        _.each(vm.agesList, function (days) {
+           if (isOlderThan(days, server)) {
+             vm.countOlderThanDays[days] += 1;
+           }
+        });
+
         var selectedAge = Number(vm.selectedAge);
         if (selectedAge !== 0) {
-          if (server.UsingLatestAmi === true) {
-            return false;
-          }
-          // console.log(server.DaysOutOfDate);
-          if (server.DaysOutOfDate === undefined) {
-            return false;
-          } else if (server.DaysOutOfDate < selectedAge) {
+          if (!isOlderThan(selectedAge, server)) {
             return false;
           }
         }
