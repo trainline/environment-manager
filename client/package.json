@@ -1,9 +1,12 @@
 {
   "name": "EnvironmentManager",
-  "version": "3.25.0",
+  "version": "3.25.1",
   "author": {
     "name": "Platform Development",
     "email": "platform.development@thetrainline.com"
+  },
+  "config": {
+    "git-tag-version": false
   },
   "scripts": {
     "test": "gulp test",
