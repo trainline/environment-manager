@@ -855,6 +855,15 @@ paths:
           in: query
           type: string
           required: true
+        - name: serverRole
+          in: query
+          type: string
+        - name: slice
+          in: query
+          type: string
+          enum:
+            - blue
+            - green 
       responses:
         200:
           description: The service
