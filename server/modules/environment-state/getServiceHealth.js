@@ -22,11 +22,9 @@ function* getServiceHealth({ environmentName, serviceName, slice, serverRole }) 
   serviceRoles = _.filter(serviceRoles, role => _.isEmpty(role.Services) === false);
 
   if (slice === undefined) {
-    let overallHealth = yield getOverallHealth(environmentName, serviceName, serviceRoles);
-    return overallHealth;
+    return (yield co.wrap(getOverallHealth)(environmentName, serviceName, serviceRoles));
   } else {
-    let individualHealth = yield getIndividualHealth(environmentName, serviceName, serviceRoles, slice);
-    return individualHealth;
+    return (yield co.wrap(getIndividualHealth)(environmentName, serviceName, serviceRoles, slice));
   }
 }
 
@@ -38,7 +36,7 @@ function* getIndividualHealth(environmentName, serviceName, serviceRoles, slice)
     let state;
 
     for (let asg of autoScalingGroups) {
-      state = yield getAsgState(asg, environmentName);
+      state = yield co.wrap(getAsgState)(asg, environmentName);
       let services = _.filter(state.Services, { Name: serviceName, Slice: slice }).map(s => ({
         Name: s.Name,
         InstanceCount: s.InstanceCount,
@@ -64,7 +62,7 @@ function* getOverallHealth(environmentName, serviceName, serviceRoles) {
     let state;
 
     for (let asg of autoScalingGroups) {
-      state = yield getAsgState(asg, environmentName);
+      state = yield co.wrap(getAsgState)(asg, environmentName);
       let instances = _.filter(state.Instances, instance => _.some(instance.Services, { Name: serviceName }));
       let services = _.filter(state.Services, { Name: serviceName });
 
