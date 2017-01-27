@@ -7,6 +7,9 @@
     "url": "https://github.com/trainline/environment-manager/issues",
     "email": "platform.development@thetrainline.com"
   },
+  "config": {
+    "git-tag-version": false
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/trainline/environment-manager.git"

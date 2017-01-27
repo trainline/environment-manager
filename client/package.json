@@ -5,6 +5,9 @@
     "name": "Platform Development",
     "email": "platform.development@thetrainline.com"
   },
+  "config": {
+    "git-tag-version": false
+  },
   "scripts": {
     "test": "gulp test",
     "test-ci": "gulp test -c",
