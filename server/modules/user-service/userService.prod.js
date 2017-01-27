@@ -30,8 +30,8 @@ module.exports = function UserService() {
       let userSession = yield authenticate(credentials, expiration, scope);
 
       let session = {
-        sessionId: guid.v1(),
-        user: userSession.toJson(),
+        sessionId: userSession.sessionId,
+        user: userSession.user.toJson(),
         password: md5(credentials.password)
       };
 
@@ -49,7 +49,10 @@ module.exports = function UserService() {
 
       if (session) {
         if (session.password === md5(credentials.password)) {
-          return User.parse(session.user);
+          return {
+            sessionId: session.sessionId,
+            user: User.parse(session.user)
+          };
         }
       }
 
@@ -60,7 +63,10 @@ module.exports = function UserService() {
       let groups = activeDirectoryUser.roles;
       let permissions = yield userRolesProvider.getPermissionsFor(_.union([name], groups));
 
-      return User.new(name, expiration, groups, permissions);
+      return {
+        sessionId: guid.v1(),
+        user: User.new(name, expiration, groups, permissions)
+      };
     });
   }
 
