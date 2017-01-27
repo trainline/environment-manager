@@ -7,7 +7,7 @@ let cookieAuthenticationConfiguration = require('modules/authentications/cookieA
 
 module.exports = {
   middleware(req, res, next) {
-    if (req.user && req.user.isAuthenticated()) return next();
+    if (req.user) return next();
 
     let cookie = req.cookies[cookieAuthenticationConfiguration.getCookieName()];
     if (!cookie) return next();

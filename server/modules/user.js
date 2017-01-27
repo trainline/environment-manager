@@ -13,14 +13,12 @@ var User = function(data) {
 
   var _data = {
     name: null,
-    roles: [],
     expiration: 0
   };
 
   if(data) {
     _data.name       = data.name || null;
     _data.groups     = data.groups || [];
-    _data.roles      = data.roles || [];
     _data.expiration = data.expiration || 0;
     _data.permissions = data.permissions || [];
   }
@@ -33,16 +31,8 @@ var User = function(data) {
     return _data.expiration;
   };
 
-  this.isAuthenticated = function() {
-    return _data.roles.length > 0;
-  };
-
   this.isAnonymous = function() {
     return !!_data.name;
-  };
-
-  this.isInRole = function(role) {
-    return _data.roles.indexOf(role) >= 0;
   };
 
   this.getPermissions = function () {
@@ -67,7 +57,7 @@ var User = function(data) {
   };
 
   this.toString = function() {
-    return [_data.name, _data.roles.join(';'), _data.expiration].join('|');
+    return [_data.name, _data.expiration].join('|');
   };
 
   this.toJson = function() {
@@ -86,10 +76,9 @@ if(typeof module !== 'undefined' && module.exports) {
       return new User();
     },
 
-    new: function(name, roles, expiration, groups, permissions) {
+    new: function(name, expiration, groups, permissions) {
       return new User({
         name: name,
-        roles: roles,
         expiration: expiration,
         groups: groups,
         permissions: permissions
@@ -101,7 +90,6 @@ if(typeof module !== 'undefined' && module.exports) {
 
       var user = new User({
         name: json.name,
-        roles: json.roles,
         expiration: json.expiration,
         groups: json.groups,
         permissions: json.permissions
