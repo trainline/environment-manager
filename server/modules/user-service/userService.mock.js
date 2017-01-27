@@ -15,11 +15,10 @@ module.exports = function UserService() {
     }
 
     let name = credentials.username.toLowerCase().replace('corp\\', '');
-    let roles = ['view', 'toggle', 'edit'];
     let groups = [];
     let permissions = [{ Access: 'ADMIN', Resource: '**' }];
     let expiration = getExpiration(duration);
-    let user = User.new(name, roles, expiration, groups, permissions);
+    let user = User.new(name, expiration, groups, permissions);
 
     let userJson = JSON.stringify(user.toJson());
     return Promise.resolve(new Buffer(userJson).toString('base64'));
@@ -31,7 +30,7 @@ module.exports = function UserService() {
 
     if (!data) return Promise.reject(new ActiveDirectoryError('Wrong cookie'));
 
-    return Promise.resolve(User.new(data.name, data.roles, data.expiration, data.groups, data.permissions));
+    return Promise.resolve(User.new(data.name, data.expiration, data.groups, data.permissions));
   };
 };
 
