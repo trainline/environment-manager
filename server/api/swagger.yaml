@@ -842,7 +842,7 @@ paths:
   /services/{service}/health:
     x-swagger-router-controller: servicesController
     get:
-      operationId: getServiceHealthById
+      operationId: getOverallServiceHealth
       summary: Get a currently deployed service.
       tags:
         - Service
@@ -863,7 +863,7 @@ paths:
   /services/{service}/health/{slice}:
     x-swagger-router-controller: servicesController
     get:
-      operationId: getServiceHealthById
+      operationId: getServiceHealth
       summary: Get a currently deployed service.
       tags:
         - Service
@@ -886,6 +886,7 @@ paths:
           enum:
             - blue
             - green
+            - none
       responses:
         200:
           description: The service

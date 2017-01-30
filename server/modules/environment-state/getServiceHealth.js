@@ -32,9 +32,10 @@ function* getServiceHealth({ environmentName, serviceName, slice, serverRole }) 
       let service = services[0];
       return {
         Name: service.Name,
-        InstanceCount: service.InstanceCount,
+        InstancesCount: service.InstancesCount,
         OverallHealth: service.OverallHealth,
-        HealthChecks: service.HealthChecks
+        HealthChecks: service.HealthChecks,
+        Slice: service.Slice
       };
     }
   }
