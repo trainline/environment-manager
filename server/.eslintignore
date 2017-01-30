@@ -2,6 +2,3 @@
 /deployment/**/*.*
 /node_modules/**/*.*
 /scripts/**/*.*
-/test/**/*.*
-
-
