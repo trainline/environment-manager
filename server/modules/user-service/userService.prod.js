@@ -91,20 +91,22 @@ module.exports = function UserService() {
         expiresIn: duration
       };
 
-      return createSignedWebToken(session.sessionId, sslComponents.privateKey, options);
+      let token = { sessionId: session.sessionId };
+
+      return createSignedWebToken(token, sslComponents.privateKey, options);
     });
   }
 
-  function getUserByToken(token) {
+  function getUserByToken(encryptedToken) {
     return co(function* () {
       let sslComponents = yield sslComponentsRepository.get();
       let options = {
         algorithm: 'RS256',
         ignoreExpiration: false
       };
-      let sessionId = verifyAndDecryptWebToken(token, sslComponents.certificate, options);
+      let token = verifyAndDecryptWebToken(encryptedToken, sslComponents.certificate, options);
 
-      let session = yield getSessionFromStore(sessionId);
+      let session = yield getSessionFromStore(token.sessionId);
       return User.parse(session.user);
     });
   }
