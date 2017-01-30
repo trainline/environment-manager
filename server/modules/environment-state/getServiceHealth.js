@@ -26,7 +26,7 @@ function* getServiceHealth({ environmentName, serviceName, slice, serverRole }) 
       }
       serviceRoles = _.filter(serviceRoles, { Name: filterName });
     } else if (slice !== 'none') {
-      serviceRoles = _.filter(serviceRoles, role => role.Name.endsWith(slice));
+      serviceRoles = _.filter(serviceRoles, role => role.Role.endsWith(slice));
     } else {
       throw new Error(`Multiple roles found for ${slice} ${serviceName} in ${environmentName} ${serverRole}`);
     }
