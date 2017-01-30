@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 'use strict';
 
 require('should');
@@ -128,3 +130,4 @@ describe('deployments-helper', () => {
     });
   });
 });
+
