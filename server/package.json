@@ -1,11 +1,14 @@
 {
   "name": "environmentmanager",
-  "version": "3.23.1",
+  "version": "3.26.2",
   "description": "EnvironmentManager Server",
   "homepage": "https://trainline.github.io/environment-manager/",
   "bugs": {
     "url": "https://github.com/trainline/environment-manager/issues",
     "email": "platform.development@thetrainline.com"
+  },
+  "config": {
+    "git-tag-version": false
   },
   "repository": {
     "type": "git",

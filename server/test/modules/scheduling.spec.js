@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 'use strict'
 
 const expect = require('chai').expect;

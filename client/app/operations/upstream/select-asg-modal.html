@@ -1,0 +1,13 @@
+<div class="modal-header">
+  <h2 class="text-default">Please select an ASG to view..</h2>
+</div>
+
+<div class="modal-body">
+  <ul>
+    <li ng-repeat="asg in vm.asgs"><a ng-click="vm.selectASG(asg)">{{asg}}</a></li>
+  </ul>
+</div>
+
+<div class="modal-footer">
+  <button class="btn btn-default" type="button" ng-click="vm.close()">Close</button>
+</div>

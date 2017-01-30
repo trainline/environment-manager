@@ -812,6 +812,33 @@ paths:
           description: The service
           schema:
             type: object
+  /services/{service}/asgs:
+    x-swagger-router-controller: servicesController
+    get:
+      operationId: getASGsByService
+      summary: Get the ASGs to which a service is deployed.
+      tags:
+        - Service
+      parameters:
+        - name: service
+          in: path
+          type: string
+          required: true
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: slice
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: List of ASGs
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/AWSAutoScalingGroup'
   /services/{service}/health:
     x-swagger-router-controller: servicesController
     get:
@@ -2589,6 +2616,9 @@ definitions:
         type: boolean
       AccountName:
         type: string
+      DaysBehindLatest:
+        type: integer
+        minimum: 0
   Instance:
     type: object
     properties:

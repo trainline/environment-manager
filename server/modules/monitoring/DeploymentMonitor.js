@@ -53,7 +53,7 @@ function monitorActiveDeploymentStatus(deploymentStatus) {
 
       let newStatus = {
         name: Enums.DEPLOYMENT_STATUS.Failed,
-        reason: deploymentStatus.error
+        reason: sanitiseError(deploymentStatus.error)
       };
       deploymentLogger.updateStatus(deploymentStatus, newStatus);
       return;
@@ -84,6 +84,11 @@ function monitorActiveDeploymentStatus(deploymentStatus) {
       deploymentLogger.updateStatus(deploymentStatus, newStatus);
     }
   });
+}
+
+function sanitiseError(error) {
+  if (_.isObjectLike(error)) { return JSON.stringify(error); }
+  return error.toString(true);
 }
 
 function isOverallDeploymentTimedOut(deploymentStartTime) {
