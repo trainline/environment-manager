@@ -24,7 +24,7 @@ function* getServiceHealth({ environmentName, serviceName, slice, serverRole }) 
       if (slice !== 'none') {
         filterName += `-${slice}`;
       }
-      serviceRoles = _.filter(serviceRoles, { Name: filterName });
+      serviceRoles = _.filter(serviceRoles, { Role: filterName });
     } else if (slice !== 'none') {
       serviceRoles = _.filter(serviceRoles, role => role.Role.endsWith(slice));
     } else {
