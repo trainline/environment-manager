@@ -1,6 +1,6 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
-'use strict'
+'use strict';
 
 let logger = require('modules/logger');
 let Redis = require('ioredis');
@@ -8,6 +8,7 @@ let config = require('config');
 let co = require('co');
 let fp = require('lodash/fp');
 let emCrypto = require('modules/emCrypto');
+let masterAccountClient = require('modules/amazon-client/masterAccountClient');
 
 const EM_REDIS_ADDRESS = config.get('EM_REDIS_ADDRESS');
 const EM_REDIS_PORT = config.get('EM_REDIS_PORT');
@@ -26,7 +27,7 @@ function create() {
 
 function createEncryptedRedisStore(client, cryptoKey) {
   function get(key) {
-    return client.getBuffer(key).then(value => {
+    return client.getBuffer(key).then((value) => {
       if (value === null) return null;
       return decrypt(value);
     });
@@ -47,7 +48,7 @@ function createEncryptedRedisStore(client, cryptoKey) {
   return {
     get,
     psetex
-  }
+  };
 }
 
 function connectToRedis() {
@@ -84,4 +85,4 @@ function getCryptoKey() {
 
 module.exports = {
   create
-}
+};

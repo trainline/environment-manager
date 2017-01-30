@@ -95,7 +95,7 @@ module.exports = function UserService() {
   }
 
   function getUserByToken(token) {
-    return co(function*(){
+    return co(function* () {
       let sslComponents = yield sslComponentsRepository.get();
       let options = {
         algorithm: 'RS256',
