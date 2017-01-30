@@ -130,9 +130,6 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
       Action: serviceAction
     };
   });
-
-  servicesList = [];
-
   
   // Look for services that weren't deployed to any instances
   // Since this service wasn't found 
