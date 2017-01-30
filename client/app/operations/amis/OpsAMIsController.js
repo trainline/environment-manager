@@ -107,10 +107,9 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
       if (server.UsingLatestAmi === true) {
         return false;
       }
-      // console.log(server.DaysOutOfDate);
-      if (server.DaysOutOfDate === undefined) {
+      if (server.DaysBehindLatest === undefined) {
         return false;
-      } else if (server.DaysOutOfDate < days) {
+      } else if (server.DaysBehindLatest < days) {
         return false;
       }
       return true;
