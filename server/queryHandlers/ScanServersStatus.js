@@ -192,7 +192,7 @@ function getImage(images, imageId) {
     name: image.Name,
     created: image.CreationDate,
     DaysBehindLatest: image.DaysBehindLatest,
-    isLatestStable: image.IsLatest && image.IsStable
+    isLatestStable: image.IsLatestStable
   };
 }
 
