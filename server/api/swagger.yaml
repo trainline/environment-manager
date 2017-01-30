@@ -2648,6 +2648,9 @@ definitions:
         type: boolean
       AccountName:
         type: string
+      DaysBehindLatest:
+        type: integer
+        minimum: 0
   Instance:
     type: object
     properties:
