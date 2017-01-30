@@ -19,7 +19,13 @@ function* getServiceHealth({ environmentName, serviceName, slice, serverRole }) 
   serviceRoles = _.filter(serviceRoles, role => _.isEmpty(role.Services) === false);
 
   if (serviceRoles.length > 1 && serverRole === undefined) {
-    throw new Error('You must specify a serverRole for services in multiple roles.');
+    return {
+      title: 'Multiple service roles found',
+      slice,
+      serviceName,
+      environmentName,
+      serviceRoles
+    };
   }
   let role = serviceRoles[0];
   let autoScalingGroups = yield AutoScalingGroup.getAllByServerRoleName(environmentName, role.Role);
