@@ -103,7 +103,6 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
         return serviceOnInstance.OverallHealth === 'Healthy';
       }
       return false;
-
     });
 
     let serviceHealthChecks = getServiceChecksInfo(serviceObjects);
@@ -130,9 +129,8 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
       Action: serviceAction
     };
   });
-  
-  // Look for services that weren't deployed to any instances
-  // Since this service wasn't found 
+
+  // Look for services that weren't deployed to any of the instances on ASG, but are in target state.
   _.each(targetServiceStates, (targetService) => {
     if (_.find(servicesList, { Name: targetService.Name, Slice: targetService.Slice }) === undefined) {
       let serviceAction = targetService.Action || SERVICE_INSTALL;
