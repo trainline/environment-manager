@@ -18,15 +18,20 @@ function* getServiceHealth({ environmentName, serviceName, slice, serverRole }) 
   // Remove from the list roles that don't contain requested service
   serviceRoles = _.filter(serviceRoles, role => _.isEmpty(role.Services) === false);
 
-  if (serviceRoles.length > 1 && serverRole === undefined) {
-    return {
-      title: 'Multiple service roles found',
-      slice,
-      serviceName,
-      environmentName,
-      serviceRoles
-    };
+  if (serviceRoles.length > 1) {
+    if (serverRole !== undefined) {
+      let filterName = serverRole;
+      if (slice !== 'none') {
+        filterName += `-${slice}`;
+      }
+      serviceRoles = _.filter(serviceRoles, { Name: filterName });
+    } else if (slice !== 'none') {
+      serviceRoles = _.filter(serviceRoles, role => role.Name.endsWith(slice));
+    } else {
+      throw new Error(`Multiple roles found for ${slice} ${serviceName} in ${environmentName} ${serverRole}`);
+    }
   }
+
   let role = serviceRoles[0];
   let autoScalingGroups = yield AutoScalingGroup.getAllByServerRoleName(environmentName, role.Role);
 
