@@ -6,7 +6,8 @@ let serviceDiscovery = require('modules/service-discovery');
 let getSlices = require('queryHandlers/slices/GetSlicesByService');
 let ScanInstances = require('queryHandlers/ScanInstances');
 let toggleSlices = require('commands/slices/ToggleSlicesByService');
-let getServiceHealth = require('modules/environment-state/getServiceHealth');
+let serviceHealth = require('modules/environment-state/getServiceHealth');
+let overallServiceHealth = require('modules/environment-state/getOverallServiceHealth');
 let metadata = require('commands/utils/metadata');
 let Environment = require('models/Environment');
 
@@ -64,13 +65,23 @@ function getServiceById(req, res, next) {
 /**
  * GET /services/{service}/health
  */
-function getServiceHealthById(req, res, next) {
+function getOverallServiceHealth(req, res, next) {
+  const environmentName = req.swagger.params.environment.value;
+  const serviceName = req.swagger.params.service.value;
+
+  return overallServiceHealth({ environmentName, serviceName }).then(data => res.json(data)).catch(next);
+}
+
+/**
+ * GET /services/{service}/health/{slice}
+ */
+function getServiceHealth(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
   const serviceName = req.swagger.params.service.value;
   const slice = req.swagger.params.slice.value;
   const serverRole = req.swagger.params.serverRole.value;
 
-  return getServiceHealth({ environmentName, serviceName, slice, serverRole }).then(data => res.json(data)).catch(next);
+  return serviceHealth({ environmentName, serviceName, slice, serverRole }).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -83,7 +94,6 @@ function getServiceSlices(req, res, next) {
 
   return getSlices({ environmentName, serviceName, active }).then(data => res.json(data)).catch(next);
 }
-
 /**
  * PUT /services/{service}/toggle
  */
@@ -98,7 +108,8 @@ function putServiceSlicesToggle(req, res, next) {
 module.exports = {
   getServices,
   getServiceById,
-  getServiceHealthById,
+  getServiceHealth,
+  getOverallServiceHealth,
   getServiceSlices,
   getASGsByService,
   putServiceSlicesToggle

@@ -855,15 +855,37 @@ paths:
           in: query
           type: string
           required: true
+      responses:
+        200:
+          description: The service
+          schema:
+            type: object
+  /services/{service}/health/{slice}:
+    x-swagger-router-controller: servicesController
+    get:
+      operationId: getServiceHealthById
+      summary: Get a currently deployed service.
+      tags:
+        - Service
+      parameters:
+        - name: service
+          in: path
+          type: string
+          required: true
+        - name: environment
+          in: query
+          type: string
+          required: true
         - name: serverRole
           in: query
           type: string
         - name: slice
-          in: query
+          in: path
           type: string
+          required: true
           enum:
             - blue
-            - green 
+            - green
       responses:
         200:
           description: The service
