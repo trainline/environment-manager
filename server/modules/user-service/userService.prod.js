@@ -13,6 +13,7 @@ let activeDirectoryAdapter = require('modules/active-directory-adapter');
 let logger = require('modules/logger');
 let md5 = require('md5');
 let EncryptedRedisStore = require('modules/data-access/encryptedRedisStore');
+let Promise = require('bluebird');
 
 module.exports = function UserService() {
   let sslComponentsRepository = new (require('modules/sslComponentsRepository'))();
