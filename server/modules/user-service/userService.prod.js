@@ -15,7 +15,7 @@ let md5 = require('md5');
 let EncryptedRedisStore = require('modules/data-access/encryptedRedisStore');
 
 module.exports = function UserService() {
-  let sslComponentsRepository = new (require('modules/sslComponentsRepository.mock'))();  // TODO: Remove .mock
+  let sslComponentsRepository = new (require('modules/sslComponentsRepository'))();
   let redisStore;
 
   this.authenticateUser = authenticateUser;
@@ -90,7 +90,7 @@ module.exports = function UserService() {
         expiresIn: duration
       };
 
-      return session.sessionId; //jsonwebtoken.sign(session.sessionId, sslComponents.privateKey, options);
+      return createSignedWebToken(session.sessionId, sslComponents.privateKey, options);
     });
   }
 
@@ -101,12 +101,15 @@ module.exports = function UserService() {
         algorithm: 'RS256',
         ignoreExpiration: false
       };
-      let sessionId = token; //jsonwebtoken.verify(token, sslComponents.certificate, options, callback); // Promisify
+      let sessionId = verifyAndDecryptWebToken(token, sslComponents.certificate, options);
 
       let session = yield getSessionFromStore(sessionId);
       return User.parse(session.user);
     });
   }
+
+  let createSignedWebToken = jsonwebtoken.sign;
+  let verifyAndDecryptWebToken = Promise.promisify(jsonwebtoken.verify);
 
   function getExpiration(durationMs) {
     let dateNow = new Date();
@@ -117,7 +120,7 @@ module.exports = function UserService() {
   function storeSession(session, scope, duration) {
     return co(function* () {
       let store = yield getStore();
-      yield store.psetex(getSessionKey(session.sessionId), duration, JSON.stringify(session));
+      yield store.psetex(getSessionKey(session.sessionId), duration, session);
       yield store.psetex(getLatestSessionIdForUserAndScope(session.user.name, scope), duration, session.sessionId);
     });
   }
@@ -126,8 +129,7 @@ module.exports = function UserService() {
     return co(function* () {
       let sessionKey = getSessionKey(sessionId);
       let store = yield getStore();
-      let session = yield store.get(sessionKey);
-      return JSON.parse(session);
+      return yield store.get(sessionKey);
     });
   }
 

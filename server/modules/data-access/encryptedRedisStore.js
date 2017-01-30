@@ -6,6 +6,8 @@ let logger = require('modules/logger');
 let Redis = require('ioredis');
 let config = require('config');
 let co = require('co');
+let fp = require('lodash/fp');
+let emCrypto = require('modules/emCrypto');
 
 const EM_REDIS_ADDRESS = config.get('EM_REDIS_ADDRESS');
 const EM_REDIS_PORT = config.get('EM_REDIS_PORT');
@@ -24,11 +26,22 @@ function create() {
 
 function createEncryptedRedisStore(client, cryptoKey) {
   function get(key) {
-    return client.get(key);
+    return client.getBuffer(key).then(value => {
+      if (value === null) return null;
+      return decrypt(value);
+    });
   }
 
   function psetex(key, ttl, value) {
-    return client.psetex(key, ttl, value);
+    return client.psetexBuffer(key, ttl, encrypt(value));
+  }
+
+  function encrypt(plaintext) {
+    return emCrypto.encrypt(cryptoKey, new Buffer(JSON.stringify(plaintext)));
+  }
+
+  function decrypt(ciphertext) {
+    return JSON.parse(emCrypto.decrypt(cryptoKey, ciphertext).toString());
   }
 
   return {
