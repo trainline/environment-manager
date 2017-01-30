@@ -12,11 +12,11 @@ let userRolesProvider = new (require('modules/userRolesProvider'))();
 let activeDirectoryAdapter = require('modules/active-directory-adapter');
 let logger = require('modules/logger');
 let md5 = require('md5');
-let Redis = require('ioredis');
-let store = new Redis(); // Todo: Replace with factory.
+let EncryptedRedisStore = require('modules/data-access/encryptedRedisStore');
 
 module.exports = function UserService() {
   let sslComponentsRepository = new (require('modules/sslComponentsRepository.mock'))();  // TODO: Remove .mock
+  let redisStore;
 
   this.authenticateUser = authenticateUser;
   this.getUserByToken = getUserByToken;
@@ -35,7 +35,7 @@ module.exports = function UserService() {
         password: md5(credentials.password)
       };
 
-      yield storeUserSession(session, scope, durationInMillis);
+      yield storeSession(session, scope, durationInMillis);
       return yield createSessionToken(session, duration);
     }).catch((err) => {
       logger.error(err);
@@ -56,7 +56,6 @@ module.exports = function UserService() {
         }
       }
 
-      // Calls the ActiveDirectory adapter to authorize the user by their credentials.
       let activeDirectoryUser = yield activeDirectoryAdapter.authorizeUser(credentials);
 
       let name = activeDirectoryUser.name;
@@ -72,17 +71,14 @@ module.exports = function UserService() {
 
   function getExistingSessionForUser(credentials, scope) {
     return co(function* () {
-      let userScopeSessionKey = getSessionTokenKeyForUserAndScope(credentials.username, scope);
-      let token = yield store.get(userScopeSessionKey);
-      if (token) {
-        return yield getUserSessionFromStore(token);
+      let store = yield getStore();
+      let userScopeSessionKey = getLatestSessionIdForUserAndScope(credentials.username, scope);
+      let sessionId = yield store.get(userScopeSessionKey);
+      if (sessionId) {
+        return yield getSessionFromStore(sessionId);
       }
       return null;
     });
-  }
-
-  function getSessionTokenKeyForUserAndScope(username, scope) {
-    return `latest-${scope}-session-${md5(username)}`;
   }
 
   function createSessionToken(session, duration) {
@@ -94,25 +90,20 @@ module.exports = function UserService() {
         expiresIn: duration
       };
 
-      let token = {
-        sessionId: session.sessionId,
-        userName: session.user.name
-      };
-
-      return token; //jsonwebtoken.sign(token, sslComponents.privateKey, options);
+      return session.sessionId; //jsonwebtoken.sign(session.sessionId, sslComponents.privateKey, options);
     });
   }
 
-  function getUserByToken(encryptedToken) {
+  function getUserByToken(token) {
     return co(function*(){
       let sslComponents = yield sslComponentsRepository.get();
       let options = {
         algorithm: 'RS256',
         ignoreExpiration: false
       };
-      let token = encryptedToken; //jsonwebtoken.verify(encryptedToken, sslComponents.certificate, options, callback); // Promisify
+      let sessionId = token; //jsonwebtoken.verify(token, sslComponents.certificate, options, callback); // Promisify
 
-      let session = yield getUserSessionFromStore(token.sessionId);
+      let session = yield getSessionFromStore(sessionId);
       return User.parse(session.user);
     });
   }
@@ -123,19 +114,39 @@ module.exports = function UserService() {
     return dateEnd.getTime();
   }
 
-  function storeUserSession(session, scope, duration) {
+  function storeSession(session, scope, duration) {
     return co(function* () {
+      let store = yield getStore();
       yield store.psetex(getSessionKey(session.sessionId), duration, JSON.stringify(session));
-      yield store.psetex(getSessionTokenKeyForUserAndScope(session.user.name, scope), duration, session.sessionId);
+      yield store.psetex(getLatestSessionIdForUserAndScope(session.user.name, scope), duration, session.sessionId);
     });
   }
 
-  function getUserSessionFromStore(sessionId) {
-    let sessionKey = getSessionKey(sessionId);
-    return store.get(sessionKey).then(session => JSON.parse(session));
+  function getSessionFromStore(sessionId) {
+    return co(function* () {
+      let sessionKey = getSessionKey(sessionId);
+      let store = yield getStore();
+      let session = yield store.get(sessionKey);
+      return JSON.parse(session);
+    });
   }
 
   function getSessionKey(sessionId) {
     return `session-${sessionId}`;
+  }
+
+  function getLatestSessionIdForUserAndScope(username, scope) {
+    return `latest-${scope}-session-${md5(username)}`;
+  }
+
+  function getStore() {
+    return co(function* () {
+      if (redisStore) {
+        return redisStore;
+      }
+
+      redisStore = yield EncryptedRedisStore.create();
+      return redisStore;
+    });
   }
 };
