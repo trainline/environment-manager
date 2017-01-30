@@ -3,9 +3,11 @@
 'use strict';
 
 let _ = require('lodash');
+let co = require('co');
+
 let Enums = require('Enums');
 let DIFF_STATE = Enums.DIFF_STATE;
-let co = require('co');
+let DEPLOYMENT_STATUS = Enums.DEPLOYMENT_STATUS;
 let logger = require('modules/logger');
 let serviceTargets = require('modules/service-targets');
 
@@ -101,6 +103,7 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
         return serviceOnInstance.OverallHealth === 'Healthy';
       }
       return false;
+
     });
 
     let serviceHealthChecks = getServiceChecksInfo(serviceObjects);
@@ -126,6 +129,32 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
       HealthChecks: serviceHealthChecks,
       Action: serviceAction
     };
+  });
+  
+  // Look for services that weren't deployed to any instances
+  // Since this service wasn't found 
+  _.each(targetServiceStates, (targetService) => {
+    if (_.find(servicesList, { Name: targetService.Name, Slice: targetService.Slice }) === undefined) {
+      let serviceAction = targetService.Action || SERVICE_INSTALL;
+
+      let missingService = {
+        Name: targetService.Name,
+        Version: targetService.Version,
+        Slice: targetService.Slice,
+        DiffWithTargetState: (targetService.Action === Enums.ServiceAction.INSTALL ? DIFF_STATE.Missing : DIFF_STATE.Ignored),
+        DeploymentId: targetService.DeploymentId,
+        InstancesNames: [],
+        InstancesCount: {
+          Healthy: 0,
+          Present: 0,
+          Total: 0
+        },
+        HealthChecks: [],
+        OverallHealth: Enums.HEALTH_STATUS.Missing,
+        Action: targetService.Action
+      };
+      servicesList.push(missingService);
+    }
   });
 
   return servicesList;
