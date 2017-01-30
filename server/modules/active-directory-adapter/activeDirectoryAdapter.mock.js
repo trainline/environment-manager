@@ -5,7 +5,7 @@
 module.exports = function ActiveDirectoryAdapter() {
   this.configure = () => { };
 
-  this.authorizeUser = (credentials, mainCallback) => {
+  this.authorizeUser = (credentials) => {
     let roles = [];
 
     switch (credentials.username) {
@@ -24,6 +24,6 @@ module.exports = function ActiveDirectoryAdapter() {
     }
 
     let name = credentials.username.toLowerCase();
-    mainCallback(null, { name, roles });
+    return Promise.resolve({ name, roles });
   };
 };
