@@ -62,31 +62,54 @@
     </div>
     <div class="form-group" ng-class="{'has-error': form.BluePort.$invalid}">
         <label class="col-sm-2 control-label text-left nowrap">Blue Port:</label>
-        <div class="col-sm-2">
-            <input type="number"
+        <div class="col-sm-4">
+            <div class="input-group">
+                <input type="number"
                    name="BluePort"
                    class="form-control"
                    maxlength="5"
                    ng-model="vm.service.Value.BluePort"
                    min="40000"
                    max="41000"
-                   ng-readonly="!vm.canUser('edit')" />
+                   ng-readonly="!vm.canUser('edit')"
+                   ng-keyup="vm.checkBluePort()" />
+
+                <span class="input-group-btn">
+                    <button class="btn btn-secondary" type="button" ng-click="vm.getBluePort()">Get Next Available</button>
+                </span>
+            </div>
         </div>
+        
         <span class="help-block" ng-if="form.BluePort.$dirty && form.BluePort.$invalid">Blue Port must be between 40000 and 41000.</span>
+        <span class="help-block" ng-if="vm.ports.blue.taken">This port number is currently in use.</span>
     </div>
     <div class="form-group" ng-class="{'has-error': form.GreenPort.$invalid}">
         <label class="col-sm-2 control-label text-left nowrap">Green Port:</label>
-        <div class="col-md-2">
-            <input type="number"
+        <div class="col-sm-4">
+            <div class="input-group">
+
+                <input type="number"
                    name="GreenPort"
                    class="form-control"
                    maxlength="5"
                    ng-model="vm.service.Value.GreenPort"
                    min="40000"
                    max="41000"
-                   ng-readonly="!vm.canUser('edit')" />
+                   ng-readonly="!vm.canUser('edit')"
+                   ng-keyup="vm.checkGreenPort()" />
+
+                <span class="input-group-btn">
+                    <button class="btn btn-secondary" type="button" ng-click="vm.getGreenPort()">Get Next Available</button>
+                </span>
+            </div>
         </div>
-        <span class="help-block" ng-if="form.GreenPort.$dirty && form.GreenPort.$invalid">Blue Port must be between 40000 and 41000.</span>
+        
+        
+        <div class="col-sm-6">
+            <span class="help-block" ng-if="form.GreenPort.$dirty && form.GreenPort.$invalid">Green Port must be between 40000 and 41000.</span>
+            <span class="help-block" ng-if="vm.ports.green.taken">This port number is currently in use.</span>
+        </div>
+        
     </div>
     <!-- TODO: validate blue and green ports not the same number -->
     <div class="form-group">

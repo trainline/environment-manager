@@ -17,6 +17,18 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
     vm.owningClustersList = [];
     vm.serviceNames = [];
     vm.version = 0;
+    vm.ports = {
+      range: {
+        lower: 40000, 
+        upper: 41000
+      },
+      blue: {
+        taken: false
+      },
+      green: {
+        taken: false
+      }
+    };
     vm.allPorts = null;
 
     vm.cancel = navigateToList;
@@ -71,8 +83,8 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       };
       _.map(data, function (item) {
         if (item.Value) {
-          ports.green.push(item.Value.GreenPort);
-          ports.blue.push(item.Value.BluePort);
+          ports.green.push(item.Value.GreenPort * 1);
+          ports.blue.push(item.Value.BluePort * 1);
         }
       });
       return ports;
@@ -106,6 +118,40 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
         delete service.Value.BluePort;
       }
       return service;
+    }
+
+    vm.getBluePort = function getBluePort() {
+      for(var i = vm.ports.range.lower; i <= vm.ports.range.upper; i += 1) {
+        if(vm.allPorts.blue.indexOf(i) === -1) {
+          vm.service.Value.BluePort = i;
+          break;
+        }
+      }
+    }
+
+    vm.checkBluePort = function() {
+      if(vm.allPorts.blue.indexOf(vm.service.Value.BluePort) !== -1) {
+        vm.ports.blue.taken = true;
+      } else {
+        vm.ports.blue.taken = false;
+      }
+    }
+
+    vm.getGreenPort = function getGreenPort() {
+      for(var i = vm.ports.range.lower; i <= vm.ports.range.upper; i += 1) {
+        if(vm.allPorts.green.indexOf(i) === -1) {
+          vm.service.Value.GreenPort = i;
+          break;
+        }
+      }
+    }
+
+    vm.checkGreenPort = function() {
+      if(vm.allPorts.green.indexOf(vm.service.Value.GreenPort) !== -1) {
+        vm.ports.green.taken = true;
+      } else {
+        vm.ports.green.taken = false;
+      }
     }
 
     vm.canUser = function () {
