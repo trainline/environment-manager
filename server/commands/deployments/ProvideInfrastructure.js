@@ -27,6 +27,7 @@ module.exports = function ProvideInfrastructureCommandHandler(command) {
     let environmentName = deployment.environmentName;
     let serviceName = deployment.serviceName;
     let accountName = deployment.accountName;
+    let slice = deployment.serviceSlice;
 
     logger.info('Reading infrastructure configuration...');
 
@@ -35,7 +36,7 @@ module.exports = function ProvideInfrastructureCommandHandler(command) {
     );
 
     let autoScalingTemplatesToCreate = yield getAutoScalingTemplatesToCreate(
-      logger, configuration, accountName
+      logger, configuration, accountName, slice
     );
 
     if (!autoScalingTemplatesToCreate.length) return;
@@ -62,22 +63,29 @@ module.exports = function ProvideInfrastructureCommandHandler(command) {
   });
 };
 
-function getAutoScalingTemplatesToCreate(logger, configuration, accountName) {
+function getAutoScalingTemplatesToCreate(logger, configuration, accountName, slice) {
   return co(function* () {
     let autoScalingTemplates = yield autoScalingTemplatesProvider.get(
       configuration, accountName
     );
-    let autoScalingGroupNames = autoScalingTemplates.map(template =>
-      template.autoScalingGroupName
-    );
+
+    let autoScalingGroupNames = autoScalingTemplates
+      .map(template => template.autoScalingGroupName)
+      .filter((asgName) => {
+        // Only create ASGs On Demand
+        return slice === 'none' ||                                        // Always create ASG in overwrite mode
+            configuration.serverRole.FleetPerSlice === undefined ||       // Always create ASG if FleetPerSlice not known
+            configuration.serverRole.FleetPerSlice === false ||           // Always create ASG in single ASG mode
+            asgName.endsWith(`-${slice}`);                                // Create ASG if it's the target slice
+      });
+
     let autoScalingGroupNamesToCreate = yield getAutoScalingGroupNamesToCreate(
       logger, autoScalingGroupNames, accountName
     );
-    let autoScalingTemplatesToCreate = autoScalingTemplates.filter(template =>
+
+    return autoScalingTemplates.filter(template =>
       autoScalingGroupNamesToCreate.indexOf(template.autoScalingGroupName) >= 0
     );
-
-    return autoScalingTemplatesToCreate;
   });
 }
 
