@@ -7,7 +7,6 @@ let ms = require('ms');
 let noAuthorization = require('modules/authorizers/none');
 let userService = require('modules/user-service');
 let utils = require('modules/utilities');
-let tokenConfiguration = require('modules/authentications/tokenAuthenticationConfiguration');
 let cookieConfiguration = require('modules/authentications/cookieAuthenticationConfiguration');
 
 /**
@@ -18,8 +17,8 @@ function* login(req, res, next) {
   let duration = cookieConfiguration.getCookieDuration();
 
   let credentials = {
-    username: req.body.username,
-    password: req.body.password,
+    username: body.username,
+    password: body.password,
     scope: 'ui'
   };
 
@@ -30,7 +29,7 @@ function* login(req, res, next) {
 
   res.cookie(cookieName, cookieValue, cookieOptions);
 
-  userService.authenticateUser(credentials, duration)
+  return userService.authenticateUser(credentials, duration)
     .then(value => res.send(value)).catch(next);
 }
 
