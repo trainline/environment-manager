@@ -24,11 +24,13 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       },
       blue: {
         existing: null,
-        taken: false
+        taken: false,
+        current: null
       },
       green: {
         existing: null,
-        taken: false
+        taken: false,
+        current: null
       }
     };
 
@@ -100,6 +102,8 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       resources.config.services.get({ key: name, range: range }).then(function (data) {
         vm.dataFound = true;
         vm.service = readableService(data);
+        vm.ports.green.current = vm.service.Value.GreenPort;
+        vm.ports.blue.current = vm.service.Value.BluePort;
         vm.version = data.Version;
       }, function (err) {
         vm.dataFound = false;
@@ -140,7 +144,8 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
     }
 
     vm.checkBluePort = function() {
-      if(vm.ports.blue.existing.indexOf(vm.service.Value.BluePort) !== -1) {
+      if(vm.ports.blue.existing.indexOf(vm.service.Value.BluePort) !== -1 
+          && vm.service.Value.BluePort !== vm.ports.blue.current) {
         vm.ports.blue.taken = true;
       } else {
         vm.ports.blue.taken = false;
@@ -148,7 +153,8 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
     }
 
     vm.checkGreenPort = function() {
-      if(vm.ports.green.existing.indexOf(vm.service.Value.GreenPort) !== -1) {
+      if(vm.ports.green.existing.indexOf(vm.service.Value.GreenPort) !== -1 
+          && vm.service.Value.GreenPort !== vm.ports.green.current) {
         vm.ports.green.taken = true;
       } else {
         vm.ports.green.taken = false;
