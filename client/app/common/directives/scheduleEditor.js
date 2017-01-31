@@ -19,6 +19,8 @@ angular.module('EnvironmentManager.common')
 
       if (!vm.schedule || vm.schedule.toUpperCase() === 'NOSCHEDULE') {
         vm.schedule = '';
+      } else if (vm.schedule === '247') {
+        vm.schedule = 'ON';
       }
 
       vm.updateSchedule = function () {
