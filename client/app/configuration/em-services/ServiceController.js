@@ -17,6 +17,7 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
     vm.owningClustersList = [];
     vm.serviceNames = [];
     vm.version = 0;
+    vm.allPorts = null;
 
     vm.cancel = navigateToList;
 
@@ -36,7 +37,9 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
 
         resources.config.services.all().then(function (services) {
           vm.serviceNames = _.map(services, 'ServiceName');
-        })
+        }),
+
+        fetchPortNumbers()
       ]).then(function () {
         if (vm.editMode) {
           readItem(serviceName, owningCluster);
@@ -49,6 +52,30 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
           };
         }
       });
+    }
+
+    function fetchPortNumbers() {
+      $http({
+          method: 'GET',
+          url: '/api/v1/config/services',
+          headers: { 'expected-version': vm.version }
+        }).then(function (result) {
+          vm.allPorts = extractPortNumbers(result.data);
+        });
+    }
+
+    function extractPortNumbers(data) {
+      var ports = {
+        blue: [],
+        green: []
+      };
+      _.map(data, function (item) {
+        if (item.Value) {
+          ports.green.push(item.Value.GreenPort);
+          ports.blue.push(item.Value.BluePort);
+        }
+      });
+      return ports;
     }
 
     function readItem(name, range) {
