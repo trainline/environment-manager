@@ -60,6 +60,35 @@
         </div>
         <span class="help-block" ng-if="form.ApplicationId.$dirty && form.ApplicationId.$error.pattern">Application ID must be a number.</span>
     </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label text-left nowrap">Goto-person:</span></label>
+        <div class="col-sm-4">
+            <input type="text"
+                   name="GotoPerson"
+                   class="form-control"
+                   required=""
+                   autofocus
+                   maxlength="50"
+                   ng-model="vm.service.Value.GotoPerson"
+                   pattern="[a-zA-Z\s]*"
+                   ng-readonly="!vm.canUser('edit')" />
+        </div>
+    </div>
+    <div class="form-group" >
+        <label class="col-sm-2 control-label text-left">Service + Documentation URL:</label>
+        <div class="col-sm-4">
+            <input type="text"
+                   name="ServiceDocumentationUrl"
+                   class="form-control"
+                   required=""
+                   autofocus
+                   maxlength="256"
+                   ng-model="vm.service.Value.ServiceDocumentationUrl"
+                   ng-readonly="!vm.canUser('edit')" />
+        </div>
+    </div>
+
     <div class="form-group" ng-class="{'has-error': form.BluePort.$invalid}">
         <label class="col-sm-2 control-label text-left nowrap">Blue Port:</label>
         <div class="col-sm-4">
@@ -75,7 +104,7 @@
                    ng-keyup="vm.checkBluePort()" />
 
                 <span class="input-group-btn">
-                    <button class="btn btn-secondary" type="button" ng-click="vm.service.Value.BluePort = vm.getBluePort()">Get Next Available</button>
+                    <button class="btn btn-default" type="button" ng-click="vm.service.Value.BluePort = vm.getBluePort()">Next Free Port</button>
                 </span>
             </div>
         </div>
@@ -97,7 +126,7 @@
                    ng-keyup="vm.checkGreenPort()" />
 
                 <span class="input-group-btn">
-                    <button class="btn btn-secondary" type="button" ng-click="vm.service.Value.GreenPort = vm.getGreenPort()">Get Next Available</button>
+                    <button class="btn btn-default" type="button" ng-click="vm.service.Value.GreenPort = vm.getGreenPort()">Next Free Port</button>
                 </span>
             </div>
         </div>
