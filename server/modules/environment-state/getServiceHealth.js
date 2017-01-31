@@ -33,8 +33,11 @@ function* getServiceHealth({ environmentName, serviceName, slice, serverRole }) 
   }
 
   let role = serviceRoles[0];
-  let autoScalingGroups = yield AutoScalingGroup.getAllByServerRoleName(environmentName, role.Role);
+  if (role === undefined) {
+    throw new Error(`Could not find ${slice} ${serviceName} in ${environmentName} with role ${serverRole}`);
+  }
 
+  let autoScalingGroups = yield AutoScalingGroup.getAllByServerRoleName(environmentName, role.Role);
   for (let asg of autoScalingGroups) {
     let state = yield getASGState(environmentName, asg.AutoScalingGroupName);
     let services = _.filter(state.Services, { Name: serviceName, Slice: slice });
