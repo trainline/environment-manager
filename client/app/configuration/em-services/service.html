@@ -11,7 +11,7 @@
 
     <div class="form-group" ng-if="!vm.editMode" ng-class="{'has-error': form.ServiceName.$invalid}">
         <label class="col-sm-2 control-label text-left nowrap">Service Name: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
-        <div class="col-sm-2">
+        <div class="col-sm-4">
             <input type="text"
                    name="ServiceName"
                    class="form-control"
@@ -29,7 +29,7 @@
     </div>
     <div class="form-group" ng-class="{'has-error': form.OwningClusters.$invalid}">
         <label class="col-sm-2 control-label text-left nowrap">Owning Cluster: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
-        <div class="col-sm-2">
+        <div class="col-sm-4">
             <select class="form-control"
                     name="OwningClusters"
                     required=""
@@ -42,14 +42,14 @@
     </div>
     <div class="form-group">
         <label class="col-sm-2 control-label text-left nowrap">Description:</label>
-        <div class="col-sm-2">
+        <div class="col-sm-4">
             <textarea ng-model="vm.service.Value.Description"
                       ng-readonly="!vm.canUser('edit')"></textarea>
         </div>
     </div>
     <div class="form-group" ng-class="{'has-error': form.ApplicationId.$invalid}">
         <label class="col-sm-2 control-label text-left nowrap">Application ID:</label>
-        <div class="col-sm-1">
+        <div class="col-sm-2">
             <input type="text"
                    name="ApplicationId"
                    class="form-control"
@@ -62,7 +62,7 @@
     </div>
     <div class="form-group" ng-class="{'has-error': form.BluePort.$invalid}">
         <label class="col-sm-2 control-label text-left nowrap">Blue Port:</label>
-        <div class="col-sm-1">
+        <div class="col-sm-2">
             <input type="number"
                    name="BluePort"
                    class="form-control"
@@ -76,7 +76,7 @@
     </div>
     <div class="form-group" ng-class="{'has-error': form.GreenPort.$invalid}">
         <label class="col-sm-2 control-label text-left nowrap">Green Port:</label>
-        <div class="col-md-1">
+        <div class="col-md-2">
             <input type="number"
                    name="GreenPort"
                    class="form-control"
@@ -90,7 +90,7 @@
     </div>
     <!-- TODO: validate blue and green ports not the same number -->
     <div class="form-group">
-        <div class="col-md-offset-1 col-sm-3">
+        <div class="col-sm-offset-2 col-sm-3">
             <button type="button"
                     class="btn btn-default"
                     ng-click="vm.cancel()">
