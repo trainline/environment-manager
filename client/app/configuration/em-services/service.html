@@ -106,8 +106,10 @@
                 </span>
             </div>
         </div>
-        <span class="help-block" ng-if="form.BluePort.$dirty && form.BluePort.$invalid">Blue Port must be between {{vm.ports.range.lower}} and {{vm.ports.range.upper}}.</span>
-        <span class="help-block" ng-if="vm.ports.blue.taken"><i>This port number is currently in use.</i></span>
+        <div class="col-sm-6">
+            <span class="help-block" ng-if="form.BluePort.$dirty && form.BluePort.$invalid">Blue Port must be between {{vm.ports.range.lower}} and {{vm.ports.range.upper}}.</span>
+            <span class="help-block" ng-if="vm.ports.blue.taken"><i>This port number is currently in use.</i></span>
+        </div>
     </div>
     <div class="form-group" ng-class="{'has-error': form.GreenPort.$invalid}">
         <label class="col-sm-2 control-label text-left nowrap">Green Port:</label>
@@ -129,7 +131,7 @@
             </div>
         </div>
         <div class="col-sm-6">
-            <span class="help-block" ng-if="form.GreenPort.$dirty && form.GreenPort.$invalid">Blue Port must be between {{vm.ports.range.lower}} and {{vm.ports.range.upper}}.</span>
+            <span class="help-block" ng-if="form.GreenPort.$dirty && form.GreenPort.$invalid">Green Port must be between {{vm.ports.range.lower}} and {{vm.ports.range.upper}}.</span>
             <span class="help-block" ng-if="vm.ports.green.taken"><i>This port number is currently in use.</i></span>
         </div>
         
@@ -145,7 +147,7 @@
             <button type="button"
                     class="btn btn-primary"
                     ng-if="vm.canUser('edit')"
-                    ng-disabled="!form.$valid"
+                    ng-disabled="!form.$valid || vm.service.Value.GreenPort === vm.service.Value.BluePort"
                     ng-click="vm.save()">Save</button>
         </div>
     </div>
