@@ -23,13 +23,14 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
         upper: 41000
       },
       blue: {
+        existing: null,
         taken: false
       },
       green: {
+        existing: null,
         taken: false
       }
     };
-    vm.allPorts = null;
 
     vm.cancel = navigateToList;
 
@@ -72,7 +73,12 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
           url: '/api/v1/config/services',
           headers: { 'expected-version': vm.version }
         }).then(function (result) {
-          vm.allPorts = extractPortNumbers(result.data);
+          var ports = extractPortNumbers(result.data);
+          vm.ports.blue.existing = ports.blue;
+          vm.ports.green.existing = ports.green;
+        }).then(function () {
+          vm.getBluePort = findNewPort({range: vm.ports.range, ports: vm.ports.blue.existing});
+          vm.getGreenPort = findNewPort({range: vm.ports.range, ports: vm.ports.green.existing});
         });
     }
 
@@ -120,34 +126,29 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       return service;
     }
 
-    vm.getBluePort = function getBluePort() {
-      for(var i = vm.ports.range.lower; i <= vm.ports.range.upper; i += 1) {
-        if(vm.allPorts.blue.indexOf(i) === -1) {
-          vm.service.Value.BluePort = i;
-          break;
+    function findNewPort(config) {
+      return function () {
+        var newPort = 0;
+        for(var i = config.range.lower; i <= config.range.upper; i += 1) {
+          if(config.ports.indexOf(i) === -1) {
+           newPort = i;
+           break;
+          }
         }
+        return newPort;
       }
     }
 
     vm.checkBluePort = function() {
-      if(vm.allPorts.blue.indexOf(vm.service.Value.BluePort) !== -1) {
+      if(vm.ports.blue.existing.indexOf(vm.service.Value.BluePort) !== -1) {
         vm.ports.blue.taken = true;
       } else {
         vm.ports.blue.taken = false;
       }
     }
 
-    vm.getGreenPort = function getGreenPort() {
-      for(var i = vm.ports.range.lower; i <= vm.ports.range.upper; i += 1) {
-        if(vm.allPorts.green.indexOf(i) === -1) {
-          vm.service.Value.GreenPort = i;
-          break;
-        }
-      }
-    }
-
     vm.checkGreenPort = function() {
-      if(vm.allPorts.green.indexOf(vm.service.Value.GreenPort) !== -1) {
+      if(vm.ports.green.existing.indexOf(vm.service.Value.GreenPort) !== -1) {
         vm.ports.green.taken = true;
       } else {
         vm.ports.green.taken = false;

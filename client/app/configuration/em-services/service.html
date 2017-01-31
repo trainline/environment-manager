@@ -75,19 +75,17 @@
                    ng-keyup="vm.checkBluePort()" />
 
                 <span class="input-group-btn">
-                    <button class="btn btn-secondary" type="button" ng-click="vm.getBluePort()">Get Next Available</button>
+                    <button class="btn btn-secondary" type="button" ng-click="vm.service.Value.BluePort = vm.getBluePort()">Get Next Available</button>
                 </span>
             </div>
         </div>
-        
-        <span class="help-block" ng-if="form.BluePort.$dirty && form.BluePort.$invalid">Blue Port must be between 40000 and 41000.</span>
-        <span class="help-block" ng-if="vm.ports.blue.taken">This port number is currently in use.</span>
+        <span class="help-block" ng-if="form.BluePort.$dirty && form.BluePort.$invalid">Blue Port must be between {{vm.ports.range.lower}} and {{vm.ports.range.upper}}.</span>
+        <span class="help-block" ng-if="vm.ports.blue.taken"><i>This port number is currently in use.</i></span>
     </div>
     <div class="form-group" ng-class="{'has-error': form.GreenPort.$invalid}">
         <label class="col-sm-2 control-label text-left nowrap">Green Port:</label>
         <div class="col-sm-4">
             <div class="input-group">
-
                 <input type="number"
                    name="GreenPort"
                    class="form-control"
@@ -99,15 +97,13 @@
                    ng-keyup="vm.checkGreenPort()" />
 
                 <span class="input-group-btn">
-                    <button class="btn btn-secondary" type="button" ng-click="vm.getGreenPort()">Get Next Available</button>
+                    <button class="btn btn-secondary" type="button" ng-click="vm.service.Value.GreenPort = vm.getGreenPort()">Get Next Available</button>
                 </span>
             </div>
         </div>
-        
-        
         <div class="col-sm-6">
-            <span class="help-block" ng-if="form.GreenPort.$dirty && form.GreenPort.$invalid">Green Port must be between 40000 and 41000.</span>
-            <span class="help-block" ng-if="vm.ports.green.taken">This port number is currently in use.</span>
+            <span class="help-block" ng-if="form.GreenPort.$dirty && form.GreenPort.$invalid">Blue Port must be between {{vm.ports.range.lower}} and {{vm.ports.range.upper}}.</span>
+            <span class="help-block" ng-if="vm.ports.green.taken"><i>This port number is currently in use.</i></span>
         </div>
         
     </div>
@@ -120,7 +116,7 @@
                 Cancel
             </button>
             <button type="button"
-                    class="btn btn-default"
+                    class="btn btn-primary"
                     ng-if="vm.canUser('edit')"
                     ng-disabled="!form.$valid"
                     ng-click="vm.save()">Save</button>
