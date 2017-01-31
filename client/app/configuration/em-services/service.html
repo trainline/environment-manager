@@ -10,8 +10,8 @@
 <form name="form" class="form-horizontal" ng-show="vm.dataFound || !vm.editMode">
 
     <div class="form-group" ng-if="!vm.editMode" ng-class="{'has-error': form.ServiceName.$invalid}">
-        <label class="col-md-1 control-label text-left nowrap">Service Name: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
-        <div class="col-md-2">
+        <label class="col-sm-2 control-label text-left nowrap">Service Name: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+        <div class="col-sm-2">
             <input type="text"
                    name="ServiceName"
                    class="form-control"
@@ -28,8 +28,8 @@
         <span class="help-block" ng-if="form.ServiceName.$dirty && form.ServiceName.$error.pattern">Service name must contain only alphanumeric characters.</span>
     </div>
     <div class="form-group" ng-class="{'has-error': form.OwningClusters.$invalid}">
-        <label class="col-md-1 control-label text-left nowrap">Owning Cluster: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
-        <div class="col-md-2">
+        <label class="col-sm-2 control-label text-left nowrap">Owning Cluster: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+        <div class="col-sm-2">
             <select class="form-control"
                     name="OwningClusters"
                     required=""
@@ -41,15 +41,15 @@
         <span class="help-block" ng-if="form.OwningClusters.$error.required">Owning cluster is mandatory.</span>
     </div>
     <div class="form-group">
-        <label class="col-md-1 control-label text-left nowrap">Description:</label>
-        <div class="col-md-2">
+        <label class="col-sm-2 control-label text-left nowrap">Description:</label>
+        <div class="col-sm-2">
             <textarea ng-model="vm.service.Value.Description"
                       ng-readonly="!vm.canUser('edit')"></textarea>
         </div>
     </div>
     <div class="form-group" ng-class="{'has-error': form.ApplicationId.$invalid}">
-        <label class="col-md-1 control-label text-left nowrap">Application ID:</label>
-        <div class="col-md-1">
+        <label class="col-sm-2 control-label text-left nowrap">Application ID:</label>
+        <div class="col-sm-1">
             <input type="text"
                    name="ApplicationId"
                    class="form-control"
@@ -61,8 +61,8 @@
         <span class="help-block" ng-if="form.ApplicationId.$dirty && form.ApplicationId.$error.pattern">Application ID must be a number.</span>
     </div>
     <div class="form-group" ng-class="{'has-error': form.BluePort.$invalid}">
-        <label class="col-md-1 control-label text-left nowrap">Blue Port:</label>
-        <div class="col-md-1">
+        <label class="col-sm-2 control-label text-left nowrap">Blue Port:</label>
+        <div class="col-sm-1">
             <input type="number"
                    name="BluePort"
                    class="form-control"
@@ -75,7 +75,7 @@
         <span class="help-block" ng-if="form.BluePort.$dirty && form.BluePort.$invalid">Blue Port must be between 40000 and 41000.</span>
     </div>
     <div class="form-group" ng-class="{'has-error': form.GreenPort.$invalid}">
-        <label class="col-md-1 control-label text-left nowrap">Green Port:</label>
+        <label class="col-sm-2 control-label text-left nowrap">Green Port:</label>
         <div class="col-md-1">
             <input type="number"
                    name="GreenPort"
@@ -90,7 +90,7 @@
     </div>
     <!-- TODO: validate blue and green ports not the same number -->
     <div class="form-group">
-        <div class="col-md-offset-1 col-md-3">
+        <div class="col-md-offset-1 col-sm-3">
             <button type="button"
                     class="btn btn-default"
                     ng-click="vm.cancel()">
