@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 'use strict';
 
 let memoize = require('modules/memoize');
@@ -81,3 +83,4 @@ describe('DeploymentLogsStreamer', function () {
         });
     });
 });
+
