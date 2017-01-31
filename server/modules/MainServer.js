@@ -54,7 +54,6 @@ module.exports = function MainServer() {
       let routeInstaller = require('modules/routeInstaller');
       let routes = {
         home: require('routes/home'),
-        form: require('routes/form'),
         initialData: require('routes/initialData'),
         deploymentNodeLogs: require('routes/deploymentNodeLogs')
       };
@@ -80,17 +79,12 @@ module.exports = function MainServer() {
 
       let staticPaths = ['*.js', '*.css', '*.html', '*.ico', '*.gif', '*.woff2', '*.ttf', '*.woff', '*.svg', '*.eot', '*.jpg', '*.png', '*.map'];
       app.get(staticPaths, authentication.allowUnknown, express.static(PUBLIC_DIR));
-      app.get('/', authentication.denyUnauthorized, express.static(PUBLIC_DIR));
+      app.get('/', express.static(PUBLIC_DIR));
 
       app.get('*.js', authentication.allowUnknown, express.static('modules'));
 
       // routing for API JSON Schemas
       app.use('/schema', authentication.allowUnknown, express.static(`${PUBLIC_DIR}/schema`));
-
-      // routing for html pages
-      app.get('/login', authentication.allowUnknown, routes.form.login.get);
-      app.post('/login', authentication.allowUnknown, routes.form.login.post);
-      app.get('/logout', authentication.allowUnknown, routes.form.logout.get);
 
       app.get('/deployments/nodes/logs', authentication.denyUnauthorized, routes.deploymentNodeLogs);
 

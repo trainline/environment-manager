@@ -986,6 +986,40 @@ paths:
       responses:
         200:
           description: OK
+  /login:
+    x-swagger-router-controller: userController
+    post:
+      operationId: login
+      summary: Login and get authentication cookie
+      tags:
+        - Authentication
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - username
+              - password
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+      responses:
+        200:
+          description: OK
+  /logout:
+    x-swagger-router-controller: userController
+    post:
+      operationId: logout
+      summary: Log out
+      tags:
+        - Authentication
+      responses:
+        200:
+          description: OK
   /token:
     x-swagger-router-controller: tokenController
     post:

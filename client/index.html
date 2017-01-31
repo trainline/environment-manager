@@ -165,95 +165,99 @@
   <script src="app/operations/ToggleServiceModalController.js"></script>
   <script src="app/compare/CompareController.js"></script>
   <script src="app/common/utilities.js"></script>
+  <script src="app/common/loginForm.js"></script>
   <script src="app/common/MainController.js"></script>
   <script src="app/app.module.js"></script>
   <!-- endinject -->
   <!-- endbuild -->
 
 </head>
-<body ng-controller="MainController as main">
-  <loading-overlay></loading-overlay>
-  <header>
-    <a href="#/"><img id="logo" src="assets/images/logo.jpg" height="30"/></a>
-    <h1 title="Environment Manager {{appVersion}}"><a href="#/">Environment Manager</a></h1>
-    <nav>
-      <ul>
-        <li><a href="#/environments" ng-class="{active: main.getSection()=='environments'}">Environments</a></li>
-        <li><a href="#/operations/deployments" ng-class="{active: main.getSection()=='operations'}">Operations</a></li>
-        <li><a href="#/compare" ng-class="{active: main.getSection()=='compare'}">Compare</a></li>
-        <li><a href="#/config/services" ng-class="{active: main.getSection()=='config'}">Configuration</a></li>
-        <li><a href="/docs" target="_blank">API</a></li>
-      </ul>
-    </nav>
-    <div id="userinfo">
-      <span><span class="glyphicon glyphicon-user"></span> <strong>{{LoggedInUser}}</strong></span>
-      <span id="logout"><a href="/logout">Logout</a></span>
-    </div>
-  </header>
-
-  <div>
-    <div id="sidebar" ng-if="main.getSection()=='config'">
-      <h3>Configuration:</h3>
+<body>
+  <login-form ng-if="!loggedIn"></login-form>
+  <div ng-controller="MainController as main" ng-if="loggedIn" ng-cloak="">
+    <loading-overlay></loading-overlay>
+    <header>
+      <a href="#/"><img id="logo" src="assets/images/logo.jpg" height="30"/></a>
+      <h1 title="Environment Manager {{vm.appVersion}}"><a href="#/">Environment Manager</a></h1>
       <nav>
         <ul>
-          <li><a href="#/config/services" ng-class="{active: $route.current.menusection == 'Services'}">Services</a></li>
-          <li><a href="#/config/deploymentmaps" ng-class="{active: $route.current.menusection == 'DeploymentMaps'}">Deployment Maps</a></li>
-          <li><a href="#/config/loadbalancers" ng-class="{active: $route.current.menusection == 'LBs'}">Load Balancer</a></li>
-          <li><a href="#/config/upstreams" ng-class="{active: $route.current.menusection == 'LBUpstream'}">Upstreams</a></li>
-          <li><a href="#/config/notification-settings" ng-class="{active: $route.current.menusection == 'NotificationSettings'}">Notification Settings</a></li>
-          <li><a href="#/config/clusters" ng-class="{active: $route.current.menusection == 'Clusters'}">Clusters</a></li>
-          <li><a href="#/config/environmenttypes" ng-class="{active: $route.current.menusection == 'EnvironmentTypes'}">Environment Types</a></li>
-          <li><a href="#/config/accounts" ng-class="{active: $route.current.menusection == 'Accounts'}">Accounts</a></li>
-        </ul>
-        <hr/>
-        <ul>
-          <li ng-if="canUser('edit')"><a href="#/config/import" ng-class="{active: $route.current.menusection == 'Import'}">Import Config</a></li>
-          <li><a href="#/config/export" ng-class="{active: $route.current.menusection == 'Export'}">Export Config</a></li>
-        </ul>
-        <hr />
-        <ul>
-          <li><a href="#/config/audit" ng-class="{active: $route.current.menusection == 'Audit'}">Audit History</a></li>
-        </ul>
-        <hr />
-        <ul>
-          <li><a href="#/config/permissions" ng-class="{active: $route.current.menusection == 'Permission'}">Users / Groups</a></li>
+          <li><a href="#/environments" ng-class="{active: main.getSection()=='environments'}">Environments</a></li>
+          <li><a href="#/operations/deployments" ng-class="{active: main.getSection()=='operations'}">Operations</a></li>
+          <li><a href="#/compare" ng-class="{active: main.getSection()=='compare'}">Compare</a></li>
+          <li><a href="#/config/services" ng-class="{active: main.getSection()=='config'}">Configuration</a></li>
+          <li><a href="/docs" target="_blank">API</a></li>
         </ul>
       </nav>
-    </div>
-    <div id="sidebar" ng-if="main.getSection()=='operations'">
-      <h3>Operations:</h3>
-      <nav>
-        <ul>
-          <li><a href="#/operations/deployments" ng-class="{active: $route.current.menusection == 'Deployments'}">Deployments</a></li>
-          <li><a href="#/operations/upstreams" ng-class="{active: $route.current.menusection == 'Upstreams'}">Upstream Status</a></li>
-          <li><a href="#/operations/amis" ng-class="{active: $route.current.menusection == 'AMIs'}">AMI Versions</a></li>
-          <li><a href="#/operations/maintenance" ng-class="{active: $route.current.menusection == 'Maintenance'}">Server Maintenance</a></li>
-        </ul>
-      </nav>
-    </div>
-    <div id="sidebar" ng-if="main.getSection()=='environments' && $route.current.menusection != ''">
-      <form name="form">
-        <select id="SelectEnvironment" class="form-control" ng-model="WorkingEnvironment.EnvironmentName" ng-change="ChangeEnvironment()">
-          <option ng-repeat="env in $parent.ParentEnvironmentsList" ng-selected="{{env == WorkingEnvironment.EnvironmentName}}" value="{{env}}">{{env}}</option>
-        </select>
-      </form>
-      <nav>
-        <ul>
-          <li><a href="#/environment/servers?environment={{WorkingEnvironment.EnvironmentName}}" ng-class="{active: $route.current.menusection == 'EnvServers'}">Servers</a></li>
-          <li><a href="#/environment/schedule?environment={{WorkingEnvironment.EnvironmentName}}" ng-class="{active: $route.current.menusection == 'EnvSchedule'}">Schedule</a></li>
-          <li><a href="#/environment/settings?environment={{WorkingEnvironment.EnvironmentName}}" ng-class="{active: $route.current.menusection == 'EnvSettings'}">Settings</a></li>
-          <!--<li><a href="#/environment/infrastructure?environment={{WorkingEnvironment.EnvironmentName}}" ng-class="{active: $route.current.menusection == 'EnvInfrastructure'}">Infrastructure</a></li>-->
-        </ul>
-      </nav>
-
-      <div class="form-group env-deploy">
-        <button class="btn btn-primary" ng-click="$parent.showDeployDialog()">Deploy a Service...</button>
+      <div id="userinfo">
+        <span><span class="glyphicon glyphicon-user"></span> <strong>{{ main.loggedInUser }}</strong></span>
+        <span id="logout"><a ng-click="main.logout()">Logout</a></span>
       </div>
-    </div>
-    <div id="content" ng-class="{sidebar: $route.current.menusection != ''}" ng-view></div>
-  </div>
+    </header>
 
-  <footer></footer>
+    <div>
+      <div id="sidebar" ng-if="main.getSection()=='config'">
+        <h3>Configuration:</h3>
+        <nav>
+          <ul>
+            <li><a href="#/config/services" ng-class="{active: $route.current.menusection == 'Services'}">Services</a></li>
+            <li><a href="#/config/deploymentmaps" ng-class="{active: $route.current.menusection == 'DeploymentMaps'}">Deployment Maps</a></li>
+            <li><a href="#/config/loadbalancers" ng-class="{active: $route.current.menusection == 'LBs'}">Load Balancer</a></li>
+            <li><a href="#/config/upstreams" ng-class="{active: $route.current.menusection == 'LBUpstream'}">Upstreams</a></li>
+            <li><a href="#/config/notification-settings" ng-class="{active: $route.current.menusection == 'NotificationSettings'}">Notification Settings</a></li>
+            <li><a href="#/config/clusters" ng-class="{active: $route.current.menusection == 'Clusters'}">Clusters</a></li>
+            <li><a href="#/config/environmenttypes" ng-class="{active: $route.current.menusection == 'EnvironmentTypes'}">Environment Types</a></li>
+            <li><a href="#/config/accounts" ng-class="{active: $route.current.menusection == 'Accounts'}">Accounts</a></li>
+          </ul>
+          <hr/>
+          <ul>
+            <li ng-if="canUser('edit')"><a href="#/config/import" ng-class="{active: $route.current.menusection == 'Import'}">Import Config</a></li>
+            <li><a href="#/config/export" ng-class="{active: $route.current.menusection == 'Export'}">Export Config</a></li>
+          </ul>
+          <hr />
+          <ul>
+            <li><a href="#/config/audit" ng-class="{active: $route.current.menusection == 'Audit'}">Audit History</a></li>
+          </ul>
+          <hr />
+          <ul>
+            <li><a href="#/config/permissions" ng-class="{active: $route.current.menusection == 'Permission'}">Users / Groups</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div id="sidebar" ng-if="main.getSection() == 'operations'">
+        <h3>Operations:</h3>
+        <nav>
+          <ul>
+            <li><a href="#/operations/deployments" ng-class="{active: $route.current.menusection == 'Deployments'}">Deployments</a></li>
+            <li><a href="#/operations/upstreams" ng-class="{active: $route.current.menusection == 'Upstreams'}">Upstream Status</a></li>
+            <li><a href="#/operations/amis" ng-class="{active: $route.current.menusection == 'AMIs'}">AMI Versions</a></li>
+            <li><a href="#/operations/maintenance" ng-class="{active: $route.current.menusection == 'Maintenance'}">Server Maintenance</a></li>
+          </ul>
+        </nav>
+      </div>
+      <div id="sidebar" ng-if="main.getSection()=='environments' && $route.current.menusection != ''">
+        <form name="form">
+          <select id="SelectEnvironment" class="form-control" ng-model="WorkingEnvironment.EnvironmentName" ng-change="ChangeEnvironment()">
+            <option ng-repeat="env in $parent.ParentEnvironmentsList" ng-selected="{{env == WorkingEnvironment.EnvironmentName}}" value="{{env}}">{{env}}</option>
+          </select>
+        </form>
+        <nav>
+          <ul>
+            <li><a href="#/environment/servers?environment={{WorkingEnvironment.EnvironmentName}}" ng-class="{active: $route.current.menusection == 'EnvServers'}">Servers</a></li>
+            <li><a href="#/environment/schedule?environment={{WorkingEnvironment.EnvironmentName}}" ng-class="{active: $route.current.menusection == 'EnvSchedule'}">Schedule</a></li>
+            <li><a href="#/environment/settings?environment={{WorkingEnvironment.EnvironmentName}}" ng-class="{active: $route.current.menusection == 'EnvSettings'}">Settings</a></li>
+            <!--<li><a href="#/environment/infrastructure?environment={{WorkingEnvironment.EnvironmentName}}" ng-class="{active: $route.current.menusection == 'EnvInfrastructure'}">Infrastructure</a></li>-->
+          </ul>
+        </nav>
+
+        <div class="form-group env-deploy">
+          <button class="btn btn-primary" ng-click="$parent.showDeployDialog()">Deploy a Service...</button>
+        </div>
+      </div>
+      <div id="content" ng-class="{sidebar: $route.current.menusection != ''}" ng-view=""></div>
+    </div>
+
+    <footer></footer>
+  </div>
 
 </body>
 </html>
