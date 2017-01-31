@@ -91,6 +91,7 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       };
       _.map(data, function (item) {
         if (item.Value) {
+          // Some values came back as strings from the end point, so changing them to numbers here
           ports.green.push(item.Value.GreenPort * 1);
           ports.blue.push(item.Value.BluePort * 1);
         }
