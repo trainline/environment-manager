@@ -76,7 +76,7 @@ function authorize(req, res, next) {
     req.params[key] = param.value;
   });
 
-  if (req.url !== '/token') {
+  if (req.url !== '/token' && req.url !== '/login') {
     authorization(authorizer, req, res, next);
   } else {
     next();
