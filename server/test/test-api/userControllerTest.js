@@ -68,18 +68,18 @@ describe('userController', function() {
       });
     })
 
-    it('user should not get authenticated with right credentials', () => {
+    it('user should not get authenticated with right credentials', (done) => {
       let req = createRequest({
         username: 'correct',
         password: 'incorrect'
       }, 20);
 
-      return sut.login(req, res).then((result) => {        
-      }).then(() => {
-        throw 'promise falsely resolved';
-      }).catch((reason) => {
-        return true;
-      });
+      sut.login(req, res)
+        .then(() => {
+          done('login should fail');
+        }, () => {
+          done();
+        });
     })
 
   });
