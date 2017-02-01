@@ -72,7 +72,6 @@ function encryptedRedisStore(args) {
   let breaker = circuitBreaker({ failurettl: 1000, maxfailures: 2, resetperiod: 1000 });
   let id = x => x;
   let keyToStore = fp.get(['keyTransform', 'toStore'])(args) || id;
-  let keyFromStore = fp.get(['keyTransform', 'fromStore'])(args) || id;
   let valueToStore = fp.get(['valueTransform', 'toStore'])(args) || fp.flow(JSON.stringify, str => new Buffer(str));
   let valueFromStore = fp.get(['valueTransform', 'fromStore'])(args) || fp.flow(buf => buf.toString(), JSON.parse);
 

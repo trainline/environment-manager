@@ -4,17 +4,14 @@
 
 let co = require('co');
 let _ = require('lodash');
-let OperationResult = require('../utils/operationResult');
 let resourceProvider = require('modules/resourceProvider');
 let InvalidOperationError = require('modules/errors/InvalidOperationError.class');
 let subnetsProvider = require('modules/provisioning/autoScaling/subnetsProvider');
-let sender = require('modules/sender');
 let Environment = require('models/Environment');
 let EnvironmentType = require('models/EnvironmentType');
 
-function* handler(command) {
-  const result = new OperationResult();
 
+function* handler(command) {
   // Validation
   let size = command.parameters.size;
 

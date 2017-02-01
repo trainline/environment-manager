@@ -26,7 +26,7 @@ module.exports = function ActiveDirectoryAdapter() {
   this.authorizeUser = (credentials) => {
     return co(function* () {
       // Authenticate ActiveDirectory via its credentials
-      let authenticated = yield adClient.authenticateAsync(credentials.username, credentials.password);
+      yield adClient.authenticateAsync(credentials.username, credentials.password);
 
       // Get the user information
       let segments = credentials.username.split('\\');

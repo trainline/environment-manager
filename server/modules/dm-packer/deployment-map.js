@@ -4,7 +4,6 @@
 
 let co = require('co');
 let moment = require('moment');
-let uuid = require('node-uuid');
 let path = require('path');
 let io = require('./deployment-map-io');
 let through = require('through2');

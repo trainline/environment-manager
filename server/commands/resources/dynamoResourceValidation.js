@@ -13,10 +13,6 @@ function validate(resource, command) {
   assert.equal(typeof resource, 'object');
   assert.equal(typeof resourceName, 'string');
 
-  function validatorIterator(validator, iteratorCallback) {
-    validator.validate(resource, command, iteratorCallback);
-  }
-
   let availableValidators = validators.filter(v => v.canValidate(resourceName));
   let promises = availableValidators.map(v => v.validate(resource, command));
   return Promise.all(promises);

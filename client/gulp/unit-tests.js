@@ -14,13 +14,13 @@ var pathSrcHtml = [
   path.join(conf.paths.src, '/**/*.html')
 ];
 
-function runTests(singleRun, done) {
+function runTests(singleRun) {
   var reporter = argv.c ? 'teamcity' : 'progress';
   var reporters = [reporter];
   var preprocessors = {};
 
-  pathSrcHtml.forEach(function (path) {
-    preprocessors[path] = ['ng-html2js'];
+  pathSrcHtml.forEach(function (p) {
+    preprocessors[p] = ['ng-html2js'];
   });
 
   var localConfig = {

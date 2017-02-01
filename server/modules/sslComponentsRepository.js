@@ -28,7 +28,6 @@ module.exports = function SSLComponentsRepository() {
   };
 
   function loadSSLComponentsFromS3(mainCallback) {
-    // TODO(filip): get rid of async
     const masterAccountName = config.getUserValue('masterAccountName');
 
     async.waterfall([

@@ -14,7 +14,6 @@ module.exports = function (request, response) {
     version: APP_VERSION
   };
 
-  // TODO(filip): refactor front code so we can send single data object rather than code
   let str = '';
   str += `window.user = new User(${data.user}); `;
   str += `window.version = '${data.version}'; `;

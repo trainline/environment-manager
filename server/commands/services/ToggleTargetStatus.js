@@ -23,7 +23,7 @@ function* ToggleTargetStatus(command) {
   service.Action = enabled ? SERVICE_INSTALL : SERVICE_IGNORE;
 
   try {
-    let result = yield serviceTargets.setTargetState(environment, { key, value: service });
+    yield serviceTargets.setTargetState(environment, { key, value: service });
     return service;
   } catch (error) {
     throw new Error(

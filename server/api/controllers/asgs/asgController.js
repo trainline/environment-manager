@@ -3,7 +3,6 @@
 'use strict';
 
 let _ = require('lodash');
-let Enums = require('Enums');
 let co = require('co');
 let getAllASGs = require('queryHandlers/ScanCrossAccountAutoScalingGroups');
 let getAccountASGs = require('queryHandlers/ScanAutoScalingGroups');

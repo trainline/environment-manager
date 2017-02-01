@@ -49,7 +49,6 @@ function getInstanceServiceHealthChecks(checks, serviceId) {
 }
 
 function getInstanceDeploymentStatus(services) {
-  let instanceDeploymentStatus;
   let expectedServices = _.filter(services, service => service.DiffWithTargetState !== DIFF_STATE.Unexpected);
 
   if (_.some(expectedServices, service =>

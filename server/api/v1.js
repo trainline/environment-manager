@@ -4,7 +4,6 @@
 
 let _ = require('lodash');
 
-let authentication = require('modules/authentication');
 let yaml = require('js-yaml');
 let swaggerTools = require('swagger-tools');
 let fs = require('fs');

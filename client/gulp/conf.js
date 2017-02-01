@@ -9,7 +9,6 @@
  */
 
 var argv = require('yargs').argv;
-var path = require('path');
 
 /**
  *  The main paths of your project handle these with care
