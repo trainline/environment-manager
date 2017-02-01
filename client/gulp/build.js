@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
@@ -47,8 +49,6 @@ gulp.task('html', ['inject', 'partials'], function () {
   var srcHtml = path.join('./', injectedHtmlFileName);
   var createSourceMaps = !conf.isProductionBuild();
 
-  // TODO(filip): fix this path
-  // return gulp.src(path.join(conf.paths.tmp, '/serve/*.html'))
   return gulp.src(srcHtml)
     .pipe($.inject(partialsInjectFile, partialsInjectOptions))
     .pipe($.useref())
@@ -96,3 +96,4 @@ gulp.task('clean', function () {
 });
 
 gulp.task('build', ['html', 'other']);
+

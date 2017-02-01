@@ -6,8 +6,7 @@ let express = require('express');
 let bodyParser = require('body-parser');
 let cookieParser = require('cookie-parser');
 let logger = require('modules/logger');
-let winston = require('winston');
-let fs = require('fs');
+let fp = require('lodash/fp');
 let config = require('config/');
 let compression = require('compression');
 let expressWinston = require('express-winston');
@@ -20,6 +19,19 @@ let deploymentMonitorScheduler = require('modules/monitoring/DeploymentMonitorSc
 let apiV1 = require('api/v1');
 
 const APP_VERSION = require('config').get('APP_VERSION');
+
+function requestFilter(req, propName) {
+  // Avoid writing the authorization token to the log.
+  if (propName === 'headers') {
+    return fp.omit(['authorization'])(req[propName]);
+  }
+  return req[propName];
+}
+
+let expressWinstonOptions = {
+  requestFilter,
+  winstonInstance: logger
+};
 
 module.exports = function MainServer() {
   let httpServerFactory = require('modules/http-server-factory');
@@ -40,7 +52,6 @@ module.exports = function MainServer() {
       let routeInstaller = require('modules/routeInstaller');
       let routes = {
         home: require('routes/home'),
-        form: require('routes/form'),
         initialData: require('routes/initialData'),
         deploymentNodeLogs: require('routes/deploymentNodeLogs')
       };
@@ -58,7 +69,7 @@ module.exports = function MainServer() {
       /* notice how the router goes after the logger.
        * https://www.npmjs.com/package/express-winston#request-logging */
       if (config.get('IS_PRODUCTION') === true) {
-        app.use(expressWinston.logger({ winstonInstance: logger }));
+        app.use(expressWinston.logger(expressWinstonOptions));
       }
 
       const PUBLIC_DIR = config.get('PUBLIC_DIR');
@@ -66,26 +77,21 @@ module.exports = function MainServer() {
 
       let staticPaths = ['*.js', '*.css', '*.html', '*.ico', '*.gif', '*.woff2', '*.ttf', '*.woff', '*.svg', '*.eot', '*.jpg', '*.png', '*.map'];
       app.get(staticPaths, authentication.allowUnknown, express.static(PUBLIC_DIR));
-      app.get('/', authentication.denyUnauthorized, express.static(PUBLIC_DIR));
+      app.get('/', express.static(PUBLIC_DIR));
 
       app.get('*.js', authentication.allowUnknown, express.static('modules'));
 
       // routing for API JSON Schemas
       app.use('/schema', authentication.allowUnknown, express.static(`${PUBLIC_DIR}/schema`));
 
-      // routing for html pages
-      app.get('/login', authentication.allowUnknown, routes.form.login.get);
-      app.post('/login', authentication.allowUnknown, routes.form.login.post);
-      app.get('/logout', authentication.allowUnknown, routes.form.logout.get);
-
       app.get('/deployments/nodes/logs', authentication.denyUnauthorized, routes.deploymentNodeLogs);
 
       // routing for APIs
-      app.get('/api/initial-data', authentication.denyUnauthorized, routes.initialData);
+      app.get('/api/initial-data', routes.initialData);
       app.use('/api', routeInstaller());
 
       if (config.get('IS_PRODUCTION') === true) {
-        app.use(expressWinston.errorLogger({ winstonInstance: logger }));
+        app.use(expressWinston.errorLogger(expressWinstonOptions));
       }
 
       apiV1.setup(app);

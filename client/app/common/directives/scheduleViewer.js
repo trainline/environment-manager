@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
@@ -19,7 +21,7 @@ angular.module('EnvironmentManager.common')
           vm.simpleOption = 'Environment Default';
           delete vm.crons;
         } else if (schedule.indexOf(':') === -1) {
-          if (schedule === '247') {
+          if (schedule === '247' || schedule === 'ON') {
             vm.simpleOption = 'Always On';
           } else if (schedule === 'OFF') {
             vm.simpleOption = 'Off';
@@ -44,3 +46,4 @@ angular.module('EnvironmentManager.common')
       update();
     }
   });
+

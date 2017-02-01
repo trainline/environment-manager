@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
@@ -12,13 +14,13 @@ var pathSrcHtml = [
   path.join(conf.paths.src, '/**/*.html')
 ];
 
-function runTests(singleRun, done) {
+function runTests(singleRun) {
   var reporter = argv.c ? 'teamcity' : 'progress';
   var reporters = [reporter];
   var preprocessors = {};
 
-  pathSrcHtml.forEach(function (path) {
-    preprocessors[path] = ['ng-html2js'];
+  pathSrcHtml.forEach(function (p) {
+    preprocessors[p] = ['ng-html2js'];
   });
 
   var localConfig = {
@@ -40,3 +42,4 @@ gulp.task('test', [], function (done) {
 gulp.task('test:auto', ['watch'], function (done) {
   runTests(false, done);
 });
+

@@ -2,7 +2,7 @@
 
 <div class="row deployments-instances" ng-show="vm.dataFound && !vm.dataLoading">
   <div class="col-md-12" ng-if="vm.instances.length == 0">
-    <p>No instances found<span ng-if="vm.selectedDateRangeValue > 0"> within selected date range</span>.</p>
+    <h3 class="empty-deployments">No instances match your selection</h3>
   </div>
   <div class="col-md-12" ng-if="vm.instances.length > 0">
     <table class="table">
@@ -26,8 +26,8 @@
       <tbody>
         <tr ng-repeat="instance in vm.instances | filter: vm.instancesFilter() | orderBy: '-timestamp'">
           <td>
-            <span am-time-ago="instance.LaunchTime"></span><br />
-            <small>{{instance.LaunchTime | amDateFormat:'DD/MM/YYYY HH:mm:ss'}}</small>
+            <span am-time-ago="instance.CreationTime"></span><br />
+            <small>{{instance.CreationTime | amDateFormat:'DD/MM/YYYY HH:mm:ss'}}</small>
           </td>
           <td>
             <health-status status='instance.OverallHealth' title='{{ instance.hoverTitle }}'></health-status> {{ instance.Name || '-'}} <small>({{ instance.InstanceId || '-'}})</small>

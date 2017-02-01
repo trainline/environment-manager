@@ -4,7 +4,6 @@
 
 let _ = require('lodash');
 
-let authentication = require('modules/authentication');
 let yaml = require('js-yaml');
 let swaggerTools = require('swagger-tools');
 let fs = require('fs');
@@ -77,7 +76,7 @@ function authorize(req, res, next) {
     req.params[key] = param.value;
   });
 
-  if (req.url !== '/token') {
+  if (req.url !== '/token' && req.url !== '/login') {
     authorization(authorizer, req, res, next);
   } else {
     next();

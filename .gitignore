@@ -38,6 +38,8 @@ build/
 /Lambda/**/*.zip
 
 *.swp
+*.swo
+*.hist
 
 # Build artifacts
 client/index-build-temp.html

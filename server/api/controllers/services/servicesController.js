@@ -4,9 +4,15 @@
 
 let serviceDiscovery = require('modules/service-discovery');
 let getSlices = require('queryHandlers/slices/GetSlicesByService');
+let ScanInstances = require('queryHandlers/ScanInstances');
 let toggleSlices = require('commands/slices/ToggleSlicesByService');
-let getServiceHealth = require('modules/environment-state/getServiceHealth');
+let serviceHealth = require('modules/environment-state/getServiceHealth');
+let overallServiceHealth = require('modules/environment-state/getOverallServiceHealth');
 let metadata = require('commands/utils/metadata');
+let Environment = require('models/Environment');
+
+let co = require('co');
+let _ = require('lodash');
 
 /**
  * GET /services
@@ -15,6 +21,35 @@ function getServices(req, res, next) {
   const environment = req.swagger.params.environment.value;
 
   return serviceDiscovery.getAllServices(environment).then(data => res.json(data)).catch(next);
+}
+
+/**
+ * GET /services/{service}/asgs
+ */
+function getASGsByService(req, res, next) {
+  const environment = req.swagger.params.environment.value;
+  const serviceName = req.swagger.params.service.value;
+  const sliceName = req.swagger.params.slice.value;
+
+  return co(function* () {
+    let slice = sliceName.toLowerCase() !== 'none' ? `-${sliceName}` : '';
+    let service = serviceName + slice;
+
+    let nodes = _.castArray(yield serviceDiscovery.getService(environment, service));
+    let accountName = yield Environment.getAccountNameForEnvironment(environment);
+
+    let asgs = yield nodes.map((node) => {
+      return co(function* () {
+        let filter = {}; filter['tag:Name'] = node.Node;
+        let instance = _.first(yield ScanInstances({ accountName, filter }));
+        return instance ? instance.getTag('aws:autoscaling:groupName') : null;
+      });
+    });
+
+    return _.chain(asgs).compact().uniq().map((asg) => {
+      return { AutoScalingGroupName: asg };
+    }).value();
+  }).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -30,11 +65,23 @@ function getServiceById(req, res, next) {
 /**
  * GET /services/{service}/health
  */
-function getServiceHealthById(req, res, next) {
+function getOverallServiceHealth(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
   const serviceName = req.swagger.params.service.value;
 
-  return getServiceHealth({ environmentName, serviceName }).then(data => res.json(data)).catch(next);
+  return overallServiceHealth({ environmentName, serviceName }).then(data => res.json(data)).catch(next);
+}
+
+/**
+ * GET /services/{service}/health/{slice}
+ */
+function getServiceHealth(req, res, next) {
+  const environmentName = req.swagger.params.environment.value;
+  const serviceName = req.swagger.params.service.value;
+  const slice = req.swagger.params.slice.value;
+  const serverRole = req.swagger.params.serverRole.value;
+
+  return serviceHealth({ environmentName, serviceName, slice, serverRole }).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -47,7 +94,6 @@ function getServiceSlices(req, res, next) {
 
   return getSlices({ environmentName, serviceName, active }).then(data => res.json(data)).catch(next);
 }
-
 /**
  * PUT /services/{service}/toggle
  */
@@ -62,7 +108,9 @@ function putServiceSlicesToggle(req, res, next) {
 module.exports = {
   getServices,
   getServiceById,
-  getServiceHealthById,
+  getServiceHealth,
+  getOverallServiceHealth,
   getServiceSlices,
+  getASGsByService,
   putServiceSlicesToggle
 };

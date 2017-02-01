@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /**
  *  This file contains the variables used in other gulp files
  *  which defines tasks
@@ -7,7 +9,6 @@
  */
 
 var argv = require('yargs').argv;
-var path = require('path');
 
 /**
  *  The main paths of your project handle these with care
@@ -52,3 +53,4 @@ module.exports = {
     return argv.p !== undefined;
   }
 };
+

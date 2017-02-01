@@ -1,7 +1,3 @@
-<div ng-if="!vm.dataLoading">
-  <h2>Instances</h2>
-</div>
-
 <div ng-if="vm.asgState.Instances.length == 0">
   <p>No matching servers found.</p>
 </div>
@@ -49,7 +45,7 @@
           <td>
             <span ng-if="instance.LatestAmi">
               <span ng-if="instance.UsingLatestAmi"><span class="glyphicon glyphicon-ok-sign ok"></span> Up to date</span>
-            <span ng-if="!instance.UsingLatestAmi"><span class="glyphicon glyphicon-exclamation-sign warning"></span> {{ instance.DaysOutOfDate }} Days</span>
+            <span ng-if="!instance.UsingLatestAmi"><span class="glyphicon glyphicon-exclamation-sign warning"></span> {{ instance.DaysBehindLatest }} Days</span>
             </span>
             <span ng-if="!instance.LatestAmi">-</span>
           </td>

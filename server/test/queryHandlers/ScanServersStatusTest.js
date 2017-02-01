@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
@@ -78,12 +80,6 @@ describe('ScanServersStatus', function() {
     }
   };
 
-  let Environment = {
-    getAccountNameForEnvironment: function () {
-      return Promise.resolve();
-    }
-  };
-
   let InstanceMock = {
     getAllByEnvironment: function () {
       return Promise.resolve([mockInstance_1, mockInstance_2]);
@@ -108,7 +104,6 @@ describe('ScanServersStatus', function() {
     sut = rewire('queryHandlers/ScanServersStatus');
     sut.__set__({
       sender,
-      Environment,
       Instance: InstanceMock,
       AutoScalingGroup: AutoScalingGroupMock
     });
@@ -138,8 +133,7 @@ describe('ScanServersStatus', function() {
 
   describe('ASGs with the latest but unstable images', () => {
     beforeEach(() => {
-      mockImage.IsLatest = true;
-      mockImage.IsStable = false;
+      mockImage.IsLatestStable = false;
     });
 
     it('should not be marked as latest stable', () => {
@@ -152,8 +146,7 @@ describe('ScanServersStatus', function() {
 
   describe('ASGs with stable but stale images', () => {
     beforeEach(() => {
-      mockImage.IsLatest = false;
-      mockImage.IsStable = true;
+      mockImage.IsLatestStable = false;
     });
 
     it('should not be marked as latest stable', () => {
@@ -166,8 +159,7 @@ describe('ScanServersStatus', function() {
 
   describe('ASGs with the latest, stable images', () => {
     beforeEach(() => {
-      mockImage.IsLatest = true;
-      mockImage.IsStable = true;
+      mockImage.IsLatestStable = true;
     });
 
     it('should be marked as latest stable', () => {
@@ -178,3 +170,4 @@ describe('ScanServersStatus', function() {
     });
   });
 });
+

@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 'use strict'
 
 const expect = require('chai').expect;
@@ -167,6 +169,15 @@ describe('scheduling', () => {
         expect(action.source).to.equal(scheduling.sources.instance);
       });
 
+      it('should be switched on when instance schedule tag is "on"', function() {
+        scheduleTag.Value = 'ON'
+
+        let action = scheduling.actionForInstance(instance);
+
+        expect(action.action).to.equal(scheduling.actions.switchOn);
+        expect(action.source).to.equal(scheduling.sources.instance);
+      });
+
       let switchOnTestCases = [
         { schedule: 'start: 0 6 * * * *; stop: 0 7 * * * *', dateTime: '2016-01-01T06:30:00Z' },
         { schedule: 'stop: 0 23 * * * *; start: 0 0 * * * *', dateTime: '2016-01-01T00:00:00Z' },
@@ -198,8 +209,6 @@ describe('scheduling', () => {
       let skipTestCases = [
         { schedule: 'start: 0 6 * * * *; stop: 0 7 * * * *', dateTime: '2016-01-01T07:30:00Z' },
         { schedule: 'stop: 0 23 * * * *; start: 0 0 * * * *', dateTime: '2016-01-01T23:59:59Z' },
-        { schedule: 'on', dateTime: '2016-01-01T05:30:00Z' },
-        { schedule: 'on', dateTime: '2016-01-01T19:30:00Z' },
       ];
 
       skipTestCases.forEach(testCase => {
@@ -251,6 +260,16 @@ describe('scheduling', () => {
 
       it('should be skipped when instance schedule tag is "247"', function() {
         scheduleTag.Value = '247'
+
+        let action = scheduling.actionForInstance(instance);
+
+        expect(action.action).to.equal(scheduling.actions.skip);
+        expect(action.source).to.equal(scheduling.sources.instance);
+        expect(action.reason).to.equal(scheduling.skipReasons.stateIsCorrect);
+      });
+
+      it('should be skipped when instance schedule tag is "ON"', function() {
+        scheduleTag.Value = 'ON'
 
         let action = scheduling.actionForInstance(instance);
 
@@ -440,6 +459,15 @@ describe('scheduling', () => {
         expect(action.source).to.equal(scheduling.sources.asg);
       });
 
+      it('should be put in service when instance schedule tag is "ON"', function() {
+        asgScheduleTag.Value = 'ON'
+
+        let action = scheduling.actionForInstance(instance);
+
+        expect(action.action).to.equal(scheduling.actions.switchOn);
+        expect(action.source).to.equal(scheduling.sources.asg);
+      });
+
       let switchOnTestCases = [
         { schedule: 'start: 0 6 * * * *; stop: 0 7 * * * *', dateTime: '2016-01-01T06:30:00Z' },
         { schedule: 'stop: 0 23 * * * *; start: 0 0 * * * *', dateTime: '2016-01-01T00:00:00Z' },
@@ -471,8 +499,6 @@ describe('scheduling', () => {
       let skipTestCases = [
         { schedule: 'start: 0 6 * * * *; stop: 0 7 * * * *', dateTime: '2016-01-01T07:30:00Z' },
         { schedule: 'stop: 0 23 * * * *; start: 0 0 * * * *', dateTime: '2016-01-01T23:59:59Z' },
-        { schedule: 'on', dateTime: '2016-01-01T05:30:00Z' },
-        { schedule: 'on', dateTime: '2016-01-01T19:30:00Z' },
       ];
 
       skipTestCases.forEach(testCase => {
@@ -525,6 +551,15 @@ describe('scheduling', () => {
 
       it('should be put in service when instance schedule tag is "247"', function() {
         asgScheduleTag.Value = '247'
+
+        let action = scheduling.actionForInstance(instance);
+
+        expect(action.action).to.equal(scheduling.actions.putInService);
+        expect(action.source).to.equal(scheduling.sources.asg);
+      });
+
+      it('should be put in service when instance schedule tag is "ON"', function() {
+        asgScheduleTag.Value = 'ON'
 
         let action = scheduling.actionForInstance(instance);
 

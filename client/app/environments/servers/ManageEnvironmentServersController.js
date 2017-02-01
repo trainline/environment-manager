@@ -1,10 +1,12 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
 
 angular.module('EnvironmentManager.environments')
   .controller('ManageEnvironmentServersController',
-    function ($rootScope, $routeParams, $http, $q, cachedResources, resources, $uibModal, accountMappingService, serversView, QuerySync) {
+    function ($rootScope, $routeParams, $http, $q, cachedResources, resources, $uibModal, accountMappingService, serversView, QuerySync, environmentDeploy, $scope) {
       var vm = this;
 
       var SHOW_ALL_OPTION = 'Any';
@@ -101,7 +103,6 @@ angular.module('EnvironmentManager.environments')
 
       vm.update = function () {
         querySync.updateQuery();
-
         vm.view = serversView(vm.data, vm.selected);
       };
 
@@ -146,5 +147,8 @@ angular.module('EnvironmentManager.environments')
         });
       };
 
+      environmentDeploy.registerDeployHandler(vm.loadDeployDialog);
+
       init();
     });
+

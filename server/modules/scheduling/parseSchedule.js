@@ -22,12 +22,8 @@ function parseSchedule(serialisedSchedule) {
 
   if (schedule === 'noschedule') { return skip(); }
 
-  if (['247', 'off'].some(x => x === schedule)) {
+  if (['on', '247', 'off'].some(x => x === schedule)) {
     return permanent(schedule);
-  }
-
-  if (schedule === 'on') {
-    return defaultSchedule();
   }
 
   let parseResult = tryParseCronSchedule(schedule);
@@ -67,7 +63,7 @@ function parseCronSchedule(serialisedCronSchedule) {
 }
 
 function permanent(schedule) {
-  let state = schedule === '247' ? 'on' : 'off';
+  let state = schedule === 'off' ? 'off' : 'on';
   return { success: true, schedule: { permanent: state } };
 }
 
@@ -77,10 +73,6 @@ function invalid(err) {
 
 function skip() {
   return { success: true, schedule: { skip: true } };
-}
-
-function defaultSchedule() {
-  return parseCronSchedule('start: 30 6 * * * *; stop: 30 18 * * * *');
 }
 
 module.exports = tryParseSchedule;

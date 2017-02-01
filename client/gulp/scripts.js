@@ -1,8 +1,9 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
 
-var path = require('path');
 var gulp = require('gulp');
 
 var browserSync = require('browser-sync');
@@ -21,8 +22,8 @@ gulp.task('scripts', function () {
 
 function buildScripts() {
   return gulp.src('app/**/*.js')
-  	// TODO(filip): fix linting
     .pipe($.eslint())
     .pipe($.eslint.format())
     .pipe($.size());
 }
+

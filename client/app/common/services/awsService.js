@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
@@ -82,7 +84,7 @@ angular.module('EnvironmentManager.common').factory('awsService',
             if (latestStableVersion) {
               instance.LatestAmi = angular.copy(latestStableVersion);
               instance.UsingLatestAmi = (instance.Ami.AmiVersion == latestStableVersion.AmiVersion);
-              instance.DaysOutOfDate = new Date().getDaysBetweenDates(instance.Ami.CreationDate);
+              instance.DaysBehindLatest = instance.Ami.DaysBehindLatest;
             }
           }
 
@@ -189,7 +191,6 @@ angular.module('EnvironmentManager.common').factory('awsService',
     return new AwsService();
   });
 
-// TODO(filip): use Lodash instead
 function groupBy(fn, array) {
   array.sort(compare);
 
@@ -223,3 +224,4 @@ function groupBy(fn, array) {
     else return 0;
   }
 }
+

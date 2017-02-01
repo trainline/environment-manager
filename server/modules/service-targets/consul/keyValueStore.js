@@ -10,7 +10,6 @@ let consulClient = require('modules/consul-client');
 let logger = require('modules/logger');
 let retry = require('retry');
 let _ = require('lodash');
-let Enums = require('Enums');
 
 function encodeValue(value) {
   if (!value) return null;

@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
@@ -5,49 +7,52 @@
 // Manage all services
 angular.module('EnvironmentManager.configuration').controller('ServicesController',
   function ($scope, $routeParams, $location, $http, resources, cachedResources, modal) {
+    var vm = this;
     var SHOW_ALL_OPTION = 'Any';
 
-    $scope.FullData = [];
-    $scope.Data = [];
-    $scope.OwningClustersList = [];
-    $scope.SelectedOwningCluster = SHOW_ALL_OPTION;
-    $scope.SelectedService = '';
+    vm.itemsPerPage = 20;
+
+    vm.fullData = [];
+    vm.data = [];
+    vm.owningClustersList = [];
+    vm.selectedOwningCluster = SHOW_ALL_OPTION;
+    vm.selectedService = '';
 
     function init() {
-      $scope.dataLoading = true;
+      vm.dataLoading = true;
       $scope.canPost = user.hasPermission({ access: 'POST', resource: '/config/services/**' });
 
       var cluster = $routeParams.cluster;
       var service = $routeParams.service;
 
-      $scope.SelectedOwningCluster = cluster || SHOW_ALL_OPTION;
-      $scope.SelectedService = service || '';
+      vm.selectedOwningCluster = cluster || SHOW_ALL_OPTION;
+      vm.selectedService = service || '';
 
       cachedResources.config.clusters.all().then(function (clusters) {
-        $scope.OwningClustersList = [SHOW_ALL_OPTION].concat(_.map(clusters, 'ClusterName')).sort();
+        vm.owningClustersList = [SHOW_ALL_OPTION].concat(_.map(clusters, 'ClusterName')).sort();
       }).then(function () {
-        $scope.Refresh();
+        vm.refresh();
       });
     }
 
-    $scope.NewItem = function () {
+    vm.newItem = function () {
       $location.path('/config/services/new');
     };
 
-    $scope.Refresh = function () {
+    vm.refresh = function () {
       var query = {};
-      if ($scope.SelectedOwningCluster != SHOW_ALL_OPTION) {
-        query.cluster = $scope.SelectedOwningCluster;
+      if (vm.selectedOwningCluster != SHOW_ALL_OPTION) {
+        query.cluster = vm.selectedOwningCluster;
       }
 
       $http.get('/api/v1/config/services', { params: query }).then(function (response) {
         var data = response.data;
-        $scope.FullData = data;
-        $scope.UpdateFilter();
+        vm.fullData = _.sortBy(data, 'ServiceName');
+        vm.updateFilter();
         $scope.canDelete = false;
 
-        for (var i in $scope.Data) {
-          var service = $scope.Data[i];
+        for (var i in vm.data) {
+          var service = vm.data[i];
           var canDelete = user.hasPermission({ access: 'DELETE', resource: '/config/services/' + service.Name });
           if (canDelete) {
             $scope.canDelete = true;
@@ -55,7 +60,7 @@ angular.module('EnvironmentManager.configuration').controller('ServicesControlle
           }
         }
 
-        $scope.dataLoading = false;
+        vm.dataLoading = false;
       });
     };
 
@@ -64,15 +69,22 @@ angular.module('EnvironmentManager.configuration').controller('ServicesControlle
       if (action === 'delete') return $scope.canDelete;
     };
 
-    $scope.UpdateFilter = function () {
-      $location.search('cluster', $scope.SelectedOwningCluster);
-      $location.search('service', $scope.SelectedService || null);
-      $scope.Data = $scope.FullData.filter(function (service) {
-        return ($scope.SelectedService === '' || angular.lowercase(service.ServiceName).indexOf(angular.lowercase($scope.SelectedService)) != -1);
-      });
+    vm.updatePagedData = function () {
+      vm.data = vm.filteredData.slice(vm.itemsPerPage * (vm.currentPage - 1), vm.itemsPerPage * vm.currentPage);
     };
 
-    $scope.Delete = function (service) {
+    vm.updateFilter = function () {
+      vm.currentPage = 1;
+      $location.search('cluster', vm.selectedOwningCluster);
+      $location.search('service', vm.selectedService || null);
+      vm.filteredData = vm.fullData.filter(function (service) {
+        return (vm.selectedService === '' || angular.lowercase(service.ServiceName).indexOf(angular.lowercase(vm.selectedService)) != -1);
+      });
+
+      vm.updatePagedData();
+    };
+
+    vm.delete = function (service) {
       var serviceName = service.ServiceName;
       var owningCluster = service.OwningCluster;
 
@@ -86,19 +98,20 @@ angular.module('EnvironmentManager.configuration').controller('ServicesControlle
         var params = { key: serviceName, range: owningCluster };
         resources.config.services.delete(params).then(function () {
           cachedResources.config.services.flush();
-          $scope.Refresh();
+          vm.refresh();
         });
       });
     };
 
-    $scope.ViewDeployments = function (service) {
+    vm.viewDeployments = function (service) {
       $location.search('servicename', service.ServiceName);
       $location.path('/operations/deployments/');
     };
 
-    $scope.ViewHistory = function (service) {
+    vm.viewHistory = function (service) {
       $scope.ViewAuditHistory('Service', service.ServiceName, service.OwningCluster);
     };
 
     init();
   });
+

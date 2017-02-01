@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
@@ -23,17 +25,12 @@ app.config(function ($routeProvider, $compileProvider) {
       controller: 'EnvironmentsSummaryController as vm',
       menusection: ''
     })
-    .when('/login', {
-      templateUrl: '/login.html',
-      allowAnonymous: true,
-      menusection: ''
-    })
     .otherwise({
       redirectTo: '/'
     });
 });
 
-app.config(function ($httpProvider, $locationProvider) {
+app.config(function ($httpProvider, $locationProvider, $qProvider) {
   $locationProvider.hashPrefix('');
 
   // Set default put request content type to JSON
@@ -52,12 +49,16 @@ app.config(function ($httpProvider, $locationProvider) {
   });
 });
 
-app.run(function ($rootScope, $timeout) {
+app.run(function ($rootScope, $timeout, $window) {
   $rootScope.canUser = function () {
     return true;
   };
 
-  $timeout(function () {
-    $rootScope.$broadcast('cookie-expired');
-  }, (window.user.getExpiration() - new Date().getTime()));
+  if ($window.user !== undefined) {
+    $rootScope.loggedIn = true;
+    $timeout(function () {
+      $rootScope.$broadcast('cookie-expired');
+    }, (window.user.getExpiration() - new Date().getTime()));
+  }
 });
+

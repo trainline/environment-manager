@@ -8,13 +8,21 @@ const APP_VERSION = config.get('APP_VERSION');
 const links = config.getUserValue('local').content.links;
 const FEATURE_DISABLE_SERVICE = true;
 
+/**
+ * This is JSONP with initial state of an app, if user is not logged in, no need to send any information.
+ * User will see a login form.
+ */
 module.exports = function (request, response) {
+  if (request.user === undefined) {
+    response.send('');
+    return;
+  }
+
   let data = {
     user: JSON.stringify(request.user.toJson()),
     version: APP_VERSION
   };
 
-  // TODO(filip): refactor front code so we can send single data object rather than code
   let str = '';
   str += `window.user = new User(${data.user}); `;
   str += `window.version = '${data.version}'; `;

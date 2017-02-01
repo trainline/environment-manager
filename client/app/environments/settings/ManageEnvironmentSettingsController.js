@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
@@ -185,7 +187,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
     function getScheduleAction(data) {
       function getCurrentSchedule() {
         if (data.ScheduleAutomatically === false) {
-          if (data.ManualScheduleUp === true) return '247';
+          if (data.ManualScheduleUp === true) return 'ON';
           if (data.ManualScheduleUp === false) return 'OFF';
         }
 
@@ -212,3 +214,4 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
 
     init();
   });
+

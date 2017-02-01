@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
@@ -138,9 +140,60 @@ describe('imageSummary', function () {
         delete y.Rank;
         return y;
       });
+
       context(`${JSON.stringify(input)}`, function () {
         it(`should return ${JSON.stringify(testCase)}`, function () {
-          sut.rank(input).should.be.eql(testCase);
+          sut.rank(input).should.match(testCase);
+        });
+      });
+    }
+
+    let daysBehindLatestTestCases = [
+      [
+        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: false, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 0 },
+      ],
+      [
+        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 0 },
+      ],
+      [
+        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 0 },
+        { AmiType: 'A', AmiVersion: '0.0.2', IsStable: false, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 0 },
+      ],
+      [
+        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 1 },
+        { AmiType: 'A', AmiVersion: '0.0.2', IsStable: true, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 0 },
+      ],
+      [
+        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 1 },
+        { AmiType: 'A', AmiVersion: '0.0.2', IsStable: true, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 0 },
+        { AmiType: 'A', AmiVersion: '0.0.3', IsStable: false, CreationDate: '2000-01-03T00:00:00.000Z', DaysBehindLatest: 0 },
+      ],
+      [
+        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 2 },
+        { AmiType: 'A', AmiVersion: '0.0.2', IsStable: false, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 1 },
+        { AmiType: 'A', AmiVersion: '0.0.3', IsStable: true, CreationDate: '2000-01-03T00:00:00.000Z', DaysBehindLatest: 0 },
+      ],
+      [
+        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 1 },
+        { AmiType: 'A', AmiVersion: '0.0.2', IsStable: true, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 0 },
+        { AmiType: 'A', AmiVersion: '0.0.3', IsStable: false, CreationDate: '2000-01-03T00:00:00.000Z', DaysBehindLatest: 0 },
+        { AmiType: 'B', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 2 },
+        { AmiType: 'B', AmiVersion: '0.0.2', IsStable: true, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 1 },
+        { AmiType: 'B', AmiVersion: '0.0.3', IsStable: true, CreationDate: '2000-01-03T00:00:00.000Z', DaysBehindLatest: 0 },
+      ],
+    ];
+
+    for (let testCase of daysBehindLatestTestCases) {
+      testCase.sort(sut.compare);
+      let input = testCase.map(x => {
+        let y = Object.assign({}, x);
+        delete y.DaysBehindLatest;
+        return y;
+      });
+
+      context(`${JSON.stringify(input)}`, function () {
+        it(`should return ${JSON.stringify(testCase)}`, function () {
+          sut.rank(input).should.match(testCase);
         });
       });
     }
@@ -157,3 +210,4 @@ describe('imageSummary', function () {
     });
   });
 });
+

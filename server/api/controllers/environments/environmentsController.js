@@ -17,9 +17,6 @@ let environmentProtection = require('modules/authorizers/environmentProtection')
  * GET /environments
  */
 function getEnvironments(req, res, next) {
-  const masterAccountName = config.getUserValue('masterAccountName');
-
-  let filter = {};
   OpsEnvironment.getAll().then(list => Promise.map(list, env => env.toAPIOutput())).then(data => res.json(data)).catch(next);
 }
 
@@ -36,7 +33,7 @@ function getEnvironmentByName(req, res, next) {
 /**
  * GET /environments/{name}/protected
  */
-function isEnvironmentProtectedFromAction(req, res, next) {
+function isEnvironmentProtectedFromAction(req, res) {
   const environmentName = req.swagger.params.name.value;
   const action = req.swagger.params.action.value;
 

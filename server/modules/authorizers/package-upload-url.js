@@ -6,7 +6,6 @@ let Environment = require('models/Environment');
 let Service = require('models/Service');
 
 let fp = require('lodash/fp');
-let config = require('config');
 
 let param = p => fp.get(['swagger', 'params', p, 'value']);
 

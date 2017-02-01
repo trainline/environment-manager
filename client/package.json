@@ -1,14 +1,17 @@
 {
   "name": "EnvironmentManager",
-  "version": "3.20.1",
+  "version": "3.27.0",
   "author": {
     "name": "Platform Development",
     "email": "platform.development@thetrainline.com"
   },
+  "config": {
+    "git-tag-version": false
+  },
   "scripts": {
     "test": "gulp test",
     "test-ci": "gulp test -c",
-    "lint": "eslint app/ gulp/ --ext .js",
+    "lint": "eslint app/ gulp/ --ext .js --max-warnings 92",
     "lint-fix": "eslint app/ gulp/ --ext .js --fix"
   },
   "devDependencies": {

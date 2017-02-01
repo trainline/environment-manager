@@ -1,14 +1,16 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
 
 angular.module('EnvironmentManager.common').controller('MainController',
-  function ($rootScope, $scope, $route, $routeParams, $location, modal, Environment) {
+  function ($rootScope, $scope, $route, $routeParams, $http, $location, $window, modal, Environment, environmentDeploy) {
     var vm = this;
 
-    $scope.appVersion = window.version;
+    vm.appVersion = $window.version;
     $scope.$route = $route; // Used by index page to determine active section
-    $scope.LoggedInUser = window.user.getName(); // For display in header
+    vm.loggedInUser = $window.user.getName(); // For display in header
     $scope.ParentEnvironmentsList = []; // For Environments selection
     $rootScope.WorkingEnvironment = { EnvironmentName: '' }; // For Environments section only, selected Environment from Sidebar drop-down
 
@@ -32,6 +34,12 @@ angular.module('EnvironmentManager.common').controller('MainController',
       } else {
         return 'Unknown section';
       }
+    };
+
+    vm.logout = function () {
+      $http.post('/api/v1/logout', {}).then(function () {
+        $window.location.reload();
+      });
     };
 
     // Change active environment for Environments section
@@ -104,6 +112,11 @@ angular.module('EnvironmentManager.common').controller('MainController',
       return errors;
     };
 
+    $scope.showDeployDialog = function() {
+      environmentDeploy.callDeployHandler();
+    }
+
+
     function missingJSONValue(value) {
       if (typeof value === 'undefined') return true;
       if (value == null) return false; // nulls allowed
@@ -111,7 +124,7 @@ angular.module('EnvironmentManager.common').controller('MainController',
       return !(value);
     }
 
-    $scope.ShowSchemaHelp = function () {
+    vm.showSchemaHelp = function () {
       var DYNAMO_SCHEMA_WIKI_URL = window.links.DYNAMO_CONFIG;
       window.open(DYNAMO_SCHEMA_WIKI_URL, '_blank');
     };
@@ -154,3 +167,4 @@ angular.module('EnvironmentManager.common').controller('MainController',
 
     init();
   });
+

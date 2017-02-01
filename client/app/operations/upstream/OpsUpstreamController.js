@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
@@ -17,6 +19,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     vm.data = [];
     vm.dataFound = false;
     vm.dataLoading = false;
+    vm.ASGDataLoading = false;
 
     function init() {
       $q.all([
@@ -92,11 +95,11 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
           var upstreamMatch = false;
           if (!serviceName && !upstreamName) return false;
           if (serviceName) {
-            serviceMatch = serviceName.indexOf(angular.lowercase(vm.selectedService)) != -1;
+            serviceMatch = serviceName.indexOf(angular.lowercase(vm.selectedService)) !== -1;
           }
 
           if (upstreamName) {
-            upstreamMatch = upstreamName.indexOf(angular.lowercase(vm.selectedService)) != -1;
+            upstreamMatch = upstreamName.indexOf(angular.lowercase(vm.selectedService)) !== -1;
           }
 
           if (!(serviceMatch || upstreamMatch)) {
@@ -117,16 +120,66 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     };
 
     vm.showInstanceDetails = function (upstreamData) {
+      return getASGsForHost(upstreamData).then(function(asgs){
+        if (asgs && asgs.length) {
+          return selectASG(asgs).then(function(asg){
+            return showAsgDetails(asg);
+          });
+        } else {
+          $uibModal.open({
+            templateUrl: '/app/operations/upstream/ops-upstream-details-modal.html',
+            controller: 'UpstreamDetailsModalController as vm',
+            size: 'lg',
+            windowClass: 'LBStatus',
+            resolve: {
+              upstream: function () {
+                return upstreamData;
+              },
+            },
+          });
+        }
+      });
+    };
+
+    function selectASG(asgs) {
+      if (asgs.length === 1)
+        return Promise.resolve(_.first(asgs));
+      
       var instance = $uibModal.open({
-        templateUrl: '/app/operations/upstream/ops-upstream-details-modal.html',
-        controller: 'UpstreamDetailsModalController as vm',
-        size: 'lg',
-        windowClass: 'LBStatus',
+        templateUrl: '/app/operations/upstream/select-asg-modal.html',
+        controller: 'ASGSelectionModalController as vm',
+        size: 'sm',
         resolve: {
-          upstream: function () {
-            return upstreamData;
+          parameters: function () {
+            return { asgs: asgs };
           }
         }
+      });
+
+      return instance.result;
+    }
+
+    function showAsgDetails(asgName) {
+      cachedResources.config.environments.all().then(function (envData) {
+        return cachedResources.config.environments.getByName(vm.selectedEnvironment, 'EnvironmentName', envData);
+      }).then(function(env){
+        var account = accountMappingService.getAccountForEnvironment(vm.selectedEnvironment).then(function(account){
+          $uibModal.open({
+            templateUrl: '/app/environments/dialogs/env-asg-details-modal.html',
+            controller: 'ASGDetailsModalController as vm',
+            windowClass: 'InstanceDetails',
+            resolve: {
+              parameters: function () {
+                return {
+                  groupName: asgName,
+                  environment: env,
+                  accountName: account,
+                  defaultAction: 'lb-status'
+                };
+              },
+            },
+          });
+        });
       });
     };
 
@@ -166,7 +219,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     };
 
 
-    // Convert to flat hosts array. Match port numbers to Blue/Green slice for corresponding service. Add NGINX status
+    // Convert to flat hosts array. Match port numbers to Blue/Green slice for corresponding service.
     function restructureUpstreams(upstreams) {
       var flattenedUpstreams = [];
       upstreams.forEach(function (upstream) {
@@ -205,6 +258,17 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
       if (_.toInteger(_.get(service, 'Value.BluePort')) === port) return 'Blue';
       if (_.toInteger(_.get(service, 'Value.GreenPort')) === port) return 'Green';
       return 'Unknown';
+    }
+
+    function getASGsForHost(upstreamHost) {
+      var environment = upstreamHost.Value.EnvironmentName;
+      var service = upstreamHost.Value.ServiceName;
+      var slice = upstreamHost.Value.Slice !== 'Unknown' ? upstreamHost.Value.Slice : 'none';
+
+      var url = ['api', 'v1', 'services', service, "asgs"].join('/') + '?environment=' + environment + '&slice=' + slice;
+      return $http.get(url).then(function (response) {
+        return response.data.map(function(asg){return asg.AutoScalingGroupName;});
+      });
     }
 
     function updateLBStatus() {
@@ -266,17 +330,17 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
       if (_.isArray(lbServerStatusData) && lbServerStatusData.length > 0) {
         lbServerStatusData.forEach(function (server) {
           if (server) {
-            if (server.State == 'up') { upCount++; }
-            if (server.State == 'down') { downCount++; }
-            if (server.State == 'unhealthy') { unhealthyCount++; }
+            if (server.State === 'up') { upCount++; }
+            if (server.State === 'down') { downCount++; }
+            if (server.State === 'unhealthy') { unhealthyCount++; }
           }
         });
 
         if (upCount == lbServerStatusData.length) {
           state = 'Up';
-        } else if (downCount == lbServerStatusData.length) {
+        } else if (downCount === lbServerStatusData.length) {
           state = 'Down';
-        } else if (unhealthyCount == lbServerStatusData.length) {
+        } else if (unhealthyCount === lbServerStatusData.length) {
           state = 'Unhealthy';
         } else if (upCount > 0 && unhealthyCount > 0 && downCount == 0) {
           state = 'UpUnhealthy';
@@ -298,3 +362,4 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
 
     init();
   });
+

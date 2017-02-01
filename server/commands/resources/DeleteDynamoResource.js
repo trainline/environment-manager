@@ -3,9 +3,7 @@
 'use strict';
 
 let co = require('co');
-let OperationResult = require('../utils/operationResult');
 let resourceProvider = require('modules/resourceProvider');
-let sender = require('modules/sender');
 
 function* handler(command) {
   // Create an instance of the resource to work with based on the resource
@@ -18,8 +16,6 @@ function* handler(command) {
 
   if (command.key) params.key = command.key;
   if (command.range) params.range = command.range;
-
-  let resourceUri = OperationResult.resourceUri(command.resource, command.key, command.range);
 
   // Mark item as deleted in order to trace the right audit
   // Run this step only if auditing is enabled

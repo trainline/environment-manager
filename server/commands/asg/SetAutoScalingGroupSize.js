@@ -4,7 +4,6 @@
 
 let co = require('co');
 let _ = require('lodash');
-let OperationResult = require('../utils/operationResult');
 let resourceProvider = require('modules/resourceProvider');
 let InvalidOperationError = require('modules/errors/InvalidOperationError.class');
 
