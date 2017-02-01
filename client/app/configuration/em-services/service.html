@@ -47,6 +47,34 @@
                       ng-readonly="!vm.canUser('edit')"></textarea>
         </div>
     </div>
+
+    <div class="form-group" >
+        <label class="col-sm-2 control-label text-left">Documentation URL:</label>
+        <div class="col-sm-4">
+            <input type="text"
+                   name="DocumentationUrl"
+                   class="form-control"
+                   autofocus
+                   maxlength="256"
+                   ng-model="vm.service.Value.DocumentationUrl"
+                   ng-readonly="!vm.canUser('edit')" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label text-left nowrap">Primary Contact:</span></label>
+        <div class="col-sm-4">
+            <input type="text"
+                   name="PrimaryContact"
+                   class="form-control"
+                   autofocus
+                   maxlength="50"
+                   ng-model="vm.service.Value.PrimaryContact"
+                   pattern="[a-zA-Z\s]*"
+                   ng-readonly="!vm.canUser('edit')" />
+        </div>
+    </div>
+
     <div class="form-group" ng-class="{'has-error': form.ApplicationId.$invalid}">
         <label class="col-sm-2 control-label text-left nowrap">Application ID:</label>
         <div class="col-sm-2">
@@ -59,32 +87,6 @@
                    ng-readonly="!vm.canUser('edit')" />
         </div>
         <span class="help-block" ng-if="form.ApplicationId.$dirty && form.ApplicationId.$error.pattern">Application ID must be a number.</span>
-    </div>
-
-    <div class="form-group">
-        <label class="col-sm-2 control-label text-left nowrap">Goto-person:</span></label>
-        <div class="col-sm-4">
-            <input type="text"
-                   name="GotoPerson"
-                   class="form-control"
-                   autofocus
-                   maxlength="50"
-                   ng-model="vm.service.Value.GotoPerson"
-                   pattern="[a-zA-Z\s]*"
-                   ng-readonly="!vm.canUser('edit')" />
-        </div>
-    </div>
-    <div class="form-group" >
-        <label class="col-sm-2 control-label text-left">Service + Documentation URL:</label>
-        <div class="col-sm-4">
-            <input type="text"
-                   name="ServiceDocumentationUrl"
-                   class="form-control"
-                   autofocus
-                   maxlength="256"
-                   ng-model="vm.service.Value.ServiceDocumentationUrl"
-                   ng-readonly="!vm.canUser('edit')" />
-        </div>
     </div>
 
     <div class="form-group" ng-class="{'has-error': form.BluePort.$invalid}">
@@ -102,7 +104,7 @@
                    ng-change="vm.checkBluePort()" />
 
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" ng-click="vm.getNextFreeBluePort()">Next Free Port <span class="glyphicon glyphicon-step-forward"></span></button>
+                    <button class="btn btn-default" type="button" ng-click="vm.getNextFreeBluePort()">Get Free Port <span class="glyphicon glyphicon-step-forward"></span></button>
                 </span>
             </div>
         </div>
@@ -126,7 +128,7 @@
                    ng-change="vm.checkGreenPort()" />
 
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" ng-click="vm.getNextFreeGreenPort()">Next Free Port <span class="glyphicon glyphicon-step-forward"></span></button>
+                    <button class="btn btn-default" type="button" ng-click="vm.getNextFreeGreenPort()">Get Free Port <span class="glyphicon glyphicon-step-forward"></span></button>
                 </span>
             </div>
         </div>
