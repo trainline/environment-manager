@@ -1,7 +1,6 @@
 {
   "ActiveDirectory": null,
   "authentication": {
-    "loginUrl": "/login",
     "cookieName": "environmentmanager",
     "cookieDuration": "12h",
     "tokenDuration": "5m"

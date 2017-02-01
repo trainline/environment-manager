@@ -50,7 +50,7 @@ function postLBSettingsConfig(req, res, next) {
   co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     return dynamoHelper.createWithSortKey(environmentName, vHostName, { Value: body.Value }, user, { accountName });
-  }).then(_ => res.status(201).end()).catch(next);
+  }).then(() => res.status(201).end()).catch(next);
 }
 
 /**
@@ -66,7 +66,7 @@ function putLBSettingConfigByName(req, res, next) {
   co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     return dynamoHelper.updateWithSortKey(environmentName, vHostName, { Value: body }, expectedVersion, user, { accountName });
-  }).then(_ => res.status(200).end()).catch(next);
+  }).then(() => res.status(200).end()).catch(next);
 }
 
 /**
@@ -80,7 +80,7 @@ function deleteLBSettingConfigByName(req, res, next) {
   co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     return dynamoHelper.deleteWithSortKey(environmentName, vHostName, user, { accountName });
-  }).then(_ => res.status(200).end()).catch(next);
+  }).then(() => res.status(200).end()).catch(next);
 }
 
 module.exports = {

@@ -21,7 +21,7 @@ angular.module('EnvironmentManager.common')
           vm.simpleOption = 'Environment Default';
           delete vm.crons;
         } else if (schedule.indexOf(':') === -1) {
-          if (schedule === '247') {
+          if (schedule === '247' || schedule === 'ON') {
             vm.simpleOption = 'Always On';
           } else if (schedule === 'OFF') {
             vm.simpleOption = 'Off';

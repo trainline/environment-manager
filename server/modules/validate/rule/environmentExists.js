@@ -12,7 +12,7 @@ let log = require('modules/logger'); // eslint-disable import/no-extraneous-depe
  */
 function environmentExists(environment) {
   return environmentDatabase.getEnvironmentByName(environment).then(
-    rsp => [],
+    () => [],
     (err) => {
       log.warn(err);
       return {

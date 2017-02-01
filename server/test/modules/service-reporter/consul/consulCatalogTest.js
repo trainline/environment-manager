@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
@@ -54,7 +56,25 @@ describe('consulCatalog', function() {
     sut.__set__({ consulClient });
   });
 
-  describe('getAllServices', function() {
+  describe('createConsulClient', () => {
+    let createConsulClient;
+
+    beforeEach(() => {
+      createConsulClient = sut.__get__('createConsulClient');
+    });
+
+    it('propagates error on fail', (done) => {
+      consulClient.create = sinon.stub().returns(Promise.reject('failed'));
+      createConsulClient('c50').then(() => {
+        done('creating consul client should fail');
+      }, (reason) => {
+        reason.should.equal('failed');
+        done();
+      })
+    });
+  });
+
+  describe('getAllServices', () => {
     it('filters out services without a deployment_id tag', () => {
       return sut.getAllServices({}).then(services => {
         assert(Object.keys(services).length > 20, 'expected more than 20 services');
@@ -66,7 +86,7 @@ describe('consulCatalog', function() {
     });
   });
 
-  describe('getNode', function() {
+  describe('getNode', () => {
     it('filters out services with no tags or no deployment ID', () => {
       return sut.getNode('environment', 'nodeName').then(nodes => {
         assert.equal(nodes.Services.length, 1);

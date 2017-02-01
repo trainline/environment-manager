@@ -16,6 +16,7 @@ class Instance {
 
   constructor(data) {
     _.assign(this, data);
+    this.CreationTime = this.getCreationTime();
   }
 
   getAutoScalingGroupName() {
@@ -32,6 +33,10 @@ class Instance {
 
       return client.setTag(parameters);
     });
+  }
+
+  getCreationTime() {
+    return _.get(this, 'BlockDeviceMappings[0].Ebs.AttachTime');
   }
 
   static getById(instanceId) {

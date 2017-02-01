@@ -7,16 +7,13 @@ let co = require('co');
 let moment = require('moment');
 let logger = require('modules/logger');
 let sender = require('modules/sender');
-let Environment = require('models/Environment');
 let AutoScalingGroup = require('models/AutoScalingGroup');
 let Instance = require('models/Instance');
-let serviceDiscovery = require('modules/service-discovery');
 
 module.exports = co.wrap(ScanServersStatusQueryHandler);
 
 function* ScanServersStatusQueryHandler(query) {
   const environmentName = query.environmentName;
-  const accountName = yield Environment.getAccountNameForEnvironment(environmentName);
 
   let allStartTime = moment.utc();
 
@@ -139,7 +136,7 @@ function getAmi(instances) {
 
   return {
     Name: ami.name,
-    Age: moment.utc().diff(moment(ami.created), 'days'),
+    Age: ami.DaysBehindLatest,
     IsLatestStable: ami.isLatestStable
   };
 }
@@ -191,7 +188,8 @@ function getImage(images, imageId) {
   return {
     name: image.Name,
     created: image.CreationDate,
-    isLatestStable: image.IsLatest && image.IsStable
+    DaysBehindLatest: image.DaysBehindLatest,
+    isLatestStable: image.IsLatestStable
   };
 }
 

@@ -1,17 +1,20 @@
 {
   "name": "environmentmanager",
-  "version": "3.24.0",
+  "version": "3.27.0",
   "description": "EnvironmentManager Server",
   "homepage": "https://trainline.github.io/environment-manager/",
   "bugs": {
     "url": "https://github.com/trainline/environment-manager/issues",
     "email": "platform.development@thetrainline.com"
   },
+  "config": {
+    "git-tag-version": false
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/trainline/environment-manager.git"
   },
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "debug": "nodemon --debug-brk index.js",

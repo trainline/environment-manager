@@ -38,7 +38,7 @@ function validate(account) {
   }).then(co.wrap(function* () {
     if (account.RoleArn !== undefined && account.RoleArn !== null) {
       try {
-        let roleIsValid = yield childAWSclient.assumeRole(account.RoleArn);
+        yield childAWSclient.assumeRole(account.RoleArn);
       } catch (error) {
         logger.error(`Rejected attempt to add account ${account.AccountName} with role ARN ${account.RoleArn}`);
         throw new Error(`Cannot assume role for ARN: ${account.RoleArn}`);

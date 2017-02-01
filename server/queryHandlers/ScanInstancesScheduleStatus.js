@@ -2,7 +2,6 @@
 
 'use strict';
 
-let resourceProvider = require('modules/resourceProvider');
 let co = require('co');
 let _ = require('lodash');
 let sender = require('modules/sender');
@@ -22,7 +21,6 @@ function getInstances(query) {
   return Promise.all([getAllInstances(query), getAllEnvironments(query), getAllASGs(query)]).then((data) => {
     let allInstances = data[0];
     let environments = buildEnvironmentIndex(data[1]);
-    let asgData = data[2];
     let asgs = buildASGIndex(data[2]);
 
     let instances = [];

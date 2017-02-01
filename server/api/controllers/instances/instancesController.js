@@ -51,10 +51,6 @@ function getInstances(req, res, next) {
     if (instanceId !== undefined) {
       filter['instance-id'] = instanceId;
     }
-    // TODO(Filip): consider adding filter on launch-time for improved performance
-    // if (since !== undefined) {
-    //   filter['launch-time'] = Instance.createLaunchTimeArraySince(since);
-    // }
 
     if (_.isEmpty(filter)) {
       filter = null;
@@ -66,12 +62,17 @@ function getInstances(req, res, next) {
     // Note: be wary of performance - this filters instances AFTER fetching all from AWS
     if (since !== undefined) {
       let sinceDate = new Date(since);
-      list = _.filter(list, instance => sinceDate.getTime() < new Date(instance.LaunchTime).getTime());
+      list = _.filter(list, (instance) => {
+        if (instance.CreationTime === undefined) {
+          return true;
+        }
+        return sinceDate.getTime() < new Date(instance.CreationTime).getTime();
+      });
     }
 
     if (includeDeploymentsStatus === true) {
       if (list.length > Enums.DEPLOYMENT_INSTANCES_LIST_MAXIMUM_LENGTH) {
-        throw new Error('Too many results. Please refine your search query, ie. choose later since date, or limit query to one environment');
+        throw new Error(`Too many results: ${list.length}. Please refine your search query, ie. choose later since date, or limit query to one environment`);
       }
 
       list = yield _.map(list, (instance) => {
@@ -92,6 +93,9 @@ function getInstances(req, res, next) {
           .then((state) => {
             _.assign(instance, state);
             return instance;
+          }, (error) => {
+            logger.error(error);
+            return false;
           });
       });
 

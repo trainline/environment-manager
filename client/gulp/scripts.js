@@ -4,7 +4,6 @@
 
 'use strict';
 
-var path = require('path');
 var gulp = require('gulp');
 
 var browserSync = require('browser-sync');
@@ -23,7 +22,6 @@ gulp.task('scripts', function () {
 
 function buildScripts() {
   return gulp.src('app/**/*.js')
-  	// TODO(filip): fix linting
     .pipe($.eslint())
     .pipe($.eslint.format())
     .pipe($.size());

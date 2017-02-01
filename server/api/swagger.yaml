@@ -842,7 +842,7 @@ paths:
   /services/{service}/health:
     x-swagger-router-controller: servicesController
     get:
-      operationId: getServiceHealthById
+      operationId: getOverallServiceHealth
       summary: Get a currently deployed service.
       tags:
         - Service
@@ -855,6 +855,38 @@ paths:
           in: query
           type: string
           required: true
+      responses:
+        200:
+          description: The service
+          schema:
+            type: object
+  /services/{service}/health/{slice}:
+    x-swagger-router-controller: servicesController
+    get:
+      operationId: getServiceHealth
+      summary: Get a currently deployed service.
+      tags:
+        - Service
+      parameters:
+        - name: service
+          in: path
+          type: string
+          required: true
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: serverRole
+          in: query
+          type: string
+        - name: slice
+          in: path
+          type: string
+          required: true
+          enum:
+            - blue
+            - green
+            - none
       responses:
         200:
           description: The service
@@ -983,6 +1015,40 @@ paths:
           in: path
           type: string
           required: true
+      responses:
+        200:
+          description: OK
+  /login:
+    x-swagger-router-controller: userController
+    post:
+      operationId: login
+      summary: Login and get authentication cookie
+      tags:
+        - Authentication
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - username
+              - password
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+      responses:
+        200:
+          description: OK
+  /logout:
+    x-swagger-router-controller: userController
+    post:
+      operationId: logout
+      summary: Log out
+      tags:
+        - Authentication
       responses:
         200:
           description: OK
@@ -2616,6 +2682,9 @@ definitions:
         type: boolean
       AccountName:
         type: string
+      DaysBehindLatest:
+        type: integer
+        minimum: 0
   Instance:
     type: object
     properties:

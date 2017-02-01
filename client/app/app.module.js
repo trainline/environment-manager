@@ -25,11 +25,6 @@ app.config(function ($routeProvider, $compileProvider) {
       controller: 'EnvironmentsSummaryController as vm',
       menusection: ''
     })
-    .when('/login', {
-      templateUrl: '/login.html',
-      allowAnonymous: true,
-      menusection: ''
-    })
     .otherwise({
       redirectTo: '/'
     });
@@ -54,13 +49,16 @@ app.config(function ($httpProvider, $locationProvider, $qProvider) {
   });
 });
 
-app.run(function ($rootScope, $timeout) {
+app.run(function ($rootScope, $timeout, $window) {
   $rootScope.canUser = function () {
     return true;
   };
 
-  $timeout(function () {
-    $rootScope.$broadcast('cookie-expired');
-  }, (window.user.getExpiration() - new Date().getTime()));
+  if ($window.user !== undefined) {
+    $rootScope.loggedIn = true;
+    $timeout(function () {
+      $rootScope.$broadcast('cookie-expired');
+    }, (window.user.getExpiration() - new Date().getTime()));
+  }
 });
 

@@ -6,10 +6,10 @@ let AWS = require('aws-sdk');
 let common = require('./common');
 
 module.exports = {
-  createDynamoClient: _ => common.create(AWS.DynamoDB.DocumentClient, common.getOptions()),
-  createASGClient: _ => common.create(AWS.AutoScaling, common.getOptions()),
-  createEC2Client: _ => common.create(AWS.EC2, common.getOptions()),
-  createIAMClient: _ => common.create(AWS.IAM, common.getOptions()),
-  createS3Client: _ => common.create(AWS.S3, common.getOptions()),
-  createSNSClient: _ => common.create(AWS.SNS, common.getOptions())
+  createDynamoClient: () => common.create(AWS.DynamoDB.DocumentClient, common.getOptions()),
+  createASGClient: () => common.create(AWS.AutoScaling, common.getOptions()),
+  createEC2Client: () => common.create(AWS.EC2, common.getOptions()),
+  createIAMClient: () => common.create(AWS.IAM, common.getOptions()),
+  createS3Client: () => common.create(AWS.S3, common.getOptions()),
+  createSNSClient: () => common.create(AWS.SNS, common.getOptions())
 };

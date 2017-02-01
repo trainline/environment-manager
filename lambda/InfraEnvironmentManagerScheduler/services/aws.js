@@ -37,7 +37,7 @@ function createAWSService(config) {
     });
 
     let promises = tasks.map(autoscalingRateLimiter.queueTask);
-    return promiseAllWithSlowFail(tasks);
+    return promiseAllWithSlowFail(promises);
   }
 
   function putAsgInstancesInStandby(instances) {

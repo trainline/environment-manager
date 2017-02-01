@@ -6,16 +6,19 @@
 
 angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
   function ($scope, $routeParams, $location, $uibModal, $q, resources, cachedResources, accountMappingService, awsService, modal, QuerySync) {
+    var vm = this;
     var SHOW_ALL_OPTION = 'Any';
 
-    $scope.EnvironmentsList = {};
-    $scope.OwningClustersList = [];
-    $scope.AmiData = [];
-    $scope.FullData = [];
-    $scope.Data = [];
-    $scope.DataLoading = true;
+    vm.environmentsList = {};
+    vm.owningClustersList = [];
+    vm.amiData = [];
+    vm.fullData = [];
+    vm.data = [];
+    vm.dataLoading = true;
 
-    $scope.SelectedAccount = '';
+    vm.selectedAccount = '';
+
+    vm.agesList = [1, 7, 30, 60];
 
     var querySync;
 
@@ -25,98 +28,142 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
           environments.sort(function (source, target) {
             return source.EnvironmentName.localeCompare(target.EnvironmentName);
           }).forEach(function (environment) {
-            $scope.EnvironmentsList[environment.EnvironmentName] = environment;
+            vm.environmentsList[environment.EnvironmentName] = environment;
           });
 
-          querySync = new QuerySync($scope, {
+          querySync = new QuerySync(vm, {
             environment: {
-              property: 'SelectedEnvironment',
+              property: 'selectedEnvironment',
               default: environments[0].EnvironmentName
             },
             cluster: {
-              property: 'SelectedOwningCluster',
+              property: 'selectedOwningCluster',
               default: SHOW_ALL_OPTION
             },
             server: {
-              property: 'SelectedServerRole',
+              property: 'selectedServerRole',
               default: ''
             },
             ami: {
-              property: 'SelectedAmi',
+              property: 'selectedAmi',
               default: ''
+            },
+            age: {
+              property: 'selectedAge',
+              default: '0'
             }
           });
 
           querySync.init();
+
+          if (vm.selectedAge === true) {
+            vm.selectedAge = '0';
+            querySync.updateQuery();
+          }
         }),
 
         cachedResources.config.clusters.all().then(function (clusters) {
-          $scope.OwningClustersList = [SHOW_ALL_OPTION].concat(_.map(clusters, 'ClusterName')).sort();
+          vm.owningClustersList = [SHOW_ALL_OPTION].concat(_.map(clusters, 'ClusterName')).sort();
         }),
 
         awsService.images.GetImageDetails().then(function (amiData) {
-          $scope.AmiData = amiData;
+          vm.amiData = amiData;
         })
       ]).then(function () {
-        $scope.Refresh();
+        vm.refresh();
       });
     }
 
-    $scope.Refresh = function () {
-      $scope.DataLoading = true;
+    vm.refresh = function () {
+      vm.dataLoading = true;
 
       querySync.updateQuery();
 
-      accountMappingService.getAccountForEnvironment($scope.SelectedEnvironment).then(function (accountName) {
-        $scope.SelectedAccount = accountName;
+      accountMappingService.getAccountForEnvironment(vm.selectedEnvironment).then(function (accountName) {
+        vm.selectedAccount = accountName;
 
         var params = {
           account: accountName,
           query: {
-            environment: $scope.SelectedEnvironment
+            environment: vm.selectedEnvironment
           }
         };
 
-        if ($scope.SelectedOwningCluster != SHOW_ALL_OPTION) {
-          params.query.cluster = $scope.SelectedOwningCluster;
+        if (vm.selectedOwningCluster != SHOW_ALL_OPTION) {
+          params.query.cluster = vm.selectedOwningCluster;
         }
 
         awsService.instances.GetInstanceDetails(params).then(function (instanceData) {
           // Merge in AMI details against each instance
-          $scope.FullData = awsService.images.MergeExtraImageDataToInstances(instanceData, $scope.AmiData);
+          vm.fullData = awsService.images.MergeExtraImageDataToInstances(instanceData, vm.amiData);
         }).finally(function () {
-          $scope.UpdateFilter();
-          $scope.DataLoading = false;
+          vm.updateFilter();
+          vm.dataLoading = false;
         });
       });
     };
 
-    $scope.UpdateFilter = function () {
+    function isOlderThan(days, server) {
+      if (server.UsingLatestAmi === true) {
+        return false;
+      }
+      if (server.DaysBehindLatest === undefined) {
+        return false;
+      } else if (server.DaysBehindLatest < days) {
+        return false;
+      }
+      return true;
+    }
+
+    vm.updateFilter = function () {
       querySync.updateQuery();
 
-      $scope.Data = $scope.FullData.filter(function (server) {
-        var match = true;
+      vm.countOlderThanDays = _.reduce(vm.agesList, function (result, value, key) {
+        result[value] = 0;
+        return result;
+      }, {});
+      vm.countOlderThanDays[0] = 0;
 
-        if ($scope.SelectedServerRole) {
+      vm.data = vm.fullData.filter(function (server) {
+        if (vm.selectedServerRole) {
           if (!server.Role) {
-            match = false;
+            return false;
           } else {
-            match = match && angular.lowercase(server.Role).indexOf(angular.lowercase($scope.SelectedServerRole)) != -1;
+            if (angular.lowercase(server.Role).indexOf(angular.lowercase(vm.selectedServerRole)) === -1) {
+              return false;
+            }
           }
         }
 
         // AMI filter (against image ID or AMI name/version)
-        if ($scope.SelectedAmi) {
+        if (vm.selectedAmi) {
           var amiInfo = server.ImageId;
           if (server.Ami && server.Ami.Name) amiInfo += server.Ami.Name;
-          match = match && angular.lowercase(amiInfo).indexOf(angular.lowercase($scope.SelectedAmi)) != -1;
+          if (angular.lowercase(amiInfo).indexOf(angular.lowercase(vm.selectedAmi)) === -1) {
+            return false;
+          }
         }
 
-        return match;
+        vm.countOlderThanDays[0] += 1;
+
+        _.each(vm.agesList, function (days) {
+           if (isOlderThan(days, server)) {
+             vm.countOlderThanDays[days] += 1;
+           }
+        });
+
+        var selectedAge = Number(vm.selectedAge);
+        if (selectedAge !== 0) {
+          if (!isOlderThan(selectedAge, server)) {
+            return false;
+          }
+        }
+
+        return true;
       });
     };
 
-    $scope.EditAutoScalingGroup = function (groupName) {
+    vm.editAutoScalingGroup = function (groupName) {
       if (groupName) {
         $uibModal.open({
           templateUrl: '/app/environments/dialogs/env-asg-details-modal.html',
@@ -126,14 +173,14 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
             parameters: function () {
               return {
                 groupName: groupName,
-                environment: $scope.EnvironmentsList[$scope.SelectedEnvironment],
-                accountName: $scope.SelectedAccount,
+                environment: vm.environmentsList[vm.selectedEnvironment],
+                accountName: vm.selectedAccount,
                 defaultAction: 'launchConfig'
               };
             }
           }
         }).result.then(function () {
-          $scope.Refresh();
+          vm.refresh();
         });
       } else {
         modal.information({

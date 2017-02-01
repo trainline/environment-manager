@@ -8,7 +8,6 @@ let notImplemented = require('api/api-utils/notImplemented');
 let auditLogReader = require('modules/auditLogReader');
 let base64 = require('modules/base64');
 let logger = require('modules/logger');
-let route = require('modules/helpers/route');
 let weblink = require('modules/weblink');
 /* eslint-enable import/no-extraneous-dependencies */
 
@@ -103,7 +102,7 @@ function getAuditLogs(request, response, next) {
 /**
  * GET /audit/{key}
  */
-function getAuditLogByKey(req, res, next) {
+function getAuditLogByKey(req, res) {
   notImplemented(res, 'Getting a specific audit log by key');
 }
 
