@@ -144,6 +144,16 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       }
     }
 
+    vm.getNextFreeGreenPort = function () {
+      vm.service.Value.GreenPort = vm.getGreenPort();
+      vm.checkGreenPort();
+    };
+
+    vm.getNextFreeBluePort = function () {
+      vm.service.Value.BluePort = vm.getBluePort();
+      vm.checkBluePort();
+    };
+
     vm.checkBluePort = function() {
       if(vm.ports.blue.existing.indexOf(vm.service.Value.BluePort) !== -1 
           && vm.service.Value.BluePort !== vm.ports.blue.current) {

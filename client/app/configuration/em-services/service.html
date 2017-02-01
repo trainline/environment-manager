@@ -7,15 +7,15 @@
 
 <div ng-show="vm.editMode && !vm.dataFound">No data found.</div>
 
-<form name="form" class="form-horizontal" ng-show="vm.dataFound || !vm.editMode">
+<form  name="form" class="form-horizontal" ng-show="vm.dataFound || !vm.editMode">
 
-    <div class="form-group" ng-if="!vm.editMode" ng-class="{'has-error': form.ServiceName.$invalid}">
+    <div class="form-group" ng-if="!vm.editMode" ng-class="{'has-error': form.ServiceName.$invalid && form.ServiceName.$dirty} ">
         <label class="col-sm-2 control-label text-left nowrap">Service Name: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
         <div class="col-sm-4">
             <input type="text"
                    name="ServiceName"
-                   class="form-control"
                    required=""
+                   class="form-control"
                    autofocus
                    maxlength="50"
                    ng-model="vm.service.ServiceName"
@@ -27,7 +27,7 @@
         <span class="help-block" ng-if="form.ServiceName.$dirty && form.ServiceName.$error.duplicated">A Service already exists with the same name.</span>
         <span class="help-block" ng-if="form.ServiceName.$dirty && form.ServiceName.$error.pattern">Service name must contain only alphanumeric characters.</span>
     </div>
-    <div class="form-group" ng-class="{'has-error': form.OwningClusters.$invalid}">
+    <div class="form-group" ng-class="{'has-error': form.OwningClusters.$invalid} && form.OwningClusters.$dirty">
         <label class="col-sm-2 control-label text-left nowrap">Owning Cluster: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
         <div class="col-sm-4">
             <select class="form-control"
@@ -99,10 +99,10 @@
                    min="40000"
                    max="41000"
                    ng-readonly="!vm.canUser('edit')"
-                   ng-keyup="vm.checkBluePort()" />
+                   ng-change="vm.checkBluePort()" />
 
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" ng-click="vm.service.Value.BluePort = vm.getBluePort()">Next Free Port <span class="glyphicon glyphicon-step-forward"></span></button>
+                    <button class="btn btn-default" type="button" ng-click="vm.getNextFreeBluePort()">Next Free Port <span class="glyphicon glyphicon-step-forward"></span></button>
                 </span>
             </div>
         </div>
@@ -123,10 +123,10 @@
                    min="40000"
                    max="41000"
                    ng-readonly="!vm.canUser('edit')"
-                   ng-keyup="vm.checkGreenPort()" />
+                   ng-change="vm.checkGreenPort()" />
 
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" ng-click="vm.service.Value.GreenPort = vm.getGreenPort()">Next Free Port <span class="glyphicon glyphicon-step-forward"></span></button>
+                    <button class="btn btn-default" type="button" ng-click="vm.getNextFreeGreenPort()">Next Free Port <span class="glyphicon glyphicon-step-forward"></span></button>
                 </span>
             </div>
         </div>
