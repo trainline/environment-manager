@@ -4,7 +4,6 @@
 
 let co = require('co');
 let ms = require('ms');
-let noAuthorization = require('modules/authorizers/none');
 let userService = require('modules/user-service');
 let utils = require('modules/utilities');
 let cookieConfiguration = require('modules/authentications/cookieAuthenticationConfiguration');
