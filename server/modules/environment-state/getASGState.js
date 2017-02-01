@@ -17,7 +17,6 @@ let Enums = require('Enums');
 let DIFF_STATE = Enums.DIFF_STATE;
 let HEALTH_STATUS = Enums.HEALTH_STATUS;
 
-
 // Services with 'Extra' diff state are present on some instances, but not in target state, typically because they're Ignored
 function getServicesSummary(services) {
   let expected = _.filter(services, (service) => {

@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 'use strict';
 
 let should = require('should');
@@ -31,3 +33,4 @@ describe('weblink', function () {
     });
   });
 });
+

@@ -74,6 +74,10 @@
       "minItems": 1,
       "uniqueItems": true
     },
+    "PuppetBranch": {
+      "type": "string",
+      "minLength": 1
+    },
     "Subnets": {
       "type": "object",
       "properties": {

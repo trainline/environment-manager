@@ -150,6 +150,9 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
       if (vm.selectedStatus !== 'Any' && instance.DeploymentStatus !== vm.selectedStatus) {
         return false;
       }
+      if (instance.Services.length === 0) {
+        return true;
+      }
       return _.some(_.map(instance.Services, function (s) { return s.Name.toLowerCase(); }), function (name) { return name.indexOf(vm.serviceName.toLowerCase()) >= 0; });
     };
 

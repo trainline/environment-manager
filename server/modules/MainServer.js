@@ -6,6 +6,9 @@ let express = require('express');
 let bodyParser = require('body-parser');
 let cookieParser = require('cookie-parser');
 let logger = require('modules/logger');
+let winston = require('winston');
+let fp = require('lodash/fp');
+let fs = require('fs');
 let config = require('config/');
 let compression = require('compression');
 let expressWinston = require('express-winston');
@@ -18,6 +21,19 @@ let deploymentMonitorScheduler = require('modules/monitoring/DeploymentMonitorSc
 let apiV1 = require('api/v1');
 
 const APP_VERSION = require('config').get('APP_VERSION');
+
+function requestFilter(req, propName) {
+  // Avoid writing the authorization token to the log.
+  if (propName === 'headers') {
+    return fp.omit(['authorization'])(req[propName]);
+  }
+  return req[propName];
+}
+
+let expressWinstonOptions = {
+  requestFilter,
+  winstonInstance: logger
+};
 
 module.exports = function MainServer() {
   let httpServerFactory = require('modules/http-server-factory');
@@ -56,7 +72,7 @@ module.exports = function MainServer() {
       /* notice how the router goes after the logger.
        * https://www.npmjs.com/package/express-winston#request-logging */
       if (config.get('IS_PRODUCTION') === true) {
-        app.use(expressWinston.logger({ winstonInstance: logger }));
+        app.use(expressWinston.logger(expressWinstonOptions));
       }
 
       const PUBLIC_DIR = config.get('PUBLIC_DIR');
@@ -83,7 +99,7 @@ module.exports = function MainServer() {
       app.use('/api', routeInstaller());
 
       if (config.get('IS_PRODUCTION') === true) {
-        app.use(expressWinston.errorLogger({ winstonInstance: logger }));
+        app.use(expressWinston.errorLogger(expressWinstonOptions));
       }
 
       apiV1.setup(app);

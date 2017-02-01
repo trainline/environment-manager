@@ -81,7 +81,7 @@ function validateServiceAndVersionNotDeployed(deployment) {
         let message = 'Each version of a service may only be deployed to slices of one colour per environment.'
           + ` You attempted to deploy ${service} ${version} to a ${slice} slice of ${environment}.`
           + ' Perhaps it is already deployed to another slice in this environment?';
-        return Promise.reject(new DeploymentValidationError(message));
+        deploymentLogger.inProgress(deployment.id, deployment.accountName, message);
       }
       return Promise.resolve();
     });

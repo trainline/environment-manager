@@ -3,6 +3,8 @@
 'use strict';
 
 let _ = require('lodash/fp');
+let ChronoUnit = require('js-joda').ChronoUnit;
+let Instant = require('js-joda').Instant;
 let semver = require('semver');
 
 module.exports = {
@@ -19,6 +21,15 @@ module.exports = {
 function isCompatibleImage(amiName) {
   // whatever-name-0.0.0
   return /^[a-zA-Z0-9.-]+-[0-9]+\.[0-9]+\.[0-9]+$/.test(amiName);
+}
+
+function daysBetween(selected, stable) {
+  let created = image => Instant.parse(image.CreationDate);
+  try {
+    return created(selected).until(created(stable), ChronoUnit.DAYS);
+  } catch (error) {
+    return 0;
+  }
 }
 
 function getAmiType(name) {
@@ -90,16 +101,22 @@ function compare(summaryImageX, summaryImageY) {
 function rank(summaries) {
   let prev = { AmiType: null };
   let prevStable = { AmiType: null };
+  let latestStable = { AmiType: null };
   let i = 0;
   for (let summary of summaries) {
     let isLatest = (summary.AmiType !== prev.AmiType);
+    let isLatestStable = (summary.AmiType !== prevStable.AmiType && summary.IsStable);
     i = isLatest ? 1 : 1 + i;
     summary.Rank = i;
     summary.IsLatest = isLatest;
-    summary.IsLatestStable = (summary.AmiType !== prevStable.AmiType && summary.IsStable);
+    summary.IsLatestStable = isLatestStable;
+    summary.DaysBehindLatest = (summary.AmiType === latestStable.AmiType) ? daysBetween(summary, latestStable) : 0;
     prev = summary;
     if (summary.IsStable) {
       prevStable = summary;
+    }
+    if (isLatestStable) {
+      latestStable = summary;
     }
   }
 
