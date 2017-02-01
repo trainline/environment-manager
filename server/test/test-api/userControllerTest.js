@@ -77,7 +77,8 @@ describe('userController', function() {
       sut.login(req, res)
         .then(() => {
           done('login should fail');
-        }, () => {
+        }, (reason) => {
+          assert.equal(reason, 'wrong password')
           done();
         });
     })
