@@ -31,7 +31,8 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
         existing: null,
         taken: false,
         current: null
-      }
+      },
+      used: []
     };
 
     vm.cancel = navigateToList;
@@ -96,6 +97,16 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
           ports.blue.push(item.Value.BluePort * 1);
         }
       });
+
+      //Add all the ports to a single array. 
+      //It doesn't matter whether they come from green or blue. 
+      data.forEach(function (item) {
+        if(item.Value) {
+          vm.ports.used.push(item.Value.GreenPort * 1);
+          vm.ports.used.push(item.Value.BluePort * 1);
+        }
+      });
+
       return ports;
     }
 
@@ -144,13 +155,40 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       }
     }
 
+    function portIsNotUsedAlready(p) {
+      return vm.ports.used.indexOf(p) === -1;
+    }
+
+    function greenPortIsNotSetToThisNumber(p) {
+      return vm.service.Value.GreenPort !== p;
+    }
+
+    function bluePortIsNotSetToThisNumber(p) {
+      return vm.service.Value.BluePort !== p;
+    }
+
+    function portIsAvailable(portNumber) {
+      return portIsNotUsedAlready(portNumber) && greenPortIsNotSetToThisNumber(portNumber) && bluePortIsNotSetToThisNumber(portNumber);
+    }
+
+    vm.getUnusedPort = function () {
+      var port = null;
+      for(var i = vm.ports.range.lower; i < vm.ports.range.upper; i += 1) {
+        if(portIsAvailable(i)) {
+          port = i;
+          break;
+        }
+      }
+      return port;
+    }
+
     vm.getNextFreeGreenPort = function () {
-      vm.service.Value.GreenPort = vm.getGreenPort();
+      vm.service.Value.GreenPort = vm.getUnusedPort();
       vm.checkGreenPort();
     };
 
     vm.getNextFreeBluePort = function () {
-      vm.service.Value.BluePort = vm.getBluePort();
+      vm.service.Value.BluePort = vm.getUnusedPort();
       vm.checkBluePort();
     };
 
