@@ -75,8 +75,4 @@ function skip() {
   return { success: true, schedule: { skip: true } };
 }
 
-function defaultSchedule() {
-  return parseCronSchedule('start: 30 6 * * * *; stop: 30 18 * * * *');
-}
-
 module.exports = tryParseSchedule;
