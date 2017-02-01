@@ -92,7 +92,7 @@ function executeAction(promiseFactoryMethod) {
   };
 
   return new Promise((resolve, reject) => {
-    operation.attempt(function () {
+    operation.attempt(() => {
       promiseFactoryMethod().then(resolve).catch(error => errorHandler(reject, error));
     });
   });
