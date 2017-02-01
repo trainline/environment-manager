@@ -89,7 +89,7 @@ module.exports = function MainServer() {
       app.get('/deployments/nodes/logs', authentication.denyUnauthorized, routes.deploymentNodeLogs);
 
       // routing for APIs
-      app.get('/api/initial-data', authentication.denyUnauthorized, routes.initialData);
+      app.get('/api/initial-data', routes.initialData);
       app.use('/api', routeInstaller());
 
       if (config.get('IS_PRODUCTION') === true) {
