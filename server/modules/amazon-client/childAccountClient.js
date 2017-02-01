@@ -9,6 +9,7 @@ let common = require('./common');
 let awsAccounts = require('modules/awsAccounts');
 
 module.exports = {
+  createLowLevelDynamoClient: createClientWithRole(AWS.DynamoDB),
   createDynamoClient: createClientWithRole(AWS.DynamoDB.DocumentClient),
   createASGClient: createClientWithRole(AWS.AutoScaling),
   createEC2Client: createClientWithRole(AWS.EC2),

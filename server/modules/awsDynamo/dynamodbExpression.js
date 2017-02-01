@@ -48,6 +48,11 @@ function compileOne(expr, scope) {
   let val = (_, exprs) => exprs.map(value => scope.nameExpressionAttributeValue(value)).join(', ');
   let reducers = {
     '=': infix,
+    '<>': infix,
+    '<': infix,
+    '<=': infix,
+    '>': infix,
+    '>=': infix,
     '+': infix,
     '-': infix,
     '/': infix,
@@ -56,7 +61,7 @@ function compileOne(expr, scope) {
     'at': attr,
     'attr': attr,
     'or': infix,
-    'val': val,
+    'val': val
   };
   let reducerFromFunction = fname => reducers[fname] || prefix;
 

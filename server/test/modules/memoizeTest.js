@@ -35,7 +35,7 @@ describe('memoize', function () {
     });
     context('when I memoize a function that returns a promise', function () {
         it('the first call to the memoized function returns the same result as the un-memoized function', function () {
-            let f = x => Promise.resolve(x);
+            let f = x => Promise.resolve(Promise.resolve(x));
             let g = memoize(f);
             g(1, 'one').should.be.eql(f(1, 'one'));
         });
