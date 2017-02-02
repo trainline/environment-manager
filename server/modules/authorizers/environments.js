@@ -43,7 +43,7 @@ exports.getRules = (request) => {
   if (request.method === 'PUT') {
     // TODO: subsequent parameters are for v1 API.
     // Once old API is gone, should use request.swagger.params.
-    let environmentType = request.body.EnvironmentType || request.body.Value.EnvironmentType || request.params.environment;
+    let environmentType = request.body.EnvironmentType || request.body.Value.EnvironmentType;
 
     if (environmentType) {
       requiredPermission.environmentTypes.push(environmentType.toLowerCase());
