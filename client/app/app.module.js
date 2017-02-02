@@ -37,11 +37,17 @@ app.config(function ($httpProvider, $locationProvider, $qProvider) {
   $httpProvider.defaults.headers.put['Content-Type'] = 'application/json;charset=utf-8';
 
   // Set up error pop up on HTTP errors
-  $httpProvider.interceptors.push(function ($q, $rootScope) {
+  $httpProvider.interceptors.push(function ($q, $rootScope, $log) {
     return {
       responseError: function (response) {
         if (response.status >= 400 && response.status !== 404) {
-          $rootScope.$broadcast('error', response);
+          // Filter out ETIMEDOUT dialogs from UI - load balancer data
+          var errorMessage = _.get(response, 'data.error');
+          if (errorMessage === 'Remote host: ETIMEDOUT') {
+            $log.warn('Remote host: ETIMEDOUT');
+          } else {
+            $rootScope.$broadcast('error', response);
+          }
         }
         return $q.reject(response);
       }
