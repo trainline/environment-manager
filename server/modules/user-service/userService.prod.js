@@ -104,7 +104,7 @@ module.exports = function UserService() {
         algorithm: 'RS256',
         ignoreExpiration: false
       };
-      let token = verifyAndDecryptWebToken(encryptedToken, sslComponents.certificate, options);
+      let token = yield verifyAndDecryptWebToken(encryptedToken, sslComponents.certificate, options);
 
       let session = yield getSessionFromStore(token.sessionId);
       return User.parse(session.user);
