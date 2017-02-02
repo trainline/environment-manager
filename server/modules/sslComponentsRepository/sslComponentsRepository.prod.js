@@ -9,7 +9,7 @@ let amazonClientFactory = require('modules/amazon-client/childAccountClient');
 let sslComponentsCache = null;
 
 module.exports = function SSLComponentsRepository() {
-  let sslComponentsRepositoryConfiguration = new (require('modules/sslComponentsRepositoryConfiguration'))();
+  let sslComponentsRepositoryConfiguration = new (require('./sslComponentsRepository.prod.config.js'))();
 
   this.get = function () {
     return new Promise((resolve, reject) => {

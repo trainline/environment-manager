@@ -19,7 +19,7 @@ module.exports = function ActiveDirectoryAdapter() {
         break;
 
       default:
-        roles.push('GG-APP-EnvironmentManager-Editor');
+        roles.push('GG-APP-EnvironmentManager-Admin');
         break;
     }
 
