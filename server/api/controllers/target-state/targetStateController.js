@@ -4,21 +4,7 @@
 
 let co = require('co');
 let GetServerRoles = require('queryHandlers/services/GetServerRoles');
-
-let serviceTargets = require('modules/service-targets');
-
-function scanAndDelete({ environmentName, keyPrefix, condition }) {
-  return co(function* () {
-    let keyValuePairs = yield serviceTargets.getTargetState(environmentName, { key: parameters.keyPrefix, recurse: true });
-    let erasedKeys = yield keyValuePairs.filter((keyValuePair) =>
-      parameters.condition(keyValuePair.key, keyValuePair.value)
-    ).map((keyValuePair) => {
-      return serviceTargets.removeTargetState(environmentName, { key: keyValuePair.key }).then(() => keyValuePair.key);
-    });
-
-    return erasedKeys;
-  });
-}
+let deleteTargetState = require('modules/environment-state/deleteTargetState');
 
 /**
  * GET /target-state/{environment}
@@ -35,21 +21,8 @@ function getTargetState(req, res, next) {
 function deleteTargetStateByEnvironment(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
 
-  return co(function* () {
-    let erasedServicesKeys = yield scanAndDelete({
-      environmentName,
-      keyPrefix: `environments/${environmentName}/services/`,
-      condition: () => true,
-    });
-
-    let erasedRolesKeys = yield scanAndDelete({
-      environmentName,
-      keyPrefix: `environments/${environmentName}/roles/`,
-      condition: () => true,
-    });
-
-    return erasedServicesKeys.concat(erasedRolesKeys);
-  });
+  deleteTargetState.byEnvironment({ environmentName })
+    .then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -57,47 +30,22 @@ function deleteTargetStateByEnvironment(req, res, next) {
  */
 function deleteTargetStateByService(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
+  const serviceName = req.swagger.params.service.value;
 
-  return co(function*() {
-    let erasedServicesKeys = yield scanAndDelete({
-      keyPrefix: `environments/${environmentName}/services/${serviceName}/`,
-      condition: () => true
-    });
-
-    let erasedRolesKeys = yield scanAndDelete({
-      keyPrefix: `environments/${environmentName}/roles/`,
-      condition: (key) =>
-        key.match(`environments\/.*\/roles\/.*\/services\/${serviceName}\/`)
-    });
-
-    return erasedServicesKeys.concat(erasedRolesKeys);
-  });
+  deleteTargetState.byService({ environmentName, serviceName })
+    .then(data => res.json(data)).catch(next);
 }
 
 /**
  * DELETE /target-state/{environment}/{service}/{version}
  */
-function deleteTargetStateByServiceVersion(req, res) {
+function deleteTargetStateByServiceVersion(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
   const serviceName = req.swagger.params.service.value;
   const serviceVersion = req.swagger.params.version.value;
 
-  return co(function* () {
-    let erasedServicesKeys = yield scanAndDelete({
-      environmentName,
-      keyPrefix: `environments/${environmentName}/services/${serviceName}/${serviceVersion}/`,
-      condition: () => true,
-    });
-
-    let erasedRolesKeys = yield scanAndDelete({
-      environmentName,
-      keyPrefix: `environments/${environmentName}/roles/`,
-      condition: (key, value) =>
-        value ? value.Name === serviceName && value.Version === serviceVersion : false,
-    });
-
-    return erasedServicesKeys.concat(erasedRolesKeys);
-  });
+  deleteTargetState.byServiceVersion({ environmentName, serviceName, serviceVersion })
+    .then(data => res.json(data)).catch(next);
 }
 
 module.exports = {

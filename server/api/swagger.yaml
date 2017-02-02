@@ -968,6 +968,7 @@ paths:
       summary: Remove the target state for all services in a given environment.
       tags:
         - Target State
+      x-authorizer: environments
       parameters:
         - name: environment
           in: path
@@ -983,6 +984,7 @@ paths:
       summary: Remove the target state for all versions of a service.
       tags:
         - Target State
+      x-authorizer: environments
       parameters:
         - name: environment
           in: path
@@ -1002,6 +1004,7 @@ paths:
       summary: Remove the target state for a specific version of a service.
       tags:
         - Target State
+      x-authorizer: environments
       parameters:
         - name: environment
           in: path

@@ -41,16 +41,16 @@ exports.getRules = (request) => {
   }
 
   if (request.method === 'PUT') {
-    // TODO(filip): second for swagger API
-    let environmentType = request.body.EnvironmentType || request.body.Value.EnvironmentType;
+    // TODO(filip): rest parameters for swagger API
+    let environmentType = request.body.EnvironmentType || request.body.Value.EnvironmentType || request.params.environment;
 
     if (environmentType) {
       requiredPermission.environmentTypes.push(environmentType.toLowerCase());
     }
   }
 
-  // TODO(filip): second for swagger API
-  let environmentName = request.params.key || request.params.name;
+  // TODO(filip): rest parameters for swagger API
+  let environmentName = request.params.key || request.params.name || request.params.environment;
   let user = request.user;
 
   return getCurrentEnvironment(environmentName, user).then((environment) => {
