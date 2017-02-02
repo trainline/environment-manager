@@ -5,13 +5,15 @@
 let co = require('co');
 let GetServerRoles = require('queryHandlers/services/GetServerRoles');
 
-function scanAndDelete(environment, parameters) {
+let serviceTargets = require('modules/service-targets');
+
+function scanAndDelete({ environmentName, keyPrefix, condition }) {
   return co(function* () {
-    let keyValuePairs = yield serviceTargets.getTargetState(query.environment, { key: parameters.keyPrefix, recurse: true });
+    let keyValuePairs = yield serviceTargets.getTargetState(environmentName, { key: parameters.keyPrefix, recurse: true });
     let erasedKeys = yield keyValuePairs.filter((keyValuePair) =>
       parameters.condition(keyValuePair.key, keyValuePair.value)
     ).map((keyValuePair) => {
-      return serviceTargets.removeTargetState(environment, { key: keyValuePair.key }).then(() => keyValuePair.key);
+      return serviceTargets.removeTargetState(environmentName, { key: keyValuePair.key }).then(() => keyValuePair.key);
     });
 
     return erasedKeys;
@@ -31,14 +33,17 @@ function getTargetState(req, res, next) {
  * DELETE /target-state/{environment}
  */
 function deleteTargetStateByEnvironment(req, res, next) {
-  throw new Error('not implemented');
+  const environmentName = req.swagger.params.environment.value;
+
   return co(function* () {
     let erasedServicesKeys = yield scanAndDelete({
+      environmentName,
       keyPrefix: `environments/${environmentName}/services/`,
       condition: () => true,
     });
 
     let erasedRolesKeys = yield scanAndDelete({
+      environmentName,
       keyPrefix: `environments/${environmentName}/roles/`,
       condition: () => true,
     });
@@ -51,7 +56,8 @@ function deleteTargetStateByEnvironment(req, res, next) {
  * DELETE /target-state/{environment}/{service}
  */
 function deleteTargetStateByService(req, res, next) {
-  throw new Error('not implemented');
+  const environmentName = req.swagger.params.environment.value;
+
   return co(function*() {
     let erasedServicesKeys = yield scanAndDelete({
       keyPrefix: `environments/${environmentName}/services/${serviceName}/`,
@@ -72,14 +78,19 @@ function deleteTargetStateByService(req, res, next) {
  * DELETE /target-state/{environment}/{service}/{version}
  */
 function deleteTargetStateByServiceVersion(req, res) {
-  throw new Error('not implemented');
+  const environmentName = req.swagger.params.environment.value;
+  const serviceName = req.swagger.params.service.value;
+  const serviceVersion = req.swagger.params.version.value;
+
   return co(function* () {
     let erasedServicesKeys = yield scanAndDelete({
+      environmentName,
       keyPrefix: `environments/${environmentName}/services/${serviceName}/${serviceVersion}/`,
       condition: () => true,
     });
 
     let erasedRolesKeys = yield scanAndDelete({
+      environmentName,
       keyPrefix: `environments/${environmentName}/roles/`,
       condition: (key, value) =>
         value ? value.Name === serviceName && value.Version === serviceVersion : false,
