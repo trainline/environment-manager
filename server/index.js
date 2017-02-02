@@ -37,7 +37,7 @@ function start() {
 
     let mainServer = require('modules/MainServer');
     yield mainServer.start();
-  }).catch(error => {
+  }).catch((error) => {
     if (error !== undefined && error.stack !== undefined) {
       console.error(error.stack);
     }

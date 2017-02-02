@@ -37,56 +37,54 @@ let expressWinstonOptions = {
 };
 
 function createExpressApp() {
-  return new Promise((resolve) => {
-    let routeInstaller = require('modules/routeInstaller');
-    let routes = {
-      home: require('routes/home'),
-      initialData: require('routes/initialData'),
-      deploymentNodeLogs: require('routes/deploymentNodeLogs')
-    };
+  let routeInstaller = require('modules/routeInstaller');
+  let routes = {
+    home: require('routes/home'),
+    initialData: require('routes/initialData'),
+    deploymentNodeLogs: require('routes/deploymentNodeLogs')
+  };
 
-    // start express
-    let app = express();
+  // start express
+  let app = express();
 
-    app.use(compression());
-    app.use(cookieParser());
-    app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
-    app.use(bodyParser.json({ extended: false, limit: '50mb' }));
-    app.use(cookieAuthentication.middleware);
-    app.use(tokenAuthentication.middleware);
+  app.use(compression());
+  app.use(cookieParser());
+  app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
+  app.use(bodyParser.json({ extended: false, limit: '50mb' }));
+  app.use(cookieAuthentication.middleware);
+  app.use(tokenAuthentication.middleware);
 
-    /* notice how the router goes after the logger.
-     * https://www.npmjs.com/package/express-winston#request-logging */
-    if (config.get('IS_PRODUCTION') === true) {
-      app.use(expressWinston.logger(expressWinstonOptions));
-    }
+  /* notice how the router goes after the logger.
+   * https://www.npmjs.com/package/express-winston#request-logging */
+  if (config.get('IS_PRODUCTION') === true) {
+    app.use(expressWinston.logger(expressWinstonOptions));
+  }
 
-    const PUBLIC_DIR = config.get('PUBLIC_DIR');
-    logger.info(`Serving static files from "${PUBLIC_DIR}"`);
+  const PUBLIC_DIR = config.get('PUBLIC_DIR');
+  logger.info(`Serving static files from "${PUBLIC_DIR}"`);
 
-    let staticPaths = ['*.js', '*.css', '*.html', '*.ico', '*.gif', '*.woff2', '*.ttf', '*.woff', '*.svg', '*.eot', '*.jpg', '*.png', '*.map'];
-    app.get(staticPaths, authentication.allowUnknown, express.static(PUBLIC_DIR));
-    app.get('/', express.static(PUBLIC_DIR));
+  let staticPaths = ['*.js', '*.css', '*.html', '*.ico', '*.gif', '*.woff2', '*.ttf', '*.woff', '*.svg', '*.eot', '*.jpg', '*.png', '*.map'];
+  app.get(staticPaths, authentication.allowUnknown, express.static(PUBLIC_DIR));
+  app.get('/', express.static(PUBLIC_DIR));
 
-    app.get('*.js', authentication.allowUnknown, express.static('modules'));
+  app.get('*.js', authentication.allowUnknown, express.static('modules'));
 
-    // routing for API JSON Schemas
-    app.use('/schema', authentication.allowUnknown, express.static(`${PUBLIC_DIR}/schema`));
+  // routing for API JSON Schemas
+  app.use('/schema', authentication.allowUnknown, express.static(`${PUBLIC_DIR}/schema`));
 
-    app.get('/deployments/nodes/logs', authentication.denyUnauthorized, routes.deploymentNodeLogs);
+  app.get('/deployments/nodes/logs', authentication.denyUnauthorized, routes.deploymentNodeLogs);
 
-    // routing for APIs
-    app.get('/api/initial-data', routes.initialData);
-    app.use('/api', routeInstaller());
+  // routing for APIs
+  app.get('/api/initial-data', routes.initialData);
+  app.use('/api', routeInstaller());
 
-    if (config.get('IS_PRODUCTION') === true) {
-      app.use(expressWinston.errorLogger(expressWinstonOptions));
-    }
+  if (config.get('IS_PRODUCTION') === true) {
+    app.use(expressWinston.errorLogger(expressWinstonOptions));
+  }
 
-    apiV1.setup(app);
+  apiV1.setup(app);
 
-    resolve(app);
-  });
+  return Promise.resolve(app);
 }
 
 function createServer(app) {
@@ -97,7 +95,7 @@ function createServer(app) {
   return httpServerFactory.create(app, parameters).then((server) => {
     logger.info(`Main server created using ${httpServerFactory.constructor.name} service.`);
     logger.info(`Main server listening at port ${parameters.port}.`);
-    return Promise.resolve(server);
+    return server;
   });
 }
 
