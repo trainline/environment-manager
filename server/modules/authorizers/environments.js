@@ -41,7 +41,8 @@ exports.getRules = (request) => {
   }
 
   if (request.method === 'PUT') {
-    // TODO(filip): rest parameters for swagger API
+    // TODO: subsequent parameters are for v1 API.
+    // Once old API is gone, should use request.swagger.params.
     let environmentType = request.body.EnvironmentType || request.body.Value.EnvironmentType || request.params.environment;
 
     if (environmentType) {
@@ -49,7 +50,8 @@ exports.getRules = (request) => {
     }
   }
 
-  // TODO(filip): rest parameters for swagger API
+  // TODO: subsequent parameters are for v1 API.
+  // Once old API is gone, should use request.swagger.params.
   let environmentName = request.params.key || request.params.name || request.params.environment;
   let user = request.user;
 
