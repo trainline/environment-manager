@@ -35,6 +35,8 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       used: []
     };
 
+    vm.portsValid = true;
+
     vm.cancel = navigateToList;
 
     function init() {
@@ -110,6 +112,14 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       return ports;
     }
 
+    function setGreenPortNumber(value) {
+      vm.service.Value.GreenPort = value;
+    }
+
+    function setBluePortNumber(value) {
+      vm.service.Value.BluePort = value;
+    }
+
     function readItem(name, range) {
       resources.config.services.get({ key: name, range: range }).then(function (data) {
         vm.dataFound = true;
@@ -150,6 +160,7 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
            newPort = i;
            break;
           }
+
         }
         return newPort;
       }
@@ -183,16 +194,34 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
     }
 
     vm.getNextFreeGreenPort = function () {
-      vm.service.Value.GreenPort = vm.getUnusedPort();
-      vm.checkGreenPort();
+      setGreenPortNumber(vm.getUnusedPort());
+      checkGreenPort();
     };
 
     vm.getNextFreeBluePort = function () {
-      vm.service.Value.BluePort = vm.getUnusedPort();
-      vm.checkBluePort();
+      setBluePortNumber(vm.getUnusedPort());
+      checkBluePort();
     };
 
-    vm.checkBluePort = function() {
+    vm.checkPorts = function () {
+      checkGreenPort();
+      checkBluePort();
+      if(vm.service.Value.GreenPort === null) {
+        vm.portsValid = true;
+        return;
+      }
+      if(vm.service.Value.BluePort === null) {
+        vm.portsValid = true;
+        return;
+      }
+      if(vm.service.Value.GreenPort === vm.service.Value.BluePort) {
+        vm.portsValid = false;
+      } else {
+        vm.portsValid = true;
+      }
+    }
+
+    function checkBluePort() {
       if(vm.ports.blue.existing.indexOf(vm.service.Value.BluePort) !== -1 
           && vm.service.Value.BluePort !== vm.ports.blue.current) {
         vm.ports.blue.taken = true;
@@ -201,7 +230,7 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       }
     }
 
-    vm.checkGreenPort = function() {
+    function checkGreenPort() {
       if(vm.ports.green.existing.indexOf(vm.service.Value.GreenPort) !== -1 
           && vm.service.Value.GreenPort !== vm.ports.green.current) {
         vm.ports.green.taken = true;
