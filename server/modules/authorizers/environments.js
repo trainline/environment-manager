@@ -2,6 +2,7 @@
 
 'use strict';
 
+let _ = require('lodash');
 let config = require('config');
 
 function getCurrentEnvironment(name, user) {
@@ -52,7 +53,9 @@ exports.getRules = (request) => {
 
   // TODO: subsequent parameters are for v1 API.
   // Once old API is gone, should use request.swagger.params.
-  let environmentName = request.params.key || request.params.name || request.params.environment;
+  let environmentName = request.params.key || request.params.name || request.params.environment
+    || _.get(request, 'swagger.params.environment.value');
+
   let user = request.user;
 
   return getCurrentEnvironment(environmentName, user).then((environment) => {
