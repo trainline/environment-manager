@@ -49,8 +49,6 @@ gulp.task('html', ['inject', 'partials'], function () {
   var srcHtml = path.join('./', injectedHtmlFileName);
   var createSourceMaps = !conf.isProductionBuild();
 
-  // TODO(filip): fix this path
-  // return gulp.src(path.join(conf.paths.tmp, '/serve/*.html'))
   return gulp.src(srcHtml)
     .pipe($.inject(partialsInjectFile, partialsInjectOptions))
     .pipe($.useref())

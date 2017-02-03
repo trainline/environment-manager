@@ -2,7 +2,6 @@
 
 'use strict';
 
-let resourceDescriptorProvider = require('modules/resourceDescriptorProvider');
 let config = require('config');
 let ScanDynamoResources = require('queryHandlers/ScanDynamoResources');
 

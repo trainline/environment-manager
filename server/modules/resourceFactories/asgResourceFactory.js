@@ -12,7 +12,6 @@ function getAccountId(accountName) {
     .then(fp.flow(fp.get('AccountNumber'), fp.toString));
 }
 
-// TODO(Filip): undecorate .get and .all, after resolving caching
 module.exports = {
 
   canCreate: resourceDescriptor =>

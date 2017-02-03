@@ -26,7 +26,6 @@ function validateDnsName(dnsName, isProd) {
   }
 
   let subDomain = matches[1];
-  let tld = matches[2];
 
   if (subDomain.startsWith('-') || subDomain.endsWith('-')) {
     return invalid(`"${dnsName}" is not valid as sub domains must not begin or end with a hyphen`);

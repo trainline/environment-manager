@@ -2,17 +2,8 @@
 
 'use strict';
 
-let querystring = require('querystring');
-let cookieAuthenticationConfiguration = require('modules/authentications/cookieAuthenticationConfiguration');
-
 function isUserAuthenticated(user) {
   return !!user;
-}
-
-function getRedirectUrl(request) {
-  let returnUrl = request.url;
-  let qs = querystring.stringify({ returnUrl });
-  return `${cookieAuthenticationConfiguration.getLoginUrl()}?${qs}`;
 }
 
 module.exports = {
@@ -23,8 +14,10 @@ module.exports = {
   denyUnauthorized(request, response, next) {
     // User not authenticated
     if (!isUserAuthenticated(request.user)) {
-      let redirectUrl = getRedirectUrl(request);
-      response.redirect(redirectUrl);
+      response.status(403);
+      response.json({
+        error: 'Access denied. Please log in'
+      });
     } else {
       next();
     }

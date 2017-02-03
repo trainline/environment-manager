@@ -11,8 +11,6 @@ angular.module('EnvironmentManager.operations').component('lbServersStatesCell',
   },
   replace: true,
   controller: function ($sce, $templateRequest, $compile, comparisons, $log) {
-    var $ctrl = this;
-
     if (!this.data) {
       $log.warn('No data passed to lbServersStatesCell!');
       return;
@@ -36,7 +34,8 @@ angular.module('EnvironmentManager.operations').component('lbServersStatesCell',
         html += '<span class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span> Down (' + lb.State.DownCount + ')</span>';
       }
 
-      if (lb.State.Overall === 'Unhealthy') { html += '<span class="status-error" title="All servers unhealthy"><span class="glyphicon glyphicon-exclamation-sign"></span> Unhealthy (' + lb.State.UnhealthyCount + ')</span>'; }
+      if (lb.State.Overall === 'Unhealthy') { html += '<span class="status-error" title="All servers unhealthy"><span class="glyphicon glyphicon-exclamation-sign"></span> Unhealthy ('
+        + lb.State.UnhealthyCount + ')</span>'; }
 
       if (lb.State.Overall === 'UpUnhealthy') {
         html += '<span class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> Up (' + lb.State.UpCount + ') </span>' +
@@ -47,7 +46,9 @@ angular.module('EnvironmentManager.operations').component('lbServersStatesCell',
         html += '<span class="status-warning" title="No servers found"><span class="glyphicon glyphicon-exclamation-sign"></span> Empty</span>';
       }
 
-      if (lb.State.Overall === 'ConfigError') { html += '<span class="status-error" title="Upstream has both Up and Down servers"><span class="glyphicon glyphicon-exclamation-sign"></span> Config Error</span>'; }
+      if (lb.State.Overall === 'ConfigError') {
+        html += '<span class="status-error" title="Upstream has both Up and Down servers"><span class="glyphicon glyphicon-exclamation-sign"></span> Config Error</span>';
+      }
 
       html += '</td>';
     });

@@ -3,7 +3,6 @@
 'use strict';
 
 let co = require('co');
-let resourceProvider = require('modules/resourceProvider');
 let serviceTargets = require('modules/service-targets');
 let schema = require('modules/schema/schema');
 

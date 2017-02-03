@@ -3,7 +3,6 @@
 'use strict';
 
 let route = require('modules/helpers/route');
-let send = require('modules/helpers/send');
 let utilities = require('modules/utilities');
 let deployments = require('modules/queryHandlersUtil/deployments-helper');
 

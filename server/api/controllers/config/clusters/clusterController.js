@@ -28,7 +28,7 @@ function getClusterConfigByName(req, res, next) {
 function postClustersConfig(req, res, next) {
   const body = req.swagger.params.body.value;
   const user = req.user;
-  return dynamoHelper.create(body[KEY_NAME], { Value: body.Value }, user).then(_ => res.status(201).end()).catch(next);
+  return dynamoHelper.create(body[KEY_NAME], { Value: body.Value }, user).then(() => res.status(201).end()).catch(next);
 }
 
 /**
@@ -41,7 +41,7 @@ function putClusterConfigByName(req, res, next) {
   const user = req.user;
 
   return dynamoHelper.update(key, { Value: body }, expectedVersion, user)
-    .then(_ => res.status(200).end())
+    .then(() => res.status(200).end())
     .catch(next);
 }
 
@@ -51,7 +51,7 @@ function putClusterConfigByName(req, res, next) {
 function deleteClusterConfigByName(req, res, next) {
   const key = req.swagger.params.name.value;
   const user = req.user;
-  return dynamoHelper.delete(key, user).then(_ => res.status(200).end()).catch(next);
+  return dynamoHelper.delete(key, user).then(() => res.status(200).end()).catch(next);
 }
 
 module.exports = {

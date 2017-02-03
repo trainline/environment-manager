@@ -14,7 +14,7 @@
     "type": "git",
     "url": "https://github.com/trainline/environment-manager.git"
   },
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "debug": "nodemon --debug-brk index.js",

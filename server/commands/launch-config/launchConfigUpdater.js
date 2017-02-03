@@ -4,8 +4,6 @@
 
 let co = require('co');
 let resourceProvider = require('modules/resourceProvider');
-let sender = require('modules/sender');
-let AutoScalingGroup = require('models/AutoScalingGroup');
 
 module.exports = {
   //

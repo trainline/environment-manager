@@ -133,8 +133,6 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
   // Look for services that weren't deployed to any of the instances on ASG, but are in target state.
   _.each(targetServiceStates, (targetService) => {
     if (_.find(servicesList, { Name: targetService.Name, Slice: targetService.Slice }) === undefined) {
-      let serviceAction = targetService.Action || SERVICE_INSTALL;
-
       let missingService = {
         Name: targetService.Name,
         Version: targetService.Version,

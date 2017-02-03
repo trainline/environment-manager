@@ -2,7 +2,6 @@
 
 'use strict';
 
-let should = require('should');
 let sinon = require('sinon');
 let sinonHelper = require('test/utils/sinonHelper');
 let proxyquire = require('proxyquire');

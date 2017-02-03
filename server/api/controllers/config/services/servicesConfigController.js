@@ -60,7 +60,7 @@ function deleteServiceConfigByName(req, res, next) {
   const user = req.user;
 
   return dynamoHelper.deleteWithSortKey(pKey, sKey, user)
-    .then(_ => res.status(200).end())
+    .then(() => res.status(200).end())
     .catch(next);
 }
 

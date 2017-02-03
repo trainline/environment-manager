@@ -3,7 +3,6 @@
 'use strict';
 
 let _ = require('lodash');
-let Enums = require('Enums');
 let co = require('co');
 let GetServerRoles = require('queryHandlers/services/GetServerRoles');
 let getASGState = require('./getASGState');
