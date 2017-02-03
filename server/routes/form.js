@@ -35,8 +35,12 @@ function serveLoginPage(response, error, username) {
 module.exports = {
   logout: {
     get: (request, response) => {
-      response.clearCookie(cookieConfiguration.getCookieName());
-      response.redirect('/');
+      co(function* () {
+        let cookieName = cookieConfiguration.getCookieName();
+        yield userService.signOut(request.cookies[cookieName]);
+        response.clearCookie(cookieName);
+        response.redirect('/');
+      });
     }
   },
   login: {
