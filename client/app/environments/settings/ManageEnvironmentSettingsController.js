@@ -187,7 +187,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
     function getScheduleAction(data) {
       function getCurrentSchedule() {
         if (data.ScheduleAutomatically === false) {
-          if (data.ManualScheduleUp === true) return '247';
+          if (data.ManualScheduleUp === true) return 'ON';
           if (data.ManualScheduleUp === false) return 'OFF';
         }
 

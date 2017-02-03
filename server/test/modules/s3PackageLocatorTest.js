@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 /* eslint func-names: 0, import/no-extraneous-dependencies: 0, prefer-arrow-callback: 0 */
@@ -68,3 +70,4 @@ describe('S3 Package Locator', function () {
         });
     });
 });
+

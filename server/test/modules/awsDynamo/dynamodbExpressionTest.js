@@ -1,3 +1,5 @@
+/* TODO: enable linting and fix resulting errors */
+/* eslint-disable */
 'use strict';
 
 const should = require('should');
@@ -61,3 +63,4 @@ describe('dynamodb expression', function () {
     });
   });
 });
+
