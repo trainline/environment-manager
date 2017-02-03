@@ -3,7 +3,7 @@
 'use strict';
 
 let co = require('co');
-
+let assert = require('assert');
 let serviceTargets = require('modules/service-targets');
 
 function scanAndDelete({ environmentName, keyPrefix, condition }) {
@@ -20,6 +20,7 @@ function scanAndDelete({ environmentName, keyPrefix, condition }) {
 }
 
 function byEnvironment({ environmentName }) {
+  assert(environmentName);
   return co(function* () {
     let erasedServicesKeys = yield scanAndDelete({
       environmentName,
@@ -38,13 +39,17 @@ function byEnvironment({ environmentName }) {
 }
 
 function byService({ environmentName, serviceName }) {
+  assert(environmentName);
+  assert(serviceName);
   return co(function* () {
     let erasedServicesKeys = yield scanAndDelete({
+      environmentName,
       keyPrefix: `environments/${environmentName}/services/${serviceName}/`,
       condition: () => true
     });
 
     let erasedRolesKeys = yield scanAndDelete({
+      environmentName,
       keyPrefix: `environments/${environmentName}/roles/`,
       condition: (key) =>
         key.match(`environments\/.*\/roles\/.*\/services\/${serviceName}\/`)
@@ -55,6 +60,9 @@ function byService({ environmentName, serviceName }) {
 }
 
 function byServiceVersion({ environmentName, serviceName, serviceVersion }) {
+  assert(environmentName);
+  assert(serviceName);
+  assert(serviceVersion);
   return co(function* () {
     let erasedServicesKeys = yield scanAndDelete({
       environmentName,
