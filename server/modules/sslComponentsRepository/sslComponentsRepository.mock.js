@@ -3,7 +3,6 @@
 'use strict';
 
 module.exports = function SSLComponentsRepository() {
-
   this.get = function () {
     return Promise.resolve({
       privateKey: `-----BEGIN RSA PRIVATE KEY-----
@@ -27,7 +26,6 @@ MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCKqo+T1gWfmXO5sxVHECRmIK10
 HQWL+tjCaLMAJ/24yff65cnLYSpWSDSF79ijxPmEBlml273KT/+t53BIzGK5SDBo
 h3JMtjFTLz9HH+PFWwIDAQAB
 -----END PUBLIC KEY-----`
-    })
+    });
   };
-
 };
