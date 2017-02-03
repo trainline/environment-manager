@@ -6,7 +6,6 @@ let logger = require('modules/logger');
 let Redis = require('ioredis');
 let config = require('config');
 let co = require('co');
-let fp = require('lodash/fp');
 let emCrypto = require('modules/emCrypto');
 let masterAccountClient = require('modules/amazon-client/masterAccountClient');
 

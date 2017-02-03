@@ -38,7 +38,7 @@ function* login(req, res, next) {
 function logout(req, res, next) {
   let cookieName = cookieConfiguration.getCookieName();
   let token = req.cookies[cookieName];
-  
+
   return userService.signOut(token).then(() => {
     res.clearCookie(cookieName);
     res.json({ ok: true });
