@@ -23,6 +23,21 @@ function postAuthorization(req, res, next) {
     .then(value => res.send(value)).catch(next);
 }
 
+/**
+ * DELETE /token
+ */
+function signOut(req, res, next) {
+  let token = req.cookies.environmentmanager;
+
+  if (!token) {
+    res.status(400).end();
+  }
+
+  userService.signOut(token)
+    .then(_ => res.status(200).end()).catch(next);
+}
+
 module.exports = {
-  postAuthorization
+  postAuthorization,
+  signOut
 };

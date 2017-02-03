@@ -21,6 +21,7 @@ module.exports = function UserService() {
 
   this.authenticateUser = authenticateUser;
   this.getUserByToken = getUserByToken;
+  this.signOut = signOut;
 
   function authenticateUser(credentials, duration) {
     return co(function* () {
@@ -41,6 +42,13 @@ module.exports = function UserService() {
     }).catch((err) => {
       logger.error(err);
       throw err;
+    });
+  }
+
+  function signOut(encryptedToken) {
+    return co(function* () {
+      let token = yield readToken(encryptedToken);
+      return yield deleteSessionFromStore(token.sessionId);
     });
   }
 
@@ -85,29 +93,31 @@ module.exports = function UserService() {
   function createSessionToken(session, duration) {
     return co(function* () {
       let sslComponents = yield sslComponentsRepository.get();
-
       let options = {
         algorithm: 'RS256',
         expiresIn: duration
       };
-
       let token = { sessionId: session.sessionId };
-
       return createSignedWebToken(token, sslComponents.privateKey, options);
     });
   }
 
   function getUserByToken(encryptedToken) {
     return co(function* () {
+      let token = yield readToken(encryptedToken);
+      let session = yield getSessionFromStore(token.sessionId);
+      return User.parse(session.user);
+    });
+  }
+
+  function readToken(encryptedToken) {
+    return co(function* () {
       let sslComponents = yield sslComponentsRepository.get();
       let options = {
         algorithm: 'RS256',
         ignoreExpiration: false
       };
-      let token = yield verifyAndDecryptWebToken(encryptedToken, sslComponents.certificate, options);
-
-      let session = yield getSessionFromStore(token.sessionId);
-      return User.parse(session.user);
+      return verifyAndDecryptWebToken(encryptedToken, sslComponents.certificate, options);
     });
   }
 
@@ -133,6 +143,14 @@ module.exports = function UserService() {
       let sessionKey = getSessionKey(sessionId);
       let store = yield getStore();
       return yield store.get(sessionKey);
+    });
+  }
+
+  function deleteSessionFromStore(sessionId) {
+    return co(function* () {
+      let sessionKey = getSessionKey(sessionId);
+      let store = yield getStore();
+      return yield store.del(sessionKey);
     });
   }
 

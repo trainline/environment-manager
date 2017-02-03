@@ -33,6 +33,10 @@ function createEncryptedRedisStore(client, cryptoKey) {
     });
   }
 
+  function del(key) {
+    return client.del(key);
+  }
+
   function psetex(key, ttl, value) {
     return client.psetexBuffer(key, ttl, encrypt(value));
   }
@@ -47,6 +51,7 @@ function createEncryptedRedisStore(client, cryptoKey) {
 
   return {
     get,
+    del,
     psetex
   };
 }
