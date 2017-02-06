@@ -101,7 +101,7 @@
                    min="40000"
                    max="41000"
                    ng-readonly="!vm.canUser('edit')"
-                   ng-change="vm.checkBluePort()" />
+                   ng-change="vm.checkPorts()" />
 
                 <span class="input-group-btn">
                     <button class="btn btn-default" type="button" ng-click="vm.getNextFreeBluePort()">Get Free Port <span class="glyphicon glyphicon-step-forward"></span></button>
@@ -125,7 +125,7 @@
                    min="40000"
                    max="41000"
                    ng-readonly="!vm.canUser('edit')"
-                   ng-change="vm.checkGreenPort()" />
+                   ng-change="vm.checkPorts()" />
 
                 <span class="input-group-btn">
                     <button class="btn btn-default" type="button" ng-click="vm.getNextFreeGreenPort()">Get Free Port <span class="glyphicon glyphicon-step-forward"></span></button>
@@ -148,7 +148,7 @@
             <button type="button"
                     class="btn btn-primary"
                     ng-if="vm.canUser('edit')"
-                    ng-disabled="!form.$valid || vm.service.Value.GreenPort === vm.service.Value.BluePort"
+                    ng-disabled="!form.$valid || !vm.portsValid"
                     ng-click="vm.save()">Save</button>
         </div>
     </div>
