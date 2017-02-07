@@ -11,6 +11,18 @@ function attachAuditMetadata({ record, metadata: { TransactionID, User } }) {
   return Object.assign({}, record, { Audit: audit });
 }
 
+function getAuditMetadata(record) {
+  return record.Audit;
+}
+
+function removeAuditMetadata(record) {
+  let t = Object.assign({}, record);
+  delete t.Audit;
+  return t;
+}
+
 module.exports = {
-  attachAuditMetadata
+  attachAuditMetadata,
+  getAuditMetadata,
+  removeAuditMetadata
 };
