@@ -23,6 +23,8 @@ angular.module('EnvironmentManager.common')
           password: vm.password
         }).then(function () {
           $window.location.reload();
+        }).catch(function (err) {
+          vm.error = { message: err.data.originalException };
         });
       };
     }
