@@ -1083,6 +1083,15 @@ paths:
           description: An authorization token
           schema:
             type: string
+    delete:
+      operationId: signOut
+      summary: Ends the current session
+      description: "This operation deletes the server side session for this token, effectively signing the user out of the system"
+      tags:
+        - Authentication
+      responses:
+        200:
+          description: OK
   /upstreams/{name}/slices:
     x-swagger-router-controller: upstreamsController
     get:

@@ -17,7 +17,8 @@ describe('userController', function() {
         } else {
           return Promise.reject('wrong password');
         }
-      }
+      },
+      signOut: () => { return Promise.resolve(); }
     };
 
     let cookieConfiguration = {
@@ -86,13 +87,15 @@ describe('userController', function() {
   });
 
   describe('.logout()', () => {
-    it('cookies should be cleared', () => {
-      let req = {};
+    it('cookies should be cleared', (done) => {
+      let req = { cookies: {} };
 
-      sut.logout(req, res);
-      res.clearCookie.calledWith('my-cookie-name').should.be.true();
-      res.json.calledWith({ ok: true}).should.be.true();
+      sut.logout(req, res)
+        .then(() => {
+          res.clearCookie.calledWith('my-cookie-name').should.be.true();
+          res.json.calledWith({ ok: true}).should.be.true();
+          done();
+        });
     })
   });
 });
-

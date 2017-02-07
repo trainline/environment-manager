@@ -5,7 +5,7 @@
 module.exports = function ActiveDirectoryAdapter() {
   this.configure = () => { };
 
-  this.authorizeUser = (credentials, mainCallback) => {
+  this.authorizeUser = (credentials) => {
     let roles = [];
 
     switch (credentials.username) {
@@ -19,11 +19,11 @@ module.exports = function ActiveDirectoryAdapter() {
         break;
 
       default:
-        roles.push('GG-APP-EnvironmentManager-Editor');
+        roles.push('GG-APP-EnvironmentManager-Admin');
         break;
     }
 
     let name = credentials.username.toLowerCase();
-    mainCallback(null, { name, roles });
+    return Promise.resolve({ name, roles });
   };
 };

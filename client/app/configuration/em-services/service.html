@@ -7,15 +7,15 @@
 
 <div ng-show="vm.editMode && !vm.dataFound">No data found.</div>
 
-<form name="form" class="form-horizontal" ng-show="vm.dataFound || !vm.editMode">
+<form  name="form" class="form-horizontal" ng-show="vm.dataFound || !vm.editMode">
 
-    <div class="form-group" ng-if="!vm.editMode" ng-class="{'has-error': form.ServiceName.$invalid}">
-        <label class="col-md-1 control-label text-left nowrap">Service Name: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
-        <div class="col-md-2">
+    <div class="form-group" ng-if="!vm.editMode" ng-class="{'has-error': form.ServiceName.$invalid && form.ServiceName.$dirty} ">
+        <label class="col-sm-2 control-label text-left nowrap">Service Name: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+        <div class="col-sm-4">
             <input type="text"
                    name="ServiceName"
-                   class="form-control"
                    required=""
+                   class="form-control"
                    autofocus
                    maxlength="50"
                    ng-model="vm.service.ServiceName"
@@ -27,9 +27,9 @@
         <span class="help-block" ng-if="form.ServiceName.$dirty && form.ServiceName.$error.duplicated">A Service already exists with the same name.</span>
         <span class="help-block" ng-if="form.ServiceName.$dirty && form.ServiceName.$error.pattern">Service name must contain only alphanumeric characters.</span>
     </div>
-    <div class="form-group" ng-class="{'has-error': form.OwningClusters.$invalid}">
-        <label class="col-md-1 control-label text-left nowrap">Owning Cluster: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
-        <div class="col-md-2">
+    <div class="form-group" ng-class="{'has-error': form.OwningClusters.$invalid} && form.OwningClusters.$dirty">
+        <label class="col-sm-2 control-label text-left nowrap">Owning Cluster: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+        <div class="col-sm-4">
             <select class="form-control"
                     name="OwningClusters"
                     required=""
@@ -41,15 +41,43 @@
         <span class="help-block" ng-if="form.OwningClusters.$error.required">Owning cluster is mandatory.</span>
     </div>
     <div class="form-group">
-        <label class="col-md-1 control-label text-left nowrap">Description:</label>
-        <div class="col-md-2">
+        <label class="col-sm-2 control-label text-left nowrap">Description:</label>
+        <div class="col-sm-4">
             <textarea ng-model="vm.service.Value.Description"
                       ng-readonly="!vm.canUser('edit')"></textarea>
         </div>
     </div>
+
+    <div class="form-group" >
+        <label class="col-sm-2 control-label text-left">Documentation URL:</label>
+        <div class="col-sm-4">
+            <input type="text"
+                   name="DocumentationUrl"
+                   class="form-control"
+                   autofocus
+                   maxlength="256"
+                   ng-model="vm.service.Value.DocumentationUrl"
+                   ng-readonly="!vm.canUser('edit')" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-2 control-label text-left nowrap">Primary Contact:</span></label>
+        <div class="col-sm-4">
+            <input type="text"
+                   name="PrimaryContact"
+                   class="form-control"
+                   autofocus
+                   maxlength="50"
+                   ng-model="vm.service.Value.PrimaryContact"
+                   pattern="[a-zA-Z\s]*"
+                   ng-readonly="!vm.canUser('edit')" />
+        </div>
+    </div>
+
     <div class="form-group" ng-class="{'has-error': form.ApplicationId.$invalid}">
-        <label class="col-md-1 control-label text-left nowrap">Application ID:</label>
-        <div class="col-md-1">
+        <label class="col-sm-2 control-label text-left nowrap">Application ID:</label>
+        <div class="col-sm-2">
             <input type="text"
                    name="ApplicationId"
                    class="form-control"
@@ -60,46 +88,67 @@
         </div>
         <span class="help-block" ng-if="form.ApplicationId.$dirty && form.ApplicationId.$error.pattern">Application ID must be a number.</span>
     </div>
+
     <div class="form-group" ng-class="{'has-error': form.BluePort.$invalid}">
-        <label class="col-md-1 control-label text-left nowrap">Blue Port:</label>
-        <div class="col-md-1">
-            <input type="number"
+        <label class="col-sm-2 control-label text-left nowrap">Blue Port:</label>
+        <div class="col-sm-4">
+            <div class="input-group">
+                <input type="number"
                    name="BluePort"
                    class="form-control"
                    maxlength="5"
                    ng-model="vm.service.Value.BluePort"
                    min="40000"
                    max="41000"
-                   ng-readonly="!vm.canUser('edit')" />
+                   ng-readonly="!vm.canUser('edit')"
+                   ng-change="vm.checkPorts()" />
+
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" ng-click="vm.getNextFreeBluePort()">Get Free Port <span class="glyphicon glyphicon-step-forward"></span></button>
+                </span>
+            </div>
         </div>
-        <span class="help-block" ng-if="form.BluePort.$dirty && form.BluePort.$invalid">Blue Port must be between 40000 and 41000.</span>
+        <div class="col-sm-6">
+            <span class="help-block" ng-if="form.BluePort.$dirty && form.BluePort.$invalid">Blue Port must be between {{vm.ports.range.lower}} and {{vm.ports.range.upper}}.</span>
+            <span class="help-block" ng-if="vm.ports.blue.taken"><i>This port number is currently in use.</i></span>
+        </div>
     </div>
     <div class="form-group" ng-class="{'has-error': form.GreenPort.$invalid}">
-        <label class="col-md-1 control-label text-left nowrap">Green Port:</label>
-        <div class="col-md-1">
-            <input type="number"
+        <label class="col-sm-2 control-label text-left nowrap">Green Port:</label>
+        <div class="col-sm-4">
+            <div class="input-group">
+                <input type="number"
                    name="GreenPort"
                    class="form-control"
                    maxlength="5"
                    ng-model="vm.service.Value.GreenPort"
                    min="40000"
                    max="41000"
-                   ng-readonly="!vm.canUser('edit')" />
+                   ng-readonly="!vm.canUser('edit')"
+                   ng-change="vm.checkPorts()" />
+
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" ng-click="vm.getNextFreeGreenPort()">Get Free Port <span class="glyphicon glyphicon-step-forward"></span></button>
+                </span>
+            </div>
         </div>
-        <span class="help-block" ng-if="form.GreenPort.$dirty && form.GreenPort.$invalid">Blue Port must be between 40000 and 41000.</span>
+        <div class="col-sm-6">
+            <span class="help-block" ng-if="form.GreenPort.$dirty && form.GreenPort.$invalid">Green Port must be between {{vm.ports.range.lower}} and {{vm.ports.range.upper}}.</span>
+            <span class="help-block" ng-if="vm.ports.green.taken"><i>This port number is currently in use.</i></span>
+        </div>
+        
     </div>
-    <!-- TODO: validate blue and green ports not the same number -->
     <div class="form-group">
-        <div class="col-md-offset-1 col-md-3">
+        <div class="col-sm-offset-2 col-sm-3">
             <button type="button"
                     class="btn btn-default"
                     ng-click="vm.cancel()">
                 Cancel
             </button>
             <button type="button"
-                    class="btn btn-default"
+                    class="btn btn-primary"
                     ng-if="vm.canUser('edit')"
-                    ng-disabled="!form.$valid"
+                    ng-disabled="!form.$valid || !vm.portsValid"
                     ng-click="vm.save()">Save</button>
         </div>
     </div>

@@ -2,224 +2,174 @@
 
 'use strict';
 
-let async = require('async');
 let _ = require('lodash');
 let ms = require('ms');
 let jsonwebtoken = require('jsonwebtoken');
 let guid = require('node-uuid');
 let co = require('co');
 let User = require('modules/user');
-let config = require('config');
-let sender = require('modules/sender');
 let userRolesProvider = new (require('modules/userRolesProvider'))();
 let activeDirectoryAdapter = require('modules/active-directory-adapter');
 let logger = require('modules/logger');
-let sessionCache = {};
+let md5 = require('md5');
+let EncryptedRedisStore = require('modules/data-access/encryptedRedisStore');
+let Promise = require('bluebird');
 
 module.exports = function UserService() {
   let sslComponentsRepository = new (require('modules/sslComponentsRepository'))();
+  let redisStore;
 
   this.authenticateUser = authenticateUser;
   this.getUserByToken = getUserByToken;
-
+  this.signOut = signOut;
 
   function authenticateUser(credentials, duration) {
     return co(function* () {
-      if (!credentials.scope) {
-        logger.warn(`credentials.scope unspecified; using "api": username=${credentials.username}.`);
+      let scope = credentials.scope || 'api';
+      let durationInMillis = ms(duration);
+      let expiration = getExpiration(durationInMillis);
+
+      let userSession = yield authenticate(credentials, expiration, scope);
+
+      let session = {
+        sessionId: userSession.sessionId,
+        user: userSession.user.toJson(),
+        password: md5(credentials.password)
+      };
+
+      yield storeSession(session, scope, durationInMillis);
+      return yield createSessionToken(session, duration);
+    }).catch((err) => {
+      logger.error(err);
+      throw err;
+    });
+  }
+
+  function signOut(encryptedToken) {
+    return co(function* () {
+      let token = yield readToken(encryptedToken);
+      return yield deleteSessionFromStore(token.sessionId);
+    });
+  }
+
+  function authenticate(credentials, expiration, scope) {
+    return co(function* () {
+      let session = yield getExistingSessionForUser(credentials, scope);
+
+      if (session) {
+        if (session.password === md5(credentials.password)) {
+          return {
+            sessionId: session.sessionId,
+            user: User.parse(session.user)
+          };
+        }
       }
 
-      let scope = credentials.scope || 'api';
-
-      // Calls the ActiveDirectory adapter to authorize current user by its
-      // credentials.
       let activeDirectoryUser = yield activeDirectoryAdapter.authorizeUser(credentials);
 
       let name = activeDirectoryUser.name;
       let groups = activeDirectoryUser.roles;
-      let roles = userRolesProvider.getFromActiveDirectoryGroupMembership(
-        activeDirectoryUser.roles
-      );
+      let permissions = yield userRolesProvider.getPermissionsFor(_.union([name], groups));
 
-      let user = yield userRolesProvider.getPermissionsFor(_.union([name], groups)).then((permissions) => {
-        let expiration = getExpiration(duration);
-        return User.new(name, roles, expiration, groups, permissions);
-      }).catch((err) => {
-        logger.error(err);
-        throw err;
-      });
+      return {
+        sessionId: guid.v1(),
+        user: User.new(name, expiration, groups, permissions)
+      };
+    });
+  }
 
-      let session = yield storeUserSession(user, scope);
-      return yield createSessionToken(session, duration);
+  function getExistingSessionForUser(credentials, scope) {
+    return co(function* () {
+      let store = yield getStore();
+      let userScopeSessionKey = getLatestSessionIdForUserAndScope(credentials.username, scope);
+      let sessionId = yield store.get(userScopeSessionKey);
+      if (sessionId) {
+        return yield getSessionFromStore(sessionId);
+      }
+      return null;
     });
   }
 
   function createSessionToken(session, duration) {
     return co(function* () {
-      // Loads SSL components from the repository because next function needs
-      // to the private key to create the user token
       let sslComponents = yield sslComponentsRepository.get();
-
-      // Given the user data creates its encoded token
       let options = {
         algorithm: 'RS256',
         expiresIn: duration
       };
-
-      let sessionToken = {
-        scope: session.scope,
-        sessionId: session.sessionId,
-        userName: session.user.name
-      };
-
-      return jsonwebtoken.sign(sessionToken, sslComponents.privateKey, options);
+      let token = { sessionId: session.sessionId };
+      return createSignedWebToken(token, sslComponents.privateKey, options);
     });
   }
 
-  function getUserByToken(token) {
-    return new Promise((resolve, reject) => {
-      let mainCallback = (err, result) => {
-        if (err) reject(err);
-        else resolve(result);
-      };
-
-      async.waterfall([
-        // Loads SSL components from the repository because next function needs
-        // to the certificate to decode the user token
-        (callback) => {
-          sslComponentsRepository.get().then(result => callback(null, result))
-            .catch(error => callback(error));
-        },
-
-        // Given encoded token creates the user data
-        (sslComponents, callback) => {
-          let options = {
-            algorithm: 'RS256',
-            ignoreExpiration: false
-          };
-
-          jsonwebtoken.verify(token, sslComponents.certificate, options, callback);
-        },
-
-        (localToken, callback) => {
-          getUserSessionByToken(localToken, callback);
-        },
-
-        (session, callback) => {
-          callback(null, User.parse(session.user));
-        }
-      ], mainCallback);
+  function getUserByToken(encryptedToken) {
+    return co(function* () {
+      let token = yield readToken(encryptedToken);
+      let session = yield getSessionFromStore(token.sessionId);
+      return User.parse(session.user);
     });
   }
 
-  function getExpiration(duration) {
-    let durationMs = ms(duration);
+  function readToken(encryptedToken) {
+    return co(function* () {
+      let sslComponents = yield sslComponentsRepository.get();
+      let options = {
+        algorithm: 'RS256',
+        ignoreExpiration: false
+      };
+      return verifyAndDecryptWebToken(encryptedToken, sslComponents.certificate, options);
+    });
+  }
+
+  let createSignedWebToken = jsonwebtoken.sign;
+  let verifyAndDecryptWebToken = Promise.promisify(jsonwebtoken.verify);
+
+  function getExpiration(durationMs) {
     let dateNow = new Date();
     let dateEnd = new Date(dateNow.setMilliseconds(dateNow.getMilliseconds() + durationMs));
-
     return dateEnd.getTime();
   }
 
-  function storeUserSession(user, scope) {
-    const masterAccountName = config.getUserValue('masterAccountName');
-
-    return new Promise((resolve, reject) => {
-      let callback = (err, result) => {
-        if (err) reject(err);
-        else resolve(result);
-      };
-
-      let newSession = {
-        scope,
-        sessionId: guid.v1(),
-        user: user.toJson()
-      };
-
-      let userSessionKey = getSessionKeyForUser(user.getName(), scope);
-
-      getUserSessionFromDb(userSessionKey, (err, dbSession) => {
-        let commandName = (err || !dbSession) ? 'CreateDynamoResource' : 'UpdateDynamoResource';
-
-        sender.sendCommand({
-          command: {
-            name: commandName,
-            resource: 'user-sessions',
-            accountName: masterAccountName,
-            item: {
-              UserName: userSessionKey,
-              Value: newSession
-            }
-          },
-          user
-        }).then(
-          () => {
-            sessionCache[userSessionKey] = newSession;
-            callback(null, newSession);
-          },
-
-          error => callback(error)
-        );
-      });
+  function storeSession(session, scope, duration) {
+    return co(function* () {
+      let store = yield getStore();
+      yield store.psetex(getSessionKey(session.sessionId), duration, session);
+      yield store.psetex(getLatestSessionIdForUserAndScope(session.user.name, scope), duration, session.sessionId);
     });
   }
 
-  function getUserSessionByToken(token, callback) {
-    if (!token.userName) {
-      callback('Token error');
-      return;
-    }
-
-    if (!token.scope) {
-      callback('Token error');
-      return;
-    }
-
-    let userSessionKey = getSessionKeyForUser(token.userName, token.scope);
-    let expectedSessionId = token.sessionId;
-
-    let cachedSession = sessionCache[userSessionKey];
-
-    if (cachedSession && cachedSession.sessionId === expectedSessionId) {
-      callback(null, cachedSession);
-    } else {
-      getUserSessionFromDb(userSessionKey, (err, dbSession) => {
-        if (err) {
-          logger.warn(`Error getting session from database: userSessionKey="${userSessionKey}"`);
-          callback(err);
-          return;
-        }
-
-        if (!dbSession) {
-          logger.warn(`Session does not exist: userSessionKey="${userSessionKey}"`);
-          callback('No session found.');
-          return;
-        }
-
-        if (dbSession.Value.sessionId !== expectedSessionId) {
-          logger.warn(`Expected sessionId ${expectedSessionId} but got ${dbSession.Value.sessionId}: userSessionKey="${userSessionKey}"`);
-          callback('No session found.');
-          return;
-        }
-
-        sessionCache[userSessionKey] = dbSession.Value;
-        callback(null, dbSession.Value);
-      });
-    }
+  function getSessionFromStore(sessionId) {
+    return co(function* () {
+      let sessionKey = getSessionKey(sessionId);
+      let store = yield getStore();
+      return yield store.get(sessionKey);
+    });
   }
 
-  function getUserSessionFromDb(userSessionKey, callback) {
-    const masterAccountName = config.getUserValue('masterAccountName');
-    let query = {
-      name: 'GetDynamoResource',
-      key: userSessionKey,
-      resource: 'user-sessions',
-      accountName: masterAccountName
-    };
+  function deleteSessionFromStore(sessionId) {
+    return co(function* () {
+      let sessionKey = getSessionKey(sessionId);
+      let store = yield getStore();
+      return yield store.del(sessionKey);
+    });
+  }
 
-    sender.sendQuery({ query }, callback);
+  function getSessionKey(sessionId) {
+    return `session-${sessionId}`;
+  }
+
+  function getLatestSessionIdForUserAndScope(username, scope) {
+    return `latest-${scope}-session-${md5(username)}`;
+  }
+
+  function getStore() {
+    return co(function* () {
+      if (redisStore) {
+        return redisStore;
+      }
+
+      redisStore = yield EncryptedRedisStore.create();
+      return redisStore;
+    });
   }
 };
-
-function getSessionKeyForUser(username, scope) {
-  return `${username}/${scope}`;
-}

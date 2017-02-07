@@ -1,6 +1,6 @@
 {
   "name": "environmentmanager",
-  "version": "3.27.0",
+  "version": "3.29.1",
   "description": "EnvironmentManager Server",
   "homepage": "https://trainline.github.io/environment-manager/",
   "bugs": {
@@ -60,6 +60,7 @@
     "jsonwebtoken": "^7.1.9",
     "later": "^1.2.0",
     "lodash": "^4.17.2",
+    "md5": "^2.2.1",
     "moment": "^2.17.1",
     "ms": "^0.7.2",
     "mz": "^2.6.0",

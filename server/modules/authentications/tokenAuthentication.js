@@ -8,7 +8,7 @@ const PATTERN = /bearer\s+(.*)/i;
 
 module.exports = {
   middleware(req, res, next) {
-    if (req.user && req.user.isAuthenticated()) return next();
+    if (req.user) return next();
 
     let authorization = req.headers.authorization;
     if (!authorization) return next();

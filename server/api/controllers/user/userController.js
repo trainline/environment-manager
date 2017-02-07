@@ -36,8 +36,13 @@ function* login(req, res, next) {
  * POST /logout
  */
 function logout(req, res, next) {
-  res.clearCookie(cookieConfiguration.getCookieName());
-  res.json({ ok: true });
+  let cookieName = cookieConfiguration.getCookieName();
+  let token = req.cookies[cookieName];
+
+  return userService.signOut(token).then(() => {
+    res.clearCookie(cookieName);
+    res.json({ ok: true });
+  }).catch(next);
 }
 
 module.exports = {

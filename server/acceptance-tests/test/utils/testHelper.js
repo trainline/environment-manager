@@ -89,7 +89,7 @@ module.exports = {
   bearerToken: 'Bearer eyJuYW1lIjoidGVzdCIsInJvbGVzIjpbInZpZXciLCJ0b2dnbGUiLCJlZGl0Il0sImV4cGlyYXRpb24iOjE0NjMxOTgwMzcxMDYsImdyb3VwcyI6W10sInBlcm1pc3Npb25zIjpbeyJBY2Nlc3MiOiJBRE1JTiIsIlJlc291cmNlIjoiKioifV19',
   cookie: {
     create: function() {
-      var testUser    = user.new('test', ['edit','toggle','view'], null, [], [{ Access: 'ADMIN', Resource: '**' }]);
+      var testUser    = user.new('test', null, [], [{ Access: 'ADMIN', Resource: '**' }]);
       var userJson    = JSON.stringify(testUser.toJson());
       var cookieValue = new Buffer(userJson).toString('base64');
       return 'environmentmanager=' + cookieValue;

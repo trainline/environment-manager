@@ -3,6 +3,6 @@
 'use strict';
 
 let User = require('modules/user');
-let systemUser = User.new('System', ['edit'], null, [], [{ Access: 'ADMIN', Resource: '**' }]);
+let systemUser = User.new('System', null, [], [{ Access: 'ADMIN', Resource: '**' }]);
 
 module.exports = systemUser;
