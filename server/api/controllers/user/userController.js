@@ -11,25 +11,27 @@ let cookieConfiguration = require('modules/authentications/cookieAuthenticationC
 /**
  * POST /login
  */
-function* login(req, res, next) {
-  let body = req.swagger.params.body.value;
-  let duration = cookieConfiguration.getCookieDuration();
+function login(req, res, next) {
+  return co(function* () {
+    let body = req.swagger.params.body.value;
+    let duration = cookieConfiguration.getCookieDuration();
 
-  let credentials = {
-    username: body.username,
-    password: body.password,
-    scope: 'ui'
-  };
+    let credentials = {
+      username: body.username,
+      password: body.password,
+      scope: 'ui'
+    };
 
-  let token = yield userService.authenticateUser(credentials, duration);
-  let cookieName = cookieConfiguration.getCookieName();
-  let cookieValue = token;
-  let cookieOptions = { expires: utils.offsetMilliseconds(new Date(), ms(duration)) };
+    let token = yield userService.authenticateUser(credentials, duration);
+    let cookieName = cookieConfiguration.getCookieName();
+    let cookieValue = token;
+    let cookieOptions = { expires: utils.offsetMilliseconds(new Date(), ms(duration)) };
 
-  res.cookie(cookieName, cookieValue, cookieOptions);
+    res.cookie(cookieName, cookieValue, cookieOptions);
 
-  return userService.authenticateUser(credentials, duration)
-    .then(value => res.send(value)).catch(next);
+    return userService.authenticateUser(credentials, duration)
+      .then(value => res.send(value));
+  }).catch(next);
 }
 
 /**
@@ -46,6 +48,6 @@ function logout(req, res, next) {
 }
 
 module.exports = {
-  login: co.wrap(login),
+  login,
   logout
 };
