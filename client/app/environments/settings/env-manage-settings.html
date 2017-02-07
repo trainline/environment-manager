@@ -46,23 +46,6 @@
                 <span class="help-block" ng-if="form.DeploymentMap.$dirty && form.DeploymentMap.$error.required">Deployment Map is mandatory.</span>
                 <!-- TODO: changing a deployment map not necessarily a good idea, won't update existing AWS resources. Should warn user if they do before Save -->
             </div>
-            <div class="form-group" ng-class="{'has-error': form.CodeDeployBucket.$invalid}">
-                <label class="col-md-1 control-label text-left nowrap">Code Deploy Bucket: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
-                <div class="col-md-2" ng-if="vm.canUser('edit')">
-                    <input type="text"
-                           name="CodeDeployBucket"
-                           class="form-control"
-                           required=""
-                           maxlength="60"
-                           ng-model="vm.newEnvironment.CodeDeployBucket" />
-                    <!-- TODO: define bucket pattern, expect to start with 'tl-deployment'? pattern="[a-zA-Z]+*" -->
-                </div>
-                <div class="col-md-3" ng-if="!vm.canUser('edit')">
-                    <label class="control-label text-left nonbold">{{NewEnvironment.CodeDeployBucket}}</label>
-                </div>
-                <span class="help-block" ng-if="form.CodeDeployBucket.$dirty && form.CodeDeployBucket.$error.required">Code Deploy Bucket is mandatory.</span>
-                <span class="help-block" ng-if="form.CodeDeployBucket.$dirty && form.CodeDeployBucket.$error.pattern">Bucket path must be a valid S3 location.</span>
-            </div>
             <div class="form-group">
                 <label class="col-md-2 control-label text-left">Description:</label>
                 <div class="col-md-2">

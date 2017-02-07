@@ -8,31 +8,30 @@ let assert = require('assert');
 let sinon = require('sinon');
 
 const CANNED_ENVIRONMENT = {
-  OwningCluster:"Code to Joy",
-  Description:"A Mock Environment",
-  EnvironmentType:"MockEnvironmentType",
-  SchemaVersion:1,
-  DeploymentMap:"MockDepMap",
-  CodeDeployBucket:"mock-codedeploy-bucket"
+  OwningCluster: "Code to Joy",
+  Description: "A Mock Environment",
+  EnvironmentType: "MockEnvironmentType",
+  SchemaVersion: 1,
+  DeploymentMap: "MockDepMap"
 };
 
 const CANNED_ENV_TYPE = {
-  DeploymentBucket:"tl-deployment-mock",
+  DeploymentBucket: "tl-deployment-mock",
   Consul:{
-    SecurityTokenPath:{
-      Key:"path/to/configuration.json",
-      Bucket:"tl-bucket-mock"
+    SecurityTokenPath: {
+      Key: "path/to/configuration.json",
+      Bucket: "tl-bucket-mock"
     },
-    Port:8500,
-    Servers:[],
-    DataCenter:"mock-dc"
+    Port: 8500,
+    Servers: [],
+    DataCenter: "mock-dc"
   },
-  LoadBalancers:[],
-  Subnets:{},
-  SchemaVersion:2,
-  AWSAccountNumber:9012342345664,
-  VpcId:"vpc-dfgh4f5g",
-  AWSAccountName:"MockAccount"
+  LoadBalancers: [],
+  Subnets: {},
+  SchemaVersion: 2,
+  AWSAccountNumber: 9012342345664,
+  VpcId: "vpc-dfgh4f5g",
+  AWSAccountName: "MockAccount"
 };
 
 describe('GetAccountByEnvironment', function() {
