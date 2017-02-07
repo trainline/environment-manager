@@ -2,6 +2,10 @@
 
 'use strict';
 
+if (process.env.NEW_RELIC_APP_NAME !== undefined) {
+  require('newrelic');
+}
+
 require('app-module-path').addPath(__dirname);
 
 let config = require('config/');
