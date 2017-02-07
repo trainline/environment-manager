@@ -25,13 +25,13 @@ function byEnvironment({ environmentName }) {
     let erasedServicesKeys = yield scanAndDelete({
       environmentName,
       keyPrefix: `environments/${environmentName}/services/`,
-      condition: () => true,
+      condition: () => true
     });
 
     let erasedRolesKeys = yield scanAndDelete({
       environmentName,
       keyPrefix: `environments/${environmentName}/roles/`,
-      condition: () => true,
+      condition: () => true
     });
 
     return erasedServicesKeys.concat(erasedRolesKeys);
@@ -67,14 +67,15 @@ function byServiceVersion({ environmentName, serviceName, serviceVersion }) {
     let erasedServicesKeys = yield scanAndDelete({
       environmentName,
       keyPrefix: `environments/${environmentName}/services/${serviceName}/${serviceVersion}/`,
-      condition: () => true,
+      condition: () => true
     });
 
     let erasedRolesKeys = yield scanAndDelete({
       environmentName,
       keyPrefix: `environments/${environmentName}/roles/`,
-      condition: (key, value) =>
-        value ? value.Name === serviceName && value.Version === serviceVersion : false,
+      condition: (key, value) => {
+        return value ? value.Name === serviceName && value.Version === serviceVersion : false;
+      }
     });
 
     return erasedServicesKeys.concat(erasedRolesKeys);

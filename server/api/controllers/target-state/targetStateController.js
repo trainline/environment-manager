@@ -2,7 +2,6 @@
 
 'use strict';
 
-let co = require('co');
 let GetServerRoles = require('queryHandlers/services/GetServerRoles');
 let deleteTargetState = require('modules/environment-state/deleteTargetState');
 
