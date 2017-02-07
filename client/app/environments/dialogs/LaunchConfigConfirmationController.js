@@ -4,14 +4,27 @@
 
 angular.module('EnvironmentManager.environments').controller('LaunchConfigConfirmationController',
   function ($scope, $uibModal, $uibModalInstance, $q, parameters) {
+    // TODO: Replace with a formula that works with greater than 3 AZs
+    function determineNumNewInstancesRequired(numInstances, numAZs) {
+      var minInstances = numInstances * 2;
+
+      if ((minInstances < numAZs) || (minInstances % numAZs === 0)) {
+        return numInstances;
+      }
+
+      return numInstances + 1;
+    }
+
     var vm = this;
     vm.scalingExplanationLink = window.links.SCALING_EXPLANATION;
 
     var numInstances = parameters.asg.Instances.length;
     var numAZs = parameters.asg.AvailabilityZones.length;
 
+    var numNewInstancesRequired = determineNumNewInstancesRequired(numInstances, numAZs);
+
     vm.numInstances = numInstances;
-    vm.requiredInstancesForScalingRefresh = 2 * Math.ceil(numInstances / numAZs) * numAZs;
+    vm.requiredInstancesForScalingRefresh = numInstances + numNewInstancesRequired;
 
     vm.close = function () {
       $uibModalInstance.close({
