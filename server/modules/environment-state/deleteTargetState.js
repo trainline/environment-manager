@@ -9,7 +9,7 @@ let serviceTargets = require('modules/service-targets');
 function scanAndDelete({ environmentName, keyPrefix, condition }) {
   return co(function* () {
     let keyValuePairs = yield serviceTargets.getTargetState(environmentName, { key: keyPrefix, recurse: true });
-    let erasedKeys = yield keyValuePairs.filter((keyValuePair) =>
+    let erasedKeys = yield keyValuePairs.filter(keyValuePair =>
       condition(keyValuePair.key, keyValuePair.value)
     ).map((keyValuePair) => {
       return serviceTargets.removeTargetState(environmentName, { key: keyValuePair.key }).then(() => keyValuePair.key);
@@ -51,7 +51,7 @@ function byService({ environmentName, serviceName }) {
     let erasedRolesKeys = yield scanAndDelete({
       environmentName,
       keyPrefix: `environments/${environmentName}/roles/`,
-      condition: (key) =>
+      condition: key =>
         key.match(`environments\/.*\/roles\/.*\/services\/${serviceName}\/`)
     });
 

@@ -106,12 +106,12 @@ function initializeServer(server) {
 }
 
 module.exports = {
-  start: function () {
+  start: () => {
     return createExpressApp()
       .then(createServer)
       .then(initializeServer);
   },
-  stop: function () {
+  stop: () => {
     serverInstance.close();
   }
 };
