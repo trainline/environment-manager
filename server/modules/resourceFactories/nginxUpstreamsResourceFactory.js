@@ -5,6 +5,7 @@
 let url = require('url');
 let request = require('request');
 let utils = require('modules/utilities');
+let logger = require('modules/logger');
 
 let HttpRequestError = require('modules/errors/HttpRequestError.class');
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
@@ -20,7 +21,7 @@ function NginxUpstreamsResource() {
   }
 
   function httpResponseToError(response) {
-    return new HttpRequestError(`Remote host: ${response.body} - ${response.statusCode}`);
+    return new HttpRequestError(`Remote host: ${response.statusCode}`);
   }
 
   function invalidJsonToError(value) {
@@ -54,7 +55,11 @@ function NginxUpstreamsResource() {
         if (error) return reject(httpErrorToError(error));
 
         // Error response from the host
-        if (response.statusCode !== 200) return reject(httpResponseToError(response));
+        if (response.statusCode !== 200) {
+          logger.error(`Unexpected Nginx Upstream response: ${response.body}`,
+            { body: response.body, statusCode: response.statusCode });
+          return reject(httpResponseToError(response));
+        }
 
         // Unexpected non JSON body
         let nginxUpstreams = utils.safeParseJSON(body);
