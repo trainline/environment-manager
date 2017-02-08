@@ -1,6 +1,10 @@
-<script>
-Powershell.exe -executionpolicy remotesigned -File C:\TTLApps\ttl-appbootstrapper\configure.ps1
-</script>
+<powershell>
+	if(test-path "C:\TTLApps\ttl-appbootstrapper\configure.ps1"){
+		Powershell.exe -executionpolicy remotesigned -File C:\TTLApps\ttl-appbootstrapper\configure.ps1
+	} else {
+		Powershell.exe -executionpolicy remotesigned -File C:\TTLApps\initial-boot.ps1
+	}
+</powershell>
 ##Creator:${ContactEmail}
 ##Environment:${Environment}
 ##Owner:${OwningCluster}
@@ -13,4 +17,3 @@ Powershell.exe -executionpolicy remotesigned -File C:\TTLApps\ttl-appbootstrappe
 ##ContactEmail:${ContactEmail}
 ##ProjectCode:${ProjectCode}
 ##RemovalDate:${RemovalDate}
-<persist>true</persist>
