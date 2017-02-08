@@ -11,7 +11,7 @@ angular.module('EnvironmentManager.common')
     controllerAs: 'vm',
     controller: function ($scope, $http, $route, $window) {
       var vm = this;
-      vm.version = window.version;
+      vm.version = $window.version;
 
       vm.signIn = function () {
         if (vm.username === undefined || vm.password === undefined) {
