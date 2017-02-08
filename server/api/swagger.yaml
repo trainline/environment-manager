@@ -2607,8 +2607,6 @@ definitions:
         type: integer
       DeploymentMap:
         type: string
-      CodeDeployBucket:
-        type: string
       IsLocked:
         type: boolean
   EnvironmentTypeConfig:
