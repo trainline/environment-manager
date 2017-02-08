@@ -13,21 +13,15 @@ const FEATURE_DISABLE_SERVICE = true;
  * User will see a login form.
  */
 module.exports = function (request, response) {
-  if (request.user === undefined) {
-    response.send('');
-    return;
-  }
-
-  let data = {
-    user: JSON.stringify(request.user.toJson()),
-    version: APP_VERSION
-  };
-
   let str = '';
-  str += `window.user = new User(${data.user}); `;
-  str += `window.version = '${data.version}'; `;
-  str += `window.links = ${JSON.stringify(links)}; `;
+  str += `window.version = '${APP_VERSION}'; `;
   str += `window.FEATURE_DISABLE_SERVICE = ${FEATURE_DISABLE_SERVICE}; `;
+
+  if (request.user !== undefined) {
+    let userJson = JSON.stringify(request.user.toJson());
+    str += `window.links = ${JSON.stringify(links)}; `;
+    str += `window.user = new User(${userJson}); `;
+  }
 
   response.send(str);
 };
