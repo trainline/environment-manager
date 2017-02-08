@@ -20,6 +20,12 @@ let s3PackageLocator = require('modules/s3PackageLocator');
 let EnvironmentHelper = require('models/Environment');
 let ResourceLockedError = require('modules/errors/ResourceLockedError');
 
+let DynamoHelper = require('api/api-utils/DynamoHelper');
+
+let environmentTable = new DynamoHelper('config/environments');
+let scheduling = require('modules/scheduling');
+let autoScalingTemplatesProvider = require('modules/provisioning/autoScalingTemplatesProvider');
+
 module.exports = function DeployServiceCommandHandler(command) {
   assertContract(command, 'command', {
     properties: {
@@ -37,6 +43,52 @@ module.exports = function DeployServiceCommandHandler(command) {
     let destination = yield packagePathProvider.getS3Path(deployment);
     let sourcePackage = getSourcePackageByCommand(command);
 
+    let environmentName = deployment.environmentName;
+    let serviceName = deployment.serviceName;
+    let serverRoleName = deployment.serverRoleName;
+    let accountName = deployment.accountName;
+    let slice = deployment.serviceSlice;
+
+    let configuration = yield infrastructureConfigurationProvider.get(
+      environmentName, serviceName, serverRoleName
+    );
+
+    let allTemplates = yield autoScalingTemplatesProvider.get(
+      configuration, accountName
+    );
+
+    let asgTemplates = allTemplates.filter((template) => {
+      return slice === 'none' ||                                        // Always create ASG in overwrite mode
+        configuration.serverRole.FleetPerSlice === undefined ||       // Always create ASG if FleetPerSlice not known
+        configuration.serverRole.FleetPerSlice === false ||           // Always create ASG in single ASG mode
+        template.endsWith(`-${slice}`);
+    });
+
+    asgTemplates.forEach((template) => {
+      let schedule = scheduling.getSchedule.forAsg(template);
+      if (schedule) {
+        let expectedScheduleState = scheduling.getExpectedStateFromSchedule(schedule);
+
+        if (expectedScheduleState) {
+          if (expectedScheduleState.toLowerCase() === 'off') {
+            throw new Error('The state of this ASG schedule is off.');
+          }
+        }
+      }
+    });
+
+    let environment = yield environmentTable.getByKey(environmentName);
+
+    let environmentSchedule = scheduling.getSchedule.forEnvironment(environment);
+
+    let environmentScheduleState = scheduling.getExpectedStateFromSchedule(environmentSchedule);
+
+    if (environmentScheduleState) {
+      if (environmentScheduleState.toLowerCase() === 'off') {
+        throw new Error('The state for the environment schedule is off.');
+      }
+    }
+
     if (command.isDryRun) {
       return {
         isDryRun: true,
@@ -47,7 +99,6 @@ module.exports = function DeployServiceCommandHandler(command) {
     // Run asynchronously, we don't wait for deploy to finish intentionally
     deploy(deployment, destination, sourcePackage, command);
 
-    let accountName = deployment.accountName;
     yield deploymentLogger.started(deployment, accountName);
     return deployment;
   });
