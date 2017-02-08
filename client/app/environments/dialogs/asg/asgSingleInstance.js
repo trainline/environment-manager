@@ -14,5 +14,8 @@ angular.module('EnvironmentManager.environments').component('asgSingleInstance',
     var vm = this;
     vm.dataLoading = false;
     vm.instance = vm.resolve.instance;
+    vm.showLogLink = function(service) {
+      return !_.includes(['Missing', 'Ignored'], service.DiffWithTargetState) ;
+    }
   }
 });

@@ -25,7 +25,7 @@
             </td>
             <td><health-checks list="service.HealthChecks" ></health-checks></td>
             <!-- <td>{{ service.DeploymentCause }}</td> -->
-            <td><a ng-href="{{ service.LogLink }}" target="_blank">View Log</a></td>
+            <td><a ng-if="vm.showLogLink(service)" ng-href="{{ service.LogLink }}" target="_blank">View Log</a></td>
           </tr>
         </tbody>
       </table>
