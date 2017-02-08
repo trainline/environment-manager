@@ -24,7 +24,8 @@ angular.module('EnvironmentManager.common')
         }).then(function () {
           $window.location.reload();
         }).catch(function (err) {
-          vm.error = { message: err.data.originalException };
+          var error = err.data.originalException;
+          vm.error = { message: error.message || error };
         });
       };
     }
