@@ -4,7 +4,7 @@ module.exports = {
   id: 'http://thetrainline.com/environment-manager/command/PreparePackageCommand-schema#',
   $schema: 'http://json-schema.org/draft-04/schema#',
   title: 'PreparePackageCommand',
-  description: 'A command to download deployment map, convert it to a CodeDeploy archive and upload it to S3',
+  description: 'A command to copy a package from one location in S3 to another',
   type: 'object',
   properties: {
     accountName: {
@@ -23,8 +23,7 @@ module.exports = {
       description: 'Describes a package that can be converted to a CodeDeploy archive',
       type: 'object',
       oneOf: [
-        { $ref: '#/definitions/codeDeployRevision' },
-        { $ref: '#/definitions/deploymentMap' }
+        { $ref: '#/definitions/codeDeployRevision' }
       ]
     },
     s3destination: {
@@ -50,31 +49,9 @@ module.exports = {
       description: 'Describes a CodeDeploy revision as a source package',
       type: 'object',
       properties: {
-        type: {
-          type: 'string',
-          pattern: '^CodeDeployRevision$'
-        },
         url: { $ref: '#/definitions/url' }
       },
-      required: ['type', 'url']
-    },
-    deploymentMap: {
-      description: 'Describes a Deployment Map as a source package',
-      type: 'object',
-      properties: {
-        type: {
-          type: 'string',
-          pattern: '^DeploymentMap$'
-        },
-        id: {
-          description: 'The name of the deployment map',
-          type: 'string',
-          minLength: 1,
-          maxLength: 127
-        },
-        version: { $ref: '#/definitions/semver' }
-      },
-      required: ['id', 'type', 'version']
+      required: ['url']
     },
     semver: {
       type: 'string',

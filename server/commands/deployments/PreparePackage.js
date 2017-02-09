@@ -3,11 +3,11 @@
 'use strict';
 
 let ajv = require('ajv');
-let async = require('async');
 let amazonClientFactory = require('modules/amazon-client/childAccountClient');
 let DeploymentCommandHandlerLogger = require('commands/deployments/DeploymentCommandHandlerLogger');
-let PackagePreparationError = require('modules/errors/PackagePreparationError.class');
-let DmPacker = require('modules/dm-packer/DmPacker');
+let co = require('co');
+let simpleHttp = require('modules/simple-http');
+let s3Url = require('modules/amazon-client/s3Url');
 
 const options = {
   allErrors: true,
@@ -16,33 +16,43 @@ const options = {
 
 let validate = ajv(options).compile(require('./PreparePackageCommand.schema'));
 
-const MAX_DM_PACKER_TASK_TIME_LIMIT_IN_MS = 10 * 60 * 1000;
-const MAX_DM_PACKER_CALLS_AT_A_TIME = 3;
-
-let q = async.queue((task, callback) => {
-  Promise.race([task(), timeout(MAX_DM_PACKER_TASK_TIME_LIMIT_IN_MS)])
-    .then(result => callback(null, result), error => callback(error));
-
-  function timeout(t) {
-    return delay(t).then(() => Promise.reject(`Packaging timed out after ${MAX_DM_PACKER_TASK_TIME_LIMIT_IN_MS} milliseconds.`));
-  }
-}, MAX_DM_PACKER_CALLS_AT_A_TIME);
-
-function queueTask(fn) {
-  return new Promise((resolve, reject) => {
-    q.push(fn, (error, response) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(response);
+function PackageMover(logger) {
+  this.downloadPackage = function (url) {
+    if (s3Url.parse(url) !== undefined) {
+      logger.info(`Downloading package from S3: ${url}`);
+      return Promise.resolve(s3Url.getObject(url));
+    }
+    return co(function* () {
+      logger.info(`Downloading package: ${url}`);
+      let input = yield simpleHttp.getResponseStream(url);
+      let headers = input.headers;
+      if (!(/\/zip$/.test(headers['content-type']))) {
+        throw new Error(`Expected a zip file. ${url}`);
       }
+      return input;
     });
-  });
+  };
+
+  this.uploadPackage = function (destination, stream, s3client) {
+    let params = {
+      Bucket: destination.bucket,
+      Key: destination.key,
+      Body: stream
+    };
+
+    return s3client.upload(params).promise().then(
+      (rsp) => {
+        logger.info(`Package uploaded to: ${rsp.Location}`);
+      },
+      (err) => {
+        logger.error(`Package upload failed: ${err.message}`);
+      });
+  };
 }
 
 module.exports = function PreparePackageCommandHandler(command) {
   let logger = new DeploymentCommandHandlerLogger(command);
-  let dmPacker = new DmPacker(logger);
+  let dmPacker = new PackageMover(logger);
   return preparePackage(dmPacker, command).catch((error) => {
     let msg = 'An error has occurred preparing the package';
     logger.error(msg, error);
@@ -61,26 +71,12 @@ let preparePackage = function (dmPacker, command) {
 
   let uploadCodeDeployPackage = archive =>
     amazonClientFactory.createS3Client(accountName)
-      .then(s3 => dmPacker.uploadCodeDeployPackage(destination, archive, s3));
+      .then(s3 => dmPacker.uploadPackage(destination, archive, s3));
 
   let fetchPackage = (pkg) => {
-    switch (pkg.type) {
-      case 'DeploymentMap':
-        return dmPacker.buildCodeDeployPackage(pkg);
-      case 'CodeDeployRevision':
-        return dmPacker.getCodeDeployPackage(pkg.url);
-      default:
-        return Promise.reject(
-          new PackagePreparationError(`Unrecognised package source type: ${pkg.type}`)
-        );
-    }
+    return dmPacker.downloadPackage(pkg.url);
   };
 
-  return queueTask(() => fetchPackage(source).then(uploadCodeDeployPackage));
+  return fetchPackage(source)
+    .then(uploadCodeDeployPackage);
 };
-
-function delay(milliseconds) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, milliseconds);
-  });
-}

@@ -1,6 +1,0 @@
-. "$PSScriptRoot\Include.ps1"
-
-#DUMMY DO NOT TOUCH THIS FILE. CODE DEPLOY USES PREVIOUS STORED REVISION TO EXECUTE THIS FILE
-
-Write-Host "Starting $($MyInvocation.MyCommand.Name) at $(Get-Date)."
-Write-Host "DUMMY STAGE. NOT MEANT TO DO ANYTHING FOR NOW"

@@ -96,29 +96,6 @@ describe('DeployService', function () {
       deploymentLogger
     });
   });
-  describe('if the packagePath is a valid URL', function () {
-    beforeEach(function () {
-      sender.sendCommand = sinon.stub().returns(Promise.resolve());
-    });
-    it('should mark it as a CodeDeploy Revision', function () {
-      let cmd = createCommand();
-      cmd.packagePath = 'http://localhost';
-      return sut(cmd).then(() => sinon.assert.calledWith(sender.sendCommand,
-        sinon.match({ command: { name: 'PreparePackage', source: { type: 'CodeDeployRevision' } } })));
-    });
-  });
-
-  describe('if the packagePath is NOT a valid URL', function () {
-    beforeEach(function () {
-      sender.sendCommand = sinon.stub().returns(Promise.resolve());
-    });
-    it('should mark it as a DeploymentMap', function () {
-      let cmd = createCommand();
-      cmd.packagePath = 'NOT A URL';
-      return sut(cmd).then(() => sinon.assert.calledWith(sender.sendCommand,
-        sinon.match({ command: { name: 'PreparePackage', source: { type: 'DeploymentMap' } } })));
-    });
-  });
 
   describe('overwrite mode', function () {
     let command = createRequiredProps();
@@ -160,19 +137,7 @@ describe('DeployService', function () {
       });
     });
 
-    describe('if the package is found in S3', function () {
-      beforeEach(function () {
-        sender.sendCommand = sinon.stub().returns(Promise.resolve());
-        s3PackageLocator.findDownloadUrl = sinon.stub().returns(Promise.resolve('https://s3-eu-west-1.amazonaws.com/tl-deployment-prod/PACKAGES/MyPackage/0.0.1/MyPackage-0.0.1.zip'));
-      });
-      it('should mark it as a CodeDeploy revision, not a DeploymentMap', function () {
-        let cmd = createCommand();
-        cmd.packagePath = undefined;
-        return sut(cmd).then(() => sinon.assert.calledWith(sender.sendCommand, sinon.match({ command: { name: 'PreparePackage', source: { type: 'CodeDeployRevision' } } })));
-      });
-    });
-
-    describe('if the package is found in S3', function () {
+    describe('if the package is not found in S3', function () {
       beforeEach(() => {
         s3PackageLocator.findDownloadUrl = sinon.stub().returns(Promise.resolve(null));
       });
@@ -199,8 +164,7 @@ describe('DeployService', function () {
       command = createCommand();
       expectedPayload = Object.assign({
         packagePath: S3_PACKAGE,
-        accountName: ACCOUNT_NAME,
-        packageType: 'CodeDeployRevision'
+        accountName: ACCOUNT_NAME
       }, command);
     });
 
