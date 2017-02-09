@@ -213,7 +213,7 @@ function getScheduleForInstance(instance) {
 }
 
 function getScheduleForAsg(asg) {
-  let asgSchedule = getTagValue(instance.AutoScalingGroup, 'schedule');
+  let asgSchedule = getTagValue(asg, 'schedule');
   if (asgSchedule) {
     return { parseResult: parseSchedule(asgSchedule), source: sources.asg };
   } else {
@@ -225,15 +225,9 @@ function getScheduleForEnvironment(environment) {
   return { parseResult: parseEnvironmentSchedule(environment), source: sources.environment };
 }
 
-let getSchedule = {
-  forAsg: getScheduleForAsg,
-  forEnvironment: getScheduleForEnvironment
-}
-
 module.exports = {
   actions,
   sources,
   skipReasons,
-  actionForInstance,
-  getSchedule
+  actionForInstance
 };
