@@ -2,6 +2,7 @@
 
 'use strict';
 
+let _ = require('lodash');
 let config = require('config');
 
 function getCurrentEnvironment(name, user) {
@@ -41,7 +42,8 @@ exports.getRules = (request) => {
   }
 
   if (request.method === 'PUT') {
-    // TODO(filip): second for swagger API
+    // TODO: subsequent parameters are for v1 API.
+    // Once old API is gone, should use request.swagger.params.
     let environmentType = request.body.EnvironmentType || request.body.Value.EnvironmentType;
 
     if (environmentType) {
@@ -49,8 +51,11 @@ exports.getRules = (request) => {
     }
   }
 
-  // TODO(filip): second for swagger API
-  let environmentName = request.params.key || request.params.name;
+  // TODO: subsequent parameters are for v1 API.
+  // Once old API is gone, should use request.swagger.params.
+  let environmentName = request.params.key || request.params.name || request.params.environment
+    || _.get(request, 'swagger.params.environment.value');
+
   let user = request.user;
 
   return getCurrentEnvironment(environmentName, user).then((environment) => {
