@@ -145,18 +145,6 @@ function getAsgInstanceLifeCycleState(instance) {
   return lifeCycleStates.transitioning;
 }
 
-function getScheduleForInstance(instance) {
-  let instanceSchedule = getTagValue(instance, 'schedule');
-  if (instanceSchedule) return { parseResult: parseSchedule(instanceSchedule), source: sources.instance };
-
-  if (instance.AutoScalingGroup) {
-    let asgSchedule = getTagValue(instance.AutoScalingGroup, 'schedule');
-    if (asgSchedule) return { parseResult: parseSchedule(asgSchedule), source: sources.asg };
-  }
-
-  return { parseResult: parseEnvironmentSchedule(instance.Environment), source: sources.environment };
-}
-
 function parseEnvironmentSchedule(environmentSchedule) {
   if (environmentSchedule.ManualScheduleUp === false && environmentSchedule.ScheduleAutomatically === false) {
     return { success: true, schedule: { permanent: 'off' } };
@@ -209,9 +197,43 @@ function takeAction(action, source) {
   return { action, source };
 }
 
+function getScheduleForInstance(instance) {
+  let instanceSchedule = getTagValue(instance, 'schedule');
+  if (instanceSchedule) return { parseResult: parseSchedule(instanceSchedule), source: sources.instance };
+
+  if (instance.AutoScalingGroup) {
+    let schedule = getScheduleForAsg(instance.AutoScalingGroup);
+
+    if (schedule.parseResult) {
+      return schedule;
+    }
+  }
+
+  return getScheduleForEnvironment(instance.Environment);
+}
+
+function getScheduleForAsg(asg) {
+  let asgSchedule = getTagValue(instance.AutoScalingGroup, 'schedule');
+  if (asgSchedule) {
+    return { parseResult: parseSchedule(asgSchedule), source: sources.asg };
+  } else {
+    return { parseResult: null, source: null };
+  }
+}
+
+function getScheduleForEnvironment(environment) {
+  return { parseResult: parseEnvironmentSchedule(environment), source: sources.environment };
+}
+
+let getSchedule = {
+  forAsg: getScheduleForAsg,
+  forEnvironment: getScheduleForEnvironment
+}
+
 module.exports = {
   actions,
   sources,
   skipReasons,
-  actionForInstance
+  actionForInstance,
+  getSchedule
 };
