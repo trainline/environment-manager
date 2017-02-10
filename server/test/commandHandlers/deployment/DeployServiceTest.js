@@ -22,6 +22,9 @@ describe('DeployService', function() {
   let sender;
   let deploymentLogger;
   let autoScalingTemplatesProvider;
+  let environmentTable;
+  let DynamoHelper;
+  let DynamoHelperLoader;
 
   const S3_PACKAGE = 's3://acme-bucket/em/binaries/package-3.1.0.tar';
   const ACCOUNT_NAME = 'acmeAccount';
@@ -89,7 +92,14 @@ describe('DeployService', function() {
     };
     autoScalingTemplatesProvider = {
       get: sinon.stub().returns(Promise.resolve([]))
-    }
+    };
+    environmentTable = {
+      getByKey: sinon.stub().returns(Promise.resolve(''))
+    };
+    DynamoHelper = sinon.stub().returns(environmentTable);
+    DynamoHelperLoader = {
+      load: sinon.stub().returns(DynamoHelper)
+    };
 
     sut.__set__({
       s3PackageLocator,
@@ -100,7 +110,8 @@ describe('DeployService', function() {
       packagePathProvider,
       sender,
       deploymentLogger,
-      autoScalingTemplatesProvider
+      autoScalingTemplatesProvider,
+      DynamoHelperLoader
     });
   });
 

@@ -20,6 +20,8 @@ let s3PackageLocator = require('modules/s3PackageLocator');
 let EnvironmentHelper = require('models/Environment');
 let ResourceLockedError = require('modules/errors/ResourceLockedError');
 let autoScalingTemplatesProvider = require('modules/provisioning/autoScalingTemplatesProvider');
+let DynamoHelperLoader = require('api/api-utils/DynamoHelperLoader');
+let scheduling = require('modules/scheduling');
 
 module.exports = function DeployServiceCommandHandler(command) {
   assertContract(command, 'command', {
@@ -41,7 +43,7 @@ module.exports = function DeployServiceCommandHandler(command) {
     let serviceName = deployment.serviceName;
     let serverRoleName = deployment.serverRoleName;
     let accountName = deployment.accountName;
-    // let slice = deployment.serviceSlice;
+    let slice = deployment.serviceSlice;
 
     let configuration = yield infrastructureConfigurationProvider.get(
       environmentName, serviceName, serverRoleName
@@ -51,7 +53,37 @@ module.exports = function DeployServiceCommandHandler(command) {
       configuration, accountName
     );
 
-    console.log(allTemplates);
+
+    let DynamoHelper = DynamoHelperLoader.load();
+    let environmentTable = new DynamoHelper('config/environments');
+
+
+    let asgTemplates = allTemplates.filter((template) => {
+      return slice === 'none' ||                                        // Always create ASG in overwrite mode
+        configuration.serverRole.FleetPerSlice === undefined ||       // Always create ASG if FleetPerSlice not known
+        configuration.serverRole.FleetPerSlice === false ||           // Always create ASG in single ASG mode
+        template.endsWith(`-${slice}`);
+    });
+
+    // TODO: test that the getExpectedStateFromSchedule is called for as many times
+    //       as there are templates provided.
+    // First: Off to go test the getExpectedStateFromSchedule
+    asgTemplates.forEach((template) => {
+      let schedule = scheduling.getSchedule.forAsg(template);
+      if (schedule) {
+        let expectedScheduleState = scheduling.getExpectedStateFromSchedule(schedule);
+
+        if (expectedScheduleState) {
+          if (expectedScheduleState.toLowerCase() === 'off') {
+            throw new Error('The state of this ASG schedule is off.');
+          }
+        }
+      }
+    });
+
+    let environment = yield environmentTable.getByKey(environmentName);
+
+    console.log(environment);
 
     if (command.isDryRun) {
       return {
