@@ -15,6 +15,15 @@ let lbSettingsTable = new DynamoHelper('config/lbsettings');
 let lbUpstreamsTable = new DynamoHelper('config/lbupstream');
 
 let Environment = require('models/Environment');
+let EnvironmentType = require('models/EnvironmentType');
+
+function attachMetadata(input) {
+  return EnvironmentType.getByName(input.Value.EnvironmentType)
+    .then(environmentType => {
+      input.AWSAccountNumber = environmentType.AWSAccountNumber;
+      return input;
+    });
+}
 
 /**
  * GET /config/environments
@@ -29,7 +38,7 @@ function getEnvironmentsConfig(req, res, next) {
   };
   filter = _.omitBy(filter, _.isUndefined);
 
-  return environmentTable.getAll(filter).then(data => res.json(data)).catch(next);
+  return environmentTable.getAll(filter).then((arr) => Promise.all(arr.map(attachMetadata))).then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -37,7 +46,7 @@ function getEnvironmentsConfig(req, res, next) {
  */
 function getEnvironmentConfigByName(req, res, next) {
   const key = req.swagger.params.name.value;
-  return environmentTable.getByKey(key).then(data => res.json(data)).catch(next);
+  return environmentTable.getByKey(key).then(attachMetadata).then(data => res.json(data)).catch(next);
 }
 
 /**
