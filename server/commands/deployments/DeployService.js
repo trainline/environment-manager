@@ -19,6 +19,7 @@ let validUrl = require('valid-url');
 let s3PackageLocator = require('modules/s3PackageLocator');
 let EnvironmentHelper = require('models/Environment');
 let ResourceLockedError = require('modules/errors/ResourceLockedError');
+let autoScalingTemplatesProvider = require('modules/provisioning/autoScalingTemplatesProvider');
 
 module.exports = function DeployServiceCommandHandler(command) {
   assertContract(command, 'command', {
@@ -36,6 +37,19 @@ module.exports = function DeployServiceCommandHandler(command) {
     let deployment = yield validateCommandAndCreateDeployment(command);
     let destination = yield packagePathProvider.getS3Path(deployment);
     let sourcePackage = getSourcePackageByCommand(command);
+    let environmentName = deployment.environmentName;
+    let serviceName = deployment.serviceName;
+    let serverRoleName = deployment.serverRoleName;
+    let accountName = deployment.accountName;
+    //let slice = deployment.serviceSlice;
+
+    let configuration = yield infrastructureConfigurationProvider.get(
+      environmentName, serviceName, serverRoleName
+    );
+
+    let allTemplates = yield autoScalingTemplatesProvider.get(
+      configuration, accountName
+    ).catch(() => {});
 
     if (command.isDryRun) {
       return {

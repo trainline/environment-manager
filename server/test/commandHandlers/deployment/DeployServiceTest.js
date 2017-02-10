@@ -21,6 +21,7 @@ describe('DeployService', function() {
   let packagePathProvider;
   let sender;
   let deploymentLogger;
+  let autoScalingTemplatesProvider;
 
   const S3_PACKAGE = 's3://acme-bucket/em/binaries/package-3.1.0.tar';
   const ACCOUNT_NAME = 'acmeAccount';
@@ -51,7 +52,7 @@ describe('DeployService', function() {
   }
 
   beforeEach(() => {
-    sut = rewire('commands/deployments/DeployService')
+    sut = rewire('commands/deployments/DeployService');
     
     environmentType = {
       AWSAccountName: ACCOUNT_NAME
@@ -86,6 +87,9 @@ describe('DeployService', function() {
       updateStatus: sinon.stub(),
       started: sinon.stub().returns(Promise.resolve({}))
     };
+    autoScalingTemplatesProvider = {
+      get: sinon.stub().returns(Promise.resolve([]));
+    }
 
     sut.__set__({
       s3PackageLocator,
@@ -95,7 +99,8 @@ describe('DeployService', function() {
       DeploymentContract,
       packagePathProvider,
       sender,
-      deploymentLogger
+      deploymentLogger,
+      autoScalingTemplatesProvider
     });
   });
 
