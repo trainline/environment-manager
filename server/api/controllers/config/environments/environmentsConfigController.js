@@ -19,7 +19,7 @@ let EnvironmentType = require('models/EnvironmentType');
 
 function attachMetadata(input) {
   return EnvironmentType.getByName(input.Value.EnvironmentType)
-    .then(environmentType => {
+    .then((environmentType) => {
       input.AWSAccountNumber = environmentType.AWSAccountNumber;
       return input;
     });
@@ -38,7 +38,7 @@ function getEnvironmentsConfig(req, res, next) {
   };
   filter = _.omitBy(filter, _.isUndefined);
 
-  return environmentTable.getAll(filter).then((arr) => Promise.all(arr.map(attachMetadata))).then(data => res.json(data)).catch(next);
+  return environmentTable.getAll(filter).then(arr => Promise.all(arr.map(attachMetadata))).then(data => res.json(data)).catch(next);
 }
 
 /**
