@@ -88,7 +88,7 @@ describe('DeployService', function() {
       started: sinon.stub().returns(Promise.resolve({}))
     };
     autoScalingTemplatesProvider = {
-      get: sinon.stub().returns(Promise.resolve([]));
+      get: sinon.stub().returns(Promise.resolve([]))
     }
 
     sut.__set__({

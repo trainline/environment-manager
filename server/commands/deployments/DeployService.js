@@ -41,7 +41,7 @@ module.exports = function DeployServiceCommandHandler(command) {
     let serviceName = deployment.serviceName;
     let serverRoleName = deployment.serverRoleName;
     let accountName = deployment.accountName;
-    //let slice = deployment.serviceSlice;
+    // let slice = deployment.serviceSlice;
 
     let configuration = yield infrastructureConfigurationProvider.get(
       environmentName, serviceName, serverRoleName
@@ -49,7 +49,9 @@ module.exports = function DeployServiceCommandHandler(command) {
 
     let allTemplates = yield autoScalingTemplatesProvider.get(
       configuration, accountName
-    ).catch(() => {});
+    );
+
+    console.log(allTemplates);
 
     if (command.isDryRun) {
       return {
