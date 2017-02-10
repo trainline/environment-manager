@@ -4,7 +4,7 @@
     <label class="control-label text-left nonbold inline">Min:</label>
     <input class="form-control inline" type="number" name="MinInstances" min="0" max="100" step="1" required="" ng-model="vm.target.ASG.MinCapacity" ng-readonly="!vm.canUser('edit')" />
     <label class="control-label text-left nonbold inline">Desired:</label>
-    <input class="form-control inline" name="NumberOfInstances" type="number" min="0" max="100" step="1" required="" ng-model="vm.target.ASG.DesiredCapacity" ng-readonly="!vm.canUser('edit')" />
+    <input class="form-control inline" name="NumberOfInstances" type="number" min="1" max="100" step="1" required="" ng-model="vm.target.ASG.DesiredCapacity" ng-readonly="!vm.canUser('edit')" />
     <label class="control-label text-left nonbold inline">Max:</label>
     <input class="form-control inline" name="MaxInstances" type="number" min="0" max="100" step="1" required="" ng-model="vm.target.ASG.MaxCapacity" ng-readonly="!vm.canUser('edit')" />
   </div>
