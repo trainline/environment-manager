@@ -168,7 +168,7 @@ module.exports = function UserService() {
         return redisStore;
       }
 
-      redisStore = yield EncryptedRedisStore.create();
+      redisStore = yield EncryptedRedisStore.get();
       return redisStore;
     });
   }
