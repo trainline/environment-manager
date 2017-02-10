@@ -51,7 +51,9 @@ module.exports = function PreparePackageCommandHandler(command) {
 };
 
 let preparePackage = function (dmPacker, command) {
-  if (!validate(command)) return Promise.reject(validate.errors);
+  if (!validate(command)) {
+    return Promise.reject({ command, errors: validate.errors });
+  }
 
   let destination = command.destination;
   let source = command.source;
