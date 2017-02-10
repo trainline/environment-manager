@@ -101,10 +101,16 @@
                    min="40000"
                    max="41000"
                    ng-readonly="!vm.canUser('edit')"
-                   ng-change="vm.checkPorts()" />
+                   ng-change="vm.checkPorts(); vm.resetBluePortButton()" />
 
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" ng-click="vm.getNextFreeBluePort()">Get Free Port <span class="glyphicon glyphicon-step-forward"></span></button>
+                    <button class="btn btn-default" 
+                        title="Get the next, lowest available port number."
+                        ng-disabled="!vm.ports.blue.button.enabled" 
+                        type="button" 
+                        ng-click="vm.getNextFreeBluePort()">
+                            Get Available Port <span class="glyphicon glyphicon-step-forward"></span>
+                        </button>
                 </span>
             </div>
         </div>
@@ -125,10 +131,16 @@
                    min="40000"
                    max="41000"
                    ng-readonly="!vm.canUser('edit')"
-                   ng-change="vm.checkPorts()" />
+                   ng-change="vm.checkPorts(); vm.resetGreenPortButton()" />
 
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" ng-click="vm.getNextFreeGreenPort()">Get Free Port <span class="glyphicon glyphicon-step-forward"></span></button>
+                    <button class="btn btn-default"
+                        title="Get the next, lowest available port number." 
+                        ng-disabled="!vm.ports.green.button.enabled" 
+                        type="button" 
+                        ng-click="vm.getNextFreeGreenPort()">
+                            Get Available Port <span class="glyphicon glyphicon-step-forward"></span>
+                    </button>
                 </span>
             </div>
         </div>
