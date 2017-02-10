@@ -3,7 +3,7 @@
 'use strict';
 
 const LOGICAL_TABLE_NAME = 'InfraConfigClusters';
-const TTL = 10; // seconds
+const TTL = 3600; // seconds
 
 let physicalTableName = require('modules/awsResourceNameProvider').getTableName;
 let cachedSingleAccountDynamoTable = require('modules/data-access/cachedSingleAccountDynamoTable');
