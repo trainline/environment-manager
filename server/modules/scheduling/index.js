@@ -7,6 +7,7 @@ const parseSchedule = require('./parseSchedule');
 const later = require('later');
 const sources = require('./sources');
 const getScheduleByAsg = require('./getScheduleByAsg');
+const getScheduleByEnvironment = require('./getScheduleByEnvironment');
 
 const actions = {
   switchOn: 'switchOn',
@@ -141,18 +142,6 @@ function getAsgInstanceLifeCycleState(instance) {
   return lifeCycleStates.transitioning;
 }
 
-function parseEnvironmentSchedule(environmentSchedule) {
-  if (environmentSchedule.ManualScheduleUp === false && environmentSchedule.ScheduleAutomatically === false) {
-    return { success: true, schedule: { permanent: 'off' } };
-  }
-
-  if (!(environmentSchedule.ManualScheduleUp !== true && environmentSchedule.ScheduleAutomatically === true)) {
-    return { success: true, schedule: { permanent: 'on' } };
-  }
-
-  return parseSchedule(environmentSchedule.DefaultSchedule);
-}
-
 function expectedStateFromSchedule(schedules, dateTime) {
   if (schedules.permanent) {
     return schedules.permanent;
@@ -205,11 +194,7 @@ function getScheduleForInstance(instance) {
     }
   }
 
-  return getScheduleForEnvironment(instance.Environment);
-}
-
-function getScheduleForEnvironment(environment) {
-  return { parseResult: parseEnvironmentSchedule(environment), source: sources.environment };
+  return getScheduleByEnvironment(instance.Environment);
 }
 
 module.exports = {

@@ -21,7 +21,9 @@ let EnvironmentHelper = require('models/Environment');
 let ResourceLockedError = require('modules/errors/ResourceLockedError');
 let autoScalingTemplatesProvider = require('modules/provisioning/autoScalingTemplatesProvider');
 let DynamoHelperLoader = require('api/api-utils/DynamoHelperLoader');
-let scheduling = require('modules/scheduling');
+let getExpectedState = require('modules/scheduling/getExpectedState');
+let getScheduleByAsg = require('modules/scheduling/getScheduleByAsg');
+let getScheduleByEnvironment = require('modules/scheduling/getScheduleByEnvironment');
 
 module.exports = function DeployServiceCommandHandler(command) {
   assertContract(command, 'command', {
@@ -53,10 +55,8 @@ module.exports = function DeployServiceCommandHandler(command) {
       configuration, accountName
     );
 
-
     let DynamoHelper = DynamoHelperLoader.load();
     let environmentTable = new DynamoHelper('config/environments');
-
 
     let asgTemplates = allTemplates.filter((template) => {
       return slice === 'none' ||                                        // Always create ASG in overwrite mode
@@ -65,13 +65,10 @@ module.exports = function DeployServiceCommandHandler(command) {
         template.endsWith(`-${slice}`);
     });
 
-    // TODO: test that the getExpectedStateFromSchedule is called for as many times
-    //       as there are templates provided.
-    // First: Off to go test the getExpectedStateFromSchedule
     asgTemplates.forEach((template) => {
-      let schedule = scheduling.getSchedule.forAsg(template);
+      let schedule = getScheduleByAsg(template);
       if (schedule) {
-        let expectedScheduleState = scheduling.getExpectedStateFromSchedule(schedule);
+        let expectedScheduleState = getExpectedState.fromSingleSchedule(schedule);
 
         if (expectedScheduleState) {
           if (expectedScheduleState.toLowerCase() === 'off') {
@@ -83,14 +80,22 @@ module.exports = function DeployServiceCommandHandler(command) {
 
     let environment = yield environmentTable.getByKey(environmentName);
 
-    console.log(environment);
+    let environmentSchedule = getScheduleByEnvironment(environment);
+
+    let environmentScheduleState = getExpectedState.fromSingleSchedule(environmentSchedule);
+
+    if (environmentScheduleState) {
+      if (environmentScheduleState.toLowerCase() === 'off') {
+        throw new Error('The state for the environment schedule is off.');
+      }
+    }
 
     if (command.isDryRun) {
       return {
         isDryRun: true,
         packagePath: command.packagePath
       };
-    }
+    } 
 
     // Run asynchronously, we don't wait for deploy to finish intentionally
     deploy(deployment, destination, sourcePackage, command);
