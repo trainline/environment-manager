@@ -23,7 +23,8 @@ angular.module('EnvironmentManager.common').factory('resources',
       { Name: 'Service', Value: 'ConfigServices' },
       { Name: 'Cluster', Value: 'InfraConfigClusters' },
       { Name: 'Permissions', Value: 'InfraConfigPermissions' },
-      { Name: 'Accounts', Value: 'InfraConfigAccounts' }
+      { Name: 'Accounts', Value: 'InfraConfigAccounts' },
+      { Name: 'Notification Settings', Value: 'ConfigNotificationSettings' }
     ];
 
     var environmentAlertSettingsList = [
