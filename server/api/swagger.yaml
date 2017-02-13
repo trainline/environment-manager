@@ -2587,6 +2587,8 @@ definitions:
     properties:
       EnvironmentName:
         type: string
+      AWSAccountNumber:
+        type: string
       Value:
         $ref: '#/definitions/EnvironmentConfigValue'
   EnvironmentConfigValue:
