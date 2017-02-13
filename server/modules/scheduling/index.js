@@ -6,7 +6,6 @@ const _ = require('lodash');
 const parseSchedule = require('./parseSchedule');
 const later = require('later');
 const sources = require('./sources');
-const getScheduleByAsg = require('./getScheduleByAsg');
 const getScheduleByEnvironment = require('./getScheduleByEnvironment');
 
 const actions = {
@@ -187,11 +186,8 @@ function getScheduleForInstance(instance) {
   if (instanceSchedule) return { parseResult: parseSchedule(instanceSchedule), source: sources.instance };
 
   if (instance.AutoScalingGroup) {
-    let schedule = getScheduleByAsg(instance.AutoScalingGroup, parseSchedule);
-
-    if (schedule.parseResult) {
-      return schedule;
-    }
+    let asgSchedule = getTagValue(instance.AutoScalingGroup, 'schedule');
+    if (asgSchedule) return { parseResult: parseSchedule(asgSchedule), source: sources.asg };
   }
 
   return getScheduleByEnvironment(instance.Environment);

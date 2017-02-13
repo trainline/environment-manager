@@ -25,6 +25,7 @@ describe('Getting expected state from schedule(s)', () => {
     describe('given incorrect arguments', () => {
       it('should return null if given no shedule', () => {
         let result = fromSingleSchedule();
+        
         assert.strictEqual(result, null);
       });
 
@@ -33,6 +34,7 @@ describe('Getting expected state from schedule(s)', () => {
 
         invalid.forEach((item) => {
           let result = fromSingleSchedule(item);
+          
           assert.strictEqual(result, null);
         });
       });
@@ -44,6 +46,7 @@ describe('Getting expected state from schedule(s)', () => {
           let schedules = [{ permanent: 'goose' }, { permanent: 'rabbit' }];
           schedules.forEach((s) => {
             let result = fromSingleSchedule(s);
+           
             assert.equal(result, s.permanent);
           });
         });
@@ -61,6 +64,7 @@ describe('Getting expected state from schedule(s)', () => {
     describe('given the wrong arguments', () => {
       it('should return null if given no shedules', () => {
         let result = fromMultipleSchedules();
+        
         assert.strictEqual(result, null);
       });
 
@@ -69,6 +73,7 @@ describe('Getting expected state from schedule(s)', () => {
 
         invalid.forEach((item) => {
           let result = fromMultipleSchedules(item);
+          
           assert.strictEqual(result, null);
         });
       });
@@ -85,6 +90,7 @@ describe('Getting expected state from schedule(s)', () => {
 
       it('should return an expected state from a list of 1 schedule', () => {
         let result = fromMultipleSchedules(validScheduleList);
+        
         assert.equal(result, 'some state');
       });
 

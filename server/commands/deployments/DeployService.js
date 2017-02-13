@@ -22,8 +22,9 @@ let ResourceLockedError = require('modules/errors/ResourceLockedError');
 let autoScalingTemplatesProvider = require('modules/provisioning/autoScalingTemplatesProvider');
 let DynamoHelperLoader = require('api/api-utils/DynamoHelperLoader');
 let getExpectedState = require('modules/scheduling/getExpectedState');
-let getScheduleByAsg = require('modules/scheduling/getScheduleByAsg');
+let getScheduleStateByAsg = require('modules/scheduling/getScheduleStateByAsg');
 let getScheduleByEnvironment = require('modules/scheduling/getScheduleByEnvironment');
+let getAsg = require('queryHandlers/GetAutoScalingGroup');
 
 module.exports = function DeployServiceCommandHandler(command) {
   assertContract(command, 'command', {
@@ -45,57 +46,29 @@ module.exports = function DeployServiceCommandHandler(command) {
     let serviceName = deployment.serviceName;
     let serverRoleName = deployment.serverRoleName;
     let accountName = deployment.accountName;
-    let slice = deployment.serviceSlice;
-
     let configuration = yield infrastructureConfigurationProvider.get(
       environmentName, serviceName, serverRoleName
     );
-
-    let allTemplates = yield autoScalingTemplatesProvider.get(
+    let template = yield autoScalingTemplatesProvider.get(
       configuration, accountName
     );
-
     let DynamoHelper = DynamoHelperLoader.load();
-    let environmentTable = new DynamoHelper('config/environments');
+    let environmentTable = new DynamoHelper('ops/environments');
+    let autoScalingGroupName = template[0].autoScalingGroupName;
+    let asg = yield getAsg({ accountName, autoScalingGroupName });
 
-    let asgTemplates = allTemplates.filter((template) => {
-      return slice === 'none' ||                                        // Always create ASG in overwrite mode
-        configuration.serverRole.FleetPerSlice === undefined ||       // Always create ASG if FleetPerSlice not known
-        configuration.serverRole.FleetPerSlice === false ||           // Always create ASG in single ASG mode
-        template.endsWith(`-${slice}`);
-    });
-
-    asgTemplates.forEach((template) => {
-      let schedule = getScheduleByAsg(template);
-      if (schedule) {
-        let expectedScheduleState = getExpectedState.fromSingleSchedule(schedule);
-
-        if (expectedScheduleState) {
-          if (expectedScheduleState.toLowerCase() === 'off') {
-            throw new Error('The state of this ASG schedule is off.');
-          }
-        }
-      }
-    });
+    checkAsgSchedule(asg);
 
     let environment = yield environmentTable.getByKey(environmentName);
 
-    let environmentSchedule = getScheduleByEnvironment(environment);
-
-    let environmentScheduleState = getExpectedState.fromSingleSchedule(environmentSchedule);
-
-    if (environmentScheduleState) {
-      if (environmentScheduleState.toLowerCase() === 'off') {
-        throw new Error('The state for the environment schedule is off.');
-      }
-    }
+    checkEnvironmentSchedule(environment);
 
     if (command.isDryRun) {
       return {
         isDryRun: true,
         packagePath: command.packagePath
       };
-    } 
+    }
 
     // Run asynchronously, we don't wait for deploy to finish intentionally
     deploy(deployment, destination, sourcePackage, command);
@@ -104,6 +77,32 @@ module.exports = function DeployServiceCommandHandler(command) {
     return deployment;
   });
 };
+
+function checkAsgSchedule(asg) {
+  let state = getScheduleStateByAsg(asg);
+  if (state && state.toLowerCase() === 'off') {
+    throw new Error('The state of this ASG schedule is off.');
+  }
+}
+
+function checkEnvironmentSchedule(environment) {
+  let environmentSchedule = getScheduleByEnvironment(environment);
+  let environmentScheduleState;
+
+  if (environmentSchedule && environmentSchedule.parseResult) {
+    if (Array.isArray(environmentSchedule.parseResult.schedule)) {
+      environmentScheduleState = getExpectedState.fromMultipleSchedules(environmentSchedule.parseResult.schedule);
+    } else {
+      environmentScheduleState = getExpectedState.fromSingleSchedule(environmentSchedule.parseResult);
+    }
+  }
+
+  if (environmentScheduleState) {
+    if (environmentScheduleState.toLowerCase() === 'off') {
+      throw new Error('The state for the environment schedule is off.');
+    }
+  }
+}
 
 function validateCommandAndCreateDeployment(command) {
   return co(function* () {

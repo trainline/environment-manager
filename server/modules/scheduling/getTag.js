@@ -9,7 +9,7 @@ module.exports = function getTag(taggedObject, key) {
     return result;
   }
 
-  if (taggedObject && taggedObject.Tags && Array.isArray(taggedObject.Tags)) {
+  if (taggedObject && taggedObject.tags && Array.isArray(taggedObject.tags)) {
     let tag = _.first(taggedObject.Tags.filter(
       t => t.Key.toLowerCase() === key.toLowerCase()
     ));
