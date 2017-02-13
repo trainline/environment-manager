@@ -10,6 +10,7 @@ let fp = require('lodash/fp');
 let config = require('config/');
 let compression = require('compression');
 let expressWinston = require('express-winston');
+let expressRequestId = require('express-request-id');
 
 let serverFactoryConfiguration = new (require('modules/serverFactoryConfiguration'))();
 let tokenAuthentication = require('modules/authentications/tokenAuthentication');
@@ -56,7 +57,7 @@ function ignoreRoute(req, res) {
 let expressWinstonOptions = {
   ignoreRoute,
   requestFilter,
-  requestWhitelist: expressWinston.requestWhitelist.concat(['username']),
+  requestWhitelist: expressWinston.requestWhitelist.concat(['id', 'username']),
   skip,
   statusLevels: true,
   winstonInstance: logger
@@ -73,6 +74,7 @@ function createExpressApp() {
   // start express
   let app = express();
 
+  app.use(expressRequestId());
   app.use(compression());
   app.use(cookieParser());
   app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
