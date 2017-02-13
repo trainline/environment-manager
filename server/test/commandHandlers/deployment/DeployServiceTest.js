@@ -1,5 +1,3 @@
-/* TODO: enable linting and fix resulting errors */
-/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
@@ -9,7 +7,7 @@ const rewire = require('rewire');
 const sinon = require('sinon');
 const _ = require('lodash');
 
-describe('DeployService', function() {
+describe('DeployService', function () {
   let sut;
   let s3PackageLocator;
   let EnvironmentHelper;
@@ -51,8 +49,8 @@ describe('DeployService', function() {
   }
 
   beforeEach(() => {
-    sut = rewire('commands/deployments/DeployService')
-    
+    sut = rewire('commands/deployments/DeployService');
+
     environmentType = {
       AWSAccountName: ACCOUNT_NAME
     };
@@ -62,7 +60,7 @@ describe('DeployService', function() {
     EnvironmentHelper = {
       getByName: sinon.stub().returns(Promise.resolve(environment))
     };
-    s3PackageLocator = {    
+    s3PackageLocator = {
       findDownloadUrl: sinon.stub().returns(Promise.resolve(S3_PACKAGE))
     };
     infrastructureConfigurationProvider = {
@@ -71,7 +69,7 @@ describe('DeployService', function() {
     namingConventionProvider = {
       getRoleName: () => 'acmeRoleName'
     };
-    DeploymentContract = function(deployment) {
+    DeploymentContract = function (deployment) {
       this.validate = () => deployment;
       _.assign(this, deployment);
     };
@@ -87,7 +85,7 @@ describe('DeployService', function() {
       started: sinon.stub().returns(Promise.resolve({}))
     };
 
-    sut.__set__({
+    sut.__set__({ // eslint-disable-line no-underscore-dangle
       s3PackageLocator,
       EnvironmentHelper,
       infrastructureConfigurationProvider,
@@ -99,45 +97,69 @@ describe('DeployService', function() {
     });
   });
 
-  describe('required properties', function() {
+  describe('required properties', function () {
     let requiredProps = createRequiredProps();
 
-    Object.keys(requiredProps).forEach(p => {
+    Object.keys(requiredProps).forEach((p) => {
       it(`should throw if ${p} is missing`, () => {
         let invalidProps = Object.assign({}, requiredProps);
         delete invalidProps[p];
-        assert.throws(sut.bind(this, invalidProps))
-      });    
-    })
+        assert.throws(sut.bind(this, invalidProps));
+      });
+    });
   });
 
-  describe('overwrite mode', function() {
+  describe('if the packagePath is a valid URL', function () {
+    beforeEach(function () {
+      sender.sendCommand = sinon.stub().returns(Promise.resolve());
+    });
+    it('should mark it as a CodeDeploy Revision', function () {
+      let cmd = createCommand();
+      cmd.packagePath = 'http://localhost';
+      return sut(cmd).then(() => sinon.assert.calledWith(sender.sendCommand,
+        sinon.match({ command: { name: 'PreparePackage', source: { type: 'CodeDeployRevision' } } })));
+    });
+  });
+
+  describe('if the packagePath is NOT a valid URL', function () {
+    beforeEach(function () {
+      sender.sendCommand = sinon.stub().returns(Promise.resolve());
+    });
+    it('should mark it as a DeploymentMap', function () {
+      let cmd = createCommand();
+      cmd.packagePath = 'NOT A URL';
+      return sut(cmd).then(() => sinon.assert.calledWith(sender.sendCommand,
+        sinon.match({ command: { name: 'PreparePackage', source: { type: 'DeploymentMap' } } })));
+    });
+  });
+
+  describe('overwrite mode', function () {
     let command = createRequiredProps();
     command.mode = 'overwrite';
     command.serviceSlice = 'blue';
 
-    it(`should throw if slice is not 'none'`, (done) => {
-      sut(command).catch(error => {
-        assert.equal(error.message, `Slice must be set to 'none' in overwrite mode.`);
+    it('should throw if slice is not \'none\'', (done) => {
+      sut(command).catch((error) => {
+        assert.equal(error.message, 'Slice must be set to \'none\' in overwrite mode.');
         done();
-      })
+      });
     });
   });
 
-  describe('blue/green mode', function() {
+  describe('blue/green mode', function () {
     let command = createRequiredProps();
     command.mode = 'bg';
     command.serviceSlice = 'none';
 
-    it(`should throw if slice is 'none'`, (done) => {
-      sut(command).catch(error => {
+    it('should throw if slice is \'none\'', (done) => {
+      sut(command).catch((error) => {
         assert.ok(error.message.indexOf('Unknown slice') === 0);
         done();
-      })
+      });
     });
   });
 
-  describe('when package path is not set', function() {
+  describe('when package path is not set', function () {
     let command;
 
     beforeEach(() => {
@@ -146,26 +168,38 @@ describe('DeployService', function() {
 
     it('should be obtained from S3 locator', (done) => {
       sut(command).then(() => {
-        assert.equal(s3PackageLocator.findDownloadUrl.calledOnce, true)
+        assert.equal(s3PackageLocator.findDownloadUrl.calledOnce, true);
         done();
-      })
+      });
     });
 
-    describe('if S3 package is not found', function() {
+    describe('if the package is found in S3', function () {
+      beforeEach(function () {
+        sender.sendCommand = sinon.stub().returns(Promise.resolve());
+        s3PackageLocator.findDownloadUrl = sinon.stub().returns(Promise.resolve('https://s3-eu-west-1.amazonaws.com/tl-deployment-prod/PACKAGES/MyPackage/0.0.1/MyPackage-0.0.1.zip'));
+      });
+      it('should mark it as a CodeDeploy revision, not a DeploymentMap', function () {
+        let cmd = createCommand();
+        cmd.packagePath = undefined;
+        return sut(cmd).then(() => sinon.assert.calledWith(sender.sendCommand, sinon.match({ command: { name: 'PreparePackage', source: { type: 'CodeDeployRevision' } } })));
+      });
+    });
+
+    describe('if the package is found in S3', function () {
       beforeEach(() => {
         s3PackageLocator.findDownloadUrl = sinon.stub().returns(Promise.resolve(null));
       });
 
       it('should throw', (done) => {
-        sut(command).catch(error => {
+        sut(command).catch((error) => {
           assert.ok(error.message.indexOf('Deployment package was not found') === 0);
           done();
-        })
+        });
       });
     });
   });
 
-  describe('deployments', function() {
+  describe('deployments', function () {
     let command;
     let expectedPayload;
 
@@ -173,37 +207,41 @@ describe('DeployService', function() {
      * Note: Because the deployment is asynchronous (ie, we don't wait for
      * the 'deploy()' method to return), any tests that depend on sub-calls
      * of 'deploy 'should not rely on the sut().then() promise to guarantee completion.
-     */ 
+     */
     beforeEach(() => {
       command = createCommand();
       expectedPayload = Object.assign({
         packagePath: S3_PACKAGE,
         accountName: ACCOUNT_NAME,
-        packageType: 'DeploymentMap'
+        packageType: 'CodeDeployRevision'
       }, command);
     });
 
     function createdExpectedCommandSpy(cmdName, done) {
-      return function(arg) {
+      return function (arg) {
         if (arg.command.name === cmdName) {
-          assert.deepEqual(arg.parent, expectedPayload);
-          done();
+          try {
+            assert.deepEqual(arg.parent, expectedPayload);
+            done();
+          } catch (error) {
+            done(error);
+          }
         }
         return expectedPayload;
-      }
+      };
     }
 
-    it('should provide infrastructure', (done) => {      
+    it('should provide infrastructure', (done) => {
       sender.sendCommand = createdExpectedCommandSpy('ProvideInfrastructure', done);
       sut(command);
     });
-    
-    it('should prepare packages', (done) => {      
+
+    it('should prepare packages', (done) => {
       sender.sendCommand = createdExpectedCommandSpy('PreparePackage', done);
       sut(command);
     });
-    
-    it('should push to consul', (done) => {      
+
+    it('should push to consul', (done) => {
       sender.sendCommand = createdExpectedCommandSpy('PushDeployment', done);
       sut(command);
     });
@@ -212,11 +250,11 @@ describe('DeployService', function() {
       sut(command).then(() => {
         assert.equal(deploymentLogger.started.calledOnce, true);
         done();
-      })
+      });
     });
 
     it('should pass deployment to logger.inProgress', (done) => {
-      deploymentLogger.inProgress = function(id, accountName) {
+      deploymentLogger.inProgress = function (id, accountName) {
         assert.equal(id, command.commandId);
         assert.equal(accountName, ACCOUNT_NAME);
         done();
@@ -224,20 +262,20 @@ describe('DeployService', function() {
       sut(command);
     });
 
-    describe('locked environments', function() {
+    describe('locked environments', function () {
       beforeEach(() => { environment.IsLocked = true; });
 
       it('should not allow deployments', (done) => {
-        sut(command).catch(error => {
+        sut(command).catch((error) => {
           assert.equal(error.message.indexOf(
             `The environment ${command.environmentName} is currently locked for deployments`), 0);
           done();
-        })
+        });
       });
     });
   });
 
-  describe('dry run deployments', function() {
+  describe('dry run deployments', function () {
     let command;
 
     beforeEach(() => {
@@ -249,7 +287,7 @@ describe('DeployService', function() {
       sut(command).then(() => {
         assert.equal(sender.sendCommand.callCount, 0);
         done();
-      })
+      });
     });
 
     it('should return a dry run result', (done) => {
@@ -257,9 +295,8 @@ describe('DeployService', function() {
         assert.ok(result.isDryRun);
         assert.equal(result.packagePath, S3_PACKAGE);
         done();
-      })
+      });
     });
   });
 });
-
 
