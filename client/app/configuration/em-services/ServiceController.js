@@ -25,12 +25,18 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       blue: {
         existing: null,
         taken: false,
-        current: null
+        current: null,
+        button: {
+          enabled: true
+        }
       },
       green: {
         existing: null,
         taken: false,
-        current: null
+        current: null,
+        button: {
+          enabled: true
+        }
       },
       used: []
     };
@@ -190,17 +196,22 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
           break;
         }
       }
+      if (!port) {
+        return 'No Free Ports Available.';
+      }
       return port;
     }
 
     vm.getNextFreeGreenPort = function () {
+      vm.ports.green.button.enabled = false;
       setGreenPortNumber(vm.getUnusedPort());
-      checkGreenPort();
+      vm.checkPorts();
     };
 
     vm.getNextFreeBluePort = function () {
+      vm.ports.blue.button.enabled = false;
       setBluePortNumber(vm.getUnusedPort());
-      checkBluePort();
+      vm.checkPorts();
     };
 
     vm.checkPorts = function () {
@@ -221,8 +232,16 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       }
     }
 
+    vm.resetGreenPortButton = function () {
+      vm.ports.green.button.enabled = true;
+    };
+
+    vm.resetBluePortButton = function () {
+      vm.ports.blue.button.enabled = true;
+    }
+
     function checkBluePort() {
-      if(vm.ports.blue.existing.indexOf(vm.service.Value.BluePort) !== -1 
+      if(vm.ports.used.indexOf(vm.service.Value.BluePort) !== -1 
           && vm.service.Value.BluePort !== vm.ports.blue.current) {
         vm.ports.blue.taken = true;
       } else {
@@ -231,7 +250,7 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
     }
 
     function checkGreenPort() {
-      if(vm.ports.green.existing.indexOf(vm.service.Value.GreenPort) !== -1 
+      if(vm.ports.used.indexOf(vm.service.Value.GreenPort) !== -1 
           && vm.service.Value.GreenPort !== vm.ports.green.current) {
         vm.ports.green.taken = true;
       } else {

@@ -250,7 +250,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       instance.result.then(function (selectedAmi) {
         vm.target.ASG.LaunchConfig.AMI = selectedAmi.displayName;
         vm.requiredImageSize = selectedAmi.rootVolumeSize;
-        vm.target.ASG.LaunchConfig.Volumes[0].Size = selectedAmi.rootVolumeSize;
+        vm.target.ASG.LaunchConfig.Volumes[0].Size = _.max([vm.requiredImageSize, vm.target.ASG.LaunchConfig.Volumes[0].Size]);
         launchConfigForm.$setDirty(true);
       });
     };

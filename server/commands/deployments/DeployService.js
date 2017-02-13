@@ -119,7 +119,7 @@ function checkEnvironmentSchedule(environment) {
 
 function validateCommandAndCreateDeployment(command) {
   return co(function* () {
-    const { mode, packagePath, environmentName, serviceSlice, serviceName, serviceVersion } = command;
+    const { mode, environmentName, serviceSlice, serviceName, serviceVersion } = command;
 
     if (mode === 'overwrite' && serviceSlice !== undefined && serviceSlice !== 'none') {
       throw new Error('Slice must be set to \'none\' in overwrite mode.');
@@ -131,7 +131,7 @@ function validateCommandAndCreateDeployment(command) {
       throw new Error(`Unknown slice \'${serviceSlice}\'. Supported slices are: ${SupportedSliceNames.join(', ')}`);
     }
 
-    if (!packagePath) {
+    if (!command.packagePath) {
       let s3Package;
       try {
         s3Package = yield s3PackageLocator.findDownloadUrl({
@@ -150,7 +150,7 @@ function validateCommandAndCreateDeployment(command) {
       }
     }
 
-    command.packageType = validUrl.isUri(packagePath) ?
+    command.packageType = validUrl.isUri(command.packagePath) ?
       Enums.SourcePackageType.CodeDeployRevision :
       Enums.SourcePackageType.DeploymentMap;
 
