@@ -5,26 +5,21 @@
 let assert = require('assert');
 let later = require('later');
 let rewire = require('rewire');
+let sinon = require('sinon');
 
 let getExpectedState = rewire('modules/scheduling/getExpectedState');
 
 describe('Getting expected state from schedule(s)', () => {
-  it('should exist', () => {
-    assert.ok(getExpectedState);
-    assert.ok(getExpectedState.fromSingleSchedule);
-    assert.ok(getExpectedState.fromMultipleSchedules);
-  });
-
   describe('from a single schedule', () => {
-    let fromSingleSchedule;
+    let fromSingleEnvironmentSchedule;
 
     beforeEach(() => {
-      fromSingleSchedule = getExpectedState.fromSingleSchedule;
+      fromSingleEnvironmentSchedule = getExpectedState.fromSingleEnvironmentSchedule;
     });
 
     describe('given incorrect arguments', () => {
       it('should return null if given no shedule', () => {
-        let result = fromSingleSchedule();
+        let result = fromSingleEnvironmentSchedule();
         
         assert.strictEqual(result, null);
       });
@@ -33,7 +28,7 @@ describe('Getting expected state from schedule(s)', () => {
         let invalid = [false, '', true, 'mouse', {}, { withProp: 'prop' }];
 
         invalid.forEach((item) => {
-          let result = fromSingleSchedule(item);
+          let result = fromSingleEnvironmentSchedule(item);
           
           assert.strictEqual(result, null);
         });
@@ -45,7 +40,7 @@ describe('Getting expected state from schedule(s)', () => {
         it('should return the permanent value', () => {
           let schedules = [{ permanent: 'goose' }, { permanent: 'rabbit' }];
           schedules.forEach((s) => {
-            let result = fromSingleSchedule(s);
+            let result = fromSingleEnvironmentSchedule(s);
            
             assert.equal(result, s.permanent);
           });
@@ -55,15 +50,15 @@ describe('Getting expected state from schedule(s)', () => {
   });
 
   describe('from multiple schedules', () => {
-    let fromMultipleSchedules;
+    let fromMultipleEnvironmentSchedules;
 
     beforeEach(() => {
-      fromMultipleSchedules = getExpectedState.fromMultipleSchedules;
+      fromMultipleEnvironmentSchedules = getExpectedState.fromMultipleEnvironmentSchedules;
     });
 
     describe('given the wrong arguments', () => {
       it('should return null if given no shedules', () => {
-        let result = fromMultipleSchedules();
+        let result = fromMultipleEnvironmentSchedules();
         
         assert.strictEqual(result, null);
       });
@@ -72,7 +67,7 @@ describe('Getting expected state from schedule(s)', () => {
         let invalid = [false, '', true, 'mouse', {}, { withProp: 'prop' }, []];
 
         invalid.forEach((item) => {
-          let result = fromMultipleSchedules(item);
+          let result = fromMultipleEnvironmentSchedules(item);
           
           assert.strictEqual(result, null);
         });
@@ -89,16 +84,22 @@ describe('Getting expected state from schedule(s)', () => {
       });
 
       it('should return an expected state from a list of 1 schedule', () => {
-        let result = fromMultipleSchedules(validScheduleList);
+        let result = fromMultipleEnvironmentSchedules(validScheduleList);
         
         assert.equal(result, 'some state');
       });
 
-      // TODO: learn the ins and outs of later and creating schedules. 
-      //       Currently this functionality is tested indirectly through other modules. 
-      //       This still needs to be tested now it's being exposed to the outside world!
       it('should return the nearest past dateTime (to now) from the list of schedules', () => {
-        
+        let getLatest = sinon.stub().returns({});
+        let getLatestSpy = sinon.spy(getLatest);
+        getExpectedState.__set__({
+          'getLatestSchedule': getLatestSpy
+        });
+        let date = new Date();
+
+        let result = fromMultipleEnvironmentSchedules(validScheduleList, date);
+
+        assert.ok(getLatestSpy.calledWith(validScheduleList, date));
       });
     });
   });

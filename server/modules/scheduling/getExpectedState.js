@@ -3,7 +3,7 @@
 let _ = require('lodash');
 let later = require('later');
 
-function fromSingleSchedule(schedule) {
+function fromSingleEnvironmentSchedule(schedule) {
   if (!schedule) {
     return null;
   }
@@ -17,7 +17,7 @@ function fromSingleSchedule(schedule) {
   return result;
 }
 
-function fromMultipleSchedules(schedules, dateTime) {
+function fromMultipleEnvironmentSchedules(schedules, dateTime) {
   if (!schedules || !Array.isArray(schedules)) {
     return null;
   }
@@ -58,6 +58,6 @@ function getLatestSchedule(schedules, date = new Date()) {
 }
 
 module.exports = {
-  fromSingleSchedule,
-  fromMultipleSchedules
+  fromSingleEnvironmentSchedule,
+  fromMultipleEnvironmentSchedules
 };

@@ -49,19 +49,23 @@ module.exports = function DeployServiceCommandHandler(command) {
     let configuration = yield infrastructureConfigurationProvider.get(
       environmentName, serviceName, serverRoleName
     );
-    let template = yield autoScalingTemplatesProvider.get(
-      configuration, accountName
-    );
     let DynamoHelper = DynamoHelperLoader.load();
     let environmentTable = new DynamoHelper('ops/environments');
-    let autoScalingGroupName = template[0].autoScalingGroupName;
-    let asg = yield getAsg({ accountName, autoScalingGroupName });
 
-    checkAsgSchedule(asg);
+    let templates = yield autoScalingTemplatesProvider.get(
+      configuration, accountName
+    );
+    if (Array.isArray(templates)) {
+      let autoScalingGroupName = templates[0].autoScalingGroupName;
+      let asg = yield getAsg({ accountName, autoScalingGroupName });
+      checkAsgSchedule(asg);
+    }
 
     let environment = yield environmentTable.getByKey(environmentName);
 
-    checkEnvironmentSchedule(environment);
+    if (environment) {
+      checkEnvironmentSchedule(environment);
+    }
 
     if (command.isDryRun) {
       return {
@@ -91,9 +95,9 @@ function checkEnvironmentSchedule(environment) {
 
   if (environmentSchedule && environmentSchedule.parseResult) {
     if (Array.isArray(environmentSchedule.parseResult.schedule)) {
-      environmentScheduleState = getExpectedState.fromMultipleSchedules(environmentSchedule.parseResult.schedule);
+      environmentScheduleState = getExpectedState.fromMultipleEnvironmentSchedules(environmentSchedule.parseResult.schedule);
     } else {
-      environmentScheduleState = getExpectedState.fromSingleSchedule(environmentSchedule.parseResult);
+      environmentScheduleState = getExpectedState.fromSingleEnvironmentSchedule(environmentSchedule.parseResult);
     }
   }
 
