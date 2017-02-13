@@ -51,14 +51,20 @@ module.exports = function DeployServiceCommandHandler(command) {
     );
     let DynamoHelper = DynamoHelperLoader.load();
     let environmentTable = new DynamoHelper('ops/environments');
-
     let templates = yield autoScalingTemplatesProvider.get(
       configuration, accountName
     );
+
     if (Array.isArray(templates)) {
       let autoScalingGroupName = templates[0].autoScalingGroupName;
-      let asg = yield getAsg({ accountName, autoScalingGroupName });
-      checkAsgSchedule(asg);
+      yield getAsg({ accountName, autoScalingGroupName })
+        .then((asg) => {
+          checkAsgSchedule(asg);
+        })
+        .catch((e) => {
+          // May not have an ASG associated with it.
+          // That's fine.
+        });
     }
 
     let environment = yield environmentTable.getByKey(environmentName);
