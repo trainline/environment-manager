@@ -23,6 +23,17 @@ let serverInstance;
 
 const APP_VERSION = require('config').get('APP_VERSION');
 
+function usernameMiddleware(req, res, next) {
+  try {
+    if (req.user && typeof req.user.getName === 'function') {
+      req.username = req.user.getName();
+    }
+    next();
+  } catch (error) {
+    next(error);
+  }
+}
+
 function requestFilter(req, propName) {
   // Avoid writing the authorization token to the log.
   if (propName === 'headers') {
@@ -45,6 +56,7 @@ function ignoreRoute(req, res) {
 let expressWinstonOptions = {
   ignoreRoute,
   requestFilter,
+  requestWhitelist: expressWinston.requestWhitelist.concat(['username']),
   skip,
   statusLevels: true,
   winstonInstance: logger
@@ -67,6 +79,7 @@ function createExpressApp() {
   app.use(bodyParser.json({ extended: false, limit: '50mb' }));
   app.use(cookieAuthentication.middleware);
   app.use(tokenAuthentication.middleware);
+  app.use(usernameMiddleware);
 
   /* notice how the router goes after the logger.
    * https://www.npmjs.com/package/express-winston#request-logging */
