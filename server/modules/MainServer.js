@@ -35,7 +35,15 @@ function skip(req, res) {
   return res.statusCode <= 400;
 }
 
+function ignoreRoute(req, res) {
+  let routePrefixes = [
+    '/api/diagnostics'
+  ];
+  return routePrefixes.some(routePrefix => req.url.startsWith(routePrefix));
+}
+
 let expressWinstonOptions = {
+  ignoreRoute,
   requestFilter,
   skip,
   statusLevels: true,
