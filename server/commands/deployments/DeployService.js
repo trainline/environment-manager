@@ -55,22 +55,25 @@ module.exports = function DeployServiceCommandHandler(command) {
       configuration, accountName
     );
 
+    let foundAsgAndFine = false;
+
     if (Array.isArray(templates)) {
       let autoScalingGroupName = templates[0].autoScalingGroupName;
-      yield getAsg({ accountName, autoScalingGroupName })
-        .then((asg) => {
-          checkAsgSchedule(asg);
-        })
+      let asg = yield getAsg({ accountName, autoScalingGroupName })
         .catch((e) => {
-          // May not have an ASG associated with it.
-          // That's fine.
+          // didn't find one!
         });
+      if (asg) {
+        checkAsgSchedule(asg);
+        foundAsgAndFine = true;
+      }
     }
 
-    let environment = yield environmentTable.getByKey(environmentName);
-
-    if (environment) {
-      checkEnvironmentSchedule(environment);
+    if (!foundAsgAndFine) {
+      let environment = yield environmentTable.getByKey(environmentName);
+      if (environment) {
+        checkEnvironmentSchedule(environment);
+      }
     }
 
     if (command.isDryRun) {
