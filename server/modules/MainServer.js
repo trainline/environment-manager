@@ -31,8 +31,14 @@ function requestFilter(req, propName) {
   return req[propName];
 }
 
+function skip(req, res) {
+  return res.statusCode <= 400;
+}
+
 let expressWinstonOptions = {
   requestFilter,
+  skip,
+  statusLevels: true,
   winstonInstance: logger
 };
 
@@ -56,9 +62,7 @@ function createExpressApp() {
 
   /* notice how the router goes after the logger.
    * https://www.npmjs.com/package/express-winston#request-logging */
-  if (config.get('IS_PRODUCTION') === true) {
-    app.use(expressWinston.logger(expressWinstonOptions));
-  }
+  app.use(expressWinston.logger(expressWinstonOptions));
 
   const PUBLIC_DIR = config.get('PUBLIC_DIR');
   logger.info(`Serving static files from "${PUBLIC_DIR}"`);
@@ -78,9 +82,7 @@ function createExpressApp() {
   app.get('/api/initial-data', routes.initialData);
   app.use('/api', routeInstaller());
 
-  if (config.get('IS_PRODUCTION') === true) {
-    app.use(expressWinston.errorLogger(expressWinstonOptions));
-  }
+  app.use(expressWinston.errorLogger(expressWinstonOptions));
 
   apiV1.setup(app);
 
