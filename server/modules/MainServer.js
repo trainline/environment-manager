@@ -55,6 +55,7 @@ function ignoreRoute(req, res) {
 }
 
 let expressWinstonOptions = {
+  bodyBlacklist: ['password'],
   ignoreRoute,
   requestFilter,
   requestWhitelist: expressWinston.requestWhitelist.concat(['id', 'username']),
