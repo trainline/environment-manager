@@ -12,19 +12,19 @@
     <label class="control-label text-left">Date:</label>
   </div>
   <div class="form-group">
-    <select class="form-control" ng-model="SelectedDateRangeValue" ng-options="d.Value as d.Name for d in DateRangeList"></select>
+    <select class="form-control" ng-change="vm.refresh()" ng-model="SelectedDateRangeValue" ng-options="d.Value as d.Name for d in DateRangeList"></select>
   </div>
   <div class="form-group">
     <label class="control-label text-left">Entity Type:</label>
   </div>
   <div class="form-group">
-    <select class="form-control" ng-model="SelectedEntityType" ng-options="e.Value as e.Name for e in EntityTypesList"></select>
+    <select class="form-control" ng-change="vm.refresh()" ng-model="SelectedEntityType" ng-options="e.Value as e.Name for e in EntityTypesList"></select>
   </div>
   <div class="form-group">
     <label class="control-label text-left">Change Type:</label>
   </div>
   <div class="form-group">
-    <select class="form-control" ng-model="SelectedChangeType">
+    <select class="form-control" ng-change="vm.refresh()" ng-model="SelectedChangeType">
       <option ng-repeat="changeType in ChangeTypesList" ng-selected="{{changeType == SelectedChangeType}}" value="{{changeType}}">{{changeType}}</option>
     </select>
   </div>
@@ -32,7 +32,7 @@
     <label class="control-label text-left">ID / Name:</label>
   </div>
   <div class="form-group">
-    <input type="search" name="EntityName" class="form-control" ng-model="SelectedEntityKey" />
+    <input type="search" ng-change="vm.updateFilter()" name="EntityName" class="form-control" ng-model="SelectedEntityKey" />
   </div>
   <div class="form-group" ng-if="SelectedEntityHasRange()">
     <label class="control-label text-left">Range:</label>
@@ -42,9 +42,6 @@
   </div>
   <div class="form-group">
     <button type="button" class="btn btn-default right" ng-click="vm.refresh()">Show Audits</button>
-  </div>
-  <div class="form-group" ng-if="hasNextPage">
-    <button type="button" class="btn btn-default right" ng-click="getPage(nextPage);">Next Page</button>
   </div>
 </form>
 
@@ -56,7 +53,8 @@
   <div class="col-md-12" ng-if="Data.length == 0 && SearchPerformed">
     <p>No matching audit records found.</p>
   </div>
-  <div class="col-md-12" ng-if="Data.length > 0">
+  <ul style="margin: 3px 0px" ng-if="vm.data.length > 0" uib-pagination total-items="vm.filteredData.length" ng-model="vm.currentPage" items-per-page="vm.itemsPerPage" max-size="10" class="pagination-sm" boundary-link-numbers="true" ng-change="vm.updatePagedData()"></ul>
+  <div class="col-md-12">
     <table class="table" id="AuditHistory" style="table-layout: fixed">
       <thead>
         <tr>
@@ -69,7 +67,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="audit in Data | orderBy: '-Timestamp'">
+        <tr ng-repeat="audit in vm.data | orderBy: '-Timestamp'">
           <td style="overflow: hidden">
             <p>
               <span am-time-ago="audit.Timestamp"></span><br />
