@@ -33,19 +33,33 @@ function createStore() {
 }
 
 function createEncryptedRedisStore(client, cryptoKey) {
+  let TIMEOUT = 5000;
+
   function get(key) {
-    return client.getBuffer(key).then((value) => {
+    return withTimeout(client.getBuffer(key).then((value) => {
       if (value === null) return null;
       return decrypt(value);
-    });
+    }));
   }
 
   function del(key) {
-    return client.del(key);
+    return withTimeout(client.del(key));
   }
 
   function psetex(key, ttl, value) {
-    return client.psetexBuffer(key, ttl, encrypt(value));
+    return withTimeout(client.psetexBuffer(key, ttl, encrypt(value)));
+  }
+
+  function withTimeout(promise) {
+    return Promise.race([timeout(TIMEOUT), promise]);
+  }
+
+  function timeout(t) {
+    return delay(t).then(() => Promise.reject(new Error(`operation timed out after ${t} milliseconds`)));
+  }
+
+  function delay(milliseconds) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
   }
 
   function encrypt(plaintext) {
@@ -64,7 +78,16 @@ function createEncryptedRedisStore(client, cryptoKey) {
 }
 
 function connectToRedis() {
-  let client = new Redis({ host: EM_REDIS_ADDRESS, port: EM_REDIS_PORT, lazyConnect: true, connectTimeout: 1000 });
+  let client = new Redis({
+    host: EM_REDIS_ADDRESS,
+    port: EM_REDIS_PORT,
+    lazyConnect: true,
+    connectTimeout: 1000,
+    reconnectOnError: () => {
+      return 2;
+    }
+  });
+
   let events = ['close', 'connect', 'end', 'error', 'ready', 'reconnecting'];
   events.forEach((name) => {
     client.on(name, (e) => {

@@ -52,7 +52,15 @@ function circuitBreaker(policy) {
 }
 
 function connectToRedis({ address, port }) {
-  let client = new Redis({ host: address, port, lazyConnect: true, connectTimeout: 1000 });
+  let client = new Redis({
+    host: address,
+    port,
+    lazyConnect: true,
+    connectTimeout: 1000,
+    reconnectOnError: () => {
+      return 2;
+    }
+  });
   let events = ['close', 'connect', 'end', 'error', 'ready', 'reconnecting'];
   events.forEach((name) => {
     client.on(name, (e) => {
