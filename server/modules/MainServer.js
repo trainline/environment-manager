@@ -51,8 +51,6 @@ function createExpressApp() {
   app.use(cookieParser());
   app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
   app.use(bodyParser.json({ extended: false, limit: '50mb' }));
-  app.use(cookieAuthentication.middleware);
-  app.use(tokenAuthentication.middleware);
 
   /* notice how the router goes after the logger.
    * https://www.npmjs.com/package/express-winston#request-logging */
@@ -71,6 +69,9 @@ function createExpressApp() {
 
   // routing for API JSON Schemas
   app.use('/schema', authentication.allowUnknown, express.static(`${PUBLIC_DIR}/schema`));
+
+  app.use(cookieAuthentication.middleware);
+  app.use(tokenAuthentication.middleware);
 
   app.get('/deployments/nodes/logs', authentication.denyUnauthorized, routes.deploymentNodeLogs);
 
