@@ -24,8 +24,7 @@ angular.module('EnvironmentManager.common')
         }).then(function () {
           $window.location.reload();
         }).catch(function (err) {
-          var error = err.data.originalException;
-          vm.error = { message: error.message || error };
+          vm.error = { message: err.data.error || err.data.originalException || 'Unknown error' };
         });
       };
     }
