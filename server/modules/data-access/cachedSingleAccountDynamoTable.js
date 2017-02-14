@@ -12,7 +12,7 @@ let dynamoTableCache = require('modules/data-access/dynamoTableCache');
 let dynamoSoftDelete = require('modules/data-access/dynamoSoftDelete');
 let fp = require('lodash/fp');
 
-function constructor(physicalTableName, { ttl }) {
+function factory(physicalTableName, { ttl }) {
   let cachedTable = dynamoTableCache(physicalTableName, { ttl });
   let tableDescriptionPromise = () => mkArn({ tableName: physicalTableName }).then(describeDynamoTable);
 
@@ -71,4 +71,4 @@ function constructor(physicalTableName, { ttl }) {
   };
 }
 
-module.exports = constructor;
+module.exports = factory;
