@@ -17,7 +17,7 @@ const EM_REDIS_CRYPTO_KEY_S3_KEY = config.get('EM_REDIS_CRYPTO_KEY_S3_KEY');
 
 let storePromise;
 
-function get() {
+function getStore() {
   return storePromise || createStore();
 }
 
@@ -119,5 +119,5 @@ function getCryptoKey() {
 }
 
 module.exports = {
-  get
+  get: getStore
 };
