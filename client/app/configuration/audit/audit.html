@@ -29,6 +29,14 @@
     </select>
   </div>
   <div class="form-group">
+    <label class="control-label text-left">Environment Type:</label>
+  </div>
+  <div class="form-group">
+    <select class="form-control" ng-model="SelectedEnvironmentType">
+      <option ng-repeat="environmentType in EnvironmentTypeNames" ng-selected="{{environmentType == SelectedEnvironmentType}}" value="{{environmentType}}">{{environmentType}}</option>
+    </select>
+  </div>
+  <div class="form-group">
     <label class="control-label text-left">ID / Name:</label>
   </div>
   <div class="form-group">

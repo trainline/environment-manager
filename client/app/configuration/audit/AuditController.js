@@ -41,12 +41,14 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
 
     $scope.SelectedEntityType = SHOW_ALL_OPTION;
     $scope.SelectedChangeType = SHOW_ALL_OPTION;
+    $scope.SelectedEnvironmentType = SHOW_ALL_OPTION;
     $scope.SelectedEntityKey = '';
     $scope.SelectedEntityRange = '';
     $scope.SelectedDateRangeValue = $scope.DateRangeList[0].Value; // Today
     $scope.hasNextPage = false;
     $scope.DataLoading = false;
     $scope.SearchPerformed = false;
+    $scope.EnvironmentTypeNames = [];
 
     // Following defines how compare items in the same array for comparison purposes
     $scope.DiffOptions = arrayItemHashDetector;
@@ -73,7 +75,9 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
             }
           }
         }),
-
+        resources.config.environmentTypes.all().then(function (environmentTypes) {
+          $scope.EnvironmentTypeNames = _.map(environmentTypes, 'EnvironmentType');
+        }),
         resources.audit.changeTypes.all().then(function (changeTypes) {
           $scope.ChangeTypesList = [SHOW_ALL_OPTION].concat(changeTypes).sort();
         })
@@ -114,7 +118,7 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
       if ($scope.SelectedEntityRange && $scope.SelectedEntityHasRange()) {
         query['Entity.Range'] = $scope.SelectedEntityRange;
       }
-
+      
       if (Number.isInteger($scope.SelectedDateRangeValue)) {
         var dateNow = new Date().getTime();
         dateNow -= ($scope.SelectedDateRangeValue);
@@ -169,6 +173,9 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
 
         return audit;
       });
+
+      console.log($scope.Data);
+
       $scope.DataLoading = false;
     }
 
