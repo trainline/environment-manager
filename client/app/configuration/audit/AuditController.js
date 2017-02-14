@@ -33,7 +33,7 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
     vm.fullData;
     vm.data;
     vm.filteredData = [];
-    vm.itemsPerPage = 20;
+    vm.itemsPerPage = 2;
 
     vm.updatePagedData = function updatePagedData() {
       vm.data = vm.filteredData.slice(vm.itemsPerPage * (vm.currentPage - 1), vm.itemsPerPage * vm.currentPage);
@@ -197,6 +197,7 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
         return audit;
       });
 
+      configureFiltering();
       $scope.DataLoading = false;
     }
 
