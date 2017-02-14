@@ -28,9 +28,7 @@ function login(req, res, next) {
     let cookieOptions = { expires: utils.offsetMilliseconds(new Date(), ms(duration)) };
 
     res.cookie(cookieName, cookieValue, cookieOptions);
-
-    return userService.authenticateUser(credentials, duration)
-      .then(value => res.send(value));
+    res.send(token);
   }).catch(next);
 }
 
