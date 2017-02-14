@@ -2248,12 +2248,15 @@ definitions:
     properties:
       ShortName:
         type: string
+        minLength: 1
       SchemaVersion:
         type: integer
       GroupEmailAddress:
         type: string
+        minLength: 1
       ADMembershipGroup:
         type: string
+        minLength: 1
   LoadBalancerUpstream:
     type: object
     properties:
