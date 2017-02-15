@@ -22,7 +22,7 @@
  *   Owning Cluster   (TODO: Future change. Where we know it anyway – useful for filter)
  */
 angular.module('EnvironmentManager.configuration').controller('AuditController',
-  function ($scope, $routeParams, $location, $q, $http, $uibModal, resources, arrayItemHashDetector, modal, enums, linkHeader, QuerySync) {
+  function ($scope, $routeParams, $location, $q, $http, $uibModal, resources, cachedResources, arrayItemHashDetector, modal, enums, linkHeader, QuerySync) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -41,14 +41,14 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
 
     $scope.SelectedEntityType = SHOW_ALL_OPTION;
     $scope.SelectedChangeType = SHOW_ALL_OPTION;
-    $scope.SelectedEnvironmentType = SHOW_ALL_OPTION;
+    $scope.SelectedEnvironment = SHOW_ALL_OPTION;
     $scope.SelectedEntityKey = '';
     $scope.SelectedEntityRange = '';
     $scope.SelectedDateRangeValue = $scope.DateRangeList[0].Value; // Today
     $scope.hasNextPage = false;
     $scope.DataLoading = false;
     $scope.SearchPerformed = false;
-    $scope.EnvironmentTypeNames = [];
+    $scope.EnvironmentsList = [];
 
     // Following defines how compare items in the same array for comparison purposes
     $scope.DiffOptions = arrayItemHashDetector;
@@ -75,8 +75,10 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
             }
           }
         }),
-        resources.config.environmentTypes.all().then(function (environmentTypes) {
-          $scope.EnvironmentTypeNames = _.map(environmentTypes, 'EnvironmentType');
+        cachedResources.config.environments.all().then(function (environments) {
+          $scope.EnvironmentsList = [SHOW_ALL_OPTION].concat(
+            _.map(environments, 'EnvironmentName')
+          ).sort()
         }),
         resources.audit.changeTypes.all().then(function (changeTypes) {
           $scope.ChangeTypesList = [SHOW_ALL_OPTION].concat(changeTypes).sort();
@@ -118,7 +120,7 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
       if ($scope.SelectedEntityRange && $scope.SelectedEntityHasRange()) {
         query['Entity.Range'] = $scope.SelectedEntityRange;
       }
-      
+
       if (Number.isInteger($scope.SelectedDateRangeValue)) {
         var dateNow = new Date().getTime();
         dateNow -= ($scope.SelectedDateRangeValue);
