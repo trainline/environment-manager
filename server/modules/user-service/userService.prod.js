@@ -17,7 +17,6 @@ let Promise = require('bluebird');
 
 module.exports = function UserService() {
   let sslComponentsRepository = new (require('modules/sslComponentsRepository'))();
-  let redisStore;
 
   this.authenticateUser = authenticateUser;
   this.getUserByToken = getUserByToken;
@@ -80,7 +79,7 @@ module.exports = function UserService() {
 
   function getExistingSessionForUser(credentials, scope) {
     return co(function* () {
-      let store = yield getStore();
+      let store = yield EncryptedRedisStore.get();
       let userScopeSessionKey = getLatestSessionIdForUserAndScope(credentials.username, scope);
       let sessionId = yield store.get(userScopeSessionKey);
       if (sessionId) {
@@ -132,7 +131,7 @@ module.exports = function UserService() {
 
   function storeSession(session, scope, duration) {
     return co(function* () {
-      let store = yield getStore();
+      let store = yield EncryptedRedisStore.get();
       yield store.psetex(getSessionKey(session.sessionId), duration, session);
       yield store.psetex(getLatestSessionIdForUserAndScope(session.user.name, scope), duration, session.sessionId);
     });
@@ -141,7 +140,7 @@ module.exports = function UserService() {
   function getSessionFromStore(sessionId) {
     return co(function* () {
       let sessionKey = getSessionKey(sessionId);
-      let store = yield getStore();
+      let store = yield EncryptedRedisStore.get();
       return yield store.get(sessionKey);
     });
   }
@@ -149,7 +148,7 @@ module.exports = function UserService() {
   function deleteSessionFromStore(sessionId) {
     return co(function* () {
       let sessionKey = getSessionKey(sessionId);
-      let store = yield getStore();
+      let store = yield EncryptedRedisStore.get();
       return yield store.del(sessionKey);
     });
   }
@@ -160,16 +159,5 @@ module.exports = function UserService() {
 
   function getLatestSessionIdForUserAndScope(username, scope) {
     return `latest-${scope}-session-${md5(username)}`;
-  }
-
-  function getStore() {
-    return co(function* () {
-      if (redisStore) {
-        return redisStore;
-      }
-
-      redisStore = yield EncryptedRedisStore.create();
-      return redisStore;
-    });
   }
 };
