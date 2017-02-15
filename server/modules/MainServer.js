@@ -59,6 +59,7 @@ let expressWinstonOptions = {
   ignoreRoute,
   requestFilter,
   requestWhitelist: expressWinston.requestWhitelist.concat(['id', 'username']),
+  responseWhitelist: expressWinston.responseWhitelist.concat(['body']),
   skip,
   statusLevels: true,
   winstonInstance: logger
