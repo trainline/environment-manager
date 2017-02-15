@@ -292,6 +292,18 @@ paths:
           type: string
           format: date-time
           required: false
+        - name: ChangeType
+          in: query
+          type: string
+          required: false
+        - name: Entity.Key
+          in: query
+          type: string
+          required: false
+        - name: Entity.Type
+          in: query
+          type: string
+          required: false
       responses:
         200:
           description: A list of Audit logs
