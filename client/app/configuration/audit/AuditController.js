@@ -41,19 +41,31 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
 
     vm.updateFilter = function updateFilter() {
       vm.currentPage = 1;
-      vm.filteredData = vm.fullData.filter(function (audit) {
-        var entityKey = angular.lowercase($scope.SelectedEntityKey);
-        var auditKey = angular.lowercase(audit.Entity.Key);
-
-        return (entityKey === '' || auditKey.indexOf(entityKey) != -1)
-      });
+      vm.filteredData = vm.fullData
+        .filter(entityKeyFilter)
+        .filter(environmentFilter);
 
       vm.updatePagedData();
     };
 
     function configureFiltering() {
       vm.fullData = $scope.Data;
-      vm.updateFilter();
+    }
+
+    function entityKeyFilter(audit) {
+      var entityType = angular.lowercase($scope.SelectedEntityKey);
+      var auditKey = angular.lowercase(audit.Entity.Key);
+
+      return (entityType === '' || auditKey.indexOf(entityType) !== -1);
+    }
+
+    function environmentFilter(audit) {
+      var environment = angular.lowercase($scope.SelectedEnvironment);
+      var auditKey = angular.lowercase(audit.Entity.Key);
+
+      return (environment === '' 
+        || environment === angular.lowercase(SHOW_ALL_OPTION)
+        || auditKey.indexOf(environment) !== -1);
     }
 
     $scope.EntityTypesList = [];
@@ -160,6 +172,7 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
       };
       resources.audit.history.all(params).then(function (data) {
         displayResults(data);
+        vm.updateFilter();
       });
     };
 
