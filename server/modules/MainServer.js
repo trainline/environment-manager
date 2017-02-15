@@ -6,10 +6,10 @@ let express = require('express');
 let bodyParser = require('body-parser');
 let cookieParser = require('cookie-parser');
 let logger = require('modules/logger');
-let fp = require('lodash/fp');
 let config = require('config/');
 let compression = require('compression');
 let expressWinston = require('express-winston');
+let expressRequestId = require('express-request-id');
 
 let serverFactoryConfiguration = new (require('modules/serverFactoryConfiguration'))();
 let tokenAuthentication = require('modules/authentications/tokenAuthentication');
@@ -18,23 +18,13 @@ let authentication = require('modules/authentication');
 let deploymentMonitorScheduler = require('modules/monitoring/DeploymentMonitorScheduler');
 let apiV1 = require('api/v1');
 let httpServerFactory = require('modules/http-server-factory');
+let configureExpressWinston = require('modules/express-middleware/configureExpressWinston');
+let usernameMiddleware = require('modules/express-middleware/usernameMiddleware');
 
 let serverInstance;
 
 const APP_VERSION = require('config').get('APP_VERSION');
-
-function requestFilter(req, propName) {
-  // Avoid writing the authorization token to the log.
-  if (propName === 'headers') {
-    return fp.omit(['authorization'])(req[propName]);
-  }
-  return req[propName];
-}
-
-let expressWinstonOptions = {
-  requestFilter,
-  winstonInstance: logger
-};
+const REQUEST_USERNAME_PROPERTY = 'username';
 
 function createExpressApp() {
   let routeInstaller = require('modules/routeInstaller');
@@ -44,9 +34,21 @@ function createExpressApp() {
     deploymentNodeLogs: require('routes/deploymentNodeLogs')
   };
 
+  let { loggerMiddleware, errorLoggerMiddleware } = (() => {
+    /* Log the unique ID and username associated with each request */
+    let expressWinstonOptions = configureExpressWinston.loggerOptions({
+      requestWhitelist: ['id', REQUEST_USERNAME_PROPERTY]
+    });
+    return {
+      loggerMiddleware: expressWinston.logger(expressWinstonOptions),
+      errorLoggerMiddleware: expressWinston.errorLogger(expressWinstonOptions)
+    };
+  })();
+
   // start express
   let app = express();
 
+  app.use(expressRequestId());
   app.use(compression());
   app.use(cookieParser());
   app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
@@ -54,9 +56,7 @@ function createExpressApp() {
 
   /* notice how the router goes after the logger.
    * https://www.npmjs.com/package/express-winston#request-logging */
-  if (config.get('IS_PRODUCTION') === true) {
-    app.use(expressWinston.logger(expressWinstonOptions));
-  }
+  app.use(loggerMiddleware);
 
   const PUBLIC_DIR = config.get('PUBLIC_DIR');
   logger.info(`Serving static files from "${PUBLIC_DIR}"`);
@@ -72,6 +72,7 @@ function createExpressApp() {
 
   app.use(cookieAuthentication.middleware);
   app.use(tokenAuthentication.middleware);
+  app.use(usernameMiddleware({ usernameProperty: REQUEST_USERNAME_PROPERTY }));
 
   app.get('/deployments/nodes/logs', authentication.denyUnauthorized, routes.deploymentNodeLogs);
 
@@ -79,9 +80,7 @@ function createExpressApp() {
   app.get('/api/initial-data', routes.initialData);
   app.use('/api', routeInstaller());
 
-  if (config.get('IS_PRODUCTION') === true) {
-    app.use(expressWinston.errorLogger(expressWinstonOptions));
-  }
+  app.use(errorLoggerMiddleware);
 
   apiV1.setup(app);
 
