@@ -5,6 +5,8 @@
 const _ = require('lodash');
 const parseSchedule = require('./parseSchedule');
 const later = require('later');
+const sources = require('./sources');
+const getScheduleByEnvironment = require('./getScheduleByEnvironment');
 
 const actions = {
   switchOn: 'switchOn',
@@ -12,12 +14,6 @@ const actions = {
   putInService: 'putInService',
   putOutOfService: 'putOutOfService',
   skip: 'skip'
-};
-
-const sources = {
-  instance: 'instance',
-  asg: 'asg',
-  environment: 'environment'
 };
 
 const skipReasons = {
@@ -145,30 +141,6 @@ function getAsgInstanceLifeCycleState(instance) {
   return lifeCycleStates.transitioning;
 }
 
-function getScheduleForInstance(instance) {
-  let instanceSchedule = getTagValue(instance, 'schedule');
-  if (instanceSchedule) return { parseResult: parseSchedule(instanceSchedule), source: sources.instance };
-
-  if (instance.AutoScalingGroup) {
-    let asgSchedule = getTagValue(instance.AutoScalingGroup, 'schedule');
-    if (asgSchedule) return { parseResult: parseSchedule(asgSchedule), source: sources.asg };
-  }
-
-  return { parseResult: parseEnvironmentSchedule(instance.Environment), source: sources.environment };
-}
-
-function parseEnvironmentSchedule(environmentSchedule) {
-  if (environmentSchedule.ManualScheduleUp === false && environmentSchedule.ScheduleAutomatically === false) {
-    return { success: true, schedule: { permanent: 'off' } };
-  }
-
-  if (!(environmentSchedule.ManualScheduleUp !== true && environmentSchedule.ScheduleAutomatically === true)) {
-    return { success: true, schedule: { permanent: 'on' } };
-  }
-
-  return parseSchedule(environmentSchedule.DefaultSchedule);
-}
-
 function expectedStateFromSchedule(schedules, dateTime) {
   if (schedules.permanent) {
     return schedules.permanent;
@@ -207,6 +179,18 @@ function skip(reason, source) {
 
 function takeAction(action, source) {
   return { action, source };
+}
+
+function getScheduleForInstance(instance) {
+  let instanceSchedule = getTagValue(instance, 'schedule');
+  if (instanceSchedule) return { parseResult: parseSchedule(instanceSchedule), source: sources.instance };
+
+  if (instance.AutoScalingGroup) {
+    let asgSchedule = getTagValue(instance.AutoScalingGroup, 'schedule');
+    if (asgSchedule) return { parseResult: parseSchedule(asgSchedule), source: sources.asg };
+  }
+
+  return getScheduleByEnvironment(instance.Environment);
 }
 
 module.exports = {
