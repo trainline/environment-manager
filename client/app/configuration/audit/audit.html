@@ -53,8 +53,8 @@
   <div class="col-md-12" ng-if="Data.length == 0 && SearchPerformed">
     <p>No matching audit records found.</p>
   </div>
-  <ul style="margin: 3px 0px" ng-if="vm.data.length > 0" uib-pagination total-items="vm.filteredData.length" ng-model="vm.currentPage" items-per-page="vm.itemsPerPage" max-size="10" class="pagination-sm" boundary-link-numbers="true" ng-change="vm.updatePagedData()"></ul>
   <div class="col-md-12">
+    <ul style="margin: 3px 0px" ng-if="vm.data.length > 0" uib-pagination total-items="vm.filteredData.length" ng-model="vm.currentPage" items-per-page="vm.itemsPerPage" max-size="10" class="pagination-sm" boundary-link-numbers="true" ng-change="vm.updatePagedData()"></ul>
     <table class="table" id="AuditHistory" style="table-layout: fixed">
       <thead>
         <tr>
