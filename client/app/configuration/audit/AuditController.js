@@ -29,6 +29,33 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
 
     $scope.Data = [];
 
+    vm.currentPage = 1;
+    vm.fullData;
+    vm.data;
+    vm.filteredData = [];
+    vm.itemsPerPage = 20;
+
+    vm.updatePagedData = function updatePagedData() {
+      vm.data = vm.filteredData.slice(vm.itemsPerPage * (vm.currentPage - 1), vm.itemsPerPage * vm.currentPage);
+    };
+
+    vm.updateFilter = function updateFilter() {
+      vm.currentPage = 1;
+      vm.filteredData = vm.fullData.filter(function (audit) {
+        var entityKey = angular.lowercase($scope.SelectedEntityKey);
+        var auditKey = angular.lowercase(audit.Entity.Key);
+
+        return (entityKey === '' || auditKey.indexOf(entityKey) != -1)
+      });
+
+      vm.updatePagedData();
+    };
+
+    function configureFiltering() {
+      vm.fullData = $scope.Data;
+      vm.updateFilter();
+    }
+
     $scope.EntityTypesList = [];
     $scope.ChangeTypesList = [];
     $scope.DateRangeList = [
@@ -169,6 +196,8 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
 
         return audit;
       });
+
+      configureFiltering();
       $scope.DataLoading = false;
     }
 
