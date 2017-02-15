@@ -283,6 +283,21 @@ describe('DeployService', function () {
       sut(command);
     });
 
+    it('should throw when asg schedule is "OFF"', (done) => {
+      // eslint-disable-next-line
+      sut.__with__({
+        getScheduleStateByAsg: sinon.stub().returns('off'),
+        getAsg: sinon.stub().returns(Promise.resolve('something truthy!'))
+      })(() => {
+        let cmd = createCommand();
+        return sut(cmd);
+      })
+      .catch(() => {
+        assert.ok(true);
+        done();
+      });
+    });
+
     describe('locked environments', function () {
       beforeEach(() => { environment.IsLocked = true; });
 

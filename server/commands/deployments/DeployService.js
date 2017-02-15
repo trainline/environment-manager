@@ -94,7 +94,7 @@ module.exports = function DeployServiceCommandHandler(command) {
 function checkAsgSchedule(asg) {
   let state = getScheduleStateByAsg(asg);
   if (state && state.toLowerCase() === 'off') {
-    throw new Error('The state of this ASG schedule is off.');
+    throw new Error('The state of the current Auto Scaling Group schedule is "OFF". This deployment cannot complete until there is a current Auto Scaling Group template with a schedule that is "ON".');
   }
 }
 
@@ -112,7 +112,7 @@ function checkEnvironmentSchedule(environment) {
 
   if (environmentScheduleState) {
     if (environmentScheduleState.toLowerCase() === 'off') {
-      throw new Error('The state for the environment schedule is off.');
+      throw new Error('The current state of the environment schedule is "OFF". This deployment cannot complete until either the Environment Schedule is set to "ON" or there is a current Auto Scaling Group template with a schedule that is "ON".');
     }
   }
 }

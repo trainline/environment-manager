@@ -4,17 +4,7 @@ let _ = require('lodash');
 let later = require('later');
 
 function fromSingleEnvironmentSchedule(schedule) {
-  if (!schedule) {
-    return null;
-  }
-
-  let result = null;
-
-  if (schedule.permanent) {
-    result = schedule.permanent;
-  }
-
-  return result;
+  return _.get(schedule, 'permanent', null);
 }
 
 function fromMultipleEnvironmentSchedules(schedules, dateTime) {
