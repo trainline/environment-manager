@@ -63,7 +63,7 @@ function* handleQuery(query, resourceName, upstreamFilter) {
   // Getting all services the upstreams refer to
 
   // Extracts all service names the found upstreams refer to
-  let serviceNames = upstreams.map(upstream => upstream.ServiceName).distinct();
+  let serviceNames = [...new Set(upstreams.map(upstream => upstream.ServiceName))];
 
   // Gets all services from DynamoDB table
   let promises = serviceNames.map((serviceName) => {

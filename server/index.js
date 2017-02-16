@@ -17,7 +17,6 @@ let ConfigurationProvider = require('modules/configuration/ConfigurationProvider
 let checkAppPrerequisites = require('modules/checkAppPrerequisites');
 let cacheManager = require('modules/cacheManager');
 let co = require('co');
-require('./globals');
 
 process.on('unhandledRejection', (reason, promise) => {
   logger.warn('Promise rejection was unhandled. ', reason);
