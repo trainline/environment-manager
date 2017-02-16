@@ -19,11 +19,10 @@ let deploymentMonitorScheduler = require('modules/monitoring/DeploymentMonitorSc
 let apiV1 = require('api/v1');
 let httpServerFactory = require('modules/http-server-factory');
 let configureExpressWinston = require('modules/express-middleware/configureExpressWinston');
-let usernameMiddleware = require('modules/express-middleware/usernameMiddleware');
+let deprecateMiddleware = require('modules/express-middleware/deprecateMiddleware');
 let serverInstance;
 
 const APP_VERSION = require('config').get('APP_VERSION');
-const REQUEST_USERNAME_PROPERTY = 'username';
 
 function createExpressApp() {
   let routeInstaller = require('modules/routeInstaller');
@@ -36,7 +35,7 @@ function createExpressApp() {
   let { loggerMiddleware, errorLoggerMiddleware } = (() => {
     /* Log the unique ID and username associated with each request */
     let expressWinstonOptions = configureExpressWinston.loggerOptions({
-      requestWhitelist: ['body', 'id', REQUEST_USERNAME_PROPERTY]
+      requestWhitelist: ['body', 'id']
     });
     return {
       loggerMiddleware: expressWinston.logger(expressWinstonOptions),
@@ -62,6 +61,11 @@ function createExpressApp() {
     app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
     app.use(bodyParser.json({ extended: false, limit: '50mb' }));
 
+    // Deprecate routes that are part of the pre-v1 API.
+    app.use('/api', deprecateMiddleware(req => (req.originalUrl.startsWith(swaggerBasePath)
+      ? undefined
+      : `this operation will be removed after ${new Date(2017, 2, 17).toUTCString()}`)));
+
     /* notice how the router goes after the logger.
      * https://www.npmjs.com/package/express-winston#request-logging */
     app.use(loggerMiddleware);
@@ -80,7 +84,6 @@ function createExpressApp() {
 
     app.use(cookieAuthentication.middleware);
     app.use(tokenAuthentication.middleware);
-    app.use(usernameMiddleware({ usernameProperty: REQUEST_USERNAME_PROPERTY }));
 
     app.get('/deployments/nodes/logs', authentication.denyUnauthorized, routes.deploymentNodeLogs);
 
