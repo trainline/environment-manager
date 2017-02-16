@@ -20,7 +20,6 @@ let apiV1 = require('api/v1');
 let httpServerFactory = require('modules/http-server-factory');
 let configureExpressWinston = require('modules/express-middleware/configureExpressWinston');
 let usernameMiddleware = require('modules/express-middleware/usernameMiddleware');
-
 let serverInstance;
 
 const APP_VERSION = require('config').get('APP_VERSION');
@@ -37,7 +36,7 @@ function createExpressApp() {
   let { loggerMiddleware, errorLoggerMiddleware } = (() => {
     /* Log the unique ID and username associated with each request */
     let expressWinstonOptions = configureExpressWinston.loggerOptions({
-      requestWhitelist: ['id', REQUEST_USERNAME_PROPERTY]
+      requestWhitelist: ['body', 'id', REQUEST_USERNAME_PROPERTY]
     });
     return {
       loggerMiddleware: expressWinston.logger(expressWinstonOptions),
@@ -48,43 +47,57 @@ function createExpressApp() {
   // start express
   let app = express();
 
-  app.use(expressRequestId());
-  app.use(compression());
-  app.use(cookieParser());
-  app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
-  app.use(bodyParser.json({ extended: false, limit: '50mb' }));
+  return apiV1().then(({
+    swaggerAuthorizer,
+    swaggerBasePath,
+    swaggerErrorHandler,
+    swaggerMetadata,
+    swaggerRouter,
+    swaggerUi,
+    swaggerValidator
+  }) => {
+    app.use(expressRequestId());
+    app.use(compression());
+    app.use(cookieParser());
+    app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
+    app.use(bodyParser.json({ extended: false, limit: '50mb' }));
 
-  /* notice how the router goes after the logger.
-   * https://www.npmjs.com/package/express-winston#request-logging */
-  app.use(loggerMiddleware);
+    /* notice how the router goes after the logger.
+     * https://www.npmjs.com/package/express-winston#request-logging */
+    app.use(loggerMiddleware);
 
-  const PUBLIC_DIR = config.get('PUBLIC_DIR');
-  logger.info(`Serving static files from "${PUBLIC_DIR}"`);
+    const PUBLIC_DIR = config.get('PUBLIC_DIR');
+    logger.info(`Serving static files from "${PUBLIC_DIR}"`);
 
-  let staticPaths = ['*.js', '*.css', '*.html', '*.ico', '*.gif', '*.woff2', '*.ttf', '*.woff', '*.svg', '*.eot', '*.jpg', '*.png', '*.map'];
-  app.get(staticPaths, authentication.allowUnknown, express.static(PUBLIC_DIR));
-  app.get('/', express.static(PUBLIC_DIR));
+    let staticPaths = ['*.js', '*.css', '*.html', '*.ico', '*.gif', '*.woff2', '*.ttf', '*.woff', '*.svg', '*.eot', '*.jpg', '*.png', '*.map'];
+    app.get(staticPaths, authentication.allowUnknown, express.static(PUBLIC_DIR));
+    app.get('/', express.static(PUBLIC_DIR));
 
-  app.get('*.js', authentication.allowUnknown, express.static('modules'));
+    app.get('*.js', authentication.allowUnknown, express.static('modules'));
 
-  // routing for API JSON Schemas
-  app.use('/schema', authentication.allowUnknown, express.static(`${PUBLIC_DIR}/schema`));
+    // routing for API JSON Schemas
+    app.use('/schema', authentication.allowUnknown, express.static(`${PUBLIC_DIR}/schema`));
 
   app.use(cookieAuthentication.middleware);
   app.use(tokenAuthentication.middleware);
   app.use(usernameMiddleware({ usernameProperty: REQUEST_USERNAME_PROPERTY }));
 
-  app.get('/deployments/nodes/logs', authentication.denyUnauthorized, routes.deploymentNodeLogs);
+    app.get('/deployments/nodes/logs', authentication.denyUnauthorized, routes.deploymentNodeLogs);
 
-  // routing for APIs
-  app.get('/api/initial-data', routes.initialData);
-  app.use('/api', routeInstaller());
+    // routing for APIs
+    app.get('/api/initial-data', routes.initialData);
+    app.use('/api', routeInstaller());
 
-  app.use(errorLoggerMiddleware);
+    app.use(swaggerMetadata);
+    app.use(swaggerValidator);
+    app.use(swaggerBasePath, swaggerAuthorizer);
+    app.use(swaggerRouter);
+    app.use(swaggerUi);
+    app.use(errorLoggerMiddleware);
+    app.use(swaggerErrorHandler);
 
-  apiV1.setup(app);
-
-  return Promise.resolve(app);
+    return Promise.resolve(app);
+  });
 }
 
 function createServer(app) {
