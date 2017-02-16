@@ -37,7 +37,7 @@ module.exports = {
       let volume = {};
       volume.Name = awsVolume.DeviceName === OS_DEVICE_NAME ? 'OS' : 'Data';
       volume.Size = awsVolume.Ebs.VolumeSize;
-      volume.Type = awsVolume.Ebs.VolumeType === 'standard' ? 'Disk' : 'SSD';
+      volume.Type = awsVolume.Ebs.VolumeType === 'gp2' ? 'SSD' : 'Disk';
       return volume;
     }).sort((vol1, vol2) => (
       // sda1 before sda2 etc.
