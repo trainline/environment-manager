@@ -27,8 +27,9 @@ function memoize(fn) {
       let result = fn(...args);
       if (isPromise(result)) {
         memo.set(key, result.then(deepFreezeIfObj));
+      } else {
+        memo.set(key, deepFreezeIfObj(result));
       }
-      memo.set(key, deepFreezeIfObj(result));
     }
     return memo.get(key);
   };

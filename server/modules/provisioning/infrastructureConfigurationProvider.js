@@ -12,6 +12,7 @@ let sender = require('modules/sender');
 let imageProvider = require('modules/provisioning/launchConfiguration/imageProvider');
 let Environment = require('models/Environment');
 let EnvironmentType = require('models/EnvironmentType');
+let clusters = require('modules/data-access/clusters');
 
 module.exports = {
   get(environmentName, serviceName, serverRoleName) {
@@ -72,17 +73,7 @@ function getServiceByName(serviceName) {
 }
 
 function getClusterByName(clusterName) {
-  const masterAccountName = config.getUserValue('masterAccountName');
-
-  let query = {
-    name: 'GetDynamoResource',
-    resource: 'config/clusters',
-    accountName: masterAccountName,
-    key: clusterName
-  };
-
-  return sender
-    .sendQuery({ query })
+  return clusters.get({ ClusterName: clusterName })
     .then(
       cluster => Promise.resolve({
         Name: cluster.ClusterName,

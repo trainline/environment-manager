@@ -78,7 +78,8 @@ angular.module('EnvironmentManager.common').factory('remoteResourceFactory',
 
       this.delete = function (params) {
         var url = urlify(params);
-        return promisify($http.delete(url));
+        var config = getExpectedVersionHeader(params.expectedVersion);
+        return promisify($http.delete(url, config));
       };
 
       this.put = function (params) {

@@ -61,6 +61,36 @@ describe('dynamodb expression', function () {
         result.Expr2.should.match(/\(#Entity\.#Key\) = \(:val[0-1]\)/);
       });
     });
+    context('when I compile an expression with an unknown name in the function position', function() {
+      let input = ['attribute_not_exists', '1', '2'];
+      let result;
+      before(function () {
+        result = sut.compile(input);
+      });
+      it('it is assumed to be a function with prefix calling convention', function() {
+        result.Expression.should.eql('attribute_not_exists(1, 2)');
+      });
+    });
+    context('when I compile an expression without any attribute references', function() {
+      let input = ['attribute_not_exists', '1', '2'];
+      let result;
+      before(function () {
+        result = sut.compile(input);
+      });
+      it('it does not have an ExpressionAttributeNames property', function() {
+        result.should.not.have.property('ExpressionAttributeNames');
+      });
+    });
+    context('when I compile an expression without any value references', function() {
+      let input = ['attribute_not_exists', '1', '2'];
+      let result;
+      before(function () {
+        result = sut.compile(input);
+      });
+      it('it does not have an ExpressionAttributeValues property', function() {
+        result.should.not.have.property('ExpressionAttributeValues');
+      });
+    });
   });
 });
 

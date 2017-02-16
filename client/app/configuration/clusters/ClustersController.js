@@ -42,13 +42,14 @@ angular.module('EnvironmentManager.configuration').controller('ClustersControlle
 
     $scope.Delete = function (cluster) {
       var name = cluster.ClusterName;
+      var expectedVersion = cluster.Version;
       modal.confirmation({
         title: 'Delete Cluster',
         message: 'Are you sure you want to delete the <strong>' + name + '</strong> Cluster?',
         action: 'Delete',
         severity: 'Danger'
       }).then(function () {
-        resources.config.clusters.delete({ key: name }).then($scope.Refresh);
+        resources.config.clusters.delete({ key: name, expectedVersion: expectedVersion }).then($scope.Refresh);
         cachedResources.config.clusters.flush();
       });
     };

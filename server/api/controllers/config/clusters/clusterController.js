@@ -2,16 +2,37 @@
 
 'use strict';
 
-const RESOURCE = 'config/clusters';
 const KEY_NAME = 'ClusterName';
 
-let dynamoHelper = new (require('api/api-utils/DynamoHelper'))(RESOURCE);
+let clusters = require('modules/data-access/clusters');
+let crypto = require('crypto');
+let versionOf = require('modules/data-access/dynamoVersion').versionOf;
+let removeAuditMetadata = require('modules/data-access/dynamoAudit').removeAuditMetadata;
+
+function keyOf(value) {
+  let t = {};
+  t[KEY_NAME] = value;
+  return t;
+}
+
+function convertToApiModel(persistedModel) {
+  let apiModel = removeAuditMetadata(persistedModel);
+  let Version = versionOf(persistedModel);
+  return Object.assign(apiModel, { Version });
+}
+
+let getMetadata = req => ({
+  TransactionID: crypto.pseudoRandomBytes(4).toString('hex'),
+  User: req.user.getName()
+});
 
 /**
  * GET /config/clusters
  */
 function getClustersConfig(req, res, next) {
-  return dynamoHelper.getAll().then(data => res.json(data)).catch(next);
+  return clusters.scan()
+    .then(data => data.map(convertToApiModel))
+    .then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -19,7 +40,9 @@ function getClustersConfig(req, res, next) {
  */
 function getClusterConfigByName(req, res, next) {
   const key = req.swagger.params.name.value;
-  return dynamoHelper.getByKey(key).then(data => res.json(data)).catch(next);
+  return clusters.get(keyOf(key))
+    .then(convertToApiModel)
+    .then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -27,8 +50,11 @@ function getClusterConfigByName(req, res, next) {
  */
 function postClustersConfig(req, res, next) {
   const body = req.swagger.params.body.value;
-  const user = req.user;
-  return dynamoHelper.create(body[KEY_NAME], { Value: body.Value }, user).then(() => res.status(201).end()).catch(next);
+
+  let metadata = getMetadata(req);
+  let record = Object.assign({}, body);
+  delete record.Version;
+  return clusters.create({ record: body, metadata }).then(() => res.status(201).end()).catch(next);
 }
 
 /**
@@ -38,9 +64,12 @@ function putClusterConfigByName(req, res, next) {
   const key = req.swagger.params.name.value;
   const expectedVersion = req.swagger.params['expected-version'].value;
   const body = req.swagger.params.body.value;
-  const user = req.user;
 
-  return dynamoHelper.update(key, { Value: body }, expectedVersion, user)
+  let metadata = getMetadata(req);
+  let record = Object.assign(keyOf(key), { Value: body });
+  delete record.Version;
+
+  return clusters.replace({ record, metadata }, expectedVersion)
     .then(() => res.status(200).end())
     .catch(next);
 }
@@ -49,9 +78,14 @@ function putClusterConfigByName(req, res, next) {
  * DELETE /config/clusters/{name}
  */
 function deleteClusterConfigByName(req, res, next) {
-  const key = req.swagger.params.name.value;
-  const user = req.user;
-  return dynamoHelper.delete(key, user).then(() => res.status(200).end()).catch(next);
+  const clusterName = req.swagger.params.name.value;
+  const expectedVersion = req.swagger.params['expected-version'].value;
+
+  let key = keyOf(clusterName);
+  let metadata = getMetadata(req);
+
+  return clusters.delete({ key, metadata }, expectedVersion)
+    .then(() => res.status(200).end()).catch(next);
 }
 
 module.exports = {
