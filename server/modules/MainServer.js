@@ -78,9 +78,9 @@ function createExpressApp() {
     // routing for API JSON Schemas
     app.use('/schema', authentication.allowUnknown, express.static(`${PUBLIC_DIR}/schema`));
 
-  app.use(cookieAuthentication.middleware);
-  app.use(tokenAuthentication.middleware);
-  app.use(usernameMiddleware({ usernameProperty: REQUEST_USERNAME_PROPERTY }));
+    app.use(cookieAuthentication.middleware);
+    app.use(tokenAuthentication.middleware);
+    app.use(usernameMiddleware({ usernameProperty: REQUEST_USERNAME_PROPERTY }));
 
     app.get('/deployments/nodes/logs', authentication.denyUnauthorized, routes.deploymentNodeLogs);
 
