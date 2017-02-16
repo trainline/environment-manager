@@ -35,7 +35,6 @@ function defaultErrorHandler(err, req, res, next) {
     };
   }
 
-  logger.error(err.stack);
   res.json(friendlyError);
 }
 
