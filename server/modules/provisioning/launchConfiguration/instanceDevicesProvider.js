@@ -37,7 +37,7 @@ module.exports = {
       let volume = {};
       volume.Name = awsVolume.DeviceName === OS_DEVICE_NAME ? 'OS' : 'Data';
       volume.Size = awsVolume.Ebs.VolumeSize;
-      volume.Type = awsVolume.Ebs.VolumeType === 'gp2' ? 'SSD' : 'Disk';
+      volume.Type = awsVolume.Ebs.VolumeType === 'standard' ? 'Disk' : 'SSD';
       return volume;
     }).sort((vol1, vol2) => (
       // sda1 before sda2 etc.
@@ -52,7 +52,7 @@ function getDeviceByVolume(dataVolume, name, encrypted) {
     Ebs: {
       DeleteOnTermination: true,
       VolumeSize: dataVolume.Size,
-      VolumeType: dataVolume.Type.toLowerCase() === 'ssd' ? 'gp2' : 'st1',
+      VolumeType: dataVolume.Type.toLowerCase() === 'ssd' ? 'gp2' : 'standard',
       Encrypted: encrypted
     }
   };
