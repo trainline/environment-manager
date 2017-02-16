@@ -25,7 +25,7 @@ function loggerOptions({ requestWhitelist }) {
    * Only log requests if the corresponding response has a non-success status code
    */
   function skip(req, res) {
-    return res.statusCode <= 400;
+    return res && typeof res.statusCode === 'number' && res.statusCode <= 400;
   }
 
   /**
