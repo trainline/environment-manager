@@ -32,16 +32,9 @@ function createExpressApp() {
     deploymentNodeLogs: require('routes/deploymentNodeLogs')
   };
 
-  let { loggerMiddleware, errorLoggerMiddleware } = (() => {
-    /* Log the unique ID and username associated with each request */
-    let expressWinstonOptions = configureExpressWinston.loggerOptions({
-      requestWhitelist: ['body', 'id']
-    });
-    return {
-      loggerMiddleware: expressWinston.logger(expressWinstonOptions),
-      errorLoggerMiddleware: expressWinston.errorLogger(expressWinstonOptions)
-    };
-  })();
+
+  let loggerMiddleware = expressWinston.logger(configureExpressWinston.loggerOptions());
+  let errorLoggerMiddleware = expressWinston.errorLogger(configureExpressWinston.errorLoggerOptions());
 
   // start express
   let app = express();

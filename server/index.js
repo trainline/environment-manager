@@ -2,6 +2,9 @@
 
 'use strict';
 
+// Replace NodeJS built-in Promise with Bluebird Promise
+global.Promise = require('bluebird');
+
 if (process.env.NEW_RELIC_APP_NAME !== undefined) {
   require('newrelic');
 }

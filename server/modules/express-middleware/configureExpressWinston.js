@@ -10,27 +10,38 @@ let expressWinston = require('express-winston');
 let fp = require('lodash/fp');
 let logger = require('modules/logger');
 
-function loggerOptions({ requestWhitelist }) {
-  /**
-   * Display the username of the request initiator
-   */
-  function dynamicMeta(req, res) {
-    return {
-      username: (req.user && typeof req.user.getName === 'function') ? req.user.getName() : null,
-      deprecated: (res.locals && res.locals.deprecated)
-    };
-  }
+const requestWhitelist = ['body', 'id'];
 
-  /**
-   * Do not log the authorization token.
-   */
-  function requestFilter(req, propName) {
-    if (propName === 'headers') {
-      return fp.omit(['authorization'])(req[propName]);
-    }
-    return req[propName];
-  }
+/**
+ * Display the username of the request initiator
+ */
+function dynamicMeta(req, res) {
+  return {
+    username: (req.user && typeof req.user.getName === 'function') ? req.user.getName() : null,
+    deprecated: (res.locals && res.locals.deprecated)
+  };
+}
 
+/**
+ * Do not log the authorization token.
+ */
+function requestFilter(req, propName) {
+  if (propName === 'headers') {
+    return fp.omit(['authorization'])(req[propName]);
+  }
+  return req[propName];
+}
+
+function errorLoggerOptions() {
+  return {
+    dynamicMeta,
+    requestFilter,
+    requestWhitelist: expressWinston.requestWhitelist.concat(requestWhitelist),
+    winstonInstance: logger
+  };
+}
+
+function loggerOptions() {
   /**
    * Only log requests if the corresponding response has a non-success status code
    * or is for a deprecated route.
@@ -64,5 +75,5 @@ function loggerOptions({ requestWhitelist }) {
 
 module.exports = {
   loggerOptions,
-  errorLoggerOptions: loggerOptions
+  errorLoggerOptions
 };
