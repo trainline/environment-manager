@@ -1,4 +1,4 @@
-<div class="form-group" ng-class="{'has-error': form.MinInstances.$invalid || form.NumberOfInstances.$invalid || form.MaxInstances.$invalid }">
+<div class="form-group" ng-class="{'has-error': settingsForm.MinInstances.$invalid || settingsForm.NumberOfInstances.$invalid || settingsForm.MaxInstances.$invalid }">
   <label class="col-md-2 control-label text-left nowrap">Size:</label>
   <div class="col-md-8">
     <label class="control-label text-left nonbold inline">Min:</label>
@@ -42,24 +42,24 @@
   </div>
 </div>
 <div class="form-group has-error"
-  ng-if="form.MinInstances.$invalid || 
-  form.NumberOfInstances.$invalid || 
-  form.MaxInstances.$invalid ||
+  ng-if="settingsForm.MinInstances.$invalid || 
+  settingsForm.NumberOfInstances.$invalid || 
+  settingsForm.MaxInstances.$invalid ||
   vm.asgUpdate.DesiredCapacity < vm.asgUpdate.MinSize ||
   vm.asgUpdate.DesiredCapacity > vm.asgUpdate.MaxSize ||
   vm.greaterThanLowestDesiredSizeScheduled(vm.asgUpdate.MinSize) ||
   vm.lessThanHighestDesiredSizeScheduled(vm.asgUpdate.MaxSize)">
   <div class="col-md-offset-2 col-md-10">
-    <span class="help-block" ng-if="form.MinInstances.$dirty && form.MinInstances.$error.required">Min instances is mandatory.</span>
-    <span class="help-block" ng-if="form.MinInstances.$dirty && (form.MinInstances.$error.number || form.MinInstances.$error.min || form.MinInstances.$error.max)">Min must be a number between 1 and 100</span>
-    <span class="help-block" ng-if="form.NumberOfInstances.$dirty && form.NumberOfInstances.$error.required">Desired instances is mandatory.</span>
-    <span class="help-block" ng-if="form.NumberOfInstances.$dirty && (form.NumberOfInstances.$error.number || form.NumberOfInstances.$error.min || form.NumberOfInstances.$error.max)">Desired must be a number between 1 and 100</span>
-    <span class="help-block" ng-if="form.MaxInstances.$dirty && form.MaxInstances.$error.required">Max instances is mandatory.</span>
-    <span class="help-block" ng-if="form.MaxInstances.$dirty && (form.MaxInstances.$error.number || form.MaxInstances.$error.min || form.MaxInstances.$error.max)">Max must be a number between 1 and 100</span>
+    <span class="help-block" ng-if="settingsForm.MinInstances.$dirty && settingsForm.MinInstances.$error.required">Min instances is mandatory.</span>
+    <span class="help-block" ng-if="settingsForm.MinInstances.$dirty && (settingsForm.MinInstances.$error.number || settingsForm.MinInstances.$error.min || settingsForm.MinInstances.$error.max)">Min must be a number from 0 to 100 inclusive</span>
+    <span class="help-block" ng-if="settingsForm.NumberOfInstances.$dirty && settingsForm.NumberOfInstances.$error.required">Desired instances is mandatory.</span>
+    <span class="help-block" ng-if="settingsForm.NumberOfInstances.$dirty && (settingsForm.NumberOfInstances.$error.number || settingsForm.NumberOfInstances.$error.min || settingsForm.NumberOfInstances.$error.max)">Desired must be a number from 0 to 100 inclusive</span>
+    <span class="help-block" ng-if="settingsForm.MaxInstances.$dirty && settingsForm.MaxInstances.$error.required">Max instances is mandatory.</span>
+    <span class="help-block" ng-if="settingsForm.MaxInstances.$dirty && (settingsForm.MaxInstances.$error.number || settingsForm.MaxInstances.$error.min || settingsForm.MaxInstances.$error.max)">Max must be a number from 0 to 100 inclusive</span>
     <span class="help-block" ng-if="vm.asgUpdate.DesiredCapacity < vm.asgUpdate.MinSize">Desired capacity must be greater than or equal to Min instances.</span>
     <span class="help-block" ng-if="vm.asgUpdate.DesiredCapacity > vm.asgUpdate.MaxSize">Desired capacity must be less than or equal to Max instances.</span>
-    <span class="help-block" ng-if="form.MinInstances.$dirty && vm.greaterThanLowestDesiredSizeScheduled(vm.asgUpdate.MinSize)">Min instances must be equal to or lower than the lowest scheduled size.</span>
-    <span class="help-block" ng-if="form.MaxInstances.$dirty && vm.lessThanHighestDesiredSizeScheduled(vm.asgUpdate.MaxSize)">Max instances must be equal to or greater than the highest scheduled size.</span>
+    <span class="help-block" ng-if="settingsForm.MinInstances.$dirty && vm.greaterThanLowestDesiredSizeScheduled(vm.asgUpdate.MinSize)">Min instances must be equal to or lower than the lowest scheduled size.</span>
+    <span class="help-block" ng-if="settingsForm.MaxInstances.$dirty && vm.lessThanHighestDesiredSizeScheduled(vm.asgUpdate.MaxSize)">Max instances must be equal to or greater than the highest scheduled size.</span>
   </div>
 </div>
 <div class="form-group" ng-if="vm.asgUpdate.DesiredCapacity < vm.asg.DesiredCapacity && vm.canResize()">

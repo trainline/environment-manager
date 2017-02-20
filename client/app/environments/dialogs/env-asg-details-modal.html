@@ -13,31 +13,31 @@
   <div ng-if="!vm.dataLoading">
     <uib-tabset active="vm.asgUpdate.SelectedAction">
       <uib-tab heading="Instances" index="'instances'">
-        <form name="form" class="form-horizontal">
+        <form name="instances-form" class="form-horizontal">
           <asg-instances asg="vm.asg" asg-state="vm.asgState" ng-if="vm.asgState"></asg-instances>
         </form>
       </uib-tab>
       <uib-tab heading="ASG Settings" index="'runtime-asg'">
-        <form name="form" class="form-horizontal">
+        <form name="settingsForm" class="form-horizontal">
           <div style="width: 900px">
             <div ng-include="'/app/environments/dialogs/asg/runtime-asg.html'"></div>
             <div class="form-group">
               <div class="col-md-8 col-md-offset-2">
-                <button class="btn btn-default" type="button" ng-click="vm.updateAutoScalingGroup()" ng-if="vm.canUser('edit')" ng-disabled="!vm.formIsValid(form) || !vm.updateASGFormIsValid()">Update Auto Scaling Group</button>
+                <button class="btn btn-default" ng-class="{'btn-highlight': settingsForm.$dirty && vm.formIsValid(settingsForm)}" type="button" ng-click="vm.updateAutoScalingGroup()" ng-if="vm.canUser('edit')" ng-disabled="!vm.formIsValid(settingsForm) || !vm.updateASGFormIsValid()">Update Auto Scaling Group</button>
               </div>
             </div>
           </div>
         </form>
       </uib-tab>
       <uib-tab heading="Launch Configuration" index="'launchConfig'" >
-        <form name="form" class="form-horizontal asg-launch-configuration">
+        <form name="form" class="form-horizontal">
           <div ng-init="vm.setLaunchConfigForm(form)">
             <div ng-include="'/app/common/launch-config/launch-config.html'" style="width: 900px"></div>
             <div class="form-group">
               <label class="col-md-1 control-label text-left" style="width: 180px"></label>
               <div class="col-md-8">
-                <button class="btn btn-default submit" type="button" ng-click="vm.updateLaunchConfig()" ng-if="vm.canUser('edit')" ng-disabled="!vm.formIsValid(form)">Update Launch Configuration</button>
-              </div>
+                <button class="btn btn-default" ng-class="{'btn-highlight': form.$dirty && vm.formIsValid(form)}" type="button" ng-click="vm.updateLaunchConfig()" ng-if="vm.canUser('edit')" ng-disabled="!vm.formIsValid(form)">Update Launch Configuration</button>
+              </div>'
             </div>
           </div>
           <div class="form-group">
