@@ -9,7 +9,6 @@ function build() {
   let output = argv.o || './build';
 
   return gulp.src([
-    'environment-manager',
     '*api/**/*',
     '*commands/**/*',
     '*config/**/*',
