@@ -23,7 +23,7 @@ function createAuditLogQuery(since, until, exclusiveStartKey, perPage, filter) {
     minDate: since.toString()
   };
   if (perPage) {
-    rq.limit = perPage || 10;
+    rq.limit = perPage;
   }
   if (exclusiveStartKey) {
     rq.exclusiveStartKey = exclusiveStartKey;
