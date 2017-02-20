@@ -1,14 +1,11 @@
-[Unit]
-After=systemd-journald.socket
-
 [Service]
 EnvironmentFile=/etc/environment-manager.env
 WorkingDirectory=/opt/environment-manager/
-ExecStart=/opt/environment-manager/environment-manager
+ExecStart=/usr/bin/node index.js mode=Release
 
 Restart=always
-StandardOutput=null
-StandardError=null
+StandardOutput=syslog
+StandardError=syslog
 SyslogIdentifier=environment-manager
 
 [Install]
