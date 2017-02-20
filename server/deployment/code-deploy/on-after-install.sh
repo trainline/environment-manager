@@ -9,3 +9,5 @@ cp -f ${SRC_FILE} ${TARGET_FILE}
 chmod 644 ${TARGET_FILE}
 
 chown root.root ${TARGET_FILE}
+
+chmod 755 /opt/environment-manager/environment-manager
