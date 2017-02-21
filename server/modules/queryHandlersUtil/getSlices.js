@@ -6,7 +6,7 @@ let sender = require('modules/sender');
 let co = require('co');
 let _ = require('lodash');
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
-let awsAccounts = require('modules/awsAccounts')
+let awsAccounts = require('modules/awsAccounts');
 
 function hostFilter(active) {
   if (active === true) {

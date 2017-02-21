@@ -3,12 +3,10 @@
 'use strict';
 
 let _ = require('lodash');
-let config = require('config');
+let awsAccounts = require('modules/awsAccounts');
 let sender = require('modules/sender');
 
 module.exports = function UserRolesProvider() {
-  const masterAccountName = config.getUserValue('masterAccountName');
-
   this.getPermissionsFor = (names) => {
     if (!names) {
       return Promise.resolve([]);
@@ -57,13 +55,16 @@ module.exports = function UserRolesProvider() {
   };
 
   let getPermissions = function (name) {
-    let query = {
-      accountName: masterAccountName,
-      name: 'ScanDynamoResources',
-      resource: 'config/permissions',
-      filter: { Name: name }
-    };
+    return awsAccounts.getMasterAccountName()
+      .then((masterAccountName) => {
+        let query = {
+          accountName: masterAccountName,
+          name: 'ScanDynamoResources',
+          resource: 'config/permissions',
+          filter: { Name: name }
+        };
 
-    return sender.sendQuery({ query });
+        return sender.sendQuery({ query });
+      });
   };
 };
