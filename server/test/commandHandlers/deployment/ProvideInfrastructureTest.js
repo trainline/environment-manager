@@ -114,14 +114,14 @@ describe('ProvideInfrastructureCommandHandler:', () => {
       let promise = null;
 
       let expectedLaunchConfigurationTemplate = {
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
+        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
       };
 
       // Mocking AutoScalingTemplatesProvider
 
       let expectedAutoScalingTemplate = {
         autoScalingGroupName: 'pr1-ta-Web',
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
+        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
       };
 
       before('Providing the infrastructure', () => {
@@ -211,11 +211,11 @@ describe('ProvideInfrastructureCommandHandler:', () => {
 
       let expectedAutoScalingTemplate = {
         autoScalingGroupName: 'pr1-ta-Web',
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
+        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
       };
 
       let expectedLaunchConfigurationTemplate = {
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
+        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
       };
 
       before('Providing the infrastructure', () => {
@@ -331,7 +331,7 @@ describe('ProvideInfrastructureCommandHandler:', () => {
 
       let expectedAutoScalingTemplate = {
         autoScalingGroupName: 'pr1-ta-Web',
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
+        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
       };
 
       before('Providing the infrastructure', () => {
@@ -347,7 +347,7 @@ describe('ProvideInfrastructureCommandHandler:', () => {
 
         // Mocking LaunchConfigurationTemplatesProvider
         let expectedLaunchConfigurationTemplate = {
-          launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
+          image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
         };
 
         mocks.launchConfigurationTemplatesProvider.get
@@ -355,7 +355,7 @@ describe('ProvideInfrastructureCommandHandler:', () => {
 
         // Mocking Sender
         let expectedLaunchConfiguration = {
-          LaunchConfigurationName: 'LaunchConfig_pr1-ta-Web'
+          image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
         };
 
         mocks.sender.sendQuery
@@ -452,12 +452,12 @@ describe('ProvideInfrastructureCommandHandler:', () => {
       let promise = null;
 
       let expectedLaunchConfigurationTemplate = {
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
+        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
       };
 
       let expectedAutoScalingTemplate = {
         autoScalingGroupName: 'pr1-ta-Web',
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
+        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
       };
 
       before('Providing the infrastructure', () => {
@@ -521,7 +521,7 @@ describe('ProvideInfrastructureCommandHandler:', () => {
 
       let expectedAutoScalingTemplate = {
         autoScalingGroupName: 'pr1-ta-Web',
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
+        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
       };
 
       before('Providing the infrastructure', () => {
@@ -540,7 +540,7 @@ describe('ProvideInfrastructureCommandHandler:', () => {
         // Mocking LaunchConfigurationTemplatesProvider
 
         let expectedLaunchConfigurationTemplate = {
-          launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
+          image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
         };
 
         mocks.launchConfigurationTemplatesProvider.get
@@ -577,22 +577,22 @@ describe('ProvideInfrastructureCommandHandler:', () => {
       // Mocking LaunchConfigurationTemplatesProvider
 
       let expectedLaunchConfigurationBlueTemplate = {
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web-blue'
+        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web-blue'
       };
 
       let expectedLaunchConfigurationGreenTemplate = {
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web-green'
+        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web-green'
       };
 
 
       let expectedAutoScalingBlueTemplate = {
         autoScalingGroupName: 'pr1-ta-Web-blue',
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web-blue'
+        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web-blue'
       };
 
       let expectedAutoScalingGreenTemplate = {
         autoScalingGroupName: 'pr1-ta-Web-green',
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web-green'
+        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web-green'
       };
 
       before('Providing the infrastructure', () => {
@@ -684,11 +684,11 @@ describe('ProvideInfrastructureCommandHandler:', () => {
       // Mocking LaunchConfigurationTemplatesProvider
 
       let expectedLaunchConfigurationBlueTemplate = {
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web-blue'
+        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web-blue'
       };
 
       let expectedLaunchConfigurationGreenTemplate = {
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web-green'
+        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web-green'
       };
 
 
@@ -696,12 +696,12 @@ describe('ProvideInfrastructureCommandHandler:', () => {
 
       let expectedAutoScalingBlueTemplate = {
         autoScalingGroupName: 'pr1-ta-Web-blue',
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web-blue'
+        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web-blue'
       };
 
       let expectedAutoScalingGreenTemplate = {
         autoScalingGroupName: 'pr1-ta-Web-green',
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web-green'
+        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web-green'
       };
 
       before('Providing the infrastructure', () => {
@@ -731,7 +731,7 @@ describe('ProvideInfrastructureCommandHandler:', () => {
         };
 
         let expectedLaunchConfigurationBlue = {
-          LaunchConfigurationName: 'LaunchConfig_pr1-ta-Web-blue'
+          image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web-blue'
         };
 
         mocks.sender.sendQuery
@@ -823,22 +823,22 @@ describe('ProvideInfrastructureCommandHandler:', () => {
       // Mocking AutoScalingTemplatesProvider
       let expectedAutoScalingBlueTemplate = {
         autoScalingGroupName: 'pr1-ta-Web-blue',
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web-blue'
+        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web-blue'
       };
 
       let expectedAutoScalingGreenTemplate = {
         autoScalingGroupName: 'pr1-ta-Web-green',
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web-green'
+        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web-green'
       };
 
 
       // Mocking LaunchConfigurationTemplatesProvider
       let expectedLaunchConfigurationBlueTemplate = {
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web-blue'
+        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web-blue'
       };
 
       let expectedLaunchConfigurationGreenTemplate = {
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web-green'
+        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web-green'
       };
 
       before('Providing the infrastructure', () => {
