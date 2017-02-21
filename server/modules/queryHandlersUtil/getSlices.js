@@ -4,9 +4,9 @@
 
 let sender = require('modules/sender');
 let co = require('co');
-let config = require('config');
 let _ = require('lodash');
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
+let awsAccounts = require('modules/awsAccounts')
 
 function hostFilter(active) {
   if (active === true) {
@@ -19,7 +19,7 @@ function hostFilter(active) {
 }
 
 function* handleQuery(query, resourceName, upstreamFilter) {
-  const masterAccountName = config.getUserValue('masterAccountName');
+  const masterAccountName = yield awsAccounts.getMasterAccountName();
 
   // Get all LoadBalancer upstreams from DynamoDB without apply any filter.
   // NOTE: If it ever becomes a DynamoDB map item then filtering this query
