@@ -7,12 +7,12 @@ let assert = require('assert');
 let co = require('co');
 let ConfigurationError = require('modules/errors/ConfigurationError.class');
 let DynamoItemNotFoundError = require('modules/errors/DynamoItemNotFoundError.class');
-let config = require('config');
 let sender = require('modules/sender');
 let imageProvider = require('modules/provisioning/launchConfiguration/imageProvider');
 let Environment = require('models/Environment');
 let EnvironmentType = require('models/EnvironmentType');
 let clusters = require('modules/data-access/clusters');
+let awsAccounts = require('modules/awsAccounts');
 
 module.exports = {
   get(environmentName, serviceName, serverRoleName) {
@@ -50,38 +50,39 @@ module.exports = {
 };
 
 function getServiceByName(serviceName) {
-  const masterAccountName = config.getUserValue('masterAccountName');
+  return awsAccounts.getMasterAccountName()
+    .then((masterAccountName) => {
+      let query = {
+        name: 'ScanDynamoResources',
+        resource: 'config/services',
+        accountName: masterAccountName,
+        filter: {
+          ServiceName: serviceName
+        }
+      };
 
-  let query = {
-    name: 'ScanDynamoResources',
-    resource: 'config/services',
-    accountName: masterAccountName,
-    filter: {
-      ServiceName: serviceName
-    }
-  };
-
-  return sender
-    .sendQuery({ query })
-    .then(services =>
-      (services.length ?
-        Promise.resolve(services[0].Value) :
-        Promise.reject(new ConfigurationError(`Service "${serviceName}" not found.`))))
-    .catch((error) => {
-      throw new Error(`An error has occurred retrieving "${serviceName}" service: ${error.message}`);
+      return sender
+        .sendQuery({ query })
+        .then(services =>
+          (services.length ?
+            Promise.resolve(services[0].Value) :
+            Promise.reject(new ConfigurationError(`Service "${serviceName}" not found.`))))
+        .catch((error) => {
+          throw new Error(`An error has occurred retrieving "${serviceName}" service: ${error.message}`);
+        });
     });
 }
 
 function getClusterByName(clusterName) {
   return clusters.get({ ClusterName: clusterName })
     .then(
-      cluster => Promise.resolve({
-        Name: cluster.ClusterName,
-        ShortName: cluster.Value.ShortName,
-        KeyPair: cluster.Value.KeyPair
-      }),
-      error => Promise.reject(error instanceof DynamoItemNotFoundError ?
-        new ConfigurationError(`Cluster "${clusterName}" not found.`) :
-        new Error(`An error has occurred retrieving "${clusterName}" cluster: ${error.message}`)
-      ));
+    cluster => Promise.resolve({
+      Name: cluster.ClusterName,
+      ShortName: cluster.Value.ShortName,
+      KeyPair: cluster.Value.KeyPair
+    }),
+    error => Promise.reject(error instanceof DynamoItemNotFoundError ?
+      new ConfigurationError(`Cluster "${clusterName}" not found.`) :
+      new Error(`An error has occurred retrieving "${clusterName}" cluster: ${error.message}`)
+    ));
 }
