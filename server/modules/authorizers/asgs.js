@@ -2,20 +2,21 @@
 
 'use strict';
 
-let config = require('config');
+let awsAccounts = require('modules/awsAccounts');
 
 function getEnvironment(name, user) {
-  const masterAccountName = config.getUserValue('masterAccountName');
+  return awsAccounts.getMasterAccountName()
+    .then((masterAccountName) => {
+      let sender = require('modules/sender');
+      let query = {
+        name: 'GetDynamoResource',
+        key: name,
+        resource: 'config/environments',
+        accountName: masterAccountName
+      };
 
-  let sender = require('modules/sender');
-  let query = {
-    name: 'GetDynamoResource',
-    key: name,
-    resource: 'config/environments',
-    accountName: masterAccountName
-  };
-
-  return sender.sendQuery({ query, user });
+      return sender.sendQuery({ query, user });
+    });
 }
 
 function getModifyPermissionsForEnvironment(environmentName, user) {
