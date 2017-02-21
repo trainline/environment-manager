@@ -20,6 +20,7 @@ let ConfigurationProvider = require('modules/configuration/ConfigurationProvider
 let checkAppPrerequisites = require('modules/checkAppPrerequisites');
 let cacheManager = require('modules/cacheManager');
 let co = require('co');
+let awsAccounts = require('modules/awsAccounts');
 
 process.on('unhandledRejection', (reason, promise) => {
   logger.warn('Promise rejection was unhandled. ', reason);
@@ -32,8 +33,9 @@ function start() {
     let configurationProvider = new ConfigurationProvider();
     yield configurationProvider.init();
     yield cacheManager.flush();
+    let masterAccountName = yield awsAccounts.getMasterAccountName();
 
-    if (config.getUserValue('masterAccountName') === undefined) {
+    if (masterAccountName === undefined) {
       logger.error('No Master account found. Check the Accounts Dynamo Table.');
       process.exit(1);
     }
