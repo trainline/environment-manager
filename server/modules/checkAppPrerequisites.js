@@ -1,10 +1,11 @@
 'use strict';
 
 let co = require('co');
-let config = require('config');
 let resourceProvider = require('modules/resourceProvider');
 let logger = require('modules/logger');
 let guid = require('node-uuid');
+let config = require('config');
+let awsAccounts = require('modules/awsAccounts');
 
 let permissionsResource;
 
@@ -58,7 +59,8 @@ function insertDefaultAdminPermission() {
 module.exports = () => {
   return co(function* () {
     if (permissionsResource === undefined) {
-      let parameters = { accountName: config.getUserValue('masterAccountName') };
+      let masterAccountName = yield awsAccounts.getMasterAccountName();
+      let parameters = { accountName: masterAccountName };
       permissionsResource = yield resourceProvider.getInstanceByName('config/permissions', parameters);
     }
     return checkAppPrerequisites();
