@@ -14,12 +14,13 @@ module.exports = {
     if (imageIdNameOrType.toLowerCase().startsWith('ami')) {
       return getImage({ id: imageIdNameOrType });
     }
-    else if (doesSpecifyVersion(imageIdNameOrType)) {
+
+    if (doesSpecifyVersion(imageIdNameOrType)) {
       return getImage({ name: imageIdNameOrType });
-    } else {
-      let safeIncludeUnstable = includeUnstable === undefined ? false : includeUnstable;
-      return getLatestImageByType(imageIdNameOrType, safeIncludeUnstable);
     }
+
+    let safeIncludeUnstable = includeUnstable === undefined ? false : includeUnstable;
+    return getLatestImageByType(imageIdNameOrType, safeIncludeUnstable);
   }
 };
 
@@ -31,7 +32,7 @@ function getImage(params) {
   let filter = {};
 
   if (params.id) filter['image-id'] = params.id;
-  if (params.name) filter['name'] = params.name;
+  if (params.name) filter.name = params.name;
 
   let query = { name: 'ScanCrossAccountImages', filter };
 
