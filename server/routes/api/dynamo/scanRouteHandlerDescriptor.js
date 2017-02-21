@@ -7,7 +7,7 @@ let utilities = require('modules/utilities');
 let send = require('modules/helpers/send');
 let route = require('modules/helpers/route');
 let make = require('modules/utilities').make;
-let config = require('config');
+let awsAccounts = require('modules/awsAccounts');
 let resourceDescriptorProvider = require('modules/resourceDescriptorProvider');
 
 module.exports = resourceDescriptorProvider
@@ -26,21 +26,23 @@ module.exports = resourceDescriptorProvider
       docs.verb = 'scan';
       docs.perAccount = resource.perAccount;
     }
-    const masterAccountName = config.getUserValue('masterAccountName');
 
     return route
       .get(url)
       .named(resource.name)
       .withDocs(docs)
       .do((request, response) => {
-        let query = {
-          name: 'ScanDynamoResources',
-          resource: resource.name,
-          filter: utilities.extractQuery(request),
-          exposeAudit: 'version-only',
-          accountName: resource.perAccount ? request.params.account : masterAccountName
-        };
+        awsAccounts.getMasterAccountName()
+          .then((masterAccountName) => {
+            let query = {
+              name: 'ScanDynamoResources',
+              resource: resource.name,
+              filter: utilities.extractQuery(request),
+              exposeAudit: 'version-only',
+              accountName: resource.perAccount ? request.params.account : masterAccountName
+            };
 
-        send.query(query, request, response);
+            send.query(query, request, response);
+          });
       });
   });
