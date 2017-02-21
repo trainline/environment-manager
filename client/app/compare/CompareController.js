@@ -15,7 +15,7 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
 
     function init() {
       vm.comparableResources = comparableResources;
-      vm.selected.comparable = vm.comparableResources[0];
+      vm.selected.comparable = getVersionsComparableResource();
 
 
       $q.all([
@@ -34,12 +34,16 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
       });
     }
 
+    function getVersionsComparableResource() {
+      return vm.comparableResources[0];
+    }
+
     $scope.$on('$locationChangeSuccess', function () {
       setStateFromUrl();
     });
 
     function setStateFromUrl() {
-      var res = $location.search().res || vm.comparableResources[0].key;
+      var res = $location.search().res || getVersionsComparableResource().key;
       var compare = $location.search().compare || vm.environments[0].EnvironmentName;
       var to = $location.search().to || '';
       var cluster = $location.search().cluster || SHOW_ALL_OPTION;
