@@ -12,7 +12,8 @@ const path = require('path');
 
 let swaggerParams = fp.flow(
   fp.get(['swagger', 'params']),
-  fp.mapValues(({ value }) => value)
+  fp.mapValues(({ value }) => value),
+  fp.cloneDeepWith((value, key) => (/password/i.test(key) ? '********' : undefined))
 );
 
 let getUser = fp.compose(
