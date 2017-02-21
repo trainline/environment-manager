@@ -33,6 +33,7 @@ server/configuration.json
 server/configuration.js
 
 .vscode
+.flowconfig
 dist/
 build/
 /Lambda/**/*.zip

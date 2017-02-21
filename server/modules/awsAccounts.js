@@ -33,6 +33,10 @@ function getMasterAccount() {
   return getAllAccounts().then(accounts => accounts.find(a => a.IsMaster));
 }
 
+function getMasterAccountName() {
+  return getMasterAccount().then(masterAccount => masterAccount.AccountName);
+}
+
 function getAMIsharingAccounts() {
   return getAllAccounts().then(accounts => accounts.filter(a => a.IncludeAMIs).map(a => a.AccountNumber));
 }
@@ -51,5 +55,6 @@ module.exports = {
   all: getAllAccounts,
   getByName,
   getMasterAccount,
+  getMasterAccountName,
   getAMIsharingAccounts
 };
