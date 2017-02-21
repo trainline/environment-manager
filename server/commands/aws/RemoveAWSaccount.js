@@ -8,7 +8,6 @@ let accountValidator = require('../validators/awsAccountValidator');
 
 function RemoveAWSAccount(command) {
   try {
-
     return awsAccounts.getMasterAccountName()
       .then((masterAccountName) => {
         let accountNumber = +command.accountNumber;
