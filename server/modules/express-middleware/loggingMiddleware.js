@@ -1,0 +1,114 @@
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
+/**
+ * Express Middleware to log requests and errors
+ */
+
+'use strict';
+
+const fp = require('lodash/fp');
+const miniStack = require('modules/miniStack');
+const path = require('path');
+
+let swaggerParams = fp.flow(
+  fp.get(['swagger', 'params']),
+  fp.mapValues(({ value }) => value)
+);
+
+let getUser = fp.compose(
+  f => (fp.isFunction(f) ? f() : null),
+  fp.get(['user', 'getName'])
+);
+
+let tryParse = (str) => {
+  try {
+    return JSON.parse(str);
+  } catch (e) {
+    return undefined;
+  }
+};
+
+let mini = (() => {
+  let basePath = path.dirname(require.resolve('package.json'));
+  let filePathTransform = fullPath => path.relative(basePath, fullPath);
+  return miniStack({ filePathTransform });
+})();
+
+let loggerMiddleware = logger => (req, res, next) => {
+  let log = () => {
+    let deprecated = fp.compose(fp.defaultTo(false), fp.get(['locals', 'deprecated']))(res);
+    let message = deprecated ? 'HTTP request deprecated' : 'HTTP request';
+    let statusCode = fp.get(['statusCode'])(res);
+    let level = (() => {
+      if (statusCode >= 500) {
+        return 'error';
+      } else if (statusCode >= 400 || deprecated) {
+        return 'warn';
+      } else {
+        return 'debug';
+      }
+    })();
+    let responseFields = (() => {
+      if (statusCode < 400) {
+        return ['statusCode'];
+      } else {
+        return ['statusCode', 'body'];
+      }
+    })();
+    let entry = {
+      eventtype: 'http',
+      req: {
+        headers: {
+          'user-agent': fp.get(['headers', 'user-agent'])(req)
+        },
+        method: fp.get('method')(req),
+        originalUrl: fp.get('originalUrl')(req),
+        params: swaggerParams(req)
+      },
+      res: fp.pick(responseFields)(res),
+      user: getUser(req)
+    };
+    logger.log(level, message, entry);
+  };
+  let send = res.send;
+  res.send = (content) => {
+    if (content) {
+      let s = content.toString();
+      res.body = tryParse(s) || s;
+    }
+    log();
+    send.call(res, content);
+  };
+  next();
+};
+
+let errorLoggerMiddleware = logger => (err, req, res, next) => {
+  let log = () => {
+    let message = 'HTTP processing error';
+    let entry = {
+      error: {
+        message: fp.get(['message'])(err),
+        stack: fp.compose(mini, fp.get(['stack']))(err)
+      },
+      eventtype: 'http error',
+      req: {
+        headers: {
+          'user-agent': fp.compose(fp.truncate({ length: 50 }), fp.get(['headers', 'user-agent']))(req)
+        },
+        method: fp.get('method')(req),
+        originalUrl: fp.get('originalUrl')(req),
+        params: swaggerParams(req)
+      },
+      user: getUser(req)
+    };
+    logger.error(message, entry);
+  };
+  res.once('close', log);
+  res.once('finish', log);
+  next(err);
+};
+
+module.exports = {
+  loggerMiddleware,
+  errorLoggerMiddleware
+};
