@@ -9,35 +9,38 @@ let ImageNotFoundError = require('modules/errors/ImageNotFoundError.class');
 
 module.exports = {
 
-  get(imageNameOrType, includeUnstable) {
-    assert(imageNameOrType, 'Expected "imageNameOrType" argument not to be null');
-    if (doesSpecifyVersion(imageNameOrType)) {
-      return getImageByName(imageNameOrType);
+  get(imageIdNameOrType, includeUnstable) {
+    assert(imageIdNameOrType, 'Expected "imageIdNameOrType" argument not to be null');
+    if (imageIdNameOrType.toLowerCase().startsWith('ami')) {
+      return getImage({ id: imageIdNameOrType });
+    }
+    else if (doesSpecifyVersion(imageIdNameOrType)) {
+      return getImage({ name: imageIdNameOrType });
     } else {
       let safeIncludeUnstable = includeUnstable === undefined ? false : includeUnstable;
-      return getLatestImageByType(imageNameOrType, safeIncludeUnstable);
+      return getLatestImageByType(imageIdNameOrType, safeIncludeUnstable);
     }
   }
 };
 
-function doesSpecifyVersion(imageNameOrType) {
-  return imageNameOrType.match(/\-(\d+\.){2}\d+$/);
+function doesSpecifyVersion(imageIdNameOrType) {
+  return imageIdNameOrType.match(/\-(\d+\.){2}\d+$/);
 }
 
-function getImageByName(imageName) {
-  let query = {
-    name: 'ScanCrossAccountImages',
-    filter: {
-      name: imageName
-    }
-  };
+function getImage(params) {
+  let filter = {};
+
+  if (params.id) filter['image-id'] = params.id;
+  if (params.name) filter['name'] = params.name;
+
+  let query = { name: 'ScanCrossAccountImages', filter };
 
   return sender
     .sendQuery({ query })
     .then(amiImages =>
       (amiImages.length ?
         Promise.resolve(new Image(amiImages[0])) :
-        Promise.reject(new ImageNotFoundError(`No AMI image named "${imageName}" found.`))
+        Promise.reject(new ImageNotFoundError(`No AMI image "${params.id || params.name}" found.`))
       )
     );
 }
