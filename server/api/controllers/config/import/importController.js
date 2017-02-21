@@ -5,8 +5,7 @@
 let _ = require('lodash');
 
 let sender = require('modules/sender');
-let config = require('config');
-const masterAccountName = config.getUserValue('masterAccountName');
+let awsAccounts = require('modules/awsAccounts');
 
 /**
  * PUT /config/import/{resource}
@@ -18,26 +17,30 @@ function putResourceImport(req, res, next) {
   const user = req.user;
 
   const account = req.swagger.params.account.value;
-  const accountName = account || masterAccountName;
 
-  let commandName;
-  if (mode === 'replace') {
-    commandName = 'ReplaceDynamoResources';
-  } else if (mode === 'merge') {
-    commandName = 'MergeDynamoResources';
-  } else {
-    next(new Error(`Unknown mode "${mode}"`));
-    return;
-  }
+  awsAccounts.getMasterAccountName()
+    .then((masterAccountName) => {
+      const accountName = account || masterAccountName;
 
-  let command = {
-    name: commandName,
-    resource,
-    items: _.concat(value),
-    accountName
-  };
+      let commandName;
+      if (mode === 'replace') {
+        commandName = 'ReplaceDynamoResources';
+      } else if (mode === 'merge') {
+        commandName = 'MergeDynamoResources';
+      } else {
+        next(new Error(`Unknown mode "${mode}"`));
+        return;
+      }
 
-  sender.sendCommand({ command, user }).then(data => res.json(data)).catch(next);
+      let command = {
+        name: commandName,
+        resource,
+        items: _.concat(value),
+        accountName
+      };
+
+      sender.sendCommand({ command, user }).then(data => res.json(data)).catch(next);
+    });
 }
 
 module.exports = {
