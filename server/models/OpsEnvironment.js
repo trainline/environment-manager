@@ -3,12 +3,12 @@
 'use strict';
 
 let _ = require('lodash');
-let config = require('config');
 let cronService = require('modules/cronService')();
 let sender = require('modules/sender');
 let ScanDynamoResources = require('queryHandlers/ScanDynamoResources');
 let Environment = require('models/Environment');
 let co = require('co');
+let awsAccounts = require('modules/awsAccounts');
 
 class OpsEnvironment {
 
@@ -46,23 +46,25 @@ class OpsEnvironment {
   }
 
   static getAll(filter = {}) {
-    const masterAccountName = config.getUserValue('masterAccountName');
-
-    return ScanDynamoResources({ resource: 'ops/environments', filter, exposeAudit: 'version-only', accountName: masterAccountName })
-      .then(list => list.map(env => new OpsEnvironment(env)));
+    return awsAccounts.getMasterAccountName()
+      .then((masterAccountName) => {
+        return ScanDynamoResources({ resource: 'ops/environments', filter, exposeAudit: 'version-only', accountName: masterAccountName })
+          .then(list => list.map(env => new OpsEnvironment(env)));
+      });
   }
 
   static getByName(environmentName) {
-    const masterAccountName = config.getUserValue('masterAccountName');
+    return awsAccounts.getMasterAccountName()
+      .then((masterAccountName) => {
+        let childQuery = {
+          name: 'GetDynamoResource',
+          resource: 'ops/environments',
+          key: environmentName,
+          accountName: masterAccountName
+        };
 
-    let childQuery = {
-      name: 'GetDynamoResource',
-      resource: 'ops/environments',
-      key: environmentName,
-      accountName: masterAccountName
-    };
-
-    return sender.sendQuery({ query: childQuery }).then(obj => new OpsEnvironment(obj));
+        return sender.sendQuery({ query: childQuery }).then(obj => new OpsEnvironment(obj));
+      });
   }
 }
 
