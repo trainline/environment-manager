@@ -3,17 +3,17 @@
 'use strict';
 
 let co = require('co');
-let config = require('config');
 let sender = require('modules/sender');
 let _ = require('lodash');
 
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
 let InconsistentSlicesStatusError = require('modules/errors/InconsistentSlicesStatusError.class');
+let awsAccounts = require('modules/awsAccounts');
 
 function ToggleUpstreamByServiceVerifier(toggleCommand) {
   this.verifyUpstreams = (upstreams) => {
-    const masterAccountName = config.getUserValue('masterAccountName');
     return co(function* () {
+      let masterAccountName = yield awsAccounts.getMasterAccountName();
       let query = {
         name: 'ScanDynamoResources',
         resource: 'config/services',

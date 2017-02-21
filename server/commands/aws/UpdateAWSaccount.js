@@ -2,7 +2,6 @@
 
 'use strict';
 
-let config = require('config');
 let sender = require('modules/sender');
 let awsAccounts = require('modules/awsAccounts');
 let accountValidator = require('../validators/awsAccountValidator');
