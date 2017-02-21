@@ -62,6 +62,7 @@ let loggerMiddleware = logger => (req, res, next) => {
         headers: {
           'user-agent': fp.get(['headers', 'user-agent'])(req)
         },
+        id: fp.get('id')(req),
         method: fp.get('method')(req),
         originalUrl: fp.get('originalUrl')(req),
         params: swaggerParams(req)
@@ -89,13 +90,11 @@ let errorLoggerMiddleware = logger => (err, req, res, next) => {
     let entry = {
       error: {
         message: fp.get(['message'])(err),
-        stack: fp.compose(mini, fp.get(['stack']))(err)
+        stack: fp.compose(fp.truncate({ length: 1400 }), mini, fp.get(['stack']))(err)
       },
       eventtype: 'http error',
       req: {
-        headers: {
-          'user-agent': fp.compose(fp.truncate({ length: 50 }), fp.get(['headers', 'user-agent']))(req)
-        },
+        id: fp.get('id')(req),
         method: fp.get('method')(req),
         originalUrl: fp.get('originalUrl')(req),
         params: swaggerParams(req)

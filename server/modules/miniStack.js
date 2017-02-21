@@ -6,7 +6,7 @@
  * Remove verbose stuff from stack traces
  */
 
-const NOT_MY_CODE_REGEXP = /node_modules/;
+const NOT_MY_CODE_REGEXP = /(node_modules)|(\([^\\\/]+:[0-9]+:[0-9]+\))/;
 const FILE_LOCATION_REGEXP = /\((.*)(:[0-9]+:[0-9]+)\)/;
 
 let isMyCode = line => !NOT_MY_CODE_REGEXP.test(line);

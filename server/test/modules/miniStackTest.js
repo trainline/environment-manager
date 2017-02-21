@@ -112,10 +112,7 @@ describe('miniStack', function () {
     at standardifyError (/opt/environment-manager/modules/resourceFactories/DynamoTableResource.js:270:18)
     at client.get.promise.then.catch (/opt/environment-manager/modules/resourceFactories/DynamoTableResource.js:101:13)
     at tryCatcher (/opt/environment-manager/node_modules/bluebird/js/release/util.js:16:23)
-    ...(6 lines skipped)...
-    at Immediate.Async.drainQueues(/opt/environment-manager/node_modules/bluebird/js/release/async.js:17:14)
-    at runCallback (timers.js:637:20)
-    at tryOnImmediate(timers.js:610:5)
+    ...(9 lines skipped)...
     at processImmediate [as _immediateCallback] (timers.js:582:5)`);
     });
   });
