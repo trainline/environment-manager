@@ -2,10 +2,8 @@
 
 'use strict';
 
-let config = require('config');
 let ScanDynamoResources = require('queryHandlers/ScanDynamoResources');
-
-const masterAccountName = config.getUserValue('masterAccountName');
+let awsAccounts = require('modules/awsAccounts');
 
 /**
  * GET /config/export/{resource}
@@ -13,12 +11,16 @@ const masterAccountName = config.getUserValue('masterAccountName');
 function getResourceExport(req, res, next) {
   const resourceParam = req.swagger.params.resource.value;
   const account = req.swagger.params.account.value;
-  const accountName = account || masterAccountName;
 
-  let resource = `config/${resourceParam}`;
+  return awsAccounts.getMasterAccountName()
+    .then((masterAccountName) => {
+      const accountName = account || masterAccountName;
 
-  return ScanDynamoResources({ resource, exposeAudit: 'full', accountName })
-    .then(data => res.json(data)).catch(next);
+      let resource = `config/${resourceParam}`;
+
+      return ScanDynamoResources({ resource, exposeAudit: 'full', accountName  })
+        .then(data => res.json(data)).catch(next);
+    });
 }
 
 module.exports = {
