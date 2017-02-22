@@ -32,7 +32,7 @@ let tryParse = (str) => {
 let mini = (() => {
   let basePath = path.dirname(require.resolve('package.json'));
   let filePathTransform = fullPath => path.relative(basePath, fullPath);
-  return miniStack({ filePathTransform });
+  return miniStack({ contextLines: 0, filePathTransform });
 })();
 
 let loggerMiddleware = logger => (req, res, next) => {
@@ -86,7 +86,7 @@ let loggerMiddleware = logger => (req, res, next) => {
 
 let errorLoggerMiddleware = logger => (err, req, res, next) => {
   let log = () => {
-    let message = 'HTTP processing error';
+    let message = 'HTTP error';
     let entry = {
       error: {
         message: fp.get(['message'])(err),

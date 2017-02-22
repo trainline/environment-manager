@@ -6,8 +6,9 @@
  * Remove verbose stuff from stack traces
  */
 
-const NOT_MY_CODE_REGEXP = /(node_modules)|(\([^\\\/]+:[0-9]+:[0-9]+\))/;
 const FILE_LOCATION_REGEXP = /\((.*)(:[0-9]+:[0-9]+)\)/;
+const LINE_FILTER_REGEXP = /^\s*at\s+/i;
+const NOT_MY_CODE_REGEXP = /(node_modules)|(\([^\\\/]+:[0-9]+:[0-9]+\))|(\(native\))/;
 
 let isMyCode = line => !NOT_MY_CODE_REGEXP.test(line);
 
@@ -16,30 +17,36 @@ let exitedMyCode = (line, prev) => !isMyCode(line) && isMyCode(prev);
 let inMyCode = (line, prev) => isMyCode(line) && isMyCode(prev);
 let inOtherCode = (line, prev) => !isMyCode(line) && !isMyCode(prev);
 
-function create({ filePathTransform }) {
+function create({ contextLines, filePathTransform }) {
   function shorten(line) {
     return line.replace(FILE_LOCATION_REGEXP, (match, fullPath, location) => {
       let file = filePathTransform(fullPath);
       return `(${file}${location})`;
-    });
+    }).replace();
   }
 
   function minimize(stack) {
-    let lines = stack.split('\n').filter(line => !/^\s*$/.test(line));
+    let lines = stack.split('\n')
+      .filter(line => LINE_FILTER_REGEXP.test(line))
+      .map(line => line.replace(LINE_FILTER_REGEXP, ''));
+    let linesSkippedMessage = (omittedCount) => {
+      let skipped = omittedCount - (2 * contextLines);
+      return skipped > 0 ? [`...(${skipped} line${skipped > 1 ? 's' : ''} skipped)...`] : [];
+    };
     function loop({ context, omittedCount, output, prev }, line) {
       if (enteredMyCode(line, prev)) {
-        let omitted = omittedCount > 2 ? [line.replace(/at.*/, `...(${omittedCount - 2} lines skipped)...`)] : [];
+        let skipped = linesSkippedMessage(omittedCount);
         return {
           context: [],
           omittedCount: 0,
-          output: output.concat(omitted, context.map(shorten), shorten(line)),
+          output: output.concat(skipped, context.map(shorten), shorten(line)),
           prev: line
         };
       } else if (exitedMyCode(line, prev)) {
         return {
           context: [],
           omittedCount: 1,
-          output: output.concat(shorten(line)),
+          output: contextLines ? output.concat(shorten(line)) : output,
           prev: line
         };
       } else if (inMyCode(line, prev)) {
@@ -51,7 +58,7 @@ function create({ filePathTransform }) {
         };
       } else if (inOtherCode(line, prev)) {
         return {
-          context: [line],
+          context: contextLines ? [line] : [],
           omittedCount: omittedCount + 1,
           output,
           prev: line
@@ -66,8 +73,9 @@ function create({ filePathTransform }) {
       output: [],
       prev: undefined
     });
-    let omitted = omittedCount > 2 ? [context[0].replace(/at.*/, `...(${omittedCount - 2} lines skipped)...`)] : [];
-    return output.concat(omitted, context.map(shorten)).join('\n');
+    let skipped = linesSkippedMessage(omittedCount);
+    let rest = context.length > 0 ? skipped.concat(context.map(shorten)) : [];
+    return output.concat(rest).join('\n');
   }
 
   return minimize;
