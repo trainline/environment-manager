@@ -121,7 +121,7 @@ describe('ProvideInfrastructureCommandHandler:', () => {
 
       let expectedAutoScalingTemplate = {
         autoScalingGroupName: 'pr1-ta-Web',
-        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
+        launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
       };
 
       before('Providing the infrastructure', () => {
@@ -211,7 +211,7 @@ describe('ProvideInfrastructureCommandHandler:', () => {
 
       let expectedAutoScalingTemplate = {
         autoScalingGroupName: 'pr1-ta-Web',
-        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
+        launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
       };
 
       let expectedLaunchConfigurationTemplate = {
@@ -355,7 +355,7 @@ describe('ProvideInfrastructureCommandHandler:', () => {
 
         // Mocking Sender
         let expectedLaunchConfiguration = {
-          image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
+          LaunchConfigurationName: 'LaunchConfig_pr1-ta-Web'
         };
 
         mocks.sender.sendQuery
@@ -457,7 +457,7 @@ describe('ProvideInfrastructureCommandHandler:', () => {
 
       let expectedAutoScalingTemplate = {
         autoScalingGroupName: 'pr1-ta-Web',
-        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
+        launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
       };
 
       before('Providing the infrastructure', () => {
@@ -521,7 +521,7 @@ describe('ProvideInfrastructureCommandHandler:', () => {
 
       let expectedAutoScalingTemplate = {
         autoScalingGroupName: 'pr1-ta-Web',
-        image: { rootVolumeSize: 10 }, devices: [{ DeviceName: '/dev/sda1', Ebs: { VolumeSize: 20 }}], launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
+        launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
       };
 
       before('Providing the infrastructure', () => {
