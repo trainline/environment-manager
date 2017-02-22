@@ -27,17 +27,20 @@ angular.module('EnvironmentManager.compare').factory('comparableResources',
         }).then(_.flatten).then(function (environments) {
           var results = _.flatMapDeep(environments, function (env) {
             var arr = env.Value.map(function (serverRole) {
-              return serverRole.Services.map(function (service) {
+              // TODO: Refactor comparableResources so that we don't have comparison specific code here
+              // E.g. serviceVersion and service.Action filter.
+              var services = serverRole.Services.filter(function (service) {
+                return service.Action === undefined || service.Action !== 'Ignore';
+              });
+              return services.map(function (service) {
                 var serverRoleName = serverRole.Role;
-                var obj = {
+                return {
                   serviceName: service.Name,
                   serverRoleName: serverRoleName,
                   environmentName: env.EnvironmentName,
                   serviceVersion: service.Version,
                   slice: service.Slice
                 };
-
-                return obj;
               });
             });
 

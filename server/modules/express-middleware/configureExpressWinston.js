@@ -27,7 +27,7 @@ function dynamicMeta(req, res) {
  */
 function requestFilter(req, propName) {
   if (propName === 'headers') {
-    return fp.omit(['authorization'])(req[propName]);
+    return fp.omit(['authorization', 'cookie'])(req[propName]);
   }
   return req[propName];
 }

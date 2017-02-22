@@ -2,12 +2,12 @@
 
 'use strict';
 
+if (process.env.NEW_RELIC_APP_NAME !== undefined) {
+  require('newrelic'); // This line must be executed before any other call to require()
+}
+
 // Replace NodeJS built-in Promise with Bluebird Promise
 global.Promise = require('bluebird');
-
-if (process.env.NEW_RELIC_APP_NAME !== undefined) {
-  require('newrelic');
-}
 
 require('app-module-path').addPath(__dirname);
 
