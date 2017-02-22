@@ -4,7 +4,6 @@
 
 let validators = [
   require('modules/deployment/validators/blueGreenDeploymentValidator'),
-  require('modules/deployment/validators/rootDeviceSizeValidator'),
   require('modules/deployment/validators/uniqueServiceVersionDeploymentValidator')
 ];
 
