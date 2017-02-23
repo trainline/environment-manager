@@ -114,7 +114,11 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     };
 
     vm.updateASGFormIsValid = function () {
-      return !!vm.asgUpdate.AvailabilityZone.length;
+      return !!vm.asgUpdate.AvailabilityZone.length &&
+        !(vm.asgUpdate.DesiredCapacity < vm.asgUpdate.MinSize) &&
+        !(vm.asgUpdate.DesiredCapacity > vm.asgUpdate.MaxSize) &&
+        !vm.greaterThanLowestDesiredSizeScheduled(vm.asgUpdate.MinSize) &&
+        !vm.lessThanHighestDesiredSizeScheduled(vm.asgUpdate.MaxSize);
     };
 
     vm.formIsValid = function (form) {

@@ -3,16 +3,8 @@
 'use strict';
 
 let resourceProvider = require('modules/resourceProvider');
-let assertContract = require('modules/assertContract');
 
 module.exports = function ScanSecurityGroupsQueryHandler(query) {
-  assertContract(query, 'query', {
-    properties: {
-      accountName: { type: String, empty: false },
-      vpcId: { type: String, empty: false }
-    }
-  });
-
   let parameters = { accountName: query.accountName };
 
   return resourceProvider.getInstanceByName('sg', parameters).then((resource) => {

@@ -3,28 +3,11 @@
 'use strict';
 
 let deploymentValidators = require('modules/deployment/deploymentValidators');
-let assertContract = require('modules/assertContract');
 let _ = require('lodash');
 
 class DeploymentContract {
 
   constructor(data) {
-    assertContract(data, 'DeploymentContract', {
-      properties: {
-        id: { type: String, empty: false },
-        environmentTypeName: { type: String, empty: false },
-        environmentName: { type: String, empty: false },
-        serverRole: { type: String, empty: false },
-        serverRoleName: { type: String, empty: false },
-        serviceName: { type: String, empty: false },
-        serviceVersion: { type: String, empty: false },
-        serviceSlice: { type: String, empty: true },
-        clusterName: { type: String, empty: false },
-        accountName: { type: String, empty: false },
-        username: { type: String, empty: false }
-      }
-    });
-
     _.assign(this, data);
   }
 

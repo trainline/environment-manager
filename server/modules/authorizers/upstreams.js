@@ -2,10 +2,10 @@
 
 'use strict';
 
-let config = require('config');
 let co = require('co');
 let Environment = require('models/Environment');
 let logger = require('modules/logger');
+let awsAccounts = require('modules/awsAccounts');
 
 function getUpstream(accountName, upstreamName) {
   let sender = require('modules/sender');
@@ -21,16 +21,18 @@ function getUpstream(accountName, upstreamName) {
 }
 
 function getEnvironment(name) {
-  const masterAccountName = config.getUserValue('masterAccountName');
-  let sender = require('modules/sender');
-  let query = {
-    name: 'GetDynamoResource',
-    key: name,
-    resource: 'config/environments',
-    accountName: masterAccountName
-  };
+  return awsAccounts.getMasterAccountName()
+    .then((masterAccountName) => {
+      let sender = require('modules/sender');
+      let query = {
+        name: 'GetDynamoResource',
+        key: name,
+        resource: 'config/environments',
+        accountName: masterAccountName
+      };
 
-  return sender.sendQuery({ query });
+      return sender.sendQuery({ query });
+    });
 }
 
 function getModifyPermissionsForEnvironment(environmentName) {

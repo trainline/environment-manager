@@ -3,8 +3,11 @@
 'use strict';
 
 if (process.env.NEW_RELIC_APP_NAME !== undefined) {
-  require('newrelic');
+  require('newrelic'); // This line must be executed before any other call to require()
 }
+
+// Replace NodeJS built-in Promise with Bluebird Promise
+global.Promise = require('bluebird');
 
 require('app-module-path').addPath(__dirname);
 
@@ -17,7 +20,7 @@ let ConfigurationProvider = require('modules/configuration/ConfigurationProvider
 let checkAppPrerequisites = require('modules/checkAppPrerequisites');
 let cacheManager = require('modules/cacheManager');
 let co = require('co');
-require('./globals');
+let awsAccounts = require('modules/awsAccounts');
 
 process.on('unhandledRejection', (reason, promise) => {
   logger.warn('Promise rejection was unhandled. ', reason);
@@ -30,8 +33,9 @@ function start() {
     let configurationProvider = new ConfigurationProvider();
     yield configurationProvider.init();
     yield cacheManager.flush();
+    let masterAccountName = yield awsAccounts.getMasterAccountName();
 
-    if (config.getUserValue('masterAccountName') === undefined) {
+    if (masterAccountName === undefined) {
       logger.error('No Master account found. Check the Accounts Dynamo Table.');
       process.exit(1);
     }

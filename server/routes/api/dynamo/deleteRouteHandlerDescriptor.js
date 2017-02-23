@@ -7,7 +7,7 @@ let send = require('modules/helpers/send');
 let route = require('modules/helpers/route');
 let make = require('modules/utilities').make;
 let resourceDescriptorProvider = require('modules/resourceDescriptorProvider');
-let config = require('config');
+let awsAccounts = require('modules/awsAccounts');
 
 module.exports = resourceDescriptorProvider
   .all()
@@ -26,7 +26,6 @@ module.exports = resourceDescriptorProvider
       docs = _.clone(resource.docs);
       docs.perAccount = resource.perAccount;
     }
-    const masterAccountName = config.getUserValue('masterAccountName');
 
     return route
       .delete(url)
@@ -34,15 +33,18 @@ module.exports = resourceDescriptorProvider
       .withAuthorizer(resource.authorizer)
       .withDocs(docs)
       .do((request, response) => {
-        let command = {
-          name: 'DeleteDynamoResource',
-          resource: resource.name,
-          key: request.params.key,
-          range: request.params.range,
-          accountName: resource.perAccount ?
-            request.params.account : masterAccountName
-        };
+        awsAccounts.getMasterAccountName()
+          .then((masterAccountName) => {
+            let command = {
+              name: 'DeleteDynamoResource',
+              resource: resource.name,
+              key: request.params.key,
+              range: request.params.range,
+              accountName: resource.perAccount ?
+                request.params.account : masterAccountName
+            };
 
-        send.command(command, request, response);
+            send.command(command, request, response);
+          });
       });
   });

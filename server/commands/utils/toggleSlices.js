@@ -3,17 +3,17 @@
 'use strict';
 
 let co = require('co');
-let config = require('config');
 let sender = require('modules/sender');
 let _ = require('lodash');
 
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
 let InconsistentSlicesStatusError = require('modules/errors/InconsistentSlicesStatusError.class');
+let awsAccounts = require('modules/awsAccounts');
 
 function ToggleUpstreamByServiceVerifier(toggleCommand) {
   this.verifyUpstreams = (upstreams) => {
-    const masterAccountName = config.getUserValue('masterAccountName');
     return co(function* () {
+      let masterAccountName = yield awsAccounts.getMasterAccountName();
       let query = {
         name: 'ScanDynamoResources',
         resource: 'config/services',
@@ -54,7 +54,7 @@ function ToggleUpstreamByServiceVerifier(toggleCommand) {
       return makeUpstreamError(upstream, 'cannot be toggled because it has more than two slices');
     }
 
-    let statuses = upstream.Value.Hosts.map((host) => { return host.State === 'up' ? 'Active' : 'Inactive'; }).distinct();
+    let statuses = [...new Set(upstream.Value.Hosts.map((host) => { return host.State === 'up' ? 'Active' : 'Inactive'; }))];
     if (statuses.length === 1) {
       return makeUpstreamError(upstream, `cannot be toggled because all its slices are "${statuses[0]}"`);
     }

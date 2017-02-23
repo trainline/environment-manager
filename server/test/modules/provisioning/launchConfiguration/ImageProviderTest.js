@@ -72,7 +72,7 @@ describe("ImageProvider", () => {
         let promise = target.get(imageNameOrType);
 
         return promise.catch(error => {
-          error.toString().should.be.containEql('No AMI image named "oel-7-ttl-nodejs-0.1.4" found.');
+          error.toString().should.be.containEql('No AMI image "oel-7-ttl-nodejs-0.1.4" found.');
         });
       });
     });

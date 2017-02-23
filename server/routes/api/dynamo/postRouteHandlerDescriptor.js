@@ -6,7 +6,7 @@ let _ = require('lodash');
 let send = require('modules/helpers/send');
 let route = require('modules/helpers/route');
 let make = require('modules/utilities').make;
-let config = require('config');
+let awsAccounts = require('modules/awsAccounts');
 let resourceDescriptorProvider = require('modules/resourceDescriptorProvider');
 
 module.exports = resourceDescriptorProvider
@@ -26,7 +26,6 @@ module.exports = resourceDescriptorProvider
       docs = _.clone(resource.docs);
       docs.perAccount = resource.perAccount;
     }
-    const masterAccountName = config.getUserValue('masterAccountName');
 
     return route
       .post(url)
@@ -34,15 +33,18 @@ module.exports = resourceDescriptorProvider
       .withDocs(docs)
       .withAuthorizer(resource.authorizer)
       .do((request, response) => {
-        let command = {
-          name: 'CreateDynamoResource',
-          resource: resource.name,
-          key: request.params.key,
-          range: request.params.range,
-          item: request.body,
-          accountName: resource.perAccount ? request.params.account : masterAccountName
-        };
+        awsAccounts.getMasterAccountName()
+          .then((masterAccountName) => {
+            let command = {
+              name: 'CreateDynamoResource',
+              resource: resource.name,
+              key: request.params.key,
+              range: request.params.range,
+              item: request.body,
+              accountName: resource.perAccount ? request.params.account : masterAccountName
+            };
 
-        send.command(command, request, response);
+            send.command(command, request, response);
+          });
       });
   });

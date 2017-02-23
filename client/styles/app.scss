@@ -92,13 +92,7 @@ label.nowrap { white-space:nowrap; }
 label.info { font-weight: normal; color: #555; }
 
 .btn-highlight {
-  box-shadow: 0px 0px 7px 1px red;
-}
-
-form.asg-launch-configuration.ng-dirty {
-  .btn.submit {
-    @extend .btn-highlight;
-  }
+  border-color: #337ab7;
 }
 
 button { margin-right: 10px; }

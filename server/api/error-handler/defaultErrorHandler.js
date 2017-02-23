@@ -4,7 +4,6 @@
 
 const IS_PROD = require('config').get('IS_PRODUCTION');
 let _ = require('lodash');
-let logger = require('modules/logger');
 
 function defaultErrorHandler(err, req, res, next) {
   let friendlyError = {};
@@ -35,7 +34,6 @@ function defaultErrorHandler(err, req, res, next) {
     };
   }
 
-  logger.error(err.stack);
   res.json(friendlyError);
 }
 

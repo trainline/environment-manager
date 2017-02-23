@@ -3,10 +3,8 @@
 'use strict';
 
 let _ = require('lodash');
-let config = require('config');
 let sender = require('modules/sender');
-
-const masterAccountName = config.getUserValue('masterAccountName');
+let awsAccounts = require('modules/awsAccounts');
 
 class Service {
 
@@ -15,13 +13,16 @@ class Service {
   }
 
   static getByName(name) {
-    let query = {
-      name: 'ScanDynamoResources',
-      resource: 'config/services',
-      accountName: masterAccountName,
-      filter: { ServiceName: name }
-    };
-    return sender.sendQuery({ query }).then(obj => new Service(obj));
+    return awsAccounts.getMasterAccountName()
+      .then((masterAccountName) => {
+        let query = {
+          name: 'ScanDynamoResources',
+          resource: 'config/services',
+          accountName: masterAccountName,
+          filter: { ServiceName: name }
+        };
+        return sender.sendQuery({ query }).then(obj => new Service(obj));
+      });
   }
 }
 

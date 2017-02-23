@@ -4,9 +4,8 @@
 
 
 let co = require('co');
-let assertContract = require('modules/assertContract');
 let DeploymentCommandHandlerLogger = require('commands/deployments/DeploymentCommandHandlerLogger');
-let DeploymentContract = require('modules/deployment/DeploymentContract');
+let DeploymentValidationError = require('modules/errors/DeploymentValidationError.class');
 let launchConfigurationTemplatesProvider = require('modules/provisioning/launchConfigurationTemplatesProvider');
 let infrastructureConfigurationProvider = require('modules/provisioning/infrastructureConfigurationProvider');
 let autoScalingTemplatesProvider = require('modules/provisioning/autoScalingTemplatesProvider');
@@ -15,12 +14,6 @@ let _ = require('lodash');
 
 module.exports = function ProvideInfrastructureCommandHandler(command) {
   let logger = new DeploymentCommandHandlerLogger(command);
-
-  assertContract(command, 'command', {
-    properties: {
-      deployment: { type: DeploymentContract, null: false }
-    }
-  });
 
   return co(function* () {
     let deployment = command.deployment;
@@ -44,6 +37,17 @@ module.exports = function ProvideInfrastructureCommandHandler(command) {
     let launchConfigurationTemplatesToCreate = yield getLaunchConfigurationTemplatesToCreate(
       logger, configuration, autoScalingTemplatesToCreate, accountName
     );
+
+    // Check launchConfigs are valid
+    launchConfigurationTemplatesToCreate.forEach((template) => {
+      let minVolumeSize = template.image.rootVolumeSize;
+      let osBlockDeviceMapping = _.find(template.devices, d => _.includes(['/dev/sda1', '/dev/xvda'], d.DeviceName));
+      let instanceVolumeSize = osBlockDeviceMapping.Ebs.VolumeSize;
+
+      if (instanceVolumeSize < minVolumeSize) {
+        throw new DeploymentValidationError(`Cannot create Launch Configuration. The specified OS volume size (${instanceVolumeSize} GB) is not sufficient for image '${template.image.name}' (${minVolumeSize} GB). Please check your deployment map settings.`);
+      }
+    });
 
     yield launchConfigurationTemplatesToCreate.map(
       template => provideLaunchConfiguration(template, accountName, command)

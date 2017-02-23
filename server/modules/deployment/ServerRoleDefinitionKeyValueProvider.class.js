@@ -2,14 +2,10 @@
 
 'use strict';
 
-let assertContract = require('modules/assertContract');
-let DeploymentContract = require('modules/deployment/DeploymentContract');
 let Enums = require('Enums');
 
 module.exports = function ServerRoleDefinitionKeyValueProvider() {
   this.get = function (deployment) {
-    assertContract(deployment, 'deployment', { type: DeploymentContract, null: false });
-
     let deploymentId = deployment.id;
     let environmentName = deployment.environmentName;
     let serviceName = deployment.serviceName;

@@ -12,6 +12,25 @@ angular.module('EnvironmentManager.configuration').controller('ClusterController
     var RETURN_PATH = '/config/clusters';
     var userHasPermission;
 
+    function withoutEmptyProperties(obj) {
+      if (typeof obj !== 'object' || obj === null) {
+        return obj;
+      } else if (Array.isArray(obj)) {
+        return obj.map(withoutEmptyProperties)
+      } else {
+        return Object.keys(obj).reduce(function (acc, nxt) {
+          var key = nxt;
+          var value = obj[nxt];
+          if (value === null || value === undefined || value === '') {
+            return acc;
+          } else {
+            acc[key] = withoutEmptyProperties(value);
+            return acc;
+          }
+        }, {});
+      }
+    }
+
     $scope.Cluster = {};
     $scope.EditMode = false;
     $scope.DataFound = false;
@@ -60,7 +79,7 @@ angular.module('EnvironmentManager.configuration').controller('ClusterController
         promise = $http({
           method: 'put',
           url: '/api/v1/config/clusters/' + clusterName,
-          data: $scope.Cluster.Value,
+          data: withoutEmptyProperties($scope.Cluster.Value),
           headers: { 'expected-version': $scope.Version }
         });
       } else {
@@ -69,7 +88,7 @@ angular.module('EnvironmentManager.configuration').controller('ClusterController
           url: '/api/v1/config/clusters',
           data: {
             ClusterName: clusterName,
-            Value: $scope.Cluster.Value
+            Value: withoutEmptyProperties($scope.Cluster.Value)
           },
           headers: { 'expected-version': $scope.Version }
         });

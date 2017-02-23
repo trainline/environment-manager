@@ -3,10 +3,10 @@
 'use strict';
 
 let _ = require('lodash');
-let config = require('config');
 let sender = require('modules/sender');
 let ConfigurationError = require('modules/errors/ConfigurationError.class');
 let DynamoItemNotFoundError = require('modules/errors/DynamoItemNotFoundError.class');
+let awsAccounts = require('modules/awsAccounts');
 
 class DeploymentMap {
 
@@ -15,23 +15,24 @@ class DeploymentMap {
   }
 
   static getByName(deploymentMapName) {
-    const masterAccountName = config.getUserValue('masterAccountName');
+    return awsAccounts.getMasterAccountName()
+      .then((masterAccountName) => {
+        let query = {
+          name: 'GetDynamoResource',
+          resource: 'config/deploymentmaps',
+          accountName: masterAccountName,
+          key: deploymentMapName
+        };
 
-    let query = {
-      name: 'GetDynamoResource',
-      resource: 'config/deploymentmaps',
-      accountName: masterAccountName,
-      key: deploymentMapName
-    };
-
-    return sender
-      .sendQuery({ query })
-      .then(
-        deploymentMap => new DeploymentMap(deploymentMap.Value),
-        error => Promise.reject(error instanceof DynamoItemNotFoundError ?
-          new ConfigurationError(`Deployment map "${deploymentMapName}" not found.`) :
-          new Error(`An error has occurred retrieving "${deploymentMapName}" deployment map: ${error.message}`)
-        ));
+        return sender
+          .sendQuery({ query })
+          .then(
+          deploymentMap => new DeploymentMap(deploymentMap.Value),
+          error => Promise.reject(error instanceof DynamoItemNotFoundError ?
+            new ConfigurationError(`Deployment map "${deploymentMapName}" not found.`) :
+            new Error(`An error has occurred retrieving "${deploymentMapName}" deployment map: ${error.message}`)
+          ));
+      });
   }
 
   getServerRolesByServiceName(serviceName) {

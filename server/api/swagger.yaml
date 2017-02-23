@@ -292,17 +292,9 @@ paths:
           type: string
           format: date-time
           required: false
-        - name: ChangeType
+        - name: per_page
           in: query
-          type: string
-          required: false
-        - name: Entity.Key
-          in: query
-          type: string
-          required: false
-        - name: Entity.Type
-          in: query
-          type: string
+          type: integer
           required: false
       responses:
         200:
@@ -750,6 +742,7 @@ paths:
       summary: Update the ASG standby-state of a given instance.
       tags:
         - Instance
+      x-authorizer: instances
       parameters:
         - name: id
           in: path
@@ -1362,6 +1355,7 @@ paths:
           in: path
           type: string
           required: true
+        - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
           description: OK
@@ -2259,12 +2253,15 @@ definitions:
     properties:
       ShortName:
         type: string
+        minLength: 1
       SchemaVersion:
         type: integer
       GroupEmailAddress:
         type: string
+        minLength: 1
       ADMembershipGroup:
         type: string
+        minLength: 1
   LoadBalancerUpstream:
     type: object
     properties:

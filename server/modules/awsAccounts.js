@@ -6,7 +6,6 @@ const TEN_MINUTES = 10 * 60;
 const CACHE_KEY = 'AWSAccounts';
 
 let _ = require('lodash');
-let config = require('config');
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
 let fetchAccounts = require('queryHandlers/GetAWSaccounts');
 let cacheManager = require('modules/cacheManager');
@@ -33,6 +32,10 @@ function getMasterAccount() {
   return getAllAccounts().then(accounts => accounts.find(a => a.IsMaster));
 }
 
+function getMasterAccountName() {
+  return getMasterAccount().then(masterAccount => masterAccount.AccountName);
+}
+
 function getAMIsharingAccounts() {
   return getAllAccounts().then(accounts => accounts.filter(a => a.IncludeAMIs).map(a => a.AccountNumber));
 }
@@ -43,7 +46,6 @@ function getAllAccounts() {
 
 function flush() {
   accountsCache.flushAll();
-  return getMasterAccount().then(account => config.setUserValue('masterAccountName', account.AccountName));
 }
 
 module.exports = {
@@ -51,5 +53,6 @@ module.exports = {
   all: getAllAccounts,
   getByName,
   getMasterAccount,
+  getMasterAccountName,
   getAMIsharingAccounts
 };

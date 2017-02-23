@@ -19,11 +19,6 @@ describe('DeployService', function () {
   let packagePathProvider;
   let sender;
   let deploymentLogger;
-  let autoScalingTemplatesProvider;
-  let environmentTable;
-  let DynamoHelper;
-  let DynamoHelperLoader;
-  let getAsg;
 
   const S3_PACKAGE = 's3://acme-bucket/em/binaries/package-3.1.0.tar';
   const ACCOUNT_NAME = 'acmeAccount';
@@ -89,19 +84,6 @@ describe('DeployService', function () {
       updateStatus: sinon.stub(),
       started: sinon.stub().returns(Promise.resolve({}))
     };
-    autoScalingTemplatesProvider = {
-      get: sinon.stub().returns(Promise.resolve([{
-        autoScalingGroupName: 'Name'
-      }]))
-    };
-    environmentTable = {
-      getByKey: sinon.stub().returns(Promise.resolve(''))
-    };
-    DynamoHelper = sinon.stub().returns(environmentTable);
-    DynamoHelperLoader = {
-      load: sinon.stub().returns(DynamoHelper)
-    };
-    getAsg = sinon.stub().returns(Promise.resolve(''));
 
     sut.__set__({ // eslint-disable-line no-underscore-dangle
       s3PackageLocator,
@@ -111,25 +93,9 @@ describe('DeployService', function () {
       DeploymentContract,
       packagePathProvider,
       sender,
-      deploymentLogger,
-      autoScalingTemplatesProvider,
-      DynamoHelperLoader,
-      getAsg
+      deploymentLogger
     });
   });
-
-  describe('required properties', function () {
-    let requiredProps = createRequiredProps();
-
-    Object.keys(requiredProps).forEach((p) => {
-      it(`should throw if ${p} is missing`, () => {
-        let invalidProps = Object.assign({}, requiredProps);
-        delete invalidProps[p];
-        assert.throws(sut.bind(this, invalidProps));
-      });
-    });
-  });
-
   describe('if the packagePath is a valid URL', function () {
     beforeEach(function () {
       sender.sendCommand = sinon.stub().returns(Promise.resolve());
@@ -281,21 +247,6 @@ describe('DeployService', function () {
         done();
       };
       sut(command);
-    });
-
-    it('should throw when asg schedule is "OFF"', (done) => {
-      // eslint-disable-next-line
-      sut.__with__({
-        getScheduleStateByAsg: sinon.stub().returns('off'),
-        getAsg: sinon.stub().returns(Promise.resolve('something truthy!'))
-      })(() => {
-        let cmd = createCommand();
-        return sut(cmd);
-      })
-      .catch(() => {
-        assert.ok(true);
-        done();
-      });
     });
 
     describe('locked environments', function () {

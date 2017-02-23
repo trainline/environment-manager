@@ -2,7 +2,6 @@
 
 'use strict';
 
-let assertContract = require('modules/assertContract');
 let launchConfigUpdater = require('./launchConfigUpdater');
 let co = require('co');
 let sender = require('modules/sender');
@@ -17,27 +16,20 @@ let AutoScalingGroup = require('models/AutoScalingGroup');
 
 module.exports = function SetLaunchConfiguration(command) {
   return co(function* () {
-    assertContract(command, 'command', {
-      properties: {
-        accountName: { type: String, empty: false },
-        autoScalingGroupName: { type: String, empty: false },
-        data: {
-          properties: {
-            AMI: { type: String, empty: true },
-            InstanceType: { type: String, empty: true },
-            InstanceProfileName: { type: String, empty: true },
-            Volumes: { type: Array, empty: true },
-            // KeyName: { type: String, empty: true },
-            SecurityGroups: { type: Array, empty: true }
-          }
-        }
-      }
-    });
-
     let data = command.data;
     let updated = {};
-
     let autoScalingGroup = yield AutoScalingGroup.getByName(command.accountName, command.autoScalingGroupName);
+    let originalLaunchConfiguration = yield autoScalingGroup.getLaunchConfiguration();
+
+    // Get the image and disk size specified
+    let image = yield imageProvider.get(data.AMI || originalLaunchConfiguration.ImageId);
+    let osDiskSize = getOSDiskSize(data.Volumes, originalLaunchConfiguration.BlockDeviceMappings);
+
+    // Check the OS disk size supports that image
+    if (osDiskSize < image.rootVolumeSize) {
+      throw new Error(`The specified OS volume size (${osDiskSize} GB) is not sufficient for image '${image.name}' (${image.rootVolumeSize} GB)`);
+    }
+
     let environmentType = yield autoScalingGroup.getEnvironmentType();
     let vpcId = environmentType.VpcId;
 
@@ -65,7 +57,6 @@ module.exports = function SetLaunchConfiguration(command) {
     }
 
     if (data.AMI !== undefined) {
-      let image = yield imageProvider.get(data.AMI);
       updated.ImageId = image.id;
     }
 
@@ -88,6 +79,15 @@ module.exports = function SetLaunchConfiguration(command) {
   });
 };
 
+function getOSDiskSize(newVolumes, originalBlockDeviceMappings) {
+  if (newVolumes !== undefined) {
+    let newOSVolume = _.find(newVolumes, v => v.Name === 'OS');
+    return newOSVolume.Size;
+  }
+
+  let originalOSBlockDeviceMapping = _.find(originalBlockDeviceMappings, d => _.includes(['/dev/sda1', '/dev/xvda'], d.DeviceName));
+  return originalOSBlockDeviceMapping.Ebs.VolumeSize;
+}
 
 function getInstanceProfileByName(accountName, instanceProfileName) {
   let query = {

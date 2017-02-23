@@ -22,7 +22,7 @@
   <div class="form-group" ng-class="{'has-error': form.InstanceProfileName.$invalid}">
     <label class="col-md-2 control-label text-left">IAM Role: <span class="glyphicon glyphicon-asterisk mandatory" ng-if="vm.context === 'asg'"></span></label>
     <div class="col-md-4">
-      <input type="text" name="InstanceProfileName" class="form-control" maxlength="100" ng-model="vm.target.ASG.LaunchConfig.InstanceProfileName" pattern="[0-9a-zA-Z\+\=\.\@\_\-]*" ng-readonly="!vm.canUser('edit')" />
+      <input type="text" name="InstanceProfileName" class="form-control" maxlength="100" ng-required="vm.context === 'asg'" ng-model="vm.target.ASG.LaunchConfig.InstanceProfileName" pattern="[0-9a-zA-Z\+\=\.\@\_\-]*" ng-readonly="!vm.canUser('edit')" />
     </div>
     <span class="inline help-block" ng-if="form.InstanceProfileName.$dirty && form.InstanceProfileName.$error.pattern">This IAM role name contains invalid characters.</span>
   </div>

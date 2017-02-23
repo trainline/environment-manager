@@ -7,11 +7,12 @@ let _ = require('lodash');
 let yaml = require('js-yaml');
 let swaggerTools = require('swagger-tools');
 let fs = require('fs');
-let defaultErrorHandler = require('./error-handler/defaultErrorHandler');
+
 let apiSpec = yaml.safeLoad(fs.readFileSync('api/swagger.yaml', 'utf8'));
-let authorization = require('modules/authorization');
+let swaggerAuthorizer = require('modules/express-middleware/swaggerAuthorizerMiddleware');
 let config = require('config');
 let path = require('path');
+let defaultErrorHandler = require('api/error-handler/defaultErrorHandler');
 
 const API_BASE_PATH = apiSpec.basePath;
 
@@ -61,39 +62,25 @@ let swaggerOptions = {
   controllers: getControllerDirectories('api/controllers')
 };
 
-function authorize(req, res, next) {
-  if (req.swagger === undefined) {
-    next();
-    return;
-  }
-
-  let authorizerName = req.swagger.operation['x-authorizer'] || 'simple';
-  let authorizer = require(`modules/authorizers/${authorizerName}`);
-
-  // We need to rewrite this for authorizers to work with swagger
-  // TODO(filip): remove this once we move to v1 API and drop old one
-  _.each(req.swagger.params, (param, key) => {
-    req.params[key] = param.value;
-  });
-
-  if (req.url !== '/token' && req.url !== '/login' && req.url !== '/logout') {
-    authorization(authorizer, req, res, next);
-  } else {
-    next();
-  }
-}
-
-function setup(app) {
-  swaggerTools.initializeMiddleware(apiSpec, (middleware) => {
-    app.use(middleware.swaggerMetadata());
-    app.use(middleware.swaggerValidator());
-    app.use(API_BASE_PATH, authorize);
-    app.use(middleware.swaggerRouter(swaggerOptions));
-    app.use(middleware.swaggerUi());
-    app.use(defaultErrorHandler);
+function setup() {
+  return new Promise((resolve, reject) => {
+    try {
+      swaggerTools.initializeMiddleware(apiSpec, ({ swaggerMetadata, swaggerValidator, swaggerRouter, swaggerUi }) => {
+        let result = {
+          swaggerAuthorizer: swaggerAuthorizer(),
+          swaggerBasePath: API_BASE_PATH,
+          swaggerErrorHandler: defaultErrorHandler,
+          swaggerMetadata: swaggerMetadata(),
+          swaggerRouter: swaggerRouter(swaggerOptions),
+          swaggerUi: swaggerUi(),
+          swaggerValidator: swaggerValidator()
+        };
+        resolve(Object.freeze(result));
+      });
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
-module.exports = {
-  setup
-};
+module.exports = setup;

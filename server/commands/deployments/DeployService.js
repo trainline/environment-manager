@@ -4,7 +4,6 @@
 
 let co = require('co');
 let Enums = require('Enums');
-let assertContract = require('modules/assertContract');
 let DeploymentContract = require('modules/deployment/DeploymentContract');
 let UnknownSourcePackageTypeError = require('modules/errors/UnknownSourcePackageTypeError.class');
 let sender = require('modules/sender');
@@ -19,62 +18,12 @@ let validUrl = require('valid-url');
 let s3PackageLocator = require('modules/s3PackageLocator');
 let EnvironmentHelper = require('models/Environment');
 let ResourceLockedError = require('modules/errors/ResourceLockedError');
-let autoScalingTemplatesProvider = require('modules/provisioning/autoScalingTemplatesProvider');
-let DynamoHelperLoader = require('api/api-utils/DynamoHelperLoader');
-let getExpectedState = require('modules/scheduling/getExpectedState');
-let getScheduleStateByAsg = require('modules/scheduling/getScheduleStateByAsg');
-let getScheduleByEnvironment = require('modules/scheduling/getScheduleByEnvironment');
-let getAsg = require('queryHandlers/GetAutoScalingGroup');
 
 module.exports = function DeployServiceCommandHandler(command) {
-  assertContract(command, 'command', {
-    properties: {
-      environmentName: { type: String, empty: false },
-      serviceName: { type: String, empty: false },
-      serviceVersion: { type: String, empty: false },
-      serviceSlice: { type: String, empty: false },
-      mode: { type: String, empty: false },
-      serverRoleName: { type: String, empty: false }
-    }
-  });
-
   return co(function* () {
     let deployment = yield validateCommandAndCreateDeployment(command);
     let destination = yield packagePathProvider.getS3Path(deployment);
     let sourcePackage = getSourcePackageByCommand(command);
-    let environmentName = deployment.environmentName;
-    let serviceName = deployment.serviceName;
-    let serverRoleName = deployment.serverRoleName;
-    let accountName = deployment.accountName;
-    let configuration = yield infrastructureConfigurationProvider.get(
-      environmentName, serviceName, serverRoleName
-    );
-    let DynamoHelper = DynamoHelperLoader.load();
-    let environmentTable = new DynamoHelper('ops/environments');
-    let templates = yield autoScalingTemplatesProvider.get(
-      configuration, accountName
-    );
-
-    let foundAsgAndFine = false;
-
-    if (Array.isArray(templates)) {
-      let autoScalingGroupName = templates[0].autoScalingGroupName;
-      let asg = yield getAsg({ accountName, autoScalingGroupName })
-        .catch((e) => {
-          // didn't find one!
-        });
-      if (asg) {
-        checkAsgSchedule(asg);
-        foundAsgAndFine = true;
-      }
-    }
-
-    if (!foundAsgAndFine) {
-      let environment = yield environmentTable.getByKey(environmentName);
-      if (environment) {
-        checkEnvironmentSchedule(environment);
-      }
-    }
 
     if (command.isDryRun) {
       return {
@@ -86,36 +35,11 @@ module.exports = function DeployServiceCommandHandler(command) {
     // Run asynchronously, we don't wait for deploy to finish intentionally
     deploy(deployment, destination, sourcePackage, command);
 
-    yield deploymentLogger.started(deployment, deployment.accountName);
+    let accountName = deployment.accountName;
+    yield deploymentLogger.started(deployment, accountName);
     return deployment;
   });
 };
-
-function checkAsgSchedule(asg) {
-  let state = getScheduleStateByAsg(asg);
-  if (state && state.toLowerCase() === 'off') {
-    throw new Error('The state of the current Auto Scaling Group schedule is "OFF". This deployment cannot complete until there is a current Auto Scaling Group template with a schedule that is "ON".');
-  }
-}
-
-function checkEnvironmentSchedule(environment) {
-  let environmentSchedule = getScheduleByEnvironment(environment);
-  let environmentScheduleState;
-
-  if (environmentSchedule && environmentSchedule.parseResult) {
-    if (Array.isArray(environmentSchedule.parseResult.schedule)) {
-      environmentScheduleState = getExpectedState.fromMultipleEnvironmentSchedules(environmentSchedule.parseResult.schedule);
-    } else {
-      environmentScheduleState = getExpectedState.fromSingleEnvironmentSchedule(environmentSchedule.parseResult);
-    }
-  }
-
-  if (environmentScheduleState) {
-    if (environmentScheduleState.toLowerCase() === 'off') {
-      throw new Error('The current state of the environment schedule is "OFF". This deployment cannot complete until either the Environment Schedule is set to "ON" or there is a current Auto Scaling Group template with a schedule that is "ON".');
-    }
-  }
-}
 
 function validateCommandAndCreateDeployment(command) {
   return co(function* () {

@@ -155,11 +155,11 @@ function createCache(name, fn, options) {
    * Evict an item from the cache.
    */
   function del(key) {
-    cachePromise.then(cache => cache.del(cacheKey(key)));
+    return cachePromise.then(cache => cache.del(cacheKey(key)));
   }
 
   function setInCache(key, item) {
-    cachePromise.then(cache => cache.set(key, normalizeValue(item)));
+    return cachePromise.then(cache => cache.set(key, normalizeValue(item)));
   }
 
   return {
