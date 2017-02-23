@@ -2,15 +2,8 @@
 
 'use strict';
 
-let assertContract = require('modules/assertContract');
 let serviceDiscovery = require('modules/service-discovery');
 
 module.exports = function GetAllNodes(query) {
-  assertContract(query, 'query', {
-    properties: {
-      environment: { type: String, empty: false }
-    }
-  });
-
   return serviceDiscovery.getAllNodes(query.environment);
 };

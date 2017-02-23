@@ -3,7 +3,6 @@
 'use strict';
 
 let _ = require('lodash');
-let assertContract = require('modules/assertContract');
 let co = require('co');
 let autoScalingGroupClientFactory = require('modules/clientFactories/autoScalingGroupClientFactory');
 
@@ -14,14 +13,6 @@ let ec2InstanceClientFactory = require('modules/clientFactories/ec2InstanceClien
 let AutoScalingGroup = require('models/AutoScalingGroup');
 
 module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
-  assertContract(command, 'command', {
-    properties: {
-      accountName: { type: String, empty: false },
-      autoScalingGroupName: { type: String, empty: false },
-      propagateToInstances: { type: Boolean }
-    }
-  });
-
   return co(function* () {
     let schedule = command.schedule;
     let accountName = command.accountName;

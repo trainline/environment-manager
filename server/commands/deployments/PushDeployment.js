@@ -4,9 +4,6 @@
 
 let co = require('co');
 let DeploymentCommandHandlerLogger = require('commands/deployments/DeploymentCommandHandlerLogger');
-let assertContract = require('modules/assertContract');
-let S3PathContract = require('modules/deployment/S3PathContract');
-let DeploymentContract = require('modules/deployment/DeploymentContract');
 let sender = require('modules/sender');
 let consulClient = require('modules/consul-client');
 
@@ -18,14 +15,6 @@ let deploymentKeyValueProvider = new (require('modules/deployment/DeploymentKeyV
 
 module.exports = function PushDeploymentCommandHandler(command) {
   let logger = new DeploymentCommandHandlerLogger(command);
-
-  assertContract(command, 'command', {
-    properties: {
-      s3Path: { type: S3PathContract, null: false },
-      deployment: { type: DeploymentContract, null: false }
-    }
-  });
-
   let deployment = command.deployment;
   let s3Path = command.s3Path;
 

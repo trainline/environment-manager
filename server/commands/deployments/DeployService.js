@@ -4,7 +4,6 @@
 
 let co = require('co');
 let Enums = require('Enums');
-let assertContract = require('modules/assertContract');
 let DeploymentContract = require('modules/deployment/DeploymentContract');
 let UnknownSourcePackageTypeError = require('modules/errors/UnknownSourcePackageTypeError.class');
 let sender = require('modules/sender');
@@ -21,17 +20,6 @@ let EnvironmentHelper = require('models/Environment');
 let ResourceLockedError = require('modules/errors/ResourceLockedError');
 
 module.exports = function DeployServiceCommandHandler(command) {
-  assertContract(command, 'command', {
-    properties: {
-      environmentName: { type: String, empty: false },
-      serviceName: { type: String, empty: false },
-      serviceVersion: { type: String, empty: false },
-      serviceSlice: { type: String, empty: false },
-      mode: { type: String, empty: false },
-      serverRoleName: { type: String, empty: false }
-    }
-  });
-
   return co(function* () {
     let deployment = yield validateCommandAndCreateDeployment(command);
     let destination = yield packagePathProvider.getS3Path(deployment);

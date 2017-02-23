@@ -2,13 +2,8 @@
 
 'use strict';
 
-let assertContract = require('modules/assertContract');
-let DeploymentContract = require('modules/deployment/DeploymentContract');
-
 module.exports = function ServiceDefinitionKeyValueProvider() {
   this.get = function (deployment) {
-    assertContract(deployment, 'deployment', { type: DeploymentContract, null: false });
-
     let environmentName = deployment.environmentName;
     let environmentTypeName = deployment.environmentTypeName;
     let serviceName = deployment.serviceName;

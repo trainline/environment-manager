@@ -2,17 +2,10 @@
 
 'use strict';
 
-let assertContract = require('modules/assertContract');
 let SNSTopicClient = require('modules/clientFactories/SNSTopicClient');
 
 module.exports = {
   create(parameters) {
-    assertContract(parameters, 'parameters', {
-      properties: {
-        accountName: { type: String, empty: false }
-      }
-    });
-
     return new Promise((resolve) => {
       let client = new SNSTopicClient(parameters.accountName);
       resolve(client);
