@@ -742,6 +742,7 @@ paths:
       summary: Update the ASG standby-state of a given instance.
       tags:
         - Instance
+      x-authorizer: instances
       parameters:
         - name: id
           in: path
