@@ -54,7 +54,7 @@ function getDeploymentLog(req, res, next) {
     };
 
     return GetNodeDeploymentLog(query).then((data) => {
-      res.send(data.replace(/\n/g, '<br />'));
+      res.set('Content-Type', 'text/plain').send(data);
     });
   }).catch(next);
 }
