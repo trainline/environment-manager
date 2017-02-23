@@ -3,7 +3,6 @@
 'use strict';
 
 let guid = require('node-uuid');
-let assertContract = require('modules/assertContract');
 let logger = require('modules/logger');
 let commandMetadata = require('commands/utils/metadata');
 
@@ -14,14 +13,6 @@ const THICK_SEPARATOR = new Array(50).join('=');
 
 module.exports = {
   sendCommand(parameters, callback) {
-    assertContract(parameters, 'parameters', {
-      command: {
-        properties: {
-          name: { type: String, empty: false }
-        }
-      }
-    });
-
     let command = commandMetadata.createFromParameters(parameters);
     let message = getLogMessage(command);
     logger.info(message);
@@ -32,16 +23,6 @@ module.exports = {
   },
 
   sendQuery(parameters, callback) {
-    assertContract(parameters, 'parameters', {
-      properties: {
-        query: {
-          properties: {
-            name: { type: String, empty: false }
-          }
-        }
-      }
-    });
-
     let query = prepareQuery(parameters);
     let type = QUERY_TYPE;
     let promise = sendCommandOrQuery(query);

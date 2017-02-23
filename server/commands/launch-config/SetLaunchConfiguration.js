@@ -2,7 +2,6 @@
 
 'use strict';
 
-let assertContract = require('modules/assertContract');
 let launchConfigUpdater = require('./launchConfigUpdater');
 let co = require('co');
 let sender = require('modules/sender');
@@ -17,26 +16,8 @@ let AutoScalingGroup = require('models/AutoScalingGroup');
 
 module.exports = function SetLaunchConfiguration(command) {
   return co(function* () {
-    assertContract(command, 'command', {
-      properties: {
-        accountName: { type: String, empty: false },
-        autoScalingGroupName: { type: String, empty: false },
-        data: {
-          properties: {
-            AMI: { type: String, empty: true },
-            InstanceType: { type: String, empty: true },
-            InstanceProfileName: { type: String, empty: true },
-            Volumes: { type: Array, empty: true },
-            // KeyName: { type: String, empty: true },
-            SecurityGroups: { type: Array, empty: true }
-          }
-        }
-      }
-    });
-
     let data = command.data;
     let updated = {};
-
     let autoScalingGroup = yield AutoScalingGroup.getByName(command.accountName, command.autoScalingGroupName);
     let originalLaunchConfiguration = yield autoScalingGroup.getLaunchConfiguration();
 

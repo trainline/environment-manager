@@ -96,19 +96,6 @@ describe('DeployService', function () {
       deploymentLogger
     });
   });
-
-  describe('required properties', function () {
-    let requiredProps = createRequiredProps();
-
-    Object.keys(requiredProps).forEach((p) => {
-      it(`should throw if ${p} is missing`, () => {
-        let invalidProps = Object.assign({}, requiredProps);
-        delete invalidProps[p];
-        assert.throws(sut.bind(this, invalidProps));
-      });
-    });
-  });
-
   describe('if the packagePath is a valid URL', function () {
     beforeEach(function () {
       sender.sendCommand = sinon.stub().returns(Promise.resolve());

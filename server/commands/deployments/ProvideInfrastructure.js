@@ -4,10 +4,8 @@
 
 
 let co = require('co');
-let assertContract = require('modules/assertContract');
 let DeploymentCommandHandlerLogger = require('commands/deployments/DeploymentCommandHandlerLogger');
 let DeploymentValidationError = require('modules/errors/DeploymentValidationError.class');
-let DeploymentContract = require('modules/deployment/DeploymentContract');
 let launchConfigurationTemplatesProvider = require('modules/provisioning/launchConfigurationTemplatesProvider');
 let infrastructureConfigurationProvider = require('modules/provisioning/infrastructureConfigurationProvider');
 let autoScalingTemplatesProvider = require('modules/provisioning/autoScalingTemplatesProvider');
@@ -16,12 +14,6 @@ let _ = require('lodash');
 
 module.exports = function ProvideInfrastructureCommandHandler(command) {
   let logger = new DeploymentCommandHandlerLogger(command);
-
-  assertContract(command, 'command', {
-    properties: {
-      deployment: { type: DeploymentContract, null: false }
-    }
-  });
 
   return co(function* () {
     let deployment = command.deployment;

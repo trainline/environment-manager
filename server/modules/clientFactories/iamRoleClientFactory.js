@@ -2,17 +2,10 @@
 
 'use strict';
 
-let assertContract = require('modules/assertContract');
 let IAMRoleClient = require('modules/clientFactories/IAMRoleClient');
 
 module.exports = {
   create(parameters) {
-    assertContract(parameters, 'parameters', {
-      properties: {
-        accountName: { type: String, empty: false }
-      }
-    });
-
     return new Promise((resolve) => {
       let client = new IAMRoleClient(parameters.accountName);
       resolve(client);

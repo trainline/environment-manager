@@ -2,7 +2,6 @@
 
 'use strict';
 
-let assertContract = require('modules/assertContract');
 let config = require('config');
 
 module.exports = function ActiveDirectoryAdapterConfiguration() {
@@ -11,15 +10,6 @@ module.exports = function ActiveDirectoryAdapterConfiguration() {
   this.get = function getConfiguration() {
     if (!configuration) {
       configuration = config.getUserValue('local').ActiveDirectory;
-
-      assertContract(configuration, 'ActiveDirectory configuration', {
-        properties: {
-          url: { Type: String, empty: false },
-          baseDN: { Type: String, empty: false },
-          username: { Type: String, empty: false },
-          password: { Type: String, empty: false }
-        }
-      });
     }
 
     return configuration;

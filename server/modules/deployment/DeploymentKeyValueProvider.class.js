@@ -2,12 +2,8 @@
 
 'use strict';
 
-let assertContract = require('modules/assertContract');
-let DeploymentContract = require('modules/deployment/DeploymentContract');
-
 module.exports = function DeploymentKeyValueProvider() {
   this.get = function (deployment) {
-    assertContract(deployment, 'deployment', { type: DeploymentContract, null: false });
     let deploymentId = deployment.id;
     let deploymentKeyValue = {
       key: `deployments/${deploymentId}/overall_status`,
