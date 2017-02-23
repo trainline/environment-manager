@@ -47,7 +47,6 @@ function getAllAccounts() {
 
 function flush() {
   accountsCache.flushAll();
-  return getMasterAccount().then(account => config.setUserValue('masterAccountName', account.AccountName));
 }
 
 module.exports = {
