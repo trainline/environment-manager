@@ -9,6 +9,4 @@ var path = require('path');
 var config = require('config');
 let localConfig = require('configuration.sample');
 
-config.setUserValue('masterAccountName', 'Sandbox');
 config.setUserValue('local', localConfig);
-

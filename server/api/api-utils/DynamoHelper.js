@@ -2,7 +2,6 @@
 
 'use strict';
 
-const masterAccountName = require('config').getUserValue('masterAccountName');
 const exposeAudit = 'version-only';
 
 let getAllValues = require('queryHandlers/ScanDynamoResources');
@@ -13,6 +12,7 @@ let updateValue = require('commands/resources/UpdateDynamoResource');
 let createValue = require('commands/resources/CreateDynamoResource');
 let deleteValue = require('commands/resources/DeleteDynamoResource');
 let metadata = require('commands/utils/metadata');
+let awsAccounts = require('modules/awsAccounts');
 
 // TODO(Filip): once we move all tables to one master account, we can remove all options.accountName
 // and do all operations on masterAccount
@@ -30,88 +30,117 @@ class DynamoHelper {
    * Get all resources in a Dynamo table
    */
   getAll(filter, options = {}) {
-    let accountName = options.accountName || masterAccountName;
-    return getAllValues({ resource: this.resource, exposeAudit, accountName, filter });
+    return awsAccounts.getMasterAccountName()
+      .then((masterAccountName) => {
+        let accountName = options.accountName || masterAccountName;
+        return getAllValues({ resource: this.resource, exposeAudit, accountName, filter });
+      });
   }
 
   /**
    * Get a specific resource from a Dynamo table
    */
   getByKey(key, options = {}) {
-    let accountName = options.accountName || masterAccountName;
-    return getValue({ resource: this.resource, key, exposeAudit, accountName });
+    return awsAccounts.getMasterAccountName()
+      .then((masterAccountName) => {
+        let accountName = options.accountName || masterAccountName;
+        return getValue({ resource: this.resource, key, exposeAudit, accountName });
+      });
   }
 
   /**
    * Get a specific resource from a Dynamo table that has includes sort key
    */
   getBySortKey(partitionKey, sortKey, options = {}) {
-    let accountName = options.accountName || masterAccountName;
-    return getValue({ key: partitionKey, range: sortKey, resource: this.resource, exposeAudit, accountName });
+    return awsAccounts.getMasterAccountName()
+      .then((masterAccountName) => {
+        let accountName = options.accountName || masterAccountName;
+        return getValue({ key: partitionKey, range: sortKey, resource: this.resource, exposeAudit, accountName });
+      });
   }
 
   /**
    * Query resources from a Dynamo table with partition key
    */
   queryRangeByKey(partitionKey, options = {}) {
-    let accountName = options.accountName || masterAccountName;
-    return queryRange({ key: partitionKey, resource: this.resource, exposeAudit, accountName });
+    return awsAccounts.getMasterAccountName()
+      .then((masterAccountName) => {
+        let accountName = options.accountName || masterAccountName;
+        return queryRange({ key: partitionKey, resource: this.resource, exposeAudit, accountName });
+      });
   }
 
   /**
    * Create a resource in a Dynamo table
    */
   create(key, item, user, options = {}) {
-    let accountName = options.accountName || masterAccountName;
-    const newItem = metadata.addMetadata({ resource: this.resource, key, item, accountName, user });
-    return createValue(newItem);
+    return awsAccounts.getMasterAccountName()
+      .then((masterAccountName) => {
+        let accountName = options.accountName || masterAccountName;
+        const newItem = metadata.addMetadata({ resource: this.resource, key, item, accountName, user });
+        return createValue(newItem);
+      });
   }
 
   /**
    * Create a resource in a Dynamo table that includes a sort key
    */
   createWithSortKey(partitionKey, sortKey, item, user, options = {}) {
-    let accountName = options.accountName || masterAccountName;
-    const newItem = metadata.addMetadata({ key: partitionKey, range: sortKey, resource: this.resource, item, accountName, user });
-    return createValue(newItem);
+    return awsAccounts.getMasterAccountName()
+      .then((masterAccountName) => {
+        let accountName = options.accountName || masterAccountName;
+        const newItem = metadata.addMetadata({ key: partitionKey, range: sortKey, resource: this.resource, item, accountName, user });
+        return createValue(newItem);
+      });
   }
 
   /**
    * Update (replace) a single Dynamo resource
    */
   update(key, item, expectedVersion, user, options = {}) {
-    let accountName = options.accountName || masterAccountName;
-    const updatedItem = metadata.addMetadata({ resource: this.resource, key, item, expectedVersion, accountName, user });
-    return updateValue(updatedItem);
+    return awsAccounts.getMasterAccountName()
+      .then((masterAccountName) => {
+        let accountName = options.accountName || masterAccountName;
+        const updatedItem = metadata.addMetadata({ resource: this.resource, key, item, expectedVersion, accountName, user });
+        return updateValue(updatedItem);
+      });
   }
 
   /**
    * Update (replace) a single Dynamo resource in a table that incldudes a sort key
    */
   updateWithSortKey(partitionKey, sortKey, item, expectedVersion, user, options = {}) {
-    let accountName = options.accountName || masterAccountName;
-    const updatedItem = metadata.addMetadata({ key: partitionKey, range: sortKey, resource: this.resource, item, expectedVersion, accountName, user });
-    return updateValue(updatedItem);
+    return awsAccounts.getMasterAccountName()
+      .then((masterAccountName) => {
+        let accountName = options.accountName || masterAccountName;
+        const updatedItem = metadata.addMetadata({ key: partitionKey, range: sortKey, resource: this.resource, item, expectedVersion, accountName, user });
+        return updateValue(updatedItem);
+      });
   }
 
   /**
    * Delete a single item from a Dynamo table
    */
   delete(key, user, options = {}) {
-    let accountName = options.accountName || masterAccountName;
-    const deletedItem = metadata.addMetadata({ resource: this.resource, key, accountName, user });
-    return deleteValue(deletedItem);
+    return awsAccounts.getMasterAccountName()
+      .then((masterAccountName) => {
+        let accountName = options.accountName || masterAccountName;
+        const deletedItem = metadata.addMetadata({ resource: this.resource, key, accountName, user });
+        return deleteValue(deletedItem);
+      });
   }
 
   /**
    * Delete a single item from a Dynamo table that includes a sort key
    */
   deleteWithSortKey(partitionKey, sortKey, user, options = {}) {
-    let accountName = options.accountName || masterAccountName;
-    const deletedItem = metadata.addMetadata({ resource: this.resource, key: partitionKey, range: sortKey, accountName, user });
-    return deleteValue(deletedItem);
+    return awsAccounts.getMasterAccountName()
+      .then((masterAccountName) => {
+        let accountName = options.accountName || masterAccountName;
+        const deletedItem = metadata.addMetadata({ resource: this.resource, key: partitionKey, range: sortKey, accountName, user });
+        return deleteValue(deletedItem);
+      });
   }
-
 }
 
 module.exports = DynamoHelper;

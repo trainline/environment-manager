@@ -2,7 +2,6 @@
 
 'use strict';
 
-let config = require('config');
 let GetASGState = require('queryHandlers/GetASGState');
 let ScanServersStatus = require('queryHandlers/ScanServersStatus');
 let co = require('co');
@@ -12,6 +11,7 @@ let sender = require('modules/sender');
 let OpsEnvironment = require('models/OpsEnvironment');
 let Promise = require('bluebird');
 let environmentProtection = require('modules/authorizers/environmentProtection');
+let awsAccounts = require('modules/awsAccounts');
 
 /**
  * GET /environments
@@ -76,32 +76,36 @@ function getEnvironmentAccountName(req, res, next) {
  * GET /environments/{name}/schedule
  */
 function getEnvironmentSchedule(req, res, next) {
-  const masterAccountName = config.getUserValue('masterAccountName');
-  const key = req.swagger.params.name.value;
+  awsAccounts.getMasterAccountName()
+    .then((masterAccountName) => {
+      const key = req.swagger.params.name.value;
 
-  GetDynamoResource({ resource: 'ops/environments', key, exposeAudit: 'version-only', accountName: masterAccountName })
-    .then(data => res.json(data)).catch(next);
+      GetDynamoResource({ resource: 'ops/environments', key, exposeAudit: 'version-only', accountName: masterAccountName })
+        .then(data => res.json(data)).catch(next);
+    });
 }
 
 /**
  * PUT /environments/{name}/schedule
  */
 function putEnvironmentSchedule(req, res, next) {
-  const masterAccountName = config.getUserValue('masterAccountName');
-  const key = req.swagger.params.name.value;
-  const item = { Value: req.swagger.params.body.value };
-  const user = req.user;
+  awsAccounts.getMasterAccountName()
+    .then((masterAccountName) => {
+      const key = req.swagger.params.name.value;
+      const item = { Value: req.swagger.params.body.value };
+      const user = req.user;
 
-  const command = {
-    name: 'UpdateDynamoResource',
-    resource: 'ops/environments',
-    key,
-    item,
-    expectedVersion: req.swagger.params['expected-version'].value,
-    accountName: masterAccountName
-  };
+      const command = {
+        name: 'UpdateDynamoResource',
+        resource: 'ops/environments',
+        key,
+        item,
+        expectedVersion: req.swagger.params['expected-version'].value,
+        accountName: masterAccountName
+      };
 
-  sender.sendCommand({ command, user }).then(data => res.json(data)).catch(next);
+      sender.sendCommand({ command, user }).then(data => res.json(data)).catch(next);
+    });
 }
 
 /**

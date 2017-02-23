@@ -6,7 +6,7 @@ let _ = require('lodash');
 let send = require('modules/helpers/send');
 let route = require('modules/helpers/route');
 let make = require('modules/utilities').make;
-let config = require('config');
+let awsAccounts = require('modules/awsAccounts');
 let resourceDescriptorProvider = require('modules/resourceDescriptorProvider');
 
 module.exports = resourceDescriptorProvider
@@ -25,22 +25,24 @@ module.exports = resourceDescriptorProvider
       docs = _.clone(resource.docs);
       docs.perAccount = resource.perAccount;
     }
-    const masterAccountName = config.getUserValue('masterAccountName');
 
     return route
       .get(url)
       .named(resource.name)
       .withDocs(docs)
       .do((request, response) => {
-        let query = {
-          name: 'GetDynamoResource',
-          resource: resource.name,
-          key: request.params.key,
-          range: request.params.range,
-          accountName: resource.perAccount ? request.params.account : masterAccountName,
-          exposeAudit: 'version-only'
-        };
+        awsAccounts.getMasterAccountName()
+          .then((masterAccountName) => {
+            let query = {
+              name: 'GetDynamoResource',
+              resource: resource.name,
+              key: request.params.key,
+              range: request.params.range,
+              accountName: resource.perAccount ? request.params.account : masterAccountName,
+              exposeAudit: 'version-only'
+            };
 
-        send.query(query, request, response);
+            send.query(query, request, response);
+          });
       });
   });

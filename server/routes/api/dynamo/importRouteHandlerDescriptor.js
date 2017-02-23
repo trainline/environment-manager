@@ -6,7 +6,7 @@ let _ = require('lodash');
 let send = require('modules/helpers/send');
 let route = require('modules/helpers/route');
 let make = require('modules/utilities').make;
-let config = require('config');
+let awsAccounts = require('modules/awsAccounts');
 let resourceDescriptorProvider = require('modules/resourceDescriptorProvider');
 
 function asRouteHandlerDescriptor(resource, action, commandName) {
@@ -22,7 +22,6 @@ function asRouteHandlerDescriptor(resource, action, commandName) {
     docs.verb = action;
     docs.perAccount = resource.perAccount;
   }
-  const masterAccountName = config.getUserValue('masterAccountName');
 
   return route
     .put(url)
@@ -30,14 +29,17 @@ function asRouteHandlerDescriptor(resource, action, commandName) {
     .withDocs(docs)
     .whenRequest((uri, value) => (_.isNil(value) ? new Error.InvalidOperation('Expected one or more items to import.') : null))
     .do((request, response) => {
-      let command = {
-        name: commandName,
-        resource: resource.name,
-        items: _.concat(request.body),
-        accountName: resource.perAccount ? request.params.account : masterAccountName
-      };
+      awsAccounts.getMasterAccountName()
+        .then((masterAccountName) => {
+          let command = {
+            name: commandName,
+            resource: resource.name,
+            items: _.concat(request.body),
+            accountName: resource.perAccount ? request.params.account : masterAccountName
+          };
 
-      send.command(command, request, response);
+          send.command(command, request, response);
+        });
     });
 }
 

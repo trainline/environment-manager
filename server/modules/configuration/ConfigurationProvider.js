@@ -25,7 +25,6 @@ module.exports = function ConfigurationProvider() {
     }
 
     return awsAccounts.getMasterAccount()
-      .then(account => config.setUserValue('masterAccountName', account.AccountName))
       .then(loadConfiguration());
   };
 };
