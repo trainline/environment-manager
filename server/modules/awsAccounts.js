@@ -6,7 +6,6 @@ const TEN_MINUTES = 10 * 60;
 const CACHE_KEY = 'AWSAccounts';
 
 let _ = require('lodash');
-let config = require('config');
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
 let fetchAccounts = require('queryHandlers/GetAWSaccounts');
 let cacheManager = require('modules/cacheManager');

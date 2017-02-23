@@ -2,8 +2,6 @@
 
 'use strict';
 
-let config = require('config');
-
 function getAwsAccounts(query) {
   let sender = require('modules/sender');
   let dynamoQuery = {
