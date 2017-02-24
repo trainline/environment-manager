@@ -35,12 +35,15 @@ function dynamoTableCache(logicalTableName, { ttl }) {
       .then(_ => cache.del(tableArn).catch(logError('Could not invalidate cache', tableArn)));
   }
 
-  function scan(tableArn) {
-    console.log(tableArn);
-    return cache.get(tableArn).catch((error) => {
-      logError('Could not get from cache', tableArn);
-      return dynamoTable.scan(tableArn);
-    });
+  function scan(tableArn, filter) {
+    if (filter) {
+      return dynamoTable.scan(tableArn, filter);
+    } else {
+      return cache.get(tableArn).catch((error) => {
+        logError('Could not get from cache', tableArn);
+        return dynamoTable.scan(tableArn);
+      });
+    }
   }
 
   return {

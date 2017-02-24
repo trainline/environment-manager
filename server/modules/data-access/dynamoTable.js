@@ -40,6 +40,13 @@ function scan(tableArn, expressions) {
     .then(dynamo => pages.flatten(rsp => rsp.Items, dynamo.scan(params)));
 }
 
+function query(tableArn, expressions) {
+  let TableName = tableName(tableArn);
+  let params = Object.assign({ TableName }, compileIfSet(expressions));
+  return dynamoClient(tableArn)
+    .then(dynamo => pages.flatten(rsp => rsp.Items, dynamo.query(params)));
+}
+
 function create(tableArn, { record, expressions }) {
   return describeDynamoTable(tableArn).then((tableDescription) => {
     let TableName = tableName(tableArn);
@@ -95,6 +102,7 @@ module.exports = {
   create,
   delete: $delete,
   get,
+  query,
   replace,
   scan
 };
