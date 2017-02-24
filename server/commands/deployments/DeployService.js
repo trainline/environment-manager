@@ -5,7 +5,6 @@
 let co = require('co');
 let Enums = require('Enums');
 let DeploymentContract = require('modules/deployment/DeploymentContract');
-let UnknownSourcePackageTypeError = require('modules/errors/UnknownSourcePackageTypeError.class');
 let sender = require('modules/sender');
 let infrastructureConfigurationProvider = require('modules/provisioning/infrastructureConfigurationProvider');
 let namingConventionProvider = require('modules/provisioning/namingConventionProvider');
@@ -14,7 +13,6 @@ let deploymentLogger = require('modules/DeploymentLogger');
 let _ = require('lodash');
 let SupportedSliceNames = _.values(Enums.SliceName);
 let SupportedDeploymentModes = _.values(Enums.DeploymentMode);
-let validUrl = require('valid-url');
 let s3PackageLocator = require('modules/s3PackageLocator');
 let EnvironmentHelper = require('models/Environment');
 let ResourceLockedError = require('modules/errors/ResourceLockedError');
@@ -73,10 +71,6 @@ function validateCommandAndCreateDeployment(command) {
         command.packagePath = s3Package;
       }
     }
-
-    command.packageType = validUrl.isUri(command.packagePath) ?
-      Enums.SourcePackageType.CodeDeployRevision :
-      Enums.SourcePackageType.DeploymentMap;
 
     const environment = yield EnvironmentHelper.getByName(command.environmentName);
     const environmentType = yield environment.getEnvironmentType();
@@ -176,19 +170,7 @@ function pushDeployment(accountName, deployment, s3Path, parentCommand) {
 }
 
 function getSourcePackageByCommand(command) {
-  switch (command.packageType) {
-    case Enums.SourcePackageType.CodeDeployRevision:
-      return {
-        type: Enums.SourcePackageType.CodeDeployRevision,
-        url: command.packagePath
-      };
-    case Enums.SourcePackageType.DeploymentMap:
-      return {
-        type: Enums.SourcePackageType.DeploymentMap,
-        id: command.packagePath,
-        version: command.serviceVersion
-      };
-    default:
-      throw new UnknownSourcePackageTypeError(`Unknown "${command.sourcePackageType}" source package type.`);
-  }
+  return {
+    url: command.packagePath
+  };
 }

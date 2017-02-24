@@ -3094,6 +3094,7 @@ definitions:
           - none
       packageLocation:
         type: string
+        pattern: ^https?://
       serverRole:
         type: string
   SimpleServiceObject:

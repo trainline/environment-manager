@@ -37,7 +37,6 @@
     "activedirectory": "^0.7.2",
     "ajv": "^4.9.1",
     "app-module-path": "^2.1.0",
-    "archiver": "^1.2.0",
     "async": "^2.1.4",
     "aws-sdk": "^2.7.10",
     "bluebird": "^3.4.6",
@@ -63,7 +62,6 @@
     "md5": "^2.2.1",
     "moment": "^2.17.1",
     "ms": "^0.7.2",
-    "mz": "^2.6.0",
     "nconf": "^0.8.4",
     "newrelic": "^1.36.2",
     "node-uuid": "^1.4.7",
@@ -75,13 +73,8 @@
     "s3-streams": "^0.3.0",
     "semver": "^5.3.0",
     "swagger-tools": "0.10.1",
-    "through2": "^2.0.3",
-    "through2-map": "^3.0.0",
-    "unzip2": "^0.2.5",
     "valid-url": "^1.0.9",
-    "winston": "^2.3.0",
-    "xmldom": "^0.1.27",
-    "xpath": "0.0.23"
+    "winston": "^2.3.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
