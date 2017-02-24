@@ -10,21 +10,16 @@ let config = require('config/');
 const EM_LOG_LEVEL = config.get('EM_LOG_LEVEL').toLowerCase();
 let fp = require('lodash/fp');
 
-// Set up formatter - if local, leave undefined
-let formatter;
-if (true) {
-  // if (config.get('IS_PRODUCTION') === true) {
-  formatter = function (options) {
-    let entry = {
-      message: options.message,
-      level: options.level,
-      name: 'environment-manager',
-      eventtype: fp.compose(fp.defaultTo('default'), fp.get(['meta', 'eventtype']))(options),
-      releaseversion: process.env.RELEASE_VERSION || config.get('APP_VERSION'),
-      meta: fp.compose(fp.omit('eventtype'), fp.get('meta'))(options)
-    };
-    return JSON.stringify(entry);
+function formatter(options) {
+  let entry = {
+    message: options.message,
+    level: options.level,
+    name: 'environment-manager',
+    eventtype: fp.compose(fp.defaultTo('default'), fp.get(['meta', 'eventtype']))(options),
+    releaseversion: process.env.RELEASE_VERSION || config.get('APP_VERSION'),
+    meta: fp.compose(fp.omit('eventtype'), fp.get('meta'))(options)
   };
+  return JSON.stringify(entry);
 }
 
 const logger = new (winston.Logger)({
