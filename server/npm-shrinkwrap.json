@@ -1102,18 +1102,6 @@
         }
       }
     },
-    "express-winston": {
-      "version": "2.1.0",
-      "from": "express-winston@2.1.0",
-      "resolved": "https://registry.npmjs.org/express-winston/-/express-winston-2.1.0.tgz",
-      "dependencies": {
-        "lodash": {
-          "version": "4.11.2",
-          "from": "lodash@>=4.11.1 <4.12.0",
-          "resolved": "https://registry.npmjs.org/lodash/-/lodash-4.11.2.tgz"
-        }
-      }
-    },
     "extend": {
       "version": "3.0.0",
       "from": "extend@>=3.0.0 <3.1.0",

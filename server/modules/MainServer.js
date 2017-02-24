@@ -8,7 +8,6 @@ let cookieParser = require('cookie-parser');
 let logger = require('modules/logger');
 let config = require('config/');
 let compression = require('compression');
-let expressWinston = require('express-winston');
 let expressRequestId = require('express-request-id');
 
 let serverFactoryConfiguration = new (require('modules/serverFactoryConfiguration'))();
@@ -18,8 +17,9 @@ let authentication = require('modules/authentication');
 let deploymentMonitorScheduler = require('modules/monitoring/DeploymentMonitorScheduler');
 let apiV1 = require('api/v1');
 let httpServerFactory = require('modules/http-server-factory');
-let configureExpressWinston = require('modules/express-middleware/configureExpressWinston');
+let loggingMiddleware = require('modules/express-middleware/loggingMiddleware');
 let deprecateMiddleware = require('modules/express-middleware/deprecateMiddleware');
+
 let serverInstance;
 
 const APP_VERSION = require('config').get('APP_VERSION');
@@ -32,12 +32,11 @@ function createExpressApp() {
     deploymentNodeLogs: require('routes/deploymentNodeLogs')
   };
 
-
-  let loggerMiddleware = expressWinston.logger(configureExpressWinston.loggerOptions());
-  let errorLoggerMiddleware = expressWinston.errorLogger(configureExpressWinston.errorLoggerOptions());
-
   // start express
   let app = express();
+
+  let loggerMiddleware = loggingMiddleware.loggerMiddleware(logger);
+  let errorLoggerMiddleware = loggingMiddleware.errorLoggerMiddleware(logger);
 
   return apiV1().then(({
     swaggerAuthorizer,
