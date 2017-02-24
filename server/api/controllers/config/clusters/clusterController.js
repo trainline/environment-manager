@@ -5,7 +5,8 @@
 const KEY_NAME = 'ClusterName';
 
 let clusters = require('modules/data-access/clusters');
-let crypto = require('crypto');
+let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMetadataForDynamoAudit;
+let param = require('api/api-utils/requestParam');
 let versionOf = require('modules/data-access/dynamoVersion').versionOf;
 let removeAuditMetadata = require('modules/data-access/dynamoAudit').removeAuditMetadata;
 
@@ -21,11 +22,6 @@ function convertToApiModel(persistedModel) {
   return Object.assign(apiModel, { Version });
 }
 
-let getMetadata = req => ({
-  TransactionID: crypto.pseudoRandomBytes(4).toString('hex'),
-  User: req.user.getName()
-});
-
 /**
  * GET /config/clusters
  */
@@ -39,7 +35,7 @@ function getClustersConfig(req, res, next) {
  * GET /config/clusters/{name}
  */
 function getClusterConfigByName(req, res, next) {
-  const key = req.swagger.params.name.value;
+  const key = param('name', req);
   return clusters.get(keyOf(key))
     .then(convertToApiModel)
     .then(data => res.json(data)).catch(next);
@@ -49,23 +45,22 @@ function getClusterConfigByName(req, res, next) {
  * POST /config/clusters
  */
 function postClustersConfig(req, res, next) {
-  const body = req.swagger.params.body.value;
-
-  let metadata = getMetadata(req);
+  const body = param('body', req);
+  let metadata = getMetadataForDynamoAudit(req);
   let record = Object.assign({}, body);
   delete record.Version;
-  return clusters.create({ record: body, metadata }).then(() => res.status(201).end()).catch(next);
+  return clusters.create({ record, metadata }).then(() => res.status(201).end()).catch(next);
 }
 
 /**
  * PUT /config/clusters/{name}
  */
 function putClusterConfigByName(req, res, next) {
-  const key = req.swagger.params.name.value;
-  const expectedVersion = req.swagger.params['expected-version'].value;
-  const body = req.swagger.params.body.value;
+  const key = param('name', req);
+  const expectedVersion = param('expected-version', req);
+  const body = param('body', req);
 
-  let metadata = getMetadata(req);
+  let metadata = getMetadataForDynamoAudit(req);
   let record = Object.assign(keyOf(key), { Value: body });
   delete record.Version;
 
@@ -78,11 +73,11 @@ function putClusterConfigByName(req, res, next) {
  * DELETE /config/clusters/{name}
  */
 function deleteClusterConfigByName(req, res, next) {
-  const clusterName = req.swagger.params.name.value;
-  const expectedVersion = req.swagger.params['expected-version'].value;
+  const clusterName = param('name', req);
+  const expectedVersion = param('expected-version', req);
 
   let key = keyOf(clusterName);
-  let metadata = getMetadata(req);
+  let metadata = getMetadataForDynamoAudit(req);
 
   return clusters.delete({ key, metadata }, expectedVersion)
     .then(() => res.status(200).end()).catch(next);
