@@ -87,6 +87,7 @@ angular.module('EnvironmentManager.configuration').controller('ServicesControlle
     vm.delete = function (service) {
       var serviceName = service.ServiceName;
       var owningCluster = service.OwningCluster;
+      var expectedVersion = service.Version;
 
       modal.confirmation({
         title: 'Deleting a Service',
@@ -95,7 +96,7 @@ angular.module('EnvironmentManager.configuration').controller('ServicesControlle
         severity: 'Danger',
         details: ['NOTE: This will not delete the service from any Deployment Maps or Load Balancer Rules. It will also not clear any AWS resources associated with the service. Clean up of these needs to be done manually. Deleting services in Environment Manager before they are fully removed from AWS and Footplate is not a good idea! <strong>Please talk to the Server team if unsure</strong>.'] // TODO:
       }).then(function () {
-        var params = { key: serviceName, range: owningCluster };
+        var params = { key: serviceName, range: owningCluster, expectedVersion: expectedVersion };
         resources.config.services.delete(params).then(function () {
           cachedResources.config.services.flush();
           vm.refresh();
