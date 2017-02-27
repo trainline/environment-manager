@@ -21,13 +21,21 @@ angular.module('EnvironmentManager.common')
 
       vm.delete = function (entry) {
         var id = entry.NotificationSettingsId;
+        var expectedVersion = entry.Version;
         modal.confirmation({
           title: 'Delete Notification Settings',
           message: 'Are you sure you want to delete the <strong>' + id + '</strong> notification settings?',
           action: 'Delete',
           severity: 'Danger',
         }).then(function () {
-          $http.delete('/api/v1/config/notification-settings/' + id).then(refresh);
+          var req = {
+            method: 'DELETE',
+            url: '/api/v1/config/notification-settings/' + id,
+            headers: {
+              'expected-version': expectedVersion
+            }
+          };
+          $http(req).then(refresh);
         });
       };
 
