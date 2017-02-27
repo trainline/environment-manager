@@ -79,12 +79,11 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
       var foundUpstreams = {};
 
       return activeStatusService.getAllUpstreamsData()
-        .then(function (statusData) {
+        .then(function findAndStoreUpstreamNamesThatMatchComparableItem(statusData) {
           comparableData.forEach(function (c) {
             var matches = statusData.data.filter(function (s) {
               return s.Value.EnvironmentName === c.EnvironmentName && s.Value.ServiceName === c.key;
             });
-
             if (matches.length > 0) {
               c.UpstreamName = matches[0].Value.UpstreamName;
               foundUpstreams[c.UpstreamName] = c;
