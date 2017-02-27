@@ -2,10 +2,8 @@
 
 'use strict';
 
-/* eslint-disable import/no-extraneous-dependencies */
-let log = require('modules/logger'); // eslint-disable import/no-extraneous-dependencies
-let sender = require('modules/sender');
-let awsAccounts = require('modules/awsAccounts');
+let log = require('modules/logger');
+let servicesDb = require('modules/data-access/services');
 
 /* Returns an error in the format specified at http://jsonapi.org/format/#errors
  * if the service does not exist.
@@ -19,17 +17,7 @@ function serviceExists(service) {
     title: 'Duplicate Service Found',
     detail: `service name: ${service}`
   });
-  return awsAccounts.getMasterAccountName()
-    .then((masterAccountName) => {
-      return sender.sendQuery({
-        query: {
-          accountName: masterAccountName,
-          name: 'ScanDynamoResources',
-          resource: 'config/services',
-          filter: { ServiceName: service }
-        }
-      });
-    })
+  return servicesDb.named(service)
     .then((rsp) => {
       if (rsp.length === 1) {
         return [];

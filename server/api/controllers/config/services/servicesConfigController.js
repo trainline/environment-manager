@@ -2,66 +2,84 @@
 
 'use strict';
 
-const RESOURCE = 'config/services';
-let dynamoHelper = new (require('api/api-utils/DynamoHelper'))(RESOURCE);
+let services = require('modules/data-access/services');
+let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMetadataForDynamoAudit;
+let param = require('api/api-utils/requestParam');
+let versionOf = require('modules/data-access/dynamoVersion').versionOf;
+let removeAuditMetadata = require('modules/data-access/dynamoAudit').removeAuditMetadata;
+
+function convertToApiModel(persistedModel) {
+  let apiModel = removeAuditMetadata(persistedModel);
+  let Version = versionOf(persistedModel);
+  return Object.assign(apiModel, { Version });
+}
 
 /**
  * GET /config/services
  */
 function getServicesConfig(req, res, next) {
-  const cluster = req.swagger.params.cluster.value;
-  let filter = {};
-  if (cluster !== undefined) {
-    filter.OwningCluster = cluster;
-  }
-  return dynamoHelper.getAll(filter).then(data => res.json(data)).catch(next);
+  const cluster = param('cluster', req);
+  return (cluster ? services.ownedBy(cluster) : services.scan())
+    .then(data => data.map(convertToApiModel))
+    .then(data => res.json(data)).catch(next);
 }
 
 /**
  * GET /config/services/{name}
  */
 function getServiceConfigByName(req, res, next) {
-  const key = req.swagger.params.name.value;
-  const sortKey = req.swagger.params.cluster.value;
-  return dynamoHelper.getBySortKey(key, sortKey).then(data => res.json(data)).catch(next);
+  let key = {
+    ServiceName: param('name', req),
+    OwningCluster: param('cluster', req)
+  };
+  return services.get(key)
+    .then(convertToApiModel)
+    .then(data => res.json(data)).catch(next);
 }
 
 /**
  * POST /config/services
  */
 function postServicesConfig(req, res, next) {
-  const body = req.swagger.params.body.value;
-  const user = req.user;
-  const key = body.ServiceName;
-  const sortKey = body.OwningCluster;
-
-  return dynamoHelper.createWithSortKey(key, sortKey, { Value: body.Value }, user).then(data => res.json(data)).catch(next);
+  const body = param('body', req);
+  let metadata = getMetadataForDynamoAudit(req);
+  let record = Object.assign({}, body);
+  delete record.Version;
+  return services.create({ record, metadata }).then(() => res.status(201).end()).catch(next);
 }
 
 /**
  * PUT /config/services/{name}/{cluster}
  */
 function putServiceConfigByName(req, res, next) {
-  const key = req.swagger.params.name.value;
-  const sortKey = req.swagger.params.cluster.value;
-  const user = req.user;
-  const expectedVersion = req.swagger.params['expected-version'].value;
-  const body = req.swagger.params.body.value;
+  let key = {
+    ServiceName: param('name', req),
+    OwningCluster: param('cluster', req)
+  };
+  const expectedVersion = param('expected-version', req);
+  const body = param('body', req);
+  let metadata = getMetadataForDynamoAudit(req);
+  let record = Object.assign(key, { Value: body });
+  delete record.Version;
 
-  return dynamoHelper.updateWithSortKey(key, sortKey, { Value: body }, expectedVersion, user).then(data => res.json(data)).catch(next);
+  return services.replace({ record, metadata }, expectedVersion)
+    .then(() => res.status(200).end())
+    .catch(next);
 }
 
 /**
  * DELETE /config/services/{name}/{infra}
  */
 function deleteServiceConfigByName(req, res, next) {
-  const pKey = req.swagger.params.name.value;
-  const sKey = req.swagger.params.cluster.value;
-  const user = req.user;
+  let key = {
+    ServiceName: param('name', req),
+    OwningCluster: param('cluster', req)
+  };
+  const expectedVersion = param('expected-version', req);
+  let metadata = getMetadataForDynamoAudit(req);
 
-  return dynamoHelper.deleteWithSortKey(pKey, sKey, user)
-    .then(() => res.status(200).end())
-    .catch(next);
+  return services.delete({ key, metadata }, expectedVersion)
+    .then(() => res.status(200).end()).catch(next);
 }
 
 module.exports = {

@@ -6,23 +6,14 @@ let upstreamValidator = require('./lbUpstreamValidator');
 let InvalidItemSchemaError = require('modules/errors/InvalidItemSchemaError.class');
 let co = require('co');
 let awsAccounts = require('modules/awsAccounts');
+let servicesDb = require('modules/data-access/services');
 
 function canValidate(resourceName) {
   return resourceName === 'config/lbupstream';
 }
 
 function getService(serviceName, parentCommand) {
-  let sender = require('modules/sender');
-
-  return sender.sendQuery({
-    query: {
-      accountName: parentCommand.accountName,
-      name: 'ScanDynamoResources',
-      resource: 'config/services',
-      filter: { ServiceName: serviceName }
-    },
-    parent: parentCommand
-  });
+  return servicesDb.named(serviceName);
 }
 
 function* validate(resource, command) {

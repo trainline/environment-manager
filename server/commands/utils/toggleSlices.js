@@ -3,30 +3,17 @@
 'use strict';
 
 let co = require('co');
-let sender = require('modules/sender');
 let _ = require('lodash');
 
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
 let InconsistentSlicesStatusError = require('modules/errors/InconsistentSlicesStatusError.class');
-let awsAccounts = require('modules/awsAccounts');
+let servicesDb = require('modules/data-access/services');
 
 function ToggleUpstreamByServiceVerifier(toggleCommand) {
   this.verifyUpstreams = (upstreams) => {
     return co(function* () {
-      let masterAccountName = yield awsAccounts.getMasterAccountName();
-      let query = {
-        name: 'ScanDynamoResources',
-        resource: 'config/services',
-        accountName: masterAccountName,
-        filter: {
-          ServiceName: upstreams[0].Value.ServiceName
-        }
-      };
-
-      let services = yield sender.sendQuery({ query, parent: toggleCommand });
+      let services = yield servicesDb.named(upstreams[0].Value.ServiceName);
       let portMapping = asPortMapping(services[0]);
-
-
       yield _.map(upstreams, upstream => detectUpstreamInconsistency(upstream, portMapping));
     });
   };
