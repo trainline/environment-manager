@@ -49,7 +49,10 @@ function getInstanceServiceHealthChecks(checks, serviceId) {
 }
 
 function getInstanceDeploymentStatus(services) {
-  let expectedServices = _.filter(services, service => service.DiffWithTargetState !== DIFF_STATE.Unexpected);
+  let expectedServices = _.filter(services, service =>
+    service.DiffWithTargetState !== DIFF_STATE.Unexpected &&
+    service.DiffWithTargetState !== DIFF_STATE.Ignored
+  );
 
   if (_.some(expectedServices, service =>
     // If any service deployment is unsuccessful, instance deployment status is also unsuccessful
