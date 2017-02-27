@@ -4,7 +4,7 @@
 
 angular.module('EnvironmentManager.compare').controller('CompareController',
   function ($scope, $routeParams, serviceComparison, $location, $q, $uibModal,
-  resources, cachedResources, comparableResources, ResourceComparison, $log) {
+    resources, cachedResources, comparableResources, ResourceComparison, $log, activeStatusService) {
     var vm = this;
     var SHOW_ALL_OPTION = 'Any';
     var services;
@@ -67,11 +67,49 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
         vm.dataLoading = true;
         var allEnvironments = _.union([vm.selected.primaryEnvironment], vm.selected.environments);
         vm.selected.comparable.get(allEnvironments)
+          .then(setActiveState)
           .then(updateView)
           .finally(function () {
             vm.dataLoading = false;
           });
       }
+    }
+
+    function setActiveState(comparableData) {
+      var foundUpstreams = {};
+
+      return activeStatusService.getAllUpstreamsData()
+        .then(function (statusData) {
+          comparableData.forEach(function (c) {
+            var matches = statusData.data.filter(function (s) {
+              return s.Value.EnvironmentName === c.EnvironmentName && s.Value.ServiceName === c.key;
+            });
+
+            if (matches.length > 0) {
+              c.UpstreamName = matches[0].Value.UpstreamName;
+              foundUpstreams[c.UpstreamName] = c;
+            }
+          });
+        })
+        .then(function getUpstreamActiveStatus() {
+          var promises = [];
+          comparableData.forEach(function (c) {
+            if (c.UpstreamName) {
+              promises.push(activeStatusService.getSliceInformation(c.UpstreamName, c.EnvironmentName));
+            }
+          });
+          return $q.all(promises);
+        })
+        .then(function (stateResponses) {
+          stateResponses.forEach(function (r) {
+            r.data.forEach(function (d) {
+              if (foundUpstreams[d.UpstreamName]) {
+                foundUpstreams[d.UpstreamName].State = d.State;
+              }
+            });
+          });
+          return comparableData;
+        });
     }
 
     vm.notPrimary = function () {
@@ -103,6 +141,7 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
     };
 
     function updateView(data) {
+      console.log(data)
       var primaryEnvironment = vm.selected.primaryEnvironment.EnvironmentName;
       var secondaryEnvironments = _.map(vm.selected.environments, 'EnvironmentName');
       var filterCluster = vm.selected.cluster === SHOW_ALL_OPTION ? null : vm.selected.cluster;

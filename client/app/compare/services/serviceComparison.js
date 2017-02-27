@@ -29,7 +29,6 @@ angular.module('EnvironmentManager.compare').factory('serviceComparison',
         });
 
         decorateItemsWithVersionInformation(items);
-
         return items;
       }
 
