@@ -59,7 +59,7 @@
         "ploadBalancerEnvironmentManagerHealthCheck": {
             "Description": "EnvironmentManager Health Check target API",
             "Type": "String",
-            "Default": "/api/diagnostics/status"
+            "Default": "/api/v1/diagnostics/healthcheck"
         },
         "ploadBalancerEnvironmentManagerSubnetIDs": {
             "Description": "List of Subnet IDs for EnvironmentManager LoadBalancer",
