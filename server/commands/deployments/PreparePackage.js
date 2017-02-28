@@ -5,9 +5,7 @@
 let ajv = require('ajv');
 let amazonClientFactory = require('modules/amazon-client/childAccountClient');
 let DeploymentCommandHandlerLogger = require('commands/deployments/DeploymentCommandHandlerLogger');
-let co = require('co');
-let simpleHttp = require('modules/simple-http');
-let s3Url = require('modules/amazon-client/s3Url');
+let packageMover = require('commands/deployments/packageMover');
 
 const options = {
   allErrors: true,
@@ -16,51 +14,17 @@ const options = {
 
 let validate = ajv(options).compile(require('./PreparePackageCommand.schema'));
 
-function PackageMover(logger) {
-  this.downloadPackage = function (url) {
-    if (s3Url.parse(url) !== undefined) {
-      logger.info(`Downloading package from S3: ${url}`);
-      return Promise.resolve(s3Url.getObject(url));
-    }
-    return co(function* () {
-      logger.info(`Downloading package: ${url}`);
-      let input = yield simpleHttp.getResponseStream(url);
-      let headers = input.headers;
-      if (!(/\/zip$/.test(headers['content-type']))) {
-        throw new Error(`Expected a zip file. ${url}`);
-      }
-      return input;
-    });
-  };
-
-  this.uploadPackage = function (destination, stream, s3client) {
-    let params = {
-      Bucket: destination.bucket,
-      Key: destination.key,
-      Body: stream
-    };
-
-    return s3client.upload(params).promise().then(
-      (rsp) => {
-        logger.info(`Package uploaded to: ${rsp.Location}`);
-      },
-      (err) => {
-        logger.error(`Package upload failed: ${err.message}`);
-      });
-  };
-}
-
 module.exports = function PreparePackageCommandHandler(command) {
   let logger = new DeploymentCommandHandlerLogger(command);
-  let dmPacker = new PackageMover(logger);
-  return preparePackage(dmPacker, command).catch((error) => {
+  let mover = packageMover(logger);
+  return preparePackage(mover, command).catch((error) => {
     let msg = 'An error has occurred preparing the package';
     logger.error(msg, error);
     return Promise.reject(error);
   });
 };
 
-let preparePackage = function (dmPacker, command) {
+let preparePackage = function (mover, command) {
   if (!validate(command)) {
     return Promise.reject({ command, errors: validate.errors });
   }
@@ -69,14 +33,6 @@ let preparePackage = function (dmPacker, command) {
   let source = command.source;
   let accountName = command.accountName;
 
-  let uploadCodeDeployPackage = archive =>
-    amazonClientFactory.createS3Client(accountName)
-      .then(s3 => dmPacker.uploadPackage(destination, archive, s3));
-
-  let fetchPackage = (pkg) => {
-    return dmPacker.downloadPackage(pkg.url);
-  };
-
-  return fetchPackage(source)
-    .then(uploadCodeDeployPackage);
+  return amazonClientFactory.createS3Client(accountName)
+    .then(s3 => mover.copyPackage(source, destination, s3));
 };
