@@ -7,6 +7,7 @@ let Enums = require('Enums');
 let DeploymentContract = require('modules/deployment/DeploymentContract');
 let sender = require('modules/sender');
 let infrastructureConfigurationProvider = require('modules/provisioning/infrastructureConfigurationProvider');
+let logger = require('modules/logger');
 let namingConventionProvider = require('modules/provisioning/namingConventionProvider');
 let packagePathProvider = new (require('modules/PackagePathProvider'))();
 let deploymentLogger = require('modules/DeploymentLogger');
@@ -119,6 +120,7 @@ function deploy(deployment, destination, sourcePackage, command) {
   }).catch((error) => {
     let deploymentStatus = {
       deploymentId: deployment.id,
+      environmentName: deployment.environmentName,
       accountName: deployment.accountName
     };
 
@@ -127,14 +129,15 @@ function deploy(deployment, destination, sourcePackage, command) {
       reason: sanitiseError(error)
     };
 
-    deploymentLogger.updateStatus(deploymentStatus, newStatus);
-    throw error;
-  });
+    return deploymentLogger.updateStatus(deploymentStatus, newStatus);
+  }).catch(error => logger.error(error));
 }
 
 function sanitiseError(error) {
-  if (_.isObjectLike(error)) { return JSON.stringify(error); }
-  return error.toString(true);
+  if (_.isObjectLike(error) && !(error instanceof Error)) {
+    return JSON.stringify(error);
+  }
+  return _.toString(error);
 }
 
 function provideInfrastructure(accountName, deployment, parentCommand) {

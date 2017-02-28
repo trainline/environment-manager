@@ -2,20 +2,24 @@
 
 'use strict';
 
+let logger = require('modules/logger');
 let simpleHttp = require('modules/simple-http');
 let s3Url = require('modules/amazon-client/s3Url');
 
-function PackageMover(logger) {
+function PackageMover(deploymentLogger) {
   this.downloadPackage = function (url) {
     if (s3Url.parse(url) !== undefined) {
-      logger.info(`Downloading package from S3: ${url}`);
+      deploymentLogger.info(`Downloading package from S3: ${url}`);
       return Promise.resolve().then(() => {
         let downloadStream = s3Url.getObject(url);
-        downloadStream.on('error', (e) => { logger.error(e); });
+        downloadStream.on('error', (e) => {
+          logger.error(e);
+          deploymentLogger.warn(`Download failed: ${e.message}`);
+        });
         return downloadStream;
       });
     } else {
-      logger.info(`Downloading package: ${url}`);
+      deploymentLogger.info(`Downloading package: ${url}`);
       return simpleHttp.getResponseStream(url)
         .then((input) => {
           let headers = input.headers;
@@ -39,10 +43,14 @@ function PackageMover(logger) {
 
     return request.promise().then(
       (rsp) => {
-        logger.info(`Package uploaded to: ${rsp.Location}`);
+        deploymentLogger.info(`Package uploaded to: ${rsp.Location}`);
+        return Promise.resolve();
       },
       (err) => {
-        logger.error(`Package upload failed: ${err.message}`);
+        let message = `Package upload failed: ${err.message}`;
+        deploymentLogger.warn(message);
+        logger.error(err);
+        return Promise.reject(err);
       });
   };
 
@@ -54,4 +62,4 @@ function PackageMover(logger) {
   };
 }
 
-module.exports = logger => new PackageMover(logger);
+module.exports = deploymentLogger => new PackageMover(deploymentLogger);

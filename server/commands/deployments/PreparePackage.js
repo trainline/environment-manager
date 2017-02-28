@@ -34,5 +34,5 @@ let preparePackage = function (mover, command) {
   let accountName = command.accountName;
 
   return amazonClientFactory.createS3Client(accountName)
-    .then(s3 => mover.copyPackage(source, destination, s3));
+    .then(s3 => mover.copyPackage(source.url, destination, s3));
 };
