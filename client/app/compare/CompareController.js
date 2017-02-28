@@ -4,7 +4,7 @@
 
 angular.module('EnvironmentManager.compare').controller('CompareController',
   function ($scope, $routeParams, serviceComparison, $location, $q, $uibModal,
-    resources, cachedResources, comparableResources, ResourceComparison, $log, activeStatusService) {
+    resources, cachedResources, comparableResources, ResourceComparison, $log, upstreamService) {
     var vm = this;
     var SHOW_ALL_OPTION = 'Any';
     var services;
@@ -67,12 +67,81 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
         vm.dataLoading = true;
         var allEnvironments = _.union([vm.selected.primaryEnvironment], vm.selected.environments);
         vm.selected.comparable.get(allEnvironments)
-          .then(setActiveState)
+          .then(setComparableData)
           .then(updateView)
           .finally(function () {
             vm.dataLoading = false;
           });
       }
+    }
+
+    function setComparableData(data) {
+      return addUpstreamData(data)
+        .then(findActiveSlice)
+        .then(function (final) {
+          console.log(final);
+          return final;
+        });
+    }
+
+    function addUpstreamData(data) {
+      return upstreamService.get()
+        .then(function (upstreams) {
+          return data.map(function (d) {
+            upstreams.data.forEach(function (u) {
+              d.Upstreams = d.Upstreams || [];
+              if (d.EnvironmentName === u.Value.EnvironmentName && d.key === u.Value.ServiceName) {
+                d.Upstreams.push(u);
+              }
+              if (d.Upstreams.length === 1) {
+                d.Comparable = true;
+              } else {
+                d.Comparable = false;
+              }
+            });
+            return d;
+          });
+        });
+    }
+
+    function findActiveSlice(data) {
+      var promises = [];
+      data.filter(function (d) {
+        return d.Comparable;
+      }).forEach(function (d) {
+        promises.push(upstreamService.getSlice(d.Upstreams[0].Value.UpstreamName, d.EnvironmentName));
+      });
+      return $q.all(promises)
+        .then(function (slices) {
+          slices.filter(function (s) {
+            return s.data.filter(function (sliceData) {
+              return sliceData.State.toUpperCase() === 'ACTIVE';
+            }).length === 1;
+          }).filter(function (s) {
+            return s.data.filter(function (sliceData) {
+              return sliceData.State.toUpperCase() === 'ACTIVE';
+            });
+          }).forEach(function (s) {
+            s.data.forEach(function (sliceData) {
+              data.forEach(function (d) {
+                console.log(sliceData)
+                if (Array.isArray(d.deployments) && d.deployments.length > 0) {
+                  console.log('data')
+                  console.log(d)
+                  d.deployments.forEach(function (deployment) {
+                    console.log('deployment')
+                    console.log(deployment)
+                    if (deployment.slice.toUpperCase() === sliceData.Name.toUpperCase()) {
+                      deployment.State = sliceData.State;
+                    }
+                  });
+                }
+              });
+            });
+          });
+
+          return data;
+        });
     }
 
     function setActiveState(comparableData) {

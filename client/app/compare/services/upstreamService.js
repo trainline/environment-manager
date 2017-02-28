@@ -4,22 +4,22 @@
 
 'use strict';
 
-angular.module('EnvironmentManager.compare').factory('activeStatusService',
+angular.module('EnvironmentManager.compare').factory('upstreamService',
   function ($http) {
 
     var baseUrl = '/api/v1/'
     
-    function getAllUpstreamsData(environmentName) {
+    function get() {
       return $http.get(baseUrl + 'config/upstreams/');
     }
 
-    function getSliceInformation(name, environment) {
+    function getSlice(name, environment) {
       return $http.get(baseUrl + 'upstreams/' + name + '/slices/', { params: { environment: environment } });
     }
 
     return {
-      getAllUpstreamsData: getAllUpstreamsData, 
-      getSliceInformation: getSliceInformation
+      get: get, 
+      getSlice: getSlice
     }
   }
 );
