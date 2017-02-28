@@ -95,10 +95,10 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
               if (d.EnvironmentName === u.Value.EnvironmentName && d.key === u.Value.ServiceName) {
                 d.Upstreams.push(u);
               }
-              if (d.Upstreams.length === 1) {
-                d.Comparable = true;
-              } else {
+              if (d.Upstreams.length > 1) {
                 d.Comparable = false;
+              } else {
+                d.Comparable = true;
               }
             });
             return d;
@@ -111,7 +111,9 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
       data.filter(function (d) {
         return d.Comparable;
       }).forEach(function (d) {
-        promises.push(upstreamService.getSlice(d.Upstreams[0].Value.UpstreamName, d.EnvironmentName));
+        if (d.Upstreams[0]) {
+          promises.push(upstreamService.getSlice(d.Upstreams[0].Value.UpstreamName, d.EnvironmentName));
+        }
       });
       return $q.all(promises)
         .then(function (slices) {
@@ -176,7 +178,31 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
       var filterCluster = vm.selected.cluster === SHOW_ALL_OPTION ? null : vm.selected.cluster;
 
       if (vm.selected.comparable.key === 'versions') {
+
         vm.view = serviceComparison(data, primaryEnvironment, secondaryEnvironments);
+
+        if (vm.selected.state.toUpperCase() === 'ACTIVE') {
+          // remove the primary that don't match
+          vm.view.items.forEach(function (item) {
+            if (item.primary && !item.primary.Comparable) {
+              console.log('DELETEING')
+              delete item.primary;
+            }
+
+            if (item.comparisons) {
+              Object.keys(item.comparisons).forEach(function (key) {
+                console.log('key ', key)
+                console.log(item)
+                if (item.comparisons[key] && !item.comparisons[key].Comparable) {
+                  console.log('COMP DELETING')
+                  delete item.comparisons[key];
+                }
+              });
+            }
+          });
+          // remove the comparisons that don't match
+        }
+
         if (filterCluster !== null) {
           vm.view.items = _.filter(vm.view.items, function (row) {
             var service = _.find(services, { ServiceName: row.key });
