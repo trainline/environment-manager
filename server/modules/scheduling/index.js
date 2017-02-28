@@ -31,12 +31,17 @@ const skipReasons = {
   stateIsCorrect: 'The instance is already in the correct state'
 };
 
+const states = {
+  on: 'on',
+  off: 'off'
+};
+
 const lifeCycleStates = {
   inService: 'InService',
   outOfService: 'Standby'
 };
 
-const states = {
+const currentStates = {
   on: 'on',
   off: 'off',
   transitioning: 'transitioning'
@@ -66,7 +71,7 @@ function actionForInstance(instance, dateTime) {
     return skip(skipReasons.explicitNoSchedule, source);
   }
 
-  let expectedState = expectedStateFromSchedule(schedule, dateTime);
+  let expectedState = expectedStateFromParsedSchedule(schedule, dateTime);
 
   if (expectedState.noSchedule) {
     return skip(skipReasons.stateIsCorrect);
@@ -79,14 +84,34 @@ function actionForInstance(instance, dateTime) {
   return switchOff(instance, source);
 }
 
+function expectedStateFromSchedule(schedule, dateTime) {
+  let parsedSchedule = parseSchedule(schedule);
+
+  if (!parsedSchedule.success) {
+    throw parsedSchedule.error;
+  }
+
+  if (parsedSchedule.schedule.skip) {
+    throw new Error('Cannot get state with NOSCHEDULE');
+  }
+
+  let expectedState = expectedStateFromParsedSchedule(parsedSchedule.schedule, dateTime);
+
+  if (expectedState.noSchedule) {
+    throw new Error('Could not find state from schedule');
+  }
+
+  return expectedState;
+}
+
 function switchOn(instance, source) {
   let currentState = currentStateOfInstance(instance);
 
-  if (currentState === states.off) {
+  if (currentState === currentStates.off) {
     return takeAction(actions.switchOn, source);
   }
 
-  if (currentState === states.transitioning) { return skip(skipReasons.transitioning); }
+  if (currentState === currentStates.transitioning) { return skip(skipReasons.transitioning); }
 
   if (instance.AutoScalingGroup) {
     let lifeCycleState = getAsgInstanceLifeCycleState(instance);
@@ -118,11 +143,11 @@ function switchOff(instance, source) {
 
   let currentState = currentStateOfInstance(instance);
 
-  if (currentState === states.on) {
+  if (currentState === currentStates.on) {
     return takeAction(actions.switchOff, source);
   }
 
-  if (currentState === states.transitioning) {
+  if (currentState === currentStates.transitioning) {
     return skip(skipReasons.transitioning);
   }
 
@@ -159,17 +184,17 @@ function getScheduleForInstance(instance) {
 
 function parseEnvironmentSchedule(environmentSchedule) {
   if (environmentSchedule.ManualScheduleUp === false && environmentSchedule.ScheduleAutomatically === false) {
-    return { success: true, schedule: { permanent: 'off' } };
+    return { success: true, schedule: { permanent: states.off } };
   }
 
   if (!(environmentSchedule.ManualScheduleUp !== true && environmentSchedule.ScheduleAutomatically === true)) {
-    return { success: true, schedule: { permanent: 'on' } };
+    return { success: true, schedule: { permanent: states.on } };
   }
 
   return parseSchedule(environmentSchedule.DefaultSchedule);
 }
 
-function expectedStateFromSchedule(schedules, dateTime) {
+function expectedStateFromParsedSchedule(schedules, dateTime) {
   if (schedules.permanent) {
     return schedules.permanent;
   }
@@ -195,10 +220,10 @@ function getTagValue(instance, tagName) {
 }
 
 function currentStateOfInstance(instance) {
-  if (instance.State.Name === 'running') return states.on;
-  if (instance.State.Name === 'stopped') return states.off;
+  if (instance.State.Name === 'running') return currentStates.on;
+  if (instance.State.Name === 'stopped') return currentStates.off;
 
-  return states.transitioning;
+  return currentStates.transitioning;
 }
 
 function skip(reason, source) {
@@ -213,5 +238,7 @@ module.exports = {
   actions,
   sources,
   skipReasons,
-  actionForInstance
+  states,
+  actionForInstance,
+  expectedStateFromSchedule
 };
