@@ -85,7 +85,10 @@ function actionForInstance(instance, dateTime) {
 }
 
 function expectedStateFromSchedule(schedule, dateTime) {
-  let parsedSchedule = parseSchedule(schedule);
+  let parsedSchedule =
+    isEnvironmentSchedule(schedule) ?
+      parseEnvironmentSchedule(schedule) :
+      parseSchedule(schedule);
 
   if (!parsedSchedule.success) {
     throw parsedSchedule.error;
@@ -102,6 +105,11 @@ function expectedStateFromSchedule(schedule, dateTime) {
   }
 
   return expectedState;
+}
+
+function isEnvironmentSchedule(schedule) {
+  let environmentScheduleProperties = ['DefaultSchedule', 'ManualScheduleUp', 'ScheduleAutomatically'];
+  return _.some(environmentScheduleProperties, p => schedule[p] !== undefined);
 }
 
 function switchOn(instance, source) {
