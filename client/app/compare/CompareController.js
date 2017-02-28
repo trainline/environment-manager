@@ -11,12 +11,13 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
 
     vm.environments = [];
     vm.selected = {};
+    vm.states = [SHOW_ALL_OPTION].concat(['ACTIVE']);
+    vm.selected.state = SHOW_ALL_OPTION;
     vm.dataLoading = false;
 
     function init() {
       vm.comparableResources = comparableResources;
       vm.selected.comparable = getVersionsComparableResource();
-
 
       $q.all([
         cachedResources.config.clusters.all().then(function (clusters) {
@@ -47,8 +48,10 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
       var compare = $location.search().compare || vm.environments[0].EnvironmentName;
       var to = $location.search().to || '';
       var cluster = $location.search().cluster || SHOW_ALL_OPTION;
+      var state = $location.search().state || SHOW_ALL_OPTION;
 
       vm.selected.cluster = cluster;
+      vm.selected.state = state;
       vm.selected.comparable = _.find(vm.comparableResources, { key: res });
 
       if (vm.environments && vm.environments.length > 0) {
@@ -79,7 +82,6 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
       return addUpstreamData(data)
         .then(findActiveSlice)
         .then(function (final) {
-          console.log(final);
           return final;
         });
     }
@@ -124,13 +126,8 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
           }).forEach(function (s) {
             s.data.forEach(function (sliceData) {
               data.forEach(function (d) {
-                console.log(sliceData)
                 if (Array.isArray(d.deployments) && d.deployments.length > 0) {
-                  console.log('data')
-                  console.log(d)
                   d.deployments.forEach(function (deployment) {
-                    console.log('deployment')
-                    console.log(deployment)
                     if (deployment.slice.toUpperCase() === sliceData.Name.toUpperCase()) {
                       deployment.State = sliceData.State;
                     }
@@ -141,43 +138,6 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
           });
 
           return data;
-        });
-    }
-
-    function setActiveState(comparableData) {
-      var foundUpstreams = {};
-
-      return activeStatusService.getAllUpstreamsData()
-        .then(function (statusData) {
-          comparableData.forEach(function (c) {
-            var matches = statusData.data.filter(function (s) {
-              return s.Value.EnvironmentName === c.EnvironmentName && s.Value.ServiceName === c.key;
-            });
-
-            if (matches.length > 0) {
-              c.UpstreamName = matches[0].Value.UpstreamName;
-              foundUpstreams[c.UpstreamName] = c;
-            }
-          });
-        })
-        .then(function getUpstreamActiveStatus() {
-          var promises = [];
-          comparableData.forEach(function (c) {
-            if (c.UpstreamName) {
-              promises.push(activeStatusService.getSliceInformation(c.UpstreamName, c.EnvironmentName));
-            }
-          });
-          return $q.all(promises);
-        })
-        .then(function (stateResponses) {
-          stateResponses.forEach(function (r) {
-            r.data.forEach(function (d) {
-              if (foundUpstreams[d.UpstreamName]) {
-                foundUpstreams[d.UpstreamName].State = d.State;
-              }
-            });
-          });
-          return comparableData;
         });
     }
 
@@ -199,10 +159,11 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
     };
 
     vm.onSelectionChanged = function () {
-      _.remove(vm.selected.environments, vm.selected.primaryEnvironment);
+      _.remove(vm.selected.environments, vm.selected.primaryEnvironment, vm.selected.state);
 
       var url = 'res=' + vm.selected.comparable.key;
       if (vm.selected.primaryEnvironment) url += '&compare=' + vm.selected.primaryEnvironment.EnvironmentName;
+      if (vm.selected.state) url += '&state=' + vm.selected.state;
       if (vm.selected.environments) url += '&to=' + _.join(vm.selected.environments.map(function (env) { return env.EnvironmentName; }), ',');
       url += '&cluster=' + vm.selected.cluster;
 
