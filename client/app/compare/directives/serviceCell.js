@@ -33,8 +33,8 @@ angular.module('EnvironmentManager.compare').component('serviceCell', {
         }
         html += '</td>';
         html += '<td>';
-        if ($ctrl.data.State) {
-          html += $ctrl.data.State;
+        if (deployment.State) {
+          html += deployment.State;
         }
         html += '</td>';
         html += '</tr>';
