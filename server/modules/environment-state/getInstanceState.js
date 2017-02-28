@@ -31,8 +31,10 @@ function getInstanceState(accountName, environmentName, nodeName, instanceId, ru
 
     // Merge consul service info with target state info and remove redundant service values
     let consulServiceContext = { checks, targetServiceStates, environmentName, instanceId, accountName };
+
     services = yield _.map(services, co.wrap(describeConsulService.bind(this, consulServiceContext)));
     services = _.compact(services);
+
 
     // Find missing services (in target state but not on instance)
     _.each(targetServiceStates, findMissingServices.bind(this, { services, accountName, instanceId, instanceLaunchTime }));
@@ -91,6 +93,7 @@ function* describeConsulService(context, service) {
  */
 function findMissingServices(context, targetService) {
   let { services, accountName, instanceId, instanceLaunchTime } = context;
+
   if (_.find(services, { Name: targetService.Name, Slice: targetService.Slice }) === undefined) {
     if (targetService.Action === Enums.ServiceAction.IGNORE) {
       return; // Don't include ignored services
@@ -123,6 +126,7 @@ function findUnexpectedServices(context, instanceService) {
     return;
   }
   let targetState = _.find(targetServiceStates, { Name: instanceService.Name, Slice: instanceService.Slice });
+
   if (targetState === undefined) {
     instanceService.Issues.Warnings.push(
       `Service missing in target state for server role "${runtimeServerRoleName}"`);

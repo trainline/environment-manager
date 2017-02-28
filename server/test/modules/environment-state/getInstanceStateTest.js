@@ -6,10 +6,6 @@ const rewire = require('rewire');
 const assert = require('assert');
 const sinon = require('sinon');
 
-const randInt = n => Math.round(Math.random() * n);
-const randSlice = _ => Math.round(Math.random()) ? 'blue' : 'green'; // eslint-disable-line no-confusing-arrow
-const randStr = n => [...Array(n)].map(_ => String.fromCharCode(Math.round(Math.random() * 25) + 97)).join('');
-
 describe('getInstanceState', function () {
   let sut;
   let serviceDiscovery;
@@ -34,48 +30,68 @@ describe('getInstanceState', function () {
     sut.__set__({ serviceDiscovery, serviceTargets }); // eslint-disable-line no-underscore-dangle
   }
 
-  describe('all services installable', function () {
-    before(() => {
-      targetStates = [];
-      currentStates = [];
-      createServiceStates(targetStates, currentStates, 10);
-      setup();
-    });
+  let SERVICE_STATES = [
+    { Install: 87, Ignore: 43 },
+    { Install: 0, Ignore: 0, Missing: 0 },
+    { Install: 11, Ignore: 65, Missing: 12 },
+    { Install: 99, Ignore: 99, Missing: 99 },
+    { Install: 89, Missing: 76 },
+    { Install: 0, Ignore: 0, Unexpected: 100 },
+    { Install: 11, Ignore: 65, Unexpected: 12 },
+    { Install: 99, Ignore: 99, Unexpected: 99 },
+    { Install: 33, Ignore: 10, Missing: 20, Unexpected: 100 },
+    { Install: 51, Ignore: 65, Missing: 90, Unexpected: 87 },
+    { Install: 7, Ignore: 48, Missing: 4, Unexpected: 6 },
+    { Unexpected: 117 },
+    { Missing: 245 },
+    { Ignore: 117 },
+    { Install: 1 }
+  ];
 
-    it('should be included in results', () => {
-      return sut().then((result) => {
-        assert.ok(result.Services.length !== 0);
-        assert.equal(result.Services.length, currentStates.length);
-      });
-    });
-  });
+  describe('service states', function () {
+    SERVICE_STATES.forEach(function (params) {
+      const installed = params.Install || 0;
+      const ignored = params.Ignore || 0;
+      const missing = params.Missing || 0;
+      const unexpected = params.Unexpected || 0;
+      const missingOrUnexpected = missing + unexpected > 0;
+      const expected = installed + missing + unexpected;
 
-  describe('ignored services', function () {
-    const N_INSTALLED = 87;
-    const N_IGNORED = 43;
+      describe(`with ${installed} installed, ${missing} missing, ${unexpected} unexpected and ${ignored} ignored`, function () {
+        beforeEach(() => {
+          targetStates = [];
+          currentStates = [];
+          Object.keys(params).forEach((key) => {
+            createServiceStates(targetStates, currentStates, params[key], key);
+          });
+          setup();
+        });
 
-    before(() => {
-      targetStates = [];
-      currentStates = [];
-      createServiceStates(targetStates, currentStates, N_INSTALLED);
-      createServiceStates(targetStates, currentStates, N_IGNORED, false);
-      setup();
-    });
+        it(`should return ${expected} services`, () => {
+          return sut().then((result) => {
+            assert.equal(result.Services.length, expected);
+          });
+        });
 
-    it('should not be included in results', () => {
-      return sut().then((result) => {
-        assert.ok(result.Services.length !== 0);
-        assert.equal(result.Services.length, N_INSTALLED);
+        it(`should ${missingOrUnexpected ? '' : 'not '}warn of missing or unexpected services`, () => {
+          return sut().then((result) => {
+            assert.equal(result.MissingOrUnexpectedServices, missingOrUnexpected);
+          });
+        });
       });
     });
   });
 });
 
-function createServiceStates(targetState, currentState, n, install = true) {
-  return [...Array(n)].map(_ => createServiceStatePairs(targetState, currentState, install));
+const randInt = n => Math.round(Math.random() * n);
+const randSlice = _ => Math.round(Math.random()) ? 'blue' : 'green'; // eslint-disable-line no-confusing-arrow
+const randStr = n => [...Array(n)].map(_ => String.fromCharCode(Math.round(Math.random() * 25) + 97)).join('');
+
+function createServiceStates(targetState, currentState, n, state) {
+  return [...Array(n)].map(_ => createServiceStatePairs(targetState, currentState, state));
 }
 
-function createServiceStatePairs(targetState, currentState, install = true) {
+function createServiceStatePairs(targetState, currentState, state = 'Install') {
   const serviceVersion = `${randInt(10)}.${randInt(100)}.${randInt(1000)}`;
   const serviceSlice = `${randSlice()}`;
   const serviceName = `${randStr(22)}`;
@@ -83,16 +99,20 @@ function createServiceStatePairs(targetState, currentState, install = true) {
   const owningCluster = `${randStr(22)}`;
   const serverRole = `${randStr(1)}${randInt(99)}-${randStr(2)}-${randStr(12)}`;
   const deploymentId = `${randStr(8)}-${randStr(8)}-${randStr(8)}-${randStr(8)}`;
+  const ignore = state === 'Ignore';
+
+  const inCurrentState = state === 'Install' || state === 'Unexpected';
+  const inTargetState = state === 'Install' || state === 'Ignore';
 
   let targetService = {
     Name: serviceName,
     DeploymentId: deploymentId,
     Slice: serviceSlice,
-    Action: install ? 'Install' : 'Ignore'
+    Action: ignore ? 'Ignore' : 'Install'
   };
 
   let currentService = {
-    Name: serviceName,
+    Name: consulServiceName,
     Service: consulServiceName,
     Tags: [
       `version:${serviceVersion}`,
@@ -102,9 +122,13 @@ function createServiceStatePairs(targetState, currentState, install = true) {
     ]
   };
 
+  if (!inTargetState) {
+    targetService.Name = consulServiceName;
+  }
+
   targetState.push(targetService);
 
-  if (install) {
+  if (inCurrentState) {
     currentState.push(currentService);
   }
 }
