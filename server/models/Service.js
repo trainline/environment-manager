@@ -3,8 +3,7 @@
 'use strict';
 
 let _ = require('lodash');
-let sender = require('modules/sender');
-let awsAccounts = require('modules/awsAccounts');
+let servicesDb = require('modules/data-access/services');
 
 class Service {
 
@@ -13,16 +12,7 @@ class Service {
   }
 
   static getByName(name) {
-    return awsAccounts.getMasterAccountName()
-      .then((masterAccountName) => {
-        let query = {
-          name: 'ScanDynamoResources',
-          resource: 'config/services',
-          accountName: masterAccountName,
-          filter: { ServiceName: name }
-        };
-        return sender.sendQuery({ query }).then(obj => new Service(obj));
-      });
+    return servicesDb.named(name).then(obj => new Service(obj));
   }
 }
 

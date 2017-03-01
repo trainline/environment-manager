@@ -6,7 +6,7 @@ let sender = require('modules/sender');
 let co = require('co');
 let _ = require('lodash');
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
-let awsAccounts = require('modules/awsAccounts');
+let servicesDb = require('modules/data-access/services');
 
 function hostFilter(active) {
   if (active === true) {
@@ -19,8 +19,6 @@ function hostFilter(active) {
 }
 
 function* handleQuery(query, resourceName, upstreamFilter) {
-  const masterAccountName = yield awsAccounts.getMasterAccountName();
-
   // Get all LoadBalancer upstreams from DynamoDB without apply any filter.
   // NOTE: If it ever becomes a DynamoDB map item then filtering this query
   //       would be great!
@@ -66,15 +64,7 @@ function* handleQuery(query, resourceName, upstreamFilter) {
   let serviceNames = [...new Set(upstreams.map(upstream => upstream.ServiceName))];
 
   // Gets all services from DynamoDB table
-  let promises = serviceNames.map((serviceName) => {
-    let newSubquery = {
-      name: 'ScanDynamoResources',
-      resource: 'config/services',
-      accountName: masterAccountName,
-      filter: { ServiceName: serviceName }
-    };
-    return sender.sendQuery({ query: newSubquery, parent: query });
-  });
+  let promises = serviceNames.map(serviceName => servicesDb.named(serviceName));
 
   let services = yield Promise.all(promises);
   let hasLength = x => x && x.length;

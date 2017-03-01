@@ -7,12 +7,11 @@ let assert = require('assert');
 let co = require('co');
 let ConfigurationError = require('modules/errors/ConfigurationError.class');
 let DynamoItemNotFoundError = require('modules/errors/DynamoItemNotFoundError.class');
-let sender = require('modules/sender');
 let imageProvider = require('modules/provisioning/launchConfiguration/imageProvider');
 let Environment = require('models/Environment');
 let EnvironmentType = require('models/EnvironmentType');
 let clusters = require('modules/data-access/clusters');
-let awsAccounts = require('modules/awsAccounts');
+let servicesDb = require('modules/data-access/services');
 
 module.exports = {
   get(environmentName, serviceName, serverRoleName) {
@@ -50,26 +49,13 @@ module.exports = {
 };
 
 function getServiceByName(serviceName) {
-  return awsAccounts.getMasterAccountName()
-    .then((masterAccountName) => {
-      let query = {
-        name: 'ScanDynamoResources',
-        resource: 'config/services',
-        accountName: masterAccountName,
-        filter: {
-          ServiceName: serviceName
-        }
-      };
-
-      return sender
-        .sendQuery({ query })
-        .then(services =>
-          (services.length ?
-            Promise.resolve(services[0].Value) :
-            Promise.reject(new ConfigurationError(`Service "${serviceName}" not found.`))))
-        .catch((error) => {
-          throw new Error(`An error has occurred retrieving "${serviceName}" service: ${error.message}`);
-        });
+  return servicesDb.named(serviceName)
+    .then(services =>
+      (services.length ?
+        Promise.resolve(services[0].Value) :
+        Promise.reject(new ConfigurationError(`Service "${serviceName}" not found.`))))
+    .catch((error) => {
+      throw new Error(`An error has occurred retrieving "${serviceName}" service: ${error.message}`);
     });
 }
 

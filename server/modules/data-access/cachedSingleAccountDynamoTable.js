@@ -8,6 +8,7 @@ let describeDynamoTable = require('modules/data-access/describeDynamoTable');
 let hashKeyAttributeName = require('modules/data-access/dynamoTableDescription').hashKeyAttributeName;
 let tableArn = require('modules/data-access/dynamoTableDescription').tableArn;
 let dynamoVersion = require('modules/data-access/dynamoVersion');
+let dynamoTable = require('modules/data-access/dynamoTable');
 let dynamoTableCache = require('modules/data-access/dynamoTableCache');
 let dynamoSoftDelete = require('modules/data-access/dynamoSoftDelete');
 let fp = require('lodash/fp');
@@ -46,6 +47,11 @@ function factory(physicalTableName, { ttl }) {
       .then(description => cachedTable.get(tableArn(description), key));
   }
 
+  function query(expression) {
+    return tableDescriptionPromise()
+      .then(description => dynamoTable.query(tableArn(description), expression));
+  }
+
   function replace(item, expectedVersion) {
     return tableDescriptionPromise().then(description =>
       fp.flow(
@@ -57,15 +63,16 @@ function factory(physicalTableName, { ttl }) {
     );
   }
 
-  function scan() {
+  function scan(expression) {
     return tableDescriptionPromise()
-      .then(description => cachedTable.scan(tableArn(description)));
+      .then(description => cachedTable.scan(tableArn(description), expression));
   }
 
   return {
     create,
     delete: $delete,
     get,
+    query,
     replace,
     scan
   };

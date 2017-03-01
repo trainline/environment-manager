@@ -450,6 +450,7 @@ paths:
     get:
       operationId: getHealthcheck
       summary: Get version and status information.
+      x-authorizer: allow-anonymous
       tags:
         - Status
       responses:
@@ -1031,6 +1032,7 @@ paths:
     post:
       operationId: login
       summary: Login and get authentication cookie
+      x-authorizer: allow-anonymous
       tags:
         - Authentication
       parameters:
@@ -1055,6 +1057,7 @@ paths:
     post:
       operationId: logout
       summary: Log out
+      x-authorizer: allow-authenticated
       tags:
         - Authentication
       responses:
@@ -1067,6 +1070,7 @@ paths:
       summary: Get an authorization token
       description: "Tokens are required for all authenticated API routes. Tokens obtained from this endpoint should be
                    used in the header of all subsequent requests as `Authorization: Bearer <token>`"
+      x-authorizer: allow-anonymous
       tags:
         - Authentication
       parameters:
@@ -1926,6 +1930,7 @@ paths:
           in: path
           type: string
           required: true
+        - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
           description: OK
