@@ -79,68 +79,173 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
     }
 
     function setComparableData(data) {
-      return addUpstreamData(data)
-        .then(findActiveSlice)
+      return addUpstreamsData(data)
+        .then(markAllItemsAsComparableByDefault)
+        .then(bringUpstreamNameToTopLevel)
+        .then(markItemsWithTooManyUpstreams)
+        .then(addUpstreamsSlicesData)
+        .then(markItemsWithMoreThanOneActiveSliceData)
+        .then(setStateOfDataWithDeploymentsMatchingSliceData)
+        .then(markItemsWithNoStateButMultipleDeployments)
         .then(function (final) {
           return final;
         });
     }
 
-    function addUpstreamData(data) {
+    function markAllItemsAsComparableByDefault(data) {
+      data.forEach(function (d) {
+        d.Comparable = true;
+      });
+
+      return data;
+    }
+
+    function addUpstreamsData(data) {
       return upstreamService.get()
         .then(function (upstreams) {
-          return data.map(function (d) {
-            upstreams.data.forEach(function (u) {
-              d.Upstreams = d.Upstreams || [];
-              if (d.EnvironmentName === u.Value.EnvironmentName && d.key === u.Value.ServiceName) {
-                d.Upstreams.push(u);
-              }
-              if (d.Upstreams.length > 1) {
-                d.Comparable = false;
-              } else {
-                d.Comparable = true;
-              }
-            });
-            return d;
-          });
+          return matchDataToUpstreams(data, upstreams);
+        })
+        .then(function () {
+          return data;
         });
     }
 
-    function findActiveSlice(data) {
-      var promises = [];
-      data.filter(function (d) {
-        return d.Comparable;
-      }).forEach(function (d) {
-        if (d.Upstreams[0]) {
-          promises.push(upstreamService.getSlice(d.Upstreams[0].Value.UpstreamName, d.EnvironmentName));
+    function matchDataToUpstreams(data, upstreams) {
+      return data.map(function (d) {
+        if (upstreams.data) {
+          upstreams.data.forEach(function (u) {
+            if (dataMatchesUpstream(d, u)) {
+              createDefaultUpstreamsOnData(d).Upstreams.push(u);
+            }
+          });
         }
+        return d;
       });
-      return $q.all(promises)
+    }
+
+    function bringUpstreamNameToTopLevel(data) {
+      return data.map(function (d) {
+        if (d.Upstreams && d.Upstreams[0] && d.Upstreams[0].Value) {
+          d.UpstreamName = d.Upstreams[0].Value.UpstreamName;
+        }
+        return d;
+      });
+    }
+
+    function dataMatchesUpstream(d, u) {
+      return d.EnvironmentName === u.Value.EnvironmentName && d.key === u.Value.ServiceName;
+    }
+
+    function createDefaultUpstreamsOnData(d) {
+      d.Upstreams = d.Upstreams || [];
+      return d;
+    }
+
+    function markItemsWithTooManyUpstreams(data) {
+      return data.map(function (d) {
+        if (d.Upstreams && d.Upstreams.length > 1) {
+          d.Comparable = false;
+        }
+        return d;
+      });
+    }
+
+    function addUpstreamsSlicesData(data) {
+      var comparableData = getComparableData(data);
+
+      return $q.all(createListOfSliceDataRequests(comparableData))
         .then(function (slices) {
-          slices.filter(function (s) {
-            return s.data.filter(function (sliceData) {
-              return sliceData.State.toUpperCase() === 'ACTIVE';
-            }).length === 1;
-          }).filter(function (s) {
-            return s.data.filter(function (sliceData) {
-              return sliceData.State.toUpperCase() === 'ACTIVE';
-            });
-          }).forEach(function (s) {
-            s.data.forEach(function (sliceData) {
-              data.forEach(function (d) {
-                if (Array.isArray(d.deployments) && d.deployments.length > 0) {
-                  d.deployments.forEach(function (deployment) {
-                    if (deployment.slice.toUpperCase() === sliceData.Name.toUpperCase()) {
-                      deployment.State = sliceData.State;
-                    }
-                  });
+          slices.forEach(function (s) {
+            s.data.forEach(function (sData) {
+              var upstreamName = sData.UpstreamName;
+              comparableData.forEach(function (d) {
+                if (d.UpstreamName === upstreamName) {
+                  d.UpstreamsSliceData = d.UpstreamsSliceData || [];
+                  d.UpstreamsSliceData.push(sData);
                 }
               });
             });
           });
-
           return data;
         });
+    }
+
+    function markItemsWithMoreThanOneActiveSliceData(data) {
+      data.forEach(function (d) {
+        var sliceData;
+        if (d.UpstreamsSliceData) {
+          sliceData = d.UpstreamsSliceData.filter(function (sData) {
+            if (sData.State) {
+              return sData.State.toUpperCase() === 'ACTIVE';
+            }
+            return false;
+          });
+        }
+        if (sliceData && sliceData.length > 1) {
+          d.Comparable = false;
+        }
+      });
+
+      return data;
+    }
+
+    function setStateOfDataWithDeploymentsMatchingSliceData(data) {
+      getComparableData(data).forEach(function (d) {
+        if (d.deployments && d.UpstreamsSliceData) {
+          d.deployments.forEach(function (deployment) {
+            d.UpstreamsSliceData.forEach(function (sData) {
+              if (sData.Name.toUpperCase() === deployment.slice.toUpperCase()) {
+                deployment.State = sData.State;
+              }
+            });
+          });
+        }
+      });
+
+      return data;
+    }
+
+    function markItemsWithNoStateButMultipleDeployments(data) {
+      getComparableData(data).forEach(function (d) {
+        if (d.deployments && d.deployments.length > 1) {
+          var hasState = false;
+          d.deployments.forEach(function (deployment) {
+            if (deployment.State) {
+              hasState = true;
+            }
+          });
+          
+          if (!hasState) {
+            d.Comparable = false;
+          }
+        }
+      });
+
+      return data;
+    }
+
+    function createListOfSliceDataRequests(data) {
+      var promises = [];
+      var upstreams = [];
+
+      data.forEach(function (d) {
+        if (d.Upstreams) {
+          upstreams.push(d.Upstreams[0].Value.UpstreamName);
+          promises.push(upstreamService.getSlice(getUpstreamName(d), d.EnvironmentName));
+        }
+      });
+
+      return promises;
+    }
+
+    function getComparableData(data) {
+      return data.filter(function (d) {
+        return d.Comparable;
+      });
+    }
+
+    function getUpstreamName(d) {
+      return d.Upstreams[0].Value.UpstreamName;
     }
 
     vm.notPrimary = function () {
@@ -172,6 +277,22 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
       $location.search(url);
     };
 
+    function markItemsAsUncomparable(data, on) {
+      data.forEach(function (d) {
+        if (d.primary) {
+          d.primary.Active = on;
+        }
+
+        if (d.comparisons) {
+          Object.keys(d.comparisons).forEach(function (key) {
+            if (d.comparisons[key]) {
+              d.comparisons[key].Active = on;
+            }
+          });
+        }
+      });
+    }
+
     function updateView(data) {
       var primaryEnvironment = vm.selected.primaryEnvironment.EnvironmentName;
       var secondaryEnvironments = _.map(vm.selected.environments, 'EnvironmentName');
@@ -182,25 +303,9 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
         vm.view = serviceComparison(data, primaryEnvironment, secondaryEnvironments);
 
         if (vm.selected.state.toUpperCase() === 'ACTIVE') {
-          // remove the primary that don't match
-          vm.view.items.forEach(function (item) {
-            if (item.primary && !item.primary.Comparable) {
-              console.log('DELETEING')
-              delete item.primary;
-            }
-
-            if (item.comparisons) {
-              Object.keys(item.comparisons).forEach(function (key) {
-                console.log('key ', key)
-                console.log(item)
-                if (item.comparisons[key] && !item.comparisons[key].Comparable) {
-                  console.log('COMP DELETING')
-                  delete item.comparisons[key];
-                }
-              });
-            }
-          });
-          // remove the comparisons that don't match
+          markItemsAsUncomparable(vm.view.items, true);
+        } else {
+          markItemsAsUncomparable(vm.view.items, false);
         }
 
         if (filterCluster !== null) {
