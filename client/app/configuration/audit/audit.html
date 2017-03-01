@@ -12,20 +12,28 @@
     <label class="control-label text-left">Date:</label>
   </div>
   <div class="form-group">
-    <select class="form-control" ng-change="vm.refresh()" ng-model="SelectedDateRangeValue" ng-options="d.Value as d.Name for d in DateRangeList"></select>
+    <select class="form-control" ng-model="SelectedDateRangeValue" ng-options="d.Value as d.Name for d in DateRangeList"></select>
   </div>
   <div class="form-group">
     <label class="control-label text-left">Entity Type:</label>
   </div>
   <div class="form-group">
-    <select class="form-control" ng-change="vm.refresh()" ng-model="SelectedEntityType" ng-options="e.Value as e.Name for e in EntityTypesList"></select>
+    <select class="form-control" ng-model="SelectedEntityType" ng-options="e.Value as e.Name for e in EntityTypesList"></select>
   </div>
   <div class="form-group">
     <label class="control-label text-left">Change Type:</label>
   </div>
   <div class="form-group">
-    <select class="form-control" ng-change="vm.refresh()" ng-model="SelectedChangeType">
+    <select class="form-control" ng-model="SelectedChangeType">
       <option ng-repeat="changeType in ChangeTypesList" ng-selected="{{changeType == SelectedChangeType}}" value="{{changeType}}">{{changeType}}</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="control-label text-left">Environment:</label>
+  </div>
+  <div class="form-group">
+    <select class="form-control" ng-model="SelectedEnvironment">
+      <option ng-repeat="environment in EnvironmentsList" ng-selected="{{environment == SelectedEnvironment}}" value="{{environment}}">{{environment}}</option>
     </select>
   </div>
   <div class="form-group">

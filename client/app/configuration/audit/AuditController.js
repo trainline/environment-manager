@@ -22,7 +22,7 @@
  *   Owning Cluster   (TODO: Future change. Where we know it anyway – useful for filter)
  */
 angular.module('EnvironmentManager.configuration').controller('AuditController',
-  function ($scope, $routeParams, $location, $q, $http, $uibModal, resources, arrayItemHashDetector, modal, enums, linkHeader, QuerySync) {
+  function ($scope, $routeParams, $location, $q, $http, $uibModal, resources, cachedResources, arrayItemHashDetector, modal, enums, linkHeader, QuerySync) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -41,19 +41,31 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
 
     vm.updateFilter = function updateFilter() {
       vm.currentPage = 1;
-      vm.filteredData = vm.fullData.filter(function (audit) {
-        var entityKey = angular.lowercase($scope.SelectedEntityKey);
-        var auditKey = angular.lowercase(audit.Entity.Key);
-
-        return (entityKey === '' || auditKey.indexOf(entityKey) != -1)
-      });
+      vm.filteredData = vm.fullData
+        .filter(entityKeyFilter)
+        .filter(environmentFilter);
 
       vm.updatePagedData();
     };
 
     function configureFiltering() {
       vm.fullData = $scope.Data;
-      vm.updateFilter();
+    }
+
+    function entityKeyFilter(audit) {
+      var entityType = angular.lowercase($scope.SelectedEntityKey);
+      var auditKey = angular.lowercase(audit.Entity.Key);
+
+      return (entityType === '' || auditKey.indexOf(entityType) !== -1);
+    }
+
+    function environmentFilter(audit) {
+      var environment = angular.lowercase($scope.SelectedEnvironment);
+      var auditKey = angular.lowercase(audit.Entity.Key);
+
+      return (environment === '' 
+        || environment === angular.lowercase(SHOW_ALL_OPTION)
+        || auditKey.indexOf(environment) !== -1);
     }
 
     $scope.EntityTypesList = [];
@@ -68,12 +80,14 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
 
     $scope.SelectedEntityType = SHOW_ALL_OPTION;
     $scope.SelectedChangeType = SHOW_ALL_OPTION;
+    $scope.SelectedEnvironment = SHOW_ALL_OPTION;
     $scope.SelectedEntityKey = '';
     $scope.SelectedEntityRange = '';
     $scope.SelectedDateRangeValue = $scope.DateRangeList[0].Value; // Today
     $scope.hasNextPage = false;
     $scope.DataLoading = false;
     $scope.SearchPerformed = false;
+    $scope.EnvironmentsList = [];
 
     // Following defines how compare items in the same array for comparison purposes
     $scope.DiffOptions = arrayItemHashDetector;
@@ -100,7 +114,11 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
             }
           }
         }),
-
+        cachedResources.config.environments.all().then(function (environments) {
+          $scope.EnvironmentsList = [SHOW_ALL_OPTION].concat(
+            _.map(environments, 'EnvironmentName')
+          ).sort()
+        }),
         resources.audit.changeTypes.all().then(function (changeTypes) {
           $scope.ChangeTypesList = [SHOW_ALL_OPTION].concat(changeTypes).sort();
         })
@@ -154,6 +172,7 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
       };
       resources.audit.history.all(params).then(function (data) {
         displayResults(data);
+        vm.updateFilter();
       });
     };
 
@@ -196,6 +215,7 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
 
         return audit;
       });
+
 
       configureFiltering();
       $scope.DataLoading = false;
