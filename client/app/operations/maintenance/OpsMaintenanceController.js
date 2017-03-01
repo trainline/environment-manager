@@ -23,12 +23,14 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
     vm.dataLoading = false;
 
     function init() {
-      cachedResources.config.accounts.all().then(function (accounts) {
-        accounts = _.map(accounts, 'AccountName');
-        vm.accountsList = [SHOW_ALL_OPTION].concat(accounts).sort();
-      }).then(function () {
-        vm.refresh();
-      });
+      cachedResources.config.accounts.all()
+        .then(function (accounts) {
+          accounts = _.map(accounts, 'AccountName');
+          vm.accountsList = [SHOW_ALL_OPTION].concat(accounts).sort();
+        })
+        .then(function () {
+          vm.refresh();
+        });
     }
 
     vm.refresh = function () {
@@ -111,11 +113,7 @@ angular.module('EnvironmentManager.operations').controller('OpsMaintenanceContro
     function ProcessMaintenanceIpsByAccount(account) {
       if (account == SHOW_ALL_OPTION) return $q.when([]);
 
-      var params = {
-        account: account,
-        key: RECORD_KEY
-      };
-      return $http.get('/api/v1/instances', { params: { maintenance: true } }).then(function (response) {
+      return $http.get('/api/v1/instances', { params: { maintenance: true, account: account } }).then(function (response) {
         var data = response.data;
 
         var ipList = [];
