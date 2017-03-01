@@ -48,8 +48,9 @@ function formatMissingService(targetService, deploymentStatus, logURL) {
 
 function mapConsulTags(tags) {
   return _.reduce(tags, (result, tag) => {
-    let spl = tag.split(':');
-    result[spl[0]] = spl[1];
+    let firstColon = tag.indexOf(':');
+    let key = tag.substr(0, firstColon);
+    result[key] = tag.substr(firstColon + 1);
     return result;
   }, {});
 }
@@ -107,7 +108,7 @@ function hasMissingOrUnexpectedServices(services) {
 }
 
 function getSimpleServiceName(name) {
-  return name.split('-')[1];
+  return name.split('-')[1] || name;
 }
 
 function getServiceAndSlice(obj) {
