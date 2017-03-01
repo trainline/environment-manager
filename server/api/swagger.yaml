@@ -944,6 +944,17 @@ paths:
       responses:
         200:
           description: OK
+  /sns: 
+    x-swagger-router-controller: snsController
+    put: 
+      operationId: createSnsEvent
+      summary: Create SNS Event.
+      description: Create an SNS event. 
+      tags: 
+        - SNS
+      responses: 
+        200: 
+          description: OK
   /target-state/{environment}:
     x-swagger-router-controller: targetStateController
     get:
