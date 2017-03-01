@@ -29,12 +29,10 @@ function getInstanceState(accountName, environmentName, nodeName, instanceId, ru
     // Get info on 'target state'
     let targetServiceStates = yield serviceTargets.getAllServiceTargets(environmentName, runtimeServerRoleName);
 
-    // Merge consul service info with target state info and remove redundant service values
+    // Combine consul service info with target state info and remove redundant service values
     let consulServiceContext = { checks, targetServiceStates, environmentName, instanceId, accountName };
-
     services = yield _.map(services, co.wrap(describeConsulService.bind(this, consulServiceContext)));
     services = _.compact(services);
-
 
     // Find missing services (in target state but not on instance)
     _.each(targetServiceStates, findMissingServices.bind(this, { services, accountName, instanceId, instanceLaunchTime }));

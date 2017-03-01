@@ -31,23 +31,25 @@ describe('getInstanceState', function () {
   }
 
   let SERVICE_STATES = [
-    { Install: 87, Ignore: 43 },
-    { Install: 0, Ignore: 0, Missing: 0 },
-    { Install: 11, Ignore: 65, Missing: 12 },
-    { Install: 99, Ignore: 99, Missing: 99 },
-    { Install: 89, Missing: 76 },
-    { Install: 0, Ignore: 0, Unexpected: 100 },
-    { Install: 11, Ignore: 65, Unexpected: 12 },
-    { Install: 99, Ignore: 99, Unexpected: 99 },
-    { Install: 33, Ignore: 10, Missing: 20, Unexpected: 100 },
-    { Install: 51, Ignore: 65, Missing: 90, Unexpected: 87 },
-    { Install: 7, Ignore: 48, Missing: 4, Unexpected: 6 },
-    { Unexpected: 117 },
-    { Missing: 245 },
-    { Ignore: 117 },
-    { Install: 1 }
-  ];
+    { Install: 0, Ignore: 0, Missing: 0, Unexpected: 0 },         // No services
 
+    { Install: 87, Ignore: 0, Missing: 0, Unexpected: 0 },        // Only Installed
+    { Install: 0, Ignore: 64, Missing: 0, Unexpected: 0 },        // Only Ignored
+    { Install: 0, Ignore: 0, Missing: 94, Unexpected: 0 },        // Only Missing
+    { Install: 0, Ignore: 0, Missing: 0, Unexpected: 45 },        // Only Unexpected
+
+    { Install: 67, Ignore: 93, Missing: 0, Unexpected: 0 },       // Installed and Ignored
+    { Install: 32, Ignore: 0, Missing: 29, Unexpected: 0 },       // Installed and Missing
+    { Install: 40, Ignore: 0, Missing: 0, Unexpected: 70 },       // Installed and Unexpected
+    { Install: 0, Ignore: 12, Missing: 7, Unexpected: 0 },        // Ignored and Missing
+    { Install: 0, Ignore: 61, Missing: 0, Unexpected: 19 },       // Ignored and Unexpected
+    { Install: 0, Ignore: 0, Missing: 72, Unexpected: 28 },       // Missing and Unexpected
+
+    { Install: 106, Ignore: 19, Missing: 44, Unexpected: 0 },     // Installed, Ignored and Missing
+    { Install: 0, Ignore: 77, Missing: 30, Unexpected: 20 },      // Ignored, Missing and Unexpected
+
+    { Install: 99, Ignore: 101, Missing: 98, Unexpected: 67 }     // All states
+  ];
   describe('service states', function () {
     SERVICE_STATES.forEach(function (params) {
       const installed = params.Install || 0;
@@ -78,11 +80,20 @@ describe('getInstanceState', function () {
             assert.equal(result.MissingOrUnexpectedServices, missingOrUnexpected);
           });
         });
+
+        it(`should report ${installed} running services`, () => {
+          return sut().then((result) => {
+            assert.equal(result.RunningServicesCount, installed);
+          });
+        });
       });
     });
   });
 });
 
+/**
+ * Utils for creating mock service states
+ */
 const randInt = n => Math.round(Math.random() * n);
 const randSlice = _ => Math.round(Math.random()) ? 'blue' : 'green'; // eslint-disable-line no-confusing-arrow
 const randStr = n => [...Array(n)].map(_ => String.fromCharCode(Math.round(Math.random() * 25) + 97)).join('');
