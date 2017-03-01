@@ -88,4 +88,38 @@ describe('scheduling (expected states)', () => {
       expect(determinedState).to.equal(scheduling.states.off);
     });
   });
+
+  describe('schedules with timezones', () => {
+    it('should support timezone identifiers', () => {
+      let schedule = 'start: 0 0 1 1 * 2016; stop: 0 1 1 1 * 2016 | Europe/London';
+      let dateTime = '2016-01-01T00:15:00';
+
+      let determinedState = scheduling.expectedStateFromSchedule(schedule, dateTime);
+      expect(determinedState).to.equal(scheduling.states.on);
+    });
+
+    it('should switch off at 17:00:00 UTC when scheduled off at 17:00:00 London time in January', () => {
+      let schedule = 'stop: 0 17 1 1 * 2017 | Europe/London';
+      let dateTime = '2017-01-01T17:00:00';
+
+      let determinedState = scheduling.expectedStateFromSchedule(schedule, dateTime);
+      expect(determinedState).to.equal(scheduling.states.off);
+    });
+
+    it('should switch off at 17:00:00 UTC when scheduled off at 18:00:00 London time in June', () => {
+      let schedule = 'stop: 0 18 1 6 * 2017 | Europe/London';
+      let dateTime = '2017-06-01T17:00:00';
+
+      let determinedState = scheduling.expectedStateFromSchedule(schedule, dateTime);
+      expect(determinedState).to.equal(scheduling.states.off);
+    });
+
+    it('should switch off at 18:00:00+0100 when scheduled off at 18:00:00 London time in June', () => {
+      let schedule = 'stop: 0 18 1 6 * 2017 | Europe/London';
+      let dateTime = '2017-06-01T18:00:00+0100';
+
+      let determinedState = scheduling.expectedStateFromSchedule(schedule, dateTime);
+      expect(determinedState).to.equal(scheduling.states.off);
+    });
+  });
 });

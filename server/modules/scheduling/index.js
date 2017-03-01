@@ -5,6 +5,7 @@
 const _ = require('lodash');
 const parseSchedule = require('./parseSchedule');
 const later = require('later');
+const moment = require('moment-timezone');
 
 const actions = {
   switchOn: 'switchOn',
@@ -71,7 +72,8 @@ function actionForInstance(instance, dateTime) {
     return skip(skipReasons.explicitNoSchedule, source);
   }
 
-  let expectedState = expectedStateFromParsedSchedule(schedule, dateTime);
+  let localTime = convertToLocalTime(dateTime, parseResult.timezone);
+  let expectedState = expectedStateFromParsedSchedule(schedule, localTime);
 
   if (expectedState.noSchedule) {
     return skip(skipReasons.stateIsCorrect);
@@ -98,7 +100,8 @@ function expectedStateFromSchedule(schedule, dateTime) {
     throw new Error('Cannot get state with NOSCHEDULE');
   }
 
-  let expectedState = expectedStateFromParsedSchedule(parsedSchedule.schedule, dateTime);
+  let localTime = convertToLocalTime(dateTime, parsedSchedule.timezone);
+  let expectedState = expectedStateFromParsedSchedule(parsedSchedule.schedule, localTime);
 
   if (expectedState.noSchedule) {
     throw new Error('Could not find state from schedule');
@@ -207,16 +210,22 @@ function expectedStateFromParsedSchedule(schedules, dateTime) {
     return schedules.permanent;
   }
 
-  let scheduleStates = schedules.map(schedule => ({
-    dateTime: later.schedule(schedule.recurrence).prev(1, dateTime),
-    state: schedule.state
-  }));
+  let scheduleStates = schedules.map((schedule) => {
+    return {
+      dateTime: later.schedule(schedule.recurrence).prev(1, dateTime),
+      state: schedule.state
+    };
+  });
 
   let latest = _.maxBy(scheduleStates, scheduleState => scheduleState.dateTime);
 
   if (latest.dateTime === 0) { return { noSchedule: true }; }
 
   return latest.state;
+}
+
+function convertToLocalTime(dateTime, timezone) {
+  return moment.tz(dateTime, 'utc').tz(timezone || 'utc').format('YYYY-MM-DDTHH:mm:ss');
 }
 
 function getTagValue(instance, tagName) {
