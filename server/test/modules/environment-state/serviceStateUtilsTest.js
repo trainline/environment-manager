@@ -4,7 +4,7 @@
 
 const assert = require('assert');
 
-describe.only('serviceStateUtils', function () {
+describe('serviceStateUtils', function () {
   let sut;
   beforeEach(() => { sut = require('modules/environment-state/serviceStateUtils'); });
 
