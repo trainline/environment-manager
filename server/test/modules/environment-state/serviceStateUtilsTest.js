@@ -4,7 +4,7 @@
 
 const assert = require('assert');
 
-describe('serviceStateUtils', function () {
+describe.only('serviceStateUtils', function () {
   let sut;
   beforeEach(() => { sut = require('modules/environment-state/serviceStateUtils'); });
 
@@ -44,7 +44,7 @@ describe('serviceStateUtils', function () {
       { tags: ['ARN:arn:aws:s3:::my_corporate_bucket/exampleobject.png'], expected: { ARN: 'arn:aws:s3:::my_corporate_bucket/exampleobject.png' } }
     ]
     .forEach((param) => {
-      it('should correctly translate tag values into a dictionary', () => {
+      it(`should correctly translate tags from ${param.tags}`, () => {
         assert.deepEqual(sut.mapConsulTags(param.tags), param.expected);
       });
     });
