@@ -57,8 +57,8 @@ module.exports = {
     return Promise.all([
       Promise.resolve(deploymentLogsStreamer.log(deploymentStatus.deploymentId, deploymentStatus.accountName, newStatus.reason))
         .then(() => deploymentLogsStreamer.flush(deploymentStatus.deploymentId))
-        .then(() => updateDeploymentDynamoTable(deploymentStatus, newStatus)),
-      updateDeploymentTargetState(deploymentStatus, newStatus)
+        .then(() => updateDeploymentDynamoTable(deploymentStatus, newStatus)).catch(error => logger.error(error)),
+      updateDeploymentTargetState(deploymentStatus, newStatus).catch(error => logger.error(error))
     ]);
   }
 };

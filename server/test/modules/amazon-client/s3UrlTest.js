@@ -9,8 +9,8 @@
 const should = require('should');
 const sut = require('modules/amazon-client/s3Url');
 
-describe('s3Url', function() {
-    describe('when I parse', function() {
+describe('s3Url', function () {
+    describe('when I parse', function () {
         let bucket = 'BUCKET';
         let endpoint = 'https://s3-eu-west-1.amazonaws.com';
         let key = 'key.txt';
@@ -21,49 +21,66 @@ describe('s3Url', function() {
         ];
         let objectVersionUrls = objectUrls.map(url => `${url}?versionId=${versionId}`);
 
-        objectUrls.forEach(function(url) {
-            context(`the valid object url ${url}`, function() {
+        objectUrls.forEach(function (url) {
+            context(`the valid object url ${url}`, function () {
                 let result;
-                before(function() {
+                before(function () {
                     result = sut.parse(url);
                 });
-                it(`the endpoint is ${endpoint}`, function() {
+                it(`the endpoint is ${endpoint}`, function () {
                     result.should.have.property('endpoint').eql(endpoint);
                 });
-                it(`the bucket is ${bucket}`, function() {
+                it(`the bucket is ${bucket}`, function () {
                     result.should.have.property('Bucket').eql(bucket);
                 });
-                it(`the key is ${key}`, function() {
+                it(`the key is ${key}`, function () {
                     result.should.have.property('Key').eql(key);
                 });
-                it('the versionId is undefined', function() {
+                it('the versionId is undefined', function () {
                     result.should.have.property('VersionId').undefined();
                 });
             });
         });
 
-        objectVersionUrls.forEach(function(url) {
-            context(`the valid object url ${url}`, function() {
+        objectVersionUrls.forEach(function (url) {
+            context(`the valid object url ${url}`, function () {
                 let result;
-                before(function() {
+                before(function () {
                     result = sut.parse(url);
                 });
-                it(`the endpoint is ${endpoint}`, function() {
+                it(`the endpoint is ${endpoint}`, function () {
                     result.should.have.property('endpoint').eql(endpoint);
                 });
-                it(`the bucket is ${bucket}`, function() {
+                it(`the bucket is ${bucket}`, function () {
                     result.should.have.property('Bucket').eql(bucket);
                 });
-                it(`the key is ${key}`, function() {
+                it(`the key is ${key}`, function () {
                     result.should.have.property('Key').eql(key);
                 });
-                it(`the versionId is ${versionId}`, function() {
+                it(`the versionId is ${versionId}`, function () {
                     result.should.have.property('VersionId').eql(versionId);
                 });
             });
         });
 
-        context('an invalid object url the result is undefined', function() {
+        context('A URL containing escaped special characters', function () {
+            let url = 'https://s3-eu-west-1.amazonaws.com/BUCKET/%26%24%40%3D%3B%3A%2B%20%2C%3F/key.txt'
+            let result;
+            before(function () {
+                result = sut.parse(url);
+            });
+            it(`the endpoint is ${endpoint}`, function () {
+                result.should.have.property('endpoint').eql('https://s3-eu-west-1.amazonaws.com');
+            });
+            it(`the bucket is ${bucket}`, function () {
+                result.should.have.property('Bucket').eql('BUCKET');
+            });
+            it(`the key is ${key}`, function () {
+                result.should.have.property('Key').eql('&$@=;:+ ,?/key.txt');
+            });
+        });
+
+        context('an invalid object url the result is undefined', function () {
             let inputs = [
                 'https://s3-eu-west-1.amazonaws.com',
                 'https://s3-eu-west-1.amazonaws.com/',
@@ -75,15 +92,15 @@ describe('s3Url', function() {
                 'https://a.b.s3-eu-west-1.amazonaws.com/bucket/key',
                 'https://bucket.s3-eu-west-1.amazonaws.com/',
             ];
-            inputs.forEach(function(input) {
-                it(input, function() {
+            inputs.forEach(function (input) {
+                it(input, function () {
                     should(sut.parse(input)).be.undefined();
                 });
             });
         });
     });
 
-    describe('when I format', function() {
+    describe('when I format', function () {
         let region = 'eu-west-1';
         let testCases = [
             {
@@ -94,11 +111,15 @@ describe('s3Url', function() {
                 arg: { Bucket: 'BUCKET', Key: 'path/file.txt', VersionId: 'my-version' },
                 result: 'https://s3-eu-west-1.amazonaws.com/BUCKET/path/file.txt?versionId=my-version'
             },
+            {
+                arg: { Bucket: 'BUCKET', Key: '&$@=;:+ ,?/key.txt' },
+                result: 'https://s3-eu-west-1.amazonaws.com/BUCKET/%26%24%40%3D%3B%3A%2B%20%2C%3F/key.txt'
+            },
         ]
 
-        testCases.forEach(function(testCase) {
-            context(JSON.stringify(testCase.arg), function() {
-                it(`I get ${testCase.result}`, function() {
+        testCases.forEach(function (testCase) {
+            context(JSON.stringify(testCase.arg), function () {
+                it(`I get ${testCase.result}`, function () {
                     sut.format(testCase.arg, region).should.eql(testCase.result);
                 });
             });
