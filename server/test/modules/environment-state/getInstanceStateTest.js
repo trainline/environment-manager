@@ -46,6 +46,8 @@ describe('getInstanceState', function () {
     { Install: 0, Ignore: 0, Missing: 72, Unexpected: 28 },       // Missing and Unexpected
 
     { Install: 106, Ignore: 19, Missing: 44, Unexpected: 0 },     // Installed, Ignored and Missing
+    { Install: 22, Ignore: 0, Missing: 87, Unexpected: 90 },      // Installed, Missing and Unexpected
+    { Install: 4, Ignore: 16, Missing: 0, Unexpected: 28 },       // Installed, Ignored and Unexpected
     { Install: 0, Ignore: 77, Missing: 30, Unexpected: 20 },      // Ignored, Missing and Unexpected
 
     { Install: 99, Ignore: 101, Missing: 98, Unexpected: 67 }     // All states
