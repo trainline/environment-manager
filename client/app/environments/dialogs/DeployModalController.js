@@ -107,10 +107,13 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
           service: vm.deploymentSettings.SelectedService,
           server_role: vm.deploymentSettings.SelectedServerRoleName,
           mode: vm.deploymentSettings.Mode,
-          slice: vm.deploymentSettings.Mode === 'bg' ? vm.deploymentSettings.Slice : undefined,
-          packageLocation: vm.deploymentSettings.PackagePath
+          slice: vm.deploymentSettings.Mode === 'bg' ? vm.deploymentSettings.Slice : undefined
         }
       };
+
+      if (vm.deploymentSettings.PackagePath) {
+        config.data.packageLocation = vm.deploymentSettings.PackagePath;
+      }
 
       if (vm.dryRunEnabled === true) {
         config.params = { dry_run:true };
