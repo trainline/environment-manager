@@ -11,7 +11,11 @@
 'use strict';
 
 const AWS = require('aws-sdk');
-const _ = require('lodash/fp');
+const fp = require('lodash/fp');
+
+let encodeKey = fp.flow(fp.split('/'), fp.map(encodeURIComponent), fp.join('/'));
+
+let decodeKey = fp.flow(fp.split('/'), fp.map(decodeURIComponent), fp.join('/'));
 
 /**
  * Parse a string as an S3 object URL.
@@ -28,7 +32,7 @@ function parse(url) {
     return {
       endpoint: t[1],
       Bucket: t[2],
-      Key: t[3],
+      Key: decodeKey(t[3]),
       VersionId: t[4]
     };
   }
@@ -42,7 +46,7 @@ function parse(url) {
     return {
       endpoint: t[1] + t[3],
       Bucket: t[2],
-      Key: t[4],
+      Key: decodeKey(t[4]),
       VersionId: t[5]
     };
   }
@@ -58,7 +62,7 @@ function parse(url) {
 function format(s3location, region) {
   let s3 = new AWS.S3({ region });
   let versionId = x => (x.VersionId ? `?versionId=${x.VersionId}` : '');
-  return `${s3.endpoint.href}${s3location.Bucket}/${s3location.Key}${versionId(s3location)}`;
+  return `${s3.endpoint.href}${s3location.Bucket}/${encodeKey(s3location.Key)}${versionId(s3location)}`;
 }
 
 /**
@@ -72,8 +76,8 @@ function getObject(url, options) {
   if (params === undefined) {
     throw new Error(`The URL is not a valid S3 object or object version URL: ${url}`);
   }
-  let opts = Object.assign({}, options || {}, _.pick(['endpoint'])(params));
-  let getObjectArgs = Object.assign({}, _.compose(_.pick(['Bucket', 'Key', 'VersionId']), _.omitBy(_.isUndefined))(params));
+  let opts = Object.assign({}, options || {}, fp.pick(['endpoint'])(params));
+  let getObjectArgs = Object.assign({}, fp.compose(fp.pick(['Bucket', 'Key', 'VersionId']), fp.omitBy(fp.isUndefined))(params));
   let request = new AWS.S3(opts).getObject(getObjectArgs);
   return request.createReadStream();
 }
