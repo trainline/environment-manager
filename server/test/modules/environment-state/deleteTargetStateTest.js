@@ -67,7 +67,7 @@ describe('deleteTargetState', () => {
   });
 
 
-  describe('byService', () => {
+  describe('byServiceVersion', () => {
 
     it('deletes target service state', () => {
       let environmentName = 'test-env';

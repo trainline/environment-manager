@@ -10,7 +10,8 @@ describe('memoize', function () {
     let typeInstances = [1, 's', {}, undefined, null, false,];
     context('when I try to memoize a value that is not a function', function () {
         typeInstances.forEach(instance => {
-            it(`and it is a ${typeof instance} an error tells me I can only memoize a function.`, function () {
+            let type = instance === null ? 'null' : (typeof instance);
+            it(`and it is a ${type} an error tells me I can only memoize a function.`, function () {
                 (() => memoize(instance)).should.throw(/Can only memoize a function/);
             });
         });
