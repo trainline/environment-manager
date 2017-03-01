@@ -40,7 +40,7 @@ describe('packageMover', function () {
       let sut = packageMover(logger);
       return sut.downloadPackage('http://localhost:8080/myPackage.zip')
         .then(() => downloadStream.emit('error', new Error('BOOM!')))
-        .then(() => sinon.assert.calledWithMatch(logger.error, new Error('BOOM!')));
+        .then(() => sinon.assert.calledWithMatch(logger.warn, /Download failed: BOOM!/i));
     });
   });
 });
