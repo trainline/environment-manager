@@ -1282,6 +1282,7 @@ paths:
           type: string
           required: true
           in: path
+        - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
           description: OK
