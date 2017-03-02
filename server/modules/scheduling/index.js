@@ -194,15 +194,23 @@ function getScheduleForInstance(instance) {
 }
 
 function parseEnvironmentSchedule(environmentSchedule) {
-  if (environmentSchedule.ManualScheduleUp === false && environmentSchedule.ScheduleAutomatically === false) {
+  if (environmentIsScheduledOff(environmentSchedule)) {
     return { success: true, schedule: { permanent: states.off } };
   }
 
-  if (!(environmentSchedule.ManualScheduleUp !== true && environmentSchedule.ScheduleAutomatically === true)) {
+  if (environmentIsScheduledOn(environmentSchedule)) {
     return { success: true, schedule: { permanent: states.on } };
   }
 
   return parseSchedule(environmentSchedule.DefaultSchedule);
+}
+
+function environmentIsScheduledOff(schedule) {
+  return schedule.ManualScheduleUp === false && schedule.ScheduleAutomatically === false;
+}
+
+function environmentIsScheduledOn(schedule) {
+  return !(schedule.ManualScheduleUp !== true && schedule.ScheduleAutomatically === true);
 }
 
 function expectedStateFromParsedSchedule(schedules, dateTime) {
