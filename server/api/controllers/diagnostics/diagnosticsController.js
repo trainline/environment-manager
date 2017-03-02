@@ -5,7 +5,7 @@
 let config = require('config');
 
 function getHealthcheck(req, res, next) {
-  res.json({ OK: true, Version: config.get('APP_VERSION') }).catch(next);
+  res.json({ OK: true, Version: config.get('APP_VERSION') });
 }
 
 module.exports = {
