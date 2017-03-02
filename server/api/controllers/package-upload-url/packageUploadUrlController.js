@@ -13,6 +13,7 @@ let makeValidationFunction = require('modules/validate');
 let masterAccountClient = require('modules/amazon-client/masterAccountClient'); // eslint-disable-line import/no-extraneous-dependencies
 let s3PackageLocator = require('modules/s3PackageLocator');
 let serviceExistsRule = require('modules/validate/rule/serviceExists');
+let dynamicResponseCreator = require('api/controllers/package-upload-url/dynamicResponseCreator');
 /* eslint-enable import/no-extraneous-dependencies */
 
 let config = require('config');
@@ -41,9 +42,9 @@ function respondWithPreSignedUrl(request) {
       s3.getSignedUrl('putObject', params, (err, url) => {
         if (err) {
           log.error(`Creation of pre-signed package upload URL failed: ${err.message}\n${err.stack}`);
-          resolve(response => response.status(500).send());
+          resolve(dynamicResponseCreator(request, 500));
         } else {
-          resolve(response => response.status(200).send(url));
+          resolve(dynamicResponseCreator(request, 200, url));
         }
       });
     }));

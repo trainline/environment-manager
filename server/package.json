@@ -86,6 +86,7 @@
     "mocha": "^3.2.0",
     "mocha-duplicate-reporter": "^0.2.1",
     "mocha-teamcity-reporter": "^1.1.1",
+    "mock-express-response": "^0.2.0",
     "proxyquire": "^1.7.10",
     "rewire": "^2.5.2",
     "should": "^11.1.1",
