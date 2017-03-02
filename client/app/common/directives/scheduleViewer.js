@@ -31,14 +31,17 @@ angular.module('EnvironmentManager.common')
 
           delete vm.crons;
         } else {
-          vm.crons = vm.schedule.split(';').map(function (cronString) {
+          var parts = vm.schedule.split('|');
+          vm.crons = parts[0].split(';').map(function (cronString) {
             if (cronString) {
               var parts = cronString.split(':');
               var action = parts[0].trim() + 's ';
               var englishCron = prettyCron.toString(parts[1].trim());
-              return { cron: action + englishCron };
+              return { cron: _.capitalize(action) + englishCron };
             }
           });
+          var timezone = (parts.length === 2) ? parts[1].trim() : 'UTC';
+          vm.timezone = 'Time Zone:' + timezone;
         }
       }
 

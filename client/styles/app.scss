@@ -545,6 +545,20 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
   margin: 10px 0 10px 0;
 }
 
+.schedule-timezone {
+  padding-top: 10px;
+  padding-bottom: 10px;
+
+  label {
+    padding-top: 0px !important;
+    padding-right: 10px;
+  }
+
+  select {
+    width: auto;
+  }
+}
+
 .cron-editor {
   display: inline-block;
 }
