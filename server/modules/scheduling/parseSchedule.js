@@ -44,7 +44,10 @@ function tryParseCronSchedule(serialisedCronSchedule) {
 }
 
 function parseCronSchedule(serialisedCronSchedule) {
-  let schedule = serialisedCronSchedule.split(';').map((item) => {
+  let [serializedSchedule, timezone] = serialisedCronSchedule.split('|');
+  if (timezone) timezone = timezone.trim();
+
+  let schedule = serializedSchedule.split(';').map((item) => {
     let parts = item.split(':');
     let state = cronActions[parts[0].trim()];
 
@@ -58,7 +61,8 @@ function parseCronSchedule(serialisedCronSchedule) {
 
   return {
     success: true,
-    schedule
+    schedule,
+    timezone
   };
 }
 
