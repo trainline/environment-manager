@@ -1,0 +1,12 @@
+---
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Environment Manager SNS Topics
+Resources: 
+  EMConfigurationChange: 
+    Type: "AWS::SNS::Topic"
+    Properties: 
+      TopicName: "EnvironmentManagerConfigurationChange"
+  EMOperationsChange:
+    Type: "AWS::SNS::Topic"
+    Properties: 
+      TopicName: "EnvironmentManagerOperationsChange"
