@@ -535,10 +535,14 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
 
 .schedule-viewer {
   margin-bottom: 10px;
-}
+  
+  .timezone {
+    padding-bottom: 10px;
+  }
 
-.schedule-viewer ul {
-  padding-left: 20px;
+  ul {
+    padding-left: 20px;
+  }
 }
 
 .schedule-line {
