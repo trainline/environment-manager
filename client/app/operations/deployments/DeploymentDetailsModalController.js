@@ -9,6 +9,7 @@ function deploymentView(deploymentRecord, clusters) {
   function getDuration() {
     var startTime = moment(deployment.StartTimestamp);
 
+    console.log(deployment)
     if (deployment.Status.toLowerCase() === 'in progress') {
       return {
         label: 'Started',
@@ -17,12 +18,21 @@ function deploymentView(deploymentRecord, clusters) {
     }
 
     var endTime = moment(deployment.EndTimestamp);
-    var diff = moment(endTime.diff(startTime)).format('m[m] s[s]');
-
+    var diff = createDiffString(startTime, endTime);
+    
     return {
       label: 'Duration',
-      value: diff + ' (' + startTime.format('YYYY-MM-DD, HH:mm:ss') + ' - ' + endTime.format('HH:mm:ss') + ')'
+      value: diff + ' (' + startTime.format('YYYY-MM-DD, HH:mm:ss') + ' - ' + endTime.format('YYYY-MM-DD, HH:mm:ss') + ')'
     };
+  }
+
+  function createDiffString(startTime, endTime) {
+    var diff = moment.duration(endTime.diff(startTime));
+    var duration = [
+      _.pad(diff.get('hours'), 2, 0), 
+      _.pad(diff.get('minutes'), 2, 0), 
+      _.pad(diff.get('seconds'), 2, 0)].join(':');
+    return duration;
   }
 
   function getError() {
@@ -47,7 +57,7 @@ function deploymentView(deploymentRecord, clusters) {
     var startEnd = startTime.format('HH:mm:ss');
     if (endTime) startEnd += ' - ' + endTime.format('HH:mm:ss');
 
-    var duration = moment(endTime.diff(startTime)).format('m[m] s[s]');
+    var duration = createDiffString(startTime, endTime);
     return duration + ' (' + startEnd + ')';
   }
 
