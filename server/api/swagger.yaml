@@ -947,7 +947,7 @@ paths:
   /sns: 
     x-swagger-router-controller: snsController
     get: 
-      operationId: createSNSTopic
+      operationId: produceMessage
       summary: Create SNS Event.
       description: Create an SNS event. 
       tags: 

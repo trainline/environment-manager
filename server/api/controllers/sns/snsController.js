@@ -12,7 +12,7 @@ const util = require('util');
 // });
 
 module.exports = {
-  createSNSTopic(req, res, next) {
+  produceMessage(req, res, next) {
     require('modules/amazon-client/masterAccountClient').createSNSClient()
       .then((snsClient) => {
         snsClient.createTopic({
