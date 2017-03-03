@@ -2,25 +2,27 @@
 
 'use strict';
 
-const AWS = require('aws-sdk');
 const util = require('util');
 
 // configure AWS
-AWS.config.update({
-  region: process.env.EM_AWS_REGION,
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-});
+// AWS.config.update({
+//   region: process.env.EM_AWS_REGION,
+//   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+//   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+// });
 
-require('modules/amazon-client/masterAccountClient').createSNSClient()
-  .then((snsClient) => {
-    snsClient.createTopic({
-      Name: 'demo'
-    }, (err, result) => {
-      if (err !== null) {
-        console.log(util.inspect(err));
-      }
-
-      console.log(util.inspect(result));
-    });
-  });
+module.exports = {
+  createSNSTopic(req, res, next) {
+    require('modules/amazon-client/masterAccountClient').createSNSClient()
+      .then((snsClient) => {
+        snsClient.createTopic({
+          Name: 'Demo'
+        }, (err, result) => {
+          if (err !== null) {
+            return res.send(util.inspect(err));
+          }
+          return res.send(util.inspect(result));
+        });
+      });
+  }
+};
