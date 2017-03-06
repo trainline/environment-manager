@@ -35,7 +35,7 @@ angular.module('EnvironmentManager.common')
         } else {
           var schedule = parseScheduleTag(vm.schedule);
 
-          vm.timezone = schedule.timezone.readable;
+          vm.timezone = schedule.timezone;
           vm.crons = schedule.schedules.map(function (s) { return { cron: s.readable }; });
 
           var next = _.minBy(schedule.schedules, function (s) { return s.next.format('YYYY-MM-DDTHH:mm:ss'); });
