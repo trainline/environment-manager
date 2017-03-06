@@ -6,7 +6,7 @@ const rewire = require('rewire');
 
 /* eslint-disable no-underscore-dangle */
 
-describe.only('Create topic for SNS', () => {
+describe('Create topic for SNS', () => {
   let sut;
   let createTopicSpy;
   let params;
