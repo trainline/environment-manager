@@ -61,7 +61,7 @@ function handler(query) {
     if (scheduledActions.length) {
       return {
         status: 'ON',
-        size: cronService.getSizeBySchedule(scheduledActions, query.date)
+        size: cronService.getSizeBySchedule(scheduledActions, query.date) // Todo(Dave): Last cronService usage!
       };
     }
 
