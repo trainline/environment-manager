@@ -93,7 +93,7 @@ function expectedStateFromSchedule(schedule, dateTime) {
       parseSchedule(schedule);
 
   if (!parsedSchedule.success) {
-    return "INVALID SCHEDULE";
+    return 'INVALID SCHEDULE';
   }
 
   if (parsedSchedule.schedule.skip) {

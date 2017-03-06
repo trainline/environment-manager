@@ -3,6 +3,7 @@
 'use strict';
 
 let scheduling = require('modules/scheduling');
+let cronService = require('modules/cronService')();
 
 function getAutoScalingGroup(query) {
   let sender = require('modules/sender');
