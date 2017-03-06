@@ -39,7 +39,7 @@ angular.module('EnvironmentManager.common')
           vm.crons = schedule.schedules.map(function (s) { return { cron: s.readable }; });
 
           var next = _.minBy(schedule.schedules, function (s) { return s.next.format('YYYY-MM-DDTHH:mm:ss'); });
-          vm.next = next.action + ': ' + next.next.format('ddd HH:mm') + ' (' + moment(next.next).tz('UTC').format('ddd HH:mm z') + ')';
+          vm.next = next.action + ': ' + next.next.format('ddd HH:mm z') + ' (' + moment(next.next).tz('UTC').format('ddd HH:mm z') + ')';
         }
       }
 
