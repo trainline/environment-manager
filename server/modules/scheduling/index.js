@@ -93,18 +93,18 @@ function expectedStateFromSchedule(schedule, dateTime) {
       parseSchedule(schedule);
 
   if (!parsedSchedule.success) {
-    throw parsedSchedule.error;
+    return "INVALID SCHEDULE";
   }
 
   if (parsedSchedule.schedule.skip) {
-    throw new Error('Cannot get state with NOSCHEDULE');
+    return 'NO SCHEDULE';
   }
 
   let localTime = convertToLocalTime(dateTime, parsedSchedule.timezone);
   let expectedState = expectedStateFromParsedSchedule(parsedSchedule.schedule, localTime);
 
   if (expectedState.noSchedule) {
-    throw new Error('Could not find state from schedule');
+    return 'NOT FOUND';
   }
 
   return expectedState;
