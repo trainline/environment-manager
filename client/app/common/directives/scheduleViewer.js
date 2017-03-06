@@ -9,7 +9,8 @@ angular.module('EnvironmentManager.common')
     restrict: 'E',
     bindings: {
       schedule: '=',
-      showOnlyCronSchedules: '='
+      showOnlyCronSchedules: '=',
+      simpleView: '='
     },
     templateUrl: '/app/common/directives/scheduleViewer.html',
     controllerAs: 'vm',
@@ -17,6 +18,7 @@ angular.module('EnvironmentManager.common')
       var vm = this;
 
       function update(schedule) {
+        vm.detailedView = !vm.simpleView;
         if (!schedule) {
           vm.simpleOption = 'Environment Default';
           delete vm.crons;
