@@ -2,26 +2,41 @@
 
 'use strict';
 
-const masterAccountClient = require('modules/amazon-client/masterAccountClient');
-const SNS = require('models/SNS');
-
-// configure AWS
-// AWS.config.update({
-//   region: process.env.EM_AWS_REGION,
-//   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-//   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-// });
+const publish = require('modules/sns/publish');
+const createTopic = require('modules/sns/createTopic');
 
 module.exports = {
-  produceMessage(req, res, next) {
-    const message = req.swagger.params.body.value;
-    masterAccountClient.createSnsClent()
-      .then((snsClient) => {
-        let sns = new SNS(snsClient);
-        return sns.produceMessage(message);
+  publishConfiguration(req, res, next) {
+    const Params = req.swagger.params.body.value.Params;
+
+    // createTopic is an idempotent operation.
+    createTopic({ Name: 'EnvironmentManagerConfigurationChange' })
+      .then((ResponseMetadata) => {
+        Params.TargetArn = ResponseMetadata.TopicArn;
+        return publish(Params);
       })
-      .then(() => {
-        res.send({ ok: true });
+      .then((value) => {
+        res.json({ ok: true });
+      })
+      .catch((err) => {
+        res.send(err);
+      });
+  },
+
+  publishOperations(req, res, next) {
+    const Params = req.swagger.params.body.value.Params;
+
+    // createTopic is an idempotent operation.
+    createTopic({ Name: 'EnvironmentManagerOperationsChange' })
+      .then((ResponseMetadata) => {
+        Params.TargetArn = ResponseMetadata.TopicArn;
+        return publish(Params);
+      })
+      .then((value) => {
+        res.json({ ok: true });
+      })
+      .catch((err) => {
+        res.send(err);
       });
   }
 };
