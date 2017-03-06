@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('EnvironmentsSummaryController',
-  function ($scope, $routeParams, $location, $uibModal, $http, $q, modal, resources, cachedResources, cron, Environment) {
+  function ($scope, $routeParams, $location, $uibModal, $http, $q, modal, resources, cachedResources, Environment) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
