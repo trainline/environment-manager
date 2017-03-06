@@ -944,7 +944,7 @@ paths:
       responses:
         200:
           description: OK
-  /sns/notification/OperationalChange: 
+  /sns/notification/OperationsChange: 
     x-swagger-router-controller: snsController
     put: 
       operationId: publishOperations
@@ -952,11 +952,7 @@ paths:
       description: Create an SNS event. 
       tags: 
         - SNS
-      parameters: 
-        - name: topicName
-          in: path
-          type: string
-          required: true
+      parameters:
         - name: Params
           in: body
           type: object 
@@ -2256,26 +2252,6 @@ definitions:
               type: integer
             Type:
               type: string
-  SNSNotification:
-    type: object
-    required:
-      - Message
-      - MessageStructure
-      - Subject
-      - TopicArn
-    properties:
-      Message: 
-        type: string
-      MessageStructure: 
-        type: string
-      PhoneNumber: 
-        type: string
-      Subject: 
-        type: string
-      TargetArn: 
-        type: string
-      TopicArn: 
-        type: string
   AccountConfig:
     type: object
     required:

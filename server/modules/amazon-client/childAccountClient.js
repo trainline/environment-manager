@@ -15,7 +15,8 @@ module.exports = {
   createEC2Client: createClientWithRole(AWS.EC2),
   createIAMClient: createClientWithRole(AWS.IAM),
   createS3Client: createClientWithRole(AWS.S3),
-  createSNSClient: createClientWithRole(AWS.SNS)
+  createSNSClient: createClientWithRole(AWS.SNS),
+  assumeRole
 };
 
 function createClientWithRole(ClientType) {
