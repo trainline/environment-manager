@@ -5,9 +5,13 @@
 module.exports = (topicsToReplicate) => {
   return (doThis) => {
     const topics = topicsToReplicate.split('_');
+    let promises = [];
 
-    return Promise.all(topics.map((topic) => {
-      return doThis(topic);
-    }));
+    topics.reduce((acc, val) => {
+      promises.push(doThis(acc + val));
+      return acc + val;
+    }, '');
+
+    return Promise.all(promises);
   };
 };

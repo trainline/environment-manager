@@ -15,7 +15,7 @@ describe.only('SNS Replicator', () => {
 
   beforeEach(() => {
     sut = rewire('modules/sns/replicator');
-    snsSpy = sinon.spy(() => { });
+    snsSpy = sinon.spy(i => i);
     topics = 'One_Two_Three';
   });
 
@@ -23,8 +23,8 @@ describe.only('SNS Replicator', () => {
     sut(topics)(snsSpy)
       .then(() => {
         assert.ok(snsSpy.calledWith('One'));
-        assert.ok(snsSpy.calledWith('Two'));
-        assert.ok(snsSpy.calledWith('Three'));
+        assert.ok(snsSpy.calledWith('OneTwo'));
+        assert.ok(snsSpy.calledWith('OneTwoThree'));
 
         done();
       });
@@ -34,8 +34,8 @@ describe.only('SNS Replicator', () => {
     sut(topics)((thing) => { return thing.toUpperCase(); })
       .then((items) => {
         assert.equal(items[0], 'ONE');
-        assert.equal(items[1], 'TWO');
-        assert.equal(items[2], 'THREE');
+        assert.equal(items[1], 'ONETWO');
+        assert.equal(items[2], 'ONETWOTHREE');
 
         done();
       });
