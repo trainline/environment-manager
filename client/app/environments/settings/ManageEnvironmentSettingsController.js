@@ -6,7 +6,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ManageEnvironmentSettingsController',
-  function ($rootScope, $routeParams, $location, $http, $q, modal, resources, cachedResources, cron, Environment) {
+  function ($rootScope, $routeParams, $location, $http, $q, modal, resources, cachedResources, Environment) {
     var vm = this;
 
     vm.environment = {};
