@@ -2,7 +2,6 @@
 
 'use strict';
 
-const util = require('util');
 const masterAccountClient = require('modules/amazon-client/masterAccountClient');
 const SNS = require('models/SNS');
 
