@@ -3,7 +3,7 @@
 'use strict';
 
 let _ = require('lodash');
-let scheduling = require('modules/scheduling')
+let scheduling = require('modules/scheduling');
 let sender = require('modules/sender');
 let ScanDynamoResources = require('queryHandlers/ScanDynamoResources');
 let Environment = require('models/Environment');

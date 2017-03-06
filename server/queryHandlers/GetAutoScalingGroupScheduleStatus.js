@@ -2,7 +2,7 @@
 
 'use strict';
 
-let cronService = require('modules/cronService')();
+let scheduling = require('modules/scheduling');
 
 function getAutoScalingGroup(query) {
   let sender = require('modules/sender');
@@ -27,7 +27,7 @@ function getAutoScalingGroupScheduledActions(query) {
 function maybeGetEnvironmentDefaultSchedule(schedule, query) {
   if (schedule) {
     return Promise.resolve({
-      status: cronService.getActionBySchedule(schedule, query.date)
+      status: scheduling.expectedStateFromSchedule(schedule, query.date).toUpperCase()
     });
   }
 
