@@ -955,8 +955,9 @@ paths:
       parameters:
         - name: Params
           in: body
-          type: object 
           required: true
+          schema:
+            $ref: '#/definitions/SNSNotification'
       responses: 
         200: 
           description: OK
@@ -971,8 +972,9 @@ paths:
       parameters: 
         - name: Params
           in: body
-          type: object 
           required: true
+          schema:
+            $ref: '#/definitions/SNSNotification'
       responses: 
         200: 
           description: OK
@@ -2252,6 +2254,13 @@ definitions:
               type: integer
             Type:
               type: string
+  SNSNotification: 
+    type: object 
+    required: 
+      - Message
+    properties: 
+      Message: 
+        type: string
   AccountConfig:
     type: object
     required:
