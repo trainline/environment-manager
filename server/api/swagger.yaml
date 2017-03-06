@@ -946,12 +946,18 @@ paths:
           description: OK
   /sns: 
     x-swagger-router-controller: snsController
-    get: 
+    put: 
       operationId: produceMessage
       summary: Create SNS Event.
       description: Create an SNS event. 
       tags: 
         - SNS
+      parameters:
+        - name: message
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/AccountConfig'
       responses: 
         200: 
           description: OK

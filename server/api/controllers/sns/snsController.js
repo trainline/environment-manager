@@ -3,6 +3,8 @@
 'use strict';
 
 const util = require('util');
+const masterAccountClient = require('modules/amazon-client/masterAccountClient');
+const SNS = require('models/SNS');
 
 // configure AWS
 // AWS.config.update({
@@ -13,16 +15,14 @@ const util = require('util');
 
 module.exports = {
   produceMessage(req, res, next) {
-    require('modules/amazon-client/masterAccountClient').createSNSClient()
+    const message = req.swagger.params.body.value;
+    masterAccountClient.createSnsClent()
       .then((snsClient) => {
-        snsClient.createTopic({
-          Name: 'Demo'
-        }, (err, result) => {
-          if (err !== null) {
-            return res.send(util.inspect(err));
-          }
-          return res.send(util.inspect(result));
-        });
+        let sns = new SNS(snsClient);
+        return sns.produceMessage(message);
+      })
+      .then(() => {
+        res.send({ ok: true });
       });
   }
 };
