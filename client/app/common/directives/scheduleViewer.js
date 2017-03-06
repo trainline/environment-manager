@@ -36,41 +36,49 @@ angular.module('EnvironmentManager.common')
           var schedule = parseScheduleTag(vm.schedule);
 
           vm.timezone = schedule.timezone.readable;
-          vm.crons = schedule.schedules.map(s => ({ cron: s.readable }));
+          vm.crons = schedule.schedules.map(function (s) { return { cron: s.readable }; });
 
-          var next = _.minBy(schedule.schedules, s => s.next.format('YYYY-MM-DDTHH:mm:ss'));
+          var next = _.minBy(schedule.schedules, function (s) { return s.next.format('YYYY-MM-DDTHH:mm:ss'); });
           vm.next = next.action + ': ' + next.next.format('ddd HH:mm') + ' (' + moment(next.next).tz('UTC').format('ddd HH:mm z') + ')';
         }
       }
 
       function parseScheduleTag(scheduleTag) {
-        let [cronsPart, timezonePart] = scheduleTag.split('|');
-        let timezoneCode = timezonePart ? timezonePart.trim() : 'UTC';
+        var parts = scheduleTag.split('|');
+        var cronsPart = parts[0];
+        var timezonePart = parts[1];
 
-        let currentLocalTime = moment.tz(moment.utc(), timezoneCode);
-        let timezone = timezoneCode + ' - Currently ' + currentLocalTime.format('HH:mm z');
+        var timezoneCode = timezonePart ? timezonePart.trim() : 'UTC';
 
-        let serialisedCrons = cronsPart.split(';');
-        let schedules = serialisedCrons.map((item) => {
-          let parts = item.split(':');
+        var currentLocalTime = moment.tz(moment.utc(), timezoneCode);
+        var timezone = timezoneCode + ' - Currently ' + currentLocalTime.format('HH:mm z');
 
-          let action = _.capitalize(parts[0].trim());
-          let cron = parts[1].trim();
+        var serialisedCrons = cronsPart.split(';');
+        var schedules = serialisedCrons.map(function (item) {
+          var parts = item.split(':');
 
-          let englishSchedule = prettyCron.toString(cron);
-          let readable = action + ': ' + englishSchedule.replace('Mon, Tue, Wed, Thu and Fri', 'Weekdays');
+          var action = _.capitalize(parts[0].trim());
+          var cron = parts[1].trim();
 
-          let schedule = later.parse.cron(cron);
-          let nextOccurrence = later.schedule(schedule).next(1, currentLocalTime.format('YYYY-MM-DDTHH:mm:ss'));
-          let next = moment.tz(moment(nextOccurrence).format('YYYY-MM-DDTHH:mm:ss'), timezoneCode);
+          var englishSchedule = prettyCron.toString(cron);
+          var readable = action + ': ' + englishSchedule.replace('Mon, Tue, Wed, Thu and Fri', 'Weekdays');
 
-          return { action, cron, readable, next };
+          var schedule = later.parse.cron(cron);
+          var nextOccurrence = later.schedule(schedule).next(1, currentLocalTime.format('YYYY-MM-DDTHH:mm:ss'));
+          var next = moment.tz(moment(nextOccurrence).format('YYYY-MM-DDTHH:mm:ss'), timezoneCode);
+
+          return {
+            action: action,
+            cron: cron,
+            readable: readable,
+            next: next
+          };
         });
 
         return {
-          schedules,
+          schedules: schedules,
           timezone: { code: timezoneCode, readable: timezone },
-          currentLocalTime
+          currentLocalTime: currentLocalTime
         };
       }
 
