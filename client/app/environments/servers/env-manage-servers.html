@@ -101,7 +101,7 @@
             <td>
               <a ng-if="role.hasScalingSchedule" ng-click="vm.showInstanceDetails(role.asgName, 'schedule')">Scheduled Scaling</a>
               <a ng-if="!role.hasScalingSchedule" ng-click="vm.showInstanceDetails(role.asgName, 'schedule')">
-                <schedule-viewer schedule="role.schedule"></schedule-viewer>
+                <schedule-viewer schedule="role.schedule" simple-view="true"></schedule-viewer>
               </a>
             </td>
           </tr>

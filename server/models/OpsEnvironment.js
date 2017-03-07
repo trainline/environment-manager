@@ -3,7 +3,7 @@
 'use strict';
 
 let _ = require('lodash');
-let cronService = require('modules/cronService')();
+let scheduling = require('modules/scheduling');
 let sender = require('modules/sender');
 let ScanDynamoResources = require('queryHandlers/ScanDynamoResources');
 let Environment = require('models/Environment');
@@ -18,14 +18,8 @@ class OpsEnvironment {
 
   getScheduleStatus(date) {
     let env = this.Value;
-    if (env.ScheduleAutomatically) {
-      let schedule = cronService.getActionBySchedule(env.DefaultSchedule, date);
-      return schedule || 'ON';
-    }
-
-    return env.ManualScheduleUp ? 'ON' : 'OFF';
+    return scheduling.expectedStateFromSchedule(env, date).toUpperCase();
   }
-
 
   toAPIOutput() {
     let self = this;
