@@ -5,6 +5,7 @@
 const _ = require('lodash');
 const parseSchedule = require('./parseSchedule');
 const later = require('later');
+const moment = require('moment-timezone');
 
 const actions = {
   switchOn: 'switchOn',
@@ -31,12 +32,17 @@ const skipReasons = {
   stateIsCorrect: 'The instance is already in the correct state'
 };
 
+const states = {
+  on: 'on',
+  off: 'off'
+};
+
 const lifeCycleStates = {
   inService: 'InService',
   outOfService: 'Standby'
 };
 
-const states = {
+const currentStates = {
   on: 'on',
   off: 'off',
   transitioning: 'transitioning'
@@ -66,7 +72,8 @@ function actionForInstance(instance, dateTime) {
     return skip(skipReasons.explicitNoSchedule, source);
   }
 
-  let expectedState = expectedStateFromSchedule(schedule, dateTime);
+  let localTime = convertToLocalTime(dateTime, parseResult.timezone);
+  let expectedState = expectedStateFromParsedSchedule(schedule, localTime);
 
   if (expectedState.noSchedule) {
     return skip(skipReasons.stateIsCorrect);
@@ -79,14 +86,43 @@ function actionForInstance(instance, dateTime) {
   return switchOff(instance, source);
 }
 
+function expectedStateFromSchedule(schedule, dateTime) {
+  let parsedSchedule =
+    isEnvironmentSchedule(schedule) ?
+      parseEnvironmentSchedule(schedule) :
+      parseSchedule(schedule);
+
+  if (!parsedSchedule.success) {
+    throw parsedSchedule.error;
+  }
+
+  if (parsedSchedule.schedule.skip) {
+    throw new Error('Cannot get state with NOSCHEDULE');
+  }
+
+  let localTime = convertToLocalTime(dateTime, parsedSchedule.timezone);
+  let expectedState = expectedStateFromParsedSchedule(parsedSchedule.schedule, localTime);
+
+  if (expectedState.noSchedule) {
+    throw new Error('Could not find state from schedule');
+  }
+
+  return expectedState;
+}
+
+function isEnvironmentSchedule(schedule) {
+  let environmentScheduleProperties = ['DefaultSchedule', 'ManualScheduleUp', 'ScheduleAutomatically'];
+  return _.some(environmentScheduleProperties, p => schedule[p] !== undefined);
+}
+
 function switchOn(instance, source) {
   let currentState = currentStateOfInstance(instance);
 
-  if (currentState === states.off) {
+  if (currentState === currentStates.off) {
     return takeAction(actions.switchOn, source);
   }
 
-  if (currentState === states.transitioning) { return skip(skipReasons.transitioning); }
+  if (currentState === currentStates.transitioning) { return skip(skipReasons.transitioning); }
 
   if (instance.AutoScalingGroup) {
     let lifeCycleState = getAsgInstanceLifeCycleState(instance);
@@ -118,11 +154,11 @@ function switchOff(instance, source) {
 
   let currentState = currentStateOfInstance(instance);
 
-  if (currentState === states.on) {
+  if (currentState === currentStates.on) {
     return takeAction(actions.switchOff, source);
   }
 
-  if (currentState === states.transitioning) {
+  if (currentState === currentStates.transitioning) {
     return skip(skipReasons.transitioning);
   }
 
@@ -158,32 +194,46 @@ function getScheduleForInstance(instance) {
 }
 
 function parseEnvironmentSchedule(environmentSchedule) {
-  if (environmentSchedule.ManualScheduleUp === false && environmentSchedule.ScheduleAutomatically === false) {
-    return { success: true, schedule: { permanent: 'off' } };
+  if (environmentIsScheduledOff(environmentSchedule)) {
+    return { success: true, schedule: { permanent: states.off } };
   }
 
-  if (!(environmentSchedule.ManualScheduleUp !== true && environmentSchedule.ScheduleAutomatically === true)) {
-    return { success: true, schedule: { permanent: 'on' } };
+  if (environmentIsScheduledOn(environmentSchedule)) {
+    return { success: true, schedule: { permanent: states.on } };
   }
 
   return parseSchedule(environmentSchedule.DefaultSchedule);
 }
 
-function expectedStateFromSchedule(schedules, dateTime) {
+function environmentIsScheduledOff(schedule) {
+  return schedule.ManualScheduleUp === false && schedule.ScheduleAutomatically === false;
+}
+
+function environmentIsScheduledOn(schedule) {
+  return !(schedule.ManualScheduleUp !== true && schedule.ScheduleAutomatically === true);
+}
+
+function expectedStateFromParsedSchedule(schedules, dateTime) {
   if (schedules.permanent) {
     return schedules.permanent;
   }
 
-  let scheduleStates = schedules.map(schedule => ({
-    dateTime: later.schedule(schedule.recurrence).prev(1, dateTime),
-    state: schedule.state
-  }));
+  let scheduleStates = schedules.map((schedule) => {
+    return {
+      dateTime: later.schedule(schedule.recurrence).prev(1, dateTime),
+      state: schedule.state
+    };
+  });
 
   let latest = _.maxBy(scheduleStates, scheduleState => scheduleState.dateTime);
 
   if (latest.dateTime === 0) { return { noSchedule: true }; }
 
   return latest.state;
+}
+
+function convertToLocalTime(dateTime, timezone) {
+  return moment.tz(dateTime, 'utc').tz(timezone || 'utc').format('YYYY-MM-DDTHH:mm:ss');
 }
 
 function getTagValue(instance, tagName) {
@@ -195,10 +245,10 @@ function getTagValue(instance, tagName) {
 }
 
 function currentStateOfInstance(instance) {
-  if (instance.State.Name === 'running') return states.on;
-  if (instance.State.Name === 'stopped') return states.off;
+  if (instance.State.Name === 'running') return currentStates.on;
+  if (instance.State.Name === 'stopped') return currentStates.off;
 
-  return states.transitioning;
+  return currentStates.transitioning;
 }
 
 function skip(reason, source) {
@@ -213,5 +263,7 @@ module.exports = {
   actions,
   sources,
   skipReasons,
-  actionForInstance
+  states,
+  actionForInstance,
+  expectedStateFromSchedule
 };

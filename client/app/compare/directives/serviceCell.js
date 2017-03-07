@@ -19,7 +19,7 @@ angular.module('EnvironmentManager.compare').component('serviceCell', {
     }
 
     var html = '<table class="table service-hover-table">';
-    html += '<tr><th>Server role</th><th>Version</th></tr>';
+    html += '<tr><th>Server role</th><th>Version</th><th>State</th></tr>';
     _.forEach(this.data.serverRoles, function (deployments, serverRoleName) {
       deployments = deployments.sort(function (a, b) {
         return comparisons.semver(a.version, b.version);
@@ -30,6 +30,11 @@ angular.module('EnvironmentManager.compare').component('serviceCell', {
         html += '<td>' + deployment.version;
         if (deployment.slice !== 'none') {
           html += ' (<span class="slice-symbol ' + deployment.slice + '"></span>' + deployment.slice + ' )';
+        }
+        html += '</td>';
+        html += '<td>';
+        if (deployment.State) {
+          html += deployment.State;
         }
         html += '</td>';
         html += '</tr>';

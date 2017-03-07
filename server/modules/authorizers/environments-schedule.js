@@ -11,7 +11,7 @@ const ACTION = environmentProtection.SCHEDULE_ENVIRONMENT;
 function getCurrentEnvironment(name, user) {
   let sender = require('modules/sender');
 
-  return awsAccounts.getMasterAccountname()
+  return awsAccounts.getMasterAccountName()
     .then((masterAccountName) => {
       let query = {
         name: 'GetDynamoResource',
