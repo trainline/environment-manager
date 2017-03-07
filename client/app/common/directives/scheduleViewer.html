@@ -1,8 +1,24 @@
 <div class="schedule-viewer">
   <span ng-show="!vm.crons && !vm.showOnlyCronSchedules">{{vm.simpleOption}}</span>
-  <ul ng-show="vm.crons">
-    <li ng-repeat="cron in vm.crons">
-      {{ cron.cron }}
-    </li>
-  </ul>
+
+  <div ng-show="vm.crons && vm.simpleView">
+    <ul>
+      <li ng-repeat="cron in vm.crons">
+        {{ cron.cron }}
+      </li>
+    </ul>
+    <div>in {{ vm.timezone.code }} time</div>
+  </div>
+
+  <div ng-show="vm.crons && vm.detailedView">
+    <div class="timezone"><b>Time Zone: </b><br />{{ vm.timezone.readable }}</div>
+    <b>Rules: </b>
+    <ul>
+      <li ng-repeat="cron in vm.crons">
+        {{ cron.cron }}
+      </li>
+    </ul>
+    <div class="timezone"><b>Next action: </b><br />{{ vm.next }}</div>
+  </div>
+
 </div>

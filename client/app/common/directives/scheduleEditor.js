@@ -17,16 +17,24 @@ angular.module('EnvironmentManager.common')
     controller: function ($scope) {
       var vm = this;
 
+      vm.timezones = moment.tz.names();
+
       if (!vm.schedule || vm.schedule.toUpperCase() === 'NOSCHEDULE') {
         vm.schedule = '';
       } else if (vm.schedule === '247') {
         vm.schedule = 'ON';
       }
 
+      vm.updateTimeZone = function () {
+        vm.updateSchedule();
+      };
+
       vm.updateSchedule = function () {
-        vm.schedule = _.join(vm.crons.map(function (cron) {
+        var cronString = _.join(vm.crons.map(function (cron) {
           return cron.cron;
         }), '; ');
+        var useTimeZone = vm.timezone && vm.timezone.trim().toLowerCase() !== 'utc';
+        vm.schedule = cronString + (useTimeZone ? ' | ' + vm.timezone : '');
       };
 
       vm.add = function () {
@@ -42,16 +50,21 @@ angular.module('EnvironmentManager.common')
 
       vm.useSpecificClicked = function () {
         if (!vm.schedule || vm.schedule.indexOf(':') === -1) {
-          vm.schedule = 'Start: 0 8 * * 1,2,3,4,5; Stop: 0 19 * * 1,2,3,4,5';
+          vm.schedule = 'Start: 0 8 * * 1,2,3,4,5; Stop: 0 19 * * 1,2,3,4,5 | ' + moment.tz.guess();
         }
       };
 
       function loadSchedule() {
         vm.crons = [];
+        vm.timezone = 'UTC';
         if (vm.schedule && vm.schedule.indexOf(':') !== -1) {
-          vm.crons = vm.schedule.split(';').map(function (cron) {
+          var parts = vm.schedule.split('|');
+          vm.crons = parts[0].split(';').map(function (cron) {
             return { cron: cron.trim() };
           });
+          if (parts.length === 2) {
+            vm.timezone = parts[1].trim();
+          }
         }
       }
 

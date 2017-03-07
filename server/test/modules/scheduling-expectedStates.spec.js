@@ -28,32 +28,32 @@ describe('scheduling (expected states)', () => {
       let schedule = 'blah blah';
       let dateTime = '2015-12-31T23:59:59';
 
-      let fn = () => scheduling.expectedStateFromSchedule(schedule, dateTime);
-      expect(fn).to.throw();
+      let determinedState = scheduling.expectedStateFromSchedule(schedule, dateTime);
+      expect(determinedState).to.equal('INVALID SCHEDULE');
     });
 
     it('should throw an error if cron is invalid', () => {
       let schedule = 'blah: 0 0 1 1 * 2016';
       let dateTime = '2015-12-31T23:59:59';
 
-      let fn = () => scheduling.expectedStateFromSchedule(schedule, dateTime);
-      expect(fn).to.throw();
+      let determinedState = scheduling.expectedStateFromSchedule(schedule, dateTime);
+      expect(determinedState).to.equal('INVALID SCHEDULE');
     });
 
     it('should signal no schedule if no previous action found', () => {
       let schedule = 'stop: 0 0 1 1 * 2016; start: 0 1 1 1 * 2016';
       let dateTime = '2015-12-31T23:59:59';
 
-      let fn = () => scheduling.expectedStateFromSchedule(schedule, dateTime);
-      expect(fn).to.throw('Could not find state from schedule');
+      let determinedState = scheduling.expectedStateFromSchedule(schedule, dateTime);
+      expect(determinedState).to.equal('NOT FOUND');
     });
 
     it('should signal no schedule if explicit no schedule', () => {
       let schedule = 'noschedule';
       let dateTime = '2015-12-31T23:59:59';
 
-      let fn = () => scheduling.expectedStateFromSchedule(schedule, dateTime);
-      expect(fn).to.throw('Cannot get state with NOSCHEDULE');
+      let determinedState = scheduling.expectedStateFromSchedule(schedule, dateTime);
+      expect(determinedState).to.equal('NO SCHEDULE');
     });
   });
 
