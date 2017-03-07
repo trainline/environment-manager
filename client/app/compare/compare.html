@@ -2,6 +2,7 @@
   <div class="row">
     <div class="col-md-12">
       <h2>Compare</h2>
+      <h3>Unless a State is selected, all information will be shown here. That information may not be comparable.</h3>
     </div>
   </div>
   <form id="SearchFilter" class="form-inline">
@@ -9,20 +10,33 @@
       <label class="control-label text-left">Compare:</label>
     </div>
     <div class="form-group">
-      <select class="form-control" ng-model="vm.selected.comparable" ng-options="cr as cr.name for cr in vm.comparableResources" ng-change="vm.onSelectionChanged()"></select>
+      <select class="form-control" ng-model="vm.selected.comparable" ng-options="cr as cr.name for cr in vm.comparableResources"
+        ng-change="vm.onSelectionChanged()"></select>
       <br />
     </div>
+
+    <div class="form-group" ng-if="vm.selected.comparable.key === 'versions'">
+      <label class="control-label text-left">State:</label>
+    </div>
+    <div class="form-group" ng-if="vm.selected.comparable.key === 'versions'">
+      <select class="form-control" ng-model="vm.selected.state" ng-change="vm.onSelectionChanged()">
+        <option ng-repeat="s in vm.states" ng-selected="{{s == vm.selected.state}}" value="{{s}}">{{s}}</option>
+      </select>
+    </div>
+
     <div class="form-group">
       <label class="control-label text-left">Primary Environment:</label>
     </div>
     <div class="form-group">
-      <select class="form-control" ng-model="vm.selected.primaryEnvironment" ng-options="env as env.EnvironmentName for env in vm.environments" ng-change="vm.onSelectionChanged()"></select>
+      <select class="form-control" ng-model="vm.selected.primaryEnvironment" ng-options="env as env.EnvironmentName for env in vm.environments"
+        ng-change="vm.onSelectionChanged()"></select>
     </div>
     <div ng-show="vm.selected.primaryEnvironment" class="form-group">
       <label class="control-label text-left">Compare With:</label>
     </div>
     <div ng-show="vm.selected.primaryEnvironment" class="form-group">
-      <ui-select style="width: 330px;" multiple limit="5" ng-model="vm.selected.environments" ng-change="vm.onSelectionChanged()" theme="bootstrap">
+      <ui-select style="width: 330px;" multiple limit="5" ng-model="vm.selected.environments" ng-change="vm.onSelectionChanged()"
+        theme="bootstrap">
         <ui-select-match placeholder="Select up to 5 environments..">
           {{ $item.EnvironmentName }}
         </ui-select-match>
@@ -37,15 +51,6 @@
     <div class="form-group" ng-if="vm.selected.comparable.key === 'versions'">
       <select class="form-control" ng-model="vm.selected.cluster" ng-change="vm.onSelectionChanged()">
         <option ng-repeat="c in vm.clustersList" ng-selected="{{c == vm.selected.cluster}}" value="{{c}}">{{c}}</option>
-      </select>
-    </div>
-
-    <div class="form-group" ng-if="vm.selected.comparable.key === 'versions'">
-      <label class="control-label text-left">State:</label>
-    </div>
-    <div class="form-group" ng-if="vm.selected.comparable.key === 'versions'">
-      <select class="form-control" ng-model="vm.selected.state" ng-change="vm.onSelectionChanged()">
-        <option ng-repeat="s in vm.states" ng-selected="{{s == vm.selected.state}}" value="{{s}}">{{s}}</option>
       </select>
     </div>
   </form>
