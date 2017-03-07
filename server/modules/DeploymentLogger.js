@@ -57,21 +57,16 @@ module.exports = {
     return Promise.all([
       Promise.resolve(deploymentLogsStreamer.log(deploymentStatus.deploymentId, deploymentStatus.accountName, newStatus.reason))
         .then(() => deploymentLogsStreamer.flush(deploymentStatus.deploymentId))
-        .then(() => updateDeploymentDynamoTable(deploymentStatus, newStatus)).catch(error => logger.error(error)),
+        .then(() => updateDeploymentDynamoTable(deploymentStatus, newStatus))
+        .catch(error => logger.error(error)),
       updateDeploymentTargetState(deploymentStatus, newStatus).catch(error => logger.error(error))
     ]);
   }
 };
 
-
 function updateDeploymentDynamoTable(deploymentStatus, newStatus) {
-  let endTimestamp = newStatus.name !== Enums.DEPLOYMENT_STATUS.InProgress ? new Date().toISOString() : undefined;
-
-  let errorReason = null;
-  // No error
-  if (newStatus.name === Enums.DEPLOYMENT_STATUS.Failed && newStatus.reason !== undefined) {
-    errorReason = newStatus.reason;
-  }
+  let endTimestamp = createDefaultTimestampForInProgress();
+  let errorReason = setAttributesInCaseOfError();
 
   let command = {
     name: 'UpdateDynamoResource',
@@ -87,6 +82,21 @@ function updateDeploymentDynamoTable(deploymentStatus, newStatus) {
   };
 
   return sender.sendCommand({ command, user: systemUser });
+
+  function createDefaultTimestampForInProgress() {
+    return newStatus.name !== Enums.DEPLOYMENT_STATUS.InProgress ? new Date().toISOString() : undefined;
+  }
+
+  function setAttributesInCaseOfError() {
+    if (hasFailed()) {
+      errorReason = newStatus.reason;
+      endTimestamp = new Date().toISOString();
+    }
+
+    function hasFailed() {
+      return newStatus.name === Enums.DEPLOYMENT_STATUS.Failed && newStatus.reason !== undefined;
+    }
+  }
 }
 
 function updateDeploymentTargetState(deploymentStatus, newStatus) {
