@@ -2,6 +2,7 @@
 
 'use strict';
 
+let scheduling = require('modules/scheduling');
 let cronService = require('modules/cronService')();
 
 function getAutoScalingGroup(query) {
@@ -27,7 +28,7 @@ function getAutoScalingGroupScheduledActions(query) {
 function maybeGetEnvironmentDefaultSchedule(schedule, query) {
   if (schedule) {
     return Promise.resolve({
-      status: cronService.getActionBySchedule(schedule, query.date)
+      status: scheduling.expectedStateFromSchedule(schedule, query.date).toUpperCase()
     });
   }
 
@@ -60,7 +61,7 @@ function handler(query) {
     if (scheduledActions.length) {
       return {
         status: 'ON',
-        size: cronService.getSizeBySchedule(scheduledActions, query.date)
+        size: cronService.getSizeBySchedule(scheduledActions, query.date) // Todo(Dave): Last cronService usage!
       };
     }
 

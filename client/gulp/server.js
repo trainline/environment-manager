@@ -37,7 +37,7 @@ function browserSyncInit(baseDir, browser) {
    *
    * For more details and option, https://github.com/chimurai/http-proxy-middleware/blob/v0.9.0/README.md
    */
-  server.middleware = proxyMiddleware(['/api', '/user.js', '/cronService.js'], { target: 'http://localhost:8080', changeOrigin: true });
+  server.middleware = proxyMiddleware(['/api', '/user.js'], { target: 'http://localhost:8080', changeOrigin: true });
 
   browserSync.instance = browserSync.init({
     startPath: '/',

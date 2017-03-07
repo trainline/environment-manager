@@ -19,6 +19,12 @@
       <input type="radio" ng-click="vm.useSpecificClicked()" ng-checked="vm.schedule.indexOf(':') >= 0"> Use specific times
     </label><br />
   </div>
+  <div ng-show="vm.schedule.indexOf(':') >= 0 || !vm.showSpecific" class="schedule-timezone form-inline">
+    <label class="control-label text-left nonbold">Time Zone: </label>
+    <select class="form-control" ng-model="vm.timezone" ng-change="vm.updateTimeZone()">
+      <option ng-repeat="timezone in vm.timezones" value="{{timezone}}">{{timezone}}</option>
+	  </select>
+  </div>
   <div ng-show="vm.schedule" class="schedule-line" ng-repeat="cron in vm.crons">
     <cron-editor cron="cron"></cron-editor>
     <button class="btn btn-danger" ng-click="vm.remove(cron)">X</button>

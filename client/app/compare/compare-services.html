@@ -11,9 +11,11 @@
       <td width="300px">{{ service.key }}</td>
       <td width="300px">
         <service-cell data="service.primary" ng-if="service.primary"></service-cell>
+        <span ng-if="!service.primary"><span class="glyphicon glyphicon-info-sign"></span> Service not found in this environment. </span>
       </td>
       <td width="300px" class="text-nowrap" ng-repeat="env in vm.selected.environments" ng-init='comparison = service.comparisons[env.EnvironmentName]'>
         <service-cell data="comparison" ng-if="comparison"></service-cell>
+        <span ng-if="!comparison"><span class="glyphicon glyphicon-info-sign"></span> Service not found in this environment.</span>
       </td>
     </tr>
   </tbody>

@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ManageEnvironmentScheduleController',
-  function ($rootScope, $routeParams, $location, $q, modal, resources, $http, cachedResources, cron, Environment) {
+  function ($rootScope, $routeParams, $location, $q, modal, resources, $http, cachedResources, Environment) {
     var PROTECTED_ACTION = 'SCHEDULE_ENVIRONMENT';
 
     var vm = this;
@@ -39,9 +39,6 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
         vm.Operations = operations;
         vm.OperationsVersion = operations.Version;
 
-        var scheduleAction = GetScheduleAction(operations.Value);
-        vm.Operations.getScheduleAction = function () { return scheduleAction; };
-
         vm.NewSchedule = {
           DefaultSchedule: operations.Value.DefaultSchedule,
           Type: operations.Value.ScheduleAutomatically ? 'Automatic' : operations.Value.ManualScheduleUp ? 'On' : 'Off'
@@ -52,9 +49,18 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
         .then(function (operations) {
           assignToTheScope(operations);
           vm.DataFound = true;
-        }, function () {
+        })
+        .then(function () {
+          var environmentName = GetActiveEnvironment();
+          return getEnvironmentScheduleStatus(environmentName).then(function(result){
+            var scheduleAction = result.data.Status;
+            vm.Operations.getScheduleAction = function () { return scheduleAction; };
+          });
+        })
+        .catch(function () {
           vm.DataFound = false;
-        }).finally(function () {
+        })
+        .finally(function () {
           vm.DataLoading = false;
         });
     };
@@ -102,18 +108,8 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       });
     };
 
-    function GetScheduleAction(data) {
-      function GetCurrentSchedule() {
-        if (data.ScheduleAutomatically === false) {
-          if (data.ManualScheduleUp === true) return 'ON';
-          if (data.ManualScheduleUp === false) return 'OFF';
-        }
-
-        return data.DefaultSchedule;
-      }
-
-      var schedule = GetCurrentSchedule();
-      return cron.getActionBySchedule(schedule);
+    function getEnvironmentScheduleStatus(environmentName) {
+      return $http.get('/api/v1/environments/' + environmentName + '/schedule-status');
     }
 
     function GetActiveEnvironment() {

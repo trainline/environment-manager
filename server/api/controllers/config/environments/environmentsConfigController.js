@@ -95,17 +95,24 @@ function deleteEnvironmentConfigByName(req, res, next) {
 
 function deleteLBSettingsForEnvironment(environmentName, accountName, user) {
   return co(function* () {
-    let lbSettingsList = yield lbSettingsTable.queryRangeByKey(environmentName);
+    let lbSettingsList = yield ignoreNotFoundResults(lbSettingsTable.queryRangeByKey(environmentName));
     return lbSettingsList.map(lbSettings => lbSettingsTable.deleteWithSortKey(environmentName, lbSettings.VHostName, user, { accountName }));
   });
 }
 
 function deleteLBUpstreamsForEnvironment(environmentName, accountName, user) {
   return co(function* () {
-    let allLBUpstreams = yield lbUpstreamsTable.getAll(null, { accountName });
+    let allLBUpstreams = yield ignoreNotFoundResults(lbUpstreamsTable.getAll(null, { accountName }));
     let lbUpstreams = allLBUpstreams.filter(lbUpstream => lbUpstream.Value.EnvironmentName.toLowerCase() === environmentName.toLowerCase());
 
     return lbUpstreams.map(lbUpstream => lbUpstreamsTable.delete(lbUpstream.key, user, { accountName }));
+  });
+}
+
+function ignoreNotFoundResults(promise) {
+  return promise.catch((err) => {
+    if (err.message.match(/^No .* items found .*$/)) return [];
+    throw err;
   });
 }
 
