@@ -9,7 +9,6 @@ function deploymentView(deploymentRecord, clusters) {
   function getDuration() {
     var startTime = moment(deployment.StartTimestamp);
 
-    console.log(deployment)
     if (deployment.Status.toLowerCase() === 'in progress') {
       return {
         label: 'Started',

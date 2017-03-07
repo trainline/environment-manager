@@ -99,8 +99,6 @@ function updateDeploymentDynamoTable(deploymentStatus, newStatus) {
   }
 }
 
-
-
 function updateDeploymentTargetState(deploymentStatus, newStatus) {
   let command = {
     name: 'UpdateTargetState',
