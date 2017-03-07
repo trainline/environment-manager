@@ -11,7 +11,7 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
 
     vm.environments = [];
     vm.selected = {};
-    vm.states = [SHOW_ALL_OPTION].concat(['ACTIVE']);
+    vm.states = [SHOW_ALL_OPTION].concat(['Active']);
     vm.selected.state = SHOW_ALL_OPTION;
     vm.dataLoading = false;
 
@@ -87,6 +87,7 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
         .then(markItemsWithMoreThanOneActiveSliceData)
         .then(setStateOfDataWithDeploymentsMatchingSliceData)
         .then(markItemsWithNoStateButMultipleDeployments)
+        .then(markSingleItemDeploymentsAsActive)
         .then(function (final) {
           return final;
         });
@@ -224,6 +225,17 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
       return data;
     }
 
+    function markSingleItemDeploymentsAsActive(data) {
+      getComparableData(data).forEach(function (d) {
+        if (d.deployments && d.deployments.length === 1) {
+          d.deployments[0].State = 'Active';
+          d.Comparable = true;
+        }
+      });
+
+      return data;
+    }
+
     function createListOfSliceDataRequests(data) {
       var promises = [];
       var upstreams = [];
@@ -302,8 +314,11 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
         vm.view = serviceComparison(data, primaryEnvironment, secondaryEnvironments);
 
         if (vm.selected.state.toUpperCase() === 'ACTIVE') {
+          vm.view.compare(vm.view.items, primaryEnvironment, secondaryEnvironments);
+          markItemsThatHaveMoreThanOneServiceWithNoActive(vm.view.items);
           markItemsAsUncomparable(vm.view.items, true);
         } else {
+          cleanDeploymentsOfComparableMarkings(vm.view.items);
           markItemsAsUncomparable(vm.view.items, false);
         }
 
@@ -321,6 +336,36 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
         // generic object comparison
         vm.view = new ResourceComparison(data, primaryEnvironment, secondaryEnvironments);
       }
+    }
+
+    function markItemsThatHaveMoreThanOneServiceWithNoActive(items) {
+      items.forEach(function (item) {
+        if (item.primary && !item.primary.Comparable) {
+          item.primary.deployments.Comparable = false;
+        }
+        if (item.comparisons) {
+          Object.keys(item.comparisons).forEach(function (key) {
+            if (item.comparisons[key] && !item.comparisons[key].Comparable) {
+              item.comparisons[key].deployments.Comparable = false;
+            }
+          });
+        }
+      });
+    }
+
+    function cleanDeploymentsOfComparableMarkings(items) {
+      items.forEach(function (item) {
+        if (item.primary && item.primary.deployments) {
+          delete item.primary.deployments.Comparable;
+        }
+        if (item.comparisons) {
+          Object.keys(item.comparisons).forEach(function (key) {
+            if (item.comparisons[key]) {
+              delete item.comparisons[key].deployments.Comparable;
+            }
+          });
+        }
+      });
     }
 
     init();
