@@ -214,7 +214,7 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
               hasState = true;
             }
           });
-          
+
           if (!hasState) {
             d.Comparable = false;
           }
@@ -299,7 +299,6 @@ angular.module('EnvironmentManager.compare').controller('CompareController',
       var filterCluster = vm.selected.cluster === SHOW_ALL_OPTION ? null : vm.selected.cluster;
 
       if (vm.selected.comparable.key === 'versions') {
-
         vm.view = serviceComparison(data, primaryEnvironment, secondaryEnvironments);
 
         if (vm.selected.state.toUpperCase() === 'ACTIVE') {
