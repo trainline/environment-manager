@@ -14,7 +14,6 @@
       </td>
       <td width="300px" class="text-nowrap" ng-repeat="env in vm.selected.environments" ng-init='comparison = service.comparisons[env.EnvironmentName]'>
         <service-cell data="comparison" ng-if="comparison"></service-cell>
-
       </td>
     </tr>
   </tbody>

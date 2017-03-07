@@ -1,5 +1,24 @@
 <div class="service-cell" uib-popover popover-trigger="'mouseenter'" uib-popover-html="$ctrl.popoverHtml" popover-placement="left">
   <div ng-repeat="deployment in $ctrl.data.deployments">
-    {{ deployment.version }} <span ng-if="deployment.slice !== 'none'">(<span class="slice-symbol" ng-class="deployment.slice"></span>{{ deployment.slice }} )</span>
+    <span ng-if="!$ctrl.data.Active">
+    {{ deployment.version }} <span ng-if="deployment.slice !== 'none'">(<span class="slice-symbol" ng-class="deployment.slice"></span>{{
+    deployment.slice }} )</span>
+    <span ng-if="deployment.versionCompare.toUpperCase() === 'SAME'"><span class="glyphicon glyphicon-minus"></span></span>
+    <span ng-if="deployment.versionCompare.toUpperCase() === 'NEWER'"><span class="glyphicon glyphicon-chevron-up"></span></span>
+    <span ng-if="deployment.versionCompare.toUpperCase() === 'OLDER'"><span class="glyphicon glyphicon-chevron-down"></span></span>
+    </span>
+
+    <span ng-if="$ctrl.data.Comparable && $ctrl.data.Active">
+    {{ deployment.version }} <span ng-if="deployment.slice !== 'none'">(<span class="slice-symbol" ng-class="deployment.slice"></span>{{
+    deployment.slice }} )</span>
+    <span ng-if="deployment.versionCompare.toUpperCase() === 'SAME'"><span class="glyphicon glyphicon-minus"></span></span>
+    <span ng-if="deployment.versionCompare.toUpperCase() === 'NEWER'"><span class="glyphicon glyphicon-chevron-up"></span></span>
+    <span ng-if="deployment.versionCompare.toUpperCase() === 'OLDER'"><span class="glyphicon glyphicon-chevron-down"></span></span>
+    </span>
+
+    <span ng-if="!$ctrl.data.Comparable && $ctrl.data.Active">
+      <span ng-if="deployment.slice !== 'none'">Unable to determine 'Active' slice.</span>
+    <span ng-if="deployment.slice === 'none'">{{ deployment.version }}</span>
+    </span>
   </div>
 </div>

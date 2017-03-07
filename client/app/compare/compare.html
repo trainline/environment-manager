@@ -39,6 +39,15 @@
         <option ng-repeat="c in vm.clustersList" ng-selected="{{c == vm.selected.cluster}}" value="{{c}}">{{c}}</option>
       </select>
     </div>
+
+    <div class="form-group" ng-if="vm.selected.comparable.key === 'versions'">
+      <label class="control-label text-left">State:</label>
+    </div>
+    <div class="form-group" ng-if="vm.selected.comparable.key === 'versions'">
+      <select class="form-control" ng-model="vm.selected.state" ng-change="vm.onSelectionChanged()">
+        <option ng-repeat="s in vm.states" ng-selected="{{s == vm.selected.state}}" value="{{s}}">{{s}}</option>
+      </select>
+    </div>
   </form>
   <hr />
   <spinner ng-show="vm.dataLoading"></spinner>

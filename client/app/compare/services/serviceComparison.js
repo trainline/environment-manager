@@ -19,7 +19,7 @@ angular.module('EnvironmentManager.compare').factory('serviceComparison',
       }
 
       function getItems(keys) {
-        return keys.map(function (key) {
+        var items = keys.map(function (key) {
           var primary = getByKeyAndEnvironment(data, key, primaryEnvironmentName);
           return {
             key: key,
@@ -27,6 +27,53 @@ angular.module('EnvironmentManager.compare').factory('serviceComparison',
             comparisons: getComparisons(primary, key)
           };
         });
+
+        decorateItemsWithVersionInformation(items);
+        return items;
+      }
+
+      function decorateItemsWithVersionInformation(items) {
+        items.forEach(function (item) {
+          addVersionInformationToItem(item);
+        });
+      }
+
+      function addVersionInformationToItem(item) {
+        if (!hasDeployment(item.primary)) return;
+
+        getComparisonsList(item).forEach(function (comparisonKey) {
+          createVersionCompareInformation(item, comparisonKey, getLatestDeploymentVersion(item.primary));          
+        });
+
+      }
+
+      function createVersionCompareInformation(item, comparisonKey, latestPrimaryDeploymentVersion) {
+        if (item.comparisons[comparisonKey] && hasDeployment(item.comparisons[comparisonKey])) {
+            var check = comparisons.semver(latestPrimaryDeploymentVersion, getLatestDeploymentVersion(item.comparisons[comparisonKey]));
+            if (check === -1) {
+              getLatestDeployment(item.comparisons[comparisonKey]).versionCompare = "NEWER";
+            } else if (check === 1) {
+              getLatestDeployment(item.comparisons[comparisonKey]).versionCompare = "OLDER";
+            } else {
+              getLatestDeployment(item.comparisons[comparisonKey]).versionCompare = "SAME";
+            }
+          }
+      }
+
+      function getComparisonsList(item) {
+        return Object.keys(item.comparisons);
+      }
+
+      function hasDeployment(item) {
+        return item && item.deployments && Array.isArray(item.deployments);
+      }
+
+      function getLatestDeployment(item) {
+        return item.deployments[item.deployments.length - 1];
+      }
+
+      function getLatestDeploymentVersion(item) {
+        return getLatestDeployment(item).version;
       }
 
       function getByKeyAndEnvironment(items, key, environmentName) {
