@@ -116,7 +116,9 @@ function getServiceAndSlice(obj) {
 }
 
 function getLogUrl(deploymentId, accountName, instanceId) {
-  return `/api/v1/deployments/${deploymentId}/log?account=${accountName}&instance=${instanceId}`;
+  return deploymentId ?
+    `/api/v1/deployments/${deploymentId}/log?account=${accountName}&instance=${instanceId}` :
+    null;
 }
 
 module.exports = {

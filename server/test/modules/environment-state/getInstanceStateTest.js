@@ -71,9 +71,9 @@ describe('getInstanceState', function () {
           setup();
         });
 
-        it(`should return ${expected} services`, () => {
+        it(`should return ${expected + unexpected} services`, () => {
           return sut().then((result) => {
-            assert.equal(result.Services.length, expected);
+            assert.equal(result.Services.length, expected + unexpected);
           });
         });
 
@@ -83,9 +83,9 @@ describe('getInstanceState', function () {
           });
         });
 
-        it(`should report ${installed} running services`, () => {
+        it(`should report ${installed + unexpected} running services`, () => {
           return sut().then((result) => {
-            assert.equal(result.RunningServicesCount, installed);
+            assert.equal(result.RunningServicesCount, installed + unexpected);
           });
         });
       });

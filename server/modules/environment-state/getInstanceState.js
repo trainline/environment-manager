@@ -9,7 +9,6 @@ let co = require('co');
 let Enums = require('Enums');
 let DIFF_STATE = Enums.DIFF_STATE;
 let DEPLOYMENT_STATUS = Enums.DEPLOYMENT_STATUS;
-let logger = require('modules/logger');
 let serviceUtil = require('./serviceStateUtils');
 
 /**
@@ -65,16 +64,9 @@ function* describeConsulService(context, service) {
   let targetService = _.find(targetServiceStates, {
     Name: serviceUtil.getSimpleServiceName(service.Service), Slice: service.Tags.slice });
 
-  if (targetService === undefined) {
-    return false; // It's not EM deployed service
-  }
   let deploymentId = _.get(targetService, 'DeploymentId') || null;
   let instanceDeploymentInfo = yield serviceTargets.getInstanceServiceDeploymentInfo(environmentName, deploymentId, instanceId);
-  if (instanceDeploymentInfo === undefined) {
-    logger.warn(`No deployment info found for ${service.Service}, ${environmentName}, ${deploymentId}, ${instanceId}`);
-    return false;
-  }
-  let deploymentStatus = instanceDeploymentInfo.Status;
+  let deploymentStatus = instanceDeploymentInfo ? instanceDeploymentInfo.Status : 'Success';
   let logURL = serviceUtil.getLogUrl(deploymentId, accountName, instanceId);
   let deploymentCause = yield serviceTargets.getServiceDeploymentCause(environmentName, deploymentId, instanceId);
   // Note: we use DeploymentId from targetService, because DeploymentId from catalog might be old - in case
