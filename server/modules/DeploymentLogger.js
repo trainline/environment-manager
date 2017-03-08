@@ -65,38 +65,26 @@ module.exports = {
 };
 
 function updateDeploymentDynamoTable(deploymentStatus, newStatus) {
-  let endTimestamp = createDefaultTimestampForInProgress();
-  let errorReason = setAttributesInCaseOfError();
+  let { Success, InProgress } = Enums.DEPLOYMENT_STATUS;
+  let running = newStatus.name === InProgress;
+  let succeeded = newStatus.name === Success;
+  let item = {
+    'Value.Status': newStatus.name,
+    'Value.Nodes': deploymentStatus.nodesDeployment || []
+  };
+  let errorReason = !running && !succeeded && newStatus.reason !== undefined
+    ? { 'Value.ErrorReason': newStatus.reason } : {};
+  let endTimestamp = running ? {} : { 'Value.EndTimestamp': new Date().toISOString() };
 
   let command = {
     name: 'UpdateDynamoResource',
     resource: 'deployments/history',
     accountName: deploymentStatus.accountName,
     key: deploymentStatus.deploymentId,
-    item: {
-      'Value.Status': newStatus.name,
-      'Value.ErrorReason': errorReason,
-      'Value.EndTimestamp': endTimestamp,
-      'Value.Nodes': deploymentStatus.nodesDeployment || []
-    }
+    item: Object.assign({}, item, errorReason, endTimestamp)
   };
 
   return sender.sendCommand({ command, user: systemUser });
-
-  function createDefaultTimestampForInProgress() {
-    return newStatus.name !== Enums.DEPLOYMENT_STATUS.InProgress ? new Date().toISOString() : undefined;
-  }
-
-  function setAttributesInCaseOfError() {
-    if (hasFailed()) {
-      errorReason = newStatus.reason;
-      endTimestamp = new Date().toISOString();
-    }
-
-    function hasFailed() {
-      return newStatus.name === Enums.DEPLOYMENT_STATUS.Failed && newStatus.reason !== undefined;
-    }
-  }
 }
 
 function updateDeploymentTargetState(deploymentStatus, newStatus) {
