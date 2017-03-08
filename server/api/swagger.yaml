@@ -944,40 +944,6 @@ paths:
       responses:
         200:
           description: OK
-  /sns/notification/OperationsChange: 
-    x-swagger-router-controller: snsController
-    put: 
-      operationId: publishOperations
-      summary: Publish an SNS Operations notification.
-      description: Create an SNS event. 
-      tags: 
-        - SNS
-      parameters:
-        - name: Params
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/SNSNotification'
-      responses: 
-        200: 
-          description: OK
-  /sns/notification/ConfigurationChange: 
-    x-swagger-router-controller: snsController
-    put: 
-      operationId: publishConfiguraton
-      summary: Publish an SNS Configuration notification.
-      description: Create an SNS event. 
-      tags: 
-        - SNS
-      parameters: 
-        - name: Params
-          in: body
-          required: true
-          schema:
-            $ref: '#/definitions/SNSNotification'
-      responses: 
-        200: 
-          description: OK
   /target-state/{environment}:
     x-swagger-router-controller: targetStateController
     get:
@@ -2254,13 +2220,6 @@ definitions:
               type: integer
             Type:
               type: string
-  SNSNotification: 
-    type: object 
-    required: 
-      - Message
-    properties: 
-      Message: 
-        type: string
   AccountConfig:
     type: object
     required:
