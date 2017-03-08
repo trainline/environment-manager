@@ -1,38 +1,37 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Publication of Environment Manager Change Events
 Resources:
-  EnvironmentManagerCongfigurationChange:
+  EMCreateConfigurationChangeEvent:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.configurationChange
       Runtime: nodejs4.3
-      CodeUri: file
-      Policies: AmazonDynamoDBReadOnlyAccess
-      # Environment:
-      #   Variables:
-      #     TABLE_NAME: !Ref Table
-      Events:
-        PutResourcee :
-          Type: Api
-          Properties:
-            Path: /events/configuration
-            Method: put
-  EnvironmentManagerOperationsChange:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: index.operationsChange
-      Runtime: nodejs4.3
-      # CodeUri: s3://bucketName/codepackage.zip
-      Policies: AmazonDynamoDBFullAccess
-      # Environment:
-      #   Variables:
-      #     TABLE_NAME: !Ref Table
+      Policies: AmazonSNSFullAccess
+      CodeUri: s3://sns-test-bucket-testing/EnvironmentManagerEvents.zip
       Events:
         PutResource:
           Type: Api
           Properties:
-            Path: /events/operations
+            Path: /events/configuration-change
             Method: put
-  # Table:
-  #   Type: AWS::Serverless::SimpleTable
+  EMCreateOperationsChangeEvent:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.operationsChange
+      Runtime: nodejs4.3
+      Policies: AmazonSNSFullAccess
+      CodeUri: s3://sns-test-bucket-testing/EnvironmentManagerEvents.zip
+      Events:
+        PutResource:
+          Type: Api
+          Properties:
+            Path: /events/operations-change
+            Method: put
+  EMConfigurationChange: 
+    Type: "AWS::SNS::Topic"
+    Properties: 
+      TopicName: "EMConfigurationChange"
+  EMOperationsChange:
+    Type: "AWS::SNS::Topic"
+    Properties: 
+      TopicName: "EMOperationsChange"
