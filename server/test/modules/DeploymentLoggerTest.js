@@ -25,7 +25,6 @@ let isDynamoUpdate = command =>
   command.name === 'UpdateDynamoResource' && command.resource === 'deployments/history';
 
 describe('DeploymentLogger', function () {
-
   let clock;
   before(function () {
     clock = sinon.useFakeTimers();
@@ -58,8 +57,6 @@ describe('DeploymentLogger', function () {
         'modules/logger': fakeLogger
       });
     });
-
-
 
     it('it should not set values to "undefined" in DynamoDB', function () {
       let newStatus = {
