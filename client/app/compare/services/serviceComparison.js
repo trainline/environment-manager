@@ -27,8 +27,6 @@ angular.module('EnvironmentManager.compare').factory('serviceComparison',
             comparisons: getComparisons(primary, key)
           };
         });
-
-        decorateItemsWithVersionInformation(items);
         return items;
       }
 
@@ -44,7 +42,6 @@ angular.module('EnvironmentManager.compare').factory('serviceComparison',
         getComparisonsList(item).forEach(function (comparisonKey) {
           createVersionCompareInformation(item, comparisonKey, getLatestDeploymentVersion(item.primary));          
         });
-
       }
 
       function createVersionCompareInformation(item, comparisonKey, latestPrimaryDeploymentVersion) {
@@ -102,7 +99,8 @@ angular.module('EnvironmentManager.compare').factory('serviceComparison',
 
       var keys = getKeys();
       return {
-        items: getItems(keys)
+        items: getItems(keys),
+        compare: decorateItemsWithVersionInformation
       };
     };
   }
