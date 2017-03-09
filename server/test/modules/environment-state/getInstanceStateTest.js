@@ -131,7 +131,8 @@ function createServiceStatePairs(targetState, currentState, state = 'Install') {
       `version:${serviceVersion}`,
       `slice:${serviceSlice}`,
       `owning_cluster:${owningCluster}`,
-      `server_role:${serverRole}`
+      `server_role:${serverRole}`,
+      `deployment_id:${deploymentId}`
     ]
   };
 

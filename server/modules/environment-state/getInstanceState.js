@@ -64,7 +64,10 @@ function* describeConsulService(context, service) {
   let targetService = _.find(targetServiceStates, {
     Name: serviceUtil.getSimpleServiceName(service.Service), Slice: service.Tags.slice });
 
-  let deploymentId = _.get(targetService, 'DeploymentId') || null;
+  let deploymentId = _.get(targetService, 'DeploymentId') || service.Tags.deployment_id;
+
+  if (!deploymentId) return false; // It's not EM deployed service
+
   let instanceDeploymentInfo = yield serviceTargets.getInstanceServiceDeploymentInfo(environmentName, deploymentId, instanceId);
   let deploymentStatus = instanceDeploymentInfo ? instanceDeploymentInfo.Status : 'Success';
   let logURL = serviceUtil.getLogUrl(deploymentId, accountName, instanceId);
