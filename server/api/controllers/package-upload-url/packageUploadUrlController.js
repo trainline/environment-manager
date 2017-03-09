@@ -42,9 +42,9 @@ function respondWithPreSignedUrl(request) {
       s3.getSignedUrl('putObject', params, (err, url) => {
         if (err) {
           log.error(`Creation of pre-signed package upload URL failed: ${err.message}\n${err.stack}`);
-          resolve(dynamicResponseCreator(request, 500));
+          resolve(response => response.status(500).send());
         } else {
-          resolve(dynamicResponseCreator(request, 200, url));
+          resolve(dynamicResponseCreator(200, url));
         }
       });
     }));
