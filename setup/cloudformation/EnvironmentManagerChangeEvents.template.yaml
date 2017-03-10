@@ -4,7 +4,7 @@ Resources:
   EMCreateConfigurationChangeEvent:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: index.configurationChange
+      Handler: index.handler
       Runtime: nodejs4.3
       Policies: AmazonSNSFullAccess
       CodeUri: s3://sns-test-bucket-testing/EnvironmentManagerEvents.zip
@@ -17,7 +17,7 @@ Resources:
   EMCreateOperationsChangeEvent:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: index.operationsChange
+      Handler: index.handler
       Runtime: nodejs4.3
       Policies: AmazonSNSFullAccess
       CodeUri: s3://sns-test-bucket-testing/EnvironmentManagerEvents.zip
