@@ -513,6 +513,26 @@ paths:
             properties:
               isProtected:
                 type: boolean
+  /environments/{name}/maintenance:
+    x-swagger-router-controller: environmentsController
+    get:
+      operationId: isEnvironmentInMaintenance
+      summary: Find if environment is in maintenance
+      tags:
+        - Environment
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The environment
+          schema:
+            type: object
+            properties:
+              isInMaintenance:
+                type: boolean
   /environments/{name}/servers:
     x-swagger-router-controller: environmentsController
     get:

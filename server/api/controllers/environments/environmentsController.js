@@ -42,6 +42,18 @@ function isEnvironmentProtectedFromAction(req, res) {
 }
 
 /**
+ * GET /environments/{name}/maintenance
+ */
+function isEnvironmentInMaintenance(req, res, next) {
+  const environmentName = req.swagger.params.name.value;
+
+  OpsEnvironment.getByName(environmentName)
+    .then((env) => {
+      res.json({ isInMaintenance: !!env.Value.EnvironmentInMaintenance });
+    }).catch(next);
+}
+
+/**
  * GET /environments/{name}/servers
  */
 function getEnvironmentServers(req, res, next) {
@@ -127,5 +139,6 @@ module.exports = {
   getEnvironmentScheduleStatus,
   putEnvironmentSchedule,
   getEnvironmentSchedule,
-  isEnvironmentProtectedFromAction
+  isEnvironmentProtectedFromAction,
+  isEnvironmentInMaintenance
 };
