@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-md-12">
       <h2>Compare</h2>
-      <h3>Unless a State is selected, all information will be shown here. That information may not be comparable.</h3>
+      <h3 ng-if="vm.selected.state !== 'Active'">Unless a State is selected, all information will be shown here. That information may not be comparable.</h3>
     </div>
   </div>
   <form id="SearchFilter" class="form-inline">
