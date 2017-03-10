@@ -6,6 +6,7 @@ describe('Create Event', () => {
   let sut;
 
   beforeEach(() => {
+    // eslint-disable-next-line global-require
     sut = require('../../EnvironmentManagerEvents/createEvent');
   });
 
@@ -29,10 +30,10 @@ describe('Create Event', () => {
   it('should fail if any message attributes are incorrect', () => {
     let event = createLambdaEvent();
     let invalidAttribute = {
-      Key: { DataType: "", StringValue: "" }
+      Key: { DataType: '', StringValue: '' }
     };
     event.attributes[invalidAttribute] = invalidAttribute;
-    
+
     assert.throws(() => {
       sut(event);
     });
@@ -57,8 +58,8 @@ describe('Create Event', () => {
 });
 
 function createLambdaEvent() {
-  return { 
+  return {
     message: 'This is the message',
-    attributes: { SomeKey: {DataType: "String", StringValue: "StringValueOfAttribute"}}
+    attributes: { SomeKey: { DataType: 'String', StringValue: 'StringValueOfAttribute' } }
   };
 }

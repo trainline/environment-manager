@@ -4,6 +4,7 @@
 
 exports.respond = (context) => {
   console.log('Context succeeded.');
+
   return (response) => {
     context.succeed({
       statusCode: 200,
@@ -14,7 +15,8 @@ exports.respond = (context) => {
 };
 
 exports.fail = (context) => {
-  console.log('Context failed.')
+  console.log('Context failed.');
+
   return (response) => {
     context.fail({
       statusCode: 500,

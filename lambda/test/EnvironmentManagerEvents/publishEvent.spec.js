@@ -12,9 +12,10 @@ describe('Publish Event', () => {
   beforeEach(() => {
     sut = rewire('../../EnvironmentManagerEvents/publishEvent');
     publishSpy = sinon.spy((name, cb) => { cb(); });
+    // eslint-disable-next-line no-underscore-dangle
     sut.__set__('aws', {
-      SNS: () => {
-        return ({ publish: publishSpy })
+      SNS: function SNS() {
+        this.publish = publishSpy;
       }
     });
     event = createValidEvent();
@@ -37,9 +38,9 @@ describe('Publish Event', () => {
   });
 
   it('should fail given a message attribute without a valid DataType', () => {
-    event.MessageAttributes['InvalidAttribute'] = {
-      DataType: "",
-      StringValue: "I have a valid string value!"
+    event.MessageAttributes.InvalidAttribute = {
+      DataType: '',
+      StringValue: 'I have a valid string value!'
     };
 
     assert.throws(() => {
@@ -58,16 +59,16 @@ describe('Publish Event', () => {
 
 function createValidEvent() {
   return {
-    TargetArn: "String Value To Represent ARN",
-    Message: "This is a string value to represent the message",
+    TargetArn: 'String Value To Represent ARN',
+    Message: 'This is a string value to represent the message',
     MessageAttributes: {
       AttrKeyOne: {
-        DataType: "String",
-        StringValue: "StringValue"
+        DataType: 'String',
+        StringValue: 'StringValue'
       },
       AttrKeyTwo: {
-        DataType: "String",
-        StringValue: "StringValue"
+        DataType: 'String',
+        StringValue: 'StringValue'
       }
     }
   };

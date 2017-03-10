@@ -6,7 +6,7 @@ let aws = require('aws-sdk');
 
 module.exports = (event) => {
   console.log('About to publish the event.');
-  
+
   if (!event.TargetArn)
     throw new Error('An event to be published must contain a TargetArn property.');
 
@@ -14,9 +14,10 @@ module.exports = (event) => {
     throw new Error('An event to be published must contain a Message property.');
 
   if (event.MessageAttributes)
-    for(let attr in event.MessageAttributes)
-      if (!event.MessageAttributes[attr].DataType)
+    Object.keys(event.MessageAttributes).forEach((k) => {
+      if (!event.MessageAttributes[k].DataType)
         throw new Error('All MessageAttribute values must contain a DataType property.');
+    });
 
   const sns = new aws.SNS();
 
@@ -25,5 +26,5 @@ module.exports = (event) => {
       if (err) reject(err);
       resolve(result);
     });
-  })
+  });
 };

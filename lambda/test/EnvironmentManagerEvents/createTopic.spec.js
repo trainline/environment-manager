@@ -5,19 +5,16 @@ const rewire = require('rewire');
 const sinon = require('sinon');
 
 describe('Create Event', () => {
-  let event;
-  let context;
   let createTopicSpy;
   let sut;
 
   beforeEach(() => {
-    event = {};
-    context = {};
     createTopicSpy = sinon.spy((name, cb) => { cb(); });
     sut = rewire('../../EnvironmentManagerEvents/createTopic');
+    /* eslint-disable no-underscore-dangle */
     sut.__set__('aws', {
-      SNS: () => {
-        return ({ createTopic: createTopicSpy })
+      SNS: function SNS() {
+        this.createTopic = createTopicSpy;
       }
     });
   });
@@ -31,12 +28,13 @@ describe('Create Event', () => {
       .catch((err) => {
         assert.equal(err, 'When creating a topic, a name parameter must be provided.');
         done();
-      })
-  })
+      });
+  });
 
   it('should reject with a name that is too long', (done) => {
     let tooLong = '';
-    for(let i = 0; i < 257; i += 1) 
+    let limit = 256;
+    for (let i = 0; i < (limit + 1); i += 1)
       tooLong += 'a';
     sut(tooLong)
       .catch((err) => {
@@ -49,6 +47,7 @@ describe('Create Event', () => {
     let nonAlphanumericName = 'abc123!"£$$';
     sut(nonAlphanumericName)
       .catch((err) => {
+        // eslint-disable-next-line max-len
         assert.equal(err, 'When creating a topic, a name parameter must be made up of only uppercase and lowercase ASCII letters, numbers, underscores, and hyphens.');
         done();
       });
@@ -57,7 +56,7 @@ describe('Create Event', () => {
   it('should create a topic with aws passing the name given in the context', (done) => {
     sut('ThisIsMyTopic')
       .then((result) => {
-        assert.ok(createTopicSpy.calledWith({ Name: 'ThisIsMyTopic' }))
+        assert.ok(createTopicSpy.calledWith({ Name: 'ThisIsMyTopic' }));
         done();
       });
   });

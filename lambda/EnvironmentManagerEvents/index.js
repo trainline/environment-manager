@@ -2,7 +2,6 @@
 
 'use strict';
 
-const AWS = require("aws-sdk");
 const createTopic = require('./createTopic');
 const getTargetArn = require('./getTargetArn');
 const createEvent = require('./createEvent');

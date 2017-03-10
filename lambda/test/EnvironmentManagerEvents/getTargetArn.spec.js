@@ -7,12 +7,12 @@ describe('Create Event', () => {
   let ResponseMetadata;
 
   beforeEach(() => {
+    // eslint-disable-next-line global-require
     sut = require('../../EnvironmentManagerEvents/getTargetArn');
     ResponseMetadata = createResponseMetadata();
   });
 
   it('should throw if the ResponseMetadata contains no TopicArn', () => {
-    let ResponseMetadata = createResponseMetadata;
     delete ResponseMetadata.TopicArn;
 
     assert.throws(() => {
