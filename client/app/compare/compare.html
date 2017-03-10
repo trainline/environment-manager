@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-md-12">
       <h2>Compare</h2>
-      <h3 ng-if="vm.selected.state !== 'Active'">To compare active service versions, please select 'Active' state</h3>
+      <h3 ng-if="vm.selected.comparable.key === 'versions' && vm.selected.state !== 'Active'">To compare active service versions, please select 'Active' state</h3>
     </div>
   </div>
   <form id="SearchFilter" class="form-inline">
