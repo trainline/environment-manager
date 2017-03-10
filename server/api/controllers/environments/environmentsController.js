@@ -48,7 +48,7 @@ function isEnvironmentInMaintenance(req, res, next) {
   const environmentName = req.swagger.params.name.value;
 
   OpsEnvironment.getByName(environmentName)
-    .then(env => {
+    .then((env) => {
       res.json({ isInMaintenance: !!env.Value.EnvironmentInMaintenance });
     }).catch(next);
 }
