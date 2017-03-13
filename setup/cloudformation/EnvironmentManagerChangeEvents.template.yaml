@@ -8,9 +8,6 @@ Resources:
       Runtime: nodejs4.3
       Policies: AmazonSNSFullAccess
       CodeUri: s3://sns-test-bucket-testing/EnvironmentManagerEvents.zip
-      Environment: 
-        Variables: 
-          EVENT_API_ID: !Ref EnvironmentManagerChangeEvent
       Events:
         PutResource:
           Type: Api

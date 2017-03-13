@@ -3,9 +3,8 @@
 'use strict';
 
 exports.respond = (context) => {
-  console.log('Context succeeded.');
-
   return (response) => {
+    console.log('Context succeeded.');
     context.succeed({
       statusCode: 200,
       body: JSON.stringify(response),
@@ -15,9 +14,8 @@ exports.respond = (context) => {
 };
 
 exports.fail = (context) => {
-  console.log('Context failed.');
-
   return (response) => {
+    console.log('Context failed.');
     context.fail({
       statusCode: 500,
       body: JSON.stringify(response),
