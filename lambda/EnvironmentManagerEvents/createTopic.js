@@ -2,6 +2,13 @@
 
 let aws = require('aws-sdk');
 
+function passSafetyNet(name) {
+  if (name !== 'EMConfigurationChange' && name !== 'EMOperationsChange')
+    return false;
+
+  return true;
+}
+
 module.exports = (name) => {
   console.log(`Creating topic for ${name}`);
 
@@ -17,6 +24,11 @@ module.exports = (name) => {
       /* eslint-disable max-len*/
       reject('When creating a topic, a name parameter must be made up of only uppercase and lowercase ASCII letters, numbers, underscores, and hyphens.');
 
+    // TODO: Move this to another service.
+    if (!passSafetyNet(name))
+      reject(`Current allowed topics list does not contain ${name}`);
+
+    console.log('Passed Create Topic validation steps.');
     sns.createTopic({ Name: name }, (err, result) => {
       if (err) reject(err);
       resolve(result);

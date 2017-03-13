@@ -13,10 +13,8 @@ module.exports = (event) => {
   if (!event.message)
     throw new Error('Missing expected message attribute.');
 
-  Object.keys(event.attributes).forEach((k) => {
-    if (!event.attributes[k].DataType)
-      throw new Error('Missing expected DataType attribute.');
-  });
+  if (event.attributes)
+    checkAttributes(event);
 
   return (target) => {
     return {
@@ -26,3 +24,10 @@ module.exports = (event) => {
     };
   };
 };
+
+function checkAttributes(event) {
+  Object.keys(event.attributes).forEach((k) => {
+    if (!event.attributes[k].DataType)
+      throw new Error('Missing expected DataType attribute.');
+  });
+}
