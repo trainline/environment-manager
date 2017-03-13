@@ -3,7 +3,6 @@
 'use strict';
 
 exports.getRules = (request) => {
-  // TODO(filip): once we move to v1, need only swagger param
   let body = request.params.body || request.body;
   let cluster = request.params.range || request.params.cluster || body.OwningCluster;
 

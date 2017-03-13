@@ -8,7 +8,6 @@ let OperationResult = require('../utils/operationResult');
 let dynamoResourceValidation = require('./dynamoResourceValidation');
 let sender = require('modules/sender');
 
-// TODO(filip): Remove code reuse - shared code with updateDynamoResource...
 function* handler(command) {
   // Create an instance of the resource to work with based on the resource
   // descriptor and AWS account name.

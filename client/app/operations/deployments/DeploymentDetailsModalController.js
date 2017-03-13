@@ -4,7 +4,6 @@
 
 'use strict';
 
-// TODO(filip): refactor
 function deploymentView(deploymentRecord, clusters) {
   function getDuration() {
     var startTime = moment(deployment.StartTimestamp);
@@ -113,7 +112,7 @@ function deploymentView(deploymentRecord, clusters) {
   var clusterShort = cluster.Value.ShortName.toLowerCase();
 
   var asgName = deployment.EnvironmentName + '-' + clusterShort + '-' + (deployment.RuntimeServerRoleName || deployment.ServerRoleName);
-  // TODO(filip): rather than linking to separate page, open modal inside current page
+
   var asgLink = '#/environment/servers/?environment=' + deployment.EnvironmentName + '&asg_name=' + asgName;
 
   return _.assign({ DeploymentID: deploymentRecord.DeploymentID }, deployment, {

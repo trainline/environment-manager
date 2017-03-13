@@ -133,9 +133,7 @@ function putInstanceMaintenance(req, res, next) {
     const environmentName = instance.getTag('Environment');
 
     /**
-     * Update ASG IPS table (previously done in separate end point through ASG IPs resource)
-     *
-     * TODO(filip): handle case when MAINTENANCE_MODE entry doesn't exist - need to create entry
+     * Update ASG IPS table
      */
     let entry = yield dynamoHelper.getByKey('MAINTENANCE_MODE', { accountName });
     let ips = JSON.parse(entry.IPs);

@@ -71,7 +71,6 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
       service.DiffWithTargetState = null;
 
       // Check instance serviceObjects for inconsistencies with target state
-      // TODO(Filip): add error / warnings to API output when inconsistencies detected
       _.each(serviceObjects, (obj) => {
         checkServiceProperties(obj, service, 'Version');
         checkServiceProperties(obj, service, 'DeploymentId');
