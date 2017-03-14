@@ -1,0 +1,23 @@
+{
+  "name": "environment-manager-stack",
+  "version": "0.0.1",
+  "description": "CloudFormation Stacks for Environment Manager",
+  "main": "index.js",
+  "scripts": {
+    "build": "cfn-packager build-aws-resources",
+    "deploy": "node tools/deploy.js",
+    "prepublish": "cfn-packager install-subpackages",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "Platform Development",
+    "email": "platform.development@thetrainline.com"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "cfn-packager": "0.0.1"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.0"
+  }
+}
