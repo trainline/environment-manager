@@ -2711,8 +2711,6 @@ definitions:
         type: integer
       DeploymentMap:
         type: string
-      IsLocked:
-        type: boolean
   EnvironmentTypeConfig:
     type: object
     required:

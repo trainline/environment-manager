@@ -53,7 +53,8 @@
       <tbody>
         <tr ng-repeat="env in vm.data | orderBy : 'EnvironmentName'">
           <td>
-            <span class="glyphicon glyphicon-lock" data-ng-if="env.Configuration.IsLocked"></span>
+            <span class="glyphicon glyphicon-lock" data-ng-if="env.Operation.DeploymentsLocked"></span>
+            <span class="glyphicon glyphicon-wrench" data-ng-if="env.Operation.InMaintenance"></span>
           </td>
           <td>
             <a href="#/environment/servers?environment={{env.EnvironmentName}}">{{env.EnvironmentName}} <small ng-if="env.Configuration.EnvironmentType">({{env.Configuration.EnvironmentType}})</small></a>
