@@ -50,11 +50,11 @@ function getDeploymentLock(req, res, next) {
     .then((masterAccountName) => {
       const key = req.swagger.params.name.value;
       return GetDynamoResource({ resource: 'ops/environments', key, exposeAudit: 'version-only', accountName: masterAccountName });
-    })       
+    })
     .then(data => ({
       EnvironmentName: data.EnvironmentName,
       Value: {
-        DeploymentsLocked: !!data.Value.DeploymentsLocked,
+        DeploymentsLocked: !!data.Value.DeploymentsLocked
       },
       Version: data.Version
     }))
@@ -68,7 +68,7 @@ function putDeploymentLock(req, res, next) {
   const environmentName = req.swagger.params.name.value;
   const user = req.user;
 
-  let input = req.swagger.params.body.value
+  let input = req.swagger.params.body.value;
   let update = { DeploymentsLocked: input.DeploymentsLocked };
   let expectedVersion = req.swagger.params['expected-version'].value;
 
@@ -84,11 +84,11 @@ function getMaintenance(req, res, next) {
     .then((masterAccountName) => {
       const key = req.swagger.params.name.value;
       return GetDynamoResource({ resource: 'ops/environments', key, exposeAudit: 'version-only', accountName: masterAccountName });
-    })       
+    })
     .then(data => ({
       EnvironmentName: data.EnvironmentName,
       Value: {
-        InMaintenance: !!data.Value.EnvironmentInMaintenance,
+        InMaintenance: !!data.Value.EnvironmentInMaintenance
       },
       Version: data.Version
     }))
@@ -102,7 +102,7 @@ function putMaintenance(req, res, next) {
   const environmentName = req.swagger.params.name.value;
   const user = req.user;
 
-  let input = req.swagger.params.body.value
+  let input = req.swagger.params.body.value;
   let update = { EnvironmentInMaintenance: input.InMaintenance };
   let expectedVersion = req.swagger.params['expected-version'].value;
 
@@ -149,7 +149,7 @@ function getEnvironmentSchedule(req, res, next) {
     .then((masterAccountName) => {
       const key = req.swagger.params.name.value;
       return GetDynamoResource({ resource: 'ops/environments', key, exposeAudit: 'version-only', accountName: masterAccountName });
-    })       
+    })
     .then(data => ({
       EnvironmentName: data.EnvironmentName,
       Value: {
@@ -169,7 +169,7 @@ function putEnvironmentSchedule(req, res, next) {
   const environmentName = req.swagger.params.name.value;
   const user = req.user;
 
-  let update = req.swagger.params.body.value
+  let update = req.swagger.params.body.value;
   let expectedVersion = req.swagger.params['expected-version'].value;
 
   updateOpsEnvironment(environmentName, update, expectedVersion, user)

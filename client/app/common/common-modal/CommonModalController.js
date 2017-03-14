@@ -14,7 +14,7 @@ angular.module('EnvironmentManager.common').controller('CommonModalController',
     vm.infoMode = configuration.infomode || false;
     vm.cancelLabel = configuration.cancelLabel || 'Cancel';
     vm.acknowledge = configuration.acknowledge;
-    vm.isAcknowledged = !vm.acknowledge
+    vm.isAcknowledged = !vm.acknowledge;
 
     vm.ok = function () {
       $uibModalInstance.close();
