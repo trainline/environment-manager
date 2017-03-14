@@ -7,5 +7,11 @@
   "license": "ISC",
   "dependencies": {
     "async": "^1.5.2"
+  },
+  "devDependencies": {
+    "pack-zip": "^0.2.2"
+  },
+  "scripts": {
+    "build-aws-resource": "pack-zip"
   }
 }

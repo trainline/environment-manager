@@ -4,6 +4,7 @@
   "description": "Starts and stops instances and ASGs scheduled by Environment Manager",
   "main": "index.js",
   "scripts": {
+    "build-aws-resource": "pack-zip",
     "test": "mocha ./**/*.spec.js",
     "test-ci": "npm test -- --reporter mocha-teamcity-reporter --timeout 4000"
   },
@@ -21,6 +22,7 @@
     "chai": "^3.5.0",
     "mocha": "^3.1.2",
     "mocha-teamcity-reporter": "^1.1.1",
+    "pack-zip": "^0.2.2",
     "sinon": "^1.17.6"
   }
 }

@@ -4,6 +4,7 @@
   "description": "Test gulp project with governator",
   "main": "index.js",
   "scripts": {
+    "build-aws-resource": "pack-zip",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -11,6 +12,7 @@
   "devDependencies": {
     "gulp": "~3.8.10",
     "gulp-awslambda": "0.2.2",
-    "gulp-zip": "~2.0.2"
+    "gulp-zip": "~2.0.2",
+    "pack-zip": "^0.2.2"
   }
 }
