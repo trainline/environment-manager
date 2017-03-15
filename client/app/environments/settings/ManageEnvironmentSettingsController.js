@@ -17,12 +17,14 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
     vm.deploymentMapsList = [];
     vm.alertSettingsList = resources.environmentAlertSettingsList;
     vm.enableLockChanges = false;
+    vm.enableMaintenanceChanges = false;
 
     vm.newEnvironment = {
       OwningCluster: '',
       DeploymentMap: '',
       Description: '',
-      IsLocked: false
+      IsLocked: false,
+      InMaintenance: false
     };
 
     function init() {
@@ -30,10 +32,8 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       vm.environment.EnvironmentName = environmentName;
 
       vm.userHasPermission = user.hasPermission({ access: 'PUT', resource: '/config/environments/' + environmentName });
-      vm.enableLockChanges = user.hasPermission({
-        access:'PUT',
-        resource: '/config/environments/' + environmentName + '/locks' // This is only exposed to ADMIN users
-      });
+      vm.enableLockChanges = user.hasPermission({ access:'PUT', resource: '/environments/' + environmentName + '/deploy-lock' });
+      vm.enableMaintenanceChanges = user.hasPermission({ access:'PUT', resource: '/environments/' + environmentName + '/maintenance' });
 
       $q.all([
         $http.get('/api/v1/config/notification-settings').then(function (response) {
@@ -70,12 +70,29 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
           Description: configuration.Value.Description,
           AlertSettings: configuration.Value.AlertSettings,
           NotificationSettingsId: configuration.Value.NotificationSettingsId,
-          IsLocked: configuration.Value.IsLocked
         };
+      })
+      .then(function () {
+        return $q.all([
+          $http.get('/api/v1/environments/' + vm.environment.EnvironmentName + '/deploy-lock').then(function (response) {
+            vm.environment.Value.IsLocked = response.data.Value.DeploymentsLocked;
+            vm.newEnvironment.IsLocked = response.data.Value.DeploymentsLocked;
+            vm.opsVersion = response.data.Version;
+          }),
+          $http.get('/api/v1/environments/' + vm.environment.EnvironmentName + '/maintenance').then(function (response) {
+            vm.environment.Value.InMaintenance = response.data.Value.InMaintenance;
+            vm.newEnvironment.InMaintenance = response.data.Value.InMaintenance;
+            vm.opsVersion = response.data.Version;
+          })
+        ]);
+      })
+      .then(function () {
         vm.dataFound = true;
-      }, function () {
+      })
+      .catch(function () {
         vm.dataFound = false;
-      }).finally(function () {
+      })
+      .finally(function () {
         vm.dataLoading = false;
       });
     };
@@ -87,7 +104,6 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       vm.environment.Value.Description = vm.newEnvironment.Description;
       vm.environment.Value.AlertSettings = vm.newEnvironment.AlertSettings;
       vm.environment.Value.NotificationSettingsId = vm.newEnvironment.NotificationSettingsId;
-      vm.environment.Value.IsLocked = vm.newEnvironment.IsLocked;
 
       var params = {
         key: vm.environment.EnvironmentName,
@@ -96,12 +112,45 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       };
       resources.config.environments.put(params).then(function () {
         cachedResources.config.environments.flush();
-        modal.information({
+      }).then(function () {
+        if (vm.newEnvironment.IsLocked !== vm.environment.Value.IsLocked) {
+          return $http({
+            method: 'PUT',
+            url: '/api/v1/environments/' + vm.environment.EnvironmentName + '/deploy-lock',
+            data: { DeploymentsLocked: vm.newEnvironment.IsLocked },
+            headers: { 'expected-version': vm.opsVersion }
+          }).then(function () { vm.opsVersion += 1; });
+        }
+      }).then(function () {
+        if (vm.newEnvironment.InMaintenance !== vm.environment.Value.InMaintenance) {
+          var setMaintenanceMode = function () {
+            return $http({
+              method: 'PUT',
+              url: '/api/v1/environments/' + vm.environment.EnvironmentName + '/maintenance',
+              data: { InMaintenance: vm.newEnvironment.InMaintenance },
+              headers: { 'expected-version': vm.opsVersion }
+            }).then(function () { vm.opsVersion += 1; });
+          };
+          if (vm.newEnvironment.InMaintenance === true) {
+            return modal.confirmation({
+              title: 'WARNING!!! Putting Environment into Maintenance',
+              message:
+              'Are you sure you want to put environment <strong>' + vm.environment.EnvironmentName + '</strong> in to Maintenance?<br />' +
+              'This will take down ALL sites in this environment!!',
+              action: 'Enter Maintenance',
+              severity: 'Danger',
+              acknowledge: 'I am sure I want to put ' + vm.environment.EnvironmentName + ' in to Maintenance!'
+            }).then(setMaintenanceMode);
+          }
+          return setMaintenanceMode();          
+        }
+      }).then(function () {
+        return modal.information({
           title: 'Environment Settings Saved',
           message: 'Environment settings saved successfully.'
-        }).then(function () {
-          vm.refresh();
         });
+      }).finally(function () {
+        vm.refresh();
       });
     };
 

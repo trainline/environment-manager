@@ -24,7 +24,8 @@ class OpsEnvironment {
   toAPIOutput() {
     let self = this;
     return co(function* () {
-      let value = _.pick(self.Value, 'ManualScheduleUp', 'ScheduleAutomatically');
+      let value = _.pick(self.Value, 'ManualScheduleUp', 'ScheduleAutomatically', 'DeploymentsLocked');
+      value.InMaintenance = self.Value.EnvironmentInMaintenance;
 
       let accountName = yield Environment.getAccountNameForEnvironment(self.EnvironmentName);
       value.AccountName = accountName;

@@ -11,7 +11,9 @@ describe('DeployService', function () {
   let sut;
   let s3PackageLocator;
   let EnvironmentHelper;
+  let OpsEnvironment;
   let environment;
+  let opsEnvironment;
   let environmentType;
   let infrastructureConfigurationProvider;
   let namingConventionProvider;
@@ -57,8 +59,14 @@ describe('DeployService', function () {
     environment = {
       getEnvironmentType: sinon.stub().returns(Promise.resolve(environmentType))
     };
+    opsEnvironment = {
+      Value: { DeploymentsLocked: false }
+    };
     EnvironmentHelper = {
       getByName: sinon.stub().returns(Promise.resolve(environment))
+    };
+    OpsEnvironment = {
+      getByName: sinon.stub().returns(Promise.resolve(opsEnvironment))
     };
     s3PackageLocator = {
       findDownloadUrl: sinon.stub().returns(Promise.resolve(S3_PACKAGE))
@@ -88,6 +96,7 @@ describe('DeployService', function () {
     sut.__set__({ // eslint-disable-line no-underscore-dangle
       s3PackageLocator,
       EnvironmentHelper,
+      OpsEnvironment,
       infrastructureConfigurationProvider,
       namingConventionProvider,
       DeploymentContract,
@@ -214,7 +223,7 @@ describe('DeployService', function () {
     });
 
     describe('locked environments', function () {
-      beforeEach(() => { environment.IsLocked = true; });
+      beforeEach(() => { opsEnvironment.Value.DeploymentsLocked = true; });
 
       it('should not allow deployments', (done) => {
         sut(command).catch((error) => {
