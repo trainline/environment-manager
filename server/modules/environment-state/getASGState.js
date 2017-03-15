@@ -21,12 +21,12 @@ let HEALTH_STATUS = Enums.HEALTH_STATUS;
 function getServicesSummary(services) {
   let expected = _.filter(services, (service) => {
     let diff = service.DiffWithTargetState;
-    return diff !== DIFF_STATE.Extra && diff !== DIFF_STATE.Ignored;
+    return diff !== DIFF_STATE.Unexpected && diff !== DIFF_STATE.Ignored;
   });
 
   let expectedAndHealthy = _.filter(expected, s => s.OverallHealth === HEALTH_STATUS.Healthy);
 
-  let unexpected = _.filter(services, { DiffWithTargetState: DIFF_STATE.Extra });
+  let unexpected = _.filter(services, { DiffWithTargetState: DIFF_STATE.Unexpected });
   let missing = _.filter(services, { DiffWithTargetState: DIFF_STATE.Missing });
   let ignored = _.filter(services, { DiffWithTargetState: DIFF_STATE.Ignored });
 
