@@ -7,6 +7,7 @@
     "build": "cfn-packager build-aws-resources",
     "deploy": "node tools/deploy.js",
     "prepublish": "cfn-packager install-subpackages",
+    "template": "node tools/template.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": {
@@ -15,9 +16,11 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "cfn-packager": "0.0.1"
+    "cfn-packager": "0.0.2"
   },
   "dependencies": {
-    "bluebird": "^3.5.0"
+    "bluebird": "^3.5.0",
+    "globby": "^6.1.0",
+    "js-yaml": "^3.8.2"
   }
 }

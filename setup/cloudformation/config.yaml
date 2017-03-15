@@ -1,0 +1,7 @@
+managedAccounts:
+  - '886983751479'
+templateFile: EnvironmentManagerCommonResources.template.json
+s3bucket: cloudformation-eu-west-1-886983751479
+stackName: environment-manager-common
+parameters:
+  pMasterAccountId: '886983751479'

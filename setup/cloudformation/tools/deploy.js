@@ -3,7 +3,7 @@
 const console = require('console');
 const { basename, resolve } = require('path');
 const { cwd, env, exit } = require('process');
-const { ensureDirExists, spawn } = require('./shared');
+const { ensureDirExists, readConfig, spawn } = require('./common');
 
 const OUTPUT_DIR = 'dist';
 
@@ -17,7 +17,7 @@ function paramsToArray(obj) {
     return Object.keys(obj).map(key => `${key}=${obj[key]}`);
 }
 
-function main({ templateFile, s3bucket, stackName, parameters }) {
+function deploy({ templateFile, s3bucket, stackName, parameters }) {
     let compiledTemplateFile = resolve(OUTPUT_DIR, basename(templateFile));
 
     return spawn('aws', ['cloudformation', 'validate-template', '--template-body', `file://${templateFile}`], DEFAULT_OPTS)
@@ -31,11 +31,4 @@ function main({ templateFile, s3bucket, stackName, parameters }) {
         });
 }
 
-main({
-    templateFile: 'EnvironmentManagerCommonResources.template.json',
-    s3bucket: 'cloudformation-eu-west-1-886983751479',
-    stackName: 'environment-manager-common',
-    parameters: {
-        pMasterAccountId: '886983751479'
-    }
-});
+readConfig().then(deploy);

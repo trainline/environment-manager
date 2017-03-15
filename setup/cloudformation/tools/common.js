@@ -4,8 +4,10 @@ const child_process = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const Promise = require('bluebird');
+const yaml = require('js-yaml');
 
 const mkdir = Promise.promisify(fs.mkdir);
+const readFile = Promise.promisify(fs.readFile);
 
 const BUILD_AWS_RESOURCE_SCRIPT = 'build-aws-resource';
 const CONCURRENCY = 4;
@@ -36,9 +38,15 @@ function ensureDirExists(dir) {
     return Promise.mapSeries(dirs, ensureDirExistsNonTransitive);
 }
 
+function readConfig() {
+    return readFile('config.yaml', 'utf-8')
+        .then(content => yaml.safeLoad(content))
+}
+
 module.exports = {
     BUILD_AWS_RESOURCE_SCRIPT,
     CONCURRENCY,
     ensureDirExists,
+    readConfig,
     spawn
 }
