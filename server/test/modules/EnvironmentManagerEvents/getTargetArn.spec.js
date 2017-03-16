@@ -22,7 +22,7 @@ describe('Create Event', () => {
 
   it('should extract TargetArn value from the ResponseMetadata', () => {
     let result = sut(ResponseMetadata);
-    assert.equal(result, 'This is the topic arn value'); 
+    assert.equal(result, 'This is the topic arn value');
   });
 });
 
