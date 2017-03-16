@@ -5,3 +5,18 @@ s3bucket: cloudformation-eu-west-1-886983751479
 stackName: environment-manager-common
 parameters:
   pMasterAccountId: '886983751479'
+  pConfigurationBucket:
+  pSecretsBucket:
+  pBackupsBucket:
+  pDeploymentLogsBucket:
+  pPackagesBucket:
+  pEc2KeyPair:
+  ploadBalancerEnvironmentManagerTimeOut:
+  ploadBalancerEnvironmentManagerPort:
+  pLoadBalancerListenPort:
+  pConsulPort:
+  ploadBalancerEnvironmentManagerHealthCheck:
+  ploadBalancerEnvironmentManagerSubnetIDs:
+  pVpcBase:
+  pInternalSubnet:
+  pCreateMasterRole:
