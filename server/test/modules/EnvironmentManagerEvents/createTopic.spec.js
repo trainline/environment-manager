@@ -10,7 +10,7 @@ describe('Create Event', () => {
 
   beforeEach(() => {
     createTopicSpy = sinon.spy((name, cb) => { cb(); });
-    sut = rewire('../../EnvironmentManagerEvents/createTopic');
+    sut = rewire('modules/sns/EnvironmentManagerEvents/createTopic');
     /* eslint-disable no-underscore-dangle */
     sut.__set__('aws', {
       SNS: function SNS() {
@@ -34,8 +34,9 @@ describe('Create Event', () => {
   it('should reject with a name that is too long', (done) => {
     let tooLong = '';
     let limit = 256;
-    for (let i = 0; i < (limit + 1); i += 1)
+    for (let i = 0; i < (limit + 1); i += 1) {
       tooLong += 'a';
+    }
     sut(tooLong)
       .catch((err) => {
         assert.equal(err, 'When creating a topic, a name parameter should be a maximum of 256 characters.');
@@ -54,9 +55,9 @@ describe('Create Event', () => {
   });
 
   it('should create a topic with aws passing the name given in the context', (done) => {
-    sut('EMConfigurationChange')
+    sut('EnvironmentManagerConfigurationChange')
       .then((result) => {
-        assert.ok(createTopicSpy.calledWith({ Name: 'EMConfigurationChange' }));
+        assert.ok(createTopicSpy.calledWith({ Name: 'EnvironmentManagerConfigurationChange' }));
         done();
       });
   });

@@ -10,8 +10,8 @@ describe('Publish Event', () => {
   let publishSpy;
 
   beforeEach(() => {
-    sut = rewire('../../EnvironmentManagerEvents/publishEvent');
-    publishSpy = sinon.spy((name, cb) => { cb(); });
+    sut = rewire('modules/sns/EnvironmentManagerEvents/publishEvent');
+    publishSpy = sinon.spy((name, cb) => { return cb(null, 'result value'); });
     // eslint-disable-next-line no-underscore-dangle
     sut.__set__('aws', {
       SNS: function SNS() {
@@ -52,6 +52,16 @@ describe('Publish Event', () => {
     sut(event)
       .then(() => {
         assert.ok(publishSpy.calledWith(event));
+        done();
+      });
+  });
+
+  it('should return the result of the publish to the caller', (done) => {
+    sut(event)
+      .then((result) => {
+        assert.equal(result, publishSpy('name', (err, r) => {
+          return r;
+        }));
         done();
       });
   });

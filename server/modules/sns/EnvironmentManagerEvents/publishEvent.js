@@ -3,28 +3,34 @@
 'use strict';
 
 let aws = require('aws-sdk');
+aws.config.update({ region: 'eu-west-1' });
 
 module.exports = (event) => {
+  // eslint-disable-next-line no-console
   console.log('About to publish the event.');
 
-  if (!event.TargetArn)
+  if (!event.TargetArn) {
     throw new Error('An event to be published must contain a TargetArn property.');
+  }
 
-  if (!event.Message)
+  if (!event.Message) {
     throw new Error('An event to be published must contain a Message property.');
+  }
 
-  if (event.MessageAttributes)
+  if (event.MessageAttributes) {
     Object.keys(event.MessageAttributes).forEach((k) => {
-      if (!event.MessageAttributes[k].DataType)
+      if (!event.MessageAttributes[k].DataType) {
         throw new Error('All MessageAttribute values must contain a DataType property.');
+      }
     });
+  }
 
   const sns = new aws.SNS();
 
   return new Promise((resolve, reject) => {
     sns.publish(event, (err, result) => {
       if (err) reject(err);
-      resolve(result);
+      return resolve(result);
     });
   });
 };

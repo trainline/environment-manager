@@ -5,17 +5,18 @@
 const util = require('util');
 
 module.exports = (event) => {
+  // eslint-disable-next-line no-console
   console.log(`Creating event for ${util.inspect(event, { depth: null })}`);
 
-  if (!event)
+  if (!event) {
     throw new Error('Expected a configuration object when creating an event.');
-
-  if (!event.message)
+  }
+  if (!event.message) {
     throw new Error('Missing expected message attribute.');
-
-  if (event.attributes)
+  }
+  if (event.attributes) {
     checkAttributes(event);
-
+  }
   return (target) => {
     return {
       Message: event.message,
@@ -27,7 +28,8 @@ module.exports = (event) => {
 
 function checkAttributes(event) {
   Object.keys(event.attributes).forEach((k) => {
-    if (!event.attributes[k].DataType)
+    if (!event.attributes[k].DataType) {
       throw new Error('Missing expected DataType attribute.');
+    }
   });
 }

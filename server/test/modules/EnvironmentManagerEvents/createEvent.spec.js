@@ -7,7 +7,7 @@ describe('Create Event', () => {
 
   beforeEach(() => {
     // eslint-disable-next-line global-require
-    sut = require('../../EnvironmentManagerEvents/createEvent');
+    sut = require('modules/sns/EnvironmentManagerEvents/createEvent');
   });
 
   it('should fail without a configuration parameter', () => {

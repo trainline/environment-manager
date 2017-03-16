@@ -6,13 +6,13 @@ const createTopic = require('./createTopic');
 const getTargetArn = require('./getTargetArn');
 const createEvent = require('./createEvent');
 const publishEvent = require('./publishEvent');
-const respond = require('./respond').respond;
-const fail = require('./respond').fail;
 
-exports.handler = (event, context) =>
-    createTopic(event.topic)
-        .then(getTargetArn)
-        .then(createEvent(event))
-        .then(publishEvent)
-        .then(respond(context))
-        .catch(fail(context));
+exports.publish = (event) => {
+  createTopic(event.topic)
+    .then(getTargetArn)
+    .then(createEvent(event))
+    .then(publishEvent)
+    .catch((reason) => {
+      console.log(reason);
+    });
+};
