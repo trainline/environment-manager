@@ -5,4 +5,4 @@
 module.exports = {
   SUCCESS: 'Success',
   FAIL: 'Failed'
-}
+};

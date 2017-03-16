@@ -9,8 +9,8 @@ let _ = require('lodash');
 let healthChecks = require('modules/healthChecks');
 
 let statusCodes = _.fromPairs([
-  [ healthChecks.resultCodes.SUCCESS, 200 ],
-  [ healthChecks.resultCodes.FAIL, 500 ]
+  [healthChecks.resultCodes.SUCCESS, 200],
+  [healthChecks.resultCodes.FAIL, 500]
 ]);
 
 function buildRouter() {
