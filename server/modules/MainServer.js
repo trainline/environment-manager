@@ -26,6 +26,7 @@ const APP_VERSION = require('config').get('APP_VERSION');
 
 function createExpressApp() {
   let routeInstaller = require('modules/routeInstaller');
+  let httpHealthChecks = require('modules/httpHealthChecks');
   let routes = {
     home: require('routes/home'),
     initialData: require('routes/initialData'),
@@ -73,6 +74,8 @@ function createExpressApp() {
 
     // routing for API JSON Schemas
     app.use('/schema', authentication.allowUnknown, express.static(`${PUBLIC_DIR}/schema`));
+
+    app.use('/diagnostics/healthchecks', httpHealthChecks.router);
 
     app.use(cookieAuthentication.middleware);
     app.use(tokenAuthentication.middleware);
