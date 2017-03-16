@@ -4,10 +4,9 @@
   "description": "CloudFormation Stacks for Environment Manager",
   "main": "index.js",
   "scripts": {
-    "build": "cfn-packager build-aws-resources",
-    "deploy": "node tools/deploy.js",
+    "build": "node tools/index.js build",
+    "deploy": "node tools/index.js deploy",
     "prepublish": "cfn-packager install-subpackages",
-    "template": "node tools/template.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": {
@@ -16,10 +15,11 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "cfn-packager": "0.0.2"
+    "cfn-packager": "0.1.0"
   },
   "dependencies": {
     "bluebird": "^3.5.0",
+    "commander": "^2.9.0",
     "globby": "^6.1.0",
     "js-yaml": "^3.8.2"
   }

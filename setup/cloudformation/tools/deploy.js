@@ -1,9 +1,8 @@
 'use strict';
 
-const console = require('console');
 const { basename, resolve } = require('path');
 const { cwd, env, exit } = require('process');
-const { ensureDirExists, readConfig, spawn } = require('./common');
+const { ensureDirExists, spawn } = require('./common');
 
 const OUTPUT_DIR = 'dist';
 
@@ -24,11 +23,7 @@ function deploy({ templateFile, s3bucket, stackName, parameters }) {
         .then(() => ensureDirExists(OUTPUT_DIR))
         .then(() => spawn('aws', ['cloudformation', 'package', '--template', templateFile, '--s3-bucket', s3bucket, '--output-template-file', compiledTemplateFile], DEFAULT_OPTS))
         .then(() => spawn('aws', ['cloudformation', 'deploy', '--template', compiledTemplateFile, '--stack-name', stackName, '--capabilities', 'CAPABILITY_NAMED_IAM', '--parameter-overrides'].concat(paramsToArray(parameters)), DEFAULT_OPTS))
-        .then(() => exit(0))
-        .catch(error => {
-            console.log(error);
-            exit(1)
-        });
+        .then(() => exit(0));
 }
 
-readConfig().then(deploy);
+module.exports = deploy;
