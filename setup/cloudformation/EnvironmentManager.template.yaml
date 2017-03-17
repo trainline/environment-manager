@@ -1,0 +1,84 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Publication of Environment Manager Change Events
+Parameters:
+  pConfigurationBucket:
+    Type: String
+    Default: ""
+    Description: S3 bucket for Environment Manager configuration
+    MinLength: 0
+  pSecretsBucket:
+    Type: String
+    Default: ""
+    Description: S3 bucket for secrets
+    MinLength: 0
+  pBackupsBucket:
+    Type: String
+    Default: ""
+    Description: S3 bucket for secrets
+    MinLength: 0
+  pDeploymentLogsBucket:
+    Type: String
+    Default: ""
+    Description: S3 bucket for deployment logs
+    MinLength: 0
+  pPackagesBucket:
+    Type: String
+    Default: ""
+    Description: S3 bucket for deployable packages
+    MinLength: 0
+  pEc2KeyPair:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Name of the EC2 key pair for the Environment Manager servers.
+  pEnvironmentManagerSecurityGroups:
+    Type: List<AWS::EC2::SecurityGroup::Id>
+    Description: Security groups to allow sysadmin and Consul cluster access to EC2 instances
+  ploadBalancerEnvironmentManagerSubnetIDs:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: List of Subnet IDs for EnvironmentManager LoadBalancer
+  pVpcBase:
+    Type: AWS::EC2::VPC::Id
+    Description: Host VPC
+  pInternalSubnet:
+    Type: String
+    Description: Internal subnet (CIDR block)
+Resources:
+  EnvironmentManagerCommon:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        pMasterAccountId: !Ref "AWS::AccountId"
+      TemplateURL: ./EnvironmentManagerCommonResources.template.json
+      TimeoutInMinutes: 30
+  EnvironmentManagerMaster:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        pConfigurationBucket: !Ref pConfigurationBucket
+        pSecretsBucket: !Ref pSecretsBucket
+        pBackupsBucket: !Ref pBackupsBucket
+        pDeploymentLogsBucket: !Ref pDeploymentLogsBucket
+        pPackagesBucket: !Ref pPackagesBucket
+        pEc2KeyPair: !Ref pEc2KeyPair
+        ploadBalancerEnvironmentManagerTimeOut: 60
+        ploadBalancerEnvironmentManagerPort: 40500
+        pLoadBalancerListenPort: 443
+        pConsulPort: 8500
+        ploadBalancerEnvironmentManagerHealthCheck: /api/v1/diagnostics/healthcheck
+        ploadBalancerEnvironmentManagerSubnetIDs: !Join [",", !Ref ploadBalancerEnvironmentManagerSubnetIDs]
+        pVpcBase: !Ref pVpcBase
+        pInternalSubnet: !Ref pInternalSubnet
+        pEnvironmentManagerSecurityGroups: !Join [",", !Ref pEnvironmentManagerSecurityGroups]
+        pCreateMasterRole: true
+      TemplateURL: ./EnvironmentManagerMasterResources.template.json
+      TimeoutInMinutes: 30
+  EnvironmentManagerChild:
+      Type: AWS::CloudFormation::Stack
+      Properties:
+        Parameters:
+          pMasterAccountId: !Ref AWS::AccountId
+          pDeploymentLogsBucket: !Ref pDeploymentLogsBucket
+          pPackagesBucket: !Ref pPackagesBucket
+          pCreateChildRole: true
+        TemplateURL: ./EnvironmentManagerChildResources.template.json
+        TimeoutInMinutes: 30

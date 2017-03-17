@@ -13,7 +13,15 @@ const DEFAULT_OPTS = {
 };
 
 function paramsToArray(obj) {
-    return Object.keys(obj).map(key => `${key}=${obj[key]}`);
+    function paramToString(key) {
+        let value = obj[key];
+        if (Array.isArray(value)) {
+            return `${key}=${value.join(',')}`
+        } else {
+            return `${key}=${value}`
+        }
+    }
+    return Object.keys(obj).map(paramToString);
 }
 
 function deploy({ templateFile, s3bucket, stackName, parameters }) {

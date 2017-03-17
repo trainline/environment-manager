@@ -39,7 +39,7 @@ module.exports = function ({ managedAccounts }) {
             },
             "pEc2KeyPair": {
                 "Description": "Name of the EC2 key pair for the Environment Manager servers.",
-                "Type": "String"
+                "Type": "AWS::EC2::KeyPair::KeyName"
             },
             "ploadBalancerEnvironmentManagerTimeOut": {
                 "Description": "Connection timeout for EnvironmentManager LoadBalancer",
@@ -77,6 +77,10 @@ module.exports = function ({ managedAccounts }) {
             "pInternalSubnet": {
                 "Description": "Internal subnet (CIDR block)",
                 "Type": "String"
+            },
+            "pEnvironmentManagerSecurityGroups": {
+                "Type": "List<AWS::EC2::SecurityGroup::Id>",
+                "Description": "Security groups to allow sysadmin and Consul cluster access to EC2 instances"
             },
             "pCreateMasterRole": {
                 "Type": "String",
@@ -191,38 +195,6 @@ module.exports = function ({ managedAccounts }) {
                     }
                 }
             },
-            "sgiInfraEnvironmentManagerTcp22fromInternalSubnet": {
-                "Type": "AWS::EC2::SecurityGroupIngress",
-                "Properties": {
-                    "GroupId": {
-                        "Ref": "sgInfraEnvironmentManager"
-                    },
-                    "IpProtocol": "tcp",
-                    "CidrIp": {
-                        "Ref": "pInternalSubnet"
-                    },
-                    "FromPort": "22",
-                    "ToPort": "22"
-                }
-            },
-            "sgiInfraEnvironmentManagerConsulfromInternalSubnet": {
-                "Type": "AWS::EC2::SecurityGroupIngress",
-                "Properties": {
-                    "GroupId": {
-                        "Ref": "sgInfraEnvironmentManager"
-                    },
-                    "IpProtocol": "tcp",
-                    "CidrIp": {
-                        "Ref": "pInternalSubnet"
-                    },
-                    "FromPort": {
-                        "Ref": "pConsulPort"
-                    },
-                    "ToPort": {
-                        "Ref": "pConsulPort"
-                    }
-                }
-            },
             "sgInfraEnvironmentManagerElb": {
                 "Type": "AWS::EC2::SecurityGroup",
                 "Properties": {
@@ -283,11 +255,9 @@ module.exports = function ({ managedAccounts }) {
                     "KeyName": {
                         "Ref": "pEc2KeyPair"
                     },
-                    "SecurityGroups": [
-                        {
-                            "Ref": "sgInfraEnvironmentManager"
-                        }
-                    ],
+                    "SecurityGroups": {
+                        "Fn::Split": [",", { "Fn::Join": [",", [{ "Ref": "sgInfraEnvironmentManager" }, { "Fn::Join": [",", { "Ref": "pEnvironmentManagerSecurityGroups" }] }]] }]
+                    },
                     "UserData": {
                         "Fn::Base64": "#!/bin/bash \n echo 'HELLO WORLD' > /var/log/userdata.stdout.txt"
                     }
