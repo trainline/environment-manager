@@ -12,7 +12,7 @@ let userRolesProvider = new (require('modules/userRolesProvider'))();
 let activeDirectoryAdapter = require('modules/active-directory-adapter');
 let logger = require('modules/logger');
 let md5 = require('md5');
-let EncryptedRedisStore = require('modules/data-access/encryptedRedisStore');
+let UserSessionStore = require('modules/userSessionStore');
 let Promise = require('bluebird');
 
 module.exports = function UserService() {
@@ -79,7 +79,7 @@ module.exports = function UserService() {
 
   function getExistingSessionForUser(credentials, scope) {
     return co(function* () {
-      let store = yield EncryptedRedisStore.get();
+      let store = yield getStore();
       let userScopeSessionKey = getLatestSessionIdForUserAndScope(credentials.username, scope);
       let sessionId = yield store.get(userScopeSessionKey);
       if (sessionId) {
@@ -131,7 +131,7 @@ module.exports = function UserService() {
 
   function storeSession(session, scope, duration) {
     return co(function* () {
-      let store = yield EncryptedRedisStore.get();
+      let store = yield getStore();
       yield store.psetex(getSessionKey(session.sessionId), duration, session);
       yield store.psetex(getLatestSessionIdForUserAndScope(session.user.name, scope), duration, session.sessionId);
     });
@@ -140,7 +140,7 @@ module.exports = function UserService() {
   function getSessionFromStore(sessionId) {
     return co(function* () {
       let sessionKey = getSessionKey(sessionId);
-      let store = yield EncryptedRedisStore.get();
+      let store = yield getStore();
       return yield store.get(sessionKey);
     });
   }
@@ -148,9 +148,13 @@ module.exports = function UserService() {
   function deleteSessionFromStore(sessionId) {
     return co(function* () {
       let sessionKey = getSessionKey(sessionId);
-      let store = yield EncryptedRedisStore.get();
+      let store = yield getStore();
       return yield store.del(sessionKey);
     });
+  }
+
+  function getStore() {
+    return UserSessionStore.get();
   }
 
   function getSessionKey(sessionId) {
