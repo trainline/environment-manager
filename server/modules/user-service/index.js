@@ -9,7 +9,7 @@ let implementation;
 if (config.get('IS_PRODUCTION')) {
   implementation = new (require('./userService.prod'))();
 } else {
-  implementation = require('./userService.mock');
+  implementation = new (require('./userService.prod'))();
 }
 
 module.exports = implementation;
