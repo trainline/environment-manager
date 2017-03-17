@@ -7,11 +7,11 @@ const USER_SESSION_STORE_INDEX = 1;
 
 let sessionStorePromise;
 
-function createSessionStore () {
+function createSessionStore() {
   sessionStorePromise = EncryptedRedisStore.createStore(USER_SESSION_STORE_INDEX);
   return sessionStorePromise;
 }
 
 module.exports = {
   get: () => { return sessionStorePromise || createSessionStore(); }
-}
+};
