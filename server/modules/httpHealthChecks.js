@@ -6,7 +6,7 @@ let express = require('express');
 let co = require('co');
 let _ = require('lodash');
 
-let healthChecks = require('modules/healthChecks');
+let healthChecks = require('modules/health-checks');
 
 let statusCodes = _.fromPairs([
   [healthChecks.resultCodes.SUCCESS, 200],
