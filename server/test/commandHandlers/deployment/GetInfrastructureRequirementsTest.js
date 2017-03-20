@@ -36,7 +36,7 @@ let COMMAND = {
 
 let expectedConfiguration = {
   environmentName: ENVIRONMENT_NAME,
-  serverRole: { FleetPerSlice: false }
+  serverRole: { FleetPerSlice: false, AutoScalingSettings: { DesiredCapacity: 2 } }
 };
 
 describe('GetInfrastructureRequirements:', () => {

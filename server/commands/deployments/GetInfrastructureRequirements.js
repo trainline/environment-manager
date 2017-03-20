@@ -2,14 +2,15 @@
 
 'use strict';
 
-
 let co = require('co');
 let DeploymentCommandHandlerLogger = require('commands/deployments/DeploymentCommandHandlerLogger');
 let DeploymentValidationError = require('modules/errors/DeploymentValidationError.class');
 let launchConfigurationTemplatesProvider = require('modules/provisioning/launchConfigurationTemplatesProvider');
-let infrastructureConfigurationProvider = require('modules/provisioning/infrastructureConfigurationProvider');
-let autoScalingTemplatesProvider = require('modules/provisioning/autoScalingTemplatesProvider');
+let configProvider = require('modules/provisioning/infrastructureConfigurationProvider');
+let asgTemplatesProvider = require('modules/provisioning/autoScalingTemplatesProvider');
+let namingConvention = require('modules/provisioning/namingConventionProvider');
 let sender = require('modules/sender');
+let getASG = require('queryHandlers/GetAutoScalingGroup');
 let _ = require('lodash');
 
 module.exports = function GetInfrastructureRequirements(command) {
@@ -21,36 +22,29 @@ module.exports = function GetInfrastructureRequirements(command) {
     let serviceName = deployment.serviceName;
     let accountName = deployment.accountName;
     let slice = deployment.serviceSlice;
-    let requiredInfra = { asgsToCreate: [], launchConfigsToCreate: [] };
+    let requiredInfra = { asgsToCreate: [], launchConfigsToCreate: [], expectedInstances: 0 };
 
     logger.info('Reading infrastructure configuration...');
 
-    let configuration = yield infrastructureConfigurationProvider.get(
-      environmentName, serviceName, deployment.serverRoleName
-    );
-
-    let asgsToCreate = yield getASGsToCreate(
-      logger, configuration, accountName, slice
-    );
+    let configuration = yield configProvider.get(environmentName, serviceName, deployment.serverRoleName);
+    let asgsToCreate = yield getASGsToCreate(logger, configuration, accountName, slice);
+    requiredInfra.expectedInstances = yield getExpectedNumberOfInstances(accountName, configuration, asgsToCreate, slice);
 
     if (!asgsToCreate.length) return requiredInfra;
-
-    requiredInfra.asgsToCreate = asgsToCreate;
-    requiredInfra.launchConfigsToCreate = yield getLaunchConfigsToCreate(
-      logger, configuration, asgsToCreate, accountName
-    );
+    let launchConfigsToCreate = yield getLaunchConfigsToCreate(logger, configuration, asgsToCreate, accountName);
 
     // Check launchConfigs are valid
-    requiredInfra.launchConfigsToCreate.forEach((template) => {
+    launchConfigsToCreate.forEach((template) => {
       let minVolumeSize = template.image.rootVolumeSize;
       let osBlockDeviceMapping = _.find(template.devices, d => _.includes(['/dev/sda1', '/dev/xvda'], d.DeviceName));
       let instanceVolumeSize = osBlockDeviceMapping.Ebs.VolumeSize;
-
       if (instanceVolumeSize < minVolumeSize) {
         throw new DeploymentValidationError(`Cannot create Launch Configuration. The specified OS volume size (${instanceVolumeSize} GB) is not sufficient for image '${template.image.name}' (${minVolumeSize} GB). Please check your deployment map settings.`);
       }
     });
 
+    requiredInfra.configuration = configuration;
+    requiredInfra.launchConfigsToCreate = launchConfigsToCreate;
     return requiredInfra;
   }).catch((error) => {
     logger.error('An error has occurred providing the expected infrastructure', error);
@@ -58,12 +52,22 @@ module.exports = function GetInfrastructureRequirements(command) {
   });
 };
 
+function getExpectedNumberOfInstances(accountName, config, slice, asgsToCreate) {
+  return co(function* () {
+    if (asgsToCreate.length) {
+      // ASG does not exist yet, get desired size from server role
+      return config.serverRole.AutoScalingSettings.DesiredCapacity;
+    } else {
+      // ASG exists, read current desired size
+      let autoScalingGroupName = namingConvention.getAutoScalingGroupName(config, slice);
+      return getASG({ accountName, autoScalingGroupName }).then(data => data.DesiredCapacity);
+    }
+  });
+}
+
 function getASGsToCreate(logger, configuration, accountName, slice) {
   return co(function* () {
-    let autoScalingTemplates = yield autoScalingTemplatesProvider.get(
-      configuration, accountName
-    );
-
+    let autoScalingTemplates = yield asgTemplatesProvider.get(configuration, accountName);
     let autoScalingGroupNames = autoScalingTemplates
       .map(template => template.autoScalingGroupName)
       .filter((asgName) => {
@@ -74,9 +78,7 @@ function getASGsToCreate(logger, configuration, accountName, slice) {
             asgName.endsWith(`-${slice}`);                                // Create ASG if it's the target slice
       });
 
-    let autoScalingGroupNamesToCreate = yield getASGNamesToCreate(
-      logger, autoScalingGroupNames, accountName
-    );
+    let autoScalingGroupNamesToCreate = yield getASGNamesToCreate(logger, autoScalingGroupNames, accountName);
 
     return autoScalingTemplates.filter(template =>
       autoScalingGroupNamesToCreate.indexOf(template.autoScalingGroupName) >= 0
@@ -94,23 +96,23 @@ function getASGNamesToCreate(logger, autoScalingGroupNames, accountName) {
     };
 
     let autoScalingGroups = yield sender.sendQuery({ query });
-    let existingAutoScalingGroupNames = autoScalingGroups.map(group =>
+    let existingASGnames = autoScalingGroups.map(group =>
       group.AutoScalingGroupName
     );
-    if (existingAutoScalingGroupNames.length) {
-      logger.info(`Following AutoScalingGroups already exist: [${existingAutoScalingGroupNames.join(', ')}]`);
+    if (existingASGnames.length) {
+      logger.info(`Following AutoScalingGroups already exist: [${existingASGnames.join(', ')}]`);
     }
 
-    let missingAutoScalingGroupNames = autoScalingGroupNames.filter(name =>
-      existingAutoScalingGroupNames.indexOf(name) < 0
+    let missingASGnames = autoScalingGroupNames.filter(name =>
+      existingASGnames.indexOf(name) < 0
     );
-    if (missingAutoScalingGroupNames.length) {
-      logger.info(`Following AutoScalingGroups have to be created: [${missingAutoScalingGroupNames.join(', ')}]`);
+    if (missingASGnames.length) {
+      logger.info(`Following AutoScalingGroups have to be created: [${missingASGnames.join(', ')}]`);
     } else {
       logger.info('No AutoScalingGroup has to be created');
     }
 
-    return missingAutoScalingGroupNames;
+    return missingASGnames;
   });
 }
 

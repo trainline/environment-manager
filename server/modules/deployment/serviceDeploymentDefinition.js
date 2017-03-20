@@ -2,7 +2,7 @@
 
 'use strict';
 
-function getKeyValue(deployment) {
+function getKeyValue(deployment, expectedNodeDeployments) {
   let environmentName = deployment.environmentName;
   let serviceName = deployment.serviceName;
   let serviceVersion = deployment.serviceVersion;
@@ -15,7 +15,8 @@ function getKeyValue(deployment) {
       Version: serviceVersion,
       ServerRole: deployment.serverRole,
       Environment: environmentName,
-      Action: 'Install'
+      Action: 'Install',
+      ExpectedNodeDeployments: expectedNodeDeployments
     }
   };
 
