@@ -7,11 +7,11 @@ let DeploymentCommandHandlerLogger = require('commands/deployments/DeploymentCom
 let sender = require('modules/sender');
 let consulClient = require('modules/consul-client');
 
-let serverRoleDefinition = require('modules/deployment/ServerRoleDefinitionKeyValueProvider.class');
-let serviceInstallation = require('modules/deployment/ServiceInstallationKeyValueProvider.class');
-let serviceDefinition = require('modules/deployment/ServiceDefinitionKeyValueProvider.class');
-let deploymentService = require('modules/deployment/DeploymentServiceKeyValueProvider.class');
-let deploymentDefinition = require('modules/deployment/DeploymentKeyValueProvider.class');
+let serverRoleDefinition = require('modules/deployment/serverRoleDefinition');
+let serviceInstallation = require('modules/deployment/serviceInstallationDefinition');
+let serviceDefinition = require('modules/deployment/serviceDefinition');
+let serviceDeployment = require('modules/deployment/serviceDeploymentDefinition');
+let deploymentDefinition = require('modules/deployment/deploymentDefinition');
 
 module.exports = function PushDeploymentCommandHandler(command) {
   let logger = new DeploymentCommandHandlerLogger(command);
@@ -29,7 +29,7 @@ module.exports = function PushDeploymentCommandHandler(command) {
       serverRoleDefinition: yield serverRoleDefinition.getKeyValue(deployment),
       serviceInstallation: yield serviceInstallation.getKeyValue(deployment, s3Path),
       deployment: yield deploymentDefinition.getKeyValue(deployment),
-      deploymentService: yield deploymentService.getKeyValue(deployment)
+      deploymentService: yield serviceDeployment.getKeyValue(deployment)
     };
 
     yield [

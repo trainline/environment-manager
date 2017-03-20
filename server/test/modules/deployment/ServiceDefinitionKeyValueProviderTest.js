@@ -6,7 +6,7 @@
 let should = require('should');
 
 let DeploymentContract = require('modules/deployment/DeploymentContract');
-let serviceDefinitionKeyValueProvider = require('modules/deployment/ServiceDefinitionKeyValueProvider.class');
+let serviceDefinition = require('modules/deployment/serviceDefinition');
 
 describe('ServiceDefinitionKeyValueProvider:', () => {
 
@@ -28,7 +28,7 @@ describe('ServiceDefinitionKeyValueProvider:', () => {
 
     var promise = null;
 
-    before(() => promise = serviceDefinitionKeyValueProvider.getKeyValue(deployment));
+    before(() => promise = serviceDefinition.getKeyValue(deployment));
 
     it('it should be possible to get a key/value pair', () =>
 
@@ -93,7 +93,7 @@ describe('ServiceDefinitionKeyValueProvider:', () => {
 
     var promise = null;
 
-    before(() => promise = serviceDefinitionKeyValueProvider.getKeyValue(deployment));
+    before(() => promise = serviceDefinition.getKeyValue(deployment));
 
     it("Service definition 'Name' and 'Id' should expose the slice name", () =>
 
@@ -138,7 +138,7 @@ describe('ServiceDefinitionKeyValueProvider:', () => {
 
     var promise = null;
 
-    before(() => promise = serviceDefinitionKeyValueProvider.getKeyValue(deployment));
+    before(() => promise = serviceDefinition.getKeyValue(deployment));
 
     it("Service definition 'server_role' tag should match the server role in the deployment", () =>
 

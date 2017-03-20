@@ -6,7 +6,7 @@
 var should = require('should');
 
 var DeploymentContract = require('modules/deployment/DeploymentContract');
-var deploymentKeyValueProvider = require('modules/deployment/DeploymentKeyValueProvider.class');
+var deploymentDefinition = require('modules/deployment/deploymentDefinition');
 
 describe('DeploymentKeyValueProvider:', () => {
 
@@ -27,7 +27,7 @@ describe('DeploymentKeyValueProvider:', () => {
     });
 
 
-    var promise = deploymentKeyValueProvider.getKeyValue(deployment);
+    var promise = deploymentDefinition.getKeyValue(deployment);
     // Assert
     return promise.then(deployment => {
       should(deployment).not.be.undefined();
