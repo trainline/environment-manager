@@ -126,7 +126,8 @@ function getServiceDeploymentDefinition(environment, key, accountName) {
     name: 'GetTargetState',
     key: `deployments/${key}/service`,
     accountName,
-    environment
+    environment,
+    recurse: true
   };
 
   return sender.sendQuery({ query: consulQuery });
