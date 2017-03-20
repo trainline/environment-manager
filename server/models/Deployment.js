@@ -12,7 +12,7 @@ class Deployment {
   constructor(data, expectedNodes = undefined) {
     _.assign(this, data);
     if (expectedNodes !== undefined) {
-      this.ExpectedNodes = expectedNodes;
+      _.assign(this, { ExpectedNodes: expectedNodes });
     }
   }
 
