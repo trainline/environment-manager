@@ -12,6 +12,7 @@ let OpsEnvironment = require('models/OpsEnvironment');
 let Promise = require('bluebird');
 let environmentProtection = require('modules/authorizers/environmentProtection');
 let awsAccounts = require('modules/awsAccounts');
+let _ = require('lodash');
 
 /**
  * GET /environments
@@ -42,15 +43,71 @@ function isEnvironmentProtectedFromAction(req, res) {
 }
 
 /**
+ * GET /environments/{name}/deploy-lock
+ */
+function getDeploymentLock(req, res, next) {
+  awsAccounts.getMasterAccountName()
+    .then((masterAccountName) => {
+      const key = req.swagger.params.name.value;
+      return GetDynamoResource({ resource: 'ops/environments', key, exposeAudit: 'version-only', accountName: masterAccountName });
+    })
+    .then(data => ({
+      EnvironmentName: data.EnvironmentName,
+      Value: {
+        DeploymentsLocked: !!data.Value.DeploymentsLocked
+      },
+      Version: data.Version
+    }))
+    .then(data => res.json(data)).catch(next);
+}
+
+/**
+ * PUT /environments/{name}/deploy-lock
+ */
+function putDeploymentLock(req, res, next) {
+  const environmentName = req.swagger.params.name.value;
+  const user = req.user;
+
+  let input = req.swagger.params.body.value;
+  let update = { DeploymentsLocked: input.DeploymentsLocked };
+  let expectedVersion = req.swagger.params['expected-version'].value;
+
+  updateOpsEnvironment(environmentName, update, expectedVersion, user)
+    .then(data => res.json(data)).catch(next);
+}
+
+/**
  * GET /environments/{name}/maintenance
  */
-function isEnvironmentInMaintenance(req, res, next) {
-  const environmentName = req.swagger.params.name.value;
+function getMaintenance(req, res, next) {
+  awsAccounts.getMasterAccountName()
+    .then((masterAccountName) => {
+      const key = req.swagger.params.name.value;
+      return GetDynamoResource({ resource: 'ops/environments', key, exposeAudit: 'version-only', accountName: masterAccountName });
+    })
+    .then(data => ({
+      EnvironmentName: data.EnvironmentName,
+      Value: {
+        InMaintenance: !!data.Value.EnvironmentInMaintenance
+      },
+      Version: data.Version
+    }))
+    .then(data => res.json(data)).catch(next);
+}
 
-  OpsEnvironment.getByName(environmentName)
-    .then((env) => {
-      res.json({ isInMaintenance: !!env.Value.EnvironmentInMaintenance });
-    }).catch(next);
+/**
+ * PUT /environments/{name}/maintenance
+ */
+function putMaintenance(req, res, next) {
+  const environmentName = req.swagger.params.name.value;
+  const user = req.user;
+
+  let input = req.swagger.params.body.value;
+  let update = { EnvironmentInMaintenance: input.InMaintenance };
+  let expectedVersion = req.swagger.params['expected-version'].value;
+
+  updateOpsEnvironment(environmentName, update, expectedVersion, user)
+    .then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -91,33 +148,54 @@ function getEnvironmentSchedule(req, res, next) {
   awsAccounts.getMasterAccountName()
     .then((masterAccountName) => {
       const key = req.swagger.params.name.value;
-
-      GetDynamoResource({ resource: 'ops/environments', key, exposeAudit: 'version-only', accountName: masterAccountName })
-        .then(data => res.json(data)).catch(next);
-    });
+      return GetDynamoResource({ resource: 'ops/environments', key, exposeAudit: 'version-only', accountName: masterAccountName });
+    })
+    .then(data => ({
+      EnvironmentName: data.EnvironmentName,
+      Value: {
+        ManualScheduleUp: data.Value.ManualScheduleUp,
+        ScheduleAutomatically: data.Value.ScheduleAutomatically,
+        DefaultSchedule: data.Value.DefaultSchedule
+      },
+      Version: data.Version
+    }))
+    .then(data => res.json(data)).catch(next);
 }
 
 /**
  * PUT /environments/{name}/schedule
  */
 function putEnvironmentSchedule(req, res, next) {
-  awsAccounts.getMasterAccountName()
-    .then((masterAccountName) => {
-      const key = req.swagger.params.name.value;
-      const item = { Value: req.swagger.params.body.value };
-      const user = req.user;
+  const environmentName = req.swagger.params.name.value;
+  const user = req.user;
 
-      const command = {
-        name: 'UpdateDynamoResource',
-        resource: 'ops/environments',
-        key,
-        item,
-        expectedVersion: req.swagger.params['expected-version'].value,
-        accountName: masterAccountName
-      };
+  let update = req.swagger.params.body.value;
+  let expectedVersion = req.swagger.params['expected-version'].value;
 
-      sender.sendCommand({ command, user }).then(data => res.json(data)).catch(next);
-    });
+  updateOpsEnvironment(environmentName, update, expectedVersion, user)
+    .then(data => res.json(data)).catch(next);
+}
+
+function updateOpsEnvironment(environmentName, update, expectedVersion, user) {
+  return co(function* () {
+    let { masterAccountName, environment } = {
+      masterAccountName: yield awsAccounts.getMasterAccountName(),
+      environment: yield OpsEnvironment.getByName(environmentName)
+    };
+
+    let item = { Value: _.assign({}, environment.Value, update) };
+
+    const command = {
+      name: 'UpdateDynamoResource',
+      resource: 'ops/environments',
+      key: environmentName,
+      item,
+      expectedVersion,
+      accountName: masterAccountName
+    };
+
+    return sender.sendCommand({ command, user });
+  });
 }
 
 /**
@@ -140,5 +218,8 @@ module.exports = {
   putEnvironmentSchedule,
   getEnvironmentSchedule,
   isEnvironmentProtectedFromAction,
-  isEnvironmentInMaintenance
+  getMaintenance,
+  putMaintenance,
+  getDeploymentLock,
+  putDeploymentLock
 };

@@ -15,21 +15,13 @@ const EM_REDIS_CRYPTO_KEY = config.get('EM_REDIS_CRYPTO_KEY');
 const EM_REDIS_CRYPTO_KEY_S3_BUCKET = config.get('EM_REDIS_CRYPTO_KEY_S3_BUCKET');
 const EM_REDIS_CRYPTO_KEY_S3_KEY = config.get('EM_REDIS_CRYPTO_KEY_S3_KEY');
 
-let storePromise;
-
-function getStore() {
-  return storePromise || createStore();
-}
-
-function createStore() {
-  storePromise = co(function* () {
-    let client = connectToRedis();
+function createStore(db) {
+  return co(function* () {
+    let client = connectToRedis(db);
     let cryptoKey = yield getCryptoKey();
 
     return createEncryptedRedisStore(client, cryptoKey);
   });
-
-  return storePromise;
 }
 
 function createEncryptedRedisStore(client, cryptoKey) {
@@ -77,10 +69,11 @@ function createEncryptedRedisStore(client, cryptoKey) {
   };
 }
 
-function connectToRedis() {
+function connectToRedis(db) {
   let client = new Redis({
     host: EM_REDIS_ADDRESS,
     port: EM_REDIS_PORT,
+    db,
     lazyConnect: true,
     connectTimeout: 1000,
     reconnectOnError: () => {
@@ -119,5 +112,5 @@ function getCryptoKey() {
 }
 
 module.exports = {
-  get: getStore
+  createStore
 };

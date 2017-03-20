@@ -3,7 +3,6 @@
 let childProcess = require('child_process');
 let path = require('path');
 let process = require('process');
-
 let version = process.env['npm_package_version'];
 
 function versionPackage(rootDirectory) {
