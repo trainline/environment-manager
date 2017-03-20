@@ -16,6 +16,7 @@ let cookieAuthentication = require('modules/authentications/cookieAuthentication
 let authentication = require('modules/authentication');
 let deploymentMonitorScheduler = require('modules/monitoring/DeploymentMonitorScheduler');
 let apiV1 = require('api/v1');
+let initialData = require('api/em-internal/controllers/initial-data');
 let httpServerFactory = require('modules/http-server-factory');
 let loggingMiddleware = require('modules/express-middleware/loggingMiddleware');
 let deprecateMiddleware = require('modules/express-middleware/deprecateMiddleware');
@@ -25,11 +26,9 @@ let serverInstance;
 const APP_VERSION = require('config').get('APP_VERSION');
 
 function createExpressApp() {
-  let routeInstaller = require('modules/routeInstaller');
   let httpHealthChecks = require('modules/httpHealthChecks');
   let routes = {
     home: require('routes/home'),
-    initialData: require('routes/initialData'),
     deploymentNodeLogs: require('routes/deploymentNodeLogs')
   };
 
@@ -82,9 +81,7 @@ function createExpressApp() {
 
     app.get('/deployments/nodes/logs', authentication.denyUnauthorized, routes.deploymentNodeLogs);
 
-    // routing for APIs
-    app.get('/api/initial-data', routes.initialData);
-    app.use('/api', routeInstaller());
+    app.get('/em/initial-data', initialData);
 
     app.use(swaggerMetadata);
     app.use(swaggerValidator);
