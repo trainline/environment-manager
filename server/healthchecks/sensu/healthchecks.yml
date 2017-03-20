@@ -1,0 +1,6 @@
+sensu_healthchecks:
+  sensu_check1:
+    name: ping
+    local_script: ping.py
+    interval: 10
+    alert_after: 6
