@@ -31,7 +31,9 @@ function commonStubs() {
     'modules/logger': {
       warn: () => { },
     },
-    'modules/sender': {},
+    'modules/sender': {
+      sendQuery: () => Promise.resolve({})
+    },
   };
 }
 
@@ -90,7 +92,7 @@ describe('deployments-helper', () => {
       return sut.get({ key: 'deployment-id' }).should.be.rejected();
     });
 
-    it('if there is such a deployment I get it', () => {
+    it('returns a deployment with unknown number of expected nodes', () => {
       let Deployment = require('models/Deployment');
       let expected = new Deployment({
         Value: { Status: 'success' },
@@ -107,8 +109,37 @@ describe('deployments-helper', () => {
         },
         'modules/configurationCache': {
           getEnvironmentTypeByName: envType => Promise.resolve({ AWSAccountName: 'master-account' }),
-        },
+        }
       }));
+
+      return sut.get({ key: 'deployment-id' }).should.finally.be.eql(expected);
+    });
+
+    it('returns a deployment with unknown number of expected nodes', () => {
+      const expectedNodes = 14;
+      let stubs = commonStubs();
+      stubs['modules/sender'] = { sendQuery: () => Promise.resolve({ ExpectedNodeDeployments:expectedNodes }) };
+
+      let Deployment = require('models/Deployment');
+      let expected = new Deployment({
+        Value: { Status: 'success' },
+        AccountName: 'master-account',
+        ExpectedNodes:expectedNodes
+      });
+      let get = sinon.stub();
+      get.onCall(0).returns({ promise: () => Promise.reject(new Error('oops')) });
+      get.onCall(1).returns(stubGet());
+      get.onCall(2).returns(stubGet());
+      get.onCall(3).returns(stubGet({ Item: { Value: { Status: 'success' } } }));
+      let sut = proxyquire('modules/queryHandlersUtil/deployments-helper', Object.assign(stubs, {
+        'modules/amazon-client/childAccountClient': {
+          createDynamoClient: () => Promise.resolve({ get }),
+        },
+        'modules/configurationCache': {
+          getEnvironmentTypeByName: envType => Promise.resolve({ AWSAccountName: 'master-account' }),
+        }
+      }));
+
       return sut.get({ key: 'deployment-id' }).should.finally.be.eql(expected);
     });
 
