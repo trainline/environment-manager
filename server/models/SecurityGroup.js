@@ -4,10 +4,9 @@
 
 let _ = require('lodash');
 let sender = require('modules/sender');
-let taggable = require('./taggable');
+let TaggableMixin = require('./TaggableMixin.class');
 
 class SecurityGroup {
-
   constructor(data) {
     _.assign(this, data);
   }
@@ -15,7 +14,9 @@ class SecurityGroup {
   getName() {
     return this.getTag('Name');
   }
+}
 
+module.exports = class TaggableSecurityGroup extends TaggableMixin(SecurityGroup) {
   static getAllByIds(accountName, vpcId, groupIds) {
     let query = {
       name: 'ScanSecurityGroups',
@@ -24,7 +25,7 @@ class SecurityGroup {
       groupIds
     };
 
-    return sender.sendQuery({ query }).then(list => list.map(item => new SecurityGroup(item)));
+    return sender.sendQuery({ query }).then(list => list.map(item => new TaggableSecurityGroup(item)));
   }
 
   static getAllByNames(accountName, vpcId, groupNames) {
@@ -35,11 +36,6 @@ class SecurityGroup {
       groupNames
     };
 
-    return sender.sendQuery({ query }).then(list => list.map(item => new SecurityGroup(item)));
+    return sender.sendQuery({ query }).then(list => list.map(item => new TaggableSecurityGroup(item)));
   }
-
-}
-
-taggable(SecurityGroup);
-
-module.exports = SecurityGroup;
+};

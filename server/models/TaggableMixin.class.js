@@ -4,18 +4,20 @@
 
 let _ = require('lodash');
 
-module.exports = function (cls) {
-  cls.prototype.getTag = function (key, defaultValue) {
+let TaggableMixin = Base => class extends Base {
+  getTag(key, defaultValue) {
     let tag = _.find(this.Tags, { Key: key });
     if (tag === undefined) {
       if (arguments.length <= 1) {
         throw new Error(`Can't find tag "${key}"`);
-      } else return defaultValue;
+      } else {
+        return defaultValue;
+      }
     }
     return tag.Value;
-  };
+  }
 
-  cls.prototype.setTag = function (key, value) {
+  setTag(key, value) {
     let tag = this.getTag(key);
     if (tag === undefined) {
       tag = {
@@ -26,11 +28,15 @@ module.exports = function (cls) {
     } else {
       tag.Value = value;
     }
-  };
+  }
 
-  cls.prototype.appendTagsToObject = function () {
+  appendTagsToObject() {
     _.each(this.Tags, (tag) => {
-      this[tag.Key] = tag.Value;
+      if (!this[tag.Key]) {
+        this[tag.Key] = tag.Value;
+      }
     });
-  };
+  }
 };
+
+module.exports = TaggableMixin;

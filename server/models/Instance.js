@@ -4,13 +4,13 @@
 
 let _ = require('lodash');
 let co = require('co');
-let taggable = require('./taggable');
 let ScanCrossAccountInstances = require('queryHandlers/ScanCrossAccountInstances');
 let ec2InstanceClientFactory = require('modules/clientFactories/ec2InstanceClientFactory');
 let Environment = require('models/Environment');
 let moment = require('moment');
 let sender = require('modules/sender');
 let logger = require('modules/logger');
+let TaggableMixin = require('./TaggableMixin.class');
 
 class Instance {
 
@@ -67,6 +67,4 @@ class Instance {
   }
 }
 
-taggable(Instance);
-
-module.exports = Instance;
+module.exports = TaggableMixin(Instance);
