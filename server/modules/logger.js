@@ -3,12 +3,15 @@
 'use strict';
 
 let winston = require('winston');
-
 let AWS = require('aws-sdk');
-
 let config = require('config/');
-const EM_LOG_LEVEL = config.get('EM_LOG_LEVEL').toLowerCase();
 let fp = require('lodash/fp');
+
+const EM_LOG_LEVEL = config.get('EM_LOG_LEVEL').toLowerCase();
+const IS_PROD = config.get('IS_PRODUCTION');
+
+let transportOpts = { level: EM_LOG_LEVEL, showLevel: false };
+if (IS_PROD) transportOpts.formatter = formatter;
 
 function formatter(options) {
   let entry = {
@@ -24,15 +27,11 @@ function formatter(options) {
 
 const logger = new (winston.Logger)({
   transports: [
-    new (winston.transports.Console)({
-      level: EM_LOG_LEVEL,
-      showLevel: false,
-      formatter
-    })
+    new (winston.transports.Console)(transportOpts)
   ]
 });
 
-if (config.get('IS_PRODUCTION') === true) {
+if (IS_PROD) {
   // Globally configure aws-sdk to log all activity.
   AWS.config.update({
     logger: {
