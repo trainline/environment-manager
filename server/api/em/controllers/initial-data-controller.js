@@ -12,7 +12,7 @@ const FEATURE_DISABLE_SERVICE = true;
  * This is JSONP with initial state of an app, if user is not logged in, no need to send any information.
  * User will see a login form.
  */
-module.exports = function (request, response) {
+module.exports = function getInitialData(request, response) {
   let str = '';
   str += `window.version = '${APP_VERSION}'; `;
   str += `window.FEATURE_DISABLE_SERVICE = ${FEATURE_DISABLE_SERVICE}; `;
