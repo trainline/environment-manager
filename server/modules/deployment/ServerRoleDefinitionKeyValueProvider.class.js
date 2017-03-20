@@ -4,31 +4,33 @@
 
 let Enums = require('Enums');
 
-module.exports = function ServerRoleDefinitionKeyValueProvider() {
-  this.get = function (deployment) {
-    let deploymentId = deployment.id;
-    let environmentName = deployment.environmentName;
-    let serviceName = deployment.serviceName;
-    let serviceVersion = deployment.serviceVersion;
-    let serviceSlice = deployment.serviceSlice;
-    let serverRole = deployment.serverRole;
+function getKeyValue(deployment) {
+  let deploymentId = deployment.id;
+  let environmentName = deployment.environmentName;
+  let serviceName = deployment.serviceName;
+  let serviceVersion = deployment.serviceVersion;
+  let serviceSlice = deployment.serviceSlice;
+  let serverRole = deployment.serverRole;
 
-    let key = serviceSlice ?
-      `environments/${environmentName}/roles/${serverRole}/services/${serviceName}/${serviceSlice}` :
-      `environments/${environmentName}/roles/${serverRole}/services/${serviceName}`;
+  let key = serviceSlice ?
+    `environments/${environmentName}/roles/${serverRole}/services/${serviceName}/${serviceSlice}` :
+    `environments/${environmentName}/roles/${serverRole}/services/${serviceName}`;
 
-    let serverRoleDefinitionKeyValue = {
-      key,
-      value: {
-        Name: serviceName,
-        Version: serviceVersion,
-        Slice: serviceSlice || 'none',
-        DeploymentId: deploymentId,
-        InstanceIds: [],
-        Action: Enums.ServiceAction.INSTALL
-      }
-    };
-
-    return Promise.resolve(serverRoleDefinitionKeyValue);
+  let serverRoleDefinitionKeyValue = {
+    key,
+    value: {
+      Name: serviceName,
+      Version: serviceVersion,
+      Slice: serviceSlice || 'none',
+      DeploymentId: deploymentId,
+      InstanceIds: [],
+      Action: Enums.ServiceAction.INSTALL
+    }
   };
+
+  return Promise.resolve(serverRoleDefinitionKeyValue);
+}
+
+module.exports = {
+  getKeyValue
 };

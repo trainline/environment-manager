@@ -2,24 +2,26 @@
 
 'use strict';
 
-module.exports = function DeploymentServiceKeyValueProvider() {
-  this.get = function (deployment) {
-    let environmentName = deployment.environmentName;
-    let serviceName = deployment.serviceName;
-    let serviceVersion = deployment.serviceVersion;
-    let deploymentId = deployment.id;
+function getKeyValue(deployment) {
+  let environmentName = deployment.environmentName;
+  let serviceName = deployment.serviceName;
+  let serviceVersion = deployment.serviceVersion;
+  let deploymentId = deployment.id;
 
-    let deploymentServiceKeyValue = {
-      key: `deployments/${deploymentId}/service`,
-      value: {
-        Name: serviceName,
-        Version: serviceVersion,
-        ServerRole: deployment.serverRole,
-        Environment: environmentName,
-        Action: 'Install'
-      }
-    };
-
-    return Promise.resolve(deploymentServiceKeyValue);
+  let deploymentServiceKeyValue = {
+    key: `deployments/${deploymentId}/service`,
+    value: {
+      Name: serviceName,
+      Version: serviceVersion,
+      ServerRole: deployment.serverRole,
+      Environment: environmentName,
+      Action: 'Install'
+    }
   };
+
+  return Promise.resolve(deploymentServiceKeyValue);
+}
+
+module.exports = {
+  getKeyValue
 };

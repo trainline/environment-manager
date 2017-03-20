@@ -7,11 +7,11 @@ let DeploymentCommandHandlerLogger = require('commands/deployments/DeploymentCom
 let sender = require('modules/sender');
 let consulClient = require('modules/consul-client');
 
-let serverRoleDefinitionKeyValueProvider = new (require('modules/deployment/ServerRoleDefinitionKeyValueProvider.class'))();
-let serviceInstallationKeyValueProvider = new (require('modules/deployment/ServiceInstallationKeyValueProvider.class'))();
-let serviceDefinitionKeyValueProvider = new (require('modules/deployment/ServiceDefinitionKeyValueProvider.class'))();
-let deploymentServiceKeyValueProvider = new (require('modules/deployment/DeploymentServiceKeyValueProvider.class'))();
-let deploymentKeyValueProvider = new (require('modules/deployment/DeploymentKeyValueProvider.class'))();
+let serverRoleDefinition = require('modules/deployment/ServerRoleDefinitionKeyValueProvider.class');
+let serviceInstallation = require('modules/deployment/ServiceInstallationKeyValueProvider.class');
+let serviceDefinition = require('modules/deployment/ServiceDefinitionKeyValueProvider.class');
+let deploymentService = require('modules/deployment/DeploymentServiceKeyValueProvider.class');
+let deploymentDefinition = require('modules/deployment/DeploymentKeyValueProvider.class');
 
 module.exports = function PushDeploymentCommandHandler(command) {
   let logger = new DeploymentCommandHandlerLogger(command);
@@ -25,11 +25,11 @@ module.exports = function PushDeploymentCommandHandler(command) {
     logger.info(`Updating consul metadata in data centre "${dataCentre}"`);
 
     let keyValues = yield {
-      serviceDefinition: yield serviceDefinitionKeyValueProvider.get(deployment),
-      serverRoleDefinition: yield serverRoleDefinitionKeyValueProvider.get(deployment),
-      serviceInstallation: yield serviceInstallationKeyValueProvider.get(deployment, s3Path),
-      deployment: yield deploymentKeyValueProvider.get(deployment),
-      deploymentService: yield deploymentServiceKeyValueProvider.get(deployment)
+      serviceDefinition: yield serviceDefinition.getKeyValue(deployment),
+      serverRoleDefinition: yield serverRoleDefinition.getKeyValue(deployment),
+      serviceInstallation: yield serviceInstallation.getKeyValue(deployment, s3Path),
+      deployment: yield deploymentDefinition.getKeyValue(deployment),
+      deploymentService: yield deploymentService.getKeyValue(deployment)
     };
 
     yield [

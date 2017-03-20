@@ -6,7 +6,7 @@
 let should = require('should');
 
 let DeploymentContract = require('modules/deployment/DeploymentContract');
-let ServerRoleDefinitionKeyValueProvider = require('modules/deployment/ServerRoleDefinitionKeyValueProvider.class');
+let serverRoleDefinitionKeyValueProvider = require('modules/deployment/ServerRoleDefinitionKeyValueProvider.class');
 
 describe('ServerRoleDefinitionKeyValueProvider:', () => {
 
@@ -30,8 +30,7 @@ describe('ServerRoleDefinitionKeyValueProvider:', () => {
       });
 
       // Act
-      var target = new ServerRoleDefinitionKeyValueProvider();
-      var promise = target.get(deployment);
+      var promise = serverRoleDefinitionKeyValueProvider.getKeyValue(deployment);
 
       // Assert
       return promise.then(serverRoleDefinition => {
@@ -74,8 +73,7 @@ describe('ServerRoleDefinitionKeyValueProvider:', () => {
       });
 
       // Act
-      var target = new ServerRoleDefinitionKeyValueProvider();
-      var promise = target.get(deployment);
+      var promise = serverRoleDefinitionKeyValueProvider.getKeyValue(deployment);
 
       // Assert
       return promise.then(serverRoleDefinition => {
@@ -118,8 +116,7 @@ describe('ServerRoleDefinitionKeyValueProvider:', () => {
       });
 
       // Act
-      var target = new ServerRoleDefinitionKeyValueProvider();
-      var promise = target.get(deployment);
+      var promise = serverRoleDefinitionKeyValueProvider.getKeyValue(deployment);
 
       // Assert
       return promise.then(serverRoleDefinition => {

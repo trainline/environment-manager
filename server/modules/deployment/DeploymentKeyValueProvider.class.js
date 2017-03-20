@@ -2,14 +2,16 @@
 
 'use strict';
 
-module.exports = function DeploymentKeyValueProvider() {
-  this.get = function (deployment) {
-    let deploymentId = deployment.id;
-    let deploymentKeyValue = {
-      key: `deployments/${deploymentId}/overall_status`,
-      value: 'In Progress'
-    };
-
-    return Promise.resolve(deploymentKeyValue);
+function getKeyValue(deployment) {
+  let deploymentId = deployment.id;
+  let deploymentKeyValue = {
+    key: `deployments/${deploymentId}/overall_status`,
+    value: 'In Progress'
   };
+
+  return Promise.resolve(deploymentKeyValue);
+}
+
+module.exports = {
+  getKeyValue
 };
