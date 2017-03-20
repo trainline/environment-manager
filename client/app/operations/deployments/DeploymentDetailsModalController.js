@@ -134,6 +134,7 @@ angular.module('EnvironmentManager.operations')
     var vm = this;
 
     vm.deployment = deployment;
+    vm.expectedNodesKnown = deployment.hasOwnProperty('ExpectedNodes');
 
     var id = deployment.DeploymentID;
     var account = deployment.AccountName;

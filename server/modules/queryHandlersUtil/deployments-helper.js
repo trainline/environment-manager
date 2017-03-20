@@ -25,8 +25,14 @@ function mapDeployment(deployment) {
   const accountName = deployment.AccountName;
 
   return co(function* () {
-    let serviceDeployment = yield getServiceDeploymentDefinition();
-    let expectedNodes = serviceDeployment.ExpectedNodeDeployments;
+    let expectedNodes;
+    try {
+      let serviceDeployment = yield getServiceDeploymentDefinition(environmentName, deploymentID, accountName);
+      expectedNodes = serviceDeployment.ExpectedNodeDeployments;
+    } catch (error) {
+      expectedNodes = undefined;
+    }
+
     if (deployment.Value.Status.toLowerCase() !== 'in progress') {
       return new Deployment(deployment, expectedNodes);
     }

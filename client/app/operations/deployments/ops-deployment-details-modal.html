@@ -14,6 +14,7 @@
             <li><strong>User:</strong> {{vm.view.User}} ({{vm.view.OwningCluster}})</li>
             <li><strong>Deployment Type:</strong> {{vm.view.DeploymentType}}</li>
             <li><strong>Deployment ID:</strong> {{vm.view.DeploymentID}}</li>
+            <li data-ng-if="vm.expectedNodesKnown"><strong>Nodes Deployed:</strong> {{vm.view.nodes.length}} / {{vm.view.ExpectedNodes}}</li>
         </ul>
 
         <div ng-if="vm.view.error" class="alert alert-danger">
