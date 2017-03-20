@@ -41,7 +41,7 @@ class Instance {
 
   static getById(instanceId) {
     let filter = { 'instance-id': instanceId };
-    return ScanCrossAccountInstances({ filter }).then(list => new Instance(list[0]));
+    return ScanCrossAccountInstances({ filter }).then(list => new TaggableInstance(list[0]));
   }
 
   static getAllByEnvironment(environmentName) {
@@ -67,4 +67,6 @@ class Instance {
   }
 }
 
-module.exports = TaggableMixin(Instance);
+class TaggableInstance extends TaggableMixin(Instance) { }
+
+module.exports = TaggableInstance;

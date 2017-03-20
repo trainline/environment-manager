@@ -14,9 +14,7 @@ class SecurityGroup {
   getName() {
     return this.getTag('Name');
   }
-}
 
-module.exports = class TaggableSecurityGroup extends TaggableMixin(SecurityGroup) {
   static getAllByIds(accountName, vpcId, groupIds) {
     let query = {
       name: 'ScanSecurityGroups',
@@ -38,4 +36,8 @@ module.exports = class TaggableSecurityGroup extends TaggableMixin(SecurityGroup
 
     return sender.sendQuery({ query }).then(list => list.map(item => new TaggableSecurityGroup(item)));
   }
-};
+}
+
+class TaggableSecurityGroup extends TaggableMixin(SecurityGroup) { }
+
+module.exports = TaggableSecurityGroup;
