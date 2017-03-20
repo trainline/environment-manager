@@ -4,7 +4,7 @@
 
 let _ = require('lodash');
 let sender = require('modules/sender');
-let TaggableMixin = require('./TaggableMixin.class');
+let TaggableMixin = require('./TaggableMixin');
 
 class SecurityGroup {
   constructor(data) {

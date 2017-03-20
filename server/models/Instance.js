@@ -10,7 +10,7 @@ let Environment = require('models/Environment');
 let moment = require('moment');
 let sender = require('modules/sender');
 let logger = require('modules/logger');
-let TaggableMixin = require('./TaggableMixin.class');
+let TaggableMixin = require('./TaggableMixin');
 
 class Instance {
 

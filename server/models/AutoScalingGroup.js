@@ -11,7 +11,7 @@ let Environment = require('models/Environment');
 let serviceTargets = require('modules/service-targets');
 let resourceProvider = require('modules/resourceProvider');
 let logger = require('modules/logger');
-let TaggableMixin = require('./TaggableMixin.class');
+let TaggableMixin = require('./TaggableMixin');
 
 class AutoScalingGroup {
 
