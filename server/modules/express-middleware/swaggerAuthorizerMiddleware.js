@@ -12,7 +12,6 @@ function authorize(req, res, next) {
   }
 
   // We need to rewrite this for authorizers to work with swagger
-  // TODO(filip): remove this once we move to v1 API and drop old one
   _.each(req.swagger.params, (param, key) => {
     req.params[key] = param.value;
   });

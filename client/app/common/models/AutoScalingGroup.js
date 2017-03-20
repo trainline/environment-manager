@@ -99,7 +99,7 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
       }).then(function (asg) {
         // Read image data, full Launch Config and Scaling Schedule for ASG
         return awsService.images.GetImageDetails().then(function (amiData) {
-          asg.$amiData = amiData; // TODO(filip): that needs to go
+          asg.$amiData = amiData;
           asg.$environmentName = environmentName;
           asg.$accountName = account;
 

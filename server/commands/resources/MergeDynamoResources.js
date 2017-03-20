@@ -8,7 +8,6 @@ let resourceDescriptorProvider = require('modules/resourceDescriptorProvider');
 let dynamoResourceValidation = require('./dynamoResourceValidation');
 let sender = require('modules/sender');
 
-// TODO(filip): DRY, look at ReplaceDynamoResources
 function* handler(command) {
   // Validate all resources schema
   let promises = command.items.map(item => dynamoResourceValidation.validate(item, command));

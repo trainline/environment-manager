@@ -4,11 +4,6 @@
 
 'use strict';
 
-/**
- * DEPRECATED
- * TODO(filip): Move this logic to middle-level abstraction, ie.:
- * particular models / or their factories / managers, if necessary
- */
 angular.module('EnvironmentManager.common').factory('awsService',
   function ($q, resources, cachedResources) {
     function AwsService() {

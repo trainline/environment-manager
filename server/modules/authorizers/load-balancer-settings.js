@@ -35,7 +35,6 @@ function getModifyPermissionsForEnvironment(environmentName, user) {
 }
 
 exports.getRules = (request) => {
-  // TODO(Filip): simplify after removing old API
   let environmentName = request.params.key || request.params.environment;
   if (environmentName === undefined) {
     // Environment is in the body

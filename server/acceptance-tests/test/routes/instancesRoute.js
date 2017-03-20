@@ -33,7 +33,7 @@ describe('Querying [instances] resource', function() {
 
   }); // <-- Api should return 200
 
-  // Filip: this was failing before we broke the app
+  // This was failing before we broke the app
   xit('Should contain instance information', function(done) {
     should(apiResponse).be.not.Null();
     should(apiResponse.body).be.not.Null();
