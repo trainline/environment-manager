@@ -7,7 +7,7 @@ let HealthCheckResults = require('../resultCodes');
 module.exports = {
   url: '/ping',
   run: () => {
-    return  Promise.resolve({
+    return Promise.resolve({
       result: HealthCheckResults.SUCCESS
     });
   }

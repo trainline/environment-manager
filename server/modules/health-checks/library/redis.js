@@ -11,7 +11,7 @@ function getResult(status) {
   if (status === 'wait' || status === 'ready') {
     return { result: HealthCheckResults.SUCCESS };
   }
-  
+
   return {
     result: HealthCheckResults.FAIL,
     reason: `Redis connection status is '${status}'`
