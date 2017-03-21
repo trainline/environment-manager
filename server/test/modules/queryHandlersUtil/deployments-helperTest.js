@@ -115,10 +115,10 @@ describe('deployments-helper', () => {
       return sut.get({ key: 'deployment-id' }).should.finally.be.eql(expected);
     });
 
-    it('returns a deployment with unknown number of expected nodes', () => {
+    it('returns a deployment with expected number nodes', () => {
       const expectedNodes = 14;
       let stubs = commonStubs();
-      stubs['modules/sender'] = { sendQuery: () => Promise.resolve({ ExpectedNodeDeployments:expectedNodes }) };
+      stubs['modules/sender'] = { sendQuery: () => Promise.resolve({ value:{ ExpectedNodeDeployments:expectedNodes} }) };
 
       let Deployment = require('models/Deployment');
       let expected = new Deployment({
@@ -143,6 +143,37 @@ describe('deployments-helper', () => {
       return sut.get({ key: 'deployment-id' }).should.finally.be.eql(expected);
     });
 
+    it('returns multiple deployments with expected number nodes', () => {
+      const expectedNodes = 6;
+      let stubs = commonStubs();
+      stubs['modules/sender'] = { sendQuery: () => Promise.resolve([
+        { value:{ ExpectedNodeDeployments:expectedNodes } },
+        { value:{ ExpectedNodeDeployments:expectedNodes * 2 } }
+      ]) };
+
+      let Deployment = require('models/Deployment');
+      let expected = new Deployment({
+        Value: { Status: 'success' },
+        AccountName: 'master-account',
+        ExpectedNodes:expectedNodes
+      });
+      let get = sinon.stub();
+      get.onCall(0).returns({ promise: () => Promise.reject(new Error('oops')) });
+      get.onCall(1).returns(stubGet());
+      get.onCall(2).returns(stubGet());
+      get.onCall(3).returns(stubGet({ Item: { Value: { Status: 'success' } } }));
+      let sut = proxyquire('modules/queryHandlersUtil/deployments-helper', Object.assign(stubs, {
+        'modules/amazon-client/childAccountClient': {
+          createDynamoClient: () => Promise.resolve({ get }),
+        },
+        'modules/configurationCache': {
+          getEnvironmentTypeByName: envType => Promise.resolve({ AWSAccountName: 'master-account' }),
+        }
+      }));
+
+      return sut.get({ key: 'deployment-id' }).should.finally.be.eql(expected);
+    });
+    
     it('if a query throws an error it is logged', () => {
       let expectedError = new Error('oops');
       let get = sinon.stub();

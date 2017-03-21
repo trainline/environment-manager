@@ -32,7 +32,7 @@ function mapDeployment(deployment) {
         serviceDeployment = serviceDeployment[0];
       }
       if (serviceDeployment !== undefined) {
-        expectedNodes = serviceDeployment[0].value.ExpectedNodeDeployments;
+        expectedNodes = serviceDeployment.value.ExpectedNodeDeployments;
       }
     } catch (error) {
       expectedNodes = undefined;
