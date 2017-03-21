@@ -1,13 +1,13 @@
 sensu_healthchecks:
   sensu_check1:
-    name: ping
+    name: enivornment-manager-ping
     local_script: ping.py
     interval: 10
     alert_after: 6
     tip: Checks that environment manager is reachable
     runbook: Check that the service is running properly
   sensu_check2:
-    name: redis
+    name: enivornment-manager-redis
     local_script: redis.py
     interval: 10
     alert_after: 6
