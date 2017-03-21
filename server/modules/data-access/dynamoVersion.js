@@ -82,9 +82,31 @@ function compareVersionOnDelete(hashKeyAttributeName) {
   };
 }
 
+function compareAndSetVersionOnUpdate({ key, expectedVersion, expressions }) {
+  let { ConditionExpression, UpdateExpression } = expressions;
+  let optimisticCheck =
+    ['=',
+      ['at', 'Audit', 'Version'],
+      ['val', expectedVersion]];
+  let updateVersion = [['set',
+    ['at', 'Audit', 'Version'],
+    ['+',
+      ['at', 'Audit', 'Version'],
+      ['val', 1]]]];
+
+  return {
+    key,
+    expressions: Object.assign({},
+    expressions,
+    { ConditionExpression: ConditionExpression ? ['and', ConditionExpression, optimisticCheck] : optimisticCheck },
+    { UpdateExpression: UpdateExpression.concat(updateVersion) })
+  };
+}
+
 module.exports = {
   compareAndSetVersionOnReplace,
   compareAndSetVersionOnCreate,
   compareVersionOnDelete,
+  compareAndSetVersionOnUpdate,
   versionOf
 };

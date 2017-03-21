@@ -48,7 +48,7 @@ describe('dynamoVersion', function () {
         let record = { key: 1, value: 'one' };
         let result = sut({ record, expectedVersion: 2 });
         compile(result.expressions).should.eql({
-          ConditionExpression: '(#Audit.#Version) = (:val0)',
+          ConditionExpression: '(#Audit.#Version = :val0)',
           ExpressionAttributeNames: {
             '#Audit': 'Audit',
             '#Version': 'Version'
@@ -69,7 +69,7 @@ describe('dynamoVersion', function () {
 
       it('the DynamoDB ConditionExpression is the intersection of the new and existing expressions', function () {
         compile(result.expressions).should.match({
-          ConditionExpression: '((#Value) > (:val0)) and ((#Audit.#Version) = (:val1))',
+          ConditionExpression: '((#Value > :val0) and (#Audit.#Version = :val1))',
           ExpressionAttributeNames: {
             '#Audit': 'Audit',
             '#Version': 'Version'
@@ -131,7 +131,7 @@ describe('dynamoVersion', function () {
         let record = { key: 1, value: 'one' };
         let result = sut({ record });
         compile(result.expressions).should.eql({
-          ConditionExpression: 'attribute_not_exists((#ID))',
+          ConditionExpression: 'attribute_not_exists(#ID)',
           ExpressionAttributeNames: {
             '#ID': 'ID'
           }
@@ -148,7 +148,7 @@ describe('dynamoVersion', function () {
 
       it('the DynamoDB ConditionExpression is the intersection of the new and existing expressions', function () {
         compile(result.expressions).should.match({
-          ConditionExpression: '((#Value) > (:val0)) and (attribute_not_exists((#ID)))',
+          ConditionExpression: '((#Value > :val0) and attribute_not_exists(#ID))',
           ExpressionAttributeNames: {
             '#ID': 'ID'
           },
@@ -160,6 +160,53 @@ describe('dynamoVersion', function () {
       it('the other DynamoDB Expressions are retained', function () {
         result.expressions.should.match({
           FilterExpression: ['=', ['at', 'A'], ['at', 'B']]
+        });
+      });
+    });
+  });
+
+  describe('compareAndSetVersionOnUpdate', function () {
+    let sut = dynamoVersion.compareAndSetVersionOnUpdate;
+    context('when there is no ConditionExpression', function () {
+      it('the expected version is incremented and set as the new version', function () {
+        let key = { name: 'one' };
+        let expressions = { UpdateExpression: ['update', ['set', ['at', 'value'], ['val', 1]]] };
+        let result = sut({ key, expectedVersion: 2, expressions });
+        result.should.eql({
+          key: { name: 'one' },
+          expressions: {
+            ConditionExpression: ['=',
+              ['at', 'Audit', 'Version'],
+              ['val', 2]],
+            UpdateExpression: ['update',
+              ['set', ['at', 'value'], ['val', 1]],
+              ['set', ['at', 'Audit', 'Version'], ['+', ['at', 'Audit', 'Version'], ['val', 1]]]
+            ]
+          }
+        });
+      });
+    });
+    context('when there is a ConditionExpression', function () {
+      it('the DynamoDB ConditionExpression is the intersection of the new and existing expressions', function () {
+        let key = { name: 'one' };
+        let expressions = {
+          ConditionExpression: ['=', ['at', 'value'], ['val', 7]],
+          UpdateExpression: ['update', ['set', ['at', 'value'], ['val', 1]]]
+        };
+        let result = sut({ key, expectedVersion: 2, expressions });
+        result.should.eql({
+          key: { name: 'one' },
+          expressions: {
+            ConditionExpression: ['and',
+              ['=', ['at', 'value'], ['val', 7]],
+              ['=',
+                ['at', 'Audit', 'Version'],
+                ['val', 2]]],
+            UpdateExpression: ['update',
+              ['set', ['at', 'value'], ['val', 1]],
+              ['set', ['at', 'Audit', 'Version'], ['+', ['at', 'Audit', 'Version'], ['val', 1]]]
+            ]
+          }
         });
       });
     });
