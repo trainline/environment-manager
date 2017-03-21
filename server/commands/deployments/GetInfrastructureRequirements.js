@@ -43,7 +43,7 @@ module.exports = function GetInfrastructureRequirements(command) {
       }
     });
 
-    requiredInfra.configuration = configuration;
+    requiredInfra.asgsToCreate = asgsToCreate;
     requiredInfra.launchConfigsToCreate = launchConfigsToCreate;
     return requiredInfra;
   }).catch((error) => {
@@ -79,7 +79,6 @@ function getASGsToCreate(logger, configuration, accountName, slice) {
       });
 
     let autoScalingGroupNamesToCreate = yield getASGNamesToCreate(logger, autoScalingGroupNames, accountName);
-
     return autoScalingTemplates.filter(template =>
       autoScalingGroupNamesToCreate.indexOf(template.autoScalingGroupName) >= 0
     );

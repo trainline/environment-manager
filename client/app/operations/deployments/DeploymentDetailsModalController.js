@@ -78,7 +78,7 @@ function deploymentView(deploymentRecord, clusters, expectedNodes) {
       };
     });
 
-    var failedToInitialize = deployment.Value.Status === 'Failed';
+    var failedToInitialize = deployment.Value.Status === 'Failed' || deployment.Value.Status === 'Cancelled';
     for (var i = 0; i < remaininingNodes; i++) {
       var n = {
         duration: '-',

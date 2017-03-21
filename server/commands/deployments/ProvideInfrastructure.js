@@ -16,8 +16,8 @@ module.exports = function ProvideInfrastructure(command) {
     let launchConfigsToCreate = command.launchConfigsToCreate;
 
     logger.info('Creating required infrastructure...');
-
     logger.info(`${launchConfigsToCreate.length} launch configs to create`);
+
     yield launchConfigsToCreate.map(
       template => provideLaunchConfiguration(template, accountName, command)
     );
