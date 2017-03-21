@@ -5,7 +5,8 @@
 let resultCodes = require('./resultCodes');
 
 let checks = [
-  require('./library/ping')
+  require('./library/ping'),
+  require('./library/redis')
   // ... add more health checks here
 ];
 
