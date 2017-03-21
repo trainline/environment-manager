@@ -4,3 +4,12 @@ sensu_healthchecks:
     local_script: ping.py
     interval: 10
     alert_after: 6
+    tip: Checks that environment manager is reachable
+    runbook: Check that the service is running properly
+  sensu_check2:
+    name: redis
+    local_script: redis.py
+    interval: 10
+    alert_after: 6
+    tip: Checks that environment manager can connect to the redis cluster it uses for user session storage
+    runbook: Check the redis cluster is up and running

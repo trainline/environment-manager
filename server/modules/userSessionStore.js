@@ -5,13 +5,13 @@
 let EncryptedRedisStore = require('modules/data-access/encryptedRedisStore');
 const USER_SESSION_STORE_INDEX = 1;
 
-let sessionStorePromise;
+let sessionStore;
 
 function createSessionStore() {
-  sessionStorePromise = EncryptedRedisStore.createStore(USER_SESSION_STORE_INDEX);
-  return sessionStorePromise;
+  sessionStore = EncryptedRedisStore.createStore(USER_SESSION_STORE_INDEX);
+  return sessionStore;
 }
 
 module.exports = {
-  get: () => { return sessionStorePromise || createSessionStore(); }
+  get: () => { return sessionStore || createSessionStore(); }
 };
