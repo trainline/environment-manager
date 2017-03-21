@@ -13,7 +13,6 @@ let logger = require('modules/logger');
 let TaggableMixin = require('./TaggableMixin');
 
 class Instance {
-
   constructor(data) {
     _.assign(this, data);
     this.CreationTime = this.getCreationTime();

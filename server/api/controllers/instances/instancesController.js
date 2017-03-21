@@ -78,8 +78,6 @@ function getInstances(req, res, next) {
       list = yield _.map(list, (instance) => {
         let instanceEnvironment = instance.getTag('Environment', null);
 
-        instance.appendTagsToObject();
-
         let instanceName = instance.getTag('Name', null);
         let instanceRoleTag = instance.getTag('Role', null);
 
@@ -89,7 +87,9 @@ function getInstances(req, res, next) {
         }
 
         // If instances were fetched by cross scan, instance.AccountName is available, otherwise, for simple scan use accountName
-        return getInstanceState(instance.AccountName || accountName, instanceEnvironment, instanceName, instance.InstanceId, instanceRoleTag, instance.LaunchTime)
+        return getInstanceState(
+          instance.getTag('AccountName', null) || accountName,
+          instanceEnvironment, instanceName, instance.getTag('InstanceId', null), instanceRoleTag, instance.getTag('LaunchTime', null))
           .then((state) => {
             _.assign(instance, state);
             return instance;
@@ -101,7 +101,7 @@ function getInstances(req, res, next) {
 
       // Remove instances without Environment tag
       list = _.compact(list);
-      list = _.sortBy(list, instance => new Date(instance.LaunchTime)).reverse();
+      list = _.sortBy(list, instance => new Date(instance.getTag('LaunchTime', null))).reverse();
       res.json(list);
     } else {
       res.json(list);

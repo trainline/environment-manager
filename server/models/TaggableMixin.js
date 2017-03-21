@@ -29,14 +29,6 @@ let TaggableMixin = Base => class extends Base {
       tag.Value = value;
     }
   }
-
-  appendTagsToObject() {
-    _.each(this.Tags, (tag) => {
-      if (!this[tag.Key]) {
-        this[tag.Key] = tag.Value;
-      }
-    });
-  }
 };
 
 module.exports = TaggableMixin;
