@@ -4,7 +4,7 @@
 
 'use strict';
 
-function deploymentView(deploymentRecord, clusters) {
+function deploymentView(deploymentRecord, clusters, expectedNodes) {
   function getDuration() {
     var startTime = moment(deployment.StartTimestamp);
 
@@ -51,7 +51,6 @@ function deploymentView(deploymentRecord, clusters) {
 
     var startTime = moment(moment.utc(node.StartTime).toDate());
     var endTime = node.EndTime ? moment(moment.utc(node.EndTime).toDate()) : moment();
-
     var startEnd = startTime.format('HH:mm:ss');
     if (endTime) startEnd += ' - ' + endTime.format('HH:mm:ss');
 
@@ -59,33 +58,52 @@ function deploymentView(deploymentRecord, clusters) {
     return duration + ' (' + startEnd + ')';
   }
 
-  function getViewableNodes(deployment) {
+  function getViewableNodes(deployment, expectedNodes) {
     var nodes = deployment.Value.Nodes;
-    if (nodes) {
-      return nodes.map(function (node) {
-        var logLink = '/api/v1/deployments/' + deployment.DeploymentID + '/log?account=' + deployment.AccountName + '&instance=' + node.InstanceId;
+    var knownNodes = nodes !== undefined ? nodes.length : 0;
+    var remaininingNodes = expectedNodes - knownNodes;
+    var viewableNodes = nodes.map(function (node) {
+      var logLink = '/api/v1/deployments/' + deployment.DeploymentID + '/log?account=' + deployment.AccountName + '&instance=' + node.InstanceId;
+      return {
+        instanceId: node.InstanceId,
+        instanceIP: node.InstanceIP,
+        status: {
+          status: node.Status,
+          lastStage: node.LastCompletedStage,
+          class: getStatusClass(node.Status)
+        },
+        duration: getNodeDuration(node),
+        numberOfAttempts: node.NumberOfAttempts || 0,
+        logLink: logLink
+      };
+    });
 
-        return {
-          instanceId: node.InstanceId,
-          instanceIP: node.InstanceIP,
-          status: {
-            status: node.Status,
-            lastStage: node.LastCompletedStage,
-            class: getStatusClass(node.Status)
-          },
-          duration: getNodeDuration(node),
-          numberOfAttempts: node.NumberOfAttempts || 0,
-          logLink: logLink
-        };
-      });
+    var failedToInitialize = deployment.Value.Status === 'Failed';
+    for (var i = 0; i < remaininingNodes; i++) {
+      var n = {
+        duration: '-',
+        numberOfAttempts: '-',
+        status: {
+          status: '-', 
+        }
+      };
+      if (failedToInitialize) {
+        n.instanceId = 'Failed to initialize';
+        n.failedToInitialize = true;
+      } else {
+        n.instanceId = 'Initializing...';
+        n.initializing = true;
+      }
+      viewableNodes.push(n)
     }
+
+    return viewableNodes;
   }
 
   function getDeploymentLog(log) {
     if (!log) return '';
 
     var logLines = log.split(/\r\n|\r|\n/g).filter(function (line) { return !!line; }).reverse();
-
     var newLogLines = logLines.map(function (line) {
       var r = /^\[(.*?)\]\s(.*)$/g;
       var matches = r.exec(line);
@@ -104,13 +122,13 @@ function deploymentView(deploymentRecord, clusters) {
   var duration = getDuration();
   var error = getError();
   var statusClass = getStatusClass(deployment.Status);
-  var nodes = getViewableNodes(deploymentRecord);
+  var nodes = getViewableNodes(deploymentRecord, expectedNodes);
   var cluster = _.find(clusters, { ClusterName: deployment.OwningCluster });
   var clusterShort = cluster.Value.ShortName.toLowerCase();
   var asgName = deployment.EnvironmentName + '-' + clusterShort + '-' + (deployment.RuntimeServerRoleName || deployment.ServerRoleName);
   // TODO: rather than linking to separate page, open modal inside current page
   var asgLink = '#/environment/servers/?environment=' + deployment.EnvironmentName + '&asg_name=' + asgName;
-  var nodesCompleted = nodes.length || 0;
+  var nodesCompleted = deployment.Nodes.length || 0;
 
   return _.assign({ DeploymentID: deploymentRecord.DeploymentID }, deployment, {
     environment: deployment.EnvironmentName,
@@ -122,6 +140,7 @@ function deploymentView(deploymentRecord, clusters) {
     error: error,
     log: log,
     nodes: nodes,
+    expectedNodes: expectedNodes,
     nodesCompleted: nodesCompleted
   });
 }
@@ -131,12 +150,18 @@ angular.module('EnvironmentManager.operations')
     var vm = this;
 
     vm.deployment = deployment;
-    vm.expectedNodesKnown = deployment.hasOwnProperty('ExpectedNodes');
-    vm.expectedNodes = deployment.ExpectedNodes || 0;
+
     var id = deployment.DeploymentID;
     var account = deployment.AccountName;
     var refreshTimer;
     var clusters;
+
+    updateExpectedNodes();
+
+    function updateExpectedNodes() {
+      vm.expectedNodesKnown = deployment.hasOwnProperty('ExpectedNodes');
+      vm.expectedNodes = deployment.ExpectedNodes || 0;
+    }
 
     function init() {
       cachedResources.config.clusters.all().then(function (list) {
@@ -150,12 +175,13 @@ angular.module('EnvironmentManager.operations')
       var params = { account: account, key: id };
       Deployment.getById(account, id).then(function (deployment) {
         vm.deployment = deployment;
+        updateExpectedNodes();
         return deployment.fetchNodesIps();
       }).then(updateView);
     }
 
     function updateView(data) {
-      vm.view = deploymentView(data, clusters);
+      vm.view = deploymentView(data, clusters, vm.expectedNodes);
 
       if (refreshTimer) $timeout.cancel(refreshTimer);
 
