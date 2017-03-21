@@ -8,9 +8,11 @@ let _ = require('lodash');
 let co = require('co');
 
 let DynamoHelper = require('api/api-utils/DynamoHelper');
+let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMetadataForDynamoAudit;
+let param = require('api/api-utils/requestParam');
 
 let environmentTable = new DynamoHelper('config/environments');
-let opsEnvironmentTable = new DynamoHelper('ops/environments');
+let opsEnvironment = require('modules/data-access/opsEnvironment');
 let lbSettingsTable = new DynamoHelper('config/lbsettings');
 let lbUpstreamsTable = new DynamoHelper('config/lbupstream');
 
@@ -77,8 +79,12 @@ function putEnvironmentConfigByName(req, res, next) {
  * DELETE /config/environments/{name}
  */
 function deleteEnvironmentConfigByName(req, res, next) {
-  const environmentName = req.swagger.params.name.value;
+  const environmentName = param('name', req);
   const user = req.user;
+  let key = {
+    EnvironmentName: environmentName
+  };
+  let metadata = getMetadataForDynamoAudit(req);
 
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
@@ -88,7 +94,9 @@ function deleteEnvironmentConfigByName(req, res, next) {
       deleteLBUpstreamsForEnvironment(environmentName, accountName, user)
     ];
 
-    yield deleteEnvironment(environmentName, accountName, user);
+    yield opsEnvironment.delete({ key, metadata });
+
+    yield deleteConfigEnvironment(environmentName, accountName, user);
     res.status(200).end();
   }).catch(next);
 }
@@ -116,9 +124,8 @@ function ignoreNotFoundResults(promise) {
   });
 }
 
-function deleteEnvironment(environmentName, accountName, user) {
+function deleteConfigEnvironment(environmentName, accountName, user) {
   return co(function* () {
-    yield opsEnvironmentTable.delete(environmentName, user);
     yield environmentTable.delete(environmentName, user);
   });
 }

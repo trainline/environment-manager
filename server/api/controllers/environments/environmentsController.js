@@ -6,13 +6,13 @@ let GetASGState = require('queryHandlers/GetASGState');
 let ScanServersStatus = require('queryHandlers/ScanServersStatus');
 let co = require('co');
 let Environment = require('models/Environment');
-let GetDynamoResource = require('queryHandlers/GetDynamoResource');
-let sender = require('modules/sender');
 let OpsEnvironment = require('models/OpsEnvironment');
 let Promise = require('bluebird');
 let environmentProtection = require('modules/authorizers/environmentProtection');
-let awsAccounts = require('modules/awsAccounts');
 let _ = require('lodash');
+let opsEnvironment = require('modules/data-access/opsEnvironment');
+let param = require('api/api-utils/requestParam');
+let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMetadataForDynamoAudit;
 
 /**
  * GET /environments
@@ -46,17 +46,16 @@ function isEnvironmentProtectedFromAction(req, res) {
  * GET /environments/{name}/deploy-lock
  */
 function getDeploymentLock(req, res, next) {
-  awsAccounts.getMasterAccountName()
-    .then((masterAccountName) => {
-      const key = req.swagger.params.name.value;
-      return GetDynamoResource({ resource: 'ops/environments', key, exposeAudit: 'version-only', accountName: masterAccountName });
-    })
+  let key = {
+    EnvironmentName: param('name', req)
+  };
+  opsEnvironment.get(key)
     .then(data => ({
       EnvironmentName: data.EnvironmentName,
       Value: {
         DeploymentsLocked: !!data.Value.DeploymentsLocked
       },
-      Version: data.Version
+      Version: data.Audit.Version
     }))
     .then(data => res.json(data)).catch(next);
 }
@@ -65,14 +64,16 @@ function getDeploymentLock(req, res, next) {
  * PUT /environments/{name}/deploy-lock
  */
 function putDeploymentLock(req, res, next) {
-  const environmentName = req.swagger.params.name.value;
-  const user = req.user;
+  let key = {
+    EnvironmentName: param('name', req)
+  };
+  let expectedVersion = param('expected-version', req);
+  let metadata = getMetadataForDynamoAudit(req);
 
   let input = req.swagger.params.body.value;
-  let update = { DeploymentsLocked: input.DeploymentsLocked };
-  let expectedVersion = req.swagger.params['expected-version'].value;
+  let isLocked = input.DeploymentsLocked;
 
-  updateOpsEnvironment(environmentName, update, expectedVersion, user)
+  return opsEnvironment.setDeploymentLock({ key, metadata, isLocked }, expectedVersion)
     .then(data => res.json(data)).catch(next);
 }
 
@@ -80,17 +81,16 @@ function putDeploymentLock(req, res, next) {
  * GET /environments/{name}/maintenance
  */
 function getMaintenance(req, res, next) {
-  awsAccounts.getMasterAccountName()
-    .then((masterAccountName) => {
-      const key = req.swagger.params.name.value;
-      return GetDynamoResource({ resource: 'ops/environments', key, exposeAudit: 'version-only', accountName: masterAccountName });
-    })
+  let key = {
+    EnvironmentName: param('name', req)
+  };
+  opsEnvironment.get(key)
     .then(data => ({
       EnvironmentName: data.EnvironmentName,
       Value: {
         InMaintenance: !!data.Value.EnvironmentInMaintenance
       },
-      Version: data.Version
+      Version: data.Audit.Version
     }))
     .then(data => res.json(data)).catch(next);
 }
@@ -99,14 +99,16 @@ function getMaintenance(req, res, next) {
  * PUT /environments/{name}/maintenance
  */
 function putMaintenance(req, res, next) {
-  const environmentName = req.swagger.params.name.value;
-  const user = req.user;
+  let key = {
+    EnvironmentName: param('name', req)
+  };
+  let expectedVersion = param('expected-version', req);
+  let metadata = getMetadataForDynamoAudit(req);
 
   let input = req.swagger.params.body.value;
-  let update = { EnvironmentInMaintenance: input.InMaintenance };
-  let expectedVersion = req.swagger.params['expected-version'].value;
+  let isInMaintenance = input.InMaintenance;
 
-  updateOpsEnvironment(environmentName, update, expectedVersion, user)
+  return opsEnvironment.setMaintenance({ key, metadata, isInMaintenance }, expectedVersion)
     .then(data => res.json(data)).catch(next);
 }
 
@@ -145,11 +147,10 @@ function getEnvironmentAccountName(req, res, next) {
  * GET /environments/{name}/schedule
  */
 function getEnvironmentSchedule(req, res, next) {
-  awsAccounts.getMasterAccountName()
-    .then((masterAccountName) => {
-      const key = req.swagger.params.name.value;
-      return GetDynamoResource({ resource: 'ops/environments', key, exposeAudit: 'version-only', accountName: masterAccountName });
-    })
+  let key = {
+    EnvironmentName: param('name', req)
+  };
+  opsEnvironment.get(key)
     .then(data => ({
       EnvironmentName: data.EnvironmentName,
       Value: {
@@ -157,7 +158,7 @@ function getEnvironmentSchedule(req, res, next) {
         ScheduleAutomatically: data.Value.ScheduleAutomatically,
         DefaultSchedule: data.Value.DefaultSchedule
       },
-      Version: data.Version
+      Version: data.Audit.Version
     }))
     .then(data => res.json(data)).catch(next);
 }
@@ -166,37 +167,18 @@ function getEnvironmentSchedule(req, res, next) {
  * PUT /environments/{name}/schedule
  */
 function putEnvironmentSchedule(req, res, next) {
-  const environmentName = req.swagger.params.name.value;
-  const user = req.user;
+  let key = {
+    EnvironmentName: param('name', req)
+  };
+  let expectedVersion = param('expected-version', req);
+  let metadata = getMetadataForDynamoAudit(req);
 
-  let update = req.swagger.params.body.value;
-  let expectedVersion = req.swagger.params['expected-version'].value;
+  let schedule = req.swagger.params.body.value;
 
-  updateOpsEnvironment(environmentName, update, expectedVersion, user)
+  return opsEnvironment.setSchedule({ key, metadata, schedule }, expectedVersion)
     .then(data => res.json(data)).catch(next);
 }
 
-function updateOpsEnvironment(environmentName, update, expectedVersion, user) {
-  return co(function* () {
-    let { masterAccountName, environment } = {
-      masterAccountName: yield awsAccounts.getMasterAccountName(),
-      environment: yield OpsEnvironment.getByName(environmentName)
-    };
-
-    let item = { Value: _.assign({}, environment.Value, update) };
-
-    const command = {
-      name: 'UpdateDynamoResource',
-      resource: 'ops/environments',
-      key: environmentName,
-      item,
-      expectedVersion,
-      accountName: masterAccountName
-    };
-
-    return sender.sendCommand({ command, user });
-  });
-}
 
 /**
  * GET /environments/{name}/schedule-status
