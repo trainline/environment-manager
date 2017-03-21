@@ -60,6 +60,6 @@ describe('Create Event', () => {
 function createLambdaEvent() {
   return {
     message: 'This is the message',
-    attributes: { SomeKey: { DataType: 'String', StringValue: 'StringValueOfAttribute' } }
+    attributes: { SomeKey: { Name: 'RequiredNameValue', Type: 'String', Value: 'StringValueOfAttribute' } }
   };
 }

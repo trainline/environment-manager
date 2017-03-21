@@ -28,8 +28,14 @@ module.exports = (event) => {
 
 function checkAttributes(event) {
   Object.keys(event.attributes).forEach((k) => {
-    if (!event.attributes[k].DataType) {
-      throw new Error('Missing expected DataType attribute.');
+    if (!event.attributes[k].Name) {
+      throw new Error(`Missing expected Name property of attribute: ${event.attributes[k]}`);
+    }
+    if (!event.attributes[k].Type) {
+      throw new Error(`Missing expected Type property of attribute: ${event.attributes[k]}`);
+    }
+    if (!event.attributes[k].Value) {
+      throw new Error(`Missing expected Value property of attribute: ${event.attributes[k]}`);
     }
   });
 }

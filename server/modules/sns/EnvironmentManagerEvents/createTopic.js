@@ -4,8 +4,9 @@ let aws = require('aws-sdk');
 aws.config.update({ region: 'eu-west-1' });
 
 function passSafetyNet(name) {
-  if (name !== 'EnvironmentManagerConfigurationChange'
-    && name !== 'EnvironmentManagerOperationsChange') {
+  let root = name.split('/')[0];
+  if (root !== 'EnvironmentManagerConfigurationChange'
+    && root !== 'EnvironmentManagerOperationsChange') {
     return false;
   }
 
