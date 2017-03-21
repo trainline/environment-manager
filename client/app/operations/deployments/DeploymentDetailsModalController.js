@@ -116,6 +116,8 @@ function deploymentView(deploymentRecord, clusters) {
   // TODO(filip): rather than linking to separate page, open modal inside current page
   var asgLink = '#/environment/servers/?environment=' + deployment.EnvironmentName + '&asg_name=' + asgName;
 
+  var nodesCompleted = nodes.length || 0;
+
   return _.assign({ DeploymentID: deploymentRecord.DeploymentID }, deployment, {
     environment: deployment.EnvironmentName,
     asgName: asgName,
@@ -125,7 +127,8 @@ function deploymentView(deploymentRecord, clusters) {
     duration: duration,
     error: error,
     log: log,
-    nodes: nodes
+    nodes: nodes,
+    nodesCompleted: nodesCompleted
   });
 }
 

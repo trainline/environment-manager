@@ -28,7 +28,12 @@ function mapDeployment(deployment) {
     let expectedNodes;
     try {
       let serviceDeployment = yield getServiceDeploymentDefinition(environmentName, deploymentID, accountName);
-      expectedNodes = serviceDeployment.ExpectedNodeDeployments;
+      if (Array.isArray(serviceDeployment)) {
+        serviceDeployment = serviceDeployment[0];
+      }
+      if (serviceDeployment !== undefined) {
+        expectedNodes = serviceDeployment[0].value.ExpectedNodeDeployments;
+      }
     } catch (error) {
       expectedNodes = undefined;
     }
