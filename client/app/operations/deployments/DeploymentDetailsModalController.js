@@ -4,7 +4,6 @@
 
 'use strict';
 
-// TODO(filip): refactor
 function deploymentView(deploymentRecord, clusters) {
   function getDuration() {
     var startTime = moment(deployment.StartTimestamp);
@@ -102,20 +101,15 @@ function deploymentView(deploymentRecord, clusters) {
 
   var deployment = deploymentRecord.Value;
   var log = getDeploymentLog(deployment.ExecutionLog);
-
   var duration = getDuration();
   var error = getError();
-
   var statusClass = getStatusClass(deployment.Status);
   var nodes = getViewableNodes(deploymentRecord);
-
   var cluster = _.find(clusters, { ClusterName: deployment.OwningCluster });
   var clusterShort = cluster.Value.ShortName.toLowerCase();
-
   var asgName = deployment.EnvironmentName + '-' + clusterShort + '-' + (deployment.RuntimeServerRoleName || deployment.ServerRoleName);
-  // TODO(filip): rather than linking to separate page, open modal inside current page
+  // TODO: rather than linking to separate page, open modal inside current page
   var asgLink = '#/environment/servers/?environment=' + deployment.EnvironmentName + '&asg_name=' + asgName;
-
   var nodesCompleted = nodes.length || 0;
 
   return _.assign({ DeploymentID: deploymentRecord.DeploymentID }, deployment, {
@@ -138,7 +132,7 @@ angular.module('EnvironmentManager.operations')
 
     vm.deployment = deployment;
     vm.expectedNodesKnown = deployment.hasOwnProperty('ExpectedNodes');
-
+    vm.expectedNodes = deployment.ExpectedNodes || 0;
     var id = deployment.DeploymentID;
     var account = deployment.AccountName;
     var refreshTimer;
