@@ -47,7 +47,7 @@ module.exports = function GetInfrastructureRequirements(command) {
     requiredInfra.launchConfigsToCreate = launchConfigsToCreate;
     return requiredInfra;
   }).catch((error) => {
-    logger.error('An error has occurred providing the expected infrastructure', error);
+    logger.error('An error has occurred while determining the required infrastructure', error);
     return Promise.reject(error);
   });
 };

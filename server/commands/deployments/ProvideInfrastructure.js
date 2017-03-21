@@ -15,6 +15,9 @@ module.exports = function ProvideInfrastructure(command) {
     let asgsToCreate = command.asgsToCreate;
     let launchConfigsToCreate = command.launchConfigsToCreate;
 
+    logger.info('Creating required infrastructure...');
+
+    logger.info(`${launchConfigsToCreate.length} launch configs to create`);
     yield launchConfigsToCreate.map(
       template => provideLaunchConfiguration(template, accountName, command)
     );
@@ -24,6 +27,7 @@ module.exports = function ProvideInfrastructure(command) {
       logger.info(`LaunchConfiguration ${template.launchConfigurationName} Security Groups: ${securityGroupsNames.join(', ')}`);
     });
 
+    logger.info(`${asgsToCreate.length} ASGs to create`);
     yield asgsToCreate.map(
       template => provideAutoScalingGroup(template, accountName, command)
     );
