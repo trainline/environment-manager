@@ -14,7 +14,7 @@ def fail(reason):
   sys.exit(2)
 
 def run_check(name):
-  url = 'http://localhost:8080/diagnostics/healthchecks/' + name
+  url = 'https://localhost:40500/diagnostics/healthchecks/' + name
   
   try:
     response = requests.get(url, verify=False)
