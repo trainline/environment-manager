@@ -26,6 +26,7 @@ let serverInstance;
 const APP_VERSION = require('config').get('APP_VERSION');
 
 function createExpressApp() {
+  let routeInstaller = require('modules/routeInstaller');
   let httpHealthChecks = require('modules/httpHealthChecks');
   let routes = {
     home: require('routes/home'),
@@ -82,6 +83,7 @@ function createExpressApp() {
     app.get('/deployments/nodes/logs', authentication.denyUnauthorized, routes.deploymentNodeLogs);
 
     app.get('/em/initial-data', initialData);
+    app.use('/api', routeInstaller());
 
     app.use(swaggerMetadata);
     app.use(swaggerValidator);
