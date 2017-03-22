@@ -7,14 +7,16 @@ let _ = require('lodash');
 let yaml = require('js-yaml');
 let swaggerTools = require('swagger-tools');
 let fs = require('fs');
-
-let apiSpec = yaml.safeLoad(fs.readFileSync('api/swagger.yaml', 'utf8'));
-let swaggerAuthorizer = require('modules/express-middleware/swaggerAuthorizerMiddleware');
 let config = require('config');
 let path = require('path');
-let defaultErrorHandler = require('api/error-handler/defaultErrorHandler');
+let apiSpec = yaml.safeLoad(fs.readFileSync('api/swagger.yaml', 'utf8'));
+let swaggerAuthorizer = require('modules/express-middleware/swaggerAuthorizerMiddleware');
 
 const API_BASE_PATH = apiSpec.basePath;
+
+const swaggerNewRelic = require('modules/express-middleware/swaggerNewRelicMiddleware');
+
+let defaultErrorHandler = require('api/error-handler/defaultErrorHandler');
 
 if (config.get('IS_PRODUCTION') === false) {
   apiSpec.host = 'localhost:8080';
@@ -73,7 +75,8 @@ function setup() {
           swaggerMetadata: swaggerMetadata(),
           swaggerRouter: swaggerRouter(swaggerOptions),
           swaggerUi: swaggerUi(),
-          swaggerValidator: swaggerValidator()
+          swaggerValidator: swaggerValidator(),
+          swaggerNewRelic
         };
         resolve(Object.freeze(result));
       });
