@@ -3,10 +3,10 @@
 'use strict';
 
 if (process.env.NEW_RELIC_APP_NAME !== undefined) {
+  // eslint-disable-next-line global-require
   require('newrelic'); // This line must be executed before any other call to require()
 }
 
-// Replace NodeJS built-in Promise with Bluebird Promise
 global.Promise = require('bluebird');
 
 require('app-module-path').addPath(__dirname);
@@ -29,7 +29,7 @@ process.on('unhandledRejection', (reason, promise) => {
 let servers;
 
 function start() {
-  co(function* () {
+  co(function* () { // eslint-disable-line func-names
     let configurationProvider = new ConfigurationProvider();
     yield configurationProvider.init();
     yield cacheManager.flush();
@@ -43,10 +43,12 @@ function start() {
     yield checkAppPrerequisites();
     config.logBootstrapValues();
 
+    // eslint-disable-next-line global-require
     let mainServer = require('modules/MainServer');
     yield mainServer.start();
   }).catch((error) => {
     if (error !== undefined && error.stack !== undefined) {
+      // eslint-disable-next-line no-console
       console.error(error.stack);
     }
   });
