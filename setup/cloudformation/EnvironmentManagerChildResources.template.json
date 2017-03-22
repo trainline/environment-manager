@@ -7,12 +7,6 @@
             "Description": "Master AWS account ID",
             "AllowedPattern": "[0-9]{12}"
         },
-        "pLambdaFunctionBucket": {
-            "Type": "String",
-            "Description": "S3 Bucket containing code for Lambda functions",
-            "Default": "lambda.trainline.com",
-            "MinLength": "0"
-        },
         "pDeploymentLogsBucket": {
             "Type": "String",
             "Default": "",
@@ -59,12 +53,7 @@
         "lambdaInfraEnvironmentManagerScheduler": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
-                "Code": {
-                    "S3Bucket": {
-                        "Ref": "pLambdaFunctionBucket"
-                    },
-                    "S3Key": "EnvironmentManager/InfraEnvironmentManagerScheduler.zip"
-                },
+                "Code": "./lambda/InfraEnvironmentManagerScheduler/scheduler.zip",
                 "Description": "This function turns each Auto Scaling Group on or off based on its schedule tag.",
                 "FunctionName": "InfraEnvironmentManagerScheduler",
                 "Handler": "index.handler",

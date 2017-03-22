@@ -7,6 +7,7 @@
   "license": "ISC",
   "dependencies": {},
   "scripts": {
+    "build-aws-resource": "pack-zip",
     "lint": "eslint"
   },
   "eslintConfig": {
@@ -23,6 +24,7 @@
     }
   },
   "devDependencies": {
-    "eslint": "^3.4.0"
+    "eslint": "^3.4.0",
+    "pack-zip": "^0.2.2"
   }
 }
