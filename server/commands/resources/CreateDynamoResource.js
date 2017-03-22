@@ -6,7 +6,7 @@ let co = require('co');
 let resourceProvider = require('modules/resourceProvider');
 let OperationResult = require('../utils/operationResult');
 let dynamoResourceValidation = require('./dynamoResourceValidation');
-let sender = require('modules/sender');
+let opsEnvironment = require('modules/data-access/opsEnvironment');
 
 function* handler(command) {
   // Create an instance of the resource to work with based on the resource
@@ -28,14 +28,16 @@ function* handler(command) {
   // Get resource uri just for response
   let resourceUri = OperationResult.resourceUri(command.resource, item[keyName], item[rangeName]);
 
+  let auditMetadata = {
+    TransactionID: command.commandId,
+    User: command.username,
+    LastChanged: command.timestamp,
+    Version: 0
+  };
+
   // Adding auditing if needed
   if (resource.isAuditingEnabled()) {
-    item.Audit = {
-      TransactionID: command.commandId,
-      User: command.username,
-      LastChanged: command.timestamp,
-      Version: 0
-    };
+    item.Audit = auditMetadata;
   }
 
   // Verify item schema
@@ -51,20 +53,12 @@ function* handler(command) {
     return result;
   }
 
-  let childResult = yield sender.sendCommand({
-    command: {
-      name: 'CreateDynamoResource',
-      resource: 'ops/environments',
-      accountName: command.accountName,
-      item: {
-        EnvironmentName: item.EnvironmentName,
-        Value: {}
-      }
-    },
-    parent: command
-  });
+  let record = { EnvironmentName: item.EnvironmentName, Value: {} };
+  let metadata = auditMetadata;
 
-  return result.add(childResult);
+  yield opsEnvironment.create({ record, metadata });
+
+  return result;
 }
 
 module.exports = co.wrap(handler);

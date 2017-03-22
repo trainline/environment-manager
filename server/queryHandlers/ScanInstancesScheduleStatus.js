@@ -5,11 +5,11 @@
 let co = require('co');
 let _ = require('lodash');
 let sender = require('modules/sender');
-let awsAccounts = require('modules/awsAccounts');
 let scheduling = require('modules/scheduling');
+let opsEnvironment = require('modules/data-access/opsEnvironment');
 
 module.exports = function ScanInstancesScheduleStatusQueryHandler(query) {
-  return co(function* () {
+  return co(function* () { // eslint-disable-line func-names
     let instances = yield getInstances(query);
 
     let dateTime = query.dateTime ? query.dateTime : new Date();
@@ -104,19 +104,7 @@ function getAllInstances(query) {
 }
 
 function getAllEnvironments(query) {
-  return awsAccounts.getMasterAccountName()
-    .then((masterAccountName) => {
-      return sender.sendQuery({
-        query: {
-          name: 'ScanDynamoResources',
-          accountName: masterAccountName,
-          resource: 'ops/environments',
-          queryId: query.queryId,
-          username: query.username,
-          timestamp: query.timestamp
-        }
-      });
-    });
+  return opsEnvironment.scan();
 }
 
 function getAllASGs(query) {

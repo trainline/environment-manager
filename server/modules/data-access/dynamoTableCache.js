@@ -46,12 +46,18 @@ function dynamoTableCache(logicalTableName, { ttl }) {
     }
   }
 
+  function update(tableArn, updateSpec) {
+    return dynamoTable.update(tableArn, updateSpec)
+      .then(_ => cache.del(tableArn).catch(logError('Could not invalidate cache', tableArn)));
+  }
+
   return {
     create,
     delete: $delete,
     get,
     replace,
-    scan
+    scan,
+    update
   };
 }
 
