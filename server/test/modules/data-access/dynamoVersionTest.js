@@ -1,3 +1,5 @@
+/* eslint-disable func-names */
+
 'use strict';
 
 require('should');

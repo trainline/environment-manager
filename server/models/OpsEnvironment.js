@@ -21,7 +21,7 @@ class OpsEnvironment {
 
   toAPIOutput() {
     let self = this;
-    return co(function* () {
+    return co(function* () { // eslint-disable-line func-names
       let value = _.pick(self.Value, 'ManualScheduleUp', 'ScheduleAutomatically', 'DeploymentsLocked');
       value.InMaintenance = self.Value.EnvironmentInMaintenance;
 

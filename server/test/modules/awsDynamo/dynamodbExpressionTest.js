@@ -1,8 +1,8 @@
-/* TODO: enable linting and fix resulting errors */
-/* eslint-disable */
+/* eslint-disable func-names */
+
 'use strict';
 
-const should = require('should');
+require('should');
 const sut = require('modules/awsDynamo/dynamodbExpression');
 
 describe('dynamodb expression', function () {
@@ -11,7 +11,7 @@ describe('dynamodb expression', function () {
       let input = ['and',
         ['=', ['attr', 'Entity', 'Type'], ['val', 7]],
         ['=', ['attr', 'ChangeType'], ['val', '9']],
-        ['=', ['attr', 'Entity', 'Key'], ['val', false]],
+        ['=', ['attr', 'Entity', 'Key'], ['val', false]]
       ];
       let result;
       before(function () {
@@ -22,14 +22,14 @@ describe('dynamodb expression', function () {
           '#Entity': 'Entity',
           '#Type': 'Type',
           '#ChangeType': 'ChangeType',
-          '#Key': 'Key',
+          '#Key': 'Key'
         });
       });
       it('the values are quoted.', function () {
         result.ExpressionAttributeValues.should.eql({
           ':val0': 7,
           ':val1': '9',
-          ':val2': false,
+          ':val2': false
         });
       });
       it('the expression is correct.', function () {
@@ -40,7 +40,7 @@ describe('dynamodb expression', function () {
     context('when I compile two expressions', function () {
       let input = {
         Expr1: ['=', ['attr', 'Entity', 'Type'], ['val', 1]],
-        Expr2: ['=', ['attr', 'Entity', 'Key'], ['val', 2]],
+        Expr2: ['=', ['attr', 'Entity', 'Key'], ['val', 2]]
       };
       let result;
       before(function () {
@@ -50,7 +50,7 @@ describe('dynamodb expression', function () {
         result.ExpressionAttributeNames.should.eql({
           '#Entity': 'Entity',
           '#Type': 'Type',
-          '#Key': 'Key',
+          '#Key': 'Key'
         });
       });
       it('there are no name collisions in the value map', function () {
@@ -105,7 +105,7 @@ describe('dynamodb expression', function () {
     context('when I compile an update expression using the delete operator', function () {
       let input = ['update',
         ['delete', ['val', '1']],
-        ['delete', ['val', '2']],
+        ['delete', ['val', '2']]
       ];
       let result = sut.compile(input);
       it('the expression is correct.', function () {
@@ -116,7 +116,7 @@ describe('dynamodb expression', function () {
     context('when I compile an update expression using the remove operator', function () {
       let input = ['update',
         ['remove', ['at', 'A1']],
-        ['remove', ['at', 'A2']],
+        ['remove', ['at', 'A2']]
       ];
       let result = sut.compile(input);
       it('the expression is correct.', function () {

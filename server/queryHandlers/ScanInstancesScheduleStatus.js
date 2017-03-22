@@ -9,7 +9,7 @@ let scheduling = require('modules/scheduling');
 let opsEnvironment = require('modules/data-access/opsEnvironment');
 
 module.exports = function ScanInstancesScheduleStatusQueryHandler(query) {
-  return co(function* () {
+  return co(function* () { // eslint-disable-line func-names
     let instances = yield getInstances(query);
 
     let dateTime = query.dateTime ? query.dateTime : new Date();

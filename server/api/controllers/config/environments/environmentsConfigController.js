@@ -40,7 +40,9 @@ function getEnvironmentsConfig(req, res, next) {
   };
   filter = _.omitBy(filter, _.isUndefined);
 
-  return environmentTable.getAll(filter).then(arr => Promise.all(arr.map(attachMetadata))).then(data => res.json(data)).catch(next);
+  return environmentTable.getAll(filter)
+    .then(arr => Promise.all(arr.map(attachMetadata)))
+    .then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -58,7 +60,9 @@ function postEnvironmentsConfig(req, res, next) {
   const body = req.swagger.params.body.value;
   const user = req.user;
 
-  return environmentTable.create(body[KEY_NAME], { Value: body.Value }, user).then(() => res.status(201).end()).catch(next);
+  return environmentTable.create(body[KEY_NAME], { Value: body.Value }, user)
+    .then(() => res.status(201).end())
+    .catch(next);
 }
 
 /**
@@ -86,7 +90,7 @@ function deleteEnvironmentConfigByName(req, res, next) {
   };
   let metadata = getMetadataForDynamoAudit(req);
 
-  return co(function* () {
+  return co(function* () { // eslint-disable-line func-names
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
 
     yield [
@@ -102,16 +106,18 @@ function deleteEnvironmentConfigByName(req, res, next) {
 }
 
 function deleteLBSettingsForEnvironment(environmentName, accountName, user) {
-  return co(function* () {
+  return co(function* () { // eslint-disable-line func-names
     let lbSettingsList = yield ignoreNotFoundResults(lbSettingsTable.queryRangeByKey(environmentName));
-    return lbSettingsList.map(lbSettings => lbSettingsTable.deleteWithSortKey(environmentName, lbSettings.VHostName, user, { accountName }));
+    return lbSettingsList.map(lbSettings =>
+      lbSettingsTable.deleteWithSortKey(environmentName, lbSettings.VHostName, user, { accountName }));
   });
 }
 
 function deleteLBUpstreamsForEnvironment(environmentName, accountName, user) {
-  return co(function* () {
+  return co(function* () { // eslint-disable-line func-names
     let allLBUpstreams = yield ignoreNotFoundResults(lbUpstreamsTable.getAll(null, { accountName }));
-    let lbUpstreams = allLBUpstreams.filter(lbUpstream => lbUpstream.Value.EnvironmentName.toLowerCase() === environmentName.toLowerCase());
+    let lbUpstreams = allLBUpstreams.filter(lbUpstream =>
+      lbUpstream.Value.EnvironmentName.toLowerCase() === environmentName.toLowerCase());
 
     return lbUpstreams.map(lbUpstream => lbUpstreamsTable.delete(lbUpstream.key, user, { accountName }));
   });
@@ -125,7 +131,7 @@ function ignoreNotFoundResults(promise) {
 }
 
 function deleteConfigEnvironment(environmentName, accountName, user) {
-  return co(function* () {
+  return co(function* () { // eslint-disable-line func-names
     yield environmentTable.delete(environmentName, user);
   });
 }

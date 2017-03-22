@@ -18,7 +18,10 @@ let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMeta
  * GET /environments
  */
 function getEnvironments(req, res, next) {
-  OpsEnvironment.getAll().then(list => Promise.map(list, env => env.toAPIOutput())).then(data => res.json(data)).catch(next);
+  return OpsEnvironment.getAll()
+    .then(list => Promise.map(list, env => env.toAPIOutput()))
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 /**
@@ -137,7 +140,7 @@ function getEnvironmentServerByName(req, res, next) {
 function getEnvironmentAccountName(req, res, next) {
   const environmentName = req.swagger.params.name.value;
 
-  return co(function* () {
+  return co(function* () { // eslint-disable-line func-names
     const accountName = yield (yield Environment.getByName(environmentName)).getAccountName();
     res.send(accountName);
   }).catch(next);
@@ -187,7 +190,10 @@ function getEnvironmentScheduleStatus(req, res, next) {
   const environmentName = req.swagger.params.name.value;
   const at = req.swagger.params.at.value;
 
-  OpsEnvironment.getByName(environmentName).then(env => ({ Status: env.getScheduleStatus(at) })).then(data => res.json(data)).catch(next);
+  return OpsEnvironment.getByName(environmentName)
+    .then(env => ({ Status: env.getScheduleStatus(at) }))
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 module.exports = {
