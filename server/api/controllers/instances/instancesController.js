@@ -16,6 +16,7 @@ let logger = require('modules/logger');
 let getInstanceState = require('modules/environment-state/getInstanceState');
 let Environment = require('models/Environment');
 let Enums = require('Enums');
+let send = require('modules/helpers/send');
 
 /**
  * GET /instances
@@ -185,9 +186,26 @@ function connectToInstance(req, res, next) {
   }).catch(next);
 }
 
+/**
+ * GET /instances/schedule-actions
+ */
+function getScheduleActions(req, res, next) {
+  const accountName = req.swagger.params.account.value;
+  const dateTime = req.swagger.params.date.value;
+
+  let query = {
+    name: 'ScanInstancesScheduleStatus',
+    accountName,
+    dateTime
+  };
+
+  send.query(query, req, res);
+}
+
 module.exports = {
   getInstances,
   getInstanceById,
   putInstanceMaintenance,
-  connectToInstance
+  connectToInstance,
+  getScheduleActions
 };
