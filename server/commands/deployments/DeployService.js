@@ -109,10 +109,11 @@ function validateCommandAndCreateDeployment(command) {
 
 function deploy(deployment, destination, sourcePackage, command) {
   return co(function* () {
-    let accountName = deployment.accountName;
-    yield provideInfrastructure(accountName, deployment, command);
+    const accountName = deployment.accountName;
+    const requiredInfra = yield getInfrastructureRequirements(accountName, deployment, command);
+    yield provideInfrastructure(accountName, requiredInfra, command);
     yield preparePackage(accountName, destination, sourcePackage, command);
-    yield pushDeployment(accountName, deployment, destination, command);
+    yield pushDeployment(accountName, requiredInfra, deployment, destination, command);
 
     deploymentLogger.inProgress(
       deployment.id,
@@ -142,11 +143,22 @@ function sanitiseError(error) {
   return _.toString(error);
 }
 
-function provideInfrastructure(accountName, deployment, parentCommand) {
+function getInfrastructureRequirements(accountName, deployment, parentCommand) {
+  let command = {
+    name: 'GetInfrastructureRequirements',
+    accountName,
+    deployment
+  };
+
+  return sender.sendCommand({ command, parent: parentCommand });
+}
+
+function provideInfrastructure(accountName, requiredInfra, parentCommand) {
   let command = {
     name: 'ProvideInfrastructure',
     accountName,
-    deployment
+    asgsToCreate: requiredInfra.asgsToCreate,
+    launchConfigsToCreate: requiredInfra.launchConfigsToCreate
   };
 
   return sender.sendCommand({ command, parent: parentCommand });
@@ -163,12 +175,13 @@ function preparePackage(accountName, destination, source, parentCommand) {
   return sender.sendCommand({ command, parent: parentCommand });
 }
 
-function pushDeployment(accountName, deployment, s3Path, parentCommand) {
+function pushDeployment(accountName, requiredInfra, deployment, s3Path, parentCommand) {
   let command = {
     name: 'PushDeployment',
     accountName,
     deployment,
-    s3Path
+    s3Path,
+    expectedNodeDeployments: requiredInfra.expectedInstances
   };
 
   return sender.sendCommand({ command, parent: parentCommand });

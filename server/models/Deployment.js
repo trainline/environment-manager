@@ -9,8 +9,11 @@ let sender = require('modules/sender');
 
 class Deployment {
 
-  constructor(data) {
+  constructor(data, expectedNodes = undefined) {
     _.assign(this, data);
+    if (expectedNodes !== undefined) {
+      _.assign(this, { ExpectedNodes: expectedNodes });
+    }
   }
 
   static getById(key) {

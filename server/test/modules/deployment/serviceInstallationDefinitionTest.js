@@ -6,7 +6,7 @@
 let should = require('should');
 let DeploymentContract = require('modules/deployment/DeploymentContract');
 let S3PathContract = require('modules/deployment/S3PathContract');
-let ServiceInstallationKeyValueProvider = require('modules/deployment/ServiceInstallationKeyValueProvider.class');
+let serviceInstallationDefinition = require('modules/deployment/serviceInstallationDefinition');
 
 describe('ServiceInstallationKeyValueProvider', () => {
   let serviceName = 'MyService';
@@ -49,16 +49,14 @@ describe('ServiceInstallationKeyValueProvider', () => {
 
 
   it('constructs the correct URL key', () => {
-    let target = new ServiceInstallationKeyValueProvider();
-    return target.get(deployment, s3Path).then(serviceInstallation => {
+    return serviceInstallationDefinition.getKeyValue(deployment, s3Path).then(serviceInstallation => {
       serviceInstallation.key.should.be.equal(`environments/${environmentName}/services/${serviceName}/${serviceVersion}/installation`);
     });
   });
 
 
   it('configures bucket, key and timeout values', () => {
-    let target = new ServiceInstallationKeyValueProvider();
-    return target.get(deployment, s3Path).then(serviceInstallation => {
+    return serviceInstallationDefinition.getKeyValue(deployment, s3Path).then(serviceInstallation => {
       serviceInstallation.value.should.match({
         PackageBucket: bucket,
         PackageKey: key,
