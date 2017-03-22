@@ -3,22 +3,10 @@
 'use strict';
 
 let _ = require('lodash');
-let awsAccounts = require('modules/awsAccounts');
+let configEnvironments = require('modules/data-access/configEnvironments');
 
 function getEnvironment(name, user) {
-  return awsAccounts.getMasterAccountName()
-    .then((masterAccountName) => {
-      let sender = require('modules/sender');
-
-      let query = {
-        name: 'GetDynamoResource',
-        key: name,
-        resource: 'config/environments',
-        accountName: masterAccountName
-      };
-
-      return sender.sendQuery({ query, user });
-    });
+  return configEnvironments.get({ EnvironmentName: name });
 }
 
 function getModifyPermissionsForEnvironment(environmentName, user) {
