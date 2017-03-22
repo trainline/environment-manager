@@ -2,6 +2,14 @@
 
 'use strict';
 
+function updateAuditMetadata({ updateExpression, metadata: { TransactionID, User } }) {
+  return updateExpression.concat([
+    ['set', ['at', 'Audit', 'LastChanged'], ['val', (new Date()).toISOString()]],
+    ['set', ['at', 'Audit', 'TransactionID'], ['val', TransactionID]],
+    ['set', ['at', 'Audit', 'User'], ['val', User]]
+  ]);
+}
+
 function attachAuditMetadata({ record, metadata: { TransactionID, User } }) {
   let audit = Object.assign({}, record.Audit, {
     LastChanged: (new Date()).toISOString(),
@@ -24,5 +32,6 @@ function removeAuditMetadata(record) {
 module.exports = {
   attachAuditMetadata,
   getAuditMetadata,
-  removeAuditMetadata
+  removeAuditMetadata,
+  updateAuditMetadata
 };

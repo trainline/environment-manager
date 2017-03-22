@@ -4,11 +4,9 @@
 
 let _ = require('lodash');
 let scheduling = require('modules/scheduling');
-let sender = require('modules/sender');
-let ScanDynamoResources = require('queryHandlers/ScanDynamoResources');
 let Environment = require('models/Environment');
 let co = require('co');
-let awsAccounts = require('modules/awsAccounts');
+let opsEnvironment = require('modules/data-access/opsEnvironment');
 
 class OpsEnvironment {
 
@@ -23,7 +21,7 @@ class OpsEnvironment {
 
   toAPIOutput() {
     let self = this;
-    return co(function* () {
+    return co(function* () { // eslint-disable-line func-names
       let value = _.pick(self.Value, 'ManualScheduleUp', 'ScheduleAutomatically', 'DeploymentsLocked');
       value.InMaintenance = self.Value.EnvironmentInMaintenance;
 
@@ -41,25 +39,13 @@ class OpsEnvironment {
   }
 
   static getAll(filter = {}) {
-    return awsAccounts.getMasterAccountName()
-      .then((masterAccountName) => {
-        return ScanDynamoResources({ resource: 'ops/environments', filter, exposeAudit: 'version-only', accountName: masterAccountName })
-          .then(list => list.map(env => new OpsEnvironment(env)));
-      });
+    return opsEnvironment.scan()
+      .then(list => list.map(env => new OpsEnvironment(env)));
   }
 
   static getByName(environmentName) {
-    return awsAccounts.getMasterAccountName()
-      .then((masterAccountName) => {
-        let childQuery = {
-          name: 'GetDynamoResource',
-          resource: 'ops/environments',
-          key: environmentName,
-          accountName: masterAccountName
-        };
-
-        return sender.sendQuery({ query: childQuery }).then(obj => new OpsEnvironment(obj));
-      });
+    return opsEnvironment.get({ EnvironmentName: environmentName })
+      .then(obj => new OpsEnvironment(obj));
   }
 }
 

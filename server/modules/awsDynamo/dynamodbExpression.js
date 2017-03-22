@@ -1,18 +1,5 @@
 'use strict';
 
-function reduce(reducer, expression) {
-  function loop(parens, expr) {
-    if (Array.isArray(expr)) {
-      let fname = expr[0];
-      let fn = reducer(fname);
-      return parens(fn(fname, expr.slice(1).map(loop.bind(null, x => `(${x})`))));
-    } else {
-      return expr;
-    }
-  }
-  return loop(x => x, expression);
-}
-
 function expressionScope() {
   let valName = i => `:val${i}`;
   let qname = name => `#${name}`;
@@ -41,12 +28,33 @@ function expressionScope() {
   };
 }
 
-function compileOne(expr, scope) {
-  let infix = (fname, args) => args.map(x => `${x}`).join(` ${fname} `);
-  let prefix = (fname, args) => `${fname}(${args.map(x => `${x}`).join(', ')})`;
-  let attr = (_, exprs) => exprs.map(name => scope.nameExpressionAttributeName(name)).join('.');
-  let val = (_, exprs) => exprs.map(value => scope.nameExpressionAttributeValue(value)).join(', ');
-  let reducers = {
+function compileOne(scope, expr) {
+  let compile = compileOne.bind(null, scope);
+  let infix = ([fn, ...args]) => `(${args.map(compile).join(` ${fn} `)})`;
+  let prefix = ([fn, ...args]) => `${fn}(${args.map(compile).join(', ')})`;
+  let attr = ([, ...exprs]) => exprs.map(name => scope.nameExpressionAttributeName(name)).join('.');
+  let val = ([, ...exprs]) => exprs.map(value => scope.nameExpressionAttributeValue(value)).join(', ');
+  let update = ([, ...args]) => {
+    let assign = opargs => opargs.map(compile).join(' = ');
+    let ref = opargs => opargs.map(compile).join(', ');
+    let operatorCompiler = {
+      add: assign,
+      delete: ref,
+      remove: ref,
+      set: assign
+    };
+    let grouped = args.reduce((acc, [op, ...opargs]) => {
+      let stmt = operatorCompiler[op](opargs);
+      if (acc[op] === undefined) {
+        acc[op] = stmt;
+      } else {
+        acc[op] += `, ${stmt}`;
+      }
+      return acc;
+    }, {});
+    return Object.keys(grouped).map(key => `${key.toUpperCase()} ${grouped[key]}`).join(' ');
+  };
+  let compilers = {
     '=': infix,
     '<>': infix,
     '<': infix,
@@ -61,22 +69,27 @@ function compileOne(expr, scope) {
     'at': attr,
     'attr': attr,
     'or': infix,
+    'update': update,
     'val': val
   };
-  let reducerFromFunction = fname => reducers[fname] || prefix;
 
-  let expression = reduce(reducerFromFunction, expr);
-  return expression;
+  if (Array.isArray(expr) && expr.length > 0) {
+    let [fn] = expr;
+    let compiler = compilers[fn] || prefix;
+    return compiler(expr);
+  } else {
+    return `${expr}`;
+  }
 }
 
-function compile(expressions) {
+function compileAll(expressions) {
   let scope = expressionScope();
   if (Array.isArray(expressions)) {
-    return compile({ Expression: expressions }, scope);
+    return compileAll({ Expression: expressions }, scope);
   }
   let result = {};
   Object.keys(expressions).forEach((key) => {
-    result[key] = compileOne(expressions[key], scope);
+    result[key] = compileOne(scope, expressions[key]);
   });
   ['ExpressionAttributeNames', 'ExpressionAttributeValues'].forEach(
     (key) => {
@@ -89,5 +102,5 @@ function compile(expressions) {
 }
 
 module.exports = {
-  compile
+  compile: compileAll
 };
