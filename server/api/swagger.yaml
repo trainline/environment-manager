@@ -841,6 +841,25 @@ paths:
       responses:
         200:
           description: OK
+  /instances/schedule-actions:
+    x-swagger-router-controller: instancesController
+    get:
+      operationId: getScheduleActions
+      summary: Get outstanding scheduled actions for instances within an account
+      tags:
+        - Instance
+      parameters:
+        - name: account
+          in: query
+          type: string
+          required: true
+        - name: date
+          in: query
+          type: string
+          required: false
+      responses:
+        200:
+          description: OK
   /load-balancer/{id}:
     x-swagger-router-controller: loadBalancerController
     get:
