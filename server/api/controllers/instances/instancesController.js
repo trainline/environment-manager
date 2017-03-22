@@ -16,7 +16,7 @@ let logger = require('modules/logger');
 let getInstanceState = require('modules/environment-state/getInstanceState');
 let Environment = require('models/Environment');
 let Enums = require('Enums');
-let send = require('modules/helpers/send');
+let ScanInstancesScheduleStatus = require('queryHandlers/ScanInstancesScheduleStatus');
 
 /**
  * GET /instances
@@ -199,7 +199,9 @@ function getScheduleActions(req, res, next) {
     dateTime
   };
 
-  send.query(query, req, res);
+  ScanInstancesScheduleStatus(query)
+    .then(actions => res.json(actions))
+    .catch(next);
 }
 
 module.exports = {
