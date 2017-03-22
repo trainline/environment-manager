@@ -26,13 +26,13 @@
         <label class="control-label text-left">Server Role:</label>
       </div>
       <div class="form-group">
-        <input type="search" class="form-control" ng-model="vm.selected.serverRole" uib-typeahead="serverRole for serverRole in vm.view.allServerRoles" ng-model-options="{debounce: 250}" ng-change="vm.update()" typeahead-on-select="vm.update()" />
+        <input type="search" class="form-control" ng-model="vm.selected.serverRole" uib-typeahead="serverRole for serverRole in vm.view.allServerRoles | filter:$viewValue" ng-model-options="{debounce: 250}" ng-change="vm.update()" typeahead-on-select="vm.update()" />
       </div>
       <div class="form-group">
         <label class="control-label text-left">Service Name:</label>
       </div>
       <div class="form-group">
-        <input type="search" class="form-control" ng-model="vm.selected.serviceName" uib-typeahead="serviceName for serviceName in vm.view.allServiceNames" ng-model-options="{debounce: 250}" ng-change="vm.update()" typeahead-on-select="vm.update()" />
+        <input type="search" class="form-control" ng-model="vm.selected.serviceName" uib-typeahead="serviceName for serviceName in vm.view.allServiceNames | filter:$viewValue" ng-model-options="{debounce: 250}" ng-change="vm.update()" typeahead-on-select="vm.update()" />
       </div>
 
     </form>

@@ -110,7 +110,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     };
 
     vm.canUser = function () {
-      return true; // TODO(filip): add perms - none were used here so far
+      return true;
     };
 
     vm.updateASGFormIsValid = function () {
@@ -141,7 +141,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         vm.asgState = arr[0];
         vm.asg = arr[1];
         vm.asg.LaunchConfig.UI_SecurityGroupsFlatList = vm.asg.LaunchConfig.SecurityGroups.join(', ');
-        vm.target = { // TODO(filip): rename this in launch-config.html to simply "LaunchConfig"
+        vm.target = {
           ASG: {
             LaunchConfig: vm.asg.LaunchConfig
           }
@@ -237,7 +237,6 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       return somethingHasChanged && configIsValid;
     };
 
-    // TODO(filip): dry this, same in Server Role modal
     vm.pickAmi = function () {
       var instance = $uibModal.open({
         templateUrl: '/app/configuration/pick-ami/pickami-modal.html',

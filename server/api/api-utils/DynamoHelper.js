@@ -14,8 +14,6 @@ let deleteValue = require('commands/resources/DeleteDynamoResource');
 let metadata = require('commands/utils/metadata');
 let awsAccounts = require('modules/awsAccounts');
 
-// TODO(Filip): once we move all tables to one master account, we can remove all options.accountName
-// and do all operations on masterAccount
 class DynamoHelper {
 
   constructor(resource) {

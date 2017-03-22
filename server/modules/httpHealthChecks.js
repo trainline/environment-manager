@@ -43,6 +43,7 @@ function runCheck(check) {
 function errorResult(error) {
   return {
     result: healthChecks.resultCodes.FAIL,
+    reason: 'An error occurred',
     error: {
       message: error.message,
       stack: error.stack

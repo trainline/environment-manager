@@ -8,7 +8,6 @@ let cacheManager = require('modules/cacheManager');
 
 const TEN_MINUTES = 10 * 60;
 
-// TODO(filip): move this with caching to Environment / EnvironmentType models
 cacheManager.create('Environment', x => environmentDatabase.getEnvironmentByName(x), { stdTTL: TEN_MINUTES });
 cacheManager.create('EnvironmentType', x => environmentDatabase.getEnvironmentTypeByName(x), { stdTTL: TEN_MINUTES });
 

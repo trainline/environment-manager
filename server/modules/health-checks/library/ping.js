@@ -2,13 +2,13 @@
 
 'use strict';
 
-let SUCCESS = require('../resultCodes').SUCCESS;
+let HealthCheckResults = require('../resultCodes');
 
 module.exports = {
   url: '/ping',
   run: () => {
     return Promise.resolve({
-      result: SUCCESS
+      result: HealthCheckResults.SUCCESS
     });
   }
 };

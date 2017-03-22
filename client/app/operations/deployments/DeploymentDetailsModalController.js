@@ -126,7 +126,6 @@ function deploymentView(deploymentRecord, clusters, expectedNodes) {
   var cluster = _.find(clusters, { ClusterName: deployment.OwningCluster });
   var clusterShort = cluster.Value.ShortName.toLowerCase();
   var asgName = deployment.EnvironmentName + '-' + clusterShort + '-' + (deployment.RuntimeServerRoleName || deployment.ServerRoleName);
-  // TODO: rather than linking to separate page, open modal inside current page
   var asgLink = '#/environment/servers/?environment=' + deployment.EnvironmentName + '&asg_name=' + asgName;
   var nodesCompleted = deployment.Nodes.length || 0;
 

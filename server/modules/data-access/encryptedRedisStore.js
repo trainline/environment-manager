@@ -27,6 +27,10 @@ function createStore(db) {
 function createEncryptedRedisStore(client, cryptoKey) {
   let TIMEOUT = 5000;
 
+  function status() {
+    return client.status;
+  }
+
   function get(key) {
     return withTimeout(client.getBuffer(key).then((value) => {
       if (value === null) return null;
@@ -63,6 +67,7 @@ function createEncryptedRedisStore(client, cryptoKey) {
   }
 
   return {
+    status,
     get,
     del,
     psetex

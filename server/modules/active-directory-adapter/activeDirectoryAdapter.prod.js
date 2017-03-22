@@ -30,7 +30,8 @@ module.exports = function ActiveDirectoryAdapter() {
 
       // Get the user information
       let segments = credentials.username.split('\\');
-      let username = segments[1];
+
+      let username = segments.length < 2 ? segments[0] : segments[1];
 
       let groups = yield adClient.getGroupMembershipForUserAsync(username);
 
