@@ -20,6 +20,8 @@ let lbUpstreamsTable = new DynamoHelper('config/lbupstream');
 let Environment = require('models/Environment');
 let EnvironmentType = require('models/EnvironmentType');
 
+let consul = require('modules/service-targets/consul');
+
 function attachMetadata(input) {
   return EnvironmentType.getByName(input.Value.EnvironmentType)
     .then((environmentType) => {
@@ -117,13 +119,18 @@ function deleteEnvironmentConfigByName(req, res, next) {
 
     yield [
       deleteLBSettingsForEnvironment(environmentName, accountName, user),
-      deleteLBUpstreamsForEnvironment(environmentName, accountName, user)
+      deleteLBUpstreamsForEnvironment(environmentName, accountName, user),
+      deleteConsulKeyValuePairs(environmentName)
     ];
 
     yield opsEnvironment.delete({ key, metadata });
     yield configEnvironments.delete({ key, metadata });
     res.status(200).end();
   }).catch(next);
+}
+
+function deleteConsulKeyValuePairs(environmentName) {
+  return consul.removeTargetState(environmentName, { key: `environments/${environmentName}`, recurse: true });
 }
 
 function deleteLBSettingsForEnvironment(environmentName, accountName, user) {
