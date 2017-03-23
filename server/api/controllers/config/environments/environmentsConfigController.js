@@ -8,9 +8,11 @@ let _ = require('lodash');
 let co = require('co');
 
 let DynamoHelper = require('api/api-utils/DynamoHelper');
+let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMetadataForDynamoAudit;
+let param = require('api/api-utils/requestParam');
 
 let environmentTable = new DynamoHelper('config/environments');
-let opsEnvironmentTable = new DynamoHelper('ops/environments');
+let opsEnvironment = require('modules/data-access/opsEnvironment');
 let lbSettingsTable = new DynamoHelper('config/lbsettings');
 let lbUpstreamsTable = new DynamoHelper('config/lbupstream');
 
@@ -38,7 +40,9 @@ function getEnvironmentsConfig(req, res, next) {
   };
   filter = _.omitBy(filter, _.isUndefined);
 
-  return environmentTable.getAll(filter).then(arr => Promise.all(arr.map(attachMetadata))).then(data => res.json(data)).catch(next);
+  return environmentTable.getAll(filter)
+    .then(arr => Promise.all(arr.map(attachMetadata)))
+    .then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -56,7 +60,9 @@ function postEnvironmentsConfig(req, res, next) {
   const body = req.swagger.params.body.value;
   const user = req.user;
 
-  return environmentTable.create(body[KEY_NAME], { Value: body.Value }, user).then(() => res.status(201).end()).catch(next);
+  return environmentTable.create(body[KEY_NAME], { Value: body.Value }, user)
+    .then(() => res.status(201).end())
+    .catch(next);
 }
 
 /**
@@ -77,10 +83,14 @@ function putEnvironmentConfigByName(req, res, next) {
  * DELETE /config/environments/{name}
  */
 function deleteEnvironmentConfigByName(req, res, next) {
-  const environmentName = req.swagger.params.name.value;
+  const environmentName = param('name', req);
   const user = req.user;
+  let key = {
+    EnvironmentName: environmentName
+  };
+  let metadata = getMetadataForDynamoAudit(req);
 
-  return co(function* () {
+  return co(function* () { // eslint-disable-line func-names
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
 
     yield [
@@ -88,22 +98,26 @@ function deleteEnvironmentConfigByName(req, res, next) {
       deleteLBUpstreamsForEnvironment(environmentName, accountName, user)
     ];
 
-    yield deleteEnvironment(environmentName, accountName, user);
+    yield opsEnvironment.delete({ key, metadata });
+
+    yield deleteConfigEnvironment(environmentName, accountName, user);
     res.status(200).end();
   }).catch(next);
 }
 
 function deleteLBSettingsForEnvironment(environmentName, accountName, user) {
-  return co(function* () {
+  return co(function* () { // eslint-disable-line func-names
     let lbSettingsList = yield ignoreNotFoundResults(lbSettingsTable.queryRangeByKey(environmentName));
-    return lbSettingsList.map(lbSettings => lbSettingsTable.deleteWithSortKey(environmentName, lbSettings.VHostName, user, { accountName }));
+    return lbSettingsList.map(lbSettings =>
+      lbSettingsTable.deleteWithSortKey(environmentName, lbSettings.VHostName, user, { accountName }));
   });
 }
 
 function deleteLBUpstreamsForEnvironment(environmentName, accountName, user) {
-  return co(function* () {
+  return co(function* () { // eslint-disable-line func-names
     let allLBUpstreams = yield ignoreNotFoundResults(lbUpstreamsTable.getAll(null, { accountName }));
-    let lbUpstreams = allLBUpstreams.filter(lbUpstream => lbUpstream.Value.EnvironmentName.toLowerCase() === environmentName.toLowerCase());
+    let lbUpstreams = allLBUpstreams.filter(lbUpstream =>
+      lbUpstream.Value.EnvironmentName.toLowerCase() === environmentName.toLowerCase());
 
     return lbUpstreams.map(lbUpstream => lbUpstreamsTable.delete(lbUpstream.key, user, { accountName }));
   });
@@ -116,9 +130,8 @@ function ignoreNotFoundResults(promise) {
   });
 }
 
-function deleteEnvironment(environmentName, accountName, user) {
-  return co(function* () {
-    yield opsEnvironmentTable.delete(environmentName, user);
+function deleteConfigEnvironment(environmentName, accountName, user) {
+  return co(function* () { // eslint-disable-line func-names
     yield environmentTable.delete(environmentName, user);
   });
 }

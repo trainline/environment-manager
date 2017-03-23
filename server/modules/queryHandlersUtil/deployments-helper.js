@@ -3,6 +3,7 @@
 'use strict';
 
 let _ = require('lodash');
+let co = require('co');
 let awsAccounts = require('modules/awsAccounts');
 let awsResourceNameProvider = require('modules/awsResourceNameProvider');
 let childAccountClient = require('modules/amazon-client/childAccountClient');
@@ -18,22 +19,40 @@ function getTargetAccountName(deployment) {
 }
 
 function mapDeployment(deployment) {
-  let Deployment = require('models/Deployment');
-  if (deployment.Value.Status.toLowerCase() !== 'in progress') {
-    return new Deployment(deployment);
-  }
+  const Deployment = require('models/Deployment');
+  const environmentName = deployment.Value.EnvironmentName;
+  const deploymentID = deployment.DeploymentID;
+  const accountName = deployment.AccountName;
 
-  return queryDeploymentNodeStates(deployment.Value.EnvironmentName, deployment.DeploymentID, deployment.AccountName).then((nodes) => {
-    deployment.Value.Nodes = nodes.map((node) => {
-      let resultNode = node.value;
+  return co(function* () {
+    let expectedNodes;
+    try {
+      let serviceDeployment = yield getServiceDeploymentDefinition(environmentName, deploymentID, accountName);
+      if (Array.isArray(serviceDeployment)) {
+        serviceDeployment = serviceDeployment[0];
+      }
+      if (serviceDeployment !== undefined) {
+        expectedNodes = serviceDeployment.value.ExpectedNodeDeployments;
+      }
+    } catch (error) {
+      expectedNodes = undefined;
+    }
 
-      let r = /.*\/(.*)$/g;
-      resultNode.InstanceId = r.exec(node.key)[1];
+    if (deployment.Value.Status.toLowerCase() !== 'in progress') {
+      return new Deployment(deployment, expectedNodes);
+    }
 
-      return resultNode;
-    });
-    return new Deployment(deployment);
+    let nodes = yield queryDeploymentNodeStates(environmentName, deploymentID, accountName);
+    deployment.Value.Nodes = nodes.map(mapNode);
+    return new Deployment(deployment, expectedNodes);
   });
+}
+
+function mapNode(node) {
+  let resultNode = node.value;
+  let r = /.*\/(.*)$/g;
+  resultNode.InstanceId = r.exec(node.key)[1];
+  return resultNode;
 }
 
 function cross(a, b) {
@@ -105,6 +124,18 @@ function queryDeployments(query) {
     sender.sendQuery({ query: currentDeploymentsQuery }),
     sender.sendQuery({ query: completedDeploymentsQuery })
   ]).then(results => _.flatten(results).filter(x => !!x));
+}
+
+function getServiceDeploymentDefinition(environment, key, accountName) {
+  let consulQuery = {
+    name: 'GetTargetState',
+    key: `deployments/${key}/service`,
+    accountName,
+    environment,
+    recurse: true
+  };
+
+  return sender.sendQuery({ query: consulQuery });
 }
 
 function queryDeploymentNodeStates(environment, key, accountName) {

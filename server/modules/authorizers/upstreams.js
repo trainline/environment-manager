@@ -60,14 +60,12 @@ function getEnvironmentPermissionsPromise(upstreamName, environmentName, account
 
 exports.getRules = (request) => {
   let r = /^\/(.*)\/config$/;
-  // TODO(Filip): remove this after switching all to V1 API
   let upstreamName = request.params.key || request.params.name || request.params.body.key;
   let accountName = request.params.account;
 
   return co(function* () {
     let body = request.params.body || request.body;
     logger.debug('Upstreams authorizer', { body, url: request.url });
-    // TODO(Filip): remove this hack after we move all upstreams data into one account
     let environmentName = upstreamName.substr(1, 3);
 
     if (accountName === undefined) {

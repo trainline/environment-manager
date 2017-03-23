@@ -19,11 +19,9 @@ function isSecureServerRole(configuration) {
 module.exports = {
   getRules(request) {
     return co(function* () {
-      // TODO(filip): clean these when dropping old API (switching to v1)
       let environmentName = request.params.environment || request.body.environment;
       let serviceName = request.params.service || request.body.service;
 
-      // TODO(filip): move this to middleware before authorizer and share result with route handler
       let environment = yield Environment.getByName(environmentName);
       let deploymentMap = yield environment.getDeploymentMap();
       let serverRoles = _.map(yield deploymentMap.getServerRolesByServiceName(serviceName), 'ServerRoleName');

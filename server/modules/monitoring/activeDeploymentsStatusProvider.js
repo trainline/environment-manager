@@ -139,11 +139,9 @@ function getNodesDeployment(nodesId, nodesDeployment) {
   return mapping;
 }
 
-// TODO(filip): pass model rather than operate on raw DynamoDB data ffs!!!
 function getExpectedNodesIdByDeployment(deployment) {
   return co(function* () {
     let serverRoleName;
-    // Old deployment - TODO(filip): remove that once we're successful
     if (deployment.Value.ServerRoleName === undefined) {
       let environment = yield Environment.getByName(deployment.Value.EnvironmentName);
       let deploymentMap = yield environment.getDeploymentMap();

@@ -16,6 +16,7 @@ let logger = require('modules/logger');
 let getInstanceState = require('modules/environment-state/getInstanceState');
 let Environment = require('models/Environment');
 let Enums = require('Enums');
+let ScanInstancesScheduleStatus = require('queryHandlers/ScanInstancesScheduleStatus');
 
 /**
  * GET /instances
@@ -78,8 +79,6 @@ function getInstances(req, res, next) {
       list = yield _.map(list, (instance) => {
         let instanceEnvironment = instance.getTag('Environment', null);
 
-        instance.appendTagsToObject();
-
         let instanceName = instance.getTag('Name', null);
         let instanceRoleTag = instance.getTag('Role', null);
 
@@ -89,7 +88,9 @@ function getInstances(req, res, next) {
         }
 
         // If instances were fetched by cross scan, instance.AccountName is available, otherwise, for simple scan use accountName
-        return getInstanceState(instance.AccountName || accountName, instanceEnvironment, instanceName, instance.InstanceId, instanceRoleTag, instance.LaunchTime)
+        return getInstanceState(
+          instance.getTag('AccountName', null) || accountName,
+          instanceEnvironment, instanceName, instance.getTag('InstanceId', null), instanceRoleTag, instance.getTag('LaunchTime', null))
           .then((state) => {
             _.assign(instance, state);
             return instance;
@@ -101,7 +102,7 @@ function getInstances(req, res, next) {
 
       // Remove instances without Environment tag
       list = _.compact(list);
-      list = _.sortBy(list, instance => new Date(instance.LaunchTime)).reverse();
+      list = _.sortBy(list, instance => new Date(instance.getTag('LaunchTime', null))).reverse();
       res.json(list);
     } else {
       res.json(list);
@@ -133,9 +134,7 @@ function putInstanceMaintenance(req, res, next) {
     const environmentName = instance.getTag('Environment');
 
     /**
-     * Update ASG IPS table (previously done in separate end point through ASG IPs resource)
-     *
-     * TODO(filip): handle case when MAINTENANCE_MODE entry doesn't exist - need to create entry
+     * Update ASG IPS table
      */
     let entry = yield dynamoHelper.getByKey('MAINTENANCE_MODE', { accountName });
     let ips = JSON.parse(entry.IPs);
@@ -187,9 +186,28 @@ function connectToInstance(req, res, next) {
   }).catch(next);
 }
 
+/**
+ * GET /instances/schedule-actions
+ */
+function getScheduleActions(req, res, next) {
+  const accountName = req.swagger.params.account.value;
+  const dateTime = req.swagger.params.date.value;
+
+  let query = {
+    name: 'ScanInstancesScheduleStatus',
+    accountName,
+    dateTime
+  };
+
+  ScanInstancesScheduleStatus(query)
+    .then(actions => res.json(actions))
+    .catch(next);
+}
+
 module.exports = {
   getInstances,
   getInstanceById,
   putInstanceMaintenance,
-  connectToInstance
+  connectToInstance,
+  getScheduleActions
 };

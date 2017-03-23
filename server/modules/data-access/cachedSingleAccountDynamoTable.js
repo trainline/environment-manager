@@ -3,7 +3,7 @@
 'use strict';
 
 let mkArn = require('modules/data-access/dynamoTableArn').mkArn;
-let attachAuditMetadata = require('modules/data-access/dynamoAudit').attachAuditMetadata;
+let { attachAuditMetadata, updateAuditMetadata } = require('modules/data-access/dynamoAudit');
 let describeDynamoTable = require('modules/data-access/describeDynamoTable');
 let hashKeyAttributeName = require('modules/data-access/dynamoTableDescription').hashKeyAttributeName;
 let tableArn = require('modules/data-access/dynamoTableDescription').tableArn;
@@ -68,13 +68,29 @@ function factory(physicalTableName, { ttl }) {
       .then(description => cachedTable.scan(tableArn(description), expression));
   }
 
+  function update(expression, expectedVersion) {
+    return tableDescriptionPromise().then(description =>
+      fp.flow(
+        updateAuditMetadata,
+        updateExpression => ({
+          key: expression.key,
+          expressions: { UpdateExpression: updateExpression },
+          expectedVersion
+        }),
+        dynamoVersion.compareAndSetVersionOnUpdate,
+        cachedTable.update.bind(null, tableArn(description))
+      )(expression)
+    );
+  }
+
   return {
     create,
     delete: $delete,
     get,
     query,
     replace,
-    scan
+    scan,
+    update
   };
 }
 

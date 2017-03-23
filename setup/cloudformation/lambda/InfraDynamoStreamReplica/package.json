@@ -1,0 +1,30 @@
+{
+  "name": "infra-dynamo-stream-replica",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "scripts": {
+    "build-aws-resource": "pack-zip",
+    "lint": "eslint"
+  },
+  "eslintConfig": {
+    "env": {
+      "es6": true,
+      "node": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+      "ecmaVersion": 6
+    },
+    "rules": {
+      "no-console": 0
+    }
+  },
+  "devDependencies": {
+    "eslint": "^3.4.0",
+    "pack-zip": "^0.2.2"
+  }
+}

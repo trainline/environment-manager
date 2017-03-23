@@ -51,7 +51,7 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       vm.editMode = serviceName.toLowerCase() !== 'new';
 
       var access = vm.editMode ? 'PUT' : 'POST';
-      var resource = vm.editMode ? name : '*';
+      var resource = vm.editMode ? serviceName + '/' + owningCluster : '*';
       userHasPermission = user.hasPermission({ access: access, resource: '/config/services/' + resource });
 
       $q.all([

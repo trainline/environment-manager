@@ -16,6 +16,7 @@ let cookieAuthentication = require('modules/authentications/cookieAuthentication
 let authentication = require('modules/authentication');
 let deploymentMonitorScheduler = require('modules/monitoring/DeploymentMonitorScheduler');
 let apiV1 = require('api/v1');
+let initialData = require('api/em-internal/controllers/initial-data');
 let httpServerFactory = require('modules/http-server-factory');
 let loggingMiddleware = require('modules/express-middleware/loggingMiddleware');
 let deprecateMiddleware = require('modules/express-middleware/deprecateMiddleware');
@@ -26,9 +27,9 @@ const APP_VERSION = require('config').get('APP_VERSION');
 
 function createExpressApp() {
   let routeInstaller = require('modules/routeInstaller');
+  let httpHealthChecks = require('modules/httpHealthChecks');
   let routes = {
     home: require('routes/home'),
-    initialData: require('routes/initialData'),
     deploymentNodeLogs: require('routes/deploymentNodeLogs')
   };
 
@@ -74,13 +75,14 @@ function createExpressApp() {
     // routing for API JSON Schemas
     app.use('/schema', authentication.allowUnknown, express.static(`${PUBLIC_DIR}/schema`));
 
+    app.use('/diagnostics/healthchecks', httpHealthChecks.router);
+
     app.use(cookieAuthentication.middleware);
     app.use(tokenAuthentication.middleware);
 
     app.get('/deployments/nodes/logs', authentication.denyUnauthorized, routes.deploymentNodeLogs);
 
-    // routing for APIs
-    app.get('/api/initial-data', routes.initialData);
+    app.get('/em/initial-data', initialData);
     app.use('/api', routeInstaller());
 
     app.use(swaggerMetadata);

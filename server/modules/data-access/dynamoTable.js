@@ -81,6 +81,23 @@ function replace(tableArn, { record, expressions }) {
   });
 }
 
+function update(tableArn, { key, expressions }) {
+  return describeDynamoTable(tableArn).then((tableDescription) => {
+    let TableName = tableName(tableArn);
+    let params = Object.assign({ TableName, Key: key }, compileIfSet(expressions));
+    return dynamoClient(tableArn)
+      .then(dynamo => dynamo.update(params).promise())
+      .catch((error) => {
+        if (error.code === 'ConditionalCheckFailedException') {
+          let keyStr = JSON.stringify(key);
+          let message = `Could not update this item because it has been modified. table = ${TableName} key = ${keyStr}.`;
+          return Promise.reject(new Error(message));
+        }
+        return Promise.reject(error);
+      });
+  });
+}
+
 function $delete(tableArn, { key, expressions }) {
   return describeDynamoTable(tableArn).then((tableDescription) => {
     let TableName = tableName(tableArn);
@@ -104,5 +121,6 @@ module.exports = {
   get,
   query,
   replace,
-  scan
+  scan,
+  update
 };

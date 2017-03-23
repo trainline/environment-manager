@@ -8,8 +8,6 @@ let commandMetadata = require('commands/utils/metadata');
 
 const COMMAND_TYPE = 'Command';
 const QUERY_TYPE = 'Query';
-const THIN_SEPARATOR = new Array(50).join('-');
-const THICK_SEPARATOR = new Array(50).join('=');
 
 module.exports = {
   sendCommand(parameters, callback) {
@@ -44,8 +42,6 @@ function prepareQuery(parameters) {
   }
 
   query.timestamp = new Date().toISOString();
-  // let message = getLogMessage(query);
-  // logger.debug(message);
   return query;
 }
 
@@ -80,28 +76,18 @@ function sendCommandOrQuery(commandOrQuery) {
 }
 
 function getLogMessage(commandOrQuery) {
-  let message = [
-    THICK_SEPARATOR,
+  return [
     `[${commandOrQuery.name}]`,
-    JSON.stringify(commandOrQuery, null, '  '),
-    THICK_SEPARATOR
+    JSON.stringify(commandOrQuery, null, '  ')
   ].join('\n');
-
-  return message;
 }
 
 function getErrorMessage(commandOrQuery, error) {
-  let message = [
+  return [
     'Error executing:',
-    THICK_SEPARATOR,
     `[${commandOrQuery.name}]`,
     JSON.stringify(commandOrQuery, null, '  '),
-    THIN_SEPARATOR,
     error.toString(true),
-    THIN_SEPARATOR,
-    JSON.stringify(error),
-    THICK_SEPARATOR
+    JSON.stringify(error)
   ].join('\n');
-
-  return message;
 }

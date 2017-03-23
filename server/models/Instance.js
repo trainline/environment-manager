@@ -4,16 +4,15 @@
 
 let _ = require('lodash');
 let co = require('co');
-let taggable = require('./taggable');
 let ScanCrossAccountInstances = require('queryHandlers/ScanCrossAccountInstances');
 let ec2InstanceClientFactory = require('modules/clientFactories/ec2InstanceClientFactory');
 let Environment = require('models/Environment');
 let moment = require('moment');
 let sender = require('modules/sender');
 let logger = require('modules/logger');
+let TaggableMixin = require('./TaggableMixin');
 
 class Instance {
-
   constructor(data) {
     _.assign(this, data);
     this.CreationTime = this.getCreationTime();
@@ -41,7 +40,7 @@ class Instance {
 
   static getById(instanceId) {
     let filter = { 'instance-id': instanceId };
-    return ScanCrossAccountInstances({ filter }).then(list => new Instance(list[0]));
+    return ScanCrossAccountInstances({ filter }).then(list => new TaggableInstance(list[0]));
   }
 
   static getAllByEnvironment(environmentName) {
@@ -67,6 +66,6 @@ class Instance {
   }
 }
 
-taggable(Instance);
+class TaggableInstance extends TaggableMixin(Instance) { }
 
-module.exports = Instance;
+module.exports = TaggableInstance;

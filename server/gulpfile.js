@@ -13,6 +13,7 @@ function build() {
     '*commands/**/*',
     '*config/**/*',
     '*deployment/**/*',
+    '*healthchecks/**/*',
     '*models/**/*',
     '*modules/**/*',
     '!node_modules/**/*',

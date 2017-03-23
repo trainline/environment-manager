@@ -1,0 +1,17 @@
+{
+  "name": "infra-environment-manager-backup",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^1.5.2"
+  },
+  "devDependencies": {
+    "pack-zip": "^0.2.2"
+  },
+  "scripts": {
+    "build-aws-resource": "pack-zip"
+  }
+}

@@ -5,7 +5,7 @@ let should  = require('should');
 let request = require('supertest');
 let helper = require('../utils/testHelper');
 
-// Filip: this was failing before we broke the app
+// This was failing before we broke the app
 xdescribe('[Export] API', function() {
 
   before('Starting server', helper.startServer);

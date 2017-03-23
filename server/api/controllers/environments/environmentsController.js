@@ -6,18 +6,22 @@ let GetASGState = require('queryHandlers/GetASGState');
 let ScanServersStatus = require('queryHandlers/ScanServersStatus');
 let co = require('co');
 let Environment = require('models/Environment');
-let GetDynamoResource = require('queryHandlers/GetDynamoResource');
-let sender = require('modules/sender');
 let OpsEnvironment = require('models/OpsEnvironment');
 let Promise = require('bluebird');
 let environmentProtection = require('modules/authorizers/environmentProtection');
-let awsAccounts = require('modules/awsAccounts');
+let _ = require('lodash');
+let opsEnvironment = require('modules/data-access/opsEnvironment');
+let param = require('api/api-utils/requestParam');
+let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMetadataForDynamoAudit;
 
 /**
  * GET /environments
  */
 function getEnvironments(req, res, next) {
-  OpsEnvironment.getAll().then(list => Promise.map(list, env => env.toAPIOutput())).then(data => res.json(data)).catch(next);
+  return OpsEnvironment.getAll()
+    .then(list => Promise.map(list, env => env.toAPIOutput()))
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 /**
@@ -39,6 +43,76 @@ function isEnvironmentProtectedFromAction(req, res) {
 
   environmentProtection.isActionProtected(environmentName, action)
     .then(isProtected => res.json({ isProtected }));
+}
+
+/**
+ * GET /environments/{name}/deploy-lock
+ */
+function getDeploymentLock(req, res, next) {
+  let key = {
+    EnvironmentName: param('name', req)
+  };
+  opsEnvironment.get(key)
+    .then(data => ({
+      EnvironmentName: data.EnvironmentName,
+      Value: {
+        DeploymentsLocked: !!data.Value.DeploymentsLocked
+      },
+      Version: data.Audit.Version
+    }))
+    .then(data => res.json(data)).catch(next);
+}
+
+/**
+ * PUT /environments/{name}/deploy-lock
+ */
+function putDeploymentLock(req, res, next) {
+  let key = {
+    EnvironmentName: param('name', req)
+  };
+  let expectedVersion = param('expected-version', req);
+  let metadata = getMetadataForDynamoAudit(req);
+
+  let input = req.swagger.params.body.value;
+  let isLocked = input.DeploymentsLocked;
+
+  return opsEnvironment.setDeploymentLock({ key, metadata, isLocked }, expectedVersion)
+    .then(data => res.json(data)).catch(next);
+}
+
+/**
+ * GET /environments/{name}/maintenance
+ */
+function getMaintenance(req, res, next) {
+  let key = {
+    EnvironmentName: param('name', req)
+  };
+  opsEnvironment.get(key)
+    .then(data => ({
+      EnvironmentName: data.EnvironmentName,
+      Value: {
+        InMaintenance: !!data.Value.EnvironmentInMaintenance
+      },
+      Version: data.Audit.Version
+    }))
+    .then(data => res.json(data)).catch(next);
+}
+
+/**
+ * PUT /environments/{name}/maintenance
+ */
+function putMaintenance(req, res, next) {
+  let key = {
+    EnvironmentName: param('name', req)
+  };
+  let expectedVersion = param('expected-version', req);
+  let metadata = getMetadataForDynamoAudit(req);
+
+  let input = req.swagger.params.body.value;
+  let isInMaintenance = input.InMaintenance;
+
+  return opsEnvironment.setMaintenance({ key, metadata, isInMaintenance }, expectedVersion)
+    .then(data => res.json(data)).catch(next);
 }
 
 /**
@@ -66,7 +140,7 @@ function getEnvironmentServerByName(req, res, next) {
 function getEnvironmentAccountName(req, res, next) {
   const environmentName = req.swagger.params.name.value;
 
-  return co(function* () {
+  return co(function* () { // eslint-disable-line func-names
     const accountName = yield (yield Environment.getByName(environmentName)).getAccountName();
     res.send(accountName);
   }).catch(next);
@@ -76,37 +150,38 @@ function getEnvironmentAccountName(req, res, next) {
  * GET /environments/{name}/schedule
  */
 function getEnvironmentSchedule(req, res, next) {
-  awsAccounts.getMasterAccountName()
-    .then((masterAccountName) => {
-      const key = req.swagger.params.name.value;
-
-      GetDynamoResource({ resource: 'ops/environments', key, exposeAudit: 'version-only', accountName: masterAccountName })
-        .then(data => res.json(data)).catch(next);
-    });
+  let key = {
+    EnvironmentName: param('name', req)
+  };
+  opsEnvironment.get(key)
+    .then(data => ({
+      EnvironmentName: data.EnvironmentName,
+      Value: {
+        ManualScheduleUp: data.Value.ManualScheduleUp,
+        ScheduleAutomatically: data.Value.ScheduleAutomatically,
+        DefaultSchedule: data.Value.DefaultSchedule
+      },
+      Version: data.Audit.Version
+    }))
+    .then(data => res.json(data)).catch(next);
 }
 
 /**
  * PUT /environments/{name}/schedule
  */
 function putEnvironmentSchedule(req, res, next) {
-  awsAccounts.getMasterAccountName()
-    .then((masterAccountName) => {
-      const key = req.swagger.params.name.value;
-      const item = { Value: req.swagger.params.body.value };
-      const user = req.user;
+  let key = {
+    EnvironmentName: param('name', req)
+  };
+  let expectedVersion = param('expected-version', req);
+  let metadata = getMetadataForDynamoAudit(req);
 
-      const command = {
-        name: 'UpdateDynamoResource',
-        resource: 'ops/environments',
-        key,
-        item,
-        expectedVersion: req.swagger.params['expected-version'].value,
-        accountName: masterAccountName
-      };
+  let schedule = req.swagger.params.body.value;
 
-      sender.sendCommand({ command, user }).then(data => res.json(data)).catch(next);
-    });
+  return opsEnvironment.setSchedule({ key, metadata, schedule }, expectedVersion)
+    .then(data => res.json(data)).catch(next);
 }
+
 
 /**
  * GET /environments/{name}/schedule-status
@@ -115,7 +190,10 @@ function getEnvironmentScheduleStatus(req, res, next) {
   const environmentName = req.swagger.params.name.value;
   const at = req.swagger.params.at.value;
 
-  OpsEnvironment.getByName(environmentName).then(env => ({ Status: env.getScheduleStatus(at) })).then(data => res.json(data)).catch(next);
+  return OpsEnvironment.getByName(environmentName)
+    .then(env => ({ Status: env.getScheduleStatus(at) }))
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 module.exports = {
@@ -127,5 +205,9 @@ module.exports = {
   getEnvironmentScheduleStatus,
   putEnvironmentSchedule,
   getEnvironmentSchedule,
-  isEnvironmentProtectedFromAction
+  isEnvironmentProtectedFromAction,
+  getMaintenance,
+  putMaintenance,
+  getDeploymentLock,
+  putDeploymentLock
 };

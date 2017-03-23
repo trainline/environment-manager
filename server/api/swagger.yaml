@@ -513,6 +513,90 @@ paths:
             properties:
               isProtected:
                 type: boolean
+  /environments/{name}/maintenance:
+    x-swagger-router-controller: environmentsController
+    get:
+      operationId: getMaintenance
+      summary: Find if environment is in maintenance
+      tags:
+        - Environment
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The environment
+          schema:
+            type: object
+            properties:
+              InMaintenance:
+                type: boolean
+    put:
+      operationId: putMaintenance
+      summary: Update whether or not the environment is in maintenance
+      tags:
+        - Environment
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              InMaintenance:
+                type: boolean
+        - $ref: '#/parameters/ExpectedVersionHeader'
+      responses:
+        200:
+          description: OK
+  /environments/{name}/deploy-lock:
+    x-swagger-router-controller: environmentsController
+    get:
+      operationId: getDeploymentLock
+      summary: Find if deployments are currently disabled for this environment
+      tags:
+        - Environment
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The environment
+          schema:
+            type: object
+            properties:
+              DeploymentsLocked:
+                type: boolean
+    put:
+      operationId: putDeploymentLock
+      summary: Update whether or not deployments to the environment are locked
+      tags:
+        - Environment
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              DeploymentsLocked:
+                type: boolean
+        - $ref: '#/parameters/ExpectedVersionHeader'
+      responses:
+        200:
+          description: OK
   /environments/{name}/servers:
     x-swagger-router-controller: environmentsController
     get:
@@ -754,6 +838,25 @@ paths:
           required: false
           schema:
             type: object
+      responses:
+        200:
+          description: OK
+  /instances/schedule-actions:
+    x-swagger-router-controller: instancesController
+    get:
+      operationId: getScheduleActions
+      summary: Get outstanding scheduled actions for instances within an account
+      tags:
+        - Instance
+      parameters:
+        - name: account
+          in: query
+          type: string
+          required: true
+        - name: date
+          in: query
+          type: string
+          required: false
       responses:
         200:
           description: OK
@@ -2627,8 +2730,6 @@ definitions:
         type: integer
       DeploymentMap:
         type: string
-      IsLocked:
-        type: boolean
   EnvironmentTypeConfig:
     type: object
     required:

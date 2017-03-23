@@ -8,9 +8,15 @@
     <ul ng-if="vm.infoMode">
         <li ng-repeat="detail in vm.details" ng-bind-html="detail"></li>
     </ul>
+    <div ng-if="vm.acknowledge">
+      <label>
+        <input type="checkbox" ng-model="vm.isAcknowledged" />
+        {{vm.acknowledge}}
+      </label>
+    </div>
 </div>
 
 <div class="modal-footer">
     <button ng-if="!vm.infoMode" class="btn btn-default" type="button" ng-click="vm.cancel()">{{vm.cancelLabel}}</button>
-    <button class="btn btn-{{vm.severity}}" type="button" ng-click="vm.ok()">{{vm.action}}</button>
+    <button ng-disabled="!vm.isAcknowledged" class="btn btn-{{vm.severity}}" type="button" ng-click="vm.ok()">{{vm.action}}</button>
 </div>

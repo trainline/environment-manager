@@ -35,7 +35,7 @@ function* ScanServersStatusQueryHandler(query) {
         let instance = _.find(allInstances, { InstanceId: asgInstance.InstanceId });
 
         if (instance && instance.State.Name !== 'terminated') {
-          let image = getImage(allImages, instance.ImageId); // TODO(filip): use Image in place of this
+          let image = getImage(allImages, instance.ImageId);
           return {
             instanceId: instance.InstanceId,
             name: instance.getTag('Name', ''),

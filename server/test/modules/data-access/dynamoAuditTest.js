@@ -1,3 +1,5 @@
+/* eslint-disable func-names */
+
 'use strict';
 
 require('should');
@@ -69,6 +71,31 @@ describe('dynamoAudit', function () {
             Version: 0
           }
         });
+      });
+    });
+  });
+
+  describe('updateAuditMetadata', function () {
+    let metadata = {
+      TransactionID: 'Xy1056k==',
+      User: 'somebody'
+    };
+    context('when the updateExpression is set', function () {
+      let result;
+      let updateExpression = ['update', ['set', ['at', 'MyAttribute'], ['val', 1]]];
+      before(function () {
+        result = dynamoAudit.updateAuditMetadata({ updateExpression, metadata });
+      });
+      it('the updateExpression argument is not modified', function () {
+        updateExpression.should.eql(['update', ['set', ['at', 'MyAttribute'], ['val', 1]]]);
+      });
+      it('the result has the expected audit properties', function () {
+        result.should.eql(['update',
+          ['set', ['at', 'MyAttribute'], ['val', 1]],
+          ['set', ['at', 'Audit', 'LastChanged'], ['val', lastChanged]],
+          ['set', ['at', 'Audit', 'TransactionID'], ['val', metadata.TransactionID]],
+          ['set', ['at', 'Audit', 'User'], ['val', metadata.User]]
+        ]);
       });
     });
   });
