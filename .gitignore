@@ -36,6 +36,7 @@ server/configuration.js
 .flowconfig
 dist/
 build/
+/lambda/**/*.zip
 *.zip
 
 *.swp
