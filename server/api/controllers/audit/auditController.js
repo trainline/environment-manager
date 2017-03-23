@@ -16,7 +16,6 @@ let Instant = require('js-joda').Instant;
 let LocalDate = require('js-joda').LocalDate;
 let ZoneOffset = require('js-joda').ZoneOffset;
 let url = require('url');
-let sns = require('modules/sns/EnvironmentManagerEvents');
 
 function createAuditLogQuery(since, until, exclusiveStartKey, perPage, filter) {
   let rq = {
@@ -59,11 +58,6 @@ function getAuditLogs(request, response, next) {
   let redirectUrl = url.parse(request.originalUrl, true);
   redirectUrl.search = null;
   let query = redirectUrl.query;
-
-  sns.publish({
-    message: 'This is the message',
-    topic: 'EnvironmentManagerConfigurationChange'
-  });
 
   function paramOrDefault(param, fn, defaultValue) {
     function f(x) {
