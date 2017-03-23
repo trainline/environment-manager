@@ -2,7 +2,9 @@
 
 'use strict';
 
-console.log('Loading function');
+/* eslint-disable no-console */
+
+console.log('Loading EnvironmentManagerConfigurationChangeAudit function');
 
 exports.handler = (event, context, callback) => {
   console.log('function starting...');

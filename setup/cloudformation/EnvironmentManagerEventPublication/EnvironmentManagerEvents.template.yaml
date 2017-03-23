@@ -3,18 +3,23 @@ Description: Environment Manager Events
 Resources:
   #Section: Topics
   #Item: Configuration Change
+  # This topic is a base path checked by SNS publish within EM. 
+  # If the base path of an attempted publish to a topic doesn't contain this, it will not be allowed.
   ConfigurationChangeTopic:
     Properties:
       DisplayName: ConfigurationChange
       TopicName: EnvironmentManagerConfigurationChange
     Type: AWS::SNS::Topic
   #Item: Operations Change
+  # This topic is a base path checked by SNS publish within EM. 
+  # If the base path of an attempted publish to a topic doesn't contain this, it will not be allowed.
   OperationsChangeTopic:
     Properties:
       DisplayName: OperationsChange
       TopicName: EnvironmentManagerOperationsChange
     Type: AWS::SNS::Topic
   #Roles
+  # Allow SNS subscribers/lambdas to write to Cloud Watch.
   EnvironmentManagerEventsAdminRole:
     Properties:
       AssumeRolePolicyDocument:
@@ -38,6 +43,9 @@ Resources:
           Version: '2012-10-17'
         PolicyName: EnvironmentManagerEventsCloudWatchPolicy
     Type: AWS::IAM::Role
+# To allow lambdas to subscribe to the topic, we need to know the ARN's they have been created with. 
+# For the moment, this requires outputs being recorded from here and used in future stacks. 
+# There is a _need_ to make this nicer!
 Outputs:
   ConfigurationChangeTopicARN:
     Description: Configuration Change Topic ARN

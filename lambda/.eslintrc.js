@@ -3,10 +3,6 @@ module.exports = {
     "ecmaVersion": 6,
     "sourceType": "script"
   },
-  "env": {
-    "mocha": true,
-    "node": true
-  },
   "extends": "airbnb-base",
   "rules": {
     "arrow-body-style": [0, "never"],
@@ -38,8 +34,6 @@ module.exports = {
     "quote-props": [1, 'consistent-as-needed'],
     "quotes": [2, 'single'],
     "require-yield": 0,
-    "strict": [2, 'global'],
-    "curly": 0,
-    "no-console": 0
+    "strict": [2, 'global']
   }
 };
