@@ -2,7 +2,7 @@
 
 const assert = require('assert');
 
-describe.only('Create Event', () => {
+describe('Create Event', () => {
   let sut;
 
   beforeEach(() => {
