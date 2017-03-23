@@ -27,15 +27,33 @@ module.exports = (event) => {
 };
 
 function checkAttributes(event) {
+  const validAttrs = [
+    'EnvironmentType',
+    'Environment',
+    'OwningCluster',
+    'User',
+    'Result',
+    'Timestamp',
+    'Action',
+    'ID',
+    'EntityURL'
+  ];
+
+  let foundNonValidAttributes = [];
+
   Object.keys(event.attributes).forEach((k) => {
-    if (!event.attributes[k].Name) {
-      throw new Error(`Missing expected Name property of attribute: ${event.attributes[k]}`);
-    }
-    if (!event.attributes[k].Type) {
+    if (!event.attributes[k].DataType) {
       throw new Error(`Missing expected Type property of attribute: ${event.attributes[k]}`);
     }
-    if (!event.attributes[k].Value) {
+    if (!event.attributes[k].StringValue) {
       throw new Error(`Missing expected Value property of attribute: ${event.attributes[k]}`);
     }
+    if (!validAttrs.includes(k)) {
+      foundNonValidAttributes.push(k);
+    }
   });
+
+  if (foundNonValidAttributes.length > 0) {
+    throw new Error(`Non valid attributes provided: ${foundNonValidAttributes.join(',')}`);
+  }
 }

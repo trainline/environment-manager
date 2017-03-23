@@ -2,7 +2,7 @@
 
 const assert = require('assert');
 
-describe('Create Event', () => {
+describe.only('Create Event', () => {
   let sut;
 
   beforeEach(() => {
@@ -24,7 +24,7 @@ describe('Create Event', () => {
     assert.throws(() => {
       sut(event);
     },
-    /Missing expected message attribute./);
+      /Missing expected message attribute./);
   });
 
   it('should fail if any message attributes are incorrect', () => {
@@ -32,11 +32,22 @@ describe('Create Event', () => {
     let invalidAttribute = {
       Key: { DataType: '', StringValue: '' }
     };
-    event.attributes[invalidAttribute] = invalidAttribute;
+    event.attributes['EnvironmentType'] = invalidAttribute;
 
     assert.throws(() => {
       sut(event);
     });
+  });
+
+  it('should fail if any of the message attributes are invalid', () => {
+    let event = createLambdaEvent();
+    event.attributes.ThisShouldNotBeHere = createAttribute();
+    event.attributes.NeitherShouldThis = createAttribute();
+
+    assert.throws(() => {
+      sut(event);
+    },
+      /^Error: Non valid attributes provided: ThisShouldNotBeHere,NeitherShouldThis$/);
   });
 
   it('should return a function with closed over event attributes', () => {
@@ -60,6 +71,15 @@ describe('Create Event', () => {
 function createLambdaEvent() {
   return {
     message: 'This is the message',
-    attributes: { SomeKey: { Name: 'RequiredNameValue', Type: 'String', Value: 'StringValueOfAttribute' } }
+    attributes: {
+      EnvironmentType: createAttribute()
+    }
   };
+}
+
+function createAttribute(DataType = 'String', StringValue = 'StringValueOfAttribute') {
+  return {
+    DataType,
+    StringValue
+  }
 }
