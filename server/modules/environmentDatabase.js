@@ -2,30 +2,20 @@
 
 'use strict';
 
+let configEnvironments = require('modules/data-access/configEnvironments');
 let ConfigurationError = require('modules/errors/ConfigurationError.class');
 let DynamoItemNotFoundError = require('modules/errors/DynamoItemNotFoundError.class');
 let sender = require('modules/sender');
 let awsAccounts = require('modules/awsAccounts');
 
 function getEnvironmentByName(environmentName) {
-  return awsAccounts.getMasterAccountName()
-    .then((masterAccountName) => {
-      let query = {
-        name: 'GetDynamoResource',
-        resource: 'config/environments',
-        accountName: masterAccountName,
-        key: environmentName
-      };
-
-      return sender
-        .sendQuery({ query })
-        .then(
-        environment => Promise.resolve(environment.Value),
-        error => Promise.reject(error instanceof DynamoItemNotFoundError ?
-          new ConfigurationError(`Environment "${environmentName}" not found.`) :
-          new Error(`An error has occurred retrieving "${environmentName}" environment: ${error.message}`)
-        ));
-    });
+  return configEnvironments.get({ EnvironmentName: environmentName })
+    .then(
+    environment => Promise.resolve(environment.Value),
+    error => Promise.reject(error instanceof DynamoItemNotFoundError ?
+      new ConfigurationError(`Environment "${environmentName}" not found.`) :
+      new Error(`An error has occurred retrieving "${environmentName}" environment: ${error.message}`)
+    ));
 }
 
 function getEnvironmentTypeByName(environmentTypeName) {

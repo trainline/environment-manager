@@ -30,14 +30,21 @@ function factory(physicalTableName, { ttl }) {
 
   function $delete(item, expectedVersion) {
     return tableDescriptionPromise().then((description) => {
-      let replaceWithDeleteMarker = fp.flow(
+      // If the expected version is undefined, read it from the table
+      let getExpectedVersion = expectedVersion !== undefined
+        ? () => Promise.resolve(expectedVersion)
+        : () => dynamoTable.get(tableArn(description), item.key).then(dynamoVersion.versionOf);
+
+      let replaceWithDeleteMarker = version => fp.flow(
         x => ({ record: dynamoSoftDelete.deleteMarkerFor(x.key), metadata: x.metadata }),
         attachAuditMetadata,
-        record => ({ record, expectedVersion }),
+        record => ({ record, expectedVersion: version }),
         dynamoVersion.compareAndSetVersionOnReplace,
         cachedTable.replace.bind(null, tableArn(description))
       );
-      return replaceWithDeleteMarker(item)
+
+      return getExpectedVersion()
+        .then(version => replaceWithDeleteMarker(version)(item))
         .then(_ => cachedTable.delete(tableArn(description), { key: item.key }));
     });
   }

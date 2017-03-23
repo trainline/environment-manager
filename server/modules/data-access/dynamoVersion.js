@@ -7,6 +7,9 @@ let fp = require('lodash/fp');
 let versionOf = fp.get(['Audit', 'Version']);
 
 function compareAndSetVersionOnReplace({ record, expectedVersion, expressions }) {
+  if (expectedVersion === undefined) {
+    throw new Error('expectedVersion is required');
+  }
   let audit = Object.assign({}, record.Audit, { Version: expectedVersion + 1 });
   let condition =
     ['=',
@@ -56,6 +59,9 @@ function compareAndSetVersionOnCreate(hashKeyAttributeName) {
 
 function compareVersionOnDelete(hashKeyAttributeName) {
   return ({ key, expectedVersion, expressions }) => {
+    if (expectedVersion === undefined) {
+      throw new Error('expectedVersion is required');
+    }
     let condition =
       ['or',
         ['attribute_not_exists', ['at', hashKeyAttributeName]],
@@ -83,6 +89,9 @@ function compareVersionOnDelete(hashKeyAttributeName) {
 }
 
 function compareAndSetVersionOnUpdate({ key, expectedVersion, expressions }) {
+  if (expectedVersion === undefined) {
+    throw new Error('expectedVersion is required');
+  }
   let { ConditionExpression, UpdateExpression } = expressions;
   let optimisticCheck =
     ['=',

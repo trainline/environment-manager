@@ -6,12 +6,13 @@ const KEY_NAME = 'EnvironmentName';
 
 let _ = require('lodash');
 let co = require('co');
+let Promise = require('bluebird');
 
 let DynamoHelper = require('api/api-utils/DynamoHelper');
 let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMetadataForDynamoAudit;
 let param = require('api/api-utils/requestParam');
 
-let environmentTable = new DynamoHelper('config/environments');
+let configEnvironments = require('modules/data-access/configEnvironments');
 let opsEnvironment = require('modules/data-access/opsEnvironment');
 let lbSettingsTable = new DynamoHelper('config/lbsettings');
 let lbUpstreamsTable = new DynamoHelper('config/lbupstream');
@@ -33,37 +34,54 @@ function attachMetadata(input) {
  * GET /config/environments
  */
 function getEnvironmentsConfig(req, res, next) {
-  const environmentType = req.swagger.params.environmentType.value;
-  const cluster = req.swagger.params.cluster.value;
+  const environmentType = param('environmentType', req);
+  const cluster = param('cluster', req);
 
-  let filter = {
-    'Value.OwningCluster': cluster,
-    'Value.EnvironmentType': environmentType
+  let getResults = () => {
+    let predicates = [
+      ...(cluster ? [['=', ['at', 'Value', 'OwningCluster'], ['val', cluster]]] : []),
+      ...(environmentType ? [['=', ['at', 'Value', 'EnvironmentType'], ['val', environmentType]]] : [])
+    ];
+    if (predicates.length === 0) {
+      return configEnvironments.scan();
+    } else {
+      let filter = predicates.length === 1 ? predicates[0] : ['and', ...predicates];
+      return configEnvironments.scan({ FilterExpression: filter });
+    }
   };
-  filter = _.omitBy(filter, _.isUndefined);
 
-  return environmentTable.getAll(filter)
-    .then(arr => Promise.all(arr.map(attachMetadata)))
-    .then(data => res.json(data)).catch(next);
+  return Promise.map(getResults(), attachMetadata)
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 /**
  * GET /config/environments/{name}
  */
 function getEnvironmentConfigByName(req, res, next) {
-  const key = req.swagger.params.name.value;
-
-  return environmentTable.getByKey(key).then(attachMetadata).then(data => res.json(data)).catch(next);
+  let key = {
+    EnvironmentName: param('name', req)
+  };
+  return configEnvironments.get(key)
+    .then(attachMetadata)
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 /**
  * POST /config/environments
  */
 function postEnvironmentsConfig(req, res, next) {
-  const body = req.swagger.params.body.value;
-  const user = req.user;
-
-  return environmentTable.create(body[KEY_NAME], { Value: body.Value }, user)
+  let configEnv = param('body', req);
+  let metadata = getMetadataForDynamoAudit(req);
+  let opsEnv = {
+    EnvironmentName: configEnv.EnvironmentName,
+    Value: {}
+  };
+  return Promise.all([
+    configEnvironments.create({ record: configEnv, metadata }),
+    opsEnvironment.create({ record: opsEnv, metadata })
+  ])
     .then(() => res.status(201).end())
     .catch(next);
 }
@@ -72,12 +90,15 @@ function postEnvironmentsConfig(req, res, next) {
  * PUT /config/environments/{name}
  */
 function putEnvironmentConfigByName(req, res, next) {
-  const key = req.swagger.params.name.value;
-  const expectedVersion = req.swagger.params['expected-version'].value;
-  const body = req.swagger.params.body.value;
-  const user = req.user;
+  let key = {
+    EnvironmentName: param('name', req)
+  };
+  let expectedVersion = param('expected-version', req);
+  let body = param('body', req);
+  let metadata = getMetadataForDynamoAudit(req);
+  let record = Object.assign(key, { Value: body });
 
-  return environmentTable.update(key, { Value: body }, expectedVersion, user)
+  return configEnvironments.replace({ record, metadata }, expectedVersion)
     .then(() => res.status(200).end())
     .catch(next);
 }
@@ -103,8 +124,7 @@ function deleteEnvironmentConfigByName(req, res, next) {
     ];
 
     yield opsEnvironment.delete({ key, metadata });
-
-    yield deleteConfigEnvironment(environmentName, accountName, user);
+    yield configEnvironments.delete({ key, metadata });
     res.status(200).end();
   }).catch(next);
 }
@@ -135,12 +155,6 @@ function ignoreNotFoundResults(promise) {
   return promise.catch((err) => {
     if (err.message.match(/^No .* items found .*$/)) return [];
     throw err;
-  });
-}
-
-function deleteConfigEnvironment(environmentName, accountName, user) {
-  return co(function* () { // eslint-disable-line func-names
-    yield environmentTable.delete(environmentName, user);
   });
 }
 

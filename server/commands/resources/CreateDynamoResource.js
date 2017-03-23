@@ -6,7 +6,6 @@ let co = require('co');
 let resourceProvider = require('modules/resourceProvider');
 let OperationResult = require('../utils/operationResult');
 let dynamoResourceValidation = require('./dynamoResourceValidation');
-let opsEnvironment = require('modules/data-access/opsEnvironment');
 
 function* handler(command) {
   // Create an instance of the resource to work with based on the resource
@@ -47,16 +46,6 @@ function* handler(command) {
   yield resource.post({ item });
 
   let result = new OperationResult({ created: [resourceUri] });
-
-  // NOTE: Ugly...
-  if (command.resource !== 'config/environments') {
-    return result;
-  }
-
-  let record = { EnvironmentName: item.EnvironmentName, Value: {} };
-  let metadata = auditMetadata;
-
-  yield opsEnvironment.create({ record, metadata });
 
   return result;
 }

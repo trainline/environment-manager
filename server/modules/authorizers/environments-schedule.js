@@ -3,25 +3,13 @@
 'use strict';
 
 let co = require('co');
+let configEnvironments = require('modules/data-access/configEnvironments');
 let environmentProtection = require('./environmentProtection');
-let awsAccounts = require('modules/awsAccounts');
 
 const ACTION = environmentProtection.SCHEDULE_ENVIRONMENT;
 
 function getCurrentEnvironment(name, user) {
-  let sender = require('modules/sender');
-
-  return awsAccounts.getMasterAccountName()
-    .then((masterAccountName) => {
-      let query = {
-        name: 'GetDynamoResource',
-        key: name,
-        resource: 'config/environments',
-        accountName: masterAccountName
-      };
-
-      return sender.sendQuery({ query, user });
-    });
+  return configEnvironments.get({ EnvironmentName: name });
 }
 
 function* getRules(request) {
