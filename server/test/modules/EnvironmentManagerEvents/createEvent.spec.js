@@ -29,10 +29,8 @@ describe.only('Create Event', () => {
 
   it('should fail if any message attributes are incorrect', () => {
     let event = createLambdaEvent();
-    let invalidAttribute = {
-      Key: { DataType: '', StringValue: '' }
-    };
-    event.attributes['EnvironmentType'] = invalidAttribute;
+    let invalidAttribute = { DataType: '', StringValue: '' };
+    event.attributes.EnvironmentType = invalidAttribute;
 
     assert.throws(() => {
       sut(event);
@@ -81,5 +79,5 @@ function createAttribute(DataType = 'String', StringValue = 'StringValueOfAttrib
   return {
     DataType,
     StringValue
-  }
+  };
 }
