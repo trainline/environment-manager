@@ -10,13 +10,13 @@ function createEMService(config) {
   function getToken() {
     return request({
       method: 'POST',
-      uri: `${config.host}/api/token`,
+      uri: `${config.host}/api/v1/token`,
       rejectUnauthorized: false,
-      form: {
-          grant_type: 'password',
+      body: {
           username: config.credentials.username,
           password: config.credentials.password
       },
+      json: true
     });
   }
 
@@ -28,7 +28,7 @@ function createEMService(config) {
       }
 
       let jsonResponse = yield request({
-        uri: `${config.host}/api/${account}/instances/schedule-actions`,
+        uri: `${config.host}/api/v1/instances/schedule-actions?account=${account}`,
         rejectUnauthorized: false,
         headers: {
           authorization: `bearer ${token}`
