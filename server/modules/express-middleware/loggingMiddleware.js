@@ -10,7 +10,7 @@ const fp = require('lodash/fp');
 const miniStack = require('modules/miniStack');
 const path = require('path');
 
-let redactSecrets = fp.cloneDeepWith((value, key) => (/password/i.test(key) ? '********' : undefined))
+let redactSecrets = fp.cloneDeepWith((value, key) => (/password/i.test(key) ? '********' : undefined));
 
 let swaggerParams = fp.flow(
   fp.get(['swagger', 'params']),
@@ -65,6 +65,7 @@ let loggerMiddleware = logger => (req, res, next) => {
           'user-agent': fp.get(['headers', 'user-agent'])(req)
         },
         id: fp.get('id')(req),
+        ip: fp.get('ip')(req),
         method: fp.get('method')(req),
         originalUrl: fp.get('originalUrl')(req),
         params: req.originalUrl === '/api/token' ? redactSecrets(req.body) : swaggerParams(req)
