@@ -10,10 +10,12 @@ const fp = require('lodash/fp');
 const miniStack = require('modules/miniStack');
 const path = require('path');
 
+let redactSecrets = fp.cloneDeepWith((value, key) => (/password/i.test(key) ? '********' : undefined))
+
 let swaggerParams = fp.flow(
   fp.get(['swagger', 'params']),
   fp.mapValues(({ value }) => value),
-  fp.cloneDeepWith((value, key) => (/password/i.test(key) ? '********' : undefined))
+  redactSecrets
 );
 
 let getUser = fp.compose(
@@ -65,10 +67,10 @@ let loggerMiddleware = logger => (req, res, next) => {
         id: fp.get('id')(req),
         method: fp.get('method')(req),
         originalUrl: fp.get('originalUrl')(req),
-        params: swaggerParams(req)
+        params: req.originalUrl === '/api/token' ? redactSecrets(req.body) : swaggerParams(req)
       },
       res: fp.pick(responseFields)(res),
-      user: getUser(req)
+      user: req.originalUrl === '/api/token' ? fp.get(['body', 'username'])(req) : getUser(req)
     };
     logger.log(level, message, entry);
   };
