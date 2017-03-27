@@ -23,6 +23,11 @@ function compileIfSet(expressions) {
   }
 }
 
+let logError = params => (error) => {
+  console.error(JSON.stringify(params, null, 2));
+  return Promise.reject(error);
+};
+
 function get(tableArn, key) {
   let params = {
     TableName: tableName(tableArn),
@@ -30,21 +35,24 @@ function get(tableArn, key) {
   };
   return dynamoClient(tableArn)
     .then(dynamo => dynamo.get(params).promise())
-    .then(result => result.Item || null);
+    .then(result => result.Item || null)
+    .catch(logError);
 }
 
 function scan(tableArn, expressions) {
   let TableName = tableName(tableArn);
   let params = Object.assign({ TableName }, compileIfSet(expressions));
   return dynamoClient(tableArn)
-    .then(dynamo => pages.flatten(rsp => rsp.Items, dynamo.scan(params)));
+    .then(dynamo => pages.flatten(rsp => rsp.Items, dynamo.scan(params)))
+    .catch(logError(params));
 }
 
 function query(tableArn, expressions) {
   let TableName = tableName(tableArn);
   let params = Object.assign({ TableName }, compileIfSet(expressions));
   return dynamoClient(tableArn)
-    .then(dynamo => pages.flatten(rsp => rsp.Items, dynamo.query(params)));
+    .then(dynamo => pages.flatten(rsp => rsp.Items, dynamo.query(params)))
+    .catch(logError(params));
 }
 
 function create(tableArn, { record, expressions }) {
@@ -60,7 +68,8 @@ function create(tableArn, { record, expressions }) {
           return Promise.reject(new Error(message));
         }
         return Promise.reject(error);
-      });
+      })
+      .catch(logError(params));
   });
 }
 
@@ -77,7 +86,8 @@ function replace(tableArn, { record, expressions }) {
           return Promise.reject(new Error(message));
         }
         return Promise.reject(error);
-      });
+      })
+      .catch(logError(params));
   });
 }
 
@@ -94,7 +104,8 @@ function update(tableArn, { key, expressions }) {
           return Promise.reject(new Error(message));
         }
         return Promise.reject(error);
-      });
+      })
+      .catch(logError(params));
   });
 }
 
@@ -111,7 +122,8 @@ function $delete(tableArn, { key, expressions }) {
           return Promise.reject(new Error(message));
         }
         return Promise.reject(error);
-      });
+      })
+      .catch(logError(params));
   });
 }
 

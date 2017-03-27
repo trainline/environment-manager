@@ -7,6 +7,7 @@ let { attachAuditMetadata, updateAuditMetadata } = require('modules/data-access/
 let describeDynamoTable = require('modules/data-access/describeDynamoTable');
 let hashKeyAttributeName = require('modules/data-access/dynamoTableDescription').hashKeyAttributeName;
 let tableArn = require('modules/data-access/dynamoTableDescription').tableArn;
+let { makeWritable } = require('modules/data-access/dynamoItemFilter');
 let dynamoVersion = require('modules/data-access/dynamoVersion');
 let dynamoTable = require('modules/data-access/dynamoTable');
 let dynamoTableCache = require('modules/data-access/dynamoTableCache');
@@ -20,6 +21,7 @@ function factory(physicalTableName, { ttl }) {
   function create(item) {
     return tableDescriptionPromise().then(description =>
       fp.flow(
+        makeWritable,
         attachAuditMetadata,
         record => ({ record }),
         dynamoVersion.compareAndSetVersionOnCreate(hashKeyAttributeName(description)),
@@ -62,6 +64,7 @@ function factory(physicalTableName, { ttl }) {
   function replace(item, expectedVersion) {
     return tableDescriptionPromise().then(description =>
       fp.flow(
+        makeWritable,
         attachAuditMetadata,
         record => ({ record, expectedVersion }),
         dynamoVersion.compareAndSetVersionOnReplace,
