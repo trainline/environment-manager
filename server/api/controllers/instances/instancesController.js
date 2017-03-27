@@ -17,6 +17,27 @@ let getInstanceState = require('modules/environment-state/getInstanceState');
 let Environment = require('models/Environment');
 let Enums = require('Enums');
 let ScanInstancesScheduleStatus = require('queryHandlers/ScanInstancesScheduleStatus');
+let fp = require('lodash/fp');
+let merge = require('modules/merge');
+
+/* The tags that should be added to each instance as properties.
+ * If the instance already has a property with one of these names
+ * its value will be replaced with an array containing the value of
+ * the tag and the original value of the property. It will not be
+ * overwritten.
+ * */
+const FLATTEN_TAGS = [
+  'aws:autoscaling:groupName',
+  'ContactEmail',
+  'Environment',
+  'EnvironmentType',
+  'Name',
+  'OwningCluster',
+  'OwningClusterShortName',
+  'Role',
+  'Schedule',
+  'SecurityZone'
+];
 
 /**
  * GET /instances
@@ -78,22 +99,27 @@ function getInstances(req, res, next) {
 
       list = yield _.map(list, (instance) => {
         let instanceEnvironment = instance.getTag('Environment', null);
-
         let instanceName = instance.getTag('Name', null);
         let instanceRoleTag = instance.getTag('Role', null);
 
-        if (instanceName === null || instanceName === '' || instanceEnvironment === null || instanceRoleTag === null || instanceRoleTag === '') {
+        if ([instanceEnvironment, instanceName, instanceRoleTag].some(x => x === null || x === '')) {
           // This instance won't be returned
+          logger.warn(`One of the tags [Environment, Name, Role] is not set. The EC2 instance will be skipped. ${instance.InstanceId}.`);
           return false;
         }
 
+        let tagsToFlatten = fp.flow(
+          fp.map(name => [name, instance.getTag(name, null)]),
+          fp.filter(([, value]) => value !== null && value !== undefined),
+          fp.fromPairs
+        )(FLATTEN_TAGS);
+
         // If instances were fetched by cross scan, instance.AccountName is available, otherwise, for simple scan use accountName
         return getInstanceState(
-          instance.getTag('AccountName', null) || accountName,
-          instanceEnvironment, instanceName, instance.getTag('InstanceId', null), instanceRoleTag, instance.getTag('LaunchTime', null))
+          instance.AccountName || accountName,
+          instanceEnvironment, instanceName, instance.InstanceId, instanceRoleTag, instance.LaunchTime, null)
           .then((state) => {
-            _.assign(instance, state);
-            return instance;
+            return merge(instance, state, tagsToFlatten);
           }, (error) => {
             logger.error(error);
             return false;
@@ -102,7 +128,7 @@ function getInstances(req, res, next) {
 
       // Remove instances without Environment tag
       list = _.compact(list);
-      list = _.sortBy(list, instance => new Date(instance.getTag('LaunchTime', null))).reverse();
+      list = _.sortBy(list, instance => new Date(instance.LaunchTime)).reverse();
       res.json(list);
     } else {
       res.json(list);
