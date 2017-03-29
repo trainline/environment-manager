@@ -2,8 +2,8 @@
 
 'use strict';
 
+let { appendLogEntries } = require('modules/data-access/deployments');
 let logger = require('modules/logger');
-let Deployment = require('models/Deployment');
 let timer = require('timers');
 
 module.exports = function DeploymentLogsStreamer() {
@@ -32,13 +32,13 @@ ${result.logEntries.join('\n')}`);
   }
 
   function flushPendingLogEntries(deploymentId) {
+    let key = { DeploymentID: deploymentId };
+
     let logEntries = pendingLogEntries.getByDeploymentId(deploymentId);
     pendingLogEntries.removeByDeploymentId(deploymentId);
-    return Deployment.getById(deploymentId)
-      .then(deployment => deployment.addExecutionLogEntries(logEntries))
+    return appendLogEntries({ logEntries, key })
       .then(() => ({ deploymentId }))
-      .catch(error => ({ deploymentId, logEntries, error }))
-      .then(logWriteErrors);
+      .catch(error => logWriteErrors({ deploymentId, logEntries, error }));
   }
 
   timer.setInterval(() => {
@@ -50,7 +50,7 @@ ${result.logEntries.join('\n')}`);
     );
   }, 1000);
 
-  this.log = (deploymentId, accountName, message) => {
+  this.log = (deploymentId, message) => {
     let timestamp = new Date().toISOString();
     pendingLogEntries.add(deploymentId, `[${timestamp}] ${message}`);
   };

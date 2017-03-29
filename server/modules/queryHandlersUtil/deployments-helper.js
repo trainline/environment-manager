@@ -4,12 +4,10 @@
 
 let _ = require('lodash');
 let co = require('co');
-let awsAccounts = require('modules/awsAccounts');
-let awsResourceNameProvider = require('modules/awsResourceNameProvider');
-let childAccountClient = require('modules/amazon-client/childAccountClient');
 let configurationCache = require('modules/configurationCache');
+let deployments = require('modules/data-access/deployments');
 let fp = require('lodash/fp');
-let logger = require('modules/logger');
+let { Clock, Instant, LocalDate, ZoneId } = require('js-joda');
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
 let sender = require('modules/sender');
 
@@ -55,75 +53,55 @@ function mapNode(node) {
   return resultNode;
 }
 
-function cross(a, b) {
-  return a.reduce((acc, x) => acc.concat(b.map(y => [x, y])), []);
-}
-
 function queryDeployment({ key }) {
-  return awsAccounts.all().then((all) => {
-    let accounts = _(all).sortBy(x => !x.IsMaster).map('AccountName').uniq().value();
-    let tables = ['ConfigDeploymentExecutionStatus', 'ConfigCompletedDeployments'];
-
-    let queries = cross(accounts, tables).map(
-      ([account, table]) => ({
-        accountName: account,
-        query: {
-          TableName: awsResourceNameProvider.getTableName(table),
-          Key: { DeploymentID: key }
-        }
-      }));
-
-    function executeQuery(params) {
-      return childAccountClient.createDynamoClient(params.accountName)
-        .then(dynamo => dynamo.get(params.query).promise());
-    }
-
-    return Promise.all(
-      queries.map(q => executeQuery(q).catch((e) => { logger.warn(e); return false; }))
-    ).then((results) => {
-      let result = results.map(x => x.Item).find(x => x);
-      if (result === undefined) {
+  return deployments.get({ DeploymentID: key })
+    .then((result) => {
+      if (result === null) {
         throw new ResourceNotFoundError(`Deployment ${key} not found`);
       } else {
         return getTargetAccountName(result).then((accountName) => {
           result.AccountName = accountName;
+          if (Array.isArray(result.Value.ExecutionLog)) {
+            result.Value.ExecutionLog = result.Value.ExecutionLog.join('\n');
+          }
           return result;
         });
       }
     });
-  });
 }
 
 function queryDeployments(query) {
-  let queryName = 'ScanCrossAccountDynamoResources';
+  let expressions = (() => {
+    function predicate(attribute, value) {
+      if (value === undefined) {
+        return null;
+      } else {
+        return ['=', ['at', ...attribute], ['val', value]];
+      }
+    }
 
-  let filter = {
-    'Value.EnvironmentName': query.environment,
-    'Value.Status': query.status,
-    'Value.OwningCluster': query.cluster,
-    '$date_from': query.since
-  };
+    let filter = [
+      predicate(['Value', 'EnvironmentName'], query.environment),
+      predicate(['Value', 'Status'], query.status),
+      predicate(['Value', 'OwningCluster'], query.cluster)
+    ].filter(x => x !== null);
 
-  filter = _.omitBy(filter, _.isUndefined);
+    if (filter.length === 0) {
+      return {};
+    } else if (filter.length === 1) {
+      return { FilterExpression: filter[0] };
+    } else {
+      return { FilterExpression: ['and', filter] };
+    }
+  })();
 
-  let currentDeploymentsQuery = {
-    name: queryName,
-    resource: 'deployments/history',
-    filter,
-    suppressError: true
-  };
-
-  let completedDeploymentsQuery = {
-    name: queryName,
-    resource: 'deployments/completed',
-    filter,
-    suppressError: true
-  };
-
-  return Promise.all([
-    sender.sendQuery({ query: currentDeploymentsQuery }),
-    sender.sendQuery({ query: completedDeploymentsQuery })
-  ]).then(results => _.flatten(results).filter(x => !!x));
+  let now = Instant.now(Clock.systemUTC());
+  let startOfToday = LocalDate.ofInstant(now, ZoneId.UTC).atStartOfDay().toInstant(ZoneId.UTC);
+  let startDate = query.since instanceof Date
+    ? Instant.ofEpochMilli(query.since)
+    : startOfToday;
+  let endDate = now;
+  return deployments.queryByDateRange(startDate, endDate, expressions);
 }
 
 function getServiceDeploymentDefinition(environment, key, accountName) {
@@ -155,8 +133,8 @@ module.exports = {
   get: query => queryDeployment(query).then(mapDeployment),
 
   scan: query => queryDeployments(query)
-    .then((deployments) => {
-      let deploymentsWithNodes = deployments.map(mapDeployment);
+    .then((results) => {
+      let deploymentsWithNodes = results.map(mapDeployment);
       return Promise.all(deploymentsWithNodes);
     })
 };

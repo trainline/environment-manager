@@ -14,16 +14,6 @@ function hasNoPropertyWithUndefinedValue(command) {
     fp.all(x => x !== undefined))(command);
 }
 
-let extractCommands = (predicate, args) => args.reduce((acc, [{ command }]) => {
-  if (predicate(command)) {
-    acc.push(command);
-  }
-  return acc;
-}, []);
-
-let isDynamoUpdate = command =>
-  command.name === 'UpdateDynamoResource' && command.resource === 'deployments/history';
-
 describe('DeploymentLogger', function () {
   let clock;
   before(function () {
@@ -40,14 +30,20 @@ describe('DeploymentLogger', function () {
       nodesDeployment: []
     };
 
+    let deployments;
     let sender;
     let sut;
 
     beforeEach(function () {
+      deployments = {
+        create: sinon.spy(() => Promise.resolve()),
+        update: sinon.spy(() => Promise.resolve())
+      };
       sender = {
         sendCommand: sinon.spy(() => Promise.resolve())
       };
       sut = proxyquire('modules/DeploymentLogger', {
+        'modules/data-access/deployments': deployments,
         'modules/systemUser': {},
         'modules/DeploymentLogsStreamer': function () {
           this.flush = function () { return Promise.resolve(); };
@@ -64,8 +60,7 @@ describe('DeploymentLogger', function () {
       };
       return sut.updateStatus(deploymentStatus, newStatus)
         .then(() => {
-          let dynamoUpdates = extractCommands(isDynamoUpdate, sender.sendCommand.args);
-          dynamoUpdates.should.matchEach(hasNoPropertyWithUndefinedValue);
+          sinon.assert.alwaysCalledWith(deployments.update, sinon.match(hasNoPropertyWithUndefinedValue));
         });
     });
 
@@ -80,12 +75,8 @@ describe('DeploymentLogger', function () {
         it(`when the status is ${newStatus.name}`, function () {
           return sut.updateStatus(deploymentStatus, newStatus)
             .then(() => {
-              let dynamoUpdates = extractCommands(isDynamoUpdate, sender.sendCommand.args);
-              dynamoUpdates.should.matchAny({
-                item: {
-                  'Value.ErrorReason': newStatus.reason
-                }
-              });
+              deployments.update.firstCall.args[0].updateExpression.should.matchAny(
+                ['set', ['at', 'Value', 'ErrorReason'], ['val', newStatus.reason]]);
             });
         });
       });
@@ -101,10 +92,8 @@ describe('DeploymentLogger', function () {
         it(`when the status is ${newStatus.name}`, function () {
           return sut.updateStatus(deploymentStatus, newStatus)
             .then(() => {
-              let dynamoUpdates = extractCommands(isDynamoUpdate, sender.sendCommand.args);
-              dynamoUpdates.should.matchEach(function hasNoErrorReason(x) {
-                return !fp.has(['item', 'Value.ErrorReason'])(x);
-              });
+              deployments.update.firstCall.args[0].updateExpression.should.not.matchAny(
+                ['set', ['at', 'Value', 'ErrorReason']]);
             });
         });
       });
@@ -116,10 +105,8 @@ describe('DeploymentLogger', function () {
       };
       return sut.updateStatus(deploymentStatus, newStatus)
         .then(() => {
-          let dynamoUpdates = extractCommands(isDynamoUpdate, sender.sendCommand.args);
-          dynamoUpdates.should.matchEach(function hasNoEndTimestamp(x) {
-            return !fp.has(['item', 'Value.EndTimestamp'])(x);
-          });
+          deployments.update.firstCall.args[0].updateExpression.should.not.matchAny(
+            ['set', ['at', 'Value', 'EndTimestamp']]);
         });
     });
     it('it should set the end time in DynamoDB when not in progress', function () {
@@ -128,10 +115,8 @@ describe('DeploymentLogger', function () {
       };
       return sut.updateStatus(deploymentStatus, newStatus)
         .then(() => {
-          let dynamoUpdates = extractCommands(isDynamoUpdate, sender.sendCommand.args);
-          dynamoUpdates.should.matchEach(function hasEndTimestamp(x) {
-            return fp.has(['item', 'Value.EndTimestamp'])(x);
-          });
+          deployments.update.firstCall.args[0].updateExpression.should.matchAny(
+            ['set', ['at', 'Value', 'EndTimestamp']]);
         });
     });
     it('it should set all the attributes in DynamoDB when complete', function () {
@@ -141,19 +126,11 @@ describe('DeploymentLogger', function () {
       };
       return sut.updateStatus(deploymentStatus, newStatus)
         .then(() => {
-          let dynamoUpdates = extractCommands(isDynamoUpdate, sender.sendCommand.args);
-          dynamoUpdates.should.matchEach({
-            name: 'UpdateDynamoResource',
-            resource: 'deployments/history',
-            accountName: 'my-account',
-            key: 'my-deployment',
-            item: {
-              'Value.Status': 'Failed',
-              'Value.Nodes': [],
-              'Value.ErrorReason': 'BOOM!',
-              'Value.EndTimestamp': '1970-01-01T00:00:00.000Z'
-            }
-          });
+          let shouldHave = x => deployments.update.firstCall.args[0].updateExpression.should.matchAny(x);
+          shouldHave(['set', ['at', 'Value', 'EndTimestamp'], ['val', '1970-01-01T00:00:00.000Z']]);
+          shouldHave(['set', ['at', 'Value', 'ErrorReason'], ['val', 'BOOM!']]);
+          shouldHave(['set', ['at', 'Value', 'Nodes']]);
+          shouldHave(['set', ['at', 'Value', 'Status'], ['val', 'Failed']]);
         });
     });
   });

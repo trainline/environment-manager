@@ -5,20 +5,25 @@
 let logger = require('modules/logger');
 let deploymentLogger = require('modules/DeploymentLogger');
 
-module.exports = function DeploymentCommandHandlerLogger(command) {
-  let deploymentId = command.commandId;
-  let accountName = command.accountName;
+module.exports = function DeploymentCommandHandlerLogger(commandOrDeploymentId) {
+  let deploymentId = (() => {
+    if (typeof commandOrDeploymentId === 'string') {
+      return commandOrDeploymentId;
+    } else {
+      return commandOrDeploymentId.deploymentId || commandOrDeploymentId.commandId;
+    }
+  })();
 
   this.debug = logger.debug.bind(logger);
 
   this.info = function (message) {
     logger.info(message);
-    deploymentLogger.inProgress(deploymentId, accountName, message);
+    deploymentLogger.inProgress(deploymentId, message);
   };
 
   this.warn = function (message) {
     logger.warn(message);
-    deploymentLogger.inProgress(deploymentId, accountName, message);
+    deploymentLogger.inProgress(deploymentId, message);
   };
 
   this.error = logger.error.bind(logger);

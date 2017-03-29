@@ -2,10 +2,10 @@
 
 'use strict';
 
+let deployments = require('modules/data-access/deployments');
 let logger = require('modules/logger');
 let ms = require('ms');
 let sender = require('modules/sender');
-let utils = require('modules/utilities');
 let DeploymentValidationError = require('modules/errors/DeploymentValidationError.class');
 let deploymentLogger = require('modules/DeploymentLogger');
 
@@ -36,24 +36,17 @@ function canDeployToSlice(targetSlice, deployedService) {
 
 function validateServiceNotCurrentlyBeingDeployed(deployment) {
   let expectedStatus = 'In Progress';
-  let minimumRangeDate = utils.offsetMilliseconds(new Date(), -DEPLOYMENT_MAXIMUM_THRESHOLD).toISOString();
-  let maximumRangeDate = new Date().toISOString();
   let query = {
-    name: 'ScanCrossAccountDynamoResources',
-    resource: 'deployments/history',
-    filter: {
-      'Value.Status': expectedStatus,
-      'Value.EnvironmentName': deployment.environmentName,
-      'Value.ServiceName': deployment.serviceName,
-      'Value.ServerRoleName': deployment.serverRoleName,
-      '$date_from': minimumRangeDate,
-      '$date_to': maximumRangeDate,
-      'Value.SchemaVersion': 2
-    }
+    FilterExpression: ['and',
+      ['=', ['at', 'Value', 'EnvironmentName'], ['val', deployment.environmentName]],
+      ['=', ['at', 'Value', 'SchemaVersion'], ['val', 2]],
+      ['=', ['at', 'Value', 'ServiceName'], ['val', deployment.serviceName]],
+      ['=', ['at', 'Value', 'Status'], ['val', expectedStatus]]
+    ]
   };
 
-  return sender.sendQuery({ query }).then((deployments) => {
-    if (deployments.length) {
+  return deployments.scanRunning(query).then((results) => {
+    if (results.length) {
       return Promise.reject(new DeploymentValidationError(
         `The '${deployment.serviceName}' service is already being deployed to '${deployment.serverRoleName}' at this time.`
       ));
@@ -82,7 +75,7 @@ function validateServiceAndVersionNotDeployed(deployment) {
         let message = 'Each version of a service may only be deployed to slices of one colour per environment.'
           + ` You attempted to deploy ${service} ${version} to a ${slice} slice of ${environment}.`
           + ' Perhaps it is already deployed to another slice in this environment?';
-        deploymentLogger.inProgress(deployment.id, deployment.accountName, message);
+        deploymentLogger.inProgress(deployment.id, message);
       }
       return Promise.resolve();
     });

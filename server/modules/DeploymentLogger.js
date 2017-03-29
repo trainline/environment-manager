@@ -4,6 +4,7 @@
 
 let systemUser = require('modules/systemUser');
 let sender = require('modules/sender');
+let deployments = require('modules/data-access/deployments');
 let DeploymentLogsStreamer = require('modules/DeploymentLogsStreamer');
 let deploymentLogsStreamer = new DeploymentLogsStreamer();
 let Enums = require('Enums');
@@ -11,42 +12,40 @@ let logger = require('modules/logger');
 
 module.exports = {
   started(deployment, accountName) {
-    let command = {
-      name: 'CreateDynamoResource',
-      resource: 'deployments/history',
-      accountName,
-      key: deployment.id,
-      item: {
-        Value: {
-          DeploymentType: 'Parallel',
-          EnvironmentName: deployment.environmentName,
-          EnvironmentType: deployment.environmentTypeName,
-          OwningCluster: deployment.clusterName,
-          SchemaVersion: 2,
-          ServiceName: deployment.serviceName,
-          ServiceSlice: deployment.serviceSlice,
-          ServiceVersion: deployment.serviceVersion,
-          RuntimeServerRoleName: deployment.serverRole,
-          ServerRoleName: deployment.serverRoleName,
-          Status: 'In Progress',
-          User: deployment.username,
-          StartTimestamp: new Date().toISOString(),
-          EndTimestamp: null,
-          ExecutionLog: null
-        }
+    let record = {
+      AccountName: deployment.accountName,
+      DeploymentID: deployment.id,
+      Value: {
+        DeploymentType: 'Parallel',
+        EnvironmentName: deployment.environmentName,
+        EnvironmentType: deployment.environmentTypeName,
+        OwningCluster: deployment.clusterName,
+        SchemaVersion: 2,
+        ServiceName: deployment.serviceName,
+        ServiceSlice: deployment.serviceSlice,
+        ServiceVersion: deployment.serviceVersion,
+        RuntimeServerRoleName: deployment.serverRole,
+        ServerRoleName: deployment.serverRoleName,
+        Status: 'In Progress',
+        User: deployment.username,
+        StartTimestamp: new Date().toISOString(),
+        EndTimestamp: null,
+        ExecutionLog: []
       }
     };
 
-    return sender.sendCommand({ command, user: systemUser }).then(() => {
+    return deployments.create(record).then(() => {
       deploymentLogsStreamer.log(deployment.id, accountName, 'Deployment started');
     });
   },
 
-  inProgress(deploymentId, accountName, message) {
-    deploymentLogsStreamer.log(deploymentId, accountName, message);
+  inProgress(deploymentId, message) {
+    deploymentLogsStreamer.log(deploymentId, message);
   },
 
   updateStatus(deploymentStatus, newStatus) {
+    let logError = error => logger.error(error);
+
     logger.debug(`Updating deployment '${deploymentStatus.deploymentId}' status to '${newStatus.name}'`);
 
     /**
@@ -54,13 +53,13 @@ module.exports = {
      * the record to another table. If this occurs before the log entries
      * are flushed then the log entries may not be written.
      */
-    return Promise.all([
-      Promise.resolve(deploymentLogsStreamer.log(deploymentStatus.deploymentId, deploymentStatus.accountName, newStatus.reason))
-        .then(() => deploymentLogsStreamer.flush(deploymentStatus.deploymentId))
-        .then(() => updateDeploymentDynamoTable(deploymentStatus, newStatus))
-        .catch(error => logger.error(error)),
-      updateDeploymentTargetState(deploymentStatus, newStatus).catch(error => logger.error(error))
-    ]);
+    return updateDeploymentTargetState(deploymentStatus, newStatus)
+      .catch(logError)
+      .then(() => deploymentLogsStreamer.log(deploymentStatus.deploymentId, newStatus.reason))
+      .then(() => deploymentLogsStreamer.flush(deploymentStatus.deploymentId))
+      .catch(logError)
+      .then(() => updateDeploymentDynamoTable(deploymentStatus, newStatus))
+      .catch(logError);
   }
 };
 
@@ -68,27 +67,25 @@ function updateDeploymentDynamoTable(deploymentStatus, newStatus) {
   let { Success, InProgress } = Enums.DEPLOYMENT_STATUS;
   let running = newStatus.name === InProgress;
   let succeeded = newStatus.name === Success;
-  let item = {
-    'Value.Status': newStatus.name,
-    'Value.Nodes': deploymentStatus.nodesDeployment || []
-  };
-  let errorReason = !running && !succeeded && newStatus.reason !== undefined
-    ? { 'Value.ErrorReason': newStatus.reason } : {};
-  let endTimestamp = running ? {} : { 'Value.EndTimestamp': new Date().toISOString() };
 
-  let command = {
-    name: 'UpdateDynamoResource',
-    resource: 'deployments/history',
-    accountName: deploymentStatus.accountName,
-    key: deploymentStatus.deploymentId,
-    item: Object.assign({}, item, errorReason, endTimestamp)
-  };
+  let updateExpression = ['update',
+    ['set', ['at', 'Value', 'Status'], ['val', newStatus.name]],
+    ['set', ['at', 'Value', 'Nodes'], ['val', deploymentStatus.nodesDeployment || []]]
+  ];
 
-  return sender.sendCommand({ command, user: systemUser });
+  if (!running && !succeeded && newStatus.reason !== undefined) {
+    updateExpression.push(['set', ['at', 'Value', 'ErrorReason'], ['val', newStatus.reason]]);
+  }
+  if (!running) {
+    updateExpression.push(['set', ['at', 'Value', 'EndTimestamp'], ['val', new Date().toISOString()]]);
+  }
+
+  return deployments.update({ key: { DeploymentID: deploymentStatus.deploymentId }, updateExpression });
 }
 
 function updateDeploymentTargetState(deploymentStatus, newStatus) {
   let command = {
+    deploymentId: deploymentStatus.deploymentId,
     name: 'UpdateTargetState',
     environment: deploymentStatus.environmentName,
     key: `deployments/${deploymentStatus.deploymentId}/overall_status`,
