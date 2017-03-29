@@ -1,76 +1,76 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: Environment Manager Events
 Parameters: 
-  EnvironmentManagerEventsAdminRole:
+  InfraEnvironmentManagerEventsAdminRole:
     Type: String
     Description: Admin role ARN given to the Environment Manager events stack.
-  ConfigurationChangeEventTopic:
+  InfraConfigurationChangeEventTopic:
     Type: String
     Description: Configuration Change Event Topic ARN.
-  OperationsChangeEventTopic:
+  InfraOperationsChangeEventTopic:
     Type: String
     Description: Operations Change Event Topic ARN.
 Resources:
   #Item: Configuration Change
-  ConfigurationChangeAuditLambda:
+  InfraConfigurationChangeAuditLambda:
     Properties:
       Code:
         S3Bucket: cloudformation-eu-west-1-743871665500
         S3Key: EnvironmentManagerConfigurationChangeAudit.zip
       Description: Lambda to record Configuration Change events.
-      FunctionName: ConfigurationChangeAuditLambdaSubscription
+      FunctionName: InfraConfigurationChangeAuditLambdaSubscription
       Handler: index.handler
-      Role: !Ref EnvironmentManagerEventsAdminRole
+      Role: !Ref InfraEnvironmentManagerEventsAdminRole
       Runtime: nodejs4.3
     Type: AWS::Lambda::Function
-  ConfigurationChangeAuditLambdaSubscription:
+  InfraConfigurationChangeAuditLambdaSubscription:
     Properties:
       Endpoint:
         Fn::GetAtt:
-        - ConfigurationChangeAuditLambda
+        - InfraConfigurationChangeAuditLambda
         - Arn
       Protocol: lambda
       TopicArn:
-        Ref: ConfigurationChangeEventTopic
+        Ref: InfraConfigurationChangeEventTopic
     Type: AWS::SNS::Subscription
-  ConfigurationChangeAuditLambdaInvokePermission: 
+  InfraConfigurationChangeAuditLambdaInvokePermission: 
     Type: 'AWS::Lambda::Permission'
     Properties: 
       Action: 'lambda:InvokeFunction'
       Principal: 'sns.amazonaws.com'
-      SourceArn: !Ref ConfigurationChangeEventTopic
+      SourceArn: !Ref InfraConfigurationChangeEventTopic
       FunctionName: 
         Fn::GetAtt:
-        - ConfigurationChangeAuditLambda
+        - InfraConfigurationChangeAuditLambda
         - Arn
   #Item: Operations Change
-  OperationsChangeAuditLambda:
+  InfraOperationsChangeAuditLambda:
     Properties:
       Code:
         S3Bucket: cloudformation-eu-west-1-743871665500
         S3Key: EnvironmentManagerOperationsChangeAudit.zip
       Description: Lambda to record Operations Change events.
-      FunctionName: OperationsChangeAuditLambdaSubscription
+      FunctionName: InfraOperationsChangeAuditLambdaSubscription
       Handler: index.handler
-      Role: !Ref EnvironmentManagerEventsAdminRole
+      Role: !Ref InfraEnvironmentManagerEventsAdminRole
       Runtime: nodejs4.3
     Type: AWS::Lambda::Function
-  OperationsChangeAuditLambdaSubscription:
+  InfraOperationsChangeAuditLambdaSubscription:
     Properties:
       Endpoint:
         Fn::GetAtt:
-        - OperationsChangeAuditLambda
+        - InfraOperationsChangeAuditLambda
         - Arn
       Protocol: lambda
-      TopicArn: !Ref OperationsChangeEventTopic
+      TopicArn: !Ref InfraOperationsChangeEventTopic
     Type: AWS::SNS::Subscription
-  OperationsChangeAuditLambdaInvokePermission: 
+  InfraOperationsChangeAuditLambdaInvokePermission: 
     Type: 'AWS::Lambda::Permission'
     Properties: 
       Action: 'lambda:InvokeFunction'
       Principal: 'sns.amazonaws.com'
-      SourceArn: !Ref OperationsChangeEventTopic
+      SourceArn: !Ref InfraOperationsChangeEventTopic
       FunctionName: 
         Fn::GetAtt:
-        - OperationsChangeAuditLambda
+        - InfraOperationsChangeAuditLambda
         - Arn
