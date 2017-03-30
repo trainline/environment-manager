@@ -27,6 +27,10 @@
                 "false",
                 "true"
             ]
+        },
+        "pAlertSNSTopic": {
+            "Type": "String",
+            "Description": "SNS Topic ARN for lambda alerts."
         }
     },
     "Conditions": {
@@ -72,7 +76,7 @@
             "Type": "AWS::CloudWatch::Alarm",
             "Properties": {
                 "ActionsEnabled": true,
-                "AlarmActions": [{ "Ref": "SensuAlertSNSTopic" }],
+                "AlarmActions": [{ "Ref": "pAlertSNSTopic" }],
                 "AlarmDescription": "If there is an error in this lambda, report to SNS topic.",
                 "AlarmName": "alertInfraEnvironmentManagerScheduler",
                 "ComparisonOperator": "GreaterThanThreshold",

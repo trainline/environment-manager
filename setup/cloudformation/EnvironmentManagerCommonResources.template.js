@@ -63,6 +63,10 @@ module.exports = function ({ managedAccounts }) {
                 "Type": "String",
                 "Description": "Master AWS account ID",
                 "AllowedPattern": "[0-9]{12}"
+            },
+            "pAlertSNSTopic": {
+                "Type": "String",
+                "Description": "SNS Topic ARN for lambda alerts."
             }
         },
         "Conditions": {
@@ -578,7 +582,7 @@ module.exports = function ({ managedAccounts }) {
                     "Type": "AWS::CloudWatch::Alarm",
                     "Properties": {
                         "ActionsEnabled": true,
-                        "AlarmActions": [{ "Ref": "SensuAlertSNSTopic" }],
+                        "AlarmActions": [{ "Ref": "pAlertSNSTopic" }],
                         "AlarmDescription": "If there is an error in this lambda, report to SNS topic.",
                         "AlarmName": "alertInfraEnvironmentManagerAudit",
                         "ComparisonOperator": "GreaterThanThreshold",
@@ -760,7 +764,7 @@ module.exports = function ({ managedAccounts }) {
                     "Type": "AWS::CloudWatch::Alarm",
                     "Properties": {
                         "ActionsEnabled": true,
-                        "AlarmActions": [{ "Ref": "SensuAlertSNSTopic" }],
+                        "AlarmActions": [{ "Ref": "pAlertSNSTopic" }],
                         "AlarmDescription": "If there is an error in this lambda, report to SNS topic.",
                         "AlarmName": "alertInfraDynamoStreamReplica",
                         "ComparisonOperator": "GreaterThanThreshold",
@@ -903,7 +907,7 @@ module.exports = function ({ managedAccounts }) {
                     "Type": "AWS::CloudWatch::Alarm",
                     "Properties": {
                         "ActionsEnabled": true,
-                        "AlarmActions": [{ "Ref": "SensuAlertSNSTopic" }],
+                        "AlarmActions": [{ "Ref": "pAlertSNSTopic" }],
                         "AlarmDescription": "If there is an error in this lambda, report to SNS topic.",
                         "AlarmName": "alertInfraAsgScale",
                         "ComparisonOperator": "GreaterThanThreshold",
