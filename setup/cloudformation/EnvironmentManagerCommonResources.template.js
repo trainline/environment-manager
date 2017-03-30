@@ -589,6 +589,12 @@ module.exports = function ({ managedAccounts }) {
                         "EvaluationPeriods": 1,
                         "MetricName": "Errors",
                         "Namespace": "AWS/Lambda",
+                        "Dimensions": [
+                            {
+                                "Name": "FunctionName",
+                                "Value": "InfraEnvironmentManagerAudit"
+                            }
+                        ],
                         "Period": 60,
                         "Statistic": "Sum",
                         "Threshold": 0
@@ -771,6 +777,12 @@ module.exports = function ({ managedAccounts }) {
                         "EvaluationPeriods": 1,
                         "MetricName": "Errors",
                         "Namespace": "AWS/Lambda",
+                        "Dimensions": [
+                            {
+                                "Name": "FunctionName",
+                                "Value": "InfraDynamoStreamReplica"
+                            }
+                        ],
                         "Period": 60,
                         "Statistic": "Sum",
                         "Threshold": 0
@@ -914,6 +926,12 @@ module.exports = function ({ managedAccounts }) {
                         "EvaluationPeriods": 1,
                         "MetricName": "Errors",
                         "Namespace": "AWS/Lambda",
+                        "Dimensions": [
+                            {
+                                "Name": "FunctionName",
+                                "Value": "InfraAsgScale"
+                            }
+                        ],
                         "Period": 60,
                         "Statistic": "Sum",
                         "Threshold": 0

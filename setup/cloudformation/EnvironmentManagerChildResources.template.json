@@ -76,13 +76,23 @@
             "Type": "AWS::CloudWatch::Alarm",
             "Properties": {
                 "ActionsEnabled": true,
-                "AlarmActions": [{ "Ref": "pAlertSNSTopic" }],
+                "AlarmActions": [
+                    {
+                        "Ref": "pAlertSNSTopic"
+                    }
+                ],
                 "AlarmDescription": "If there is an error in this lambda, report to SNS topic.",
                 "AlarmName": "alertInfraEnvironmentManagerScheduler",
                 "ComparisonOperator": "GreaterThanThreshold",
-                "EvaluationPeriods": 1, 
-                "MetricName": "Errors", 
+                "EvaluationPeriods": 1,
+                "MetricName": "Errors",
                 "Namespace": "AWS/Lambda",
+                "Dimensions": [
+                    {
+                        "Name": "FunctionName",
+                        "Value": "InfraEnvironmentManagerScheduler"
+                    }
+                ],
                 "Period": 60,
                 "Statistic": "Sum",
                 "Threshold": 0

@@ -19,6 +19,9 @@ Resources:
       EvaluationPeriods: 1
       MetricName: Errors
       Namespace: 'AWS/Lambda'
+      Dimensions:
+        - Name: FunctionName
+          Value: deliberateError
       # Multiple of 60, measured in seconds
       Period: 60
       Statistic: Sum
