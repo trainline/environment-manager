@@ -574,6 +574,22 @@ module.exports = function ({ managedAccounts }) {
                         "Timeout": 3
                     }
                 },
+                "alertInfraEnvironmentManagerAudit": {
+                    "Type": "AWS::CloudWatch::Alarm",
+                    "Properties": {
+                        "ActionsEnabled": true,
+                        "AlarmActions": [{ "Ref": "SensuAlertSNSTopic" }],
+                        "AlarmDescription": "If there is an error in this lambda, report to SNS topic.",
+                        "AlarmName": "alertInfraEnvironmentManagerAudit",
+                        "ComparisonOperator": "GreaterThanThreshold",
+                        "EvaluationPeriods": 1,
+                        "MetricName": "Errors",
+                        "Namespace": "AWS/Lambda",
+                        "Period": 60,
+                        "Statistic": "Sum",
+                        "Threshold": 0
+                    }
+                },
                 "roleInfraEnvironmentManagerAudit": {
                     "Type": "AWS::IAM::Role",
                     "Properties": {
@@ -740,6 +756,22 @@ module.exports = function ({ managedAccounts }) {
                         "Timeout": 30
                     }
                 },
+                "alertInfraDynamoStreamReplica": {
+                    "Type": "AWS::CloudWatch::Alarm",
+                    "Properties": {
+                        "ActionsEnabled": true,
+                        "AlarmActions": [{ "Ref": "SensuAlertSNSTopic" }],
+                        "AlarmDescription": "If there is an error in this lambda, report to SNS topic.",
+                        "AlarmName": "alertInfraDynamoStreamReplica",
+                        "ComparisonOperator": "GreaterThanThreshold",
+                        "EvaluationPeriods": 1,
+                        "MetricName": "Errors",
+                        "Namespace": "AWS/Lambda",
+                        "Period": 60,
+                        "Statistic": "Sum",
+                        "Threshold": 0
+                    }
+                },
                 "roleInfraDynamoStreamReplica": {
                     "Type": "AWS::IAM::Role",
                     "Condition": "ThisIsMasterAccount",
@@ -865,6 +897,22 @@ module.exports = function ({ managedAccounts }) {
                         },
                         "Runtime": "nodejs4.3",
                         "Timeout": 30
+                    }
+                },
+                "alertInfraAsgScale": {
+                    "Type": "AWS::CloudWatch::Alarm",
+                    "Properties": {
+                        "ActionsEnabled": true,
+                        "AlarmActions": [{ "Ref": "SensuAlertSNSTopic" }],
+                        "AlarmDescription": "If there is an error in this lambda, report to SNS topic.",
+                        "AlarmName": "alertInfraAsgScale",
+                        "ComparisonOperator": "GreaterThanThreshold",
+                        "EvaluationPeriods": 1,
+                        "MetricName": "Errors",
+                        "Namespace": "AWS/Lambda",
+                        "Period": 60,
+                        "Statistic": "Sum",
+                        "Threshold": 0
                     }
                 },
                 "snsInfraAsgScale": {

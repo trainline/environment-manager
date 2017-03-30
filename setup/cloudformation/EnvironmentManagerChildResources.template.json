@@ -68,6 +68,22 @@
                 "Timeout": 90
             }
         },
+        "alertInfraEnvironmentManagerScheduler": {
+            "Type": "AWS::CloudWatch::Alarm",
+            "Properties": {
+                "ActionsEnabled": true,
+                "AlarmActions": [{ "Ref": "SensuAlertSNSTopic" }],
+                "AlarmDescription": "If there is an error in this lambda, report to SNS topic.",
+                "AlarmName": "alertInfraEnvironmentManagerScheduler",
+                "ComparisonOperator": "GreaterThanThreshold",
+                "EvaluationPeriods": 1, 
+                "MetricName": "Errors", 
+                "Namespace": "AWS/Lambda",
+                "Period": 60,
+                "Statistic": "Sum",
+                "Threshold": 0
+            }
+        },
         "roleInfraEnvironmentManagerScheduler": {
             "Type": "AWS::IAM::Role",
             "Properties": {
