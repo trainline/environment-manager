@@ -9,9 +9,6 @@ let proxyquire = require('proxyquire');
 let sinon = require('sinon');
 
 let defaults = {
-  'modules/awsAccounts': {
-    all: () => Promise.resolve(['child-account-1', 'child-account-2'].map(x => ({ AccountNumber: x })))
-  },
   'modules/awsResourceNameProvider': { getTableName: x => x },
   'modules/data-access/describeDynamoTable': arn => Promise.resolve({
     Table: {
@@ -44,14 +41,12 @@ describe('deployments', function () {
     });
     context('when the deployment is found in one table', function () {
       let scenarios = [
-        ['master-account', 'ConfigDeploymentExecutionStatus'],
-        ['master-account', 'ConfigCompletedDeployments'],
-        ['child-account-2', 'ConfigDeploymentExecutionStatus'],
-        ['child-account-2', 'ConfigCompletedDeployments']
+        'ConfigDeploymentExecutionStatus',
+        'ConfigCompletedDeployments'
       ];
-      scenarios.forEach(([account, table]) => {
-        it(`returns the deployment if it is found in ${table} in ${account}`, function () {
-          let sut = withDynamoGet((arn, key) => (arn === `${account}:${table}`
+      scenarios.forEach((table) => {
+        it(`returns the deployment if it is found in ${table}`, function () {
+          let sut = withDynamoGet((arn, key) => (arn === `master-account:${table}`
             ? Promise.resolve({})
             : Promise.resolve(null)));
           return sut.get({ DeploymentID: '' }).should.finally.eql({});
@@ -60,65 +55,15 @@ describe('deployments', function () {
     });
     context('when a failure occurs accessing a table in the master account', function () {
       let scenarios = [
-        ['master-account', 'ConfigDeploymentExecutionStatus'],
-        ['master-account', 'ConfigCompletedDeployments']
+        'ConfigDeploymentExecutionStatus',
+        'ConfigCompletedDeployments'
       ];
-      scenarios.forEach(([account, table]) => {
+      scenarios.forEach((table) => {
         it(`returns a rejected promise for ${table}`, function () {
-          let sut = withDynamoGet((arn, key) => (arn === `${account}:${table}`
+          let sut = withDynamoGet((arn, key) => (arn === `master-account:${table}`
             ? Promise.reject(new Error('BOOM!'))
             : Promise.resolve(null)));
           return sut.get({ DeploymentID: '' }).should.be.rejected();
-        });
-      });
-    });
-    context('when a failure occurs accessing a table in a child account', function () {
-      let scenarios = [
-        ['child-account-2', 'ConfigDeploymentExecutionStatus'],
-        ['child-account-2', 'ConfigCompletedDeployments']
-      ];
-      scenarios.forEach(([account, table]) => {
-        it(`returns null for ${table}`, function () {
-          let sut = withDynamoGet((arn, key) => (arn === `${account}:${table}`
-            ? Promise.reject(new Error('BOOM!'))
-            : Promise.resolve(null)));
-          return sut.get({ DeploymentID: '' }).should.finally.be.null();
-        });
-      });
-    });
-    context('when the deployment is found in a child account but there are failures accessing others', function () {
-      let successTables = [
-        ['child-account-2', 'ConfigDeploymentExecutionStatus'],
-        ['child-account-2', 'ConfigCompletedDeployments']
-      ];
-      successTables.forEach(([account, table]) => {
-        it(`returns the deployment for ${table}`, function () {
-          let sut = withDynamoGet((arn, key) => {
-            if (arn === `${account}:${table}`) {
-              return Promise.resolve({});
-            } else if (arn.startsWith('master-account')) {
-              return Promise.resolve(null);
-            } else {
-              Promise.reject(new Error('BOOM!'));
-            }
-            return sut.get({ DeploymentID: '' }).should.finally.eql({});
-          });
-        });
-      });
-    });
-    context('when the deployment is found in a table in the master account', function () {
-      let scenarios = [
-        ['master-account', 'ConfigDeploymentExecutionStatus'],
-        ['master-account', 'ConfigCompletedDeployments']
-      ];
-      scenarios.forEach(([account, table]) => {
-        it(`the child accounts are not searched (${table})`, function () {
-          let get = sinon.spy((arn, key) => (arn === `${account}:${table}`
-            ? Promise.resolve({})
-            : Promise.resolve(null)));
-          let sut = withDynamoGet(get);
-          return sut.get({ DeploymentID: '' }).then(() =>
-            sinon.assert.neverCalledWith(get, sinon.match(/^child-account.*/)));
         });
       });
     });
@@ -148,8 +93,6 @@ describe('deployments', function () {
         return results.then(() => {
           sinon.assert.alwaysCalledWith(query, sinon.match(/:ConfigCompletedDeployments$/));
           sinon.assert.calledWith(query, sinon.match(/^master-account:/));
-          sinon.assert.calledWith(query, sinon.match(/^child-account-1:/));
-          sinon.assert.calledWith(query, sinon.match(/^child-account-2:/));
         });
       });
       it('for each day in the range', function () {
@@ -181,12 +124,12 @@ describe('deployments', function () {
           )));
       });
     });
-    it('returns the set of results from all tables', function () {
+    it('returns the set of results from all dates queried', function () {
       let query = table => Promise.resolve([{ table, type: 'query' }]);
       let scan = table => Promise.resolve([{ table, type: 'scan' }]);
       let sut = withScanAndQuery({ query, scan });
-      // one query result for each day for each child account plus one scan result.
-      return sut.queryByDateRange(Instant.parse('2000-01-01T00:00:00Z'), Instant.parse('2000-01-03T23:59:00Z')).should.finally.have.length((3 * 3) + 1);
+      // one query result for each day plus one scan result.
+      return sut.queryByDateRange(Instant.parse('2000-01-01T00:00:00Z'), Instant.parse('2000-01-03T23:59:00Z')).should.finally.have.length(3 + 1);
     });
     context('when the scan of ConfigDeploymentExecutionStatus fails', function () {
       it('returns a rejected promise', function () {

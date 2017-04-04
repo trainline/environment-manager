@@ -4,7 +4,6 @@
 
 let { getTableName: physicalTableName } = require('modules/awsResourceNameProvider');
 let Promise = require('bluebird');
-let awsAccounts = require('modules/awsAccounts');
 let logger = require('modules/logger');
 let { mkArn } = require('modules/data-access/dynamoTableArn');
 let describeDynamoTable = require('modules/data-access/describeDynamoTable');
@@ -35,14 +34,6 @@ const DEFAULT_SCAN_EXPRESSIONS = {
 
 const ES_DATETIME_FORMAT = new DateTimeFormatterBuilder().appendInstant(3).toFormatter();
 
-function otherAccounts() {
-  return awsAccounts.all()
-    .then(fp.flow(
-      fp.filter(x => !x.IsMaster),
-      fp.map('AccountNumber'),
-      fp.uniq));
-}
-
 function factory({ archivedDeploymentsTable, archivedDeploymentsIndex, runningDeploymentsTable }) {
   let tableDescriptionPromise = args => mkArn(args).then(describeDynamoTable);
 
@@ -50,12 +41,6 @@ function factory({ archivedDeploymentsTable, archivedDeploymentsIndex, runningDe
 
   function myTables() {
     return Promise.resolve(tableNames.map(tableName => mkArn({ tableName })));
-  }
-
-  function otherTables() {
-    return otherAccounts()
-      .then(fp.reduce((result, account) =>
-        [...result, ...tableNames.map(tableName => mkArn({ account, tableName }))], []));
   }
 
   function create(item) {
@@ -75,15 +60,8 @@ function factory({ archivedDeploymentsTable, archivedDeploymentsIndex, runningDe
 
   function get(key) {
     let firstFoundOrNull = fp.flow(fp.find(x => x !== null), fp.defaultTo(null));
-    let logAndReturnNull = (error) => { logger.warn(error); return null; };
-
-    let getFromMyTables = () => Promise.map(myTables(), arn => dynamoTable.get(arn, key))
+    return Promise.map(myTables(), arn => dynamoTable.get(arn, key))
       .then(firstFoundOrNull);
-    let getFromOtherTables = () => Promise.map(otherTables(), arn => dynamoTable.get(arn, key).catch(logAndReturnNull))
-      .then(firstFoundOrNull);
-
-    return getFromMyTables()
-      .then(result => (result !== null ? Promise.resolve(result) : getFromOtherTables()));
   }
 
   function scanRunning(expressions) {
@@ -119,17 +97,13 @@ function factory({ archivedDeploymentsTable, archivedDeploymentsIndex, runningDe
         }
       }
 
-      let tables = Promise.join(
-        mkArn({ tableName: archivedDeploymentsTable }),
-        Promise.map(otherAccounts(), account => mkArn({ account, tableName: archivedDeploymentsTable })),
-        (mine, others) => [mine, ...others]
-      );
-
       let firstPartition = LocalDate.ofInstant(maxInstant, ZoneId.UTC);
-      return Promise.map(tables, table => Promise.resolve().then(() => loop(table, firstPartition, minInstant, [])).catch((error) => {
+      return mkArn({ tableName: archivedDeploymentsTable })
+      .then(table => loop(table, firstPartition, minInstant, []))
+      .catch((error) => {
         logger.warn(error);
         return [];
-      })).then(fp.flatten);
+      });
     }
 
     return Promise.join(
