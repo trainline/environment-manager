@@ -259,80 +259,6 @@ module.exports = function ({ managedAccounts }) {
                     "TableName": "ConfigNotificationSettings"
                 }
             },
-            "ConfigDeploymentExecutionStatus": {
-                "Type": "AWS::DynamoDB::Table",
-                "Properties": {
-                    "AttributeDefinitions": [
-                        {
-                            "AttributeName": "DeploymentID",
-                            "AttributeType": "S"
-                        }
-                    ],
-                    "KeySchema": [
-                        {
-                            "AttributeName": "DeploymentID",
-                            "KeyType": "HASH"
-                        }
-                    ],
-                    "ProvisionedThroughput": {
-                        "ReadCapacityUnits": 10,
-                        "WriteCapacityUnits": 2
-                    },
-                    "TableName": "ConfigDeploymentExecutionStatus"
-                }
-            },
-            "ConfigCompletedDeployments": {
-                "Type": "AWS::DynamoDB::Table",
-                "Properties": {
-                    "AttributeDefinitions": [
-                        {
-                            "AttributeName": "DeploymentID",
-                            "AttributeType": "S"
-                        },
-                        {
-                            "AttributeName": "StartTimestamp",
-                            "AttributeType": "S"
-                        },
-                        {
-                            "AttributeName": "StartDate",
-                            "AttributeType": "S"
-                        }
-                    ],
-                    "GlobalSecondaryIndexes": [
-                        {
-                            "IndexName": "StartDate-StartTimestamp-index",
-                            "KeySchema": [
-                                {
-                                    "AttributeName": "StartDate",
-                                    "KeyType": "HASH"
-                                },
-                                {
-                                    "AttributeName": "StartTimestamp",
-                                    "KeyType": "RANGE"
-                                }
-                            ],
-                            "Projection": {
-                                "ProjectionType": "ALL"
-                            },
-                            "ProvisionedThroughput": {
-                                "ReadCapacityUnits": 10,
-                                "WriteCapacityUnits": 2
-                            }
-                        }
-                    ],
-                    "KeySchema": [
-                        {
-                            "AttributeName": "DeploymentID",
-                            "KeyType": "HASH"
-                        }
-                    ],
-                    "ProvisionedThroughput": {
-                        "ReadCapacityUnits": 10,
-                        "WriteCapacityUnits": 2
-                    },
-                    "TableName": "ConfigCompletedDeployments"
-                }
-            },
             "ConfigEnvironmentTypes": {
                 "Type": "AWS::DynamoDB::Table",
                 "Properties": {
@@ -686,7 +612,6 @@ module.exports = function ({ managedAccounts }) {
                                                 'ConfigDeploymentMaps',
                                                 'ConfigLBSettings',
                                                 'ConfigLBUpstream',
-                                                'ConfigDeploymentExecutionStatus',
                                                 'ConfigEnvironmentTypes',
                                                 'InfraAsgIPs',
                                                 'InfraConfigAccounts',
@@ -714,7 +639,6 @@ module.exports = function ({ managedAccounts }) {
                         "ConfigDeploymentMaps",
                         "ConfigLBSettings",
                         "ConfigLBUpstream",
-                        "ConfigDeploymentExecutionStatus",
                         "ConfigEnvironmentTypes",
                         "InfraAsgIPs",
                         "InfraChangeAudit",
