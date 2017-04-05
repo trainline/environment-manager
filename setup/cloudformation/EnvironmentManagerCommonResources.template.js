@@ -1,59 +1,18 @@
 'use strict';
 
+let {
+    dependsOnSeq,
+    streamArn,
+    triggerAll
+} = require('./template');
+
 module.exports = function ({ managedAccounts }) {
 
     managedAccounts = Array.from(new Set(managedAccounts || []));
 
-    function streamArn(tableName) {
-        return {
-            'Fn::GetAtt': [
-                tableName,
-                'StreamArn'
-            ]
-        };
-    }
-
-    function triggerAll(functionName, sourceArn) {
-        return {
-            "Type": "AWS::Lambda::EventSourceMapping",
-            "Properties": {
-                "BatchSize": 25,
-                "Enabled": true,
-                "EventSourceArn": sourceArn,
-                "FunctionName": {
-                    "Ref": functionName
-                },
-                "StartingPosition": "LATEST"
-            }
-        }
-    }
-
     function trigger(functionName, sourceArn) {
-        return Object.assign({ "Condition": "ThisIsMasterAccount" }, triggerAll(functionName, sourceArn));
-    }
-
-    function dependsOnSeq(resources) {
-        function addDependencies(acc, key) {
-            let [[prev,],] = acc;
-            return [
-                [key, Object.assign({ DependsOn: prev }, resources[key])],
-                ...acc
-            ];
-        }
-        function pairsToObject(acc, [key, value]) {
-            acc[key] = value;
-            return acc;
-        }
-        let [head, ...tail] = Object.keys(resources);
-        if (head) {
-            return tail
-                .reduce(addDependencies, [[head, resources[head]]])
-                .reverse()
-                .reduce(pairsToObject, {});
-        } else {
-            return {};
-        }
-    }
+    return Object.assign({ "Condition": "ThisIsMasterAccount" }, triggerAll(functionName, sourceArn));
+}
 
     return {
         "AWSTemplateFormatVersion": "2010-09-09",
@@ -94,6 +53,7 @@ module.exports = function ({ managedAccounts }) {
         "Resources": Object.assign(dependsOnSeq({
             "ConfigEnvironments": {
                 "Type": "AWS::DynamoDB::Table",
+                "Condition": "ThisIsMasterAccount",
                 "Properties": {
                     "AttributeDefinitions": [
                         {
@@ -119,6 +79,7 @@ module.exports = function ({ managedAccounts }) {
             },
             "ConfigServices": {
                 "Type": "AWS::DynamoDB::Table",
+                "Condition": "ThisIsMasterAccount",
                 "Properties": {
                     "AttributeDefinitions": [
                         {
@@ -152,6 +113,7 @@ module.exports = function ({ managedAccounts }) {
             },
             "ConfigDeploymentMaps": {
                 "Type": "AWS::DynamoDB::Table",
+                "Condition": "ThisIsMasterAccount",
                 "Properties": {
                     "AttributeDefinitions": [
                         {
@@ -261,6 +223,7 @@ module.exports = function ({ managedAccounts }) {
             },
             "ConfigEnvironmentTypes": {
                 "Type": "AWS::DynamoDB::Table",
+                "Condition": "ThisIsMasterAccount",
                 "Properties": {
                     "AttributeDefinitions": [
                         {
@@ -361,6 +324,7 @@ module.exports = function ({ managedAccounts }) {
             },
             "InfraConfigAccounts": {
                 "Type": "AWS::DynamoDB::Table",
+                "Condition": "ThisIsMasterAccount",
                 "Properties": {
                     "AttributeDefinitions": [
                         {
@@ -386,6 +350,7 @@ module.exports = function ({ managedAccounts }) {
             },
             "InfraConfigClusters": {
                 "Type": "AWS::DynamoDB::Table",
+                "Condition": "ThisIsMasterAccount",
                 "Properties": {
                     "AttributeDefinitions": [
                         {
@@ -411,6 +376,7 @@ module.exports = function ({ managedAccounts }) {
             },
             "InfraConfigPermissions": {
                 "Type": "AWS::DynamoDB::Table",
+                "Condition": "ThisIsMasterAccount",
                 "Properties": {
                     "AttributeDefinitions": [
                         {
@@ -436,6 +402,7 @@ module.exports = function ({ managedAccounts }) {
             },
             "InfraEnvManagerSessions": {
                 "Type": "AWS::DynamoDB::Table",
+                "Condition": "ThisIsMasterAccount",
                 "Properties": {
                     "AttributeDefinitions": [
                         {
@@ -447,17 +414,18 @@ module.exports = function ({ managedAccounts }) {
                         {
                             "AttributeName": "UserName",
                             "KeyType": "HASH"
-                        }
+                }
                     ],
                     "ProvisionedThroughput": {
                         "ReadCapacityUnits": 10,
                         "WriteCapacityUnits": 2
                     },
                     "TableName": "InfraEnvManagerSessions"
-                }
+            }
             },
             "InfraOpsEnvironment": {
                 "Type": "AWS::DynamoDB::Table",
+                "Condition": "ThisIsMasterAccount",
                 "Properties": {
                     "AttributeDefinitions": [
                         {
@@ -570,160 +538,6 @@ module.exports = function ({ managedAccounts }) {
                 "auditTriggerConfigDeploymentMaps": trigger('lambdaInfraEnvironmentManagerAudit', streamArn('ConfigDeploymentMaps')),
                 "auditTriggerInfraConfigAccounts": trigger('lambdaInfraEnvironmentManagerAudit', streamArn('InfraConfigAccounts')),
                 "auditTriggerConfigNotificationSettings": trigger('lambdaInfraEnvironmentManagerAudit', streamArn('ConfigNotificationSettings')),
-                "roleInfraDynamoStreamReplicaWriter": {
-                    "Type": "AWS::IAM::Role",
-                    "Condition": "ThisIsNotMasterAccount",
-                    "Properties": {
-                        "AssumeRolePolicyDocument": {
-                            "Version": "2012-10-17",
-                            "Statement": [
-                                {
-                                    "Sid": "",
-                                    "Effect": "Allow",
-                                    "Principal": {
-                                        "AWS": [
-                                            {
-                                                "Fn::Sub": "arn:aws:iam::${pMasterAccountId}:root"
-                                            }
-                                        ]
-                                    },
-                                    "Action": "sts:AssumeRole"
-                                }
-                            ]
-                        },
-                        "ManagedPolicyArns": [
-                            "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
-                        ],
-                        "Policies": [
-                            {
-                                "PolicyName": "roleInfraDynamoStreamReplicaWriterPolicy",
-                                "PolicyDocument": {
-                                    "Version": "2012-10-17",
-                                    "Statement": [
-                                        {
-                                            "Effect": "Allow",
-                                            "Action": [
-                                                "dynamodb:DeleteItem",
-                                                "dynamodb:PutItem"
-                                            ],
-                                            "Resource": [
-                                                'ConfigEnvironments',
-                                                'ConfigServices',
-                                                'ConfigDeploymentMaps',
-                                                'ConfigLBSettings',
-                                                'ConfigLBUpstream',
-                                                'ConfigEnvironmentTypes',
-                                                'InfraAsgIPs',
-                                                'InfraConfigAccounts',
-                                                'InfraConfigClusters',
-                                                'InfraConfigPermissions',
-                                                'InfraEnvManagerSessions',
-                                                'InfraOpsEnvironment'
-                                            ].map(name => ({
-                                                "Fn::Sub": `arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${${name}}`
-                                            }))
-                                        }
-                                    ]
-                                }
-                            }
-                        ],
-                        "RoleName": "roleInfraDynamoStreamReplicaWriter"
-                    }
-                },
-                "lambdaInfraDynamoStreamReplica": {
-                    "Type": "AWS::Lambda::Function",
-                    "Condition": "ThisIsMasterAccount",
-                    "DependsOn": [
-                        "ConfigEnvironments",
-                        "ConfigServices",
-                        "ConfigDeploymentMaps",
-                        "ConfigLBSettings",
-                        "ConfigLBUpstream",
-                        "ConfigEnvironmentTypes",
-                        "InfraAsgIPs",
-                        "InfraChangeAudit",
-                        "InfraConfigAccounts",
-                        "InfraConfigClusters",
-                        "InfraConfigPermissions",
-                        "InfraEnvManagerSessions",
-                        "InfraOpsEnvironment"
-                    ],
-                    "Properties": {
-                        "Code": "./lambda/InfraDynamoStreamReplica/infra-dynamo-stream-replica.zip",
-                        "Description": "This function replicates data from DynamoDB tables in this account to the corresponding tables in the child accounts it manages.",
-                        "FunctionName": "InfraDynamoStreamReplica",
-                        "Handler": "index.handler",
-                        "MemorySize": 128,
-                        "Role": {
-                            "Fn::GetAtt": [
-                                "roleInfraDynamoStreamReplica",
-                                "Arn"
-                            ]
-                        },
-                        "Runtime": "nodejs4.3",
-                        "Timeout": 30
-                    }
-                },
-                "roleInfraDynamoStreamReplica": {
-                    "Type": "AWS::IAM::Role",
-                    "Condition": "ThisIsMasterAccount",
-                    "Properties": {
-                        "AssumeRolePolicyDocument": {
-                            "Version": "2012-10-17",
-                            "Statement": [
-                                {
-                                    "Effect": "Allow",
-                                    "Principal": {
-                                        "Service": "lambda.amazonaws.com"
-                                    },
-                                    "Action": "sts:AssumeRole"
-                                }
-                            ]
-                        },
-                        "ManagedPolicyArns": [
-                            "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
-                        ],
-                        "Policies": [
-                            {
-                                "PolicyName": "roleInfraDynamoStreamReplicaPolicy",
-                                "PolicyDocument": {
-                                    "Version": "2012-10-17",
-                                    "Statement": [
-                                        {
-                                            "Action": "sts:AssumeRole",
-                                            "Effect": "Allow",
-                                            "Resource": managedAccounts.map(accountNumber => `arn:aws:iam::${accountNumber}:role/roleInfraDynamoStreamReplicaWriter`)
-                                        },
-                                        {
-                                            "Effect": "Allow",
-                                            "Action": [
-                                                "dynamodb:GetRecords",
-                                                "dynamodb:GetShardIterator",
-                                                "dynamodb:DescribeStream",
-                                                "dynamodb:ListStreams"
-                                            ],
-                                            "Resource": [
-                                                'ConfigServices',
-                                                'InfraConfigClusters',
-                                                'ConfigEnvironments',
-                                                'ConfigEnvironmentTypes',
-                                                'ConfigDeploymentMaps',
-                                                'InfraConfigAccounts',
-                                                'InfraOpsEnvironment'
-                                            ].map(streamArn)
-                                        }
-                                    ]
-                                }
-                            }
-                        ]
-                    }
-                },
-                "replicaTriggerInfraConfigClusters": trigger('lambdaInfraDynamoStreamReplica', streamArn('InfraConfigClusters')),
-                "replicaTriggerInfraOpsEnvironment": trigger('lambdaInfraDynamoStreamReplica', streamArn('InfraOpsEnvironment')),
-                "replicaTriggerConfigEnvironments": trigger('lambdaInfraDynamoStreamReplica', streamArn('ConfigEnvironments')),
-                "replicaTriggerConfigDeploymentMaps": trigger('lambdaInfraDynamoStreamReplica', streamArn('ConfigDeploymentMaps')),
-                "replicaTriggerConfigServices": trigger('lambdaInfraDynamoStreamReplica', streamArn('ConfigServices')),
-                "replicaTriggerConfigEnvironmentTypes": trigger('lambdaInfraDynamoStreamReplica', streamArn('ConfigEnvironmentTypes')),
                 "roleInfraEnvironmentManagerAuditWriter": {
                     "Type": "AWS::IAM::Role",
                     "Condition": "ThisIsMasterAccount",
