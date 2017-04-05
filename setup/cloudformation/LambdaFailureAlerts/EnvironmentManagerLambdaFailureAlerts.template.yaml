@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Environment Manager Events
+Parameters:
+  ErrorAlertSNSTopicArn:
+    Type: String
+    Description: Then 
+Resources:
+  LambdaFailureAlert:
+    Type: 'AWS::CloudWatch::Alarm'
+    Properties:
+      # Should actions be executed when there is a change in the alarms state
+      ActionsEnabled: true
+      # SNS topic on which to publish the alarm
+      AlarmActions: 
+        - !Ref ErrorAlertSNSTopicArn
+      AlarmDescription: Reports if there is any error within a lambda invocation.
+      AlarmName: EnvironmentManagerLambdaErrorNotification
+      ComparisonOperator: GreaterThanThreshold
+      EvaluationPeriods: 1
+      MetricName: Errors
+      Namespace: 'AWS/Lambda'
+      Dimensions:
+        - Name: FunctionName
+          Value: deliberateError
+      # Multiple of 60, measured in seconds
+      Period: 60
+      Statistic: Sum
+      Threshold: 0
