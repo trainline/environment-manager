@@ -91,7 +91,7 @@ function queryDeployments(query) {
     } else if (filter.length === 1) {
       return { FilterExpression: filter[0] };
     } else {
-      return { FilterExpression: ['and', filter] };
+      return { FilterExpression: ['and', ...filter] };
     }
   })();
 
