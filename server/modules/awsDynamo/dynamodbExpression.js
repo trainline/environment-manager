@@ -34,6 +34,7 @@ function compileOne(scope, expr) {
   let prefix = ([fn, ...args]) => `${fn}(${args.map(compile).join(', ')})`;
   let attr = ([, ...exprs]) => exprs.map(name => scope.nameExpressionAttributeName(name)).join('.');
   let val = ([, ...exprs]) => exprs.map(value => scope.nameExpressionAttributeValue(value)).join(', ');
+  let list = ([, sep, ...items]) => `${items.map(compile).join(sep)}`;
   let update = ([, ...args]) => {
     let assign = opargs => opargs.map(compile).join(' = ');
     let ref = opargs => opargs.map(compile).join(', ');
@@ -68,6 +69,7 @@ function compileOne(scope, expr) {
     'and': infix,
     'at': attr,
     'attr': attr,
+    'list': list,
     'or': infix,
     'update': update,
     'val': val

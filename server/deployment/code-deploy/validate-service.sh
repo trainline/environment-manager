@@ -8,13 +8,13 @@ http_port=40500
 
 echo "Verifying the installation"
 
-url="https://127.0.0.1:$http_port/api/diagnostics/status"
+url="https://127.0.0.1:$http_port/diagnostics/healthchecks/ping"
 echo "Service URL=$url"
 
 while [[ $retries -lt $max_retries ]]
 do
-	if curl -k -s $url --insecure | grep "OK"; then
-		echo "Got 'OK'. Success!"
+	if curl -k -s $url --insecure | grep "Success"; then
+		echo "Got Success!"
 		exit 0
 	fi
 	sleep 1

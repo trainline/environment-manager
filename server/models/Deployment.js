@@ -3,9 +3,7 @@
 'use strict';
 
 let _ = require('lodash');
-let deploymentsHelper = require('modules/queryHandlersUtil/deployments-helper');
-let systemUser = require('modules/systemUser');
-let sender = require('modules/sender');
+let deployments = require('modules/data-access/deployments');
 
 class Deployment {
 
@@ -17,32 +15,8 @@ class Deployment {
   }
 
   static getById(key) {
-    return deploymentsHelper.get({ key });
+    return deployments.get({ DeploymentID: key });
   }
-
-  updateItemValue(itemValue) {
-    let command = {
-      name: 'UpdateDynamoResource',
-      resource: 'deployments/history',
-      accountName: this.AccountName,
-      key: this.DeploymentID,
-      item: itemValue
-    };
-    return sender.sendCommand({ command, user: systemUser });
-  }
-
-  addExecutionLogEntries(logs) {
-    let executionLog = this.Value.ExecutionLog;
-    let executionLogEntries = executionLog ? executionLog.split('\n') : [];
-    executionLogEntries = executionLogEntries.concat(logs);
-
-    this.Value.ExecutionLog = executionLogEntries.join('\n');
-
-    return this.updateItemValue({
-      'Value.ExecutionLog': this.Value.ExecutionLog
-    });
-  }
-
 }
 
 module.exports = Deployment;

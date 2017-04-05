@@ -117,7 +117,6 @@ function deploy(deployment, destination, sourcePackage, command) {
 
     deploymentLogger.inProgress(
       deployment.id,
-      deployment.accountName,
       'Waiting for nodes to perform service deployment...'
     );
   }).catch((error) => {

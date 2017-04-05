@@ -4,14 +4,14 @@
 
 /* eslint-disable no-console */
 
-console.log('Loading EnvironmentManagerConfigurationChangeAudit function');
+console.log('Loading InfraEnvironmentManagerOperationsChangeAudit function');
 
 exports.handler = (event, context, callback) => {
-  console.log('function EnvironmentManagerConfigurationChangeAudit starting...');
+  console.log('function InfraEnvironmentManagerOperationsChangeAudit starting...');
   const attributes = event.Records[0].Sns.MessageAttributes;
   const attributeString = Object.keys(attributes).map(key => `${key}:${attributes[key].Value}`).join(',');
-  console.log('Configuration Change Attributes:', attributeString);
+  console.log('Operations Change Attributes:', attributeString);
   const message = event.Records[0].Sns.Message;
-  console.log('Configuration Change SNS:', message);
+  console.log('Operations Change SNS:', message);
   callback(null, message);
 };

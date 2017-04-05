@@ -9,8 +9,8 @@ let logger = require('modules/logger');
 let config = require('config/');
 let compression = require('compression');
 let expressRequestId = require('express-request-id');
-
-let serverFactoryConfiguration = new (require('modules/serverFactoryConfiguration'))();
+let ServerFactoryConfiguration = require('modules/serverFactoryConfiguration');
+let serverFactoryConfiguration = new ServerFactoryConfiguration();
 let tokenAuthentication = require('modules/authentications/tokenAuthentication');
 let cookieAuthentication = require('modules/authentications/cookieAuthentication');
 let authentication = require('modules/authentication');
@@ -21,19 +21,20 @@ let httpServerFactory = require('modules/http-server-factory');
 let loggingMiddleware = require('modules/express-middleware/loggingMiddleware');
 let deprecateMiddleware = require('modules/express-middleware/deprecateMiddleware');
 
-let serverInstance;
-
 const APP_VERSION = require('config').get('APP_VERSION');
 
+let serverInstance;
+
 function createExpressApp() {
+  /* eslint-disable global-require */
   let routeInstaller = require('modules/routeInstaller');
   let httpHealthChecks = require('modules/httpHealthChecks');
   let routes = {
     home: require('routes/home'),
     deploymentNodeLogs: require('routes/deploymentNodeLogs')
   };
+  /* eslint-enable */
 
-  // start express
   let app = express();
 
   let loggerMiddleware = loggingMiddleware.loggerMiddleware(logger);
@@ -46,7 +47,8 @@ function createExpressApp() {
     swaggerMetadata,
     swaggerRouter,
     swaggerUi,
-    swaggerValidator
+    swaggerValidator,
+    swaggerNewRelic
   }) => {
     app.use(expressRequestId());
     app.use(compression());
@@ -66,13 +68,14 @@ function createExpressApp() {
     const PUBLIC_DIR = config.get('PUBLIC_DIR');
     logger.info(`Serving static files from "${PUBLIC_DIR}"`);
 
-    let staticPaths = ['*.js', '*.css', '*.html', '*.ico', '*.gif', '*.woff2', '*.ttf', '*.woff', '*.svg', '*.eot', '*.jpg', '*.png', '*.map'];
+    let staticPaths = ['*.js', '*.css', '*.html', '*.ico', '*.gif',
+      '*.woff2', '*.ttf', '*.woff', '*.svg', '*.eot', '*.jpg', '*.png', '*.map'];
+
     app.get(staticPaths, authentication.allowUnknown, express.static(PUBLIC_DIR));
     app.get('/', express.static(PUBLIC_DIR));
 
     app.get('*.js', authentication.allowUnknown, express.static('modules'));
 
-    // routing for API JSON Schemas
     app.use('/schema', authentication.allowUnknown, express.static(`${PUBLIC_DIR}/schema`));
 
     app.use('/diagnostics/healthchecks', httpHealthChecks.router);
@@ -87,7 +90,7 @@ function createExpressApp() {
 
     app.use(swaggerMetadata);
     app.use(swaggerValidator);
-    app.use(swaggerBasePath, swaggerAuthorizer);
+    app.use(swaggerBasePath, [swaggerNewRelic, swaggerAuthorizer]);
     app.use(swaggerRouter);
     app.use(swaggerUi);
     app.use(errorLoggerMiddleware);

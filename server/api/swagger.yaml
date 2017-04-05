@@ -2707,6 +2707,8 @@ definitions:
         type: string
       AWSAccountNumber:
         type: string
+      Version:
+        type: integer
       Value:
         $ref: '#/definitions/EnvironmentConfigValue'
   EnvironmentConfigValue:

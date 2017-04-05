@@ -12,11 +12,11 @@ let DEFAULT_SERVICE_INSTALLATION_TIMEOUT = '30m';
 
 let Enums = require('Enums');
 let BaseError = require('modules/errors/BaseError.class');
+let deployments = require('modules/data-access/deployments');
 let sender = require('modules/sender');
 let infrastructureConfigurationProvider = require('modules/provisioning/infrastructureConfigurationProvider');
 let namingConventionProvider = require('modules/provisioning/namingConventionProvider');
 let logger = require('modules/logger');
-let utils = require('modules/utilities');
 let Environment = require('models/Environment');
 
 module.exports = {
@@ -44,22 +44,11 @@ module.exports = {
 };
 
 function getActiveDeploymentsFromHistoryTable() {
-  let expectedStatus = 'In Progress';
-  let minimumRangeDate = utils.offsetMilliseconds(new Date(), -DEPLOYMENT_MAXIMUM_THRESHOLD).toISOString();
-  let maximumRangeDate = utils.offsetMilliseconds(new Date(), -DEPLOYMENT_MINIMUM_THRESHOLD).toISOString();
-
-  let query = {
-    name: 'ScanCrossAccountDynamoResources',
-    resource: 'deployments/history',
-    filter: {
-      'Value.Status': expectedStatus,
-      '$date_from': minimumRangeDate,
-      '$date_to': maximumRangeDate,
-      'Value.SchemaVersion': 2
-    }
-  };
-
-  return sender.sendQuery({ query });
+  let FilterExpression = ['and',
+    ['=', ['at', 'Value', 'SchemaVersion'], ['val', 2]],
+    ['=', ['at', 'Value', 'Status'], ['val', 'In Progress']]
+  ];
+  return deployments.scanRunning({ FilterExpression });
 }
 
 function getActiveDeploymentFullStatus(activeDeployment) {

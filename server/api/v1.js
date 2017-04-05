@@ -2,17 +2,16 @@
 
 'use strict';
 
-let _ = require('lodash');
-
-let yaml = require('js-yaml');
-let swaggerTools = require('swagger-tools');
-let fs = require('fs');
-
-let apiSpec = yaml.safeLoad(fs.readFileSync('api/swagger.yaml', 'utf8'));
-let swaggerAuthorizer = require('modules/express-middleware/swaggerAuthorizerMiddleware');
-let config = require('config');
-let path = require('path');
-let defaultErrorHandler = require('api/error-handler/defaultErrorHandler');
+const _ = require('lodash');
+const yaml = require('js-yaml');
+const swaggerTools = require('swagger-tools');
+const fs = require('fs');
+const config = require('config');
+const path = require('path');
+const apiSpec = yaml.safeLoad(fs.readFileSync('api/swagger.yaml', 'utf8'));
+const swaggerAuthorizer = require('modules/express-middleware/swaggerAuthorizerMiddleware');
+const swaggerNewRelic = require('modules/express-middleware/swaggerNewRelicMiddleware');
+const defaultErrorHandler = require('api/error-handler/defaultErrorHandler');
 
 const API_BASE_PATH = apiSpec.basePath;
 
@@ -38,12 +37,14 @@ function getControllerDirectories(root) {
     let files = fsEntries.filter(f => f.isFile).map(f => f.fullname);
 
     if (files.length > 0 && dirs.length > 0) {
+      // eslint-disable-next-line max-len
       throw new Error(`Controller directories must contain either controller files or subdirectories but "${dir}" contains both.`);
     }
 
     files.forEach((f) => {
       let basename = path.basename(f);
       if (controllerNames[basename]) {
+        // eslint-disable-next-line max-len
         throw new Error(`Controller names must be unique but "${basename}" was found at "${f}" and at "${controllerNames[basename]}".`);
       } else {
         controllerNames[basename] = f;
@@ -73,7 +74,8 @@ function setup() {
           swaggerMetadata: swaggerMetadata(),
           swaggerRouter: swaggerRouter(swaggerOptions),
           swaggerUi: swaggerUi(),
-          swaggerValidator: swaggerValidator()
+          swaggerValidator: swaggerValidator(),
+          swaggerNewRelic
         };
         resolve(Object.freeze(result));
       });

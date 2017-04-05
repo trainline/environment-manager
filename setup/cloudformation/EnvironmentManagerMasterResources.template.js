@@ -103,6 +103,80 @@ module.exports = function ({ managedAccounts }) {
             }
         },
         "Resources": {
+            "ConfigDeploymentExecutionStatus": {
+                "Type": "AWS::DynamoDB::Table",
+                "Properties": {
+                    "AttributeDefinitions": [
+                        {
+                            "AttributeName": "DeploymentID",
+                            "AttributeType": "S"
+                        }
+                    ],
+                    "KeySchema": [
+                        {
+                            "AttributeName": "DeploymentID",
+                            "KeyType": "HASH"
+                        }
+                    ],
+                    "ProvisionedThroughput": {
+                        "ReadCapacityUnits": 10,
+                        "WriteCapacityUnits": 2
+                    },
+                    "TableName": "ConfigDeploymentExecutionStatus"
+                }
+            },
+            "ConfigCompletedDeployments": {
+                "Type": "AWS::DynamoDB::Table",
+                "Properties": {
+                    "AttributeDefinitions": [
+                        {
+                            "AttributeName": "DeploymentID",
+                            "AttributeType": "S"
+                        },
+                        {
+                            "AttributeName": "StartTimestamp",
+                            "AttributeType": "S"
+                        },
+                        {
+                            "AttributeName": "StartDate",
+                            "AttributeType": "S"
+                        }
+                    ],
+                    "GlobalSecondaryIndexes": [
+                        {
+                            "IndexName": "StartDate-StartTimestamp-index",
+                            "KeySchema": [
+                                {
+                                    "AttributeName": "StartDate",
+                                    "KeyType": "HASH"
+                                },
+                                {
+                                    "AttributeName": "StartTimestamp",
+                                    "KeyType": "RANGE"
+                                }
+                            ],
+                            "Projection": {
+                                "ProjectionType": "ALL"
+                            },
+                            "ProvisionedThroughput": {
+                                "ReadCapacityUnits": 10,
+                                "WriteCapacityUnits": 2
+                            }
+                        }
+                    ],
+                    "KeySchema": [
+                        {
+                            "AttributeName": "DeploymentID",
+                            "KeyType": "HASH"
+                        }
+                    ],
+                    "ProvisionedThroughput": {
+                        "ReadCapacityUnits": 10,
+                        "WriteCapacityUnits": 2
+                    },
+                    "TableName": "ConfigCompletedDeployments"
+                }
+            },
             "loadBalancerEnvironmentManager": {
                 "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
                 "Properties": {

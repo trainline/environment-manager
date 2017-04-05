@@ -10,6 +10,8 @@ let Promise = require('bluebird');
 
 let DynamoHelper = require('api/api-utils/DynamoHelper');
 let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMetadataForDynamoAudit;
+let removeAuditMetadata = require('modules/data-access/dynamoAudit').removeAuditMetadata;
+let versionOf = require('modules/data-access/dynamoVersion').versionOf;
 let param = require('api/api-utils/requestParam');
 
 let configEnvironments = require('modules/data-access/configEnvironments');
@@ -23,6 +25,7 @@ let EnvironmentType = require('models/EnvironmentType');
 let consul = require('modules/service-targets/consul');
 
 function attachMetadata(input) {
+  input.Version = versionOf(input);
   return EnvironmentType.getByName(input.Value.EnvironmentType)
     .then((environmentType) => {
       input.AWSAccountNumber = environmentType.AWSAccountNumber;
@@ -64,6 +67,7 @@ function getEnvironmentConfigByName(req, res, next) {
   };
   return configEnvironments.get(key)
     .then(attachMetadata)
+    .then(removeAuditMetadata)
     .then(data => res.json(data))
     .catch(next);
 }

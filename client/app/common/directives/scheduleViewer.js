@@ -64,7 +64,7 @@ angular.module('EnvironmentManager.common')
           var readable = action + ': ' + englishSchedule.replace('Mon, Tue, Wed, Thu and Fri', 'Weekdays');
 
           var schedule = later.parse.cron(cron);
-          var nextOccurrence = later.schedule(schedule).next(1, currentLocalTime.format('YYYY-MM-DDTHH:mm:ss'));
+          var nextOccurrence = moment.tz(later.schedule(schedule).next(1, currentLocalTime.format('YYYY-MM-DDTHH:mm:ss')), 'UTC');
           var next = moment.tz(moment(nextOccurrence).format('YYYY-MM-DDTHH:mm:ss'), timezoneCode);
 
           return {

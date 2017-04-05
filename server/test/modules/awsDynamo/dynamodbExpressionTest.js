@@ -149,6 +149,16 @@ describe('dynamodb expression', function () {
           'ADD #A1 = :val0, #A4 = :val3 DELETE :val1 REMOVE #A2 SET #A3 = :val2');
       });
     });
+    context('when I compile a list expression', function () {
+      let input = ['list', ', ',
+        ['at', 'a', 'b'],
+        ['at', 'c', 'd']];
+      let result = sut.compile(input);
+      it('the expression is correct.', function () {
+        result.Expression.should.eql(
+          '#a.#b, #c.#d');
+      });
+    });
   });
 });
 

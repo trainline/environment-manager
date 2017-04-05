@@ -214,9 +214,8 @@ describe('DeployService', function () {
     });
 
     it('should pass deployment to logger.inProgress', (done) => {
-      deploymentLogger.inProgress = function (id, accountName) {
+      deploymentLogger.inProgress = function (id) {
         assert.equal(id, command.commandId);
-        assert.equal(accountName, ACCOUNT_NAME);
         done();
       };
       sut(command);

@@ -1,59 +1,18 @@
 'use strict';
 
+let {
+    dependsOnSeq,
+    streamArn,
+    triggerAll
+} = require('./template');
+
 module.exports = function ({ managedAccounts }) {
 
     managedAccounts = Array.from(new Set(managedAccounts || []));
 
-    function streamArn(tableName) {
-        return {
-            'Fn::GetAtt': [
-                tableName,
-                'StreamArn'
-            ]
-        };
-    }
-
-    function triggerAll(functionName, sourceArn) {
-        return {
-            "Type": "AWS::Lambda::EventSourceMapping",
-            "Properties": {
-                "BatchSize": 25,
-                "Enabled": true,
-                "EventSourceArn": sourceArn,
-                "FunctionName": {
-                    "Ref": functionName
-                },
-                "StartingPosition": "LATEST"
-            }
-        }
-    }
-
     function trigger(functionName, sourceArn) {
-        return Object.assign({ "Condition": "ThisIsMasterAccount" }, triggerAll(functionName, sourceArn));
-    }
-
-    function dependsOnSeq(resources) {
-        function addDependencies(acc, key) {
-            let [[prev,],] = acc;
-            return [
-                [key, Object.assign({ DependsOn: prev }, resources[key])],
-                ...acc
-            ];
-        }
-        function pairsToObject(acc, [key, value]) {
-            acc[key] = value;
-            return acc;
-        }
-        let [head, ...tail] = Object.keys(resources);
-        if (head) {
-            return tail
-                .reduce(addDependencies, [[head, resources[head]]])
-                .reverse()
-                .reduce(pairsToObject, {});
-        } else {
-            return {};
-        }
-    }
+    return Object.assign({ "Condition": "ThisIsMasterAccount" }, triggerAll(functionName, sourceArn));
+}
 
     return {
         "AWSTemplateFormatVersion": "2010-09-09",
@@ -98,6 +57,7 @@ module.exports = function ({ managedAccounts }) {
         "Resources": Object.assign(dependsOnSeq({
             "ConfigEnvironments": {
                 "Type": "AWS::DynamoDB::Table",
+                "Condition": "ThisIsMasterAccount",
                 "Properties": {
                     "AttributeDefinitions": [
                         {
@@ -161,6 +121,7 @@ module.exports = function ({ managedAccounts }) {
             },
             "ConfigServices": {
                 "Type": "AWS::DynamoDB::Table",
+                "Condition": "ThisIsMasterAccount",
                 "Properties": {
                     "AttributeDefinitions": [
                         {
@@ -232,6 +193,7 @@ module.exports = function ({ managedAccounts }) {
             },
             "ConfigDeploymentMaps": {
                 "Type": "AWS::DynamoDB::Table",
+                "Condition": "ThisIsMasterAccount",
                 "Properties": {
                     "AttributeDefinitions": [
                         {
@@ -643,6 +605,7 @@ module.exports = function ({ managedAccounts }) {
             },
             "ConfigEnvironmentTypes": {
                 "Type": "AWS::DynamoDB::Table",
+                "Condition": "ThisIsMasterAccount",
                 "Properties": {
                     "AttributeDefinitions": [
                         {
@@ -857,6 +820,7 @@ module.exports = function ({ managedAccounts }) {
             },
             "InfraConfigAccounts": {
                 "Type": "AWS::DynamoDB::Table",
+                "Condition": "ThisIsMasterAccount",
                 "Properties": {
                     "AttributeDefinitions": [
                         {
@@ -920,6 +884,7 @@ module.exports = function ({ managedAccounts }) {
             },
             "InfraConfigClusters": {
                 "Type": "AWS::DynamoDB::Table",
+                "Condition": "ThisIsMasterAccount",
                 "Properties": {
                     "AttributeDefinitions": [
                         {
@@ -983,6 +948,7 @@ module.exports = function ({ managedAccounts }) {
             },
             "InfraConfigPermissions": {
                 "Type": "AWS::DynamoDB::Table",
+                "Condition": "ThisIsMasterAccount",
                 "Properties": {
                     "AttributeDefinitions": [
                         {
@@ -1046,6 +1012,7 @@ module.exports = function ({ managedAccounts }) {
             },
             "InfraEnvManagerSessions": {
                 "Type": "AWS::DynamoDB::Table",
+                "Condition": "ThisIsMasterAccount",
                 "Properties": {
                     "AttributeDefinitions": [
                         {
@@ -1057,14 +1024,14 @@ module.exports = function ({ managedAccounts }) {
                         {
                             "AttributeName": "UserName",
                             "KeyType": "HASH"
-                        }
+                }
                     ],
                     "ProvisionedThroughput": {
                         "ReadCapacityUnits": 10,
                         "WriteCapacityUnits": 2
                     },
                     "TableName": "InfraEnvManagerSessions"
-                }
+            }
             },
             "AlertReadCapacityInfraEnvManagerSessions": {
                 "Type": "AWS::CloudWatch::Alarm",
@@ -1106,6 +1073,7 @@ module.exports = function ({ managedAccounts }) {
             },
             "InfraOpsEnvironment": {
                 "Type": "AWS::DynamoDB::Table",
+                "Condition": "ThisIsMasterAccount",
                 "Properties": {
                     "AttributeDefinitions": [
                         {

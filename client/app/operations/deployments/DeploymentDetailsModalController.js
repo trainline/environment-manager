@@ -166,6 +166,7 @@ angular.module('EnvironmentManager.operations')
       cachedResources.config.clusters.all().then(function (list) {
         clusters = list;
         updateView(deployment);
+        refreshData();
       });
     }
 
