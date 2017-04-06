@@ -58,9 +58,11 @@ function getAsgByName(req, res, next) {
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     return getASG({
-      accountName,
-      autoScalingGroupName
-    }).then(data => res.json(data)).catch(next);
+        accountName,
+        autoScalingGroupName
+      })
+      .then(data => res.json(data))
+      .catch(next);
   });
 }
 
@@ -139,7 +141,7 @@ function putAsg(req, res, next) {
   const autoScalingGroupName = req.swagger.params.name.value;
 
   const parameters = req.swagger.params.body.value;
-  makePublisher(UpdateAutoScalingGroup, publishUpdateAutoScalingGroup);
+
   UpdateAutoScalingGroup({
       environmentName,
       autoScalingGroupName,
@@ -150,15 +152,9 @@ function putAsg(req, res, next) {
       message: '',
       topic: sns.TOPICS.OPERATIONS_CHANGE,
       attributes: {
-        Environment: {
-          StringValue: environmentName
-        },
-        Action: {
-          StringValue: sns.ACTIONS.PUT
-        },
-        ID: {
-          StringValue: autoScalingGroupName
-        }
+        Environment: environmentName,
+        Action: sns.ACTIONS.PUT,
+        ID: autoScalingGroupName
       }
     }))
     .catch(next);
@@ -184,15 +180,9 @@ function deleteAsg(req, res, next) {
         message: '',
         topic: sns.TOPICS.OPERATIONS_CHANGE,
         attributes: {
-          Environment: {
-            StringValue: environmentName
-          },
-          Action: {
-            StringValue: sns.ACTIONS.DELETE
-          },
-          ID: {
-            StringValue: autoScalingGroupName
-          }
+          Environment: environmentName,
+          Action: sns.ACTIONS.DELETE,
+          ID: autoScalingGroupName
         }
       }))
       .catch(next);
@@ -227,15 +217,9 @@ function putScalingSchedule(req, res, next) {
       message: '',
       topic: sns.TOPICS.OPERATIONS_CHANGE,
       attributes: {
-        Environment: {
-          StringValue: environmentName
-        },
-        Action: {
-          StringValue: sns.ACTIONS.PUT
-        },
-        ID: {
-          StringValue: autoScalingGroupName
-        }
+        Environment: environmentName,
+        Action: sns.ACTIONS.PUT,
+        ID: autoScalingGroupName
       }
     }))
     .catch(next);
@@ -266,15 +250,9 @@ function putAsgSize(req, res, next) {
         message: '',
         topic: sns.TOPICS.OPERATIONS_CHANGE,
         attributes: {
-          Environment: {
-            StringValue: environmentName
-          },
-          Action: {
-            StringValue: sns.ACTIONS.PUT
-          },
-          ID: {
-            StringValue: autoScalingGroupName
-          }
+          Environment: environmentName,
+          Action: sns.ACTIONS.PUT,
+          ID: autoScalingGroupName
         }
       }))
       .catch(next);
@@ -298,20 +276,14 @@ function putAsgLaunchConfig(req, res, next) {
       })
       .then(res.json.bind(res))
       .then(sns.publish({
-      message: '',
-      topic: sns.TOPICS.OPERATIONS_CHANGE,
-      attributes: {
-        Environment: {
-          StringValue: environmentName
-        },
-        Action: {
-          StringValue: sns.ACTIONS.PUT
-        },
-        ID: {
-          StringValue: autoScalingGroupName
+        message: '',
+        topic: sns.TOPICS.OPERATIONS_CHANGE,
+        attributes: {
+          Environment: environmentName,
+          Action: sns.ACTIONS.PUT,
+          ID: autoScalingGroupName
         }
-      }
-    }))
+      }))
       .catch(next);
   });
 }

@@ -27,16 +27,6 @@ describe('Create Event', () => {
       /Missing expected message attribute./);
   });
 
-  it('should fail if any message attributes are incorrect', () => {
-    let event = createLambdaEvent();
-    let invalidAttribute = { DataType: 'asdasdasdasd', StringValue: '' };
-    event.attributes.EnvironmentType = invalidAttribute;
-
-    assert.throws(() => {
-      sut(event);
-    });
-  });
-
   it('should not fail when only the data type is missing, and shoudl default to "String"', () => {
     let event = createLambdaEvent();
     let nonInvalidAttribute = {DataType: null, StringValue: 'Not Empty! Therefore this is valid.'};
@@ -49,7 +39,7 @@ describe('Create Event', () => {
 
   it('should provide a default default timestamp if the attribute is not given explicitly', () => {
     let event = createLambdaEvent();
-    event.EnvironmentType = createAttribute();
+    event.EnvironmentType = 'Environment Type Value';
 
     sut(event);
 
@@ -58,8 +48,8 @@ describe('Create Event', () => {
 
   it('should fail if any of the message attributes are invalid', () => {
     let event = createLambdaEvent();
-    event.attributes.ThisShouldNotBeHere = createAttribute();
-    event.attributes.NeitherShouldThis = createAttribute();
+    event.attributes.ThisShouldNotBeHere = 'This should not be here at all'
+    event.attributes.NeitherShouldThis = 'This is a not the value you are looking for';
 
     assert.throws(() => {
       sut(event);
@@ -89,14 +79,7 @@ function createLambdaEvent() {
   return {
     message: 'This is the message',
     attributes: {
-      EnvironmentType: createAttribute()
+      EnvironmentType: 'Default Environment'
     }
-  };
-}
-
-function createAttribute(DataType = 'String', StringValue = 'StringValueOfAttribute') {
-  return {
-    DataType,
-    StringValue
   };
 }
