@@ -59,3 +59,17 @@ exports.publish = (event) => {
       console.log(reason);
     });
 };
+
+exports.TOPICS = {
+  CONFIGURATION_CHANGE: 'EnvironmentManagerConfigurationChange',
+  OPERATIONS_CHANGE: 'EnvironmentManagerOperationsChange'
+};
+
+exports.ACTIONS = {
+  DELETE: 'delete',
+  REMOVE: 'delete',
+  UPDATE: 'update',
+  PUT: 'update',
+  CREATE: 'create',
+  POST: 'create',
+}

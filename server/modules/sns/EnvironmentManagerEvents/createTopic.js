@@ -14,9 +14,6 @@ function passSafetyNet(name) {
 }
 
 module.exports = (name) => {
-  // eslint-disable-next-line no-console
-  console.log(`Creating topic for ${name}`);
-
   const sns = new aws.SNS();
   const valid = /^[a-zA-Z0-9\-\_]+$/;
 
@@ -34,9 +31,6 @@ module.exports = (name) => {
     if (!passSafetyNet(name)) {
       reject(`Current allowed topics list does not contain ${name}`);
     }
-
-    // eslint-disable-next-line no-console
-    console.log('Passed Create Topic validation steps.');
 
     sns.createTopic({ Name: name }, (err, result) => {
       if (err) reject(err);

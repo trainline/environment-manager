@@ -29,12 +29,31 @@ describe('Create Event', () => {
 
   it('should fail if any message attributes are incorrect', () => {
     let event = createLambdaEvent();
-    let invalidAttribute = { DataType: '', StringValue: '' };
+    let invalidAttribute = { DataType: 'asdasdasdasd', StringValue: '' };
     event.attributes.EnvironmentType = invalidAttribute;
 
     assert.throws(() => {
       sut(event);
     });
+  });
+
+  it('should not fail when only the data type is missing, and shoudl default to "String"', () => {
+    let event = createLambdaEvent();
+    let nonInvalidAttribute = {DataType: null, StringValue: 'Not Empty! Therefore this is valid.'};
+    event.attributes.EnvironmentType = nonInvalidAttribute;
+
+    assert.doesNotThrow(() => {
+      sut(event);
+    });
+  });
+
+  it('should provide a default default timestamp if the attribute is not given explicitly', () => {
+    let event = createLambdaEvent();
+    event.EnvironmentType = createAttribute();
+
+    sut(event);
+
+    assert.ok(event.attributes.Timestamp);
   });
 
   it('should fail if any of the message attributes are invalid', () => {

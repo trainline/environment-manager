@@ -10,7 +10,6 @@ let subnetsProvider = require('modules/provisioning/autoScaling/subnetsProvider'
 let Environment = require('models/Environment');
 let EnvironmentType = require('models/EnvironmentType');
 
-
 function* handler(command) {
   // Validation
   let size = command.parameters.size;
@@ -46,7 +45,9 @@ function* handler(command) {
   // Get a resource instance to work with AutoScalingGroup in the proper
   // AWS account.
   let accountName = yield Environment.getAccountNameForEnvironment(command.environmentName);
-  let resource = yield resourceProvider.getInstanceByName('asgs', { accountName });
+  let resource = yield resourceProvider.getInstanceByName('asgs', {
+    accountName
+  });
 
   let subnets;
 
@@ -54,7 +55,9 @@ function* handler(command) {
   if (!_.isNil(network)) {
     let environment = yield Environment.getByName(command.environmentName);
     let environmentType = yield EnvironmentType.getByName(environment.EnvironmentType);
-    let asg = yield resource.get({ name: command.autoScalingGroupName });
+    let asg = yield resource.get({
+      name: command.autoScalingGroupName
+    });
 
     let currentSubnet = asg.VPCZoneIdentifier.split(',')[0];
     let currentSubnetType = getSubnetTypeBySubnet(environmentType.Subnets, currentSubnet);

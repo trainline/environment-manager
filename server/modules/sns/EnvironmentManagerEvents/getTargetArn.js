@@ -3,9 +3,6 @@
 'use strict';
 
 module.exports = (ResponseMetadata) => {
-  // eslint-disable-next-line no-console
-  console.log('Getting TargetArn from ResponseMetadata');
-
   if (!ResponseMetadata.TopicArn) {
     throw new Error('ResponseMetadata does not contain a TopicArn value to extract.');
   }

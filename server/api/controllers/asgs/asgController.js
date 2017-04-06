@@ -17,6 +17,7 @@ let UpdateAutoScalingGroup = require('commands/asg/UpdateAutoScalingGroup');
 let GetAutoScalingGroupScheduledActions = require('queryHandlers/GetAutoScalingGroupScheduledActions');
 let getASGReady = require('modules/environment-state/getASGReady');
 let Environment = require('models/Environment');
+let sns = require('modules/sns/EnvironmentManagerEvents');
 
 /**
  * GET /asgs
@@ -26,19 +27,25 @@ function getAsgs(req, res, next) {
   const environment = req.swagger.params.environment.value;
 
   return co(function* () {
-    let list;
-    if (environment !== undefined) {
-      let account = yield Environment.getAccountNameForEnvironment(environment);
-      let t = yield getAccountASGs({ accountName: account });
-      list = t.filter(asg => asg.getTag('Environment') === environment);
-    } else if (accountName !== undefined) {
-      list = yield getAccountASGs({ accountName });
-    } else {
-      list = yield getAllASGs();
-    }
+      let list;
+      if (environment !== undefined) {
+        let account = yield Environment.getAccountNameForEnvironment(environment);
+        let t = yield getAccountASGs({
+          accountName: account
+        });
+        list = t.filter(asg => asg.getTag('Environment') === environment);
+      } else if (accountName !== undefined) {
+        list = yield getAccountASGs({
+          accountName
+        });
+      } else {
+        list = yield getAllASGs();
+      }
 
-    res.json(list);
-  }).catch(next);
+      res.json(list);
+    })
+    .catch(next);
+
 }
 
 /**
@@ -50,7 +57,10 @@ function getAsgByName(req, res, next) {
 
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    return getASG({ accountName, autoScalingGroupName }).then(data => res.json(data)).catch(next);
+    return getASG({
+      accountName,
+      autoScalingGroupName
+    }).then(data => res.json(data)).catch(next);
   });
 }
 
@@ -62,7 +72,10 @@ function getAsgReadyByName(req, res, next) {
   const autoScalingGroupName = req.swagger.params.name.value;
   const environmentName = req.swagger.params.environment.value;
 
-  return getASGReady({ autoScalingGroupName, environmentName })
+  return getASGReady({
+      autoScalingGroupName,
+      environmentName
+    })
     .then(data => res.json(data)).catch(next);
 }
 
@@ -77,7 +90,12 @@ function getAsgIps(req, res, next) {
   const exposeAudit = 'version-only';
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    getDynamo({ accountName, key, resource, exposeAudit }).then(data => res.json(data)).catch(next);
+    getDynamo({
+      accountName,
+      key,
+      resource,
+      exposeAudit
+    }).then(data => res.json(data)).catch(next);
   });
 }
 
@@ -90,7 +108,10 @@ function getAsgLaunchConfig(req, res, next) {
 
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    GetLaunchConfiguration({ accountName, autoScalingGroupName }).then(data => res.json(data)).catch(next);
+    GetLaunchConfiguration({
+      accountName,
+      autoScalingGroupName
+    }).then(data => res.json(data)).catch(next);
   });
 }
 
@@ -103,7 +124,10 @@ function getScalingSchedule(req, res, next) {
 
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    GetAutoScalingGroupScheduledActions({ accountName, autoScalingGroupName }).then(data => res.json(data)).catch(next);
+    GetAutoScalingGroupScheduledActions({
+      accountName,
+      autoScalingGroupName
+    }).then(data => res.json(data)).catch(next);
   });
 }
 
@@ -115,13 +139,33 @@ function putAsg(req, res, next) {
   const autoScalingGroupName = req.swagger.params.name.value;
 
   const parameters = req.swagger.params.body.value;
-
-  UpdateAutoScalingGroup({ environmentName, autoScalingGroupName, parameters })
-    .then(data => res.json(data)).catch(next);
+  makePublisher(UpdateAutoScalingGroup, publishUpdateAutoScalingGroup);
+  UpdateAutoScalingGroup({
+      environmentName,
+      autoScalingGroupName,
+      parameters
+    })
+    .then(data => res.json(data))
+    .then(sns.publish({
+      message: '',
+      topic: sns.TOPICS.OPERATIONS_CHANGE,
+      attributes: {
+        Environment: {
+          StringValue: environmentName
+        },
+        Action: {
+          StringValue: sns.ACTIONS.PUT
+        },
+        ID: {
+          StringValue: autoScalingGroupName
+        }
+      }
+    }))
+    .catch(next);
 }
 
 /**
- * PUT /asgs/{name}
+ * DELETE /asgs/{name}
  */
 function deleteAsg(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
@@ -135,7 +179,23 @@ function deleteAsg(req, res, next) {
         res.json({
           Ok: status
         });
-      }).catch(next);
+      })
+      .then(sns.publish({
+        message: '',
+        topic: sns.TOPICS.OPERATIONS_CHANGE,
+        attributes: {
+          Environment: {
+            StringValue: environmentName
+          },
+          Action: {
+            StringValue: sns.ACTIONS.DELETE
+          },
+          ID: {
+            StringValue: autoScalingGroupName
+          }
+        }
+      }))
+      .catch(next);
   });
 }
 
@@ -148,16 +208,37 @@ function putScalingSchedule(req, res, next) {
   const autoScalingGroupName = req.swagger.params.name.value;
 
   return co(function* () {
-    let data = {};
+      let data = {};
 
-    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    let schedule = body.schedule;
-    let propagateToInstances = body.propagateToInstances;
+      let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+      let schedule = body.schedule;
+      let propagateToInstances = body.propagateToInstances;
 
-    data = yield SetAutoScalingGroupSchedule({ accountName, autoScalingGroupName, schedule, propagateToInstances });
+      data = yield SetAutoScalingGroupSchedule({
+        accountName,
+        autoScalingGroupName,
+        schedule,
+        propagateToInstances
+      });
 
-    res.json(data);
-  }).catch(next);
+      res.json(data);
+    })
+    .then(sns.publish({
+      message: '',
+      topic: sns.TOPICS.OPERATIONS_CHANGE,
+      attributes: {
+        Environment: {
+          StringValue: environmentName
+        },
+        Action: {
+          StringValue: sns.ACTIONS.PUT
+        },
+        ID: {
+          StringValue: autoScalingGroupName
+        }
+      }
+    }))
+    .catch(next);
 }
 
 /**
@@ -174,13 +255,29 @@ function putAsgSize(req, res, next) {
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     SetAutoScalingGroupSize({
-      accountName,
-      autoScalingGroupName,
-      autoScalingGroupMinSize,
-      autoScalingGroupDesiredSize,
-      autoScalingGroupMaxSize
-    })
-      .then(data => res.json(data)).catch(next);
+        accountName,
+        autoScalingGroupName,
+        autoScalingGroupMinSize,
+        autoScalingGroupDesiredSize,
+        autoScalingGroupMaxSize
+      })
+      .then(data => res.json(data))
+      .then(sns.publish({
+        message: '',
+        topic: sns.TOPICS.OPERATIONS_CHANGE,
+        attributes: {
+          Environment: {
+            StringValue: environmentName
+          },
+          Action: {
+            StringValue: sns.ACTIONS.PUT
+          },
+          ID: {
+            StringValue: autoScalingGroupName
+          }
+        }
+      }))
+      .catch(next);
   });
 }
 
@@ -194,7 +291,28 @@ function putAsgLaunchConfig(req, res, next) {
 
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    SetLaunchConfiguration({ accountName, autoScalingGroupName, data }).then(res.json.bind(res)).catch(next);
+    SetLaunchConfiguration({
+        accountName,
+        autoScalingGroupName,
+        data
+      })
+      .then(res.json.bind(res))
+      .then(sns.publish({
+      message: '',
+      topic: sns.TOPICS.OPERATIONS_CHANGE,
+      attributes: {
+        Environment: {
+          StringValue: environmentName
+        },
+        Action: {
+          StringValue: sns.ACTIONS.PUT
+        },
+        ID: {
+          StringValue: autoScalingGroupName
+        }
+      }
+    }))
+      .catch(next);
   });
 }
 

@@ -43,7 +43,8 @@ function checkAttributes(event) {
 
   Object.keys(event.attributes).forEach((k) => {
     if (!event.attributes[k].DataType) {
-      throw new Error(`Missing expected Type property of attribute: ${event.attributes[k]}`);
+      event.attributes[k].DataType = 'String'
+      // throw new Error(`Missing expected Type property of attribute: ${event.attributes[k]}`);
     }
     if (!event.attributes[k].StringValue) {
       throw new Error(`Missing expected Value property of attribute: ${event.attributes[k]}`);
@@ -52,6 +53,10 @@ function checkAttributes(event) {
       foundNonValidAttributes.push(k);
     }
   });
+
+  if(!event.attributes['Timestamp']) {
+    event.attributes['Timestamp'] = Date.now().toString()
+  }
 
   if (foundNonValidAttributes.length > 0) {
     throw new Error(`Non valid attributes provided: ${foundNonValidAttributes.join(',')}`);
