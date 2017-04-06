@@ -29,7 +29,7 @@ describe('Create Event', () => {
 
   it('should not fail when only the data type is missing, and shoudl default to "String"', () => {
     let event = createLambdaEvent();
-    let nonInvalidAttribute = {DataType: null, StringValue: 'Not Empty! Therefore this is valid.'};
+    let nonInvalidAttribute = { DataType: null, StringValue: 'Not Empty! Therefore this is valid.' };
     event.attributes.EnvironmentType = nonInvalidAttribute;
 
     assert.doesNotThrow(() => {
@@ -48,7 +48,7 @@ describe('Create Event', () => {
 
   it('should fail if any of the message attributes are invalid', () => {
     let event = createLambdaEvent();
-    event.attributes.ThisShouldNotBeHere = 'This should not be here at all'
+    event.attributes.ThisShouldNotBeHere = 'This should not be here at all';
     event.attributes.NeitherShouldThis = 'This is a not the value you are looking for';
 
     assert.throws(() => {

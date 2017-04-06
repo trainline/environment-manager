@@ -27,25 +27,23 @@ function getAsgs(req, res, next) {
   const environment = req.swagger.params.environment.value;
 
   return co(function* () {
-      let list;
-      if (environment !== undefined) {
-        let account = yield Environment.getAccountNameForEnvironment(environment);
-        let t = yield getAccountASGs({
-          accountName: account
-        });
-        list = t.filter(asg => asg.getTag('Environment') === environment);
-      } else if (accountName !== undefined) {
-        list = yield getAccountASGs({
-          accountName
-        });
-      } else {
-        list = yield getAllASGs();
-      }
+    let list;
+    if (environment !== undefined) {
+      let account = yield Environment.getAccountNameForEnvironment(environment);
+      let t = yield getAccountASGs({
+        accountName: account
+      });
+      list = t.filter(asg => asg.getTag('Environment') === environment);
+    } else if (accountName !== undefined) {
+      list = yield getAccountASGs({
+        accountName
+      });
+    } else {
+      list = yield getAllASGs();
+    }
 
-      res.json(list);
-    })
-    .catch(next);
-
+    res.json(list);
+  }).catch(next);
 }
 
 /**
@@ -58,9 +56,9 @@ function getAsgByName(req, res, next) {
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     return getASG({
-        accountName,
-        autoScalingGroupName
-      })
+      accountName,
+      autoScalingGroupName
+    })
       .then(data => res.json(data))
       .catch(next);
   });
@@ -75,9 +73,9 @@ function getAsgReadyByName(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
 
   return getASGReady({
-      autoScalingGroupName,
-      environmentName
-    })
+    autoScalingGroupName,
+    environmentName
+  })
     .then(data => res.json(data)).catch(next);
 }
 
@@ -143,10 +141,10 @@ function putAsg(req, res, next) {
   const parameters = req.swagger.params.body.value;
 
   UpdateAutoScalingGroup({
-      environmentName,
-      autoScalingGroupName,
-      parameters
-    })
+    environmentName,
+    autoScalingGroupName,
+    parameters
+  })
     .then(data => res.json(data))
     .then(sns.publish({
       message: '',
@@ -198,21 +196,21 @@ function putScalingSchedule(req, res, next) {
   const autoScalingGroupName = req.swagger.params.name.value;
 
   return co(function* () {
-      let data = {};
+    let data = {};
 
-      let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-      let schedule = body.schedule;
-      let propagateToInstances = body.propagateToInstances;
+    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
+    let schedule = body.schedule;
+    let propagateToInstances = body.propagateToInstances;
 
-      data = yield SetAutoScalingGroupSchedule({
-        accountName,
-        autoScalingGroupName,
-        schedule,
-        propagateToInstances
-      });
+    data = yield SetAutoScalingGroupSchedule({
+      accountName,
+      autoScalingGroupName,
+      schedule,
+      propagateToInstances
+    });
 
-      res.json(data);
-    })
+    res.json(data);
+  })
     .then(sns.publish({
       message: '',
       topic: sns.TOPICS.OPERATIONS_CHANGE,
@@ -239,12 +237,12 @@ function putAsgSize(req, res, next) {
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     SetAutoScalingGroupSize({
-        accountName,
-        autoScalingGroupName,
-        autoScalingGroupMinSize,
-        autoScalingGroupDesiredSize,
-        autoScalingGroupMaxSize
-      })
+      accountName,
+      autoScalingGroupName,
+      autoScalingGroupMinSize,
+      autoScalingGroupDesiredSize,
+      autoScalingGroupMaxSize
+    })
       .then(data => res.json(data))
       .then(sns.publish({
         message: '',
@@ -270,10 +268,10 @@ function putAsgLaunchConfig(req, res, next) {
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     SetLaunchConfiguration({
-        accountName,
-        autoScalingGroupName,
-        data
-      })
+      accountName,
+      autoScalingGroupName,
+      data
+    })
       .then(res.json.bind(res))
       .then(sns.publish({
         message: '',

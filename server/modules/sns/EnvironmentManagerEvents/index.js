@@ -8,8 +8,8 @@ const createEvent = require('./createEvent');
 const publishEvent = require('./publishEvent');
 
 /**
- * @param {any} event 
- * 
+ * @param {any} event
+ *
  * event: {
  *  topic: 'string' = topic name,
  *  message: 'string' = message content,
@@ -20,14 +20,14 @@ const publishEvent = require('./publishEvent');
  *    }
  *  }
  * }
- * 
+ *
  * Valid topics:
  * EnvironmentManagerConfigurationChange
  *  optional extras for the topic: EnvironmentManagerConfigurationChange/somethingElse/SomethingElse
  * EnvironmentManagerOperationsChange
  *  optional extras for the topic: EnvironmentManagerOperationsChange/somethingElse/SomethingElse
- * 
- * Valid keys for attributes: 
+ *
+ * Valid keys for attributes:
  *  'EnvironmentType',
     'Environment',
     'OwningCluster',
@@ -37,8 +37,8 @@ const publishEvent = require('./publishEvent');
     'Action',
     'ID',
     'EntityURL'
- * 
- * Example use: 
+ *
+ * Example use:
  * sns.publish({
  *  topic: 'EnvironmentManagerConfigurationChange',
  *  message: 'This is what will be sent as message content to the consumer',
@@ -71,5 +71,5 @@ exports.ACTIONS = {
   UPDATE: 'update',
   PUT: 'update',
   CREATE: 'create',
-  POST: 'create',
-}
+  POST: 'create'
+};

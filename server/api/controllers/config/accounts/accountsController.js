@@ -23,9 +23,9 @@ function postAccountsConfig(req, res, next) {
   const user = req.user;
 
   return addAccount({
-      account,
-      user
-    })
+    account,
+    user
+  })
     .then(() => res.status(201).end())
     .then(sns.publish({
       message: 'POST /config/accounts',
@@ -48,9 +48,9 @@ function putAccountConfigByName(req, res, next) {
   account.AccountNumber = accountNumber; // Prevent attempts to update the key
 
   return updateAccount({
-      account,
-      user
-    })
+    account,
+    user
+  })
     .then(() => res.status(200).end())
     .then(sns.publish({
       message: `PUT /config/accounts/${accountNumber}`,
@@ -71,9 +71,9 @@ function deleteAccountConfigByName(req, res, next) {
   const user = req.user;
 
   return removeAccount({
-      accountNumber,
-      user
-    })
+    accountNumber,
+    user
+  })
     .then(() => res.status(200).end())
     .then(sns.publish({
       message: `Delete /config/accounts/${accountNumber}`,

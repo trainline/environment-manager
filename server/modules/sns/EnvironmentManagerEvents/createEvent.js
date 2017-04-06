@@ -49,8 +49,8 @@ function checkAttributes(event) {
     }
   });
 
-  if (!event.attributes['Timestamp']) {
-    event.attributes['Timestamp'] = turnProvidedValueIntoSnsAttribute(Date.now().toString());
+  if (!event.attributes.Timestamp) {
+    event.attributes.Timestamp = turnProvidedValueIntoSnsAttribute(Date.now().toString());
   }
 
   if (foundNonValidAttributes.length > 0) {
