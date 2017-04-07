@@ -8,6 +8,8 @@ let configEnvironmentTypes = require('modules/data-access/configEnvironmentTypes
 let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMetadataForDynamoAudit;
 let param = require('api/api-utils/requestParam');
 let { versionOf } = require('modules/data-access/dynamoVersion');
+let { hasValue, when } = require('modules/functional');
+let { ifNotFound, notFoundMessage } = require('api/api-utils/ifNotFound');
 
 function keyOf(value) {
   let t = {};
@@ -36,8 +38,10 @@ function getEnvironmentTypesConfig(req, res, next) {
 function getEnvironmentTypeConfigByName(req, res, next) {
   const key = param('name', req);
   return configEnvironmentTypes.get(keyOf(key))
-    .then(convertToApiModel)
-    .then(data => res.json(data)).catch(next);
+    .then(when(hasValue, convertToApiModel))
+    .then(ifNotFound(notFoundMessage('environment type')))
+    .then(send => send(res))
+    .catch(next);
 }
 
 /**

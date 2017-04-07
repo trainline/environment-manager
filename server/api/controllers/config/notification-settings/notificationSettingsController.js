@@ -7,6 +7,8 @@ let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMeta
 let param = require('api/api-utils/requestParam');
 let versionOf = require('modules/data-access/dynamoVersion').versionOf;
 let removeAuditMetadata = require('modules/data-access/dynamoAudit').removeAuditMetadata;
+let { hasValue, when } = require('modules/functional');
+let { ifNotFound, notFoundMessage } = require('api/api-utils/ifNotFound');
 
 function convertToApiModel(persistedModel) {
   let apiModel = removeAuditMetadata(persistedModel);
@@ -31,8 +33,10 @@ function getNotificationSettingsById(req, res, next) {
     NotificationSettingsId: param('id', req)
   };
   return notificationSettings.get(key)
-    .then(convertToApiModel)
-    .then(data => res.json(data)).catch(next);
+    .then(when(hasValue, convertToApiModel))
+    .then(ifNotFound(notFoundMessage('notification setting')))
+    .then(send => send(res))
+    .catch(next);
 }
 
 /**

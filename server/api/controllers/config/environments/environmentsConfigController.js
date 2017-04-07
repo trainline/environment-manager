@@ -23,6 +23,8 @@ let Environment = require('models/Environment');
 let EnvironmentType = require('models/EnvironmentType');
 
 let consul = require('modules/service-targets/consul');
+let { hasValue, when } = require('modules/functional');
+let { ifNotFound, notFoundMessage } = require('api/api-utils/ifNotFound');
 
 function attachMetadata(input) {
   input.Version = versionOf(input);
@@ -66,9 +68,10 @@ function getEnvironmentConfigByName(req, res, next) {
     EnvironmentName: param('name', req)
   };
   return configEnvironments.get(key)
-    .then(attachMetadata)
-    .then(removeAuditMetadata)
-    .then(data => res.json(data))
+    .then(when(hasValue, attachMetadata))
+    .then(when(hasValue, removeAuditMetadata))
+    .then(ifNotFound(notFoundMessage('environment')))
+    .then(send => send(res))
     .catch(next);
 }
 
