@@ -3,57 +3,104 @@
 'use strict';
 
 let _ = require('lodash');
-let co = require('co');
+let Promise = require('bluebird');
+let {
+  assign,
+  flatMap,
+  flatten,
+  isUndefined,
+  map,
+  matches,
+  omitBy,
+  pickBy,
+  reduce,
+  toPairs
+} = require('lodash/fp');
 let GetServerRoles = require('queryHandlers/services/GetServerRoles');
-let getASGState = require('./getASGState');
 let AutoScalingGroup = require('models/AutoScalingGroup');
+let serviceDiscovery = require('modules/service-discovery');
+let { createEC2Client } = require('modules/amazon-client/childAccountClient');
+let { fullyQualifiedServiceNamesFor } = require('modules/environment-state/serverRoleFilters');
+let {
+  compare,
+  currentState,
+  desiredCountOf,
+  desiredState,
+  desiredTopologyOf,
+  instancesOf,
+  instancesRequestFor,
+  summariseComparison } = require('modules/environment-state/healthReporter');
+let { getAccountNameForEnvironment } = require('models/Environment');
 
-function* getServiceHealth({ environmentName, serviceName, slice, serverRole }) {
-  let serviceRoles = (yield GetServerRoles({ environmentName })).Value;
-
-  _.each(serviceRoles, (role) => {
-    role.Services = _.filter(role.Services, { Name: serviceName });
-  });
-  // Remove from the list roles that don't contain requested service
-  serviceRoles = _.filter(serviceRoles, role => _.isEmpty(role.Services) === false);
-
-  if (serviceRoles.length > 1) {
-    if (serverRole !== undefined) {
-      let filterName = serverRole;
-      if (slice !== 'none') {
-        filterName += `-${slice}`;
-      }
-      serviceRoles = _.filter(serviceRoles, { Role: filterName });
-    } else if (slice !== 'none') {
-      serviceRoles = _.filter(serviceRoles, role => role.Role.endsWith(slice));
-    } else {
-      throw new Error(`Multiple roles found for ${slice} ${serviceName} in ${environmentName} ${serverRole}`);
-    }
-  }
-
-  let role = serviceRoles[0];
-  if (role === undefined) {
-    throw new Error(`Could not find ${slice} ${serviceName} in ${environmentName} with role ${serverRole}`);
-  }
-
-  let autoScalingGroups = yield AutoScalingGroup.getAllByServerRoleName(environmentName, role.Role);
-  for (let asg of autoScalingGroups) {
-    let state = yield getASGState(environmentName, asg.AutoScalingGroupName);
-    let services = _.filter(state.Services, { Name: serviceName, Slice: slice });
-
-    if (services.length === 1) {
-      let service = services[0];
-      return {
-        Name: service.Name,
-        InstancesCount: service.InstancesCount,
-        OverallHealth: service.OverallHealth,
-        HealthChecks: service.HealthChecks,
-        Slice: service.Slice
-      };
-    }
-  }
-
-  throw new Error(`Could not find ${slice} ${serviceName} in ${environmentName} ${serverRole}`);
+function getAutoScalingGroups(environmentQualifiedRoleNames) {
+  return Promise.map(environmentQualifiedRoleNames,
+    ({ environment, role }) => AutoScalingGroup.getAllByServerRoleName(environment, role))
+    .then(flatten);
 }
 
-module.exports = co.wrap(getServiceHealth);
+function getHealth(fullyQualifiedServiceNames) {
+  return Promise.map(fullyQualifiedServiceNames, (fullyQualifiedServiceName) => {
+    let [environment, service, slice] = fullyQualifiedServiceName.split('-');
+    let sliceQualifiedServiceName = `${service}${slice ? `-${slice}` : ''}`;
+    return serviceDiscovery.getServiceHealth(environment, sliceQualifiedServiceName);
+  }).then(flatten);
+}
+
+function getInstances(instanceRequests) {
+  let query = instances => ({
+    Filters: [
+      {
+        Name: 'tag:Name',
+        Values: instances
+      }
+    ]
+  });
+  return Promise.map(toPairs(instanceRequests), ([account, instances]) => {
+    let filters = query(instances);
+    return createEC2Client(account)
+      .then(ec2 => ec2.describeInstances(filters).promise());
+  }).then(flatten);
+}
+
+function getDesiredState(filters) {
+  let rolesP = GetServerRoles(filters);
+  let desiredTopologyP = rolesP
+    .then(desiredTopologyOf)
+    .then(pickBy(matches(omitBy(isUndefined)({
+      environment: filters.environmentName,
+      service: filters.serviceName,
+      slice: filters.slice
+    }))));
+  let desiredCountsP = rolesP
+    .then(({ EnvironmentName, Value }) => map(({ Role }) => ({ environment: EnvironmentName, role: Role }))(Value))
+    .then(getAutoScalingGroups)
+    .then(desiredCountOf);
+
+  return Promise.join(desiredTopologyP, desiredCountsP, desiredState);
+}
+
+function getCurrentState(filters) {
+  let fullyQualifiedServiceNames = fullyQualifiedServiceNamesFor(filters);
+  let serviceHealthP = getHealth(fullyQualifiedServiceNames);
+  let instancesP = serviceHealthP
+    .then(serviceHealth => instancesRequestFor(getAccountNameForEnvironment, serviceHealth))
+    .then(getInstances)
+    .then(flatMap(instancesOf))
+    .then(reduce(assign, {}));
+
+  return Promise.join(serviceHealthP, instancesP, currentState);
+}
+
+function getServiceHealth(filters) {
+  let currentStateP = getCurrentState(filters);
+  let desiredStateP = getDesiredState(filters);
+
+  function compareWithSummary(d, c) {
+    let comparison = compare(d, c);
+    return map(service => assign(summariseComparison(service))(service))(comparison);
+  }
+
+  return Promise.join(desiredStateP, currentStateP, compareWithSummary);
+}
+
+module.exports = getServiceHealth;

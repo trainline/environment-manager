@@ -985,9 +985,6 @@ paths:
           in: query
           type: string
           required: true
-        - name: serverRole
-          in: query
-          type: string
         - name: slice
           in: path
           type: string
@@ -998,9 +995,11 @@ paths:
             - none
       responses:
         200:
-          description: The service
+          description: the service status summaries
           schema:
-            type: object
+            type: array
+            items:
+              $ref: '#/definitions/ServiceStatusSummary'
   /services/{service}/slices:
     x-swagger-router-controller: servicesController
     get:
@@ -3232,6 +3231,113 @@ definitions:
       description:
         type: string
         description: A long, human readable description of the error.
+  ServiceStatusSummary:
+    type: object
+    properties:
+      desiredCount:
+        type: number
+        description: the desired number of instances of this service
+        minimum: 0
+      desiredAndHealthyCount:
+        type: number
+        description: the number of instances of the service running on the desired infrastructure with no failing checks
+        minimum: 0
+      undesiredCount:
+        type: number
+        description: the number of instances of the service running but not on the desired infrastructure
+        minimum: 0
+      environment:
+        type: string
+        description: the environment name
+        minLength: 1
+      name:
+        type: string
+        description: the fully-qualified service name
+        minLength: 1
+      orphanedInstances:
+        type: array
+        description: status of the instances running this service but not tagged with any role
+        items:
+          $ref: '#/definitions/ServiceStatusDetail'
+        minLength: 0
+      roles:
+        type: array
+        description: status of the instances running this service and tagged with a role, aggregated by role
+        items:
+          $ref: '#/definitions/ServiceStatusDetail'
+        minLength: 0
+      service:
+        type: string
+        description: the service definition name
+        minLength: 1
+      slice:
+        $ref: '#/definitions/Slice'
+        description: the slice name
+    required:
+      - environment
+      - name
+      - orphaned-instances
+      - roles
+      - service
+      - slice
+  ServiceStatusDetail:
+    type: object
+    properties:
+      failing-checks:
+        type: array
+        description: items describing any failing health checks
+        items:
+          $ref: '#/definitions/HealthCheck'
+        minLength: 0
+      healthyCount:
+        type: integer
+        description: the number of instances of the service with no failing checks
+        minimum: 0
+      desiredCount:
+        type: integer
+        description: the desired number of instances of this service
+        minimum: 0
+      unhealthyCount:
+        type: integer
+        description: the number of instances of the service with one or more failing checks
+        minimum: 0
+      name:
+        type: string
+        description: the name of the server role or instance
+    required:
+      - failing-checks
+      - healthyCount
+      - desiredSize
+      - unhealthyCount
+      - name
+  HealthCheck:
+    type: object
+    properties:
+      CheckID:
+        type: string
+        description: Check identifier
+        minLength: 1
+      Node:
+        type: string
+        description: the name of the instance covered by the check
+        minLength: 1
+      Status:
+        type: string
+        description: the status of the check
+        enum:
+          - critical
+          - warning
+    required:
+      - CheckID
+      - Node
+      - Status
+  Slice:
+    type: string
+    enum:
+      - blue
+      - green
+      - none
+
 parameters:
   ExpectedVersionHeader:
     name: expected-version

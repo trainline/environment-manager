@@ -5,6 +5,7 @@
 let {
   getAllServices,
   getService,
+  getServiceHealth,
   getAllNodes,
   getNode,
   getNodeHealth
@@ -13,6 +14,7 @@ let {
 module.exports = {
   getAllServices,
   getService,
+  getServiceHealth,
   getAllNodes,
   getNode,
   getNodeHealth
