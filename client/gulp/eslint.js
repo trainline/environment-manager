@@ -18,4 +18,3 @@ gulp.task('lint-fix', function () {
     .pipe(eslint.failAfterError())
     .pipe(gulp.dest('./app'));
 });
-
