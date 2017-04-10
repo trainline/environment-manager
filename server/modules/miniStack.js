@@ -10,6 +10,8 @@ const FILE_LOCATION_REGEXP = /\((.*)(:[0-9]+:[0-9]+)\)/;
 const LINE_FILTER_REGEXP = /^\s*at\s+/i;
 const NOT_MY_CODE_REGEXP = /(node_modules)|(\([^\\\/]+:[0-9]+:[0-9]+\))|(\(native\))/;
 
+const path = require('path');
+
 let isMyCode = line => !NOT_MY_CODE_REGEXP.test(line);
 
 let enteredMyCode = (line, prev) => isMyCode(line) && !isMyCode(prev);
@@ -80,5 +82,11 @@ function create({ contextLines, filePathTransform }) {
 
   return minimize;
 }
+
+create.build = () => {
+  let basePath = path.dirname(require.resolve('package.json'));
+  let filePathTransform = fullPath => path.relative(basePath, fullPath);
+  return create({ contextLines: 0, filePathTransform });
+};
 
 module.exports = create;

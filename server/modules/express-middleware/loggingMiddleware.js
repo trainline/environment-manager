@@ -8,7 +8,6 @@
 
 const fp = require('lodash/fp');
 const miniStack = require('modules/miniStack');
-const path = require('path');
 
 let redactSecrets = fp.cloneDeepWith((value, key) => (/password/i.test(key) ? '********' : undefined));
 
@@ -31,11 +30,7 @@ let tryParse = (str) => {
   }
 };
 
-let mini = (() => {
-  let basePath = path.dirname(require.resolve('package.json'));
-  let filePathTransform = fullPath => path.relative(basePath, fullPath);
-  return miniStack({ contextLines: 0, filePathTransform });
-})();
+let mini = miniStack.build();
 
 let loggerMiddleware = logger => (req, res, next) => {
   let log = () => {
