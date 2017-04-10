@@ -27,13 +27,19 @@ const miniStack = require('modules/miniStack');
 const mini = miniStack.build();
 
 process.on('unhandledRejection', (err, promise) => {
-  let entry = {
-    error: {
-      message: fp.get(['message'])(err),
-      stack: fp.compose(fp.truncate({ length: 1400 }), mini, fp.get(['stack']))(err)
-    },
-    eventtype: 'UnhandledRejection'
-  };
+  let entry;
+  if (err instanceof Error) {
+    entry = {
+      error: {
+        message: fp.get(['message'])(err),
+        stack: fp.compose(fp.truncate({ length: 1400 }), mini, fp.get(['stack']))(err)
+      },
+      eventtype: 'UnhandledRejection'
+    };
+  } else {
+    entry = err;
+  }
+
   logger.warn('Promise rejection was unhandled: ', entry);
 });
 
