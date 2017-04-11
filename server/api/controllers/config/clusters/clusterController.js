@@ -9,6 +9,7 @@ let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMeta
 let param = require('api/api-utils/requestParam');
 let versionOf = require('modules/data-access/dynamoVersion').versionOf;
 let removeAuditMetadata = require('modules/data-access/dynamoAudit').removeAuditMetadata;
+const sns = require('modules/sns/EnvironmentManagerEvents');
 
 function keyOf(value) {
   let t = {};
@@ -49,7 +50,17 @@ function postClustersConfig(req, res, next) {
   let metadata = getMetadataForDynamoAudit(req);
   let record = Object.assign({}, body);
   delete record.Version;
-  return clusters.create({ record, metadata }).then(() => res.status(201).end()).catch(next);
+  return clusters.create({ record, metadata })
+    .then(() => res.status(201).end())
+    .then(sns.publish({
+      message: 'POST /config/clusters',
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.POST,
+        ID: ''
+      }
+    }))
+    .catch(next);
 }
 
 /**
@@ -66,6 +77,14 @@ function putClusterConfigByName(req, res, next) {
 
   return clusters.replace({ record, metadata }, expectedVersion)
     .then(() => res.status(200).end())
+    .then(sns.publish({
+      message: `Put /config/clusters/${key}`,
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.PUT,
+        ID: key
+      }
+    }))
     .catch(next);
 }
 
@@ -80,7 +99,16 @@ function deleteClusterConfigByName(req, res, next) {
   let metadata = getMetadataForDynamoAudit(req);
 
   return clusters.delete({ key, metadata }, expectedVersion)
-    .then(() => res.status(200).end()).catch(next);
+    .then(() => res.status(200).end())
+    .then(sns.publish({
+      message: `Delete /config/clsuters/${key}`,
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.DELETE,
+        ID: clusterName
+      }
+    }))
+    .catch(next);
 }
 
 module.exports = {

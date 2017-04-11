@@ -7,6 +7,7 @@ let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMeta
 let param = require('api/api-utils/requestParam');
 let versionOf = require('modules/data-access/dynamoVersion').versionOf;
 let removeAuditMetadata = require('modules/data-access/dynamoAudit').removeAuditMetadata;
+const sns = require('modules/sns/EnvironmentManagerEvents');
 
 function convertToApiModel(persistedModel) {
   let apiModel = removeAuditMetadata(persistedModel);
@@ -43,34 +44,66 @@ function postNotificationSettings(req, res, next) {
   let metadata = getMetadataForDynamoAudit(req);
   let record = Object.assign({}, body);
   delete record.Version;
-  return notificationSettings.create({ record, metadata }).then(data => res.json(data)).catch(next);
+  return notificationSettings.create({ record, metadata })
+    .then(data => res.json(data))
+    .then(sns.publish({
+      message: 'Post /config/notification-settings',
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.POST,
+        ID: ''
+      }
+    }))
+    .catch(next);
 }
 
 /**
  * PUT /config/notification-settings/{id}
  */
 function putNotificationSettingsById(req, res, next) {
+  let notificationSettingsId = param('id', req);
   let key = {
-    NotificationSettingsId: param('id', req)
+    NotificationSettingsId: notificationSettingsId
   };
   let body = param('body', req);
   let expectedVersion = param('expected-version', req);
   let metadata = getMetadataForDynamoAudit(req);
   let record = Object.assign({}, key, { Value: body });
   delete record.Version;
-  return notificationSettings.replace({ record, metadata }, expectedVersion).then(data => res.json(data)).catch(next);
+  return notificationSettings.replace({ record, metadata }, expectedVersion)
+    .then(data => res.json(data))
+    .then(sns.publish({
+      message: `Put /config/notification-settings/${notificationSettingsId}`,
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.PUT,
+        ID: notificationSettingsId
+      }
+    }))
+    .catch(next);
 }
 
 /**
  * DELETE /config/notification-settings/{id}
  */
 function deleteNotificationSettingsById(req, res, next) {
+  let notificationSettingsId = param('id', req);
   let key = {
-    NotificationSettingsId: param('id', req)
+    NotificationSettingsId: notificationSettingsId
   };
   let expectedVersion = param('expected-version', req);
   let metadata = getMetadataForDynamoAudit(req);
-  return notificationSettings.delete({ key, metadata }, expectedVersion).then(data => res.json(data)).catch(next);
+  return notificationSettings.delete({ key, metadata }, expectedVersion)
+    .then(data => res.json(data))
+    .then(sns.publish({
+      message: `Put /config/notification-settings/${notificationSettingsId}`,
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.DELETE,
+        ID: notificationSettingsId
+      }
+    }))
+    .catch(next);
 }
 
 module.exports = {

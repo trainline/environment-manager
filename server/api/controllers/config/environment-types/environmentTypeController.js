@@ -8,6 +8,7 @@ let configEnvironmentTypes = require('modules/data-access/configEnvironmentTypes
 let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMetadataForDynamoAudit;
 let param = require('api/api-utils/requestParam');
 let { versionOf } = require('modules/data-access/dynamoVersion');
+const sns = require('modules/sns/EnvironmentManagerEvents');
 
 function keyOf(value) {
   let t = {};
@@ -50,6 +51,14 @@ function postEnvironmentTypesConfig(req, res, next) {
   delete record.Version;
   return configEnvironmentTypes.create({ record, metadata })
     .then(() => res.status(201).end())
+    .then(sns.publish({
+      message: 'Post /config/environment-types',
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.POST,
+        ID: ''
+      }
+    }))
     .catch(next);
 }
 
@@ -67,6 +76,14 @@ function putEnvironmentTypeConfigByName(req, res, next) {
 
   return configEnvironmentTypes.replace({ record, metadata }, expectedVersion)
     .then(() => res.status(200).end())
+    .then(sns.publish({
+      message: `Put /config/environment-types/${key}`,
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.PUT,
+        ID: key
+      }
+    }))
     .catch(next);
 }
 
@@ -80,7 +97,16 @@ function deleteEnvironmentTypeConfigByName(req, res, next) {
   let metadata = getMetadataForDynamoAudit(req);
 
   return configEnvironmentTypes.delete({ key, metadata })
-    .then(() => res.status(200).end()).catch(next);
+    .then(() => res.status(200).end())
+    .then(sns.publish({
+      message: `Delete /config/environment-types/${clusterName}`,
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.DELETE,
+        ID: clusterName
+      }
+    }))
+    .catch(next);
 }
 
 module.exports = {

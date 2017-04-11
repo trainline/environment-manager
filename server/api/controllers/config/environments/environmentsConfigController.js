@@ -23,6 +23,7 @@ let Environment = require('models/Environment');
 let EnvironmentType = require('models/EnvironmentType');
 
 let consul = require('modules/service-targets/consul');
+const sns = require('modules/sns/EnvironmentManagerEvents');
 
 function attachMetadata(input) {
   input.Version = versionOf(input);
@@ -87,6 +88,14 @@ function postEnvironmentsConfig(req, res, next) {
     opsEnvironment.create({ record: opsEnv, metadata })
   ])
     .then(() => res.status(201).end())
+    .then(sns.publish({
+      message: 'Post /config/environments',
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.POST,
+        ID: ''
+      }
+    }))
     .catch(next);
 }
 
@@ -94,8 +103,9 @@ function postEnvironmentsConfig(req, res, next) {
  * PUT /config/environments/{name}
  */
 function putEnvironmentConfigByName(req, res, next) {
+  let environmentName = param('name', req);
   let key = {
-    EnvironmentName: param('name', req)
+    EnvironmentName: environmentName
   };
   let expectedVersion = param('expected-version', req);
   let body = param('body', req);
@@ -104,6 +114,14 @@ function putEnvironmentConfigByName(req, res, next) {
 
   return configEnvironments.replace({ record, metadata }, expectedVersion)
     .then(() => res.status(200).end())
+    .then(sns.publish({
+      message: `Put /config/clusters/${environmentName}`,
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.PUT,
+        ID: environmentName
+      }
+    }))
     .catch(next);
 }
 
@@ -130,7 +148,16 @@ function deleteEnvironmentConfigByName(req, res, next) {
     yield opsEnvironment.delete({ key, metadata });
     yield configEnvironments.delete({ key, metadata });
     res.status(200).end();
-  }).catch(next);
+  })
+    .then(sns.publish({
+      message: `Delete /config/environments/${environmentName}`,
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.DELETE,
+        ID: environmentName
+      }
+    }))
+    .catch(next);
 }
 
 function deleteConsulKeyValuePairs(environmentName) {
