@@ -7,6 +7,9 @@ angular.module('EnvironmentManager.common').factory('UpstreamConfig',
     var baseUrl = '/api/v1/config/upstreams';
 
     function UpstreamConfig(data) {
+      data.Value.Hosts.sort(function (a, b) {
+        return a.DnsName.localeCompare(b.DnsName);
+      });
       _.assign(this, data);
     }
 
