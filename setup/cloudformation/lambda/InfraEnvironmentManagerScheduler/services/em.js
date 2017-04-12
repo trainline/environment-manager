@@ -20,7 +20,7 @@ function createEMService(config) {
     });
   }
 
-  function getScheduledInstanceActions(account) {
+  function getScheduledInstanceActions() {
     return co(function*() {
     
       if (!token) {
@@ -28,7 +28,7 @@ function createEMService(config) {
       }
 
       let jsonResponse = yield request({
-        uri: `${config.host}/api/v1/instances/schedule-actions?account=${account}`,
+        uri: `${config.host}/api/v1/instances/schedule-actions?account=${config.awsAccount}`,
         rejectUnauthorized: false,
         headers: {
           authorization: `bearer ${token}`

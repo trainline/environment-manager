@@ -4,10 +4,9 @@
 let config = require('./config.json');
 let schedulerFactory = require('../scheduler.js');
 
-let account = 'enter-em-account-name';
-let scheduler = schedulerFactory.create(account, config);
+let scheduler = schedulerFactory.create(config);
 
-scheduler
-  .doScheduling()
-  .then(result => { console.log(JSON.stringify(result, null, 2)); })
-  .catch(err => { console.log(JSON.stringify(err, null, 2)); });
+let write = result => console.log(JSON.stringify(result, null, 2));
+
+scheduler.doScheduling()
+  .then(write).catch(write);
