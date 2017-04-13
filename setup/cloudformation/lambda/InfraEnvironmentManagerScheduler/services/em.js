@@ -3,7 +3,7 @@
 let co = require('co');
 let request = require('request-promise');
 
-function createEMService(config) {
+function createEMService(awsAccount, config) {
 
   let token;
 
@@ -28,7 +28,7 @@ function createEMService(config) {
       }
 
       let jsonResponse = yield request({
-        uri: `${config.host}/api/v1/instances/schedule-actions?account=${config.awsAccount}`,
+        uri: `${config.host}/api/v1/instances/schedule-actions?account=${awsAccount}`,
         rejectUnauthorized: false,
         headers: {
           authorization: `bearer ${token}`

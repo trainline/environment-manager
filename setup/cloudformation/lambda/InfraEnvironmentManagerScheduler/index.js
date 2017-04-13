@@ -1,60 +1,37 @@
 ﻿/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
-let process = require('process');
+let co = require('co');
+
 let schedulerFactory = require('./scheduler.js');
+let environment = require('./environment.js');
+let awsFactory = require('./services/aws');
+let emFactory = require('./services/em');
+
+let config;
 
 exports.handler = (event, context, callback) => {
-  let config = getEnvironmentConfig(context);
-  let scheduler = schedulerFactory.create(config);
+  return co(function* () {
+    let awsConfig = getAwsConfigFromContext(context);
+    let aws = awsFactory.create({ region: awsConfig.region });
 
-  doSafely(scheduler.doScheduling)
-  .then((result) => {
+    if (!config) config = yield environment.getConfig(aws.kms);
+    
+    let em = emFactory.create(awsConfig.account, config.em);
+
+    let scheduler = schedulerFactory.create(config, em, aws.ec2);
+    let result = yield scheduler.doScheduling();
+
     if (result.success) {
       callback(null, logSuccess(result));
     } else {
       if (config.errorOnFailure) callback(logError('Scheduling Failure', result));
       else callback(null, logError('Scheduling Failure', result));
     }
-  })
-  .catch(err => {
-    callback(logError('Unhandled Exception', err));
-  });
+  }).catch(err => callback(logError('Unhandled Exception', err)));
 };
 
-function getEnvironmentConfig(context) {
-  let IGNORE_ASG_INSTANCES = hasValue(process.env.IGNORE_ASG_INSTANCES, 'true');
-  let LIST_SKIPPED_INSTANCES = hasValue(process.env.LIST_SKIPPED_INSTANCES, 'true');
-  let WHAT_IF = hasValue(process.env.WHAT_IF, 'true');
-  let ERROR_ON_FAILURE = !hasValue(process.env.ERROR_ON_FAILURE, 'false');
-
-  let aws = getAwsDetailsFromContext(context);
-
-  return {
-    aws: {
-      region: aws.region
-    },
-    em: {
-      host: process.env.EM_HOST,
-      awsAccount: aws.account,
-      credentials: {
-        username: process.env.EM_USERNAME,
-        password: process.env.EM_PASSWORD
-      }
-    },
-    limitToEnvironment: process.env.LIMIT_TO_ENVIRONMENT,
-    ignoreASGInstances: IGNORE_ASG_INSTANCES,
-    listSkippedInstances: LIST_SKIPPED_INSTANCES,
-    whatIf: WHAT_IF,
-    errorOnFailure: ERROR_ON_FAILURE
-  };
-}
-
-function hasValue(val, testVal) {
-  return !!val && val.trim().toLowerCase() === testVal.trim().toLowerCase();
-}
-
-function getAwsDetailsFromContext(context) {
+function getAwsConfigFromContext(context) {
   let arn = context.invokedFunctionArn.split(':');
   return { region: arn[3], account: arn[4] };
 }
@@ -65,11 +42,6 @@ function logSuccess(result) {
 }
 
 function logError(err, details) {
-  console.error(JSON.stringify({ err, details }, null, 2));
+  console.error(JSON.stringify({ err, details: details.stack || details }, null, 2));
   return `ERROR: ${err}. See logs for more details.`;
-}
-
-function doSafely(fn) {
-  try { return fn(); }
-  catch (err) { return Promise.reject(err); }
 }

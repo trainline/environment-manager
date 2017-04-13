@@ -72,12 +72,25 @@ function createAWSService(config) {
     });
   }
 
+  function decrypt(cyphertext) {
+    let kms = new AWS.KMS();
+    return new Promise((resolve, reject) => {
+      kms.decrypt({ CiphertextBlob: new Buffer(cyphertext, 'base64') }, (err, data) => {
+        if (err) reject(err);
+        else resolve(data.Plaintext.toString('ascii'));
+      });
+    });
+  }
+
   return {
     ec2: {
       switchInstancesOn,
       switchInstancesOff,
       putAsgInstancesInService,
       putAsgInstancesInStandby
+    },
+    kms: {
+      decrypt
     }
   };
 

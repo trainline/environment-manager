@@ -2,9 +2,16 @@
 'use strict'
 
 let config = require('./config.json');
-let schedulerFactory = require('../scheduler.js');
+let awsFactory = require('../services/aws');
+let emFactory = require('../services/em');
+let schedulerFactory = require('../scheduler');
 
-let scheduler = schedulerFactory.create(config);
+let awsConfig = { account: 'enter-account-name', region: 'eu-west-1' };
+
+let aws = awsFactory.create({ region: awsConfig.region });
+let em = emFactory.create(awsConfig.account, config.em);
+
+let scheduler = schedulerFactory.create(config, em, aws.ec2);
 
 let write = result => console.log(JSON.stringify(result, null, 2));
 
