@@ -14,7 +14,7 @@ var ROLE_NAME         = process.env.ROLE_NAME;
 var masterAccount = JSON.parse(process.env.MASTER_ACCOUNT);
 masterAccount.tables = JSON.parse(process.env.MASTER_ACCOUNT_TABLES);
 
-var childAccounts = JSON.parse(process.env.CHILD_ACCOUNT);
+var childAccounts = JSON.parse(process.env.CHILD_ACCOUNTS);
 var childAccountTables = JSON.parse(process.env.CHILD_ACCOUNT_TABLES);
 childAccounts.forEach(account => account.tables = childAccountTables);
 
