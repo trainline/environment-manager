@@ -5,10 +5,21 @@ var AWS          = require('aws-sdk'),
     S3           = new AWS.S3(),
     STS          = new AWS.STS(),
     async        = require('async'),
-    DynamoTables = require('./DynamoTables');
+    process      = require('process');
 
-var S3_BACKUP_BUCKET = "tl-backups-prod";
-var ROLE_NAME        = 'roleInfraEnvironmentManagerBackup';
+var S3_BACKUP_BUCKET  = process.env.S3_BACKUP_BUCKET;
+var S3_PATH           = process.env.S3_PATH;
+var ROLE_NAME         = process.env.ROLE_NAME;
+
+var masterAccount = JSON.parse(process.env.MASTER_ACCOUNT);
+masterAccount.tables = JSON.parse(process.env.MASTER_ACCOUNT_TABLES);
+
+var childAccounts = JSON.parse(process.env.CHILD_ACCOUNT);
+var childAccountTables = JSON.parse(process.env.CHILD_ACCOUNT_TABLES);
+childAccounts.forEach(account => account.tables = childAccountTables);
+
+var DynamoTables = require('./DynamoTables')(masterAccount, childAccounts, S3_PATH);
+
 var BYTE             = 1;
 var KB               = 1024 * BYTE;
 var MB               = 1024 * KB;

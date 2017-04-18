@@ -12,7 +12,7 @@ function getDatestamp(date) {
   return result;
 }
 
-function getDynamoTableBackupFilename(dynamoTable) {
+function getDynamoTableBackupFilename(dynamoTable, bucketPath) {
   var datestamp = getDatestamp(new Date());
 
   var filename = [
@@ -23,15 +23,14 @@ function getDynamoTableBackupFilename(dynamoTable) {
   ].join('_') + '.json';
 
   var result = [
-    'Infra',
-    'EnvironmentManager',
+    bucketPath,
     filename
   ].join('/');
 
   return result;
 };
 
-function DynamoTable(name, account, stringifier) {
+function DynamoTable(name, account, stringifier, bucketPath) {
   var $this = this;
 
   $this.name      = name;
@@ -43,7 +42,7 @@ function DynamoTable(name, account, stringifier) {
   };
 
   $this.toBackupFilename = function() {
-    return getDynamoTableBackupFilename($this);
+    return getDynamoTableBackupFilename($this, bucketPath);
   };
 
 }
