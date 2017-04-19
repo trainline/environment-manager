@@ -71,5 +71,6 @@ exports.ACTIONS = {
   UPDATE: 'update',
   PUT: 'update',
   CREATE: 'create',
-  POST: 'create'
+  POST: 'create',
+  PATCH: 'patch'
 };
