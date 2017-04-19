@@ -71,8 +71,8 @@ function deleteTargetStateByServiceVersion(req, res, next) {
       topic: sns.TOPICS.OPERATIONS_CHANGE,
       attributes: {
         Action: sns.ACTIONS.DELETE,
-        ID: environmentName,
-        EnvironmentName: `${environmentName}/${serviceName}/${serviceVersion}`
+        EnvironmentName: environmentName,
+        ID: `${environmentName}/${serviceName}/${serviceVersion}`
       }
     }))
     .catch(next);
