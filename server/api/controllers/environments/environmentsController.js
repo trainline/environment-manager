@@ -13,6 +13,7 @@ let _ = require('lodash');
 let opsEnvironment = require('modules/data-access/opsEnvironment');
 let param = require('api/api-utils/requestParam');
 let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMetadataForDynamoAudit;
+const sns = require('modules/sns/EnvironmentManagerEvents');
 
 /**
  * GET /environments
@@ -67,8 +68,9 @@ function getDeploymentLock(req, res, next) {
  * PUT /environments/{name}/deploy-lock
  */
 function putDeploymentLock(req, res, next) {
+  let environmentName = param('name', req);
   let key = {
-    EnvironmentName: param('name', req)
+    EnvironmentName: environmentName
   };
   let expectedVersion = param('expected-version', req);
   let metadata = getMetadataForDynamoAudit(req);
@@ -77,7 +79,17 @@ function putDeploymentLock(req, res, next) {
   let isLocked = input.DeploymentsLocked;
 
   return opsEnvironment.setDeploymentLock({ key, metadata, isLocked }, expectedVersion)
-    .then(data => res.json(data)).catch(next);
+    .then(data => res.json(data))
+    .then(sns.publish({
+      message: `PUT /environments/${environmentName}/deploy-lock`,
+      topic: sns.TOPICS.OPERATIONS_CHANGE,
+      attributes: {
+        Environment: environmentName,
+        Action: sns.ACTIONS.PUT,
+        ID: environmentName
+      }
+    }))
+    .catch(next);
 }
 
 /**
@@ -102,8 +114,9 @@ function getMaintenance(req, res, next) {
  * PUT /environments/{name}/maintenance
  */
 function putMaintenance(req, res, next) {
+  let environmentName = param('name', req);
   let key = {
-    EnvironmentName: param('name', req)
+    EnvironmentName: environmentName
   };
   let expectedVersion = param('expected-version', req);
   let metadata = getMetadataForDynamoAudit(req);
@@ -112,7 +125,17 @@ function putMaintenance(req, res, next) {
   let isInMaintenance = input.InMaintenance;
 
   return opsEnvironment.setMaintenance({ key, metadata, isInMaintenance }, expectedVersion)
-    .then(data => res.json(data)).catch(next);
+    .then(data => res.json(data))
+    .then(sns.publish({
+      message: `PUT /environments/${environmentName}/maintenance`,
+      topic: sns.TOPICS.OPERATIONS_CHANGE,
+      attributes: {
+        Environment: environmentName,
+        Action: sns.ACTIONS.PUT,
+        ID: environmentName
+      }
+    }))
+    .catch(next);
 }
 
 /**
@@ -170,8 +193,9 @@ function getEnvironmentSchedule(req, res, next) {
  * PUT /environments/{name}/schedule
  */
 function putEnvironmentSchedule(req, res, next) {
+  let environmentName = param('name', req);
   let key = {
-    EnvironmentName: param('name', req)
+    EnvironmentName: environmentName
   };
   let expectedVersion = param('expected-version', req);
   let metadata = getMetadataForDynamoAudit(req);
@@ -179,7 +203,17 @@ function putEnvironmentSchedule(req, res, next) {
   let schedule = req.swagger.params.body.value;
 
   return opsEnvironment.setSchedule({ key, metadata, schedule }, expectedVersion)
-    .then(data => res.json(data)).catch(next);
+    .then(data => res.json(data))
+    .then(sns.publish({
+      message: `PUT /environments/${environmentName}/schedule`,
+      topic: sns.TOPICS.OPERATIONS_CHANGE,
+      attributes: {
+        Environment: environmentName,
+        Action: sns.ACTIONS.PUT,
+        ID: environmentName
+      }
+    }))
+    .catch(next);
 }
 
 

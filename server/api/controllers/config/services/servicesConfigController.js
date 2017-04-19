@@ -7,7 +7,7 @@ let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMeta
 let param = require('api/api-utils/requestParam');
 let versionOf = require('modules/data-access/dynamoVersion').versionOf;
 let removeAuditMetadata = require('modules/data-access/dynamoAudit').removeAuditMetadata;
-const sns = require('modules/sns/EnvironmentManager');
+const sns = require('modules/sns/EnvironmentManagerEvents');
 
 function convertToApiModel(persistedModel) {
   let apiModel = removeAuditMetadata(persistedModel);
