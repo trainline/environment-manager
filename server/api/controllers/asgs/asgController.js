@@ -147,7 +147,7 @@ function putAsg(req, res, next) {
   })
     .then(data => res.json(data))
     .then(sns.publish({
-      message: '',
+      message: `PUT /asgs/${autoScalingGroupName}`,
       topic: sns.TOPICS.OPERATIONS_CHANGE,
       attributes: {
         Environment: environmentName,
@@ -175,7 +175,7 @@ function deleteAsg(req, res, next) {
         });
       })
       .then(sns.publish({
-        message: '',
+        message: `DELETE /asgs/${autoScalingGroupName}`,
         topic: sns.TOPICS.OPERATIONS_CHANGE,
         attributes: {
           Environment: environmentName,
@@ -212,7 +212,7 @@ function putScalingSchedule(req, res, next) {
     res.json(data);
   })
     .then(sns.publish({
-      message: '',
+      message: `PUT /asgs/${autoScalingGroupName}/scaling-schedule`,
       topic: sns.TOPICS.OPERATIONS_CHANGE,
       attributes: {
         Environment: environmentName,
@@ -245,7 +245,7 @@ function putAsgSize(req, res, next) {
     })
       .then(data => res.json(data))
       .then(sns.publish({
-        message: '',
+        message: `PUT /asgs/${autoScalingGroupName}/size`,
         topic: sns.TOPICS.OPERATIONS_CHANGE,
         attributes: {
           Environment: environmentName,
@@ -274,7 +274,7 @@ function putAsgLaunchConfig(req, res, next) {
     })
       .then(res.json.bind(res))
       .then(sns.publish({
-        message: '',
+        message: `PUT /asgs/${autoScalingGroupName}/launch-config`,
         topic: sns.TOPICS.OPERATIONS_CHANGE,
         attributes: {
           Environment: environmentName,
