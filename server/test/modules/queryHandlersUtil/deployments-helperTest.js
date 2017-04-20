@@ -5,7 +5,6 @@
 require('should');
 let proxyquire = require('proxyquire').noCallThru();
 let sinon = require('sinon');
-let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
 
 function commonStubs() {
   return {
@@ -21,12 +20,12 @@ function commonStubs() {
 
 describe('deployments-helper', () => {
   describe('queryDeployment', () => {
-    it('throws an error if the deployment is not found', () => {
+    it('returns null if the deployment is not found', () => {
       let get = sinon.spy(() => Promise.resolve(null));
       let sut = proxyquire('modules/queryHandlersUtil/deployments-helper', Object.assign(commonStubs(), {
         'modules/data-access/deployments': { get }
       }));
-      return sut.get({ key: '' }).should.be.rejectedWith(ResourceNotFoundError);
+      return sut.get({ key: '' }).should.finally.be.null();
     });
 
     it('returns a deployment with unknown number of expected nodes', () => {

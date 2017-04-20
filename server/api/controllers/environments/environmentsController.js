@@ -13,6 +13,10 @@ let _ = require('lodash');
 let opsEnvironment = require('modules/data-access/opsEnvironment');
 let param = require('api/api-utils/requestParam');
 let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMetadataForDynamoAudit;
+let { when } = require('modules/functional');
+let { ifNotFound, notFoundMessage } = require('api/api-utils/ifNotFound');
+
+let environmentNotFound = notFoundMessage('environment');
 
 /**
  * GET /environments
@@ -30,8 +34,11 @@ function getEnvironments(req, res, next) {
 function getEnvironmentByName(req, res, next) {
   const environmentName = req.swagger.params.name.value;
 
-  OpsEnvironment.getByName(environmentName).then(env => env.toAPIOutput())
-    .then(data => res.json(data)).catch(next);
+  OpsEnvironment.getByName(environmentName)
+    .then(when(env => !env.isNothing(), env => env.toAPIOutput()))
+    .then(ifNotFound(environmentNotFound))
+    .then(send => send(res))
+    .catch(next);
 }
 
 /**

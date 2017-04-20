@@ -9,6 +9,7 @@ let sender = require('modules/sender');
 let Enums = require('Enums');
 let activeDeploymentsStatusProvider = require('modules/monitoring/activeDeploymentsStatusProvider');
 let deploymentLogger = require('modules/DeploymentLogger');
+let { ifNotFound, notFoundMessage } = require('api/api-utils/ifNotFound');
 
 /**
  * GET /deployments
@@ -31,7 +32,9 @@ function getDeploymentById(req, res, next) {
   const key = req.swagger.params.id.value;
 
   return deploymentsHelper.get({ key })
-    .then(data => res.json(data)).catch(next);
+    .then(ifNotFound(notFoundMessage('deployment')))
+    .then(send => send(res))
+    .catch(next);
 }
 
 /**
