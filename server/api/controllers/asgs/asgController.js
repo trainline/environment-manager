@@ -50,8 +50,8 @@ function getAsgByName(req, res, next) {
 
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    return getASG({ accountName, autoScalingGroupName }).then(data => res.json(data)).catch(next);
-  });
+    return getASG({ accountName, autoScalingGroupName }).then(data => res.json(data));
+  }).catch(next);
 }
 
 
@@ -77,8 +77,8 @@ function getAsgIps(req, res, next) {
   const exposeAudit = 'version-only';
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    getDynamo({ accountName, key, resource, exposeAudit }).then(data => res.json(data)).catch(next);
-  });
+    getDynamo({ accountName, key, resource, exposeAudit }).then(data => res.json(data));
+  }).catch(next);
 }
 
 /**
@@ -90,8 +90,8 @@ function getAsgLaunchConfig(req, res, next) {
 
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    GetLaunchConfiguration({ accountName, autoScalingGroupName }).then(data => res.json(data)).catch(next);
-  });
+    GetLaunchConfiguration({ accountName, autoScalingGroupName }).then(data => res.json(data));
+  }).catch(next);
 }
 
 /**
@@ -103,8 +103,8 @@ function getScalingSchedule(req, res, next) {
 
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    GetAutoScalingGroupScheduledActions({ accountName, autoScalingGroupName }).then(data => res.json(data)).catch(next);
-  });
+    GetAutoScalingGroupScheduledActions({ accountName, autoScalingGroupName }).then(data => res.json(data));
+  }).catch(next);
 }
 
 /**
@@ -135,8 +135,8 @@ function deleteAsg(req, res, next) {
         res.json({
           Ok: status
         });
-      }).catch(next);
-  });
+      });
+  }).catch(next);
 }
 
 /**
@@ -180,8 +180,8 @@ function putAsgSize(req, res, next) {
       autoScalingGroupDesiredSize,
       autoScalingGroupMaxSize
     })
-      .then(data => res.json(data)).catch(next);
-  });
+      .then(data => res.json(data));
+  }).catch(next);
 }
 
 /**
@@ -194,8 +194,8 @@ function putAsgLaunchConfig(req, res, next) {
 
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    SetLaunchConfiguration({ accountName, autoScalingGroupName, data }).then(res.json.bind(res)).catch(next);
-  });
+    SetLaunchConfiguration({ accountName, autoScalingGroupName, data }).then(res.json.bind(res));
+  }).catch(next);
 }
 
 module.exports = {
