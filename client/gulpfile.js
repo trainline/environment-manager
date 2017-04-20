@@ -15,7 +15,6 @@ fs.readdirSync('./gulp').filter(function(file) {
   require('./gulp/' + file);
 });
 
-
 /**
  *  Default task clean temporaries directories and launch the
  *  main optimization build task

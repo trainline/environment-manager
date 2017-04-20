@@ -22,8 +22,25 @@ let cacheManager = require('modules/cacheManager');
 let co = require('co');
 let awsAccounts = require('modules/awsAccounts');
 
-process.on('unhandledRejection', (reason, promise) => {
-  logger.warn('Promise rejection was unhandled. ', reason);
+const fp = require('lodash/fp');
+const miniStack = require('modules/miniStack');
+const mini = miniStack.build();
+
+process.on('unhandledRejection', (err, promise) => {
+  let entry;
+  if (err instanceof Error) {
+    entry = {
+      error: {
+        message: fp.get(['message'])(err),
+        stack: fp.compose(fp.truncate({ length: 1400 }), mini, fp.get(['stack']))(err)
+      },
+      eventtype: 'UnhandledRejection'
+    };
+  } else {
+    entry = err;
+  }
+
+  logger.warn('Promise rejection was unhandled: ', entry);
 });
 
 let servers;

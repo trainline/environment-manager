@@ -11,6 +11,10 @@ let overallServiceHealth = require('modules/environment-state/getOverallServiceH
 let metadata = require('commands/utils/metadata');
 let Environment = require('models/Environment');
 
+function isEmptyResponse(data) {
+  return Array.isArray(data) && data.length === 0;
+}
+
 let co = require('co');
 let _ = require('lodash');
 
@@ -59,7 +63,9 @@ function getServiceById(req, res, next) {
   const environment = req.swagger.params.environment.value;
   const serviceName = req.swagger.params.service.value;
 
-  return serviceDiscovery.getService(environment, serviceName).then(data => res.json(data)).catch(next);
+  return serviceDiscovery.getService(environment, serviceName)
+    .then(data => (isEmptyResponse(data) ? res.status(404).send(JSON.stringify({ error: 'Service not found.' })) : res.json(data)))
+    .catch(next);
 }
 
 /**

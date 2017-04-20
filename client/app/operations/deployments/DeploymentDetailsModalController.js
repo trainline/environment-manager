@@ -27,9 +27,9 @@ function deploymentView(deploymentRecord, clusters, expectedNodes) {
   function createDiffString(startTime, endTime) {
     var diff = moment.duration(endTime.diff(startTime));
     var duration = [
-      _.pad(diff.get('hours'), 2, 0), 
-      _.pad(diff.get('minutes'), 2, 0), 
-      _.pad(diff.get('seconds'), 2, 0)].join(':');
+      _.padStart(diff.get('hours'), 2, 0), 
+      _.padStart(diff.get('minutes'), 2, 0), 
+      _.padStart(diff.get('seconds'), 2, 0)].join(':');
     return duration;
   }
 

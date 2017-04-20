@@ -3,10 +3,11 @@
 
 const AWS = require('aws-sdk');
 const crypto = require('crypto');
+const process = require('process');
 
-const DESTINATION_ACCOUNT_ID = ''; // Assign the AWS Account ID of your Environment Manager master account
-const DESTINATION_TABLE_NAME = 'InfraChangeAudit';
-const WRITER_ROLE_NAME = 'roleInfraEnvironmentManagerAuditWriter';
+const DESTINATION_ACCOUNT_ID = process.env.DESTINATION_ACCOUNT_ID; // Assign the AWS Account ID of your Environment Manager master account
+const DESTINATION_TABLE_NAME = process.env.DESTINATION_TABLE_NAME;
+const WRITER_ROLE_NAME = process.env.WRITER_ROLE_NAME;
 
 /* See example of string matched by DYNAMO_STREAM_ARN_REGEX below:
 /* arn:aws:dynamodb:us-west-2:account-id:table/ExampleTableWithStream/stream/2015-06-27T00:48:05.899
