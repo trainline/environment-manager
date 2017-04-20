@@ -25,7 +25,12 @@
             </td>
             <td><health-checks list="service.HealthChecks" ></health-checks></td>
             <!-- <td>{{ service.DeploymentCause }}</td> -->
-            <td><a ng-if="vm.showLogLink(service)" ng-href="{{ service.LogLink }}" target="_blank">View Log</a></td>
+            <td>
+              <a ng-if="vm.showLogLink(service)" ng-href="{{ service.LogLink }}" target="_blank">View Log</a>
+              <span ng-if="!vm.showLogLink(service)">
+                <span class="glyphicon glyphicon-question-sign" title="An error has occurred prior to logs becoming available."></span>
+              </span>
+            </td>
           </tr>
         </tbody>
       </table>
