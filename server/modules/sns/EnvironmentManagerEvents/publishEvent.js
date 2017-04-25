@@ -6,9 +6,6 @@ let aws = require('aws-sdk');
 aws.config.update({ region: 'eu-west-1' });
 
 module.exports = (event) => {
-  // eslint-disable-next-line no-console
-  console.log('About to publish the event.');
-
   if (!event.TargetArn) {
     throw new Error('An event to be published must contain a TargetArn property.');
   }

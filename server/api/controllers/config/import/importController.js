@@ -6,6 +6,7 @@ let _ = require('lodash');
 
 let sender = require('modules/sender');
 let awsAccounts = require('modules/awsAccounts');
+const sns = require('modules/sns/EnvironmentManagerEvents');
 
 /**
  * PUT /config/import/{resource}
@@ -39,7 +40,17 @@ function putResourceImport(req, res, next) {
         accountName
       };
 
-      sender.sendCommand({ command, user }).then(data => res.json(data)).catch(next);
+      sender.sendCommand({ command, user })
+        .then(data => res.json(data))
+        .then(sns.publish({
+          message: `Put /config/import/${req.swagger.params.resource.value}`,
+          topic: sns.TOPICS.CONFIGURATION_CHANGE,
+          attributes: {
+            Action: sns.ACTIONS.PUT,
+            ID: req.swagger.params.resource.value
+          }
+        }))
+        .catch(next);
     });
 }
 

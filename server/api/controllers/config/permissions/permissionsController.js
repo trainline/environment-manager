@@ -4,6 +4,7 @@
 
 const RESOURCE = 'config/permissions';
 let dynamoHelper = new (require('api/api-utils/DynamoHelper'))(RESOURCE);
+const sns = require('modules/sns/EnvironmentManagerEvents');
 
 /**
  * GET /config/permissions
@@ -28,7 +29,17 @@ function postPermissionsConfig(req, res, next) {
   let user = req.user;
   let key = body.Name;
 
-  return dynamoHelper.create(key, { Permissions: body.Permissions }, user).then(data => res.json(data)).catch(next);
+  return dynamoHelper.create(key, { Permissions: body.Permissions }, user)
+    .then(data => res.json(data))
+    .then(sns.publish({
+      message: 'Post /config/permissions',
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.POST,
+        ID: ''
+      }
+    }))
+    .catch(next);
 }
 
 /**
@@ -40,7 +51,17 @@ function putPermissionConfigByName(req, res, next) {
   let expectedVersion = req.swagger.params['expected-version'].value;
   let user = req.user;
 
-  return dynamoHelper.update(key, { Permissions: body }, expectedVersion, user).then(data => res.json(data)).catch(next);
+  return dynamoHelper.update(key, { Permissions: body }, expectedVersion, user)
+    .then(data => res.json(data))
+    .then(sns.publish({
+      message: `Put /config/permissions/${key}`,
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.PUT,
+        ID: key
+      }
+    }))
+    .catch(next);
 }
 
 /**
@@ -49,7 +70,17 @@ function putPermissionConfigByName(req, res, next) {
 function deletePermissionConfigByName(req, res, next) {
   let key = req.swagger.params.name.value;
   let user = req.user;
-  return dynamoHelper.delete(key, user).then(data => res.json(data)).catch(next);
+  return dynamoHelper.delete(key, user)
+    .then(data => res.json(data))
+    .then(sns.publish({
+      message: `Put /config/permissions/${key}`,
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.DELETE,
+        ID: key
+      }
+    }))
+    .catch(next);
 }
 
 module.exports = {

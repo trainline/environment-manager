@@ -42,18 +42,25 @@ function checkAttributes(event) {
   let foundNonValidAttributes = [];
 
   Object.keys(event.attributes).forEach((k) => {
-    if (!event.attributes[k].DataType) {
-      throw new Error(`Missing expected Type property of attribute: ${event.attributes[k]}`);
-    }
-    if (!event.attributes[k].StringValue) {
-      throw new Error(`Missing expected Value property of attribute: ${event.attributes[k]}`);
-    }
     if (!validAttrs.includes(k)) {
       foundNonValidAttributes.push(k);
+    } else {
+      event.attributes[k] = turnProvidedValueIntoSnsAttribute(event.attributes[k]);
     }
   });
+
+  if (!event.attributes.Timestamp) {
+    event.attributes.Timestamp = turnProvidedValueIntoSnsAttribute(Date.now().toString());
+  }
 
   if (foundNonValidAttributes.length > 0) {
     throw new Error(`Non valid attributes provided: ${foundNonValidAttributes.join(',')}`);
   }
+}
+
+function turnProvidedValueIntoSnsAttribute(value) {
+  return {
+    DataType: 'String',
+    StringValue: value
+  };
 }

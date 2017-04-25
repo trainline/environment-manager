@@ -9,6 +9,7 @@ const SORT_KEY = 'VHostName';
 let co = require('co');
 let dynamoHelper = new (require('api/api-utils/DynamoHelper'))(RESOURCE);
 let Environment = require('models/Environment');
+const sns = require('modules/sns/EnvironmentManagerEvents');
 
 /**
  * GET /config/lb-settings
@@ -50,7 +51,17 @@ function postLBSettingsConfig(req, res, next) {
   co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     return dynamoHelper.createWithSortKey(environmentName, vHostName, { Value: body.Value }, user, { accountName });
-  }).then(() => res.status(201).end()).catch(next);
+  })
+    .then(() => res.status(201).end())
+    .then(sns.publish({
+      message: 'Post /config/lb-settings',
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.POST,
+        ID: ''
+      }
+    }))
+    .catch(next);
 }
 
 /**

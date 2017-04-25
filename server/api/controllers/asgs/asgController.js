@@ -17,6 +17,7 @@ let UpdateAutoScalingGroup = require('commands/asg/UpdateAutoScalingGroup');
 let GetAutoScalingGroupScheduledActions = require('queryHandlers/GetAutoScalingGroupScheduledActions');
 let getASGReady = require('modules/environment-state/getASGReady');
 let Environment = require('models/Environment');
+let sns = require('modules/sns/EnvironmentManagerEvents');
 
 /**
  * GET /asgs
@@ -29,10 +30,14 @@ function getAsgs(req, res, next) {
     let list;
     if (environment !== undefined) {
       let account = yield Environment.getAccountNameForEnvironment(environment);
-      let t = yield getAccountASGs({ accountName: account });
+      let t = yield getAccountASGs({
+        accountName: account
+      });
       list = t.filter(asg => asg.getTag('Environment') === environment);
     } else if (accountName !== undefined) {
-      list = yield getAccountASGs({ accountName });
+      list = yield getAccountASGs({
+        accountName
+      });
     } else {
       list = yield getAllASGs();
     }
@@ -62,7 +67,10 @@ function getAsgReadyByName(req, res, next) {
   const autoScalingGroupName = req.swagger.params.name.value;
   const environmentName = req.swagger.params.environment.value;
 
-  return getASGReady({ autoScalingGroupName, environmentName })
+  return getASGReady({
+    autoScalingGroupName,
+    environmentName
+  })
     .then(data => res.json(data)).catch(next);
 }
 
@@ -79,6 +87,7 @@ function getAsgIps(req, res, next) {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     getDynamo({ accountName, key, resource, exposeAudit }).then(data => res.json(data));
   }).catch(next);
+
 }
 
 /**
@@ -116,12 +125,26 @@ function putAsg(req, res, next) {
 
   const parameters = req.swagger.params.body.value;
 
-  UpdateAutoScalingGroup({ environmentName, autoScalingGroupName, parameters })
-    .then(data => res.json(data)).catch(next);
+  UpdateAutoScalingGroup({
+    environmentName,
+    autoScalingGroupName,
+    parameters
+  })
+    .then(data => res.json(data))
+    .then(sns.publish({
+      message: `PUT /asgs/${autoScalingGroupName}`,
+      topic: sns.TOPICS.OPERATIONS_CHANGE,
+      attributes: {
+        Environment: environmentName,
+        Action: sns.ACTIONS.PUT,
+        ID: autoScalingGroupName
+      }
+    }))
+    .catch(next);
 }
 
 /**
- * PUT /asgs/{name}
+ * DELETE /asgs/{name}
  */
 function deleteAsg(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
@@ -135,8 +158,18 @@ function deleteAsg(req, res, next) {
         res.json({
           Ok: status
         });
-      });
-  }).catch(next);
+      })
+      .then(sns.publish({
+        message: `DELETE /asgs/${autoScalingGroupName}`,
+        topic: sns.TOPICS.OPERATIONS_CHANGE,
+        attributes: {
+          Environment: environmentName,
+          Action: sns.ACTIONS.DELETE,
+          ID: autoScalingGroupName
+        }
+      }))
+      .catch(next);
+  });
 }
 
 /**
@@ -154,10 +187,25 @@ function putScalingSchedule(req, res, next) {
     let schedule = body.schedule;
     let propagateToInstances = body.propagateToInstances;
 
-    data = yield SetAutoScalingGroupSchedule({ accountName, autoScalingGroupName, schedule, propagateToInstances });
+    data = yield SetAutoScalingGroupSchedule({
+      accountName,
+      autoScalingGroupName,
+      schedule,
+      propagateToInstances
+    });
 
     res.json(data);
-  }).catch(next);
+  })
+    .then(sns.publish({
+      message: `PUT /asgs/${autoScalingGroupName}/scaling-schedule`,
+      topic: sns.TOPICS.OPERATIONS_CHANGE,
+      attributes: {
+        Environment: environmentName,
+        Action: sns.ACTIONS.PUT,
+        ID: autoScalingGroupName
+      }
+    }))
+    .catch(next);
 }
 
 /**
@@ -180,8 +228,18 @@ function putAsgSize(req, res, next) {
       autoScalingGroupDesiredSize,
       autoScalingGroupMaxSize
     })
-      .then(data => res.json(data));
-  }).catch(next);
+      .then(data => res.json(data))
+      .then(sns.publish({
+        message: `PUT /asgs/${autoScalingGroupName}/size`,
+        topic: sns.TOPICS.OPERATIONS_CHANGE,
+        attributes: {
+          Environment: environmentName,
+          Action: sns.ACTIONS.PUT,
+          ID: autoScalingGroupName
+        }
+      }))
+      .catch(next);
+  });
 }
 
 /**
@@ -194,8 +252,23 @@ function putAsgLaunchConfig(req, res, next) {
 
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    SetLaunchConfiguration({ accountName, autoScalingGroupName, data }).then(res.json.bind(res));
-  }).catch(next);
+    SetLaunchConfiguration({
+      accountName,
+      autoScalingGroupName,
+      data
+    })
+      .then(res.json.bind(res))
+      .then(sns.publish({
+        message: `PUT /asgs/${autoScalingGroupName}/launch-config`,
+        topic: sns.TOPICS.OPERATIONS_CHANGE,
+        attributes: {
+          Environment: environmentName,
+          Action: sns.ACTIONS.PUT,
+          ID: autoScalingGroupName
+        }
+      }))
+      .catch(next);
+  });
 }
 
 module.exports = {

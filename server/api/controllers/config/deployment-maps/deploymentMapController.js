@@ -7,6 +7,7 @@ let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMeta
 let param = require('api/api-utils/requestParam');
 let versionOf = require('modules/data-access/dynamoVersion').versionOf;
 let removeAuditMetadata = require('modules/data-access/dynamoAudit').removeAuditMetadata;
+const sns = require('modules/sns/EnvironmentManagerEvents');
 let { hasValue, when } = require('modules/functional');
 let { ifNotFound, notFoundMessage } = require('api/api-utils/ifNotFound');
 
@@ -55,6 +56,14 @@ function postDeploymentMapsConfig(req, res, next) {
   delete record.Version;
   return deploymentMaps.create({ record, metadata })
     .then(() => res.status(201).end())
+    .then(sns.publish({
+      message: 'Post /config/deployment-maps',
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.POST,
+        ID: ''
+      }
+    }))
     .catch(next);
 }
 
@@ -72,6 +81,14 @@ function putDeploymentMapConfigByName(req, res, next) {
 
   return deploymentMaps.replace({ record, metadata }, expectedVersion)
     .then(() => res.status(200).end())
+    .then(sns.publish({
+      message: `Put /config/deployment-maps/${key}`,
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.PUT,
+        ID: key
+      }
+    }))
     .catch(next);
 }
 
@@ -84,6 +101,14 @@ function deleteDeploymentMapConfigByName(req, res, next) {
 
   return deploymentMaps.delete({ key, metadata })
     .then(() => res.status(200).end())
+    .then(sns.publish({
+      message: `Delete /config/deployment-maps/${key}`,
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.DELETE,
+        ID: key
+      }
+    }))
     .catch(next);
 }
 
