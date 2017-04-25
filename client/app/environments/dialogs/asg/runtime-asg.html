@@ -2,47 +2,25 @@
   <label class="col-md-2 control-label text-left nowrap">Size:</label>
   <div class="col-md-8">
     <label class="control-label text-left nonbold inline">Min:</label>
-    <input class="form-control inline"
-      type="number"
-      name="MinInstances"
-      min="0"
-      max="100"
-      step="1"
-      required=""
-      ng-model="vm.asgUpdate.MinSize"
+    <input class="form-control inline" type="number" name="MinInstances" min="0" max="100" step="1" required="" ng-model="vm.asgUpdate.MinSize"
       ng-readonly="!canUser('edit')" />
     <label class="control-label text-left nonbold inline">Desired:</label>
-    <input class="form-control inline"
-      name="NumberOfInstances"
-      type="number"
-      min="0"
-      max="100"
-      step="1"
-      required=""
-      ng-model="vm.asgUpdate.DesiredCapacity"
+    <input class="form-control inline" name="NumberOfInstances" type="number" min="0" max="100" step="1" required="" ng-model="vm.asgUpdate.DesiredCapacity"
       ng-readonly="!canUser('edit')" />
     <label class="control-label text-left nonbold inline">Max:</label>
-    <input class="form-control inline"
-      name="MaxInstances"
-      type="number"
-      min="0"
-      max="100"
-      step="1"
-      required=""
-      ng-model="vm.asgUpdate.MaxSize"
+    <input class="form-control inline" name="MaxInstances" type="number" min="0" max="100" step="1" required="" ng-model="vm.asgUpdate.MaxSize"
       ng-readonly="!canUser('edit')" />
   </div>
 </div>
 <div class="form-group has-error" ng-if="vm.asgUpdate.MinSize > 0">
   <div class="col-md-8 col-md-offset-2">
     <div class="help-block">
-      Note: The recommended Min Size is 0.<br />
-      The Scheduler will not switch off instances when an ASG reaches its minimum size.
+      Note: The recommended Min Size is 0.<br /> The Scheduler will not switch off instances when an ASG reaches its minimum
+      size.
     </div>
   </div>
 </div>
-<div class="form-group has-error"
-  ng-if="settingsForm.MinInstances.$invalid || 
+<div class="form-group has-error" ng-if="settingsForm.MinInstances.$invalid || 
   settingsForm.NumberOfInstances.$invalid || 
   settingsForm.MaxInstances.$invalid ||
   vm.asgUpdate.DesiredCapacity < vm.asgUpdate.MinSize ||
@@ -64,7 +42,8 @@
 </div>
 <div class="form-group" ng-if="vm.asgUpdate.DesiredCapacity < vm.asg.DesiredCapacity && vm.canResize()">
   <div class="col-md-offset-2 col-md-8">
-    <p>Note: During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection draining before termination.</p>
+    <p>Note: During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection draining before
+      termination.</p>
   </div>
 </div>
 <div class="form-group">
@@ -72,13 +51,7 @@
   <div class="col-md-6">
     <div style="margin-top: 6px;">
       <div style="float: left; margin-right: 10px;" ng-disabled="!vm.canUser('edit')" ng-repeat="az in vm.deploymentAzsList">
-        <input
-          type="checkbox"
-          name="{{az}}-checkbox"
-          value="{{az}}"
-          ng-checked="vm.isAZChecked(az)"
-          ng-click="vm.toggleAZSelection(az)"
-          > {{az}}
+        <input type="checkbox" name="{{az}}-checkbox" value="{{az}}" ng-checked="vm.isAZChecked(az)" ng-click="vm.toggleAZSelection(az)">        {{az}}
       </div>
       <span class="error" ng-if="!vm.asgUpdate.AvailabilityZone.length">At least one zone must be selected.</span>
     </div>
@@ -97,15 +70,9 @@
             </div>
             <div ng-if="az.active" class="node" ng-repeat="node in az.nodes" ng-class="{ old: node.isOld, protected: node.isProtected }">
               {{ node.id }}
-              <span
-                ng-if="node.isOld"
-                class="glyphicon glyphicon-warning-sign"
-                title="This instance does not use the latest launch config">
+              <span ng-if="node.isOld" class="glyphicon glyphicon-warning-sign" title="This instance does not use the latest launch config">
               </span>
-              <span
-                ng-if="node.isProtected"
-                class="glyphicon glyphicon-lock"
-                title="This instance is protected from scale-in">
+              <span ng-if="node.isProtected" class="glyphicon glyphicon-lock" title="This instance is protected from scale-in">
               </span>
             </div>
           </div>
@@ -114,7 +81,14 @@
     </div>
     <p style="margin-top: 15px">
       <strong>Please Note:</strong> AWS will always keep instances balanced across availability zones. <br />
-      Make sure that the minimum number of required up-to-date instances are present in each AZ before using scale-in to remove out-of-date instances. Protected instances are never terminated!
     </p>
+    <p>
+      Make sure that the minimum number of required up-to-date instances are present in each AZ before using scale-in to remove
+      out-of-date instances.
+    </p>
+    <p>
+      Instances with <strong>Instance Protection</strong> are never terminated!
+    </p>
+    <aside><strong>Termination Protection</strong> within AWS console will not prevent the instance from being terminated when scaling-in.</aside>
   </div>
 </div>
