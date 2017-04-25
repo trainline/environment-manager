@@ -87,7 +87,6 @@ function getAsgIps(req, res, next) {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     getDynamo({ accountName, key, resource, exposeAudit }).then(data => res.json(data));
   }).catch(next);
-
 }
 
 /**
@@ -167,9 +166,8 @@ function deleteAsg(req, res, next) {
           Action: sns.ACTIONS.DELETE,
           ID: autoScalingGroupName
         }
-      }))
-      .catch(next);
-  });
+      }));
+  }).catch(next);
 }
 
 /**
@@ -237,9 +235,8 @@ function putAsgSize(req, res, next) {
           Action: sns.ACTIONS.PUT,
           ID: autoScalingGroupName
         }
-      }))
-      .catch(next);
-  });
+      }));
+  }).catch(next);
 }
 
 /**
@@ -266,9 +263,8 @@ function putAsgLaunchConfig(req, res, next) {
           Action: sns.ACTIONS.PUT,
           ID: autoScalingGroupName
         }
-      }))
-      .catch(next);
-  });
+      }));
+  }).catch(next);
 }
 
 module.exports = {
