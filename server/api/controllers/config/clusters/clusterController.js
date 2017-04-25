@@ -10,6 +10,8 @@ let param = require('api/api-utils/requestParam');
 let versionOf = require('modules/data-access/dynamoVersion').versionOf;
 let removeAuditMetadata = require('modules/data-access/dynamoAudit').removeAuditMetadata;
 const sns = require('modules/sns/EnvironmentManagerEvents');
+let { hasValue, when } = require('modules/functional');
+let { ifNotFound, notFoundMessage } = require('api/api-utils/ifNotFound');
 
 function keyOf(value) {
   let t = {};
@@ -38,8 +40,10 @@ function getClustersConfig(req, res, next) {
 function getClusterConfigByName(req, res, next) {
   const key = param('name', req);
   return clusters.get(keyOf(key))
-    .then(convertToApiModel)
-    .then(data => res.json(data)).catch(next);
+    .then(when(hasValue, convertToApiModel))
+    .then(ifNotFound(notFoundMessage('cluster')))
+    .then(send => send(res))
+    .catch(next);
 }
 
 /**

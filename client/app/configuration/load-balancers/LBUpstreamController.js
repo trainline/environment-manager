@@ -1,189 +1,91 @@
-/* TODO: enable linting and fix resulting errors */
-/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
-'use strict';
-
-// Manage specific Upstream
 angular.module('EnvironmentManager.configuration').controller('LBUpstreamController',
-  function ($scope, $routeParams, $location, $q, resources, cachedResources, modal, accountMappingService, UpstreamConfig) {
-    $scope.LBUpstream = {};
-    $scope.NewHostDefault = { DnsName: '', Port: null, FailTimeout: '30s', MaxFails: null, State: 'down', Weight: 1 };
-    $scope.NewHost = angular.copy($scope.NewHostDefault);
-    $scope.CopyFromName = '';
-    $scope.PageError = '';
-    $scope.PageMode = 'Edit'; // Edit, New, Copy
-    $scope.DataFound = false;
+  function ($routeParams, $q, $location, cachedResources, modal, accountMappingService, UpstreamConfig, UpstreamViewModel) {
+    var vm = this;
 
-    $scope.AddingHost = false;
-    $scope.ServicesList = [];
-    $scope.EnvironmentsList = [];
+    var env = $routeParams.up_environment;
+    var mode = $routeParams.mode ? $routeParams.mode : 'Edit';
 
-    var ReturnPath = '/config/upstreams/'; // Plus Environment name to get back to the previous selection
+    var isNewMode = mode === 'New';
+    var isEditMode = mode === 'Edit';
+
+    vm.view = new UpstreamViewModel({ mode: mode, user: window.user, environment: env });
 
     function init() {
-      var mode = $routeParams.mode;
-      var env = $routeParams.up_environment;
-      var key = $routeParams.key;
-      var returnPath = $routeParams.returnPath;
-
-      if (key) key = decodeURIComponent(key);
-      if (returnPath) ReturnPath = decodeURIComponent(returnPath);
-
-      $q.all([
-        cachedResources.config.environments.all().then(function (environments) {
-          $scope.EnvironmentsList = _.map(environments, 'EnvironmentName').sort();
-        }),
-
-        cachedResources.config.services.all().then(function (services) {
-          $scope.Services = services;
-          $scope.ServicesList = _.map(services, 'ServiceName').sort();
-        })
-      ]).then(function () {
-        $scope.PageMode = mode ? mode : 'Edit';
-        if ($scope.PageMode == 'Edit' || $scope.PageMode == 'Copy') {
-          if (!key || !env) {
-            $scope.DataFound = false;
-          } else {
-            accountMappingService.getAccountForEnvironment(env).then(function (accountName) {
-              UpstreamConfig.getByKey(key, accountName).then(function (data) {
-                $scope.LBUpstream = data;
-                updateSelectedService();
-
-                if ($scope.PageMode == 'Copy') {
-                  data.key = '';
-                  $scope.CopyFromName = data.Value.UpstreamName;
-                  data.Value.UpstreamName = '';
-                }
-
-                // Sort hosts by DNS
-                data.Value.Hosts.sort(function (a, b) {
-                  return a.DnsName.localeCompare(b.DnsName);
-                });
-
-                $scope.DataFound = true;
-
-                if ($scope.PageMode == 'Edit') {
-                  $scope.userHasPermission = user.hasPermission({ access: 'PUT', resource: '/' + accountName + '/config/lbupstream/' + key });
-                } else {
-                  $scope.userHasPermission = user.hasPermission({ access: 'POST', resource: '/*/config/lbupstream/**' });
-                }
-              });
-            });
-          }
-        } else {
-          $scope.LBUpstream = UpstreamConfig.createWithDefaults(env);
-          $scope.userHasPermission = user.hasPermission({ access: 'POST', resource: '/*/config/lbupstream/**' });
-        }
+      return $q.all([
+        cachedResources.config.environments.all(),
+        cachedResources.config.services.all(),
+        fetchOrCreateUpstream()
+      ]).then(function (results) {
+        var data = { environments: results[0], services: results[1], upstream: results[2] };
+        vm.upstream = data.upstream;
+        vm.view.init(data);
+      }).catch(function () {
+        vm.backToSummary();
       });
     }
 
-    function updateSelectedService() {
-      $scope.SelectedService = _.find($scope.Services, function (service) {
-        return service.ServiceName === $scope.LBUpstream.Value.ServiceName;
-      });
-    }
+    vm.addHost = function () {
+      if (!vm.view.newHostIsValid()) return;
 
-    $scope.$watch('LBUpstream.Value.ServiceName', updateSelectedService);
-
-    $scope.canUser = function () {
-      return $scope.userHasPermission;
+      vm.upstream.Value.Hosts.push(angular.copy(vm.view.newHost));
+      vm.view.clearNewHostEditor();
     };
 
-    $scope.Save = function () {
-      var upstreamValue = $scope.LBUpstream.Value;
+    vm.deleteHost = function (selectedHost) {
+      _.pull(vm.upstream.Value.Hosts, selectedHost);
+    };
 
-      if ($scope.PageMode != 'Edit' && !_.startsWith(upstreamValue.UpstreamName, upstreamValue.EnvironmentName + '-')) {
-        $scope.PageError = 'Upstream Name must begin with the selected Environment and a dash';
+    vm.save = function () {
+      if (!isEditMode && !_.startsWith(vm.upstream.Value.UpstreamName, vm.upstream.Value.EnvironmentName + '-')) {
+        vm.view.showValidationError('Upstream Name must begin with the selected Environment and a dash');
         return;
       }
 
-      var key = $scope.LBUpstream.key;
-      if ($scope.PageMode != 'Edit') {
-        // Auto-generate key from environment and upstream names
-        key = '/' + upstreamValue.EnvironmentName + '_' + upstreamValue.UpstreamName + '/config';
-      }
+      var key = getUpstreamKey();
 
-      accountMappingService.getAccountForEnvironment(upstreamValue.EnvironmentName).then(function (accountName) {
-        var saveMethod;
-        var data;
-
-        var activeHosts = GetActiveHostCount();
-        var promise;
-        if (activeHosts === 0) {
-          promise = modal.confirmation({
-            title: 'No Active Upstream Hosts',
-            message: 'Are you sure you want to save this upstream with no active hosts?',
-            action: 'Save'
-          });
-        } else {
-          promise = $q.when();
-        }
-
-        promise.then(function () {
-          if ($scope.PageMode === 'Edit') {
-            return $scope.LBUpstream.update(key);
-          } else {
-            return $scope.LBUpstream.save(key);
-          }
-        }).then(function () {
-          cachedResources.config.lbUpstream.flush();
-          BackToSummary(upstreamValue.EnvironmentName);
-        });
+      confirmSaveIfNoActiveHosts().then(function () {
+        return isEditMode ?
+          vm.upstream.update(key) :
+          vm.upstream.save(key);
+      }).then(function () {
+        cachedResources.config.lbUpstream.flush();
+        vm.backToSummary(vm.upstream.Value.EnvironmentName);
       });
     };
 
-    $scope.Cancel = function () {
-      BackToSummary($scope.LBUpstream.Value.EnvironmentName);
+    vm.backToSummary = function () {
+      $location.path('/config/upstreams/');
+      $location.search('up_environment', env);
     };
 
-    $scope.Toggle = function () {
-      $scope.LBUpstream.Value.Hosts.forEach(function (host) {
-        if (host.State == 'up') {
-          host.State = 'down';
-        } else {
-          host.State = 'up';
-        }
+    function confirmSaveIfNoActiveHosts() {
+      if (countActiveHosts() > 0) return Promise.resolve();
+
+      return modal.confirmation({
+        title: 'No Active Upstream Hosts',
+        message: 'Are you sure you want to save this upstream with no active hosts?',
+        action: 'Save'
       });
-    };
-
-    $scope.ShowAddHost = function () {
-      $scope.AddingHost = true;
-    };
-
-    $scope.AddHost = function () {
-      var newHost = $scope.NewHost;
-      if (!newHost.DnsName || !newHost.Port || !newHost.Weight) {
-        return;
-      }
-
-      $scope.LBUpstream.Value.Hosts.push(angular.copy(newHost));
-      $scope.NewHost = angular.copy($scope.NewHostDefault);
-      $scope.HostError = '';
-      $scope.AddingHost = false;
-    };
-
-    $scope.DeleteHost = function (selectedHost) {
-      $scope.LBUpstream.Value.Hosts = $scope.LBUpstream.Value.Hosts.filter(function (host) {
-        return (host.DnsName != selectedHost.DnsName);
-      });
-    };
-
-    function BackToSummary(environment) {
-      $location.search('up_environment', environment);
-      $location.path(ReturnPath);
     }
 
-    function GetActiveHostCount() {
-      if ($scope.LBUpstream.Value.Hosts.length == 0) return 0;
-      var count = 0;
-      $scope.LBUpstream.Value.Hosts.forEach(function (host) {
-        if (host.State == 'up') count++;
-      });
+    function getUpstreamKey() {
+      if (isEditMode) return vm.upstream.key;
+      return '/' + vm.upstream.Value.EnvironmentName + '_' + vm.upstream.Value.UpstreamName + '/config';
+    }
 
-      return count;
+    function fetchOrCreateUpstream() {
+      if (isNewMode) return Promise.resolve(UpstreamConfig.createWithDefaults(env));
+
+      return accountMappingService.getAccountForEnvironment(env).then(function (accountName) {
+        return UpstreamConfig.getByKey(decodeURIComponent($routeParams.key), accountName);
+      });
+    }
+
+    function countActiveHosts() {
+      return _.filter(vm.upstream.Value.Hosts, { State: 'up' }).length;
     }
 
     init();
   });
-

@@ -8,6 +8,8 @@ let param = require('api/api-utils/requestParam');
 let versionOf = require('modules/data-access/dynamoVersion').versionOf;
 let removeAuditMetadata = require('modules/data-access/dynamoAudit').removeAuditMetadata;
 const sns = require('modules/sns/EnvironmentManagerEvents');
+let { hasValue, when } = require('modules/functional');
+let { ifNotFound, notFoundMessage } = require('api/api-utils/ifNotFound');
 
 const KEY_NAME = 'DeploymentMapName';
 function keyOf(value) {
@@ -38,8 +40,9 @@ function getDeploymentMapsConfig(req, res, next) {
 function getDeploymentMapConfigByName(req, res, next) {
   let key = param('name', req);
   return deploymentMaps.get(keyOf(key))
-    .then(convertToApiModel)
-    .then(data => res.json(data))
+    .then(when(hasValue, convertToApiModel))
+    .then(ifNotFound(notFoundMessage('deployment map')))
+    .then(send => send(res))
     .catch(next);
 }
 
