@@ -5,6 +5,7 @@
 let getSlices = require('queryHandlers/slices/GetSlicesByUpstream');
 let toggleSlices = require('commands/slices/ToggleSlicesByUpstream');
 let metadata = require('commands/utils/metadata');
+const sns = require('modules/sns/EnvironmentManagerEvents');
 
 /**
  * GET /upstreams/{name}/slices
@@ -26,7 +27,18 @@ function putUpstreamSlicesToggle(req, res, next) {
   const user = req.user;
 
   const command = metadata.addMetadata({ environmentName, upstreamName, user });
-  return toggleSlices(command).then(data => res.json(data)).catch(next);
+  return toggleSlices(command)
+    .then(data => res.json(data))
+    .then(sns.publish({
+      message: `PUT /upstreams/${upstreamName}/slices/toggle`,
+      topic: sns.TOPICS.OPERATIONS_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.PUT,
+        ID: upstreamName,
+        EnvironmentName: environmentName
+      }
+    }))
+    .catch(next);
 }
 
 module.exports = {

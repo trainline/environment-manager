@@ -19,6 +19,7 @@ let Enums = require('Enums');
 let ScanInstancesScheduleStatus = require('queryHandlers/ScanInstancesScheduleStatus');
 let fp = require('lodash/fp');
 let merge = require('modules/merge');
+const sns = require('modules/sns/EnvironmentManagerEvents');
 
 /* The tags that should be added to each instance as properties.
  * If the instance already has a property with one of these names
@@ -151,6 +152,7 @@ function putInstanceMaintenance(req, res, next) {
   const id = req.swagger.params.id.value;
   const body = req.swagger.params.body.value;
   const enable = body.enable;
+  let name = null;
 
   co(function* () {
     let instance = yield Instance.getById(id);
@@ -158,6 +160,7 @@ function putInstanceMaintenance(req, res, next) {
     const accountName = instance.AccountName;
     const autoScalingGroupName = instance.getAutoScalingGroupName();
     const environmentName = instance.getTag('Environment');
+    name = environmentName;
 
     /**
      * Update ASG IPS table
@@ -194,7 +197,17 @@ function putInstanceMaintenance(req, res, next) {
     serviceTargets.setInstanceMaintenanceMode(accountName, instance.PrivateIpAddress, environmentName, enable);
 
     res.send({ ok: true });
-  }).catch(next);
+  })
+    .then(sns.publish({
+      message: `PUT /instances/${id}/maintenance`,
+      topic: sns.TOPICS.OPERATIONS_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.PUT,
+        ID: 'id',
+        EnvironmentName: name
+      }
+    }))
+    .catch(next);
 }
 
 /**

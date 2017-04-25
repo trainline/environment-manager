@@ -9,6 +9,7 @@ let sender = require('modules/sender');
 let Enums = require('Enums');
 let activeDeploymentsStatusProvider = require('modules/monitoring/activeDeploymentsStatusProvider');
 let deploymentLogger = require('modules/DeploymentLogger');
+const sns = require('modules/sns/EnvironmentManagerEvents');
 let { ifNotFound, notFoundMessage } = require('api/api-utils/ifNotFound');
 
 /**
@@ -97,16 +98,27 @@ function postDeployment(req, res, next) {
       res.location(`/api/${deployment.accountName}/deployments/history/${deployment.id}`);
       res.json(deployment);
     }
-  }).catch(next);
+  })
+    .then(sns.publish({
+      message: 'POST /deployments',
+      topic: sns.TOPICS.OPERATIONS_CHANGE,
+      attributes: {
+        Environment: environmentName,
+        Action: sns.ACTIONS.POST,
+        ID: serviceName
+      }
+    }))
+    .catch(next);
 }
 
 /**
  * PATCH /deployments/{key}
  */
 function patchDeployment(req, res, next) {
+  let key = null;
   return co(function* () {
     const body = req.swagger.params.body.value;
-    const key = req.swagger.params.id.value;
+    key = req.swagger.params.id.value;
     let status = body.Status;
     let action = body.Action;
 
@@ -144,7 +156,20 @@ function patchDeployment(req, res, next) {
     } else {
       return null;
     }
-  }).then(data => res.json(data)).catch(next);
+  })
+    .then(data => res.json(data))
+    .then(() => {
+      sns.publish({
+        message: `PATCH /deployments/${key}`,
+        topic: sns.TOPICS.OPERATIONS_CHANGE,
+        attributes: {
+          Environment: '',
+          Action: sns.ACTIONS.PATCH,
+          ID: key
+        }
+      });
+    })
+    .catch(next);
 }
 
 function switchDeployment(key, enable, user) {

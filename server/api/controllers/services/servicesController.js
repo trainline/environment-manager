@@ -10,6 +10,7 @@ let serviceHealth = require('modules/environment-state/getServiceHealth');
 let overallServiceHealth = require('modules/environment-state/getOverallServiceHealth');
 let metadata = require('commands/utils/metadata');
 let Environment = require('models/Environment');
+let sns = require('modules/sns/EnvironmentManagerEvents');
 
 function isEmptyResponse(data) {
   return Array.isArray(data) && data.length === 0;
@@ -108,7 +109,18 @@ function putServiceSlicesToggle(req, res, next) {
   const serviceName = req.swagger.params.service.value;
   const user = req.user;
 
-  return toggleSlices(metadata.addMetadata({ environmentName, serviceName, user })).then(data => res.json(data)).catch(next);
+  return toggleSlices(metadata.addMetadata({ environmentName, serviceName, user }))
+    .then(data => res.json(data))
+    .then(sns.publish({
+      message: `PUT /services/${serviceName}/toggle`,
+      topic: sns.TOPICS.OPERATIONS_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.PUT,
+        ID: serviceName,
+        EnvironmentName: environmentName
+      }
+    }))
+    .catch(next);
 }
 
 module.exports = {

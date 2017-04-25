@@ -4,6 +4,7 @@
 
 let GetServerRoles = require('queryHandlers/services/GetServerRoles');
 let deleteTargetState = require('modules/environment-state/deleteTargetState');
+const sns = require('modules/sns/EnvironmentManagerEvents');
 
 /**
  * GET /target-state/{environment}
@@ -21,7 +22,17 @@ function deleteTargetStateByEnvironment(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
 
   deleteTargetState.byEnvironment({ environmentName })
-    .then(data => res.json(data)).catch(next);
+    .then(data => res.json(data))
+    .then(sns.publish({
+      message: `DELETE /target-state/${environmentName}`,
+      topic: sns.TOPICS.OPERATIONS_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.DELETE,
+        ID: environmentName,
+        EnvironmentName: environmentName
+      }
+    }))
+    .catch(next);
 }
 
 /**
@@ -32,7 +43,17 @@ function deleteTargetStateByService(req, res, next) {
   const serviceName = req.swagger.params.service.value;
 
   deleteTargetState.byService({ environmentName, serviceName })
-    .then(data => res.json(data)).catch(next);
+    .then(data => res.json(data))
+    .then(sns.publish({
+      message: `DELETE /target-state/${environmentName}/${serviceName}`,
+      topic: sns.TOPICS.OPERATIONS_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.DELETE,
+        ID: `${environmentName}/${serviceName}`,
+        EnvironmentName: environmentName
+      }
+    }))
+    .catch(next);
 }
 
 /**
@@ -44,7 +65,17 @@ function deleteTargetStateByServiceVersion(req, res, next) {
   const serviceVersion = req.swagger.params.version.value;
 
   deleteTargetState.byServiceVersion({ environmentName, serviceName, serviceVersion })
-    .then(data => res.json(data)).catch(next);
+    .then(data => res.json(data))
+    .then(sns.publish({
+      message: `DELETE /target-state/${environmentName}/${serviceName}/${serviceVersion}`,
+      topic: sns.TOPICS.OPERATIONS_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.DELETE,
+        EnvironmentName: environmentName,
+        ID: `${environmentName}/${serviceName}/${serviceVersion}`
+      }
+    }))
+    .catch(next);
 }
 
 module.exports = {
