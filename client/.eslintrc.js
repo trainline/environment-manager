@@ -1,6 +1,7 @@
 module.exports = {
   env: {
     browser: true,
+    jasmine: true,
     es6: false,
   },
   globals: {
@@ -9,11 +10,13 @@ module.exports = {
     moment: false,
     it: false,
     expect: false,
-    beforeEach: false
+    beforeEach: false,
+    inject: false,
+    Promise: false
   },
 
-  extends: "airbnb-base/legacy",
-  plugins: ['angular'],
+  extends: ["airbnb-base/legacy", "plugin:jasmine/recommended"],
+  plugins: ['jasmine', 'angular'],
 
   rules: {
     "indent": ['error', 2],

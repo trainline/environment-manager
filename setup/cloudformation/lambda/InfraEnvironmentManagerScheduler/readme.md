@@ -32,42 +32,28 @@ npm test
 There are two ways you can run this lambda locally.
 
 - First, you can use [lambda-local](https://www.npmjs.com/package/lambda-local) which will execute index.handler in the same way that AWS does.
-- Second you can run ``` node local ``` in your command prompt. This will execute ./local/index.js which will run the scheduler manually.
+- Second you can run ``` node local ``` in your command prompt. This will execute ./local/index.js which will run the scheduler manually. Running this way you will need to provide a config.json file which describes the configuration settings that will be used. A sample can be found at local/config.sample.json
 
 In both cases an AWS access key and secret key must be provided in one of the default locations (such as environment variables) in order to access your AWS account.
 
 ### Configuration
 
-The root of the project must contain a config.json file which contains the settings necessary to run the application. A sample config file is included at ./local/config.json and can be modified with the necessary settings to run the function locally.
+The following table describes the environment variables used by this lambda.
 
-```
-{
-  "limitToEnvironment": "xxx",
-  "whatIf": true,
-  "listSkippedInstances": true,
-  "ignoreASGInstances": false,
-  "em": {
-    "host": "environment-manager-domain-name",
-    "credentials": {
-      "username": "username",
-      "password": "password"
-    }
-  },
-  "aws": {
-    "region": "eu-west-1"
-  }
-}
-```
-
-- **limitToEnvironment**: An optional regular expression which, if provided, will cause the scheduler to limit processing to those instances with a matching 'environment' tag.
-- **ignoreASGInstances**: If set to true this flag will prevent destructive operations on instances inside ASGs. These instances will not be listed in the output.
-- **whatIf**: If set to true this flag will prevent all destructive operations from running. Successful responses will be simulated.
-- **em**: The hostname (or IP) and credentials needed to access the Environment Manager service which governs this AWS account.
-- **aws**: Configuration information provided to the AWS SDK when constructing the EC2 service.
+| Name | Value | Description |
+|---|---|---|
+| EM_HOST | string | The base URL of the Environment Manager API |
+| EM_USERNAME | string | The username to authenticate with Environment Manager |
+| EM_PASSWORD | string | The password to authenticate with Environment Manager |
+| IGNORE_ASG_INSTANCES | boolean | If set to true this flag will prevent destructive operations on instances inside ASGs. These instances will not be listed in the output. |
+| LIMIT_TO_ENVIRONMENT | RegExp | An optional regular expression which, if provided, will cause the scheduler to limit processing to those instances with a matching 'environment' tag. |
+| LIST_SKIPPED_INSTANCES | | |
+| WHAT_IF | boolean | If set to true this flag will prevent all destructive operations from running. Successful responses will be simulated. |
+| ERROR_ON_FAILURE | boolean | If set to false will prevent scheduling failure results being logged as a lambda error |
 
 ### Packaging and Deployment
 
-In order to execute this lambda in AWS all files must be added to a .zip package along with a suitable config.json file in the root.
+In order to execute this lambda in AWS all files must be added to a .zip package.
 
 Exceptions include:
 

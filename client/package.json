@@ -1,6 +1,6 @@
 {
   "name": "EnvironmentManager",
-  "version": "3.39.8",
+  "version": "3.41.0",
   "author": {
     "name": "Platform Development",
     "email": "platform.development@thetrainline.com"
@@ -26,6 +26,7 @@
     "eslint-config-airbnb-base": "^10.0.1",
     "eslint-plugin-angular": "^1.4.1",
     "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jasmine": "^2.2.0",
     "gulp": "^3.9.1",
     "gulp-angular-filesort": "^1.1.1",
     "gulp-angular-templatecache": "^2.0.0",

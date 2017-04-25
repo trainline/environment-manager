@@ -1,8 +1,4 @@
 {
-  "limitToEnvironment": "xxx",
-  "whatIf": true,
-  "listSkippedInstances": true,
-  "ignoreASGInstances": false,
   "em": {
     "host": "https://environment-manager-domain-name",
     "credentials": {
@@ -10,7 +6,9 @@
       "password": "password"
     }
   },
-  "aws": {
-    "region": "eu-west-1"
-  }
+  "limitToEnvironment": "xxx",
+  "whatIf": true,
+  "listSkippedInstances": true,
+  "ignoreASGInstances": false,
+  "errorOnFailure": true
 }

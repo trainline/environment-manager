@@ -8,7 +8,6 @@ let configurationCache = require('modules/configurationCache');
 let deployments = require('modules/data-access/deployments');
 let fp = require('lodash/fp');
 let { Clock, Instant, LocalDate, ZoneId } = require('js-joda');
-let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
 let sender = require('modules/sender');
 
 function getTargetAccountName(deployment) {
@@ -57,7 +56,7 @@ function queryDeployment({ key }) {
   return deployments.get({ DeploymentID: key })
     .then((result) => {
       if (result === null) {
-        throw new ResourceNotFoundError(`Deployment ${key} not found`);
+        return null;
       } else {
         return getTargetAccountName(result).then((accountName) => {
           result.AccountName = accountName;
@@ -130,7 +129,7 @@ function queryDeploymentNodeStates(environment, key, accountName) {
 
 module.exports = {
 
-  get: query => queryDeployment(query).then(mapDeployment),
+  get: query => queryDeployment(query).then(x => (x !== null ? mapDeployment(x) : null)),
 
   scan: query => queryDeployments(query)
     .then((results) => {
