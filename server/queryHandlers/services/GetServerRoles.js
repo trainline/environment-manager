@@ -4,7 +4,7 @@
 
 let serviceTargets = require('modules/service-targets');
 let _ = require('lodash');
-let co = require('co');
+let { createServerRoleFilter } = require('modules/environment-state/serverRoleFilters');
 
 function toRoleGroups(results) {
   let hash = _.groupBy(results, getRole);
@@ -22,15 +22,14 @@ function getRole(service) {
   return matches[1];
 }
 
-function* GetServerRoles({ environmentName }) {
+function GetServerRoles({ environmentName, serviceName, slice, serverRole }) {
   let recurse = true;
   let key = `environments/${environmentName.toLowerCase()}/roles`;
-  let results = yield serviceTargets.getTargetState(environmentName, { key, recurse });
-
-  return {
-    EnvironmentName: environmentName,
-    Value: toRoleGroups(results)
-  };
+  return serviceTargets.getTargetState(environmentName, { key, recurse })
+    .then(results => ({
+      EnvironmentName: environmentName,
+      Value: toRoleGroups(results).filter(createServerRoleFilter({ serviceName, slice, serverRole }))
+    }));
 }
 
-module.exports = co.wrap(GetServerRoles);
+module.exports = GetServerRoles;

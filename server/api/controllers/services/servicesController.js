@@ -86,9 +86,8 @@ function getServiceHealth(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
   const serviceName = req.swagger.params.service.value;
   const slice = req.swagger.params.slice.value;
-  const serverRole = req.swagger.params.serverRole.value;
 
-  return serviceHealth({ environmentName, serviceName, slice, serverRole }).then(data => res.json(data)).catch(next);
+  return serviceHealth({ environmentName, serviceName, slice }).then(data => res.json(data)).catch(next);
 }
 
 /**

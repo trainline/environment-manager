@@ -33,6 +33,11 @@ function getService(environment, serviceQuery) {
     });
 }
 
+function getServiceHealth(environment, serviceQuery) {
+  let nodeKey = `${environment}-${serviceQuery}`;
+  return executeConsul(environment, clientInstance => clientInstance.health.service(nodeKey));
+}
+
 function getAllNodes(environment) {
   return executeConsul(environment, clientInstance => clientInstance.catalog.node.list());
 }
@@ -106,6 +111,7 @@ function createConsulClient(environment) {
 module.exports = {
   getAllServices,
   getService,
+  getServiceHealth,
   getAllNodes,
   getNodeHealth,
   getNode
