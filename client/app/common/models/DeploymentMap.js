@@ -35,6 +35,10 @@ angular.module('EnvironmentManager.common').factory('DeploymentMap',
       return new DeploymentMap(data);
     };
 
+    DeploymentMap.create = function (data) {
+      return new DeploymentMap(data);
+    };
+
     DeploymentMap.deleteByName = function (name) {
       return $http.delete(baseUrl + '/' + encodeURIComponent(name));
     };

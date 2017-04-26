@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ASGDetailsModalController',
-  function ($http, $scope, $uibModal, $uibModalInstance, $q, modal, loading, serviceDiscovery, Image, awsService, AutoScalingGroup, resources, cachedResources, deploymentMapConverter, asgDistributionService, accountMappingService, parameters) {
+  function ($http, $scope, $uibModal, $uibModalInstance, $q, modal, loading, serviceDiscovery, Image, awsService, AutoScalingGroup, resources, cachedResources, deploymentMapConverter, asgDistributionService, accountMappingService, parameters, DeploymentMap) {
     var vm = this;
 
     vm.context = 'asg';
@@ -93,7 +93,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         size: 'lg',
         resolve: {
           deploymentMap: function () {
-            return angular.copy(vm.deploymentMap);
+            return DeploymentMap.create(angular.copy(vm.deploymentMap));
           },
 
           deploymentTarget: function () {
