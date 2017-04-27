@@ -29,7 +29,7 @@ function deleteTargetStateByEnvironment(req, res, next) {
       attributes: {
         Action: sns.ACTIONS.DELETE,
         ID: environmentName,
-        EnvironmentName: environmentName
+        Environment: environmentName
       }
     }))
     .catch(next);
@@ -50,7 +50,7 @@ function deleteTargetStateByService(req, res, next) {
       attributes: {
         Action: sns.ACTIONS.DELETE,
         ID: `${environmentName}/${serviceName}`,
-        EnvironmentName: environmentName
+        Environment: environmentName
       }
     }))
     .catch(next);
@@ -71,7 +71,7 @@ function deleteTargetStateByServiceVersion(req, res, next) {
       topic: sns.TOPICS.OPERATIONS_CHANGE,
       attributes: {
         Action: sns.ACTIONS.DELETE,
-        EnvironmentName: environmentName,
+        Environment: environmentName,
         ID: `${environmentName}/${serviceName}/${serviceVersion}`
       }
     }))

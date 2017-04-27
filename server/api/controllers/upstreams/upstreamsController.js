@@ -35,7 +35,7 @@ function putUpstreamSlicesToggle(req, res, next) {
       attributes: {
         Action: sns.ACTIONS.PUT,
         ID: upstreamName,
-        EnvironmentName: environmentName
+        Environment: environmentName
       }
     }))
     .catch(next);
