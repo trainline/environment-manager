@@ -94,6 +94,7 @@ let errorLoggerMiddleware = logger => (err, req, res, next) => {
       req: {
         id: fp.get('id')(req),
         method: fp.get('method')(req),
+        ip: fp.get('ip')(req),
         originalUrl: fp.get('originalUrl')(req),
         params: swaggerParams(req)
       },
