@@ -1,7 +1,7 @@
 [Service]
 EnvironmentFile=/etc/environment-manager.env
 WorkingDirectory=/opt/environment-manager/
-ExecStart=/usr/bin/node index.js mode=Release
+ExecStart=/usr/bin/npm start
 
 Restart=always
 StandardOutput=syslog
