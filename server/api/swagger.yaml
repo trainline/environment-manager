@@ -3274,12 +3274,15 @@ definitions:
         $ref: '#/definitions/Slice'
         description: the slice name
     required:
+      - desiredCount
+      - desiredAndHealthyCount
       - environment
       - name
-      - orphaned-instances
+      - orphanedInstances
       - roles
       - service
       - slice
+      - undesiredCount
   ServiceStatusDetail:
     type: object
     properties:
@@ -3305,11 +3308,11 @@ definitions:
         type: string
         description: the name of the server role or instance
     required:
+      - desiredCount
       - failing-checks
       - healthyCount
-      - desiredSize
-      - unhealthyCount
       - name
+      - unhealthyCount
   HealthCheck:
     type: object
     properties:
