@@ -4,6 +4,13 @@ require('should');
 let { createServerRoleFilter } = require('modules/environment-state/serverRoleFilters');
 
 describe('createServerRoleFilter', function () {
+  context('when filtering by no criteria', function () {
+    it('includes any role', function () {
+      let sut = createServerRoleFilter({ });
+      sut({}).should.be.true();
+    });
+  });
+
   context('when filtering by service name only', function () {
     it('excludes a role that has just the service but where Action is not Install', function () {
       let sut = createServerRoleFilter({ serviceName: 'T' });
