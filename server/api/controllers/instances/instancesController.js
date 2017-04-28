@@ -204,7 +204,7 @@ function putInstanceMaintenance(req, res, next) {
       attributes: {
         Action: sns.ACTIONS.PUT,
         ID: 'id',
-        EnvironmentName: name
+        Environment: name
       }
     }))
     .catch(next);

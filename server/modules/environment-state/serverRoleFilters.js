@@ -6,7 +6,7 @@ let fp = require('lodash/fp');
 
 function createServerRoleFilter({ serviceName, slice, serverRole }) {
   if (!serviceName) {
-    return () => false;
+    return () => true;
   }
 
   let slicePredicate = slice ? x => x === slice : () => true;

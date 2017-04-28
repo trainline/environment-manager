@@ -36,6 +36,11 @@ function createExpressApp() {
   /* eslint-enable */
 
   let app = express();
+  /* enable the 'trust proxy' setting so that we resolve
+   * the client IP address when app is behind HTTP Proxy
+   * http://expressjs.com/en/guide/behind-proxies.html
+   * */
+  app.enable('trust proxy');
 
   let loggerMiddleware = loggingMiddleware.loggerMiddleware(logger);
   let errorLoggerMiddleware = loggingMiddleware.errorLoggerMiddleware(logger);

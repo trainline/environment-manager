@@ -116,7 +116,7 @@ function putServiceSlicesToggle(req, res, next) {
       attributes: {
         Action: sns.ACTIONS.PUT,
         ID: serviceName,
-        EnvironmentName: environmentName
+        Environment: environmentName
       }
     }))
     .catch(next);
