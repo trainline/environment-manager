@@ -41,10 +41,12 @@ nconf.defaults({
  * Convenience values
  */
 const isProduction = nconf.get('NODE_ENV') === 'production';
+const isRemoteDebug = nconf.get('REMOTE_DEBUG') === 'true';
 const useDevSources = nconf.get('DEV_SOURCES') === 'true';
 const publicDir = isProduction || useDevSources ? './dist' : '../client';
 
 nconf.set('IS_PRODUCTION', isProduction);
+nconf.set('IS_REMOTE_DEBUG', isRemoteDebug);
 nconf.set('APP_VERSION', APP_VERSION);
 nconf.set('PUBLIC_DIR', publicDir);
 

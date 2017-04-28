@@ -7,7 +7,37 @@
  * `gulp serve` to start gulp development workflow with style watchers
  */
 
-body { padding: 15px; min-width: 1200px; }
+body {
+  padding: 15px; 
+  min-width: 1200px;
+  height: 100%;
+  margin: 0;
+}
+
+html{
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.main-full {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+footer {
+  margin-top: -20px;
+  display: flex;
+  flex: 1;
+  div {
+    margin-left: auto;
+  }
+  a {
+    color: #BCBCBC;
+  }
+}
+
 h1 { font-size: 1.9em; }
 h2 { font-size: 1.4em; margin-top: 10px; }
 h3 { font-size: 1.2em; margin-top: 10px; }

@@ -9,6 +9,7 @@ let fp = require('lodash/fp');
 
 const EM_LOG_LEVEL = config.get('EM_LOG_LEVEL').toLowerCase();
 const IS_PROD = config.get('IS_PRODUCTION');
+const IS_REMOTE_DEBUG = config.get('IS_REMOTE_DEBUG');
 
 let transportOpts = { level: EM_LOG_LEVEL, showLevel: false };
 if (IS_PROD) transportOpts.formatter = formatter;
@@ -42,4 +43,14 @@ if (IS_PROD) {
 
 logger.info(`Starting logger with log level ${EM_LOG_LEVEL}`);
 
-module.exports = logger;
+if (IS_REMOTE_DEBUG) {
+  /**
+   * The remote debugger will *only* pick-up messages sent via console.{log|info|warn|error}
+   * The Winston console transport currently uses process.stdout.write which will not work.
+   * @see https://github.com/winstonjs/winston/issues/981
+   */
+  module.exports = console;
+} else {
+  module.exports = logger;
+}
+
