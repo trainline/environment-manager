@@ -9,203 +9,293 @@
   <div class="form-group" ng-if="vm.view.showNameField" ng-class="{'has-error': form.Upstream.$invalid}">
     <label class="col-md-1 control-label text-left nowrap">Name: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
     <div class="col-md-2">
-      <input type="text" name="Upstream" class="form-control" required="" autofocus maxlength="100" pattern="[a-zA-Z0-9-]+" ng-model="vm.upstream.Value.UpstreamName"
-        ng-readonly="vm.view.configFieldsDisabled" />
+      <input type="text"
+      name="Upstream"
+      class="form-control"
+      required=""
+      autofocus
+      maxlength="100"
+      pattern="[a-zA-Z0-9-]+"
+      ng-model="vm.upstream.Value.UpstreamName"
+      ng-readonly="vm.view.configFieldsDisabled" />
     </div>
-    <span class="help-block" ng-if="form.Upstream.$dirty && form.Upstream.$error.required">Upstlbupstreamream name is mandatory.</span>
+    <span class="help-block" ng-if="form.Upstream.$dirty && form.Upstream.$error.required">Upstream name is mandatory.</span>
     <span class="help-block" ng-if="form.Upstream.$dirty && form.Upstream.$error.pattern">Upstream name cannot contain underscores or special characters. It should start with the environment name.</span>
   </div>
   <div class="form-group">
     <label class="col-md-1 control-label text-left">Environment:</label>
     <div class="col-md-2">
-      <select class="form-control" name="EnvironmentName" required="" ng-model="vm.upstream.Value.EnvironmentName" ng-disabled="vm.view.configFieldsDisabled">
+      <select class="form-control"
+      name="EnvironmentName"
+      required=""
+      ng-model="vm.upstream.Value.EnvironmentName"
+      ng-disabled="vm.view.configFieldsDisabled">
       <option ng-repeat="env in vm.view.environments" ng-selected="{{env == vm.upstream.Value.EnvironmentName}}" value="{{env}}">{{env}}</option>
     </select>
-    </div>
   </div>
-  <div class="form-group" ng-class="{'has-error': form.Service.$invalid}">
-    <label class="col-md-1 control-label text-left">Service Name: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
-    <div class="col-md-2">
-      <select class="form-control" name="Service" required="" ng-model="vm.upstream.Value.ServiceName" ng-disabled="vm.view.configFieldsDisabled">
+</div>
+<div class="form-group" ng-class="{'has-error': form.Service.$invalid}">
+  <label class="col-md-1 control-label text-left">Service Name: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+  <div class="col-md-2">
+    <select class="form-control"
+    name="Service"
+    required=""
+    ng-model="vm.upstream.Value.ServiceName"
+    ng-disabled="vm.view.configFieldsDisabled">
     <option ng-repeat="service in vm.view.services track by $index" ng-selected="{{service == vm.upstream.Value.ServiceName}}" value="{{service}}">{{service}}</option>
   </select>
-    </div>
-    <a ng-if="vm.view.showServiceLink()" class="help-link" href="{{vm.view.serviceLink()}}" target="_blank">Go to service definition</a>
-    <span class="help-block" ng-if="form.Service.$error.required">Service Name is mandatory.</span>
+</div>
+<a ng-if="vm.view.showServiceLink()" class="help-link" href="{{vm.view.serviceLink()}}" target="_blank">Go to service definition</a>
+<span class="help-block" ng-if="form.Service.$error.required">Service Name is mandatory.</span>
+</div>
+<div class="form-group" ng-class="{'has-error': form.ZoneSize.$invalid}">
+  <label class="col-md-1 control-label text-left">Zone Size: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+  <div class="col-md-1">
+    <input type="text"
+    name="ZoneSize"
+    class="form-control"
+    maxlength="10"
+    required=""
+    ng-model="vm.upstream.Value.ZoneSize"
+    ng-readonly="vm.view.configFieldsDisabled" />
   </div>
-  <div class="form-group" ng-class="{'has-error': form.ZoneSize.$invalid}">
-    <label class="col-md-1 control-label text-left">Zone Size: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
-    <div class="col-md-1">
-      <input type="text" name="ZoneSize" class="form-control" maxlength="10" required="" ng-model="vm.upstream.Value.ZoneSize"
-        ng-readonly="vm.view.configFieldsDisabled" />
-    </div>
-    <span class="help-block" ng-if="form.ZoneSize.$dirty && form.ZoneSize.$error.required">Zone Size is mandatory.</span>
+  <span class="help-block" ng-if="form.ZoneSize.$dirty && form.ZoneSize.$error.required">Zone Size is mandatory.</span>
+</div>
+<div class="form-group" ng-class="{'has-error': form.LoadBalancingMethod.$invalid}">
+  <label class="col-md-1 control-label text-left nowrap">Load Balancing Method:</label>
+  <div class="col-md-1">
+    <input type="text"
+    name="LoadBalancingMethod"
+    class="form-control"
+    maxlength="100"
+    ng-model="vm.upstream.Value.LoadBalancingMethod"
+    ng-readonly="vm.view.configFieldsDisabled" />
   </div>
-  <div class="form-group" ng-class="{'has-error': form.LoadBalancingMethod.$invalid}">
-    <label class="col-md-1 control-label text-left nowrap">Load Balancing Method:</label>
-    <div class="col-md-1">
-      <input type="text" name="LoadBalancingMethod" class="form-control" maxlength="100" ng-model="vm.upstream.Value.LoadBalancingMethod"
-        ng-readonly="vm.view.configFieldsDisabled" />
-    </div>
+</div>
+<div class="form-group" ng-class="{'has-error': form.PersistenceMethod.$invalid}">
+  <label class="col-md-1 control-label text-left nowrap">Persistence Method:</label>
+  <div class="col-md-2">
+    <input type="text"
+      name="PersistenceMethod"
+      class="form-control"
+      maxlength="100"
+      ng-model="vm.upstream.Value.PersistenceMethod"
+      ng-readonly="vm.view.configFieldsDisabled" />
   </div>
-  <div class="form-group" ng-class="{'has-error': form.PersistenceMethod.$invalid}">
-    <label class="col-md-1 control-label text-left nowrap">Persistence Method:</label>
-    <div class="col-md-2">
-      <input type="text" name="PersistenceMethod" class="form-control" maxlength="100" ng-model="vm.upstream.Value.PersistenceMethod"
-        ng-readonly="vm.view.configFieldsDisabled" />
-    </div>
+</div>
+<div class="form-group" ng-class="{'has-error': form.UpStreamKeepalives.$invalid}">
+  <label class="col-md-1 control-label text-left">Keep Alives:</label>
+  <div class="col-md-1">
+    <input type="number"
+      min="1"
+      max="500"
+      step="1"
+      name="UpStreamKeepalives"
+      class="form-control"
+      ng-model="vm.upstream.Value.UpStreamKeepalives"
+      ng-readonly="vm.view.configFieldsDisabled" />
   </div>
-  <div class="form-group" ng-class="{'has-error': form.UpStreamKeepalives.$invalid}">
-    <label class="col-md-1 control-label text-left">Keep Alives:</label>
-    <div class="col-md-1">
-      <input type="number" min="1" max="500" step="1" name="UpStreamKeepalives" class="form-control" ng-model="vm.upstream.Value.UpStreamKeepalives"
-        ng-readonly="vm.view.configFieldsDisabled" />
-    </div>
-    <span class="help-block" ng-if="form.UpStreamKeepalives.$dirty && form.UpStreamKeepalives.$invalid">Keep alives must be an integer between 1 and 500.</span>
+  <span class="help-block" ng-if="form.UpStreamKeepalives.$dirty && form.UpStreamKeepalives.$invalid">Keep alives must be an integer between 1 and 500.</span>
+</div>
+<div class="form-group" ng-class="{'has-error': form.SlowStart.$invalid}">
+  <label class="col-md-1 control-label text-left">Slow Start:</label>
+  <div class="col-md-1">
+    <input type="text"
+      maxlength="3"
+      name="SlowStart"
+      pattern="[0-9]{1,2}[s,m]"
+      class="form-control"
+      ng-model="vm.upstream.Value.SlowStart"
+      ng-readonly="vm.view.configFieldsDisabled" />
   </div>
-  <div class="form-group" ng-class="{'has-error': form.SlowStart.$invalid}">
-    <label class="col-md-1 control-label text-left">Slow Start:</label>
-    <div class="col-md-1">
-      <input type="text" maxlength="3" name="SlowStart" pattern="[0-9]{1,2}[s,m]" class="form-control" ng-model="vm.upstream.Value.SlowStart"
-        ng-readonly="vm.view.configFieldsDisabled" />
-    </div>
-    <span class="help-block" ng-if="form.SlowStart.$dirty && form.SlowStart.$invalid">Slow start must be an integer between 1 and 99 followed by an 's' or 'm'.</span>
-  </div>
+  <span class="help-block" ng-if="form.SlowStart.$dirty && form.SlowStart.$invalid">Slow start must be an integer between 1 and 99 followed by an 's' or 'm'.</span>
+</div>
 
-  <div class="form-group" style="margin-bottom: 0px;">
-    <label class="col-md-1 control-label text-left">Hosts:</label>
-    <div class="col-md-8">
+<div class="form-group" style="margin-bottom: 0px;">
+  <label class="col-md-1 control-label text-left">Hosts:</label>
+  <div class="col-md-8">
 
-      <table id="UpstreamHosts" class="table table-responsive">
-        <thead>
-          <tr>
-            <th>Consul Service / DNS / IP <span class="glyphicon glyphicon-asterisk mandatory"></span></th>
-            <th>Port <span class="glyphicon glyphicon-asterisk mandatory"></span></th>
-            <th>FailTimeout</th>
-            <th>MaxFails</th>
-            <th>Weight <span class="glyphicon glyphicon-asterisk mandatory"></span></th>
-            <th>Configured State</th>
-            <th ng-if="vm.view.configFieldsEnabled" class="command-header"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="host in vm.upstream.Value.Hosts">
-            <td>
-              <span ng-if="vm.view.configFieldsDisabled">{{host.DnsName}}</span>
-              <div ng-if="vm.view.configFieldsEnabled" ng-class="{'has-error': !host.DnsName}">
-                <input type="text" name="DnsName" class="form-control" maxlength="63" required="" ng-model="host.DnsName" />
-              </div>
-            </td>
-            <td>
-              <span ng-if="vm.view.configFieldsDisabled">{{host.Port}}</span>
-              <div ng-if="vm.view.configFieldsEnabled" ng-class="{'has-error': !host.Port}">
-                <input type="number" min="1" max="41000" step="1" name="Port" class="form-control" required="" ng-model="host.Port" />
-              </div>
-            </td>
-            <td>
-              <span ng-if="vm.view.configFieldsDisabled">{{host.FailTimeout}}</span>
-              <div ng-if="vm.view.configFieldsEnabled">
-                <input type="text" name="FailTimeout" class="form-control" maxlength="4" ng-model="host.FailTimeout" />
-              </div>
-            </td>
-            <td>
-              <span ng-if="vm.view.configFieldsDisabled">{{host.MaxFails}}</span>
-              <div ng-if="vm.view.configFieldsEnabled">
-                <input type="number" min="0" max="100" step="1" name="MaxFails" class="form-control" ng-model="host.MaxFails" />
-              </div>
-            </td>
-            <td>
-              <span ng-if="vm.view.configFieldsDisabled">{{host.Weight}}</span>
-              <div ng-if="vm.view.configFieldsEnabled" ng-class="{'has-error': !host.Weight}">
-                <input type="number" min="1" max="100" step="1" name="Weight" class="form-control" required="" ng-model="host.Weight" />
-              </div>
-            </td>
-            <td>
-              <span ng-if="vm.view.configFieldsDisabled">
-              <span ng-if="host.State === 'up'" class="status-up"><span class="glyphicon glyphicon-triangle-top"></span>              Up</span>
-              <span ng-if="host.State === 'down'" class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span>              Down</span>
-              </span>
-              <div ng-if="vm.view.configFieldsEnabled">
-                <div class="onoffswitch">
-                  <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="hostState{{$index}}" checked ng-model="host.State"
-                    ng-true-value="'up'" ng-false-value="'down'">
-                  <label class="onoffswitch-label" for="hostState{{$index}}">
+    <table id="UpstreamHosts" class="table table-responsive">
+      <thead>
+        <tr>
+          <th>Consul Service / DNS / IP <span class="glyphicon glyphicon-asterisk mandatory"></span></th>
+          <th>Port <span class="glyphicon glyphicon-asterisk mandatory"></span></th>
+          <th>FailTimeout</th>
+          <th>MaxFails</th>
+          <th>Weight <span class="glyphicon glyphicon-asterisk mandatory"></span></th>
+          <th>Configured State</th>
+          <th ng-if="vm.view.configFieldsEnabled" class="command-header"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="host in vm.upstream.Value.Hosts">
+          <td>
+            <span ng-if="vm.view.configFieldsDisabled">{{host.DnsName}}</span>
+            <div ng-if="vm.view.configFieldsEnabled" ng-class="{'has-error': !host.DnsName}">
+              <input type="text"
+                name="DnsName"
+                class="form-control"
+                maxlength="63"
+                required=""
+                ng-model="host.DnsName" />
+            </div>
+          </td>
+          <td>
+            <span ng-if="vm.view.configFieldsDisabled">{{host.Port}}</span>
+            <div ng-if="vm.view.configFieldsEnabled" ng-class="{'has-error': !host.Port}">
+              <input type="number"
+                min="1"
+                max="41000"
+                step="1"
+                name="Port"
+                class="form-control"
+                required=""
+                ng-model="host.Port" />
+            </div>
+          </td>
+          <td>
+            <span ng-if="vm.view.configFieldsDisabled">{{host.FailTimeout}}</span>
+            <div ng-if="vm.view.configFieldsEnabled">
+              <input type="text"
+                name="FailTimeout"
+                class="form-control"
+                maxlength="4"
+                ng-model="host.FailTimeout" />
+            </div>
+          </td>
+          <td>
+            <span ng-if="vm.view.configFieldsDisabled">{{host.MaxFails}}</span>
+            <div ng-if="vm.view.configFieldsEnabled">
+              <input type="number"
+                min="0"
+                max="100"
+                step="1"
+                name="MaxFails"
+                class="form-control"
+                ng-model="host.MaxFails" />
+            </div>
+          </td>
+          <td>
+            <span ng-if="vm.view.configFieldsDisabled">{{host.Weight}}</span>
+            <div ng-if="vm.view.configFieldsEnabled" ng-class="{'has-error': !host.Weight}">
+              <input type="number"
+                min="1"
+                max="100"
+                step="1"
+                name="Weight"
+                class="form-control"
+                required=""
+                ng-model="host.Weight" />
+            </div>
+          </td>
+          <td>
+            <span ng-if="vm.view.configFieldsDisabled">
+              <span ng-if="host.State === 'up'" class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> Up</span>
+              <span ng-if="host.State === 'down'" class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span> Down</span>
+            </span>
+            <div ng-if="vm.view.configFieldsEnabled">
+              <div class="onoffswitch">
+                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="hostState{{$index}}" checked ng-model="host.State" ng-true-value="'up'" ng-false-value="'down'">
+                <label class="onoffswitch-label" for="hostState{{$index}}">
                   <span class="onoffswitch-inner"></span>
                   <span class="onoffswitch-switch"></span>
                 </label>
-                </div>
               </div>
-            </td>
-            <td ng-if="vm.view.configFieldsEnabled" class="command command-delete"><span class="glyphicon glyphicon-remove" ng-click="vm.deleteHost(host)" title="Remove Host"></span></td>
-          </tr>
-          <tr ng-if="vm.upstream.Value.Hosts.length > 0">
-            <td colspan="7" style="height: 5px;"></td>
-          </tr>
-          <tr ng-if="vm.upstream.Value.Hosts.length > 0">
-            <td colspan="7" style="background-color: RGB(170,170,170); height: 3px; padding: 0px;"></td>
-          </tr>
-          <tr ng-if="vm.view.showCreateHostLink()">
-            <td colspan="7" style="text-align: center"><strong><a href="" ng-click="vm.view.createNewHost()">Click to Add Another Host</a></strong></td>
-          </tr>
-          <tr ng-if="vm.view.newHost">
-            <td>
-              <div ng-class="{'has-error': !vm.view.newHost.DnsName}">
-                <input type="text" name="DnsName" class="form-control" maxlength="63" ng-model="vm.view.newHost.DnsName" />
-              </div>
-            </td>
-            <td>
-              <div ng-class="{'has-error': !vm.view.newHost.Port}">
-                <input type="number" min="1" max="41000" step="1" name="Port" class="form-control" ng-model="vm.view.newHost.Port" />
-              </div>
-            </td>
-            <td>
-              <div>
-                <input type="text" name="FailTimeout" class="form-control" maxlength="4" ng-model="vm.view.newHost.FailTimeout" />
-              </div>
-            </td>
-            <td>
-              <div>
-                <input type="number" min="0" max="100" step="1" name="MaxFails" class="form-control" ng-model="vm.view.newHost.MaxFails"
-                />
-              </div>
-            </td>
-            <td>
-              <div ng-if="vm.view.configFieldsEnabled" ng-class="{'has-error': !vm.view.newHost.Weight}">
-                <input type="number" min="1" max="100" step="1" name="Weight" class="form-control" ng-model="vm.view.newHost.Weight" />
-              </div>
-            </td>
-            <td>
-              <div ng-if="vm.view.configFieldsEnabled">
-                <div class="onoffswitch">
-                  <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="NewHost" checked ng-model="NewHost.State" ng-true-value="'up'"
-                    ng-false-value="'down'">
-                  <label class="onoffswitch-label" for="NewHost">
+            </div>
+          </td>
+          <td ng-if="vm.view.configFieldsEnabled" class="command command-delete"><span class="glyphicon glyphicon-remove" ng-click="vm.deleteHost(host)" title="Remove Host"></span></td>
+        </tr>
+        <tr ng-if="vm.upstream.Value.Hosts.length > 0">
+          <td colspan="7" style="height: 5px;"></td>
+        </tr>
+        <tr ng-if="vm.upstream.Value.Hosts.length > 0">
+          <td colspan="7" style="background-color: RGB(170,170,170); height: 3px; padding: 0px;"></td>
+        </tr>
+        <tr ng-if="vm.view.showCreateHostLink()">
+          <td colspan="7" style="text-align: center"><strong><a href="" ng-click="vm.view.createNewHost()">Click to Add Another Host</a></strong></td>
+        </tr>
+        <tr ng-if="vm.view.newHost">
+          <td>
+            <div ng-class="{'has-error': !vm.view.newHost.DnsName}">
+              <input type="text"
+                name="DnsName"
+                class="form-control"
+                maxlength="63"
+                ng-model="vm.view.newHost.DnsName" />
+            </div>
+          </td>
+          <td>
+            <div ng-class="{'has-error': !vm.view.newHost.Port}">
+              <input type="number"
+                min="1"
+                max="41000"
+                step="1"
+                name="Port"
+                class="form-control"
+                ng-model="vm.view.newHost.Port" />
+            </div>
+          </td>
+          <td>
+            <div>
+              <input type="text"
+                name="FailTimeout"
+                class="form-control"
+                maxlength="4"
+                ng-model="vm.view.newHost.FailTimeout" />
+            </div>
+          </td>
+          <td>
+            <div>
+              <input type="number"
+                min="0"
+                max="100"
+                step="1"
+                name="MaxFails"
+                class="form-control"
+                ng-model="vm.view.newHost.MaxFails" />
+            </div>
+          </td>
+          <td>
+            <div ng-if="vm.view.configFieldsEnabled" ng-class="{'has-error': !vm.view.newHost.Weight}">
+              <input type="number"
+                min="1"
+                max="100"
+                step="1"
+                name="Weight"
+                class="form-control"
+                ng-model="vm.view.newHost.Weight" />
+            </div>
+          </td>
+          <td>
+            <div ng-if="vm.view.configFieldsEnabled">
+              <div class="onoffswitch">
+                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="NewHost" checked ng-model="NewHost.State" ng-true-value="'up'" ng-false-value="'down'">
+                <label class="onoffswitch-label" for="NewHost">
                   <span class="onoffswitch-inner"></span>
                   <span class="onoffswitch-switch"></span>
                 </label>
-                </div>
               </div>
-            </td>
-            <td class="command command-add"><span class="glyphicon glyphicon-plus" ng-click="vm.addHost()" title="Add New Host"></span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+            </div>
+          </td>
+          <td class="command command-add"><span class="glyphicon glyphicon-plus" ng-click="vm.addHost()" title="Add New Host"></span></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
-  <div class="form-group has-error" ng-if="vm.view.validationError">
-    <label class="col-md-1">&nbsp;</label>
-    <div class="col-md-7">
-      <span class="help-block">{{vm.view.validationError}}.</span>
-    </div>
+</div>
+<div class="form-group has-error" ng-if="vm.view.validationError">
+  <label class="col-md-1">&nbsp;</label>
+  <div class="col-md-7">
+    <span class="help-block">{{vm.view.validationError}}.</span>
   </div>
-  <div class="form-group">
-    <label class="col-md-1">&nbsp;</label>
-    <div class="col-md-5">
-      <button type="button" class="btn btn-default" ng-click="vm.backToSummary()">Cancel</button>
-      <button type="button" class="btn btn-default" ng-if="vm.view.configFieldsEnabled" ng-disabled="vm.view.toggleActiveHostsButtonIsDisabled()"
-        ng-click="vm.view.toggleActiveHosts()">Toggle Active Hosts</button>
-      <button type="button" class="btn btn-default" ng-if="vm.view.configFieldsEnabled" ng-disabled="!form.$valid" ng-click="vm.save()">Save</button>
-    </div>
+</div>
+<div class="form-group">
+  <label class="col-md-1">&nbsp;</label>
+  <div class="col-md-5">
+    <button type="button" class="btn btn-default" ng-click="vm.backToSummary()">Cancel</button>
+    <button type="button" class="btn btn-default" ng-if="vm.view.configFieldsEnabled" ng-disabled="vm.view.toggleActiveHostsButtonIsDisabled()" ng-click="vm.view.toggleActiveHosts()">Toggle Active Hosts</button>
+    <button type="button" class="btn btn-default" ng-if="vm.view.configFieldsEnabled" ng-disabled="!form.$valid" ng-click="vm.save()">Save</button>
   </div>
+</div>
 
 </form>
