@@ -23,8 +23,12 @@
     <span class="help-block" ng-if="form.Upstream.$dirty && form.Upstream.$error.pattern">Upstream name cannot contain underscores or special characters. It should start with the environment name.</span>
   </div>
   <div class="form-group">
+    {{vm.view.showEnvironmentField}}
     <label class="col-md-1 control-label text-left">Environment:</label>
-    <div class="col-md-2">
+    <div class="col-md-2" ng-if="!vm.view.showEnvironmentField">
+      <label class="control-label text-left nonbold">{{vm.upstream.Value.EnvironmentName}}</label>
+    </div>
+    <div class="col-md-2" ng-if="vm.view.showEnvironmentField">
       <select class="form-control"
       name="EnvironmentName"
       required=""

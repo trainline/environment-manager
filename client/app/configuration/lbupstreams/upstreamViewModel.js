@@ -23,6 +23,7 @@ angular.module('EnvironmentManager.configuration').factory('UpstreamViewModel', 
 
     self.showEnvironmentEditorField = isCopyMode;
     self.showEnvironmentReadOnlyField = !isCopyMode;
+    self.showEnvironmentField = !isEditMode;
 
     if (isNewMode) {
       self.newHost = _.clone(defaultHostTemplate);
@@ -53,6 +54,8 @@ angular.module('EnvironmentManager.configuration').factory('UpstreamViewModel', 
       self.showError = true;
       self.errorMessage = error;
     };
+
+    self.showEnvironment
 
     self.showCreateHostLink = function () {
       return !self.newHost && self.configFieldsEnabled;
