@@ -1,6 +1,6 @@
 {
   "name": "environmentmanager",
-  "version": "3.42.4",
+  "version": "3.43.0",
   "description": "EnvironmentManager Server",
   "homepage": "https://trainline.github.io/environment-manager/",
   "bugs": {
@@ -19,7 +19,7 @@
     "start": "node index.js",
     "debug": "nodemon --debug-brk index.js",
     "dev": "nodemon index.js",
-    "start-debug":"REMOTE_DEBUG=true DEBUG_PORT=60101 node --inspect=60101 index.js",
+    "start-debug": "REMOTE_DEBUG=true DEBUG_PORT=60101 node --inspect=60101 index.js",
     "lint": "eslint . --ext .js --quiet",
     "lint-rule": "eslint . --ext .js --quiet --parser-options {ecmaVersion:6} --rule ",
     "lint-and-test": "npm run lint -s && npm test -s",
