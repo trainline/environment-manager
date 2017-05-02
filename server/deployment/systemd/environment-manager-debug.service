@@ -1,15 +1,13 @@
 [Unit]
-Conflicts=environment-manager-debug.service
+Conflicts=environment-manager.service
 
 [Service]
 EnvironmentFile=/etc/environment-manager.env
 WorkingDirectory=/opt/environment-manager/
-ExecStart=/usr/bin/npm start
+ExecStart=/usr/bin/npm run start-debug
 
 Restart=always
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=environment-manager
+SyslogIdentifier=environment-manager-debug
 
 [Install]
 WantedBy=multi-user.target

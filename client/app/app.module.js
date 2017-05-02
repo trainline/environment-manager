@@ -66,5 +66,10 @@ app.run(function ($rootScope, $timeout, $window) {
       $rootScope.$broadcast('cookie-expired');
     }, (window.user.getExpiration() - new Date().getTime()));
   }
+
+  if ($window.remoteDebugger !== undefined) {
+    $rootScope.showDebug = true;
+    $rootScope.debugAddress = $window.remoteDebugger;
+  }
 });
 
