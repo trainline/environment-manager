@@ -55,8 +55,6 @@ angular.module('EnvironmentManager.configuration').factory('UpstreamViewModel', 
       self.errorMessage = error;
     };
 
-    self.showEnvironment
-
     self.showCreateHostLink = function () {
       return !self.newHost && self.configFieldsEnabled;
     };
