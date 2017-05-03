@@ -11,8 +11,8 @@ module.exports = function ({ managedAccounts }) {
     managedAccounts = Array.from(new Set(managedAccounts || []));
 
     function trigger(functionName, sourceArn) {
-    return Object.assign({ "Condition": "ThisIsMasterAccount" }, triggerAll(functionName, sourceArn));
-}
+        return Object.assign({ "Condition": "ThisIsMasterAccount" }, triggerAll(functionName, sourceArn));
+    }
 
     return {
         "AWSTemplateFormatVersion": "2010-09-09",
@@ -453,156 +453,6 @@ module.exports = function ({ managedAccounts }) {
                     "Threshold": 1.6
                 }
             },
-            "ConfigDeploymentExecutionStatus": {
-                "Type": "AWS::DynamoDB::Table",
-                "Properties": {
-                    "AttributeDefinitions": [
-                        {
-                            "AttributeName": "DeploymentID",
-                            "AttributeType": "S"
-                        }
-                    ],
-                    "KeySchema": [
-                        {
-                            "AttributeName": "DeploymentID",
-                            "KeyType": "HASH"
-                        }
-                    ],
-                    "ProvisionedThroughput": {
-                        "ReadCapacityUnits": 10,
-                        "WriteCapacityUnits": 2
-                    },
-                    "TableName": "ConfigDeploymentExecutionStatus"
-                }
-            },
-            "AlertReadCapacityConfigDeploymentExecutionStatus": {
-                "Type": "AWS::CloudWatch::Alarm",
-                "Properties": {
-                    "ActionsEnabled": true,
-                    "AlarmActions": [{ "Ref": "pAlertSNSTopic" }],
-                    "AlarmDescription": "ReadCapacityConfigDeploymentExecutionStatus",
-                    "AlarmName": "AlertReadCapacityConfigDeploymentExecutionStatus",
-                    "ComparisonOperator": "GreaterThanThreshold",
-                    "Dimensions": [{ "Name": "TableName", "Value": "ConfigDeploymentExecutionStatus" }],
-                    "EvaluationPeriods": 1,
-                    // "InsufficientDataActions": [""]
-                    "MetricName": "ConsumedReadCapacityUnits",
-                    "Namespace": "AWS/DynamoDB",
-                    // "OKActions": [""]
-                    "Period": 60,
-                    "Statistic": "Sum",
-                    "Threshold": 8
-                }
-            },
-            "AlertWriteCapacityConfigDeploymentExecutionStatus": {
-                "Type": "AWS::CloudWatch::Alarm",
-                "Properties": {
-                    "ActionsEnabled": true,
-                    "AlarmActions": [{ "Ref": "pAlertSNSTopic" }],
-                    "AlarmDescription": "WriteCapacityConfigDeploymentExecutionStatus",
-                    "AlarmName": "AlertWriteCapacityConfigDeploymentExecutionStatus",
-                    "ComparisonOperator": "GreaterThanThreshold",
-                    "Dimensions": [{ "Name": "TableName", "Value": "ConfigDeploymentExecutionStatus" }],
-                    "EvaluationPeriods": 1,
-                    // "InsufficientDataActions": [""]
-                    "MetricName": "ConsumedWriteCapacityUnits",
-                    "Namespace": "AWS/DynamoDB",
-                    // "OKActions": [""]
-                    "Period": 60,
-                    "Statistic": "Sum",
-                    "Threshold": 1.6
-                }
-            },
-            "ConfigCompletedDeployments": {
-                "Type": "AWS::DynamoDB::Table",
-                "Properties": {
-                    "AttributeDefinitions": [
-                        {
-                            "AttributeName": "DeploymentID",
-                            "AttributeType": "S"
-                        },
-                        {
-                            "AttributeName": "StartTimestamp",
-                            "AttributeType": "S"
-                        },
-                        {
-                            "AttributeName": "StartDate",
-                            "AttributeType": "S"
-                        }
-                    ],
-                    "GlobalSecondaryIndexes": [
-                        {
-                            "IndexName": "StartDate-StartTimestamp-index",
-                            "KeySchema": [
-                                {
-                                    "AttributeName": "StartDate",
-                                    "KeyType": "HASH"
-                                },
-                                {
-                                    "AttributeName": "StartTimestamp",
-                                    "KeyType": "RANGE"
-                                }
-                            ],
-                            "Projection": {
-                                "ProjectionType": "ALL"
-                            },
-                            "ProvisionedThroughput": {
-                                "ReadCapacityUnits": 10,
-                                "WriteCapacityUnits": 2
-                            }
-                        }
-                    ],
-                    "KeySchema": [
-                        {
-                            "AttributeName": "DeploymentID",
-                            "KeyType": "HASH"
-                        }
-                    ],
-                    "ProvisionedThroughput": {
-                        "ReadCapacityUnits": 10,
-                        "WriteCapacityUnits": 2
-                    },
-                    "TableName": "ConfigCompletedDeployments"
-                }
-            },
-            "AlertReadCapacityConfigCompletedDeployments": {
-                "Type": "AWS::CloudWatch::Alarm",
-                "Properties": {
-                    "ActionsEnabled": true,
-                    "AlarmActions": [{ "Ref": "pAlertSNSTopic" }],
-                    "AlarmDescription": "ReadCapacityConfigCompletedDeployments",
-                    "AlarmName": "AlertReadCapacityConfigCompletedDeployments",
-                    "ComparisonOperator": "GreaterThanThreshold",
-                    "Dimensions": [{ "Name": "TableName", "Value": "ConfigCompletedDeployments" }],
-                    "EvaluationPeriods": 1,
-                    // "InsufficientDataActions": [""]
-                    "MetricName": "ConsumedReadCapacityUnits",
-                    "Namespace": "AWS/DynamoDB",
-                    // "OKActions": [""]
-                    "Period": 60,
-                    "Statistic": "Sum",
-                    "Threshold": 8
-                }
-            },
-            "AlertWriteCapacityConfigCompletedDeployments": {
-                "Type": "AWS::CloudWatch::Alarm",
-                "Properties": {
-                    "ActionsEnabled": true,
-                    "AlarmActions": [{ "Ref": "pAlertSNSTopic" }],
-                    "AlarmDescription": "WriteCapacityConfigCompletedDeployments",
-                    "AlarmName": "AlertWriteCapacityConfigCompletedDeployments",
-                    "ComparisonOperator": "GreaterThanThreshold",
-                    "Dimensions": [{ "Name": "TableName", "Value": "ConfigCompletedDeployments" }],
-                    "EvaluationPeriods": 1,
-                    // "InsufficientDataActions": [""]
-                    "MetricName": "ConsumedWriteCapacityUnits",
-                    "Namespace": "AWS/DynamoDB",
-                    // "OKActions": [""]
-                    "Period": 60,
-                    "Statistic": "Sum",
-                    "Threshold": 1.6
-                }
-            },
             "ConfigEnvironmentTypes": {
                 "Type": "AWS::DynamoDB::Table",
                 "Condition": "ThisIsMasterAccount",
@@ -1024,14 +874,14 @@ module.exports = function ({ managedAccounts }) {
                         {
                             "AttributeName": "UserName",
                             "KeyType": "HASH"
-                }
+                        }
                     ],
                     "ProvisionedThroughput": {
                         "ReadCapacityUnits": 10,
                         "WriteCapacityUnits": 2
                     },
                     "TableName": "InfraEnvManagerSessions"
-            }
+                }
             },
             "AlertReadCapacityInfraEnvManagerSessions": {
                 "Type": "AWS::CloudWatch::Alarm",
@@ -1246,184 +1096,6 @@ module.exports = function ({ managedAccounts }) {
                 "auditTriggerConfigDeploymentMaps": trigger('lambdaInfraEnvironmentManagerAudit', streamArn('ConfigDeploymentMaps')),
                 "auditTriggerInfraConfigAccounts": trigger('lambdaInfraEnvironmentManagerAudit', streamArn('InfraConfigAccounts')),
                 "auditTriggerConfigNotificationSettings": trigger('lambdaInfraEnvironmentManagerAudit', streamArn('ConfigNotificationSettings')),
-                "roleInfraDynamoStreamReplicaWriter": {
-                    "Type": "AWS::IAM::Role",
-                    "Condition": "ThisIsNotMasterAccount",
-                    "Properties": {
-                        "AssumeRolePolicyDocument": {
-                            "Version": "2012-10-17",
-                            "Statement": [
-                                {
-                                    "Sid": "",
-                                    "Effect": "Allow",
-                                    "Principal": {
-                                        "AWS": [
-                                            {
-                                                "Fn::Sub": "arn:aws:iam::${pMasterAccountId}:root"
-                                            }
-                                        ]
-                                    },
-                                    "Action": "sts:AssumeRole"
-                                }
-                            ]
-                        },
-                        "ManagedPolicyArns": [
-                            "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
-                        ],
-                        "Policies": [
-                            {
-                                "PolicyName": "roleInfraDynamoStreamReplicaWriterPolicy",
-                                "PolicyDocument": {
-                                    "Version": "2012-10-17",
-                                    "Statement": [
-                                        {
-                                            "Effect": "Allow",
-                                            "Action": [
-                                                "dynamodb:DeleteItem",
-                                                "dynamodb:PutItem"
-                                            ],
-                                            "Resource": [
-                                                'ConfigEnvironments',
-                                                'ConfigServices',
-                                                'ConfigDeploymentMaps',
-                                                'ConfigLBSettings',
-                                                'ConfigLBUpstream',
-                                                'ConfigDeploymentExecutionStatus',
-                                                'ConfigEnvironmentTypes',
-                                                'InfraAsgIPs',
-                                                'InfraConfigAccounts',
-                                                'InfraConfigClusters',
-                                                'InfraConfigPermissions',
-                                                'InfraEnvManagerSessions',
-                                                'InfraOpsEnvironment'
-                                            ].map(name => ({
-                                                "Fn::Sub": `arn:aws:dynamodb:\${AWS::Region}:\${AWS::AccountId}:table/\${${name}}`
-                                            }))
-                                        }
-                                    ]
-                                }
-                            }
-                        ],
-                        "RoleName": "roleInfraDynamoStreamReplicaWriter"
-                    }
-                },
-                "lambdaInfraDynamoStreamReplica": {
-                    "Type": "AWS::Lambda::Function",
-                    "Condition": "ThisIsMasterAccount",
-                    "DependsOn": [
-                        "ConfigEnvironments",
-                        "ConfigServices",
-                        "ConfigDeploymentMaps",
-                        "ConfigLBSettings",
-                        "ConfigLBUpstream",
-                        "ConfigDeploymentExecutionStatus",
-                        "ConfigEnvironmentTypes",
-                        "InfraAsgIPs",
-                        "InfraChangeAudit",
-                        "InfraConfigAccounts",
-                        "InfraConfigClusters",
-                        "InfraConfigPermissions",
-                        "InfraEnvManagerSessions",
-                        "InfraOpsEnvironment"
-                    ],
-                    "Properties": {
-                        "Code": "./lambda/InfraDynamoStreamReplica/infra-dynamo-stream-replica.zip",
-                        "Description": "This function replicates data from DynamoDB tables in this account to the corresponding tables in the child accounts it manages.",
-                        "FunctionName": "InfraDynamoStreamReplica",
-                        "Handler": "index.handler",
-                        "MemorySize": 128,
-                        "Role": {
-                            "Fn::GetAtt": [
-                                "roleInfraDynamoStreamReplica",
-                                "Arn"
-                            ]
-                        },
-                        "Runtime": "nodejs4.3",
-                        "Timeout": 30
-                    }
-                },
-                "alertInfraDynamoStreamReplica": {
-                    "Type": "AWS::CloudWatch::Alarm",
-                    "Properties": {
-                        "ActionsEnabled": true,
-                        "AlarmActions": [{ "Ref": "pAlertSNSTopic" }],
-                        "AlarmDescription": "If there is an error in this lambda, report to SNS topic.",
-                        "AlarmName": "alertInfraDynamoStreamReplica",
-                        "ComparisonOperator": "GreaterThanThreshold",
-                        "EvaluationPeriods": 1,
-                        "MetricName": "Errors",
-                        "Namespace": "AWS/Lambda",
-                        "Dimensions": [
-                            {
-                                "Name": "FunctionName",
-                                "Value": "InfraDynamoStreamReplica"
-                            }
-                        ],
-                        "Period": 60,
-                        "Statistic": "Sum",
-                        "Threshold": 0
-                    }
-                },
-                "roleInfraDynamoStreamReplica": {
-                    "Type": "AWS::IAM::Role",
-                    "Condition": "ThisIsMasterAccount",
-                    "Properties": {
-                        "AssumeRolePolicyDocument": {
-                            "Version": "2012-10-17",
-                            "Statement": [
-                                {
-                                    "Effect": "Allow",
-                                    "Principal": {
-                                        "Service": "lambda.amazonaws.com"
-                                    },
-                                    "Action": "sts:AssumeRole"
-                                }
-                            ]
-                        },
-                        "ManagedPolicyArns": [
-                            "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
-                        ],
-                        "Policies": [
-                            {
-                                "PolicyName": "roleInfraDynamoStreamReplicaPolicy",
-                                "PolicyDocument": {
-                                    "Version": "2012-10-17",
-                                    "Statement": [
-                                        {
-                                            "Action": "sts:AssumeRole",
-                                            "Effect": "Allow",
-                                            "Resource": managedAccounts.map(accountNumber => `arn:aws:iam::${accountNumber}:role/roleInfraDynamoStreamReplicaWriter`)
-                                        },
-                                        {
-                                            "Effect": "Allow",
-                                            "Action": [
-                                                "dynamodb:GetRecords",
-                                                "dynamodb:GetShardIterator",
-                                                "dynamodb:DescribeStream",
-                                                "dynamodb:ListStreams"
-                                            ],
-                                            "Resource": [
-                                                'ConfigServices',
-                                                'InfraConfigClusters',
-                                                'ConfigEnvironments',
-                                                'ConfigEnvironmentTypes',
-                                                'ConfigDeploymentMaps',
-                                                'InfraConfigAccounts',
-                                                'InfraOpsEnvironment'
-                                            ].map(streamArn)
-                                        }
-                                    ]
-                                }
-                            }
-                        ]
-                    }
-                },
-                "replicaTriggerInfraConfigClusters": trigger('lambdaInfraDynamoStreamReplica', streamArn('InfraConfigClusters')),
-                "replicaTriggerInfraOpsEnvironment": trigger('lambdaInfraDynamoStreamReplica', streamArn('InfraOpsEnvironment')),
-                "replicaTriggerConfigEnvironments": trigger('lambdaInfraDynamoStreamReplica', streamArn('ConfigEnvironments')),
-                "replicaTriggerConfigDeploymentMaps": trigger('lambdaInfraDynamoStreamReplica', streamArn('ConfigDeploymentMaps')),
-                "replicaTriggerConfigServices": trigger('lambdaInfraDynamoStreamReplica', streamArn('ConfigServices')),
-                "replicaTriggerConfigEnvironmentTypes": trigger('lambdaInfraDynamoStreamReplica', streamArn('ConfigEnvironmentTypes')),
                 "roleInfraEnvironmentManagerAuditWriter": {
                     "Type": "AWS::IAM::Role",
                     "Condition": "ThisIsMasterAccount",
@@ -1569,7 +1241,7 @@ module.exports = function ({ managedAccounts }) {
                         ],
                         "Policies": [
                             {
-                                "PolicyName": "roleInfraDynamoStreamReplicaPolicy",
+                                "PolicyName": "roleInfraAsgScalePolicy",
                                 "PolicyDocument": {
                                     "Version": "2012-10-17",
                                     "Statement": [

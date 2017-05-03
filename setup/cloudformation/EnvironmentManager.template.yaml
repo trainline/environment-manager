@@ -45,11 +45,23 @@ Parameters:
   pRedisSubnets:
     Type: "List<AWS::EC2::Subnet::Id>"
     Description: Redis Access Subnets
+  pExternalAlertTopic:
+    Type: String
+    Default: ""
+    Description: SNS topic to receive Environment Manager Alerts
+Conditions:
+  AlertToInternalTopic: !Equals ["", !Ref pExternalAlertTopic]
 Resources:
+  InternalAlertTopic:
+    Type: "AWS::SNS::Topic"
+    Condition: AlertToInternalTopic
+    Properties:
+      DisplayName: Environment Manager Alerts
   EnvironmentManagerCommon:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
+        pAlertSNSTopic: !If [AlertToInternalTopic, !Ref InternalAlertTopic, !Ref pExternalAlertTopic]
         pMasterAccountId: !Ref "AWS::AccountId"
       TemplateURL: ./EnvironmentManagerCommonResources.template.json
       TimeoutInMinutes: 30
@@ -57,6 +69,7 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
+        pAlertSNSTopic: !If [AlertToInternalTopic, !Ref InternalAlertTopic, !Ref pExternalAlertTopic]
         pConfigurationBucket: !Ref pConfigurationBucket
         pSecretsBucket: !Ref pSecretsBucket
         pBackupsBucket: !Ref pBackupsBucket
@@ -79,6 +92,7 @@ Resources:
       Type: AWS::CloudFormation::Stack
       Properties:
         Parameters:
+          pAlertSNSTopic: !If [AlertToInternalTopic, !Ref InternalAlertTopic, !Ref pExternalAlertTopic]
           pMasterAccountId: !Ref AWS::AccountId
           pDeploymentLogsBucket: !Ref pDeploymentLogsBucket
           pPackagesBucket: !Ref pPackagesBucket
