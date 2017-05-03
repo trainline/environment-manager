@@ -48,8 +48,8 @@ describe('UniqueServiceVersionDeploymentValidator: ', function () {
       key: `environments/${environmentName}/services/${serviceName}/${serviceVersion}/definition`,
       value: {
         Service: {
-          Name: `${environmentName}-${serviceName}-${serviceSlice}`,
-          ID: `${environmentName}-${serviceName}-${serviceSlice}`,
+          Name: `${environmentName}-${serviceName}-${slice}`,
+          ID: `${environmentName}-${serviceName}-${slice}`,
           Address: '',
           Port: 0,
           Tags: [
@@ -89,23 +89,6 @@ describe('UniqueServiceVersionDeploymentValidator: ', function () {
       });
     });
 
-    it('queries the deployed services', () => {
-      let deployments = { scanRunning: () => Promise.resolve([]) };
-      let sender = { sendQuery: sinon.spy(x => Promise.resolve([])) };
-      let sut = validator(deployments, sender);
-      return sut.validate(deployment, configuration)
-        .then(() =>
-          sender.sendQuery.calledWithMatch({
-            query: {
-              name: 'GetTargetState',
-              environment: environmentName,
-              recurse: true,
-              key: `environments/${environmentName}/services/${serviceName}/${serviceVersion}/definition`
-            }
-          })
-        ).should.finally.be.true();
-    });
-
     it('fails when the service is being deployed', () => {
       let deployments = { scanRunning: () => Promise.resolve([{}]) };
       let sut = validator(deployments);
@@ -136,6 +119,12 @@ describe('UniqueServiceVersionDeploymentValidator: ', function () {
 
     it('succeeds when the same version of the same service is deployed to the same slice', function () {
       let sender = mockSender(() => Promise.resolve(cannedBlueGreenResponse(serviceSlice)));
+      let sut = validator(deployments, sender);
+      return sut.validate(deployment, configuration).should.be.fulfilled();
+    });
+
+    it('succeeds when the same version of the same service is deployed to different slices', function () {
+      let sender = mockSender(() => Promise.resolve(cannedBlueGreenResponse('green')));
       let sut = validator(deployments, sender);
       return sut.validate(deployment, configuration).should.be.fulfilled();
     });
