@@ -90,6 +90,10 @@ module.exports = function ({ managedAccounts }) {
                     "false",
                     "true"
                 ]
+            },
+            "pAlertSNSTopic": {
+                "Type": "String",
+                "Description": "SNS Topic ARN for lambda alerts."
             }
         },
         "Conditions": {
@@ -123,6 +127,44 @@ module.exports = function ({ managedAccounts }) {
                         "WriteCapacityUnits": 2
                     },
                     "TableName": "ConfigDeploymentExecutionStatus"
+                }
+            },
+            "AlertReadCapacityConfigDeploymentExecutionStatus": {
+                "Type": "AWS::CloudWatch::Alarm",
+                "Properties": {
+                    "ActionsEnabled": true,
+                    "AlarmActions": [{ "Ref": "pAlertSNSTopic" }],
+                    "AlarmDescription": "ReadCapacityConfigDeploymentExecutionStatus",
+                    "AlarmName": "AlertReadCapacityConfigDeploymentExecutionStatus",
+                    "ComparisonOperator": "GreaterThanThreshold",
+                    "Dimensions": [{ "Name": "TableName", "Value": "ConfigDeploymentExecutionStatus" }],
+                    "EvaluationPeriods": 1,
+                    // "InsufficientDataActions": [""]
+                    "MetricName": "ConsumedReadCapacityUnits",
+                    "Namespace": "AWS/DynamoDB",
+                    // "OKActions": [""]
+                    "Period": 60,
+                    "Statistic": "Sum",
+                    "Threshold": 8
+                }
+            },
+            "AlertWriteCapacityConfigDeploymentExecutionStatus": {
+                "Type": "AWS::CloudWatch::Alarm",
+                "Properties": {
+                    "ActionsEnabled": true,
+                    "AlarmActions": [{ "Ref": "pAlertSNSTopic" }],
+                    "AlarmDescription": "WriteCapacityConfigDeploymentExecutionStatus",
+                    "AlarmName": "AlertWriteCapacityConfigDeploymentExecutionStatus",
+                    "ComparisonOperator": "GreaterThanThreshold",
+                    "Dimensions": [{ "Name": "TableName", "Value": "ConfigDeploymentExecutionStatus" }],
+                    "EvaluationPeriods": 1,
+                    // "InsufficientDataActions": [""]
+                    "MetricName": "ConsumedWriteCapacityUnits",
+                    "Namespace": "AWS/DynamoDB",
+                    // "OKActions": [""]
+                    "Period": 60,
+                    "Statistic": "Sum",
+                    "Threshold": 1.6
                 }
             },
             "ConfigCompletedDeployments": {
@@ -175,6 +217,44 @@ module.exports = function ({ managedAccounts }) {
                         "WriteCapacityUnits": 2
                     },
                     "TableName": "ConfigCompletedDeployments"
+                }
+            },
+            "AlertReadCapacityConfigCompletedDeployments": {
+                "Type": "AWS::CloudWatch::Alarm",
+                "Properties": {
+                    "ActionsEnabled": true,
+                    "AlarmActions": [{ "Ref": "pAlertSNSTopic" }],
+                    "AlarmDescription": "ReadCapacityConfigCompletedDeployments",
+                    "AlarmName": "AlertReadCapacityConfigCompletedDeployments",
+                    "ComparisonOperator": "GreaterThanThreshold",
+                    "Dimensions": [{ "Name": "TableName", "Value": "ConfigCompletedDeployments" }],
+                    "EvaluationPeriods": 1,
+                    // "InsufficientDataActions": [""]
+                    "MetricName": "ConsumedReadCapacityUnits",
+                    "Namespace": "AWS/DynamoDB",
+                    // "OKActions": [""]
+                    "Period": 60,
+                    "Statistic": "Sum",
+                    "Threshold": 8
+                }
+            },
+            "AlertWriteCapacityConfigCompletedDeployments": {
+                "Type": "AWS::CloudWatch::Alarm",
+                "Properties": {
+                    "ActionsEnabled": true,
+                    "AlarmActions": [{ "Ref": "pAlertSNSTopic" }],
+                    "AlarmDescription": "WriteCapacityConfigCompletedDeployments",
+                    "AlarmName": "AlertWriteCapacityConfigCompletedDeployments",
+                    "ComparisonOperator": "GreaterThanThreshold",
+                    "Dimensions": [{ "Name": "TableName", "Value": "ConfigCompletedDeployments" }],
+                    "EvaluationPeriods": 1,
+                    // "InsufficientDataActions": [""]
+                    "MetricName": "ConsumedWriteCapacityUnits",
+                    "Namespace": "AWS/DynamoDB",
+                    // "OKActions": [""]
+                    "Period": 60,
+                    "Statistic": "Sum",
+                    "Threshold": 1.6
                 }
             },
             "loadBalancerEnvironmentManager": {
