@@ -33,6 +33,35 @@ function compareAndSetVersionOnReplace({ record, expectedVersion, expressions })
   }
 }
 
+function compareAndSetVersionOnPut(hashKeyAttributeName) {
+  return ({ record, expectedVersion, expressions }) => {
+    if (expectedVersion === undefined) {
+      throw new Error('expectedVersion is required');
+    }
+    let audit = Object.assign({}, record.Audit, { Version: expectedVersion + 1 });
+    let condition =
+      ['or',
+        ['attribute_not_exists', ['at', hashKeyAttributeName]],
+        ['=', ['at', 'Audit', 'Version'], ['val', expectedVersion]]];
+    if (expressions && expressions.ConditionExpression) {
+      let newExpressions = {
+        ConditionExpression: ['and', expressions.ConditionExpression, condition]
+      };
+      return {
+        record: Object.assign({}, record, { Audit: audit }),
+        expressions: Object.assign({}, expressions, newExpressions)
+      };
+    } else {
+      return {
+        record: Object.assign({}, record, { Audit: audit }),
+        expressions: {
+          ConditionExpression: condition
+        }
+      };
+    }
+  };
+}
+
 function compareAndSetVersionOnCreate(hashKeyAttributeName) {
   return ({ record, expressions }) => {
     let audit = Object.assign({}, record.Audit, { Version: 1 });
@@ -106,16 +135,35 @@ function compareAndSetVersionOnUpdate({ key, expectedVersion, expressions }) {
   return {
     key,
     expressions: Object.assign({},
-    expressions,
-    { ConditionExpression: ConditionExpression ? ['and', ConditionExpression, optimisticCheck] : optimisticCheck },
-    { UpdateExpression: UpdateExpression.concat(updateVersion) })
+      expressions,
+      { ConditionExpression: ConditionExpression ? ['and', ConditionExpression, optimisticCheck] : optimisticCheck },
+      { UpdateExpression: UpdateExpression.concat(updateVersion) })
+  };
+}
+
+function setVersionOnUpdate({ key, expressions }) {
+  let { ConditionExpression, UpdateExpression } = expressions;
+  let updateVersion = [['set',
+    ['at', 'Audit', 'Version'],
+    ['+',
+      ['at', 'Audit', 'Version'],
+      ['val', 1]]]];
+
+  return {
+    key,
+    expressions: Object.assign({},
+      expressions,
+      ConditionExpression ? { ConditionExpression } : {},
+      { UpdateExpression: UpdateExpression.concat(updateVersion) })
   };
 }
 
 module.exports = {
   compareAndSetVersionOnReplace,
   compareAndSetVersionOnCreate,
+  compareAndSetVersionOnPut,
   compareVersionOnDelete,
   compareAndSetVersionOnUpdate,
+  setVersionOnUpdate,
   versionOf
 };

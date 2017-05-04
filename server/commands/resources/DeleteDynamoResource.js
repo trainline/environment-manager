@@ -16,6 +16,10 @@ function* handler(command) {
 
   if (command.key) params.key = command.key;
   if (command.range) params.range = command.range;
+  params.metadata = {
+    TransactionID: command.commandId,
+    User: command.username
+  };
 
   // Mark item as deleted in order to trace the right audit
   // Run this step only if auditing is enabled

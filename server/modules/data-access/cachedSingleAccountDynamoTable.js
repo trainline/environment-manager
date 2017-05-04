@@ -11,7 +11,7 @@ let { makeWritable } = require('modules/data-access/dynamoItemFilter');
 let dynamoVersion = require('modules/data-access/dynamoVersion');
 let dynamoTable = require('modules/data-access/dynamoTable');
 let dynamoTableCache = require('modules/data-access/dynamoTableCache');
-let dynamoSoftDelete = require('modules/data-access/dynamoSoftDelete');
+let { softDelete } = require('modules/data-access/dynamoSoftDelete');
 let fp = require('lodash/fp');
 
 function factory(physicalTableName, { ttl }) {
@@ -31,23 +31,11 @@ function factory(physicalTableName, { ttl }) {
   }
 
   function $delete(item, expectedVersion) {
+    let { key, metadata } = item;
     return tableDescriptionPromise().then((description) => {
-      // If the expected version is undefined, read it from the table
-      let getExpectedVersion = expectedVersion !== undefined
-        ? () => Promise.resolve(expectedVersion)
-        : () => dynamoTable.get(tableArn(description), item.key).then(dynamoVersion.versionOf);
-
-      let replaceWithDeleteMarker = version => fp.flow(
-        x => ({ record: dynamoSoftDelete.deleteMarkerFor(x.key), metadata: x.metadata }),
-        attachAuditMetadata,
-        record => ({ record, expectedVersion: version }),
-        dynamoVersion.compareAndSetVersionOnReplace,
-        cachedTable.replace.bind(null, tableArn(description))
-      );
-
-      return getExpectedVersion()
-        .then(version => replaceWithDeleteMarker(version)(item))
-        .then(_ => cachedTable.delete(tableArn(description), { key: item.key }));
+      let table = tableArn(description);
+      return cachedTable.update(table, softDelete({ key, metadata, expectedVersion }))
+        .then(_ => cachedTable.delete(table, { key }));
     });
   }
 
