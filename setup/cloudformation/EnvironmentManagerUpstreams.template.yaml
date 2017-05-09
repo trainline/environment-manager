@@ -1,0 +1,137 @@
+AWSTemplateFormatVersion: "2010-09-09"
+# A template for a stack that contains an ElastiCache Redis Cluster.
+Description: Environment Manager Resources
+Parameters:
+  pExecutionRole:
+    Description: role to execute the Lambda function
+    Type: String
+  pCrossAccountRole:
+    Description: role to assume for cross-account writes
+    Type: String
+  pDestinationTable:
+    Description: destination table for cross-account writes
+    Type: String
+  pAlertSNSTopic:
+    Description: SNS Topic ARN for lambda alerts.
+    Type: String
+  pAuditLambdaFunction:
+    Description: the lambda function that audits upstream changes
+    Type: String
+  pResourcePrefix:
+    Description: optional resource name prefix
+    Type: String
+    Default: ""
+Resources:
+  tableInfraConfigLBUpstream:
+    Type: "AWS::DynamoDB::Table"
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: Environment
+          AttributeType: S
+        - AttributeName: Key
+          AttributeType: S
+        - AttributeName: LoadBalancerGroup
+          AttributeType: S
+        - AttributeName: Service
+          AttributeType: S
+        - AttributeName: Upstream
+          AttributeType: S
+      GlobalSecondaryIndexes:
+        - IndexName: Environment-Service-index
+          KeySchema:
+            - AttributeName: Environment
+              KeyType: HASH
+            - AttributeName: Service
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 10
+            WriteCapacityUnits: 2
+        - IndexName: Environment-Upstream-index
+          KeySchema:
+            - AttributeName: Environment
+              KeyType: HASH
+            - AttributeName: Upstream
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 10
+            WriteCapacityUnits: 2
+        - IndexName: LoadBalancerGroup-index
+          KeySchema:
+            - AttributeName: LoadBalancerGroup
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 10
+            WriteCapacityUnits: 2
+      KeySchema:
+        - AttributeName: Key
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 10
+        WriteCapacityUnits: 2
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: !Sub ${pResourcePrefix}InfraConfigLBUpstream
+  lambdaInfraEnvironmentManagerUpstreamRouter:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Code: ./lambda/InfraEnvironmentManagerUpstreamRouter/infra-environment-manager-upstream-router.zip
+      Description: This function routes upstream configuration records to the correct DynamoDB table in each child account.
+      Environment:
+        Variables:
+          DESTINATION_TABLE: !Ref pDestinationTable
+          ROLE_NAME: !Ref pCrossAccountRole
+      FunctionName: !Sub ${pResourcePrefix}InfraEnvironmentManagerUpstreamRouter
+      Handler: index.handler
+      MemorySize: 128
+      Role: !Ref pExecutionRole
+      Runtime: nodejs6.10
+      Timeout: 10
+  alertInfraEnvironmentManagerUpstreamRouter:
+    Type: "AWS::CloudWatch::Alarm"
+    Properties:
+      ActionsEnabled: true
+      AlarmActions:
+        - !Ref pAlertSNSTopic
+      AlarmDescription: Error propagating upstream change to the destination account
+      AlarmName: !Sub ${pResourcePrefix}alertInfraEnvironmentManagerUpstreamRouter
+      ComparisonOperator: GreaterThanThreshold
+      EvaluationPeriods: 1
+      MetricName: Errors
+      Namespace: AWS/Lambda
+      Dimensions:
+        - Name: FunctionName
+          Value: !Ref lambdaInfraEnvironmentManagerUpstreamRouter
+      Period: 60
+      Statistic: Sum
+      Threshold: 0
+  triggerInfraEnvironmentManagerUpstreamRouter:
+    Type: "AWS::Lambda::EventSourceMapping"
+    Properties:
+      BatchSize: 5
+      Enabled: true
+      EventSourceArn: !GetAtt tableInfraConfigLBUpstream.StreamArn
+      FunctionName: !Ref lambdaInfraEnvironmentManagerUpstreamRouter
+      StartingPosition: LATEST
+  triggerAuditInfraConfigLBSettings:
+    Type: "AWS::Lambda::EventSourceMapping"
+    Properties:
+      BatchSize: 5
+      Enabled: true
+      EventSourceArn: !GetAtt tableInfraConfigLBUpstream.StreamArn
+      FunctionName: !Ref pAuditLambdaFunction
+      StartingPosition: LATEST
+Outputs:
+  lambdaInfraEnvironmentManagerUpstreamRouter:
+    Description: The upstream router Lambda function
+    Value:
+      !GetAtt lambdaInfraEnvironmentManagerUpstreamRouter.Arn
+  tableInfraConfigLBUpstream:
+    Description: The upstream configuration table
+    Value:
+      !Ref tableInfraConfigLBUpstream
