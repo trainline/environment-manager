@@ -159,6 +159,15 @@ describe('dynamodb expression', function () {
           '#a.#b, #c.#d');
       });
     });
+    context('when I compile an and expression with a single subexpression', function () {
+      let input = ['and', ['=',
+        ['at', 'a', 'b'],
+        ['val', 'x']]];
+      let result = sut.compile(input);
+      it('the expression does not have duplicate parentheses.', function () {
+        result.Expression.should.eql('(#a.#b = :val0)');
+      });
+    });
   });
 });
 

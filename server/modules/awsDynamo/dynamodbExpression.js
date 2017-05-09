@@ -30,7 +30,10 @@ function expressionScope() {
 
 function compileOne(scope, expr) {
   let compile = compileOne.bind(null, scope);
-  let infix = ([fn, ...args]) => `(${args.map(compile).join(` ${fn} `)})`;
+  let infix = ([fn, ...args]) => {
+    let compiled = args.map(compile).join(` ${fn} `);
+    return args.length === 1 ? compiled : `(${compiled})`;
+  };
   let prefix = ([fn, ...args]) => `${fn}(${args.map(compile).join(', ')})`;
   let attr = ([, ...exprs]) => exprs.map(name => scope.nameExpressionAttributeName(name)).join('.');
   let val = ([, ...exprs]) => exprs.map(value => scope.nameExpressionAttributeValue(value)).join(', ');

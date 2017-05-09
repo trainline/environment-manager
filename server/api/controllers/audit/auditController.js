@@ -3,6 +3,7 @@
 'use strict';
 
 let notImplemented = require('api/api-utils/notImplemented');
+let { getTableName } = require('modules/awsResourceNameProvider');
 
 /* eslint-disable import/no-extraneous-dependencies */
 let auditLogReader = require('modules/auditLogReader');
@@ -37,7 +38,11 @@ function createAuditLogQuery(since, until, exclusiveStartKey, perPage, filter) {
 function createFilter(query) {
   logger.debug('Audit History: Creating filter.');
   let exprs = {
-    'Entity.Type': val => ['=', ['attr', 'Entity', 'Type'], ['val', val]],
+    'Entity.Type': val => (val === 'ConfigLBUpstream'
+      ? ['or',
+        ['=', ['attr', 'Entity', 'Type'], ['val', getTableName('ConfigLBUpstream')]],
+        ['=', ['attr', 'Entity', 'Type'], ['val', getTableName('InfraConfigLBUpstream')]]]
+      : ['=', ['attr', 'Entity', 'Type'], ['val', getTableName(val)]]),
     'ChangeType': val => ['=', ['attr', 'ChangeType'], ['val', val]],
     'Entity.Key': val => ['=', ['attr', 'Entity', 'Key'], ['val', val]]
   };
