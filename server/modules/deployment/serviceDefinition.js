@@ -10,6 +10,7 @@ function getKeyValue(deployment) {
   let serviceSlice = deployment.serviceSlice;
   let clusterName = deployment.clusterName;
   let serviceId = getServiceId(environmentName, serviceName, serviceSlice);
+  let servicePort = deployment.servicePort || 0;
   let serviceDefinitionKeyValue = {
     key: `environments/${environmentName}/services/${serviceName}/${serviceVersion}/definition`,
     value: {
@@ -17,7 +18,7 @@ function getKeyValue(deployment) {
         Name: serviceId,
         ID: serviceId,
         Address: '',
-        Port: 0,
+        Port: servicePort,
         Tags: [
           `environment_type:${environmentTypeName}`,
           `environment:${environmentName}`,
