@@ -74,9 +74,16 @@ function LBUpstreamTableResource(config, client) {
     }
     let tableArnP = mkArn({ tableName: physicalTableName(UPSTREAMS_TABLE) });
     let recordP = convertToNewModel(convertAuditPathsToNestedProperties(item));
-    return Promise.join(tableArnP, recordP, (t, r) => flow(
+    let expectedVersionP = expectedVersion
+      ? Promise.resolve(expectedVersion)
+      : this.get({ key: item.key, formatting: { exposeAudit: 'version-only' } })
+        .then(({ Version }) => Version);
+
+    function show(x) { console.log(x); return x; }
+    return Promise.join(tableArnP, recordP, expectedVersionP, (t, r, e) => flow(
       makeWritable,
-      record => ({ record, expectedVersion }),
+      record => ({ record, expectedVersion: e }),
+      show,
       dynamoVersion.compareAndSetVersionOnPut('Key'),
       dynamoTable.replace.bind(null, t)
     )(r));
