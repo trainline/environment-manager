@@ -79,7 +79,7 @@ function validateCommandAndCreateDeployment(command) {
     const opsEnvironment = yield OpsEnvironment.getByName(command.environmentName);
     const environmentType = yield environment.getEnvironmentType();
     command.accountName = environmentType.AWSAccountName;
-    const servicePort = yield GetServicePort(command.serviceName, command.serviceSlice);
+    const servicePortConfig = yield GetServicePort(command.serviceName, command.serviceSlice);
 
     if (opsEnvironment.Value.DeploymentsLocked) {
       throw new ResourceLockedError(`The environment ${environmentName} is currently locked for deployments. Contact the environment owner.`);
@@ -98,7 +98,7 @@ function validateCommandAndCreateDeployment(command) {
       serviceName: command.serviceName,
       serviceVersion: command.serviceVersion,
       serviceSlice: command.serviceSlice || '',
-      servicePort,
+      servicePortConfig,
       serverRole: roleName,
       serverRoleName: command.serverRoleName,
       clusterName: configuration.cluster.Name,

@@ -6,10 +6,11 @@ let sinon = require('sinon');
 let rewire = require('rewire');
 let assert = require('assert');
 
-describe('GetServicePort', function() {
+describe.only('GetServicePort', function() {
   let sut;
   let Service;
-  
+  const DEFAULT = { green:0, blue:0 };
+
   function setup(service) {
     Service = {
       getByName: sinon.stub().returns(Promise.resolve(service))
@@ -27,73 +28,50 @@ describe('GetServicePort', function() {
     }];
   }
   
-  it('returns 0 for no inputs', () => {
+  it('returns default port value for empty input', () => {
     setup();
-    return sut().then(result => assert.equal(result, 0));
-  });
-  
-  it('returns 0 for empty string inputs', () => {
-    setup();
-    return sut('', '').then(result => {
-      return assert.equal(result, 0);
-    });
+    return sut().then(result => assert.deepEqual(result, DEFAULT));
   });
   
   it('looks up the service config by name', () => {
-    return sut('mockServiceName', 'blue').then(result => {
-      assert.ok(Service.getByName.calledOnce)
+    const SERVICE_NAME = 'realyCoolMockServiceName';
+    return sut(SERVICE_NAME).then(result => {
+      assert.ok(Service.getByName.calledWith(SERVICE_NAME))
     });
   });
   
-  it('correctly resolves blue ports', () => {
+  it('correctly resolves when both ports are known', () => {
     const BLUE = 9134;
     const GREEN = 7265;
+    const EXPECTED = { blue:BLUE, green:GREEN };
     setup(mockService(BLUE, GREEN));
-    return sut('serviceName', 'blue').then(result => {
-      return assert.equal(result, BLUE);
+    return sut('serviceName').then(result => {
+      return assert.deepEqual(result, EXPECTED);
     });
   });
 
-  it('correctly resolves green ports', () => {
-    const BLUE = 6552;
-    const GREEN = 4461;
-    setup(mockService(BLUE, GREEN));
-    return sut('serviceName', 'green').then(result => {
-      return assert.equal(result, GREEN);
+  it('sets default blue port when only green port is known', () => {
+    const GREEN = 7825;
+    const EXPECTED = { blue:0, green:GREEN };
+    setup(mockService(undefined, GREEN));
+    return sut('serviceName').then(result => {
+      return assert.deepEqual(result, EXPECTED);
+    });
+  });
+
+  it('sets default green port when only blue port is known', () => {
+    const BLUE = 1105;
+    const EXPECTED = { blue:BLUE, green:0 };
+    setup(mockService(BLUE, undefined));
+    return sut('serviceName').then(result => {
+      return assert.deepEqual(result, EXPECTED);
     });
   });
   
-  it('is case insensitive', () => {
-    const BLUE = 9134;
-    const GREEN = 7265;
-    setup(mockService(BLUE, GREEN));
-    return sut('serviceName', 'bLuE').then(result => {
-      return assert.equal(result, BLUE);
-    });
-  });
-  
-  it('ignores whitespace', () => {
-    const BLUE = 6552;
-    const GREEN = 4461;
-    setup(mockService(BLUE, GREEN));
-    return sut(' serviceName ', '  green     ').then(result => {
-      return assert.equal(result, GREEN);
-    });
-  });
-  
-  it('returns 0 if the given slice is undefined', () => {
-    const BLUE = 6552;
-    const GREEN = 4461;
-    setup(mockService(BLUE));
-    return sut('serviceName', 'green').then(result => {
-      return assert.equal(result, 0);
-    });
-  });
-  
-  it('returns 0 if the service is undefined', () => {
+  it('returns default port values if the service is undefined', () => {
     setup(undefined);
-    return sut('serviceName', 'blue').then(result => {
-      return assert.equal(result, 0);
+    return sut('serviceName').then(result => {
+      return assert.deepEqual(result, DEFAULT);
     });
   });
 });
