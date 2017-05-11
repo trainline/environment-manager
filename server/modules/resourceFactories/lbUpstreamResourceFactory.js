@@ -5,40 +5,38 @@
 const UPSTREAMS_TABLE = 'InfraConfigLBUpstream';
 
 let Promise = require('bluebird');
-let utils = require('modules/utilities');
 let amazonClientFactory = require('modules/amazon-client/childAccountClient');
 let dynamoTable = require('modules/data-access/dynamoTable');
-let { convertToNewModel } = require('modules/data-access/lbUpstreamAdapter');
+let { convertToNewModel, convertToOldModel } = require('modules/data-access/lbUpstreamAdapter');
 let { mkArn } = require('modules/data-access/dynamoTableArn');
 let { makeWritable } = require('modules/data-access/dynamoItemFilter');
 let { getTableName: physicalTableName } = require('modules/awsResourceNameProvider');
 let { softDelete } = require('modules/data-access/dynamoSoftDelete');
 let dynamoVersion = require('modules/data-access/dynamoVersion');
 let DynamoTableResource = require('./DynamoTableResource');
+let { versionOf } = require('modules/data-access/dynamoVersion');
+let { removeAuditMetadata } = require('modules/data-access/dynamoAudit');
 let _ = require('lodash');
 let {
   assign,
   flow,
+  map,
   mapKeys,
   omitBy,
   pickBy,
   replace
 } = require('lodash/fp');
+let { getByName: getAccountByName } = require('modules/awsAccounts');
 
-
-function fromNativeDynamoItem(item) {
-  if (!item.value) return item;
-
-  let itemClone = _.clone(item);
-
-  itemClone.Value = utils.safeParseJSON(itemClone.value);
-  delete itemClone.value;
-
-  return itemClone;
+function convertToApiModel(persistedModel) {
+  let apiModel = removeAuditMetadata(persistedModel);
+  let Version = versionOf(persistedModel);
+  return Object.assign(apiModel, { Version });
 }
 
 function LBUpstreamTableResource(config, client) {
   this.client = client;
+  this.accountId = config.accountId;
 
   let $base = new DynamoTableResource(config, client);
 
@@ -48,11 +46,22 @@ function LBUpstreamTableResource(config, client) {
   this._buildPrimaryKey = $base._buildPrimaryKey.bind($base); // eslint-disable-line no-underscore-dangle
 
   this.get = function (params) {
-    return $base.get(params).then(item => fromNativeDynamoItem(item));
+    return mkArn({ tableName: physicalTableName(UPSTREAMS_TABLE) })
+      .then(tableArn => dynamoTable.get(tableArn, { Key: params.key }))
+      .then(convertToOldModel)
+      .then(convertToApiModel);
   };
 
   this.all = function (params) {
-    return $base.all(params).then(items => items.map(fromNativeDynamoItem));
+    let queryParams = {
+      IndexName: 'LoadBalancerGroup-index',
+      KeyConditionExpression: ['=', ['at', 'LoadBalancerGroup'], ['val', this.accountId]],
+      Limit: 20
+    };
+    return mkArn({ tableName: physicalTableName(UPSTREAMS_TABLE) })
+      .then(tableArn => dynamoTable.query(tableArn, queryParams))
+      .then(map(convertToOldModel))
+      .then(map(convertToApiModel));
   };
 
   this.put = function (params) {
@@ -79,11 +88,9 @@ function LBUpstreamTableResource(config, client) {
       : this.get({ key: item.key, formatting: { exposeAudit: 'version-only' } })
         .then(({ Version }) => Version);
 
-    function show(x) { console.log(x); return x; }
     return Promise.join(tableArnP, recordP, expectedVersionP, (t, r, e) => flow(
       makeWritable,
       record => ({ record, expectedVersion: e }),
-      show,
       dynamoVersion.compareAndSetVersionOnPut('Key'),
       dynamoTable.replace.bind(null, t)
     )(r));
@@ -121,17 +128,19 @@ module.exports = {
     resourceDescriptor.type.toLowerCase() === 'dynamodb/table' &&
     resourceDescriptor.name.toLowerCase() === 'config/lbupstream',
 
-  create: (resourceDescriptor, parameters) =>
-    amazonClientFactory.createDynamoClient(parameters.accountName).then((client) => {
-      let config = {
-        resourceName: resourceDescriptor.name,
-        table: resourceDescriptor.tableName,
-        key: resourceDescriptor.keyName,
-        range: resourceDescriptor.rangeName,
-        auditingEnabled: resourceDescriptor.enableAuditing,
-        dateField: resourceDescriptor.dateField
-      };
-
-      return new LBUpstreamTableResource(config, client);
-    })
+  create(resourceDescriptor, parameters) {
+    let accountIdP = getAccountByName(parameters.accountName)
+      .then(({ AccountNumber }) => String(AccountNumber));
+    let clientP = accountIdP.then(amazonClientFactory.createDynamoClient);
+    let configP = accountIdP.then(accountId => ({
+      accountId,
+      resourceName: resourceDescriptor.name,
+      table: resourceDescriptor.tableName,
+      key: resourceDescriptor.keyName,
+      range: resourceDescriptor.rangeName,
+      auditingEnabled: resourceDescriptor.enableAuditing,
+      dateField: resourceDescriptor.dateField
+    }));
+    return Promise.join(configP, clientP, (config, client) => new LBUpstreamTableResource(config, client));
+  }
 };
