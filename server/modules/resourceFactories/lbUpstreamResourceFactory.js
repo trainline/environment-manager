@@ -54,8 +54,8 @@ function LBUpstreamTableResource(config, client) {
 
   this.all = function (params) {
     let queryParams = {
-      IndexName: 'LoadBalancerGroup-index',
-      KeyConditionExpression: ['=', ['at', 'LoadBalancerGroup'], ['val', this.accountId]],
+      IndexName: 'AccountId-index',
+      KeyConditionExpression: ['=', ['at', 'AccountId'], ['val', this.accountId]],
       Limit: 20
     };
     return mkArn({ tableName: physicalTableName(UPSTREAMS_TABLE) })

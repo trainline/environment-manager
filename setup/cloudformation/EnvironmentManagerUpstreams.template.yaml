@@ -26,6 +26,8 @@ Resources:
     Type: "AWS::DynamoDB::Table"
     Properties:
       AttributeDefinitions:
+        - AttributeName: AccountId
+          AttributeType: S
         - AttributeName: Environment
           AttributeType: S
         - AttributeName: Key
@@ -37,6 +39,15 @@ Resources:
         - AttributeName: Upstream
           AttributeType: S
       GlobalSecondaryIndexes:
+        - IndexName: AccountId-index
+          KeySchema:
+            - AttributeName: AccountId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 10
+            WriteCapacityUnits: 2
         - IndexName: Environment-Service-index
           KeySchema:
             - AttributeName: Environment
