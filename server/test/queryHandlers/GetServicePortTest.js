@@ -6,7 +6,7 @@ let sinon = require('sinon');
 let rewire = require('rewire');
 let assert = require('assert');
 
-describe.only('GetServicePort', function() {
+describe('GetServicePortConfig', function() {
   let sut;
   let Service;
   const DEFAULT = { green:0, blue:0 };
@@ -15,7 +15,7 @@ describe.only('GetServicePort', function() {
     Service = {
       getByName: sinon.stub().returns(Promise.resolve(service))
     };
-    sut = rewire('queryHandlers/GetServicePort');
+    sut = rewire('queryHandlers/GetServicePortConfig');
     sut.__set__({ Service }); //eslint-disable no-underscore-dangle
   }
 

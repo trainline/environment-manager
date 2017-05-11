@@ -4,7 +4,7 @@ let Service = require('models/Service');
 let co = require('co');
 let _ = require('lodash');
 
-function* getServicePort(serviceName) {
+function* getServicePortConfig(serviceName) {
   let portConfig = { blue: 0, green: 0 };
 
   if (serviceName === undefined || serviceName === '') {
@@ -30,4 +30,4 @@ function* getServicePort(serviceName) {
   return portConfig;
 }
 
-module.exports = co.wrap(getServicePort);
+module.exports = co.wrap(getServicePortConfig);
