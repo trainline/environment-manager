@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsUpstreamController',
-  function ($routeParams, $location, $uibModal, $q, $http, resources, QuerySync, cachedResources, accountMappingService, modal) {
+  function ($routeParams, $location, $uibModal, $q, $http, resources, QuerySync, cachedResources, accountMappingService, modal, UpstreamConfig) {
     var vm = this;
     var querySync;
     var SHOW_ALL_OPTION = 'Any';
@@ -64,8 +64,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
 
     vm.refresh = function () {
       vm.dataLoading = true;
-      var params = { account: 'all' };
-      resources.config.lbUpstream.all(params).then(function (data) {
+      UpstreamConfig.getForEnvironment(vm.selectedEnvironment).then(function (data) {
         vm.fullUpstreamData = restructureUpstreams(data);
         return updateLBStatus().then(function () {
           vm.updateFilter();

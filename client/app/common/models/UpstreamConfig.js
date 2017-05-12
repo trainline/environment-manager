@@ -26,6 +26,12 @@ angular.module('EnvironmentManager.common').factory('UpstreamConfig',
       });
     };
 
+    UpstreamConfig.getForEnvironment = function (environment) {
+      return $http.get(baseUrl + '?environment=' + environment).then(function (response) {
+        return response.data;
+      });
+    };
+
     UpstreamConfig.deleteByKey = function (key, account) {
       return $http.delete(baseUrl + '/' + encodeURIComponent(key), { params: { account: account } });
     };
