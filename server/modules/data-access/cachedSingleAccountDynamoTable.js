@@ -2,94 +2,12 @@
 
 'use strict';
 
-let mkArn = require('modules/data-access/dynamoTableArn').mkArn;
-let { attachAuditMetadata, updateAuditMetadata } = require('modules/data-access/dynamoAudit');
-let describeDynamoTable = require('modules/data-access/describeDynamoTable');
-let hashKeyAttributeName = require('modules/data-access/dynamoTableDescription').hashKeyAttributeName;
-let tableArn = require('modules/data-access/dynamoTableDescription').tableArn;
-let { makeWritable } = require('modules/data-access/dynamoItemFilter');
-let dynamoVersion = require('modules/data-access/dynamoVersion');
-let dynamoTable = require('modules/data-access/dynamoTable');
+let singleAccountdynamoTable = require('modules/data-access/singleAccountdynamoTable');
 let dynamoTableCache = require('modules/data-access/dynamoTableCache');
-let { softDelete } = require('modules/data-access/dynamoSoftDelete');
-let fp = require('lodash/fp');
 
 function factory(physicalTableName, { ttl }) {
   let cachedTable = dynamoTableCache(physicalTableName, { ttl });
-  let tableDescriptionPromise = () => mkArn({ tableName: physicalTableName }).then(describeDynamoTable);
-
-  function create(item) {
-    return tableDescriptionPromise().then(description =>
-      fp.flow(
-        makeWritable,
-        attachAuditMetadata,
-        record => ({ record }),
-        dynamoVersion.compareAndSetVersionOnCreate(hashKeyAttributeName(description)),
-        cachedTable.create.bind(null, tableArn(description))
-      )(item)
-    );
-  }
-
-  function $delete(item, expectedVersion) {
-    let { key, metadata } = item;
-    return tableDescriptionPromise().then((description) => {
-      let table = tableArn(description);
-      return cachedTable.update(table, softDelete({ key, metadata, expectedVersion }))
-        .then(_ => cachedTable.delete(table, { key }));
-    });
-  }
-
-  function get(key) {
-    return tableDescriptionPromise()
-      .then(description => cachedTable.get(tableArn(description), key));
-  }
-
-  function query(expression) {
-    return tableDescriptionPromise()
-      .then(description => dynamoTable.query(tableArn(description), expression));
-  }
-
-  function replace(item, expectedVersion) {
-    return tableDescriptionPromise().then(description =>
-      fp.flow(
-        makeWritable,
-        attachAuditMetadata,
-        record => ({ record, expectedVersion }),
-        dynamoVersion.compareAndSetVersionOnReplace,
-        cachedTable.replace.bind(null, tableArn(description))
-      )(item)
-    );
-  }
-
-  function scan(expression) {
-    return tableDescriptionPromise()
-      .then(description => cachedTable.scan(tableArn(description), expression));
-  }
-
-  function update(expression, expectedVersion) {
-    return tableDescriptionPromise().then(description =>
-      fp.flow(
-        updateAuditMetadata,
-        updateExpression => ({
-          key: expression.key,
-          expressions: { UpdateExpression: updateExpression },
-          expectedVersion
-        }),
-        dynamoVersion.compareAndSetVersionOnUpdate,
-        cachedTable.update.bind(null, tableArn(description))
-      )(expression)
-    );
-  }
-
-  return {
-    create,
-    delete: $delete,
-    get,
-    query,
-    replace,
-    scan,
-    update
-  };
+  return singleAccountdynamoTable(physicalTableName, cachedTable);
 }
 
 module.exports = factory;
