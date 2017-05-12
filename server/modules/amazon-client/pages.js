@@ -22,10 +22,13 @@ function reduce(callback, initialValue, awsRequest) {
     awsRequest.eachPage((error, data) => {
       if (error) {
         reject(error);
+        return false;
       } else if (data === null) {
         resolve(accumulator);
+        return false;
       } else {
         accumulator = callback(accumulator, data);
+        return true;
       }
     });
   });
