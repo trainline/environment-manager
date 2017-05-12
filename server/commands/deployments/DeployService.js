@@ -18,6 +18,7 @@ let s3PackageLocator = require('modules/s3PackageLocator');
 let EnvironmentHelper = require('models/Environment');
 let OpsEnvironment = require('models/OpsEnvironment');
 let ResourceLockedError = require('modules/errors/ResourceLockedError');
+let GetServicePortConfig = require('queryHandlers/GetServicePortConfig');
 
 module.exports = function DeployServiceCommandHandler(command) {
   return co(function* () {
@@ -78,6 +79,7 @@ function validateCommandAndCreateDeployment(command) {
     const opsEnvironment = yield OpsEnvironment.getByName(command.environmentName);
     const environmentType = yield environment.getEnvironmentType();
     command.accountName = environmentType.AWSAccountName;
+    const servicePortConfig = yield GetServicePortConfig(command.serviceName, command.serviceSlice);
 
     if (opsEnvironment.Value.DeploymentsLocked) {
       throw new ResourceLockedError(`The environment ${environmentName} is currently locked for deployments. Contact the environment owner.`);
@@ -96,6 +98,7 @@ function validateCommandAndCreateDeployment(command) {
       serviceName: command.serviceName,
       serviceVersion: command.serviceVersion,
       serviceSlice: command.serviceSlice || '',
+      servicePortConfig,
       serverRole: roleName,
       serverRoleName: command.serverRoleName,
       clusterName: configuration.cluster.Name,

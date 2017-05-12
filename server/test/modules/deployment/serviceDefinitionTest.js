@@ -21,6 +21,10 @@ describe('ServiceDefinitionKeyValueProvider:', () => {
       serviceName: 'MyService',
       serviceVersion: '1.2.3',
       serviceSlice: 'none',
+      servicePortConfig: {
+        blue: 1234,
+        green: 9876
+      },
       clusterName: 'Tango',
       accountName: 'Prod',
       username: 'test-user',
@@ -59,7 +63,7 @@ describe('ServiceDefinitionKeyValueProvider:', () => {
             Name: 'pr1-MyService',
             ID: 'pr1-MyService',
             Address: '',
-            Port: 0,
+            Ports: { blue: 1234, green: 9876 },
             Tags: [
               'environment_type:Prod',
               'environment:pr1',
@@ -86,6 +90,7 @@ describe('ServiceDefinitionKeyValueProvider:', () => {
       serviceName: 'MyService',
       serviceVersion: '1.2.3',
       serviceSlice: 'blue',
+      servicePortConfig: { blue: 1234, green: 9876 },
       clusterName: 'Tango',
       accountName: 'Prod',
       username: 'test-user',
@@ -104,7 +109,7 @@ describe('ServiceDefinitionKeyValueProvider:', () => {
             Name: 'pr1-MyService-blue',
             ID: 'pr1-MyService-blue',
             Address: '',
-            Port: 0,
+            Ports: { blue: 1234, green: 9876 },
             Tags: [
               'environment_type:Prod',
               'environment:pr1',
@@ -130,6 +135,7 @@ describe('ServiceDefinitionKeyValueProvider:', () => {
       serverRoleName: 'Web',
       serviceName: 'MyService',
       serviceVersion: '1.2.3',
+      servicePortConfig: { blue: 1234, green: 9876 },
       serviceSlice: 'blue',
       clusterName: 'Tango',
       accountName: 'Prod',
@@ -149,7 +155,7 @@ describe('ServiceDefinitionKeyValueProvider:', () => {
             Name: 'pr1-MyService-blue',
             ID: 'pr1-MyService-blue',
             Address: '',
-            Port: 0,
+            Ports: { blue: 1234, green: 9876 },
             Tags: [
               'environment_type:Prod',
               'environment:pr1',
