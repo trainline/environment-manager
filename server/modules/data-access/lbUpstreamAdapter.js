@@ -33,7 +33,6 @@ function convertToOldModel(model) {
 }
 
 function convertToNewModel(model) {
-  console.log(JSON.stringify(model, null, 2));
   return Promise.resolve()
     .then(() => {
       if (model.__Deleted) { // eslint-disable-line no-underscore-dangle
@@ -51,7 +50,7 @@ function convertToNewModel(model) {
             Environment: environmentName,
             Hosts: model.Value.Hosts,
             Key: model.key,
-            LoadBalancerGroup: environmentType.Value.AWSAccountNumber,
+            LoadBalancerGroup: environmentType.EnvironmentType,
             LoadBalancingMethod: model.Value.LoadBalancingMethod,
             PersistenceMethod: model.Value.PersistenceMethod,
             SchemaVersion: model.Value.SchemaVersion,
