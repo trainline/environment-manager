@@ -43,8 +43,9 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamsContro
     };
 
     vm.refresh = function () {
+      $location.search('up_environment', vm.selectedEnvironment);
       vm.dataLoading = true;
-      UpstreamConfig.getAll().then(function (data) {
+      UpstreamConfig.getForEnvironment(vm.selectedEnvironment).then(function (data) {
         vm.fullData = data;
       }).finally(function () {
         vm.updateFilter();
@@ -53,7 +54,6 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamsContro
     };
 
     vm.updateFilter = function () {
-      $location.search('up_environment', vm.selectedEnvironment);
       $location.search('serviceFilter', vm.selectedService);
       vm.data = vm.fullData.filter(function (upstream) {
         var match = true;
@@ -67,6 +67,10 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamsContro
         return match;
       });
     };
+
+    vm.updateEnvironment = function () {
+      vm.refresh();
+    }
 
     vm.newItem = function () {
       $location.search('mode', 'New');

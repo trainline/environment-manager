@@ -2068,6 +2068,31 @@ paths:
       summary: Get all upstream configurations.
       tags:
         - Upstream
+      parameters:
+        - name: environment
+          in: query
+          type: string
+        - name: loadBalancerGroup
+          in: query
+          type: string
+        - name: exclusiveStartKey
+          in: query
+          type: string
+        - name: per_page
+          in: query
+          type: integer
+        - name: sort
+          in: query
+          type: string
+          enum:
+            - asc
+            - ASC
+            - ascending
+            - ASCENDING
+            - desc
+            - DESC
+            - descending
+            - DESCENDING
       responses:
         200:
           description: The list of upstream configs
@@ -2122,10 +2147,6 @@ paths:
           in: path
           type: string
           required: true
-        - name: account
-          in: query
-          type: string
-          required: true
       responses:
         200:
           description: The upstream config
@@ -2140,10 +2161,6 @@ paths:
       parameters:
         - name: name
           in: path
-          type: string
-          required: true
-        - name: account
-          in: query
           type: string
           required: true
       responses:

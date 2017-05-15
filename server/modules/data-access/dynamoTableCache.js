@@ -30,6 +30,10 @@ function dynamoTableCache(logicalTableName, { ttl }) {
     return dynamoTable.get(tableArn, key);
   }
 
+  function query(tableArn, expressions) {
+    return dynamoTable.query(tableArn, expressions);
+  }
+
   function replace(tableArn, replaceSpec) {
     return dynamoTable.replace(tableArn, replaceSpec)
       .then(_ => cache.del(tableArn).catch(logError('Could not invalidate cache', tableArn)));
@@ -55,6 +59,7 @@ function dynamoTableCache(logicalTableName, { ttl }) {
     create,
     delete: $delete,
     get,
+    query,
     replace,
     scan,
     update
