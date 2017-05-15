@@ -17,28 +17,7 @@ const TABLE_NAME = physicalTableName(LOGICAL_TABLE_NAME);
 
 let table = singleAccountDynamoTable(TABLE_NAME, dynamoTable);
 
-// Paged implementation
-// function inEnvironment(environment, { ExclusiveStartKey, Limit, ScanIndexForward } = {}) {
-//   return documentClient()
-//     .then((dynamo) => {
-//       let KeyConditionExpression = ['=',
-//         ['at', 'Environment'],
-//         ['val', environment]];
-//       let params = Object.assign(
-//         {
-//           IndexName: 'Environment-Key-index',
-//           TableName: TABLE_NAME
-//         },
-//         (ExclusiveStartKey ? { ExclusiveStartKey } : {}),
-//         (Limit ? { Limit } : {}),
-//         (ScanIndexForward !== null && ScanIndexForward !== undefined ? { ScanIndexForward } : {}),
-//         compile({ KeyConditionExpression }));
-//       return dynamo.query(params).promise()
-//         .then(({ LastEvaluatedKey, Items }) => ({ LastEvaluatedKey, Items }));
-//     });
-// }
-
-function inEnvironment(environment) {
+function inEnvironment(environment, { ExclusiveStartKey, Limit, ScanIndexForward } = {}) {
   return documentClient()
     .then((dynamo) => {
       let KeyConditionExpression = ['=',
@@ -49,9 +28,15 @@ function inEnvironment(environment) {
           IndexName: 'Environment-Key-index',
           TableName: TABLE_NAME
         },
+        (ExclusiveStartKey ? { ExclusiveStartKey } : {}),
+        (Limit ? { Limit } : {}),
+        (ScanIndexForward !== null && ScanIndexForward !== undefined ? { ScanIndexForward } : {}),
         compile({ KeyConditionExpression }));
-      return pages.flatten(rsp => rsp.Items, dynamo.query(params)).then(x => ({ Items: x }));
-    });
+      return dynamo.query(params);
+    })
+    .then(awsRequest => (Limit
+      ? awsRequest.promise().then(({ LastEvaluatedKey, Items }) => ({ LastEvaluatedKey, Items }))
+      : pages.flatten(rsp => rsp.Items, awsRequest).then(x => ({ Items: x }))));
 }
 
 function inLoadBalancerGroup(loadBalancerGroup) {
