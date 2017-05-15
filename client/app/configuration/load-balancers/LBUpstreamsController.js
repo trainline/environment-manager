@@ -53,7 +53,6 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamsContro
     };
 
     vm.updateFilter = function () {
-      console.log('updateFilter')
       $location.search('serviceFilter', vm.selectedService);
       vm.data = vm.fullData.filter(function (upstream) {
         var match = true;
@@ -69,7 +68,6 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamsContro
     };
 
     vm.updateEnvironment = function () {
-      console.log('updateEnvironment')
       $location.search('up_environment', vm.selectedEnvironment);
       UpstreamConfig.getForEnvironment(vm.selectedEnvironment).then(function (data) {
         vm.fullData = data;
