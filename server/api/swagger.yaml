@@ -1799,6 +1799,10 @@ paths:
         - name: frontend
           in: query
           required: false
+          type: boolean
+        - name: loadBalancerGroup
+          in: query
+          required: false
           type: string
       responses:
         200:
