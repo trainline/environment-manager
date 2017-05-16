@@ -38,10 +38,10 @@ function createAuditLogQuery(since, until, exclusiveStartKey, perPage, filter) {
 function createFilter(query) {
   logger.debug('Audit History: Creating filter.');
   let exprs = {
-    'Entity.Type': val => (val === 'ConfigLBUpstream'
+    'Entity.Type': val => (val === 'ConfigLBUpstream' || val === 'ConfigLBSettings'
       ? ['or',
-        ['=', ['attr', 'Entity', 'Type'], ['val', getTableName('ConfigLBUpstream')]],
-        ['=', ['attr', 'Entity', 'Type'], ['val', getTableName('InfraConfigLBUpstream')]]]
+        ['=', ['attr', 'Entity', 'Type'], ['val', getTableName(val)]],
+        ['=', ['attr', 'Entity', 'Type'], ['val', getTableName(`Infra${val}`)]]]
       : ['=', ['attr', 'Entity', 'Type'], ['val', getTableName(val)]]),
     'ChangeType': val => ['=', ['attr', 'ChangeType'], ['val', val]],
     'Entity.Key': val => ['=', ['attr', 'Entity', 'Key'], ['val', val]]
