@@ -62,7 +62,8 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
         var params = {
           account: accountName,
           query: {
-            environment: $scope.SelectedEnvironment
+            qa: 'environment',
+            qv: $scope.SelectedEnvironment
           }
         };
 

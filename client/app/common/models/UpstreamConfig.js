@@ -27,7 +27,7 @@ angular.module('EnvironmentManager.common').factory('UpstreamConfig',
     };
 
     UpstreamConfig.getForEnvironment = function (environment) {
-      return $http.get(baseUrl + '?environment=' + environment).then(function (response) {
+      return $http.get(baseUrl + '?qa=environment&qv=' + environment).then(function (response) {
         return response.data;
       });
     };

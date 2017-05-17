@@ -2,7 +2,8 @@
 
 'use strict';
 
-let { flow } = require('lodash/fp');
+let Promise = require('bluebird');
+let { flatten, flow } = require('lodash/fp');
 let { convertToNewModel, convertToOldModel } = require('modules/data-access/lbSettingsAdapter');
 let loadBalancerSettings = require('modules/data-access/loadBalancerSettings');
 let { getMetadataForDynamoAudit } = require('api/api-utils/requestMetadata');
@@ -29,7 +30,8 @@ let str = JSON.stringify.bind(JSON);
 function getLBSettingsConfig(req, res, next) {
   const environmentName = param('environment', req);
   const frontend = param('frontend', req);
-  const loadBalancerGroup = param('loadBalancerGroup', req);
+  const queryAttribute = param('qa', req);
+  const queryValues = param('qv', req);
 
   function filterExpression(expressions) {
     let { length } = expressions;
@@ -44,35 +46,50 @@ function getLBSettingsConfig(req, res, next) {
     }
   }
 
-  let filterExpressions = [
-    (frontend !== undefined)
-      ? ['=', ['at', 'Value', 'FrontEnd'], ['val', frontend !== false]]
-      : undefined,
-    (loadBalancerGroup !== undefined && environmentName !== undefined)
-      ? ['=', ['at', 'LoadBalancerGroup'], ['val', loadBalancerGroup]]
-      : undefined
-  ];
+  function keyConditionExpression(attribute, value) {
+    switch (attribute) {
+      case 'environment':
+        return {
+          KeyConditionExpression: ['=', ['at', 'EnvironmentName'], ['val', value]]
+        };
+      case 'load-balancer-group':
+        return {
+          IndexName: 'LoadBalancerGroup-index',
+          KeyConditionExpression: ['=', ['at', 'LoadBalancerGroup'], ['val', value]]
+        };
+      default:
+        return {};
+    }
+  }
 
-  let expressions = Object.assign(
-    (environmentName !== undefined)
-      ? { KeyConditionExpression: ['=', ['at', 'EnvironmentName'], ['val', environmentName]] }
-      : {},
-    (loadBalancerGroup !== undefined && environmentName === undefined)
-      ? {
-        IndexName: 'LoadBalancerGroup-index',
-        KeyConditionExpression: ['=', ['at', 'LoadBalancerGroup'], ['val', loadBalancerGroup]]
-      }
-      : {},
-    filterExpression(filterExpressions.filter(x => x !== undefined))
-  );
+  function get(attribute, value) {
+    let filterExpressions = [
+      (frontend !== undefined)
+        ? ['=', ['at', 'Value', 'FrontEnd'], ['val', frontend !== false]]
+        : undefined
+    ];
 
-  let getData = expressions.KeyConditionExpression
-    ? () => loadBalancerSettings.query(expressions)
-    : () => loadBalancerSettings.scan(expressions);
+    let expressions = Object.assign(
+      keyConditionExpression(attribute, value),
+      filterExpression(filterExpressions.filter(x => x !== undefined))
+    );
 
-  return getData()
-    .then(data => res.json(data))
-    .catch(next);
+    return expressions.KeyConditionExpression
+      ? loadBalancerSettings.query(expressions)
+      : loadBalancerSettings.scan(expressions);
+  }
+
+  return (() => {
+    if (environmentName) {
+      return get('environment', environmentName);
+    } else if (queryAttribute && queryValues) {
+      return Promise.map(queryValues, value => get(queryAttribute, value)).then(flatten);
+    } else {
+      return get();
+    }
+  })()
+  .then(data => res.json(data))
+  .catch(next);
 }
 
 /**
