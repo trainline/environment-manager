@@ -3,8 +3,9 @@
 'use strict';
 
 const RESOURCE = 'config/lbupstream';
-let { flow, pickBy } = require('lodash/fp');
-let base64 = require('modules/base64');
+
+let Promise = require('bluebird');
+let { flatten, flow, map } = require('lodash/fp');
 let { versionOf } = require('modules/data-access/dynamoVersion');
 let { removeAuditMetadata } = require('modules/data-access/dynamoAudit');
 let { convertToOldModel } = require('modules/data-access/lbUpstreamAdapter');
@@ -13,9 +14,7 @@ let { getMetadataForDynamoAudit } = require('api/api-utils/requestMetadata');
 let dynamoHelper = new (require('api/api-utils/DynamoHelper'))(RESOURCE);
 let param = require('api/api-utils/requestParam');
 let { getAccountNameForEnvironment } = require('models/Environment');
-let weblink = require('modules/weblink');
 let co = require('co');
-let querystring = require('querystring');
 
 function convertToApiModel(persistedModel) {
   let apiModel = removeAuditMetadata(persistedModel);
@@ -28,78 +27,33 @@ function convertToApiModel(persistedModel) {
  */
 function getUpstreamsConfig(req, res, next) {
   const environment = param('environment', req);
-  const exclusiveStartKey = param('exclusiveStartKey', req);
-  const loadBalancerGroup = param('loadBalancerGroup', req);
-  const limit = param('per_page', req);
-  const sort = param('sort', req);
+  const queryAttribute = param('qa', req);
+  const queryValues = param('qv', req);
 
-  let opts = {
-    ExclusiveStartKey: exclusiveStartKey ? base64.decode(exclusiveStartKey) : null,
-    Limit: limit,
-    ScanIndexForward: sort ? !sort.toUpperCase().startsWith('DESC') : true
-  };
-
-  function nextUrl(lastEvaluatedKey) {
-    if (lastEvaluatedKey) {
-      return flow(
-        pickBy(value => value),
-        querystring.stringify,
-        q => [req.path, q].filter(x => x !== '').join('?')
-      )({
-        environment,
-        exclusiveStartKey: base64.encode(lastEvaluatedKey),
-        per_page: limit,
-        sort: opts.ScanIndexForward ? 'asc' : 'desc'
-      });
-    } else {
-      return null;
-    }
-  }
-
-  function previousUrl([head]) {
-    let keyOf = ({ Environment, Key }) => ({ Environment, Key });
-    if (head && exclusiveStartKey) {
-      return flow(
-        pickBy(value => value),
-        querystring.stringify,
-        q => [req.path, q].filter(x => x !== '').join('?')
-      )({
-        environment,
-        exclusiveStartKey: base64.encode(keyOf(head)),
-        per_page: limit,
-        sort: opts.ScanIndexForward ? 'desc' : 'asc'
-      });
-    } else {
-      return null;
-    }
-  }
-
-  let dbOperation = () => {
-    if (environment) {
-      return loadBalancerUpstreams.inEnvironment(environment, opts);
-    } else if (loadBalancerGroup) {
-      return loadBalancerUpstreams.inLoadBalancerGroup(loadBalancerGroup);
-    } else {
-      return loadBalancerUpstreams.scan();
-    }
-  };
-
-  return dbOperation()
-    .then(({ LastEvaluatedKey, Items }) => ({
-      Items,
-      Links: {
-        next: nextUrl(LastEvaluatedKey),
-        previous: previousUrl(Items)
+  function get(attribute, value) {
+    return (() => {
+      switch (attribute) {
+        case 'environment':
+          return loadBalancerUpstreams.inEnvironment(value);
+        case 'load-balancer-group':
+          return loadBalancerUpstreams.inLoadBalancerGroup(value);
+        default:
+          return loadBalancerUpstreams.scan();
       }
-    }))
-    .then((data) => {
-      let linkHeader = flow(
-        pickBy(x => x),
-        weblink.link
-      )(data.Links);
-      res.header('Link', linkHeader);
-      res.json(data.Items.map(flow(convertToOldModel, convertToApiModel)));
-    })
+    })().then(({ Items }) => Items);
+  }
+
+  return (() => {
+    if (environment) {
+      return get('environment', environment);
+    } else if (queryAttribute && queryValues) {
+      return Promise.map(queryValues, value => get(queryAttribute, value)).then(flatten);
+    } else {
+      return get();
+    }
+  })()
+    .then(map(flow(convertToOldModel, convertToApiModel)))
+    .then(data => res.json(data))
     .catch(next);
 }
 
