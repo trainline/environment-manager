@@ -22,7 +22,6 @@ function convertToApiModel(persistedModel) {
 }
 
 let notify = sns.publish.bind(sns);
-let str = JSON.stringify.bind(JSON);
 
 /**
  * GET /config/lb-settings
@@ -131,7 +130,7 @@ function postLBSettingsConfig(req, res, next) {
           topic: sns.TOPICS.CONFIGURATION_CHANGE,
           attributes: {
             Action: sns.ACTIONS.POST,
-            ID: str(key)
+            ID: body.VHostName
           }
         }));
     })
@@ -158,7 +157,7 @@ function putLBSettingConfigByName(req, res, next) {
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.POST,
-        ID: str(key)
+        ID: param('vHostName', req)
       }
     }))
     .catch(next);
@@ -182,7 +181,7 @@ function deleteLBSettingConfigByName(req, res, next) {
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.DELETE,
-        ID: str(key)
+        ID: param('vHostName', req)
       }
     }))
     .catch(next);
