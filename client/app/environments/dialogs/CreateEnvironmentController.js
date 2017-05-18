@@ -98,7 +98,7 @@ angular.module('EnvironmentManager.environments').controller('CreateEnvironmentC
 
       resources.config.environments.post(params)
         .then(function (data) {
-          return Environment.putSchedule($scope.Environment.EnvironmentName, 1, ScheduleConfig)
+          return Environment.putSchedule($scope.Environment.EnvironmentName, 1, DefaultProvidedScheduleConfig)
             .then(function () {
               cachedResources.config.environments.flush();
               $uibModalInstance.close(data);
