@@ -90,7 +90,7 @@ angular.module('EnvironmentManager.environments').controller('CreateEnvironmentC
         }
       };
 
-      var ScheduleConfig = {
+      var DefaultProvidedScheduleConfig = {
         ScheduleAutomatically: false,
         ManualScheduleUp: false,
         DefaultSchedule: undefined
