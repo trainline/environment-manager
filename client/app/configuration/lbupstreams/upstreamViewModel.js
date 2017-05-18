@@ -5,6 +5,7 @@
 angular.module('EnvironmentManager.configuration').factory('UpstreamViewModel', function () {
   var defaultHostTemplate = { DnsName: '', Port: null, FailTimeout: '30s', MaxFails: null, State: 'down', Weight: 1 };
 
+
   function UpstreamViewModel(params) {
     var self = this;
 
@@ -46,6 +47,9 @@ angular.module('EnvironmentManager.configuration').factory('UpstreamViewModel', 
       self.configFieldsEnabled = hasPermissionsToEdit;
       self.configFieldsDisabled = !self.configFieldsEnabled;
 
+      if (isNewMode) {
+        upstream.Value.UpStreamKeepalives = 32; // All new upstreams should have a keep alive value of 32
+      }
       self.showForm = true;
     };
 
