@@ -22,7 +22,6 @@ function convertToApiModel(persistedModel) {
 }
 
 let notify = sns.publish.bind(sns);
-let str = JSON.stringify.bind(JSON);
 
 /**
  * GET /config/lb-settings
