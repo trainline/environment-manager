@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('CreateEnvironmentController',
-  function ($scope, $http, $uibModalInstance, $q, resources, cachedResources) {
+  function ($scope, $http, $uibModalInstance, $q, resources, cachedResources, Environment) {
     var vm = this;
 
     $scope.OwningClustersList = [];
@@ -90,10 +90,20 @@ angular.module('EnvironmentManager.environments').controller('CreateEnvironmentC
         }
       };
 
-      resources.config.environments.post(params).then(function (data) {
-        cachedResources.config.environments.flush();
-        $uibModalInstance.close(data);
-      });
+      var DefaultProvidedScheduleConfig = {
+        ScheduleAutomatically: false,
+        ManualScheduleUp: false,
+        DefaultSchedule: undefined
+      }
+
+      resources.config.environments.post(params)
+        .then(function (data) {
+          return Environment.putSchedule($scope.Environment.EnvironmentName, 1, DefaultProvidedScheduleConfig)
+            .then(function () {
+              cachedResources.config.environments.flush();
+              $uibModalInstance.close(data);
+            });
+        })
     };
 
     $scope.Cancel = function () {

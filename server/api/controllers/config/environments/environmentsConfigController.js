@@ -97,7 +97,7 @@ function postEnvironmentsConfig(req, res, next) {
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.POST,
-        ID: ''
+        ID: configEnv.EnvironmentName || 'None'
       }
     }))
     .catch(next);
