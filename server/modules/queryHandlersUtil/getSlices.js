@@ -2,7 +2,6 @@
 
 'use strict';
 
-let sender = require('modules/sender');
 let co = require('co');
 let _ = require('lodash');
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
@@ -18,37 +17,25 @@ function hostFilter(active) {
   }
 }
 
-function* handleQuery(query, resourceName, upstreamFilter) {
+function* handleQuery(query, inputUpstreams) {
   // Get all LoadBalancer upstreams from DynamoDB without apply any filter.
   // NOTE: If it ever becomes a DynamoDB map item then filtering this query
   //       would be great!
 
-  // Requires all LoadBalancer upstreams in the specified AWS account.
-  let subquery = {
-    name: 'ScanDynamoResources',
-    resource: 'config/lbupstream',
-    accountName: query.accountName
-  };
-
-  let upstreams = yield sender.sendQuery({ query: subquery, parent: query });
-
-  // Filtering upstreams
-  upstreams = upstreams.filter(upstreamFilter);
-
   // If any upstream was found the chain continues otherwise a
   // [ResourceNotFound] error is returned.
-  if (!upstreams.length) {
-    throw new ResourceNotFoundError(`No ${resourceName} has been found.`);
+  if (!inputUpstreams.length) {
+    throw new ResourceNotFoundError('No load balancer upstream has been found.');
   }
 
   // Flatting upstreams hosts in to a plain list
   // eslint-disable-next-line arrow-body-style
   let upstreamValues = (upstream) => {
-    return upstream.Value.Hosts.filter(hostFilter(query.active)).map(host => ({
-      Key: upstream.key,
-      EnvironmentName: upstream.Value.EnvironmentName,
-      ServiceName: upstream.Value.ServiceName,
-      UpstreamName: upstream.Value.UpstreamName,
+    return upstream.Hosts.filter(hostFilter(query.active)).map(host => ({
+      Key: upstream.Key,
+      EnvironmentName: upstream.Environment,
+      ServiceName: upstream.Service,
+      UpstreamName: upstream.Upstream,
       DnsName: host.DnsName,
       Port: host.Port,
       OwningCluster: '',
@@ -57,7 +44,7 @@ function* handleQuery(query, resourceName, upstreamFilter) {
     }));
   };
 
-  upstreams = _(upstreams).map(upstreamValues).compact().flatten().value();
+  let upstreams = _(inputUpstreams).map(upstreamValues).compact().flatten().value();
   // Getting all services the upstreams refer to
 
   // Extracts all service names the found upstreams refer to
@@ -98,28 +85,6 @@ function* handleQuery(query, resourceName, upstreamFilter) {
   return upstreams;
 }
 
-let QUERYING = {
-  upstream: {
-    byUpstreamName: query => `Upstream named "${query.upstreamName}"`,
-    byServiceName: query => `Upstream for service "${query.serviceName}" in "${query.environmentName}" environment`
-  }
-};
-
-let FILTER = {
-  upstream: {
-    byUpstreamName: query =>
-      upstream =>
-        upstream.Value.EnvironmentName === query.environmentName && upstream.Value.UpstreamName === query.upstreamName,
-
-    byServiceName: query =>
-      upstream =>
-        upstream.Value.EnvironmentName === query.environmentName && upstream.Value.ServiceName === query.serviceName
-  }
-
-};
-
 module.exports = {
-  handleQuery: co.wrap(handleQuery),
-  QUERYING,
-  FILTER
+  handleQuery: co.wrap(handleQuery)
 };

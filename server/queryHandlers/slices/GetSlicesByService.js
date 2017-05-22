@@ -4,19 +4,12 @@
 
 let assert = require('assert');
 let getSlices = require('modules/queryHandlersUtil/getSlices');
-let getAccountByEnvironment = require('commands/aws/GetAccountByEnvironment');
-
-const FILTER = getSlices.FILTER;
-const QUERYING = getSlices.QUERYING;
+let loadBalancerUpstreams = require('modules/data-access/loadBalancerUpstreams');
 
 module.exports = function GetSlicesByService(query) {
   assert.equal(typeof query.environmentName, 'string');
   assert.equal(typeof query.serviceName, 'string');
 
-  return getAccountByEnvironment({ environment: query.environmentName }).then((account) => {
-    query.accountName = account;
-    return getSlices.handleQuery(query,
-      QUERYING.upstream.byServiceName(query),
-      FILTER.upstream.byServiceName(query));
-  });
+  return loadBalancerUpstreams.inEnvironmentWithService(query.environmentName, query.serviceName)
+    .then(upstreams => getSlices.handleQuery(query, upstreams));
 };

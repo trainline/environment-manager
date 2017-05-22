@@ -3,22 +3,13 @@
 'use strict';
 
 let assert = require('assert');
-let co = require('co');
 let getSlices = require('modules/queryHandlersUtil/getSlices');
-let Environment = require('models/Environment');
+let loadBalancerUpstreams = require('modules/data-access/loadBalancerUpstreams');
 
-const FILTER = getSlices.FILTER;
-const QUERYING = getSlices.QUERYING;
-
-function* GetSlicesByUpstream(query) {
+module.exports = function GetSlicesByUpstream(query) {
   assert.equal(typeof query.environmentName, 'string');
   assert.equal(typeof query.upstreamName, 'string');
 
-  query.accountName = yield Environment.getAccountNameForEnvironment(query.environmentName);
-
-  return getSlices.handleQuery(query,
-    QUERYING.upstream.byUpstreamName(query),
-    FILTER.upstream.byUpstreamName(query));
-}
-
-module.exports = co.wrap(GetSlicesByUpstream);
+  return loadBalancerUpstreams.inEnvironmentWithUpstream(query.environmentName, query.upstreamName)
+    .then(upstreams => getSlices.handleQuery(query, upstreams));
+};
