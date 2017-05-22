@@ -168,6 +168,19 @@ describe('dynamodb expression', function () {
         result.Expression.should.eql('(#a.#b = :val0)');
       });
     });
+    context('when I compile an attribute expression with an index number', function () {
+      let input = ['at', 'array', 0, 'itemprop'];
+      let result = sut.compile(input);
+      it('the expression contains an index number in square brackets', function () {
+        result.Expression.should.eql('#array[0].#itemprop');
+      });
+      it('the index is not treated as an expression attribute name', function () {
+        result.ExpressionAttributeNames.should.eql({
+          '#array': 'array',
+          '#itemprop': 'itemprop'
+        });
+      });
+    });
   });
 });
 

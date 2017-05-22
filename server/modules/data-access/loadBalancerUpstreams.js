@@ -9,6 +9,7 @@ let {
 } = require('modules/awsResourceNameProvider');
 let pages = require('modules/amazon-client/pages');
 let { compile } = require('modules/awsDynamo/dynamodbExpression');
+let { updateAuditMetadata } = require('modules/data-access/dynamoAudit');
 let { DocumentClient: documentClient } = require('modules/data-access/dynamoClientFactory');
 let dynamoTable = require('modules/data-access/dynamoTable');
 let singleAccountDynamoTable = require('modules/data-access/singleAccountDynamoTable');
@@ -39,6 +40,34 @@ function inEnvironment(environment, { ExclusiveStartKey, Limit, ScanIndexForward
       : pages.flatten(rsp => rsp.Items, awsRequest).then(x => ({ Items: x }))));
 }
 
+function inEnvironmentWithService(environment, service) {
+  let params = {
+    FilterExpression: ['=',
+      ['at', 'Service'],
+      ['val', service]
+    ],
+    IndexName: 'Environment-Key-index',
+    KeyConditionExpression: ['=',
+      ['at', 'Environment'],
+      ['val', environment]]
+  };
+  return table.query(params);
+}
+
+function inEnvironmentWithUpstream(environment, upstream) {
+  let params = {
+    FilterExpression: ['=',
+      ['at', 'Upstream'],
+      ['val', upstream]
+    ],
+    IndexName: 'Environment-Key-index',
+    KeyConditionExpression: ['=',
+      ['at', 'Environment'],
+      ['val', environment]]
+  };
+  return table.query(params);
+}
+
 function inLoadBalancerGroup(loadBalancerGroup) {
   return documentClient()
     .then((dynamo) => {
@@ -66,13 +95,45 @@ function scan(environment) {
     });
 }
 
+function toggle(upstream, metadata) {
+  let invert = state => (state.toUpperCase() === 'UP' ? 'down' : 'up');
+
+  let expressions = {
+    ConditionExpression: ['and',
+      ...(upstream.Hosts.map((host, i) => ['=', ['at', 'Hosts', i, 'State'], ['val', host.State]]))],
+    UpdateExpression: updateAuditMetadata({
+      updateExpression: ['update',
+        ...(upstream.Hosts.map((host, i) => ['set', ['at', 'Hosts', i, 'State'], ['val', invert(host.State)]]))],
+      metadata
+    })
+  };
+  let params = Object.assign(
+    {
+      Key: { Key: upstream.Key },
+      TableName: TABLE_NAME
+    },
+    compile(expressions));
+  return documentClient()
+    .then(dynamo => dynamo.update(params).promise())
+    .catch((error) => {
+      if (error.code === 'ConditionalCheckFailedException') {
+        let message = `Could not toggle upstream ${upstream.Key} because it has been modified.`;
+        return Promise.reject(new Error(message));
+      }
+      return Promise.reject(error);
+    });
+}
+
 module.exports = {
   create: table.create,
   delete: table.delete,
   get: table.get,
   inEnvironment,
+  inEnvironmentWithService,
+  inEnvironmentWithUpstream,
   inLoadBalancerGroup,
   replace: table.replace,
   scan,
+  toggle,
   update: table.update
 };

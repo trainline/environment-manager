@@ -2,7 +2,6 @@
 
 function expressionScope() {
   let valName = i => `:val${i}`;
-  let qname = name => `#${name}`;
   let expressionAttributeValues = {};
   let expressionAttributeNames = {};
   let i = 0;
@@ -14,10 +13,15 @@ function expressionScope() {
     return t;
   }
 
-  function nameExpressionAttributeName(name) {
-    let t = qname(name);
-    expressionAttributeNames[t] = name;
-    return t;
+  function nameExpressionAttributeName(result, name) {
+    if (typeof name === 'number') {
+      let elt = `[${name}]`;
+      return result === null ? elt : `${result}${elt}`;
+    } else {
+      let elt = `#${name}`;
+      expressionAttributeNames[elt] = name;
+      return result === null ? elt : `${result}.${elt}`;
+    }
   }
 
   return {
@@ -35,7 +39,7 @@ function compileOne(scope, expr) {
     return args.length === 1 ? compiled : `(${compiled})`;
   };
   let prefix = ([fn, ...args]) => `${fn}(${args.map(compile).join(', ')})`;
-  let attr = ([, ...exprs]) => exprs.map(name => scope.nameExpressionAttributeName(name)).join('.');
+  let attr = ([, ...exprs]) => exprs.reduce(scope.nameExpressionAttributeName, null);
   let val = ([, ...exprs]) => exprs.map(value => scope.nameExpressionAttributeValue(value)).join(', ');
   let list = ([, sep, ...items]) => `${items.map(compile).join(sep)}`;
   let update = ([, ...args]) => {
