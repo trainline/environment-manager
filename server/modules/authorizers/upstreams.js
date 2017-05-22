@@ -4,20 +4,12 @@
 
 let co = require('co');
 let configEnvironments = require('modules/data-access/configEnvironments');
+let loadBalancerUpstreams = require('modules/data-access/loadBalancerUpstreams');
 let Environment = require('models/Environment');
 let logger = require('modules/logger');
 
-function getUpstream(accountName, upstreamName) {
-  let sender = require('modules/sender');
-
-  let query = {
-    name: 'GetDynamoResource',
-    key: upstreamName,
-    resource: 'config/lbupstream',
-    accountName
-  };
-
-  return sender.sendQuery({ query });
+function getUpstream(upstreamName) {
+  return loadBalancerUpstreams.get({ Key: upstreamName });
 }
 
 function getEnvironment(name) {
@@ -36,10 +28,10 @@ function getEnvironmentPermissionsPromise(upstreamName, environmentName, account
     return getModifyPermissionsForEnvironment(environmentName);
   }
 
-  return getUpstream(accountName, upstreamName)
+  return getUpstream(upstreamName)
     .then((upstream) => {
       if (upstream) {
-        let envName = upstream.Value.EnvironmentName;
+        let envName = upstream.Environment;
         return getModifyPermissionsForEnvironment(envName);
       }
 
