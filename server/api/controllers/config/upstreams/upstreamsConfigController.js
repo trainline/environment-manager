@@ -2,19 +2,28 @@
 
 'use strict';
 
-const RESOURCE = 'config/lbupstream';
-
 let Promise = require('bluebird');
-let { flatten, flow, map } = require('lodash/fp');
+let logger = require('modules/logger');
+let { assign, flatten, flow, map, omit } = require('lodash/fp');
 let { versionOf } = require('modules/data-access/dynamoVersion');
 let { removeAuditMetadata } = require('modules/data-access/dynamoAudit');
-let { convertToOldModel } = require('modules/data-access/lbUpstreamAdapter');
+let { convertToNewModel, convertToOldModel } = require('modules/data-access/lbUpstreamAdapter');
 let loadBalancerUpstreams = require('modules/data-access/loadBalancerUpstreams');
+let services = require('modules/data-access/services');
 let { getMetadataForDynamoAudit } = require('api/api-utils/requestMetadata');
-let dynamoHelper = new (require('api/api-utils/DynamoHelper'))(RESOURCE);
 let param = require('api/api-utils/requestParam');
-let { getAccountNameForEnvironment } = require('models/Environment');
-let co = require('co');
+let { validate } = require('commands/validators/lbUpstreamValidator');
+let { getByName: getAccount } = require('modules/awsAccounts');
+let InvalidItemSchemaError = require('modules/errors/InvalidItemSchemaError.class');
+
+function rejectIfValidationFailed(validationResult) {
+  if (!validationResult.isValid) {
+    logger.info('Upstream Validation Failure', validationResult.err);
+    return Promise.reject(new InvalidItemSchemaError(validationResult.err));
+  } else {
+    return Promise.resolve();
+  }
+}
 
 function convertToApiModel(persistedModel) {
   let apiModel = removeAuditMetadata(persistedModel);
@@ -72,31 +81,42 @@ function getUpstreamConfigByName(req, res, next) {
  * POST /config/upstreams
  */
 function postUpstreamsConfig(req, res, next) {
-  let body = req.swagger.params.body.value;
-  let user = req.user;
-  let key = body.key;
-  let environmentName = body.Value.EnvironmentName;
+  const body = param('body', req);
+  let metadata = getMetadataForDynamoAudit(req);
+  let oldRecord = omit('version')(body);
+  let newRecordP = convertToNewModel(oldRecord);
+  let accountP = newRecordP.then(({ AccountId }) => getAccount(AccountId));
+  let serviceP = services.named(oldRecord.Value.ServiceName);
 
-  co(function* () {
-    let accountName = yield getAccountNameForEnvironment(environmentName);
-    return dynamoHelper.create(key, { Value: body.Value }, user, { accountName });
-  }).then(data => res.json(data)).catch(next);
+  return Promise.join(accountP, newRecordP, serviceP,
+    (account, record, svc) => Promise.resolve()
+      .then(() => validate(oldRecord, account, svc))
+      .then(rejectIfValidationFailed)
+      .then(() => loadBalancerUpstreams.create({ record, metadata })))
+    .then(() => res.status(200).end())
+    .catch(next);
 }
 
 /**
  * PUT /config/upstreams/{name}
  */
 function putUpstreamConfigByName(req, res, next) {
-  let body = req.swagger.params.body.value;
-  let key = req.swagger.params.name.value;
-  let expectedVersion = req.swagger.params['expected-version'].value;
-  let user = req.user;
-  let environmentName = body.EnvironmentName;
+  let body = param('body', req);
+  let key = { key: param('name', req) };
+  let expectedVersion = param('expected-version', req);
+  let metadata = getMetadataForDynamoAudit(req);
+  let oldRecord = flow(assign(key), omit('version'))({ Value: body });
+  let newRecordP = convertToNewModel(oldRecord);
+  let accountP = newRecordP.then(({ AccountId }) => getAccount(AccountId));
+  let serviceP = services.named(oldRecord.Value.ServiceName);
 
-  co(function* () {
-    let accountName = yield getAccountNameForEnvironment(environmentName);
-    return dynamoHelper.update(key, { Value: body }, expectedVersion, user, { accountName });
-  }).then(data => res.json(data)).catch(next);
+  return Promise.join(accountP, newRecordP, serviceP,
+    (account, record, svc) => Promise.resolve()
+      .then(() => validate(oldRecord, account, svc))
+      .then(rejectIfValidationFailed)
+      .then(() => loadBalancerUpstreams.replace({ record, metadata }, expectedVersion)))
+    .then(() => res.status(200).end())
+    .catch(next);
 }
 
 /**

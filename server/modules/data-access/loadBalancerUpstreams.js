@@ -12,7 +12,9 @@ let { compile } = require('modules/awsDynamo/dynamodbExpression');
 let { updateAuditMetadata } = require('modules/data-access/dynamoAudit');
 let { DocumentClient: documentClient } = require('modules/data-access/dynamoClientFactory');
 let dynamoTable = require('modules/data-access/dynamoTable');
+let { mkArn } = require('modules/data-access/dynamoTableArn');
 let singleAccountDynamoTable = require('modules/data-access/singleAccountDynamoTable');
+let { setVersionOnUpdate } = require('modules/data-access/dynamoVersion');
 
 const TABLE_NAME = physicalTableName(LOGICAL_TABLE_NAME);
 
@@ -98,6 +100,7 @@ function scan(environment) {
 function toggle(upstream, metadata) {
   let invert = state => (state.toUpperCase() === 'UP' ? 'down' : 'up');
 
+  let key = { Key: upstream.Key };
   let expressions = {
     ConditionExpression: ['and',
       ...(upstream.Hosts.map((host, i) => ['=', ['at', 'Hosts', i, 'State'], ['val', host.State]]))],
@@ -107,21 +110,10 @@ function toggle(upstream, metadata) {
       metadata
     })
   };
-  let params = Object.assign(
-    {
-      Key: { Key: upstream.Key },
-      TableName: TABLE_NAME
-    },
-    compile(expressions));
-  return documentClient()
-    .then(dynamo => dynamo.update(params).promise())
-    .catch((error) => {
-      if (error.code === 'ConditionalCheckFailedException') {
-        let message = `Could not toggle upstream ${upstream.Key} because it has been modified.`;
-        return Promise.reject(new Error(message));
-      }
-      return Promise.reject(error);
-    });
+
+  return mkArn({ tableName: TABLE_NAME })
+    .then(tableArn => dynamoTable.update.bind(null, tableArn))
+    .then(update => update(setVersionOnUpdate({ key, expressions })));
 }
 
 module.exports = {

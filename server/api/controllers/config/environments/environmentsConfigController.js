@@ -5,10 +5,8 @@
 const KEY_NAME = 'EnvironmentName';
 
 let _ = require('lodash');
-let co = require('co');
 let Promise = require('bluebird');
 
-let DynamoHelper = require('api/api-utils/DynamoHelper');
 let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMetadataForDynamoAudit;
 let removeAuditMetadata = require('modules/data-access/dynamoAudit').removeAuditMetadata;
 let versionOf = require('modules/data-access/dynamoVersion').versionOf;
@@ -16,10 +14,9 @@ let param = require('api/api-utils/requestParam');
 
 let configEnvironments = require('modules/data-access/configEnvironments');
 let opsEnvironment = require('modules/data-access/opsEnvironment');
-let lbSettingsTable = new DynamoHelper('config/lbsettings');
-let lbUpstreamsTable = new DynamoHelper('config/lbupstream');
+let loadBalancerUpstreams = require('modules/data-access/loadBalancerUpstreams');
+let loadBalancerSettings = require('modules/data-access/loadBalancerSettings');
 
-let Environment = require('models/Environment');
 let EnvironmentType = require('models/EnvironmentType');
 
 let consul = require('modules/service-targets/consul');
@@ -134,25 +131,19 @@ function putEnvironmentConfigByName(req, res, next) {
  */
 function deleteEnvironmentConfigByName(req, res, next) {
   const environmentName = param('name', req);
-  const user = req.user;
   let key = {
     EnvironmentName: environmentName
   };
   let metadata = getMetadataForDynamoAudit(req);
 
-  return co(function* () { // eslint-disable-line func-names
-    let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-
-    yield [
-      deleteLBSettingsForEnvironment(environmentName, accountName, user),
-      deleteLBUpstreamsForEnvironment(environmentName, accountName, user),
-      deleteConsulKeyValuePairs(environmentName)
-    ];
-
-    yield opsEnvironment.delete({ key, metadata });
-    yield configEnvironments.delete({ key, metadata });
-    res.status(200).end();
-  })
+  return Promise.all([
+    deleteLBSettingsForEnvironment(environmentName, metadata),
+    deleteLBUpstreamsForEnvironment(environmentName, metadata),
+    deleteConsulKeyValuePairs(environmentName)
+  ])
+    .then(() => opsEnvironment.delete({ key, metadata }))
+    .then(() => configEnvironments.delete({ key, metadata }))
+    .then(() => res.status(200).end())
     .then(sns.publish({
       message: `Delete /config/environments/${environmentName}`,
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
@@ -168,29 +159,20 @@ function deleteConsulKeyValuePairs(environmentName) {
   return consul.removeTargetState(environmentName, { key: `environments/${environmentName}`, recurse: true });
 }
 
-function deleteLBSettingsForEnvironment(environmentName, accountName, user) {
-  return co(function* () { // eslint-disable-line func-names
-    let lbSettingsList = yield ignoreNotFoundResults(lbSettingsTable.queryRangeByKey(environmentName));
-    return lbSettingsList.map(lbSettings =>
-      lbSettingsTable.deleteWithSortKey(environmentName, lbSettings.VHostName, user, { accountName }));
-  });
+function deleteLBSettingsForEnvironment(environmentName, metadata) {
+  let params = {
+    KeyConditionExpression: ['=', ['at', 'EnvironmentName'], ['val', environmentName]],
+    ProjectionExpression: ['list', ', ', ['at', 'EnvironmentName'], ['at', 'VHostName'], ['at', 'Audit', 'Version']]
+  };
+  return loadBalancerSettings.query(params)
+    .then(items => Promise.map(items, ({ EnvironmentName, VHostName, Audit: { Version: expectedVersion } }) =>
+      loadBalancerSettings.delete({ key: { EnvironmentName, VHostName }, metadata }, expectedVersion)));
 }
 
-function deleteLBUpstreamsForEnvironment(environmentName, accountName, user) {
-  return co(function* () { // eslint-disable-line func-names
-    let allLBUpstreams = yield ignoreNotFoundResults(lbUpstreamsTable.getAll(null, { accountName }));
-    let lbUpstreams = allLBUpstreams.filter(lbUpstream =>
-      lbUpstream.Value.EnvironmentName.toLowerCase() === environmentName.toLowerCase());
-
-    return lbUpstreams.map(lbUpstream => lbUpstreamsTable.delete(lbUpstream.key, user, { accountName }));
-  });
-}
-
-function ignoreNotFoundResults(promise) {
-  return promise.catch((err) => {
-    if (err.message.match(/^No .* items found .*$/)) return [];
-    throw err;
-  });
+function deleteLBUpstreamsForEnvironment(environmentName, metadata) {
+  return loadBalancerUpstreams.inEnvironment(environmentName)
+    .then(({ Items }) => Promise.map(Items, ({ Key, Audit: { Version: expectedVersion } }) =>
+      loadBalancerUpstreams.delete({ key: { Key }, metadata }, expectedVersion)));
 }
 
 module.exports = {
