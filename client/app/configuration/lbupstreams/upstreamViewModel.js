@@ -24,6 +24,7 @@ angular.module('EnvironmentManager.configuration').factory('UpstreamViewModel', 
 
     self.showEnvironmentEditorField = isCopyMode;
     self.showEnvironmentReadOnlyField = !isCopyMode;
+    self.showEnvironmentField = !isEditMode;
 
     if (isNewMode) {
       self.newHost = _.clone(defaultHostTemplate);
