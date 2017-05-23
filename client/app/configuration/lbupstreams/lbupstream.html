@@ -118,7 +118,13 @@
 <div class="form-group" style="margin-bottom: 0px;">
   <label class="col-md-1 control-label text-left">Hosts:</label>
   <div class="col-md-8">
-
+  <div style="text-align:center;" ng-if="vm.view.showToggleLink()">
+    <span  class="warning">
+      Changes made on this page require elevated permissions!
+      <p>
+      Just want to <strong>toggle</strong>? You can <strong><a ng-href="{{vm.view.toggleLink()}}" target="">toggle here</a></strong>.
+    </span>
+  </div>
     <table id="UpstreamHosts" class="table table-responsive">
       <thead>
         <tr>
@@ -297,7 +303,6 @@
   <label class="col-md-1">&nbsp;</label>
   <div class="col-md-5">
     <button type="button" class="btn btn-default" ng-click="vm.backToSummary()">Cancel</button>
-    <button type="button" class="btn btn-default" ng-if="vm.view.configFieldsEnabled" ng-disabled="vm.view.toggleActiveHostsButtonIsDisabled()" ng-click="vm.view.toggleActiveHosts()">Toggle Active Hosts</button>
     <button type="button" class="btn btn-default" ng-if="vm.view.configFieldsEnabled" ng-disabled="!form.$valid" ng-click="vm.save()">Save</button>
   </div>
 </div>
