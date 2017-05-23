@@ -134,6 +134,34 @@ describe('UpstreamViewModel', function () {
     expect(vm.serviceLink()).toEqual('/#/config/services/s2/?Range=c2');
   });
 
+  it('Should hide the toggle link when copying an upstream', function () {
+    var vm = createUpstreamViewModel({ mode: 'Copy' });
+    expect(vm.showToggleLink()).toBe(false);
+  });
+
+  it('Should hide the toggle link when creating an upstream', function () {
+    var vm = createUpstreamViewModel({ mode: 'New' });
+    expect(vm.showToggleLink()).toBe(false);
+  });
+
+  it('Should show the toggle link when editing an upstream that has an environment and service', function () {
+    var vm = createUpstreamViewModel({ mode: 'Edit' });
+    var testUpstream = createSimpleTestUpstream();
+    init(vm, { upstream: testUpstream });
+    testUpstream.Value.EnvironmentName = 'e01';
+    testUpstream.Value.ServiceName = 'mysvc';
+    expect(vm.showToggleLink()).toBe(true);
+  });
+
+  it('Should show the correct toggle link when a service is selected', function () {
+    var vm = createUpstreamViewModel();
+    var testUpstream = createSimpleTestUpstream();
+    init(vm, { upstream: testUpstream });
+    testUpstream.Value.EnvironmentName = 'e01';
+    testUpstream.Value.ServiceName = 'mysvc';
+    expect(vm.toggleLink()).toEqual('/#/operations/upstreams?environment=e01&state=All&service=mysvc');
+  });
+
   it('Should show new host line when creating a new Upstream', function () {
     var vm = createUpstreamViewModel({ mode: 'New' });
     expect(vm.newHost).toEqual(defaultHost);
@@ -226,38 +254,6 @@ describe('UpstreamViewModel', function () {
     var vm = createUpstreamViewModel();
     vm.showValidationError('Something not right');
     expect(vm.validationError).toBe('Something not right');
-  });
-
-  it('Should disable the "toggle active hosts" button if the number of hosts is zero', function () {
-    var vm = createAndInitUpstreamViewModel();
-    expect(vm.toggleActiveHostsButtonIsDisabled()).toBe(true);
-  });
-
-  it('Should not disable the "toggle active hosts" button if the number of hosts is greater than zero', function () {
-    var vm = createUpstreamViewModel();
-    var testUpstream = createSimpleTestUpstream();
-    init(vm, { upstream: testUpstream });
-
-    testUpstream.Value.Hosts.push({ DnsName: 'blah', State: 'up' });
-
-    expect(vm.toggleActiveHostsButtonIsDisabled()).toBe(false);
-  });
-
-  it('Should toggle hosts when the "toggle active hosts" button is pressed', function () {
-    var vm = createUpstreamViewModel();
-    var testUpstream = createSimpleTestUpstream();
-    init(vm, { upstream: testUpstream });
-
-    testUpstream.Value.Hosts.push({ State: 'up' });
-    testUpstream.Value.Hosts.push({ State: 'down' });
-
-    expect(testUpstream.Value.Hosts[0].State).toBe('up');
-    expect(testUpstream.Value.Hosts[1].State).toBe('down');
-
-    vm.toggleActiveHosts();
-
-    expect(testUpstream.Value.Hosts[0].State).toBe('down');
-    expect(testUpstream.Value.Hosts[1].State).toBe('up');
   });
 
   function createAndInitUpstreamViewModel() {

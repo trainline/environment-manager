@@ -89,14 +89,14 @@ angular.module('EnvironmentManager.configuration').factory('UpstreamViewModel', 
       return '/#/config/services/' + service.ServiceName + '/?Range=' + service.OwningCluster;
     };
 
-    self.toggleActiveHostsButtonIsDisabled = function () {
-      return upstream.Value.Hosts.length === 0;
+    self.showToggleLink = function () {
+      if (!upstream) return false;
+      return !!(isEditMode && upstream.Value.EnvironmentName && upstream.Value.ServiceName);
     };
 
-    self.toggleActiveHosts = function () {
-      upstream.Value.Hosts.forEach(function (host) {
-        host.State = host.State === 'up' ? 'down' : 'up';
-      });
+    self.toggleLink = function () {
+      if (!upstream) return null;
+      return '/#/operations/upstreams?environment=' + upstream.Value.EnvironmentName + '&state=All&service=' + upstream.Value.ServiceName;
     };
 
     self.showValidationError = function (msg) {
