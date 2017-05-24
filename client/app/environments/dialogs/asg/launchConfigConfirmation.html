@@ -1,32 +1,33 @@
 <div class="modal-header">
-    <h2 class="text-default">Launch Configuration Updated</h2>
+    <h2 class="text-info">
+      <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> Launch Configuration Updated
+    </h2>
 </div>
 
 <div class="modal-body launch-config-confirm-dialog">
-
-    <p style="text-align: center">Launch Configuration updated successfully.</p>
-
+    <p><strong>The Launch Configuration was updated successfully but your instances have not changed.</strong></p>
     <div ng-if="vm.numInstances">
-
-      <p style="text-align: center; color: red">Your instances have not been changed. Settings will apply to <b>new</b> instances.</p>
-      
+      <p style="text-align: center; color: red">Settings will apply to <strong>new</strong> instances.</p>
       <p>
-        To roll out this change you need to scale up to <b>{{vm.requiredInstancesForScalingRefresh}} instances</b>.
-        This will guarantee that when you scale back down, only updated servers will remain
-        (<a href="{{vm.scalingExplanationLink}}" target="_blank">see explanation</a>).<br /><br />
-      
+        You currently have <strong>{{vm.numInstances}} instances</strong> running across <strong>{{vm.numAZs}} Availability Zones</strong>.
+      </p>
+      <p>
+        To roll out this change you need to scale up to <strong>{{vm.requiredInstancesForScalingRefresh}} instances</strong>.
+        This will guarantee that when you scale back down, only updated servers will remain.
+      </p>
+      <p>
         Once the new instances are healthy, manually scale back down to <b>{{vm.numInstances}} instances</b> again.
       </p>
-
+      <p>
+        <a href="{{vm.scalingExplanationLink}}" target="_blank">How are these values calculated?</a>
+      </p>
+      <br />
       <p style="text-align: center">
         <button class="btn btn-default" type="button" ng-click="vm.close()">Scale manually later</button>
         <button class="btn btn-default" type="button" ng-click="vm.doScalingRefresh()">Scale to {{vm.requiredInstancesForScalingRefresh}} instances now</button>
       </p>
-
     </div>
-
     <div ng-if="!vm.numInstances">
       <button class="btn btn-default" type="button" ng-click="vm.close()">Ok</button>
     </div>
-
 </div>
