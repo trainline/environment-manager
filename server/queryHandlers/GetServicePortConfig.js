@@ -1,33 +1,29 @@
 'use strict';
 
 let Service = require('models/Service');
-let co = require('co');
 let _ = require('lodash');
 
-function* getServicePortConfig(serviceName) {
-  let portConfig = { blue: 0, green: 0 };
+const DEFAULT_PORT = 0;
 
-  if (serviceName === undefined || serviceName === '') {
-    return portConfig;
-  }
+const getPort = (service, colour) => _.get(service, [0, 'Value', `${colour}Port`]);
 
-  serviceName = serviceName.trim(); // eslint-disable-line no-param-reassign
-  const service = yield Service.getByName(serviceName);
-  if (service === undefined) {
-    return portConfig;
-  }
-
-  const configValue = _.get(service, '[0].Value');
-  if (configValue === undefined) {
-    return portConfig;
-  }
-  if (configValue.BluePort !== undefined) {
-    portConfig.blue = configValue.BluePort;
-  }
-  if (configValue.GreenPort !== undefined) {
-    portConfig.green = configValue.GreenPort;
-  }
-  return portConfig;
+function intOrDefault(maybePort) {
+  let port = Number(maybePort);
+  return Number.isInteger(port) ? port : DEFAULT_PORT;
 }
 
-module.exports = co.wrap(getServicePortConfig);
+function getServicePortConfig(serviceName) {
+  let portConfig = { blue: DEFAULT_PORT, green: DEFAULT_PORT };
+
+  if (serviceName === undefined || serviceName === '') {
+    return Promise.resolve(portConfig);
+  }
+
+  return Service.getByName(serviceName.trim())
+    .then(service => ({
+      blue: intOrDefault(getPort(service, 'Blue')),
+      green: intOrDefault(getPort(service, 'Green'))
+    }));
+}
+
+module.exports = getServicePortConfig;

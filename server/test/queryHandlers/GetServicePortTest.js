@@ -9,7 +9,8 @@ let assert = require('assert');
 describe('GetServicePortConfig', function() {
   let sut;
   let Service;
-  const DEFAULT = { green:0, blue:0 };
+  const DEFAULT_PORT = 0;
+  const DEFAULT = { green:DEFAULT_PORT, blue:DEFAULT_PORT };
 
   function setup(service) {
     Service = {
@@ -52,7 +53,7 @@ describe('GetServicePortConfig', function() {
 
   it('sets default blue port when only green port is known', () => {
     const GREEN = 7825;
-    const EXPECTED = { blue:0, green:GREEN };
+    const EXPECTED = { blue:DEFAULT_PORT, green:GREEN };
     setup(mockService(undefined, GREEN));
     return sut('serviceName').then(result => {
       return assert.deepEqual(result, EXPECTED);
@@ -61,7 +62,7 @@ describe('GetServicePortConfig', function() {
 
   it('sets default green port when only blue port is known', () => {
     const BLUE = 1105;
-    const EXPECTED = { blue:BLUE, green:0 };
+    const EXPECTED = { blue:BLUE, green:DEFAULT_PORT };
     setup(mockService(BLUE, undefined));
     return sut('serviceName').then(result => {
       return assert.deepEqual(result, EXPECTED);
@@ -72,6 +73,24 @@ describe('GetServicePortConfig', function() {
     setup(undefined);
     return sut('serviceName').then(result => {
       return assert.deepEqual(result, DEFAULT);
+    });
+  });
+
+  it('converts the port number to an integer if possible', () => {
+    const BLUE = '9134';
+    const EXPECTED = { blue: 9134, green: DEFAULT_PORT };
+    setup(mockService(BLUE, undefined));
+    return sut('serviceName').then(result => {
+      return assert.deepEqual(result, EXPECTED);
+    });
+  });
+
+  it('assigns the default port number if the port number cannot be converted to an integer', () => {
+    const BLUE = '913.4';
+    const EXPECTED = { blue: DEFAULT_PORT, green: DEFAULT_PORT };
+    setup(mockService(BLUE, undefined));
+    return sut('serviceName').then(result => {
+      return assert.deepEqual(result, EXPECTED);
     });
   });
 });
