@@ -1,6 +1,7 @@
 ﻿/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
+let rl = require('roast-lambda');
 let co = require('co');
 
 let schedulerFactory = require('./scheduler.js');
@@ -10,38 +11,35 @@ let emFactory = require('./services/em');
 
 let config;
 
-exports.handler = (event, context, callback) => {
-  return co(function* () {
-    let awsConfig = getAwsConfigFromContext(context);
-    let aws = awsFactory.create({ region: awsConfig.region });
+exports.handler = rl.init({
+  handler: ({ context, AWS, logger }) => {
+    return co(function* () {
+      let aws = awsFactory.create(AWS, { region: context.awsRegion });
 
-    if (!config) config = yield environment.getConfig(aws.kms);
-    
-    let em = emFactory.create(awsConfig.account, config.em);
+      if (!config) config = yield environment.getConfig(context, aws.kms);
+      
+      let em = emFactory.create(context.awsAccountId, config.em);
 
-    let scheduler = schedulerFactory.create(config, em, aws.ec2);
-    let result = yield scheduler.doScheduling();
+      let scheduler = schedulerFactory.create(config, em, aws.ec2);
+      let result = yield scheduler.doScheduling();
+      
+      if (!result.success && config.errorOnFailure) {
+        return Promise.reject({
+          error: 'Scheduling Failure',
+          report: result
+        });
+      }
 
-    if (result.success) {
-      callback(null, logSuccess(result));
-    } else {
-      if (config.errorOnFailure) callback(logError('Scheduling Failure', result));
-      else callback(null, logError('Scheduling Failure', result));
-    }
-  }).catch(err => callback(logError('Unhandled Exception', err)));
-};
+      logResult(logger, result);
+      return result;
+    });
+  }
+});
 
-function getAwsConfigFromContext(context) {
-  let arn = context.invokedFunctionArn.split(':');
-  return { region: arn[3], account: arn[4] };
-}
-
-function logSuccess(result) {
-  console.log(JSON.stringify(result, null, 2));
-  return `SUCCESS! See logs for more details.`;
-}
-
-function logError(err, details) {
-  console.error(JSON.stringify({ err, details: details.stack || details }, null, 2));
-  return `ERROR: ${err}. See logs for more details.`;
+function logResult(logger, result) {
+  if (result.success) {
+    logger.log('Scheduling completed successfully!', result);
+  } else {
+    logger.warn('Scheduling completed but with some errors.', result);
+  }
 }

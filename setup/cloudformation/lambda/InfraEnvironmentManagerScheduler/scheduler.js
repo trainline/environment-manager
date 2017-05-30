@@ -20,13 +20,6 @@ function createScheduler(config, em, ec2) {
 
       return reporting.createReport({ actionGroups, changeResults }, config.listSkippedInstances);
 
-    }).catch(err => {
-
-      return {
-        success: false,
-        error: printableError(err),
-      };
-
     });
   }
 
@@ -35,17 +28,6 @@ function createScheduler(config, em, ec2) {
       return instanceActions;
 
     return instanceActions.filter(instanceAction => !instanceAction.instance.asg);
-  }
-
-  function printableError(err) {
-    if (err instanceof Error) {
-      return {
-        message: err.message,
-        stack: err.stack
-      };
-    }
-
-    return err;
   }
 
   function getScheduledActions() {

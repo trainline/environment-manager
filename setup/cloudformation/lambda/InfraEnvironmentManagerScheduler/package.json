@@ -16,7 +16,8 @@
     "later": "^1.2.0",
     "lodash": "^4.16.3",
     "request": "^2.75.0",
-    "request-promise": "^4.1.1"
+    "request-promise": "^4.1.1",
+    "roast-lambda": "^0.1.8"
   },
   "devDependencies": {
     "chai": "^3.5.0",

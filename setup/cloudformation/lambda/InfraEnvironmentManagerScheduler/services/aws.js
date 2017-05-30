@@ -1,9 +1,8 @@
 'use strict'
 
-const AWS = require('aws-sdk');
 const RateLimiter = require('./rateLimiter');
 
-function createAWSService(config) {
+function createAWSService(AWS, config) {
 
   let ec2 = new AWS.EC2(config);
   let autoscaling = new AWS.AutoScaling(config);
