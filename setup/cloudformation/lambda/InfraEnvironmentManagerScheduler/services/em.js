@@ -3,8 +3,7 @@
 let co = require('co');
 let request = require('request-promise');
 
-function createEMService(awsAccount, config) {
-
+function createEMService(config) {
   let token;
 
   function getToken() {
@@ -20,15 +19,22 @@ function createEMService(awsAccount, config) {
     });
   }
 
-  function getScheduledInstanceActions() {
+  function getAccounts() {
+    return getJson('api/v1/config/accounts');
+  }
+
+  function getScheduledInstanceActions(awsAccount) {
+    return getJson(`api/v1/instances/schedule-actions?account=${awsAccount}`);
+  }
+
+  function getJson(uri) {
     return co(function*() {
-    
       if (!token) {
         token = yield getToken();
       }
 
       let jsonResponse = yield request({
-        uri: `${config.host}/api/v1/instances/schedule-actions?account=${awsAccount}`,
+        uri: `${config.host}/${uri}`,
         rejectUnauthorized: false,
         headers: {
           authorization: `bearer ${token}`
@@ -36,12 +42,10 @@ function createEMService(awsAccount, config) {
       });
 
       return JSON.parse(jsonResponse);
-
     });
   }
 
-  return { getScheduledInstanceActions };
-
+  return { getAccounts, getScheduledInstanceActions };
 }
 
 module.exports = {

@@ -18,9 +18,9 @@ exports.handler = rl.init({
 
       if (!config) config = yield environment.getConfig(context, aws.kms);
       
-      let em = emFactory.create(context.awsAccountId, config.em);
+      let em = emFactory.create(config.em);
 
-      let scheduler = schedulerFactory.create(config, em, aws.ec2);
+      let scheduler = schedulerFactory.create(config, em, AWS, context);
       let result = yield scheduler.doScheduling();
       
       if (!result.success && config.errorOnFailure) {
