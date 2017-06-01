@@ -1,7 +1,11 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: Publication of Environment Manager Change Events
+Description: Environment Manager
 Parameters:
+  pResourcePrefix:
+    Type: String
+    Description: "Prefix for named AWS resources"
+    Default: ""
   pConfigurationBucket:
     Type: String
     Default: ""
@@ -57,18 +61,20 @@ Resources:
     Condition: AlertToInternalTopic
     Properties:
       DisplayName: Environment Manager Alerts
-  EnvironmentManagerCommon:
+  Database:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
+        pResourcePrefix: !Ref pResourcePrefix
         pAlertSNSTopic: !If [AlertToInternalTopic, !Ref InternalAlertTopic, !Ref pExternalAlertTopic]
         pMasterAccountId: !Ref "AWS::AccountId"
       TemplateURL: ./EnvironmentManagerCommonResources.template.json
       TimeoutInMinutes: 30
-  EnvironmentManagerMaster:
+  App:
     Type: AWS::CloudFormation::Stack
     Properties:
       Parameters:
+        pResourcePrefix: !Ref pResourcePrefix
         pAlertSNSTopic: !If [AlertToInternalTopic, !Ref InternalAlertTopic, !Ref pExternalAlertTopic]
         pConfigurationBucket: !Ref pConfigurationBucket
         pSecretsBucket: !Ref pSecretsBucket
@@ -84,34 +90,34 @@ Resources:
         ploadBalancerEnvironmentManagerSubnetIDs: !Join [",", !Ref ploadBalancerEnvironmentManagerSubnetIDs]
         pVpcBase: !Ref pVpcBase
         pInternalSubnet: !Ref pInternalSubnet
-        pEnvironmentManagerSecurityGroups: !Join [",", [!GetAtt EnvironmentManagerRedisNetwork.Outputs.RedisAccessSecurityGroup, !Join [",", !Ref pEnvironmentManagerSecurityGroups]]]
+        pEnvironmentManagerSecurityGroups: !Join [",", [!GetAtt RedisNetwork.Outputs.RedisAccessSecurityGroup, !Join [",", !Ref pEnvironmentManagerSecurityGroups]]]
         pCreateMasterRole: true
       TemplateURL: ./EnvironmentManagerMasterResources.template.json
       TimeoutInMinutes: 30
-  EnvironmentManagerChild:
+  Agent:
       Type: AWS::CloudFormation::Stack
       Properties:
         Parameters:
-          pAlertSNSTopic: !If [AlertToInternalTopic, !Ref InternalAlertTopic, !Ref pExternalAlertTopic]
+          pResourcePrefix: !Ref pResourcePrefix
           pMasterAccountId: !Ref AWS::AccountId
           pDeploymentLogsBucket: !Ref pDeploymentLogsBucket
           pPackagesBucket: !Ref pPackagesBucket
-          pCreateChildRole: true
         TemplateURL: ./EnvironmentManagerChildResources.template.json
         TimeoutInMinutes: 30
-  EnvironmentManagerRedisNetwork:
+  RedisNetwork:
       Type: AWS::CloudFormation::Stack
       Properties:
         Parameters:
+          pResourcePrefix: !Ref pResourcePrefix
           pVpcBase: !Ref pVpcBase
           pRedisSubnets: !Join [",", !Ref pRedisSubnets]
         TemplateURL: ./EnvironmentManagerRedisNetwork.template.yaml
         TimeoutInMinutes: 30
-  EnvironmentManagerRedisCluster:
+  Redis:
       Type: AWS::CloudFormation::Stack
       Properties:
         Parameters:
-          pRedisSubnetGroupName: !GetAtt EnvironmentManagerRedisNetwork.Outputs.RedisClusterSubnetGroup
-          pRedisSecurityGroup: !GetAtt EnvironmentManagerRedisNetwork.Outputs.RedisHostSecurityGroup
+          pRedisSubnetGroupName: !GetAtt RedisNetwork.Outputs.RedisClusterSubnetGroup
+          pRedisSecurityGroup: !GetAtt RedisNetwork.Outputs.RedisHostSecurityGroup
         TemplateURL: ./EnvironmentManagerRedis.template.yaml
         TimeoutInMinutes: 30
