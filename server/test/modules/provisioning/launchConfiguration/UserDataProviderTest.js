@@ -18,7 +18,7 @@ describe("UserDataProvider:", () => {
       serverRole: {
         ServerRoleName: "Web",
         SecurityZone: "Secure",
-        ContactEmailTag: "tango@trainline.com",
+        ContactEmailTag: "test@email.com",
         ProjectCodeTag: "001",
         PuppetRole: "PuppetRole"
       },
