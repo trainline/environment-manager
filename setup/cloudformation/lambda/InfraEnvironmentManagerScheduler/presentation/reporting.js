@@ -4,7 +4,7 @@
 const _ = require('lodash');
 
 function createReport(accounts, listSkippedInstances) {
-  let success = accounts.every(accountWasSuccessfullyScheduled);
+  let success = _.every(accounts, accountWasSuccessfullyScheduled);
 
   let result = {
     success: success,
