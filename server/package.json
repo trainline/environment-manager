@@ -16,6 +16,7 @@
   },
   "main": "index.js",
   "scripts": {
+    "build": "gulp build --gulpfile gulpfile.js -p -o build",
     "start": "node index.js",
     "debug": "nodemon --debug-brk index.js",
     "dev": "nodemon index.js",
@@ -53,6 +54,7 @@
     "express": "^4.14.0",
     "express-request-id": "^1.3.0",
     "glob-intersection": "^0.1.3",
+    "gulp": "^3.9.1",
     "ioredis": "^2.5.0",
     "ip": "^1.1.4",
     "js-joda": "^1.1.17",
