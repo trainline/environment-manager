@@ -2,17 +2,16 @@
 'use strict';
 
 const AWS = require('aws-sdk');
-const crypto = require('crypto');
 const process = require('process');
 
-const DESTINATION_ACCOUNT_ID = process.env.DESTINATION_ACCOUNT_ID; // Assign the AWS Account ID of your Environment Manager master account
 const DESTINATION_TABLE_NAME = process.env.DESTINATION_TABLE_NAME;
-const WRITER_ROLE_NAME = process.env.WRITER_ROLE_NAME;
 
 /* See example of string matched by DYNAMO_STREAM_ARN_REGEX below:
 /* arn:aws:dynamodb:us-west-2:account-id:table/ExampleTableWithStream/stream/2015-06-27T00:48:05.899
 */
 const DYNAMO_STREAM_ARN_REGEX = /^(?:[^:]+:){5}[^\/]+\/([^\/]+)/;
+
+const dynamodb = new AWS.DynamoDB.DocumentClient({ apiVersion: '2012-08-10' });
 
 // Copied from 'aws-sdk'
 function unmarshall(data) {
@@ -140,39 +139,23 @@ function asPutRequestItem(auditItem) {
   };
 }
 
-function uuid() {
-  function chunk(sizes, str) {
-    function loop(chunkNumber, chunkStartIdx, acc) {
-      if (chunkNumber >= sizes.length) {
-        return acc;
+function writeItems(items) {
+  let request = { RequestItems: {} };
+  request.RequestItems[DESTINATION_TABLE_NAME] = items;
+  return new Promise(function (resolve, reject) {
+    dynamodb.batchWrite(request, function (error, data) {
+      if (error) {
+        reject(error);
+      } else {
+        let unprocessed = data.UnprocessedItems[DESTINATION_TABLE_NAME];
+        if (unprocessed) {
+          console.log('%d items remain to precess', unprocessed.length);
+          resolve(writeItems(dynamodb, unprocessed));
+        } else {
+          resolve(`${items.length} audit record written.`);
+        }
       }
-      if (chunkStartIdx >= str.length) {
-        return acc;
-      }
-      let nextChunkStartIdx = chunkStartIdx + sizes[chunkNumber];
-      acc.push(str.substring(chunkStartIdx, nextChunkStartIdx));
-      return loop(chunkNumber + 1, nextChunkStartIdx, acc);
-    }
-    return loop(0, 0, []);
-  }
-
-  let s = crypto.randomBytes(16).toString('hex');
-  return chunk([8, 4, 4, 4, 12], s).join('-');
-}
-
-function getDynamoClientWithCredentials(credentials) {
-  let dynamodb = new AWS.DynamoDB({ apiVersion: '2012-08-10', credentials: credentials });
-  let documentClient = new AWS.DynamoDB.DocumentClient({ service: dynamodb });
-  return documentClient;
-}
-
-/* This function returns a promise of the configuration required
- * to run this function. The current implementation just returns
- * a constant but a DynamoDB or S3 lookup would be easy. */
-function getConfiguration(context) {
-  return Promise.resolve({
-    DestinationTableName: DESTINATION_TABLE_NAME,
-    WriterRoleArn: `arn:aws:iam::${DESTINATION_ACCOUNT_ID}:role/${WRITER_ROLE_NAME}`
+    });
   });
 }
 
@@ -180,63 +163,12 @@ exports.handler = function (event, context, callback) {
   let succeed = x => callback(null, x);
   let fail = x => callback(x);
 
-return getConfiguration(context).then(config =>
- {
-  function getAuditWriterCredentials() {
-    let sts = new AWS.STS({ apiVersion: '2011-06-15' });
-    let params = {
-      RoleArn: config.WriterRoleArn,
-      RoleSessionName: uuid(),
-      DurationSeconds: 900
-    };
-    return new Promise(function (resolve, reject) {
-      sts.assumeRole(params, function (error, data) {
-        if (error) {
-          reject(error);
-        } else {
-          let c = data.Credentials;
-          resolve(new AWS.Credentials({
-            accessKeyId: c.AccessKeyId,
-            secretAccessKey: c.SecretAccessKey,
-            sessionToken: c.SessionToken}));
-        }
-      });
-    });
-  }
-
-  let destinationTableName = config.DestinationTableName;
-
-   function writeItems(dynamodb, items) {
-    let request = { RequestItems: {} };
-    request.RequestItems[destinationTableName] = items;
-    return new Promise(function (resolve, reject) {
-      dynamodb.batchWrite(request, function (error, data) {
-        if (error) {
-          reject(error);
-        } else {
-          let unprocessed = data.UnprocessedItems[destinationTableName];
-          if (unprocessed) {
-            console.log('%d items remain to precess', unprocessed.length);
-            resolve(writeItems(dynamodb, unprocessed));
-          } else {
-            resolve(`${auditItems.length} audit record written.`);
-          }
-        }
-      });
-    });
-  }
-
   console.log(`Received ${event.Records.length} records from dynamo streams.`);
 
-  var auditItems = getAllAuditItems(event);
-  if (auditItems.length === 0) {
-    succeed("No audit items found to write.");
-    return;
-  }
-
-  let items = auditItems.map(asPutRequestItem);
-  return getAuditWriterCredentials()
-    .then(getDynamoClientWithCredentials)
-    .then(dynamodb => writeItems(dynamodb, items))
-    .then(succeed, fail);}, fail);
+  return Promise.resolve(event)
+    .then(getAllAuditItems)
+    .then(items => items.map(asPutRequestItem))
+    .then(writeItems)
+    .then(succeed)
+    .catch(fail);
 };
