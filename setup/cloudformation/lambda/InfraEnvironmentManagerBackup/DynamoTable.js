@@ -1,10 +1,12 @@
+'use strict';
+
 function pad(number) {
-  return number < 10 ? '0' + number : number;
-};
+  return number < 10 ? `0${number}` : number;
+}
 
 function getDatestamp(date) {
-  var result = [
-        date.getUTCFullYear(),
+  let result = [
+    date.getUTCFullYear(),
     pad(date.getUTCMonth() + 1),
     pad(date.getUTCDate())
   ].join('');
@@ -13,38 +15,37 @@ function getDatestamp(date) {
 }
 
 function getDynamoTableBackupFilename(dynamoTable, bucketPath) {
-  var datestamp = getDatestamp(new Date());
+  let datestamp = getDatestamp(new Date());
 
-  var filename = [
+  let filename = `${[
     datestamp,
     'environmentmanager',
     dynamoTable.name,
     dynamoTable.account.name
-  ].join('_') + '.json';
+  ].join('_')}.json`;
 
-  var result = [
+  let result = [
     bucketPath,
     filename
   ].join('/');
 
   return result;
-};
+}
 
 function DynamoTable(name, account, stringifier, bucketPath) {
-  var $this = this;
+  let $this = this;
 
-  $this.name      = name;
-  $this.account   = account;
+  $this.name = name;
+  $this.account = account;
   $this.stringify = stringifier;
 
-  $this.toString = function() {
+  $this.toString = function () {
     return [$this.account.name, $this.name].join('/');
   };
 
-  $this.toBackupFilename = function() {
+  $this.toBackupFilename = function () {
     return getDynamoTableBackupFilename($this, bucketPath);
   };
-
 }
 
 module.exports = DynamoTable;

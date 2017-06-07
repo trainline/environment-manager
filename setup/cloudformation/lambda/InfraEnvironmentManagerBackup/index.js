@@ -1,52 +1,51 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-var AWS          = require('aws-sdk'),
-    S3           = new AWS.S3(),
-    STS          = new AWS.STS(),
-    async        = require('async'),
-    process      = require('process');
+let AWS = require('aws-sdk');
+let S3 = new AWS.S3();
+let STS = new AWS.STS();
+let async = require('async');
+let process = require('process');
 
-var S3_BACKUP_BUCKET  = process.env.S3_BACKUP_BUCKET;
-var S3_PATH           = process.env.S3_PATH;
-var ROLE_NAME         = process.env.ROLE_NAME;
+let S3_BACKUP_BUCKET = process.env.S3_BACKUP_BUCKET;
+let S3_PATH = process.env.S3_PATH;
+let ROLE_NAME = process.env.ROLE_NAME;
 
-var masterAccount = JSON.parse(process.env.MASTER_ACCOUNT);
+let masterAccount = JSON.parse(process.env.MASTER_ACCOUNT);
 masterAccount.tables = JSON.parse(process.env.MASTER_ACCOUNT_TABLES);
 
-var childAccounts = JSON.parse(process.env.CHILD_ACCOUNTS);
-var childAccountTables = JSON.parse(process.env.CHILD_ACCOUNT_TABLES);
-childAccounts.forEach(account => account.tables = childAccountTables);
+let childAccounts = JSON.parse(process.env.CHILD_ACCOUNTS);
+let childAccountTables = JSON.parse(process.env.CHILD_ACCOUNT_TABLES);
+childAccounts.forEach((account) => { account.tables = childAccountTables; });
 
-var DynamoTables = require('./DynamoTables')(masterAccount, childAccounts, S3_PATH);
+let DynamoTables = require('./DynamoTables')(masterAccount, childAccounts, S3_PATH);
 
-var BYTE             = 1;
-var KB               = 1024 * BYTE;
-var MB               = 1024 * KB;
-var S3_MINPARTSIZE   = MB * 5;
-var NO_ERROR         = undefined;
+let BYTE = 1;
+let KB = 1024 * BYTE;
+let MB = 1024 * KB;
+let S3_MINPARTSIZE = MB * 5;
+let NO_ERROR;
 
 function getIAMRoleInTargetAccount(targetAccount) {
-  var arn = "arn:aws:iam::" + targetAccount.number + ":role/" + ROLE_NAME;
+  let arn = `arn:aws:iam::${targetAccount.number}:role/${ROLE_NAME}`;
 
   return arn;
 }
 
 function toSize(size) {
-  if (size > (100 * KB))   return (size / MB).toFixed(2) + ' MB';
-  if (size > (100 * BYTE)) return (size / KB).toFixed(2) + ' KB';
-  return size + ' Byte';
+  if (size > (100 * KB)) return `${(size / MB).toFixed(2)} MB`;
+  if (size > (100 * BYTE)) return `${(size / KB).toFixed(2)} KB`;
+  return `${size} Byte`;
 }
 
-exports.handler = function(event, context) {
-
+exports.handler = function (event, context) {
   function backupDynamoTable(dynamoTable, mainCallback) {
+    let start = new Date();
+    let tableName = dynamoTable.toString();
+    let backupFilename = dynamoTable.toBackupFilename();
 
-    var start          = new Date();
-    var tableName      = dynamoTable.toString();
-    var backupFilename = dynamoTable.toBackupFilename();
-
-	  console.log('Starting "%s" dynamo table backup', tableName);
+    console.log('Starting "%s" dynamo table backup', tableName);
 
     async.waterfall([
 
@@ -54,13 +53,13 @@ exports.handler = function(event, context) {
       // Dynamo client must be created with the assumed credentials for getting
       // records from the target table in the proper AWS account.
       function assumeRoleCredentials(firstLevelCallback) {
-        var roleArn = getIAMRoleInTargetAccount(dynamoTable.account);
+        let roleArn = getIAMRoleInTargetAccount(dynamoTable.account);
 
         console.log('1/5 Assuming role for "%s"', roleArn);
 
-        var stsParams = {
+        let stsParams = {
           RoleArn: roleArn,
-          RoleSessionName: '' + new Date().getTime()
+          RoleSessionName: `${new Date().getTime()}`
         };
         STS.assumeRole(stsParams, firstLevelCallback);
       },
@@ -70,15 +69,14 @@ exports.handler = function(event, context) {
       // A new DynamoDB client is created with the assumed credentials and
       // pushed to the next callback in the chain.
       function createDynamoClient(stsResponse, firstLevelCallback) {
-
         console.log('2/5 Creating DynamoDB client');
 
-        var credentials = new AWS.Credentials(
+        let credentials = new AWS.Credentials(
           stsResponse.Credentials.AccessKeyId,
           stsResponse.Credentials.SecretAccessKey,
           stsResponse.Credentials.SessionToken
         );
-        var dynamoClient = new AWS.DynamoDB.DocumentClient({credentials: credentials});
+        let dynamoClient = new AWS.DynamoDB.DocumentClient({ credentials });
         firstLevelCallback(NO_ERROR, dynamoClient);
       },
 
@@ -87,14 +85,14 @@ exports.handler = function(event, context) {
       // This callback pushes to the next one the dynamoClient and the UploadId
       // needed for uploading the table content in multiple steps.
       function createMultipartUpload(dynamoClient, firstLevelCallback) {
-        var parameters = {
+        let parameters = {
           Bucket: S3_BACKUP_BUCKET,
           Key: backupFilename
         };
 
         console.log('3/5 Creating multipart upload for "%s/%s" S3 object', S3_BACKUP_BUCKET, backupFilename);
 
-        S3.createMultipartUpload(parameters, function(error, s3Response) {
+        S3.createMultipartUpload(parameters, (error, s3Response) => {
           if (error) firstLevelCallback(error);
           else firstLevelCallback(NO_ERROR, dynamoClient, s3Response.UploadId);
         });
@@ -104,9 +102,9 @@ exports.handler = function(event, context) {
       // orchestrating the multipart upload to S3 until there is no longer
       // dynamo records to upload.
       function uploadAllRecordsToS3(dynamoClient, uploadId, firstLevelCallback) {
-        var partResults = [];
-        var lastKey     = undefined;
-        var buffer      = '';
+        let partResults = [];
+        let lastKey;
+        let buffer = '';
 
         console.log('4/5 Starting upload records to S3 object.');
 
@@ -114,38 +112,34 @@ exports.handler = function(event, context) {
 
           // Get a chunk of records from dynamo table and upload the content
           // to the S3 preposed object.
-          function uploadChunkOfRecordsToS3(secondLevelCallback) {
-
+          (secondLevelCallback) => {
             async.waterfall([
 
               // Get a chunk of records from the dynamo table.
               // This function will be repeated changing the 'ExclusiveStartKey'
               // argument in order to scan the whole table chunk after chunk.
               function getRecords(thirdLevelCallback) {
-
-                var request = {
+                let request = {
                   TableName: dynamoTable.name,
                   ExclusiveStartKey: lastKey
                 };
 
-                dynamoClient.scan(request, function(error, data) {
+                dynamoClient.scan(request, (error, data) => {
                   if (error) {
                     // Error occurred. Stop the chain!
                     thirdLevelCallback(error);
-                  }
-                  else {
-                    var records = data.Items;
+                  } else {
+                    let records = data.Items;
                     console.log('4/5 Got %d records from DynamoDB', records.length);
 
                     // Stringifing the table content and pushing it to the next
                     // chain callback for uploading it to S3.
                     lastKey = data.LastEvaluatedKey;
-                    var content = dynamoTable.stringify(records);
+                    let content = dynamoTable.stringify(records);
 
                     thirdLevelCallback(NO_ERROR, content);
                   }
                 });
-
               },
 
               // S3 API requires all uploaded part except the last one must have
@@ -154,8 +148,8 @@ exports.handler = function(event, context) {
               // requirement is satisfied.
               function bufferizeContent(content, thirdLevelCallback) {
                 buffer += buffer.length > 0
-                          ? ',\n' + content
-                          :         content;
+                  ? `,\n${content}`
+                  : content;
 
                 console.log('4/5 Buffer size %s.', toSize(buffer.length));
 
@@ -170,14 +164,13 @@ exports.handler = function(event, context) {
               // Upload the stringified content to the S3 object initialized
               // as multipart upload.
               function uploadRecords(content, thirdLevelCallback) {
-
                 // If no content is provided the callback skips to do its job.
-                if (content.length == 0) {
+                if (content.length === 0) {
                   thirdLevelCallback();
                   return;
                 }
 
-                function getConcatenableContent(content) {
+                function getConcatenableContent(content2) {
                   // Content stringified is going to compose a JSON array.
                   // For this reason if this is the first part of the content, the
                   // content itself is prefixed by the array opening character.
@@ -185,64 +178,60 @@ exports.handler = function(event, context) {
                   // the previous one.
                   // In the same way the content is suffixed with an array closing
                   // character when current part is the latest one.
-                  var prefix = (partResults.length === 0) ? '[' : ',\n';
-                  var suffix = (lastKey === undefined)    ? ']' : '';
-                  var result = prefix + content + suffix;
+                  let prefix = (partResults.length === 0) ? '[' : ',\n';
+                  let suffix = (lastKey === undefined) ? ']' : '';
+                  let result = prefix + content2 + suffix;
 
                   return result;
-                };
+                }
 
-                var partNumber = partResults.length + 1;
+                let partNumber = partResults.length + 1;
 
                 console.log('4/5 Uploading part %d [%s]', partNumber, toSize(content.length));
 
-                var parameters = {
+                let parameters = {
                   Bucket: S3_BACKUP_BUCKET,
                   Key: backupFilename,
                   PartNumber: partNumber,
                   UploadId: uploadId,
                   Body: getConcatenableContent(content)
-                }
+                };
 
-                S3.uploadPart(parameters, function(error, s3Response) {
+                S3.uploadPart(parameters, (error, s3Response) => {
                   if (error) {
                     thirdLevelCallback(error, uploadId, partResults);
                   } else {
-                    partResults.push({ PartNumber: partNumber, ETag: s3Response.ETag})
+                    partResults.push({ PartNumber: partNumber, ETag: s3Response.ETag });
                     thirdLevelCallback(NO_ERROR);
                   }
-                })
-
+                });
               }
 
             ],
 
-            // Continue the parent callback chain (Second level)
-            secondLevelCallback);
-
+              // Continue the parent callback chain (Second level)
+              secondLevelCallback);
           },
 
           // If 'lastKey' is undefined there is no other dynamo records to read.
-          function isLastChunkOfRecords() {
+          () => {
             return lastKey !== undefined;
           },
 
           // Continue the parent callback chain (First level)
-          function (error) {
+          (error) => {
             console.log('4/5 Uploaded whole table content.');
             if (error) firstLevelCallback(error, uploadId);
-            else firstLevelCallback(NO_ERROR, uploadId, partResults)
+            else firstLevelCallback(NO_ERROR, uploadId, partResults);
           }
 
         );
-
       },
 
       // Following callback finalizes the S3 object in which the dynamo table
       // content has been uploaded.
       function completeMultipartUpload(uploadId, partResults, firstLevelCallback) {
-
-        var parameters = {
+        let parameters = {
           Bucket: S3_BACKUP_BUCKET,
           Key: backupFilename,
           UploadId: uploadId,
@@ -253,33 +242,28 @@ exports.handler = function(event, context) {
 
         console.log('5/5 Completing multipart upload for "%s/%s" S3 object', S3_BACKUP_BUCKET, backupFilename);
 
-        S3.completeMultipartUpload(parameters, function(error, s3Response) {
+        S3.completeMultipartUpload(parameters, (error, s3Response) => {
           if (error) firstLevelCallback(error, uploadId);
           else firstLevelCallback(NO_ERROR);
         });
-
       }
 
     ],
 
-    function (error) {
+      (error) => {
+        let elapsedSeconds = (new Date().getTime() - start.getTime()) / 1000;
 
-      var elapsedSeconds = (new Date().getTime() - start.getTime()) / 1000;
+        if (error) console.log('An error has occurred during "%s" dynamo table backup.', tableName);
+        else console.log('"%s" dynamo table successfully backuped in %d seconds.', tableName, elapsedSeconds);
 
-      if (error) console.log('An error has occurred during "%s" dynamo table backup.', tableName);
-      else console.log('"%s" dynamo table successfully backuped in %d seconds.', tableName, elapsedSeconds);
-
-      mainCallback(error);
-
-    });
-
-  };
-
-  var callback = function(error) {
-    if (error) context.fail(error);
-    else context.succeed();
+        mainCallback(error);
+      });
   }
 
-  async.eachSeries(DynamoTables, backupDynamoTable, callback);
+  let callback = function (error) {
+    if (error) context.fail(error);
+    else context.succeed();
+  };
 
+  async.eachSeries(DynamoTables, backupDynamoTable, callback);
 };

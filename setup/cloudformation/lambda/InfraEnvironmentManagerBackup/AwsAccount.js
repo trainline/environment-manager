@@ -1,11 +1,13 @@
-function AwsAccount(name, number) {
-  var $this = this;
+'use strict';
 
-  $this.name   = name;
+function AwsAccount(name, number) {
+  let $this = this;
+
+  $this.name = name;
   $this.number = number;
 
-  $this.toString = function() {
-    return $this.name + '[' + $this.number + ']';
+  $this.toString = function () {
+    return `${$this.name}[${$this.number}]`;
   };
 }
 

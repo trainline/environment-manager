@@ -1,35 +1,35 @@
 'use strict';
 
-var AwsAccount  = require('./AwsAccount'),
-    DynamoTable = require('./DynamoTable');
+let AwsAccount = require('./AwsAccount');
+let DynamoTable = require('./DynamoTable');
 
-var Convert = {
-  objectToJsonString: function(object) {
-    var result = JSON.stringify(object, null, '  ');
+let Convert = {
+  objectToJsonString(object) {
+    let result = JSON.stringify(object, null, '  ');
     return result;
   },
-  jsonStringToObject: function(jsonString) {
-    var result = JSON.parse(jsonString);
+  jsonStringToObject(jsonString) {
+    let result = JSON.parse(jsonString);
     return result;
   }
 };
 
-var Stringify = {
-  defaultDynamoTableContent: function(content) {
-    var result = content.map(Convert.objectToJsonString)
+let Stringify = {
+  defaultDynamoTableContent(content) {
+    let result = content.map(Convert.objectToJsonString)
                         .join(',\n');
 
     return result;
   },
-  lbUpstreamDynamoTableContent: function(content) {
-    var normalizeValue = function(item) {
+  lbUpstreamDynamoTableContent(content) {
+    let normalizeValue = function (item) {
       item.Value = Convert.jsonStringToObject(item.value);
       delete item.value;
 
       return item;
     };
 
-    var result = content.map(normalizeValue)
+    let result = content.map(normalizeValue)
                         .map(Convert.objectToJsonString)
                         .join(',\n');
 
@@ -37,7 +37,7 @@ var Stringify = {
   }
 };
 
-function createTable (accountName, accountNumber, tableName, bucketPath) {
+function createTable(accountName, accountNumber, tableName, bucketPath) {
   let account = new AwsAccount(accountName, accountNumber);
 
   let serializer = tableName === 'ConfigLBUpstream'
@@ -45,7 +45,7 @@ function createTable (accountName, accountNumber, tableName, bucketPath) {
       : Stringify.defaultDynamoTableContent;
 
   return new DynamoTable(tableName, account, serializer, bucketPath);
-};
+}
 
 module.exports = (masterAccount, childAccounts, bucketPath) => {
   let tables = masterAccount.tables.map(tableName =>
