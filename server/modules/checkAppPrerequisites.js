@@ -1,13 +1,10 @@
 'use strict';
 
 let co = require('co');
-let resourceProvider = require('modules/resourceProvider');
+let permissionsDb = require('modules/data-access/permissions');
 let logger = require('modules/logger');
 let guid = require('node-uuid');
 let config = require('config');
-let awsAccounts = require('modules/awsAccounts');
-
-let permissionsResource;
 
 function checkAppPrerequisites() {
   return co(function* () {
@@ -25,7 +22,7 @@ function checkAppPrerequisites() {
 
 function checkIfPermissionsExist() {
   return co(function* () {
-    let results = yield permissionsResource.all({ limit: 1, formatting: {} });
+    let results = yield permissionsDb.scan({ Limit: 1 });
     return !!(results && results.length);
   });
 }
@@ -40,16 +37,14 @@ function insertDefaultAdminPermission() {
       throw new Error('The value "authentication.defaultAdmin" was not found in config. This is required to create the first permission.');
     }
 
-    yield permissionsResource.post({
-      item: {
+    yield permissionsDb.create({
+      record: {
         Name: defaultAdmin,
-        Permissions: [{ Resource: '**', Access: 'ADMIN' }],
-        Audit: {
-          TransactionID: guid.v1(),
-          User: 'system',
-          LastChanged: new Date().toISOString(),
-          Version: 0
-        }
+        Permissions: [{ Resource: '**', Access: 'ADMIN' }]
+      },
+      metadata: {
+        TransactionID: guid.v1(),
+        User: 'system'
       }
     });
   });
@@ -58,11 +53,6 @@ function insertDefaultAdminPermission() {
 // eslint-disable-next-line arrow-body-style
 module.exports = () => {
   return co(function* () {
-    if (permissionsResource === undefined) {
-      let masterAccountName = yield awsAccounts.getMasterAccountName();
-      let parameters = { accountName: masterAccountName };
-      permissionsResource = yield resourceProvider.getInstanceByName('config/permissions', parameters);
-    }
     return checkAppPrerequisites();
   });
 };
