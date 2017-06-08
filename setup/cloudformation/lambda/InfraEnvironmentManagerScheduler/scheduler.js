@@ -7,20 +7,20 @@ const _ = require('lodash');
 const awsFactory = require('./services/aws');
 const reporting = require('./presentation/reporting');
 
-function createScheduler(config, em, AWS, context) {
+function createScheduler(config, em, AWS, context, logger) {
   function doScheduling () {
     return co(function*() {
-      let accounts = yield em.getAccounts();
+      let accounts = yield getAccounts();
 
       let accountResults = yield accounts.map((account) => {
         return co(function*() {
-          let aws = yield awsFactory.create(AWS, context, account);
+          let aws = yield awsFactory.create(AWS, context, account, logger);
           
           let allScheduledActions = yield getScheduledActions(account);
           let scheduledActions = maybeFilterActionsForASGInstances(allScheduledActions);
           let actionGroups = groupActionsByType(scheduledActions);
 
-          let changeResults = yield performChanges(aws.ec2, actionGroups);
+          let changeResults = yield performChanges(aws, actionGroups);
 
           return {
             accountName: account.AccountName,
@@ -38,6 +38,15 @@ function createScheduler(config, em, AWS, context) {
       return instanceActions;
 
     return instanceActions.filter(instanceAction => !instanceAction.instance.asg);
+  }
+
+  function getAccounts() {
+    return co(function*() {
+      let allAccounts = yield em.getAccounts();
+
+      if (!config.limitToAccounts.length) return allAccounts;
+      return allAccounts.filter(x => _.includes(config.limitToAccounts, x.AccountName));
+    });
   }
 
   function getScheduledActions(account) {
@@ -64,13 +73,13 @@ function createScheduler(config, em, AWS, context) {
     return re.test(environmentName);
   }
 
-  function performChanges(ec2, actionGroups) {
+  function performChanges(aws, actionGroups) {
     return co(function*() {
       return {
-        switchOn: yield performChange(ec2.switchInstancesOn, actionGroups.switchOn),
-        switchOff: yield performChange(ec2.switchInstancesOff, actionGroups.switchOff),
-        putInService: yield performChange(ec2.putAsgInstancesInService, actionGroups.putInService),
-        putOutOfService: yield performChange(ec2.putAsgInstancesInStandby, actionGroups.putOutOfService)
+        switchOn: yield performChange(aws.ec2.switchInstancesOn, actionGroups.switchOn),
+        switchOff: yield performChange(aws.ec2.switchInstancesOff, actionGroups.switchOff),
+        putInService: yield performChange(aws.autoScaling.putInstancesInService, actionGroups.putInService),
+        putOutOfService: yield performChange(aws.autoScaling.putInstancesInStandby, actionGroups.putOutOfService)
       };
     });
   }

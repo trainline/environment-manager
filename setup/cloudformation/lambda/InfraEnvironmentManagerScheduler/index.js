@@ -9,18 +9,14 @@ let environment = require('./environment.js');
 let awsFactory = require('./services/aws');
 let emFactory = require('./services/em');
 
-let config;
-
 exports.handler = rl.init({
   handler: ({ context, AWS, logger }) => {
     return co(function* () {
-      let aws = awsFactory.create(AWS, { region: context.awsRegion });
-
-      if (!config) config = yield environment.getConfig(context, aws.kms);
+      let config = yield environment.getConfig(AWS, context);
       
       let em = emFactory.create(config.em);
 
-      let scheduler = schedulerFactory.create(config, em, AWS, context);
+      let scheduler = schedulerFactory.create(config, em, AWS, context, logger);
       let result = yield scheduler.doScheduling();
       
       if (!result.success && config.errorOnFailure) {
@@ -30,16 +26,7 @@ exports.handler = rl.init({
         });
       }
 
-      logResult(logger, result);
       return result;
     });
   }
 });
-
-function logResult(logger, result) {
-  if (result.success) {
-    logger.log('Scheduling completed successfully!', result);
-  } else {
-    logger.warn('Scheduling completed but with some errors.', result);
-  }
-}

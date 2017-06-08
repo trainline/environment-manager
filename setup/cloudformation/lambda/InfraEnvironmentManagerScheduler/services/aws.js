@@ -5,12 +5,13 @@ const co = require('co');
 
 const RateLimiter = require('./rateLimiter');
 
-function createAWSService(AWS, context, account) {
+function createAWSService(AWS, context, account, logger) {
   return co(function*() {
     let awsConfig = { region: context.awsRegion };
 
-    if (account && account.AccountNumber !== context.awsAccountId)
+    if (account.AccountNumber !== context.awsAccountId) {
       awsConfig.credentials = yield getCredentials();
+    }
 
     let ec2 = new AWS.EC2(awsConfig);
     let autoscaling = new AWS.AutoScaling(awsConfig);
@@ -20,7 +21,8 @@ function createAWSService(AWS, context, account) {
     function switchInstancesOn(instances) {
       return promiseAllWithSlowFail(instances.map(instance => {
         return ec2.startInstances({
-          InstanceIds: [instance.id]
+          InstanceIds: [instance.id],
+          XRaySegment: logger.segment
         }).promise();
       }));
     }
@@ -28,17 +30,19 @@ function createAWSService(AWS, context, account) {
     function switchInstancesOff(instances) {
       return promiseAllWithSlowFail(instances.map(instance => {
         return ec2.stopInstances({
-          InstanceIds: [instance.id]
+          InstanceIds: [instance.id],
+          XRaySegment: logger.segment
         }).promise();
       }));
     }
 
-    function putAsgInstancesInService(instances) {
+    function putInstancesInService(instances) {
       let tasks = instances.map(instance => {
         return () => {
           return autoscaling.exitStandby({
             AutoScalingGroupName: instance.asg,
-            InstanceIds: [instance.id]
+            InstanceIds: [instance.id],
+            XRaySegment: logger.segment
           }).promise();
         };
       });
@@ -47,13 +51,14 @@ function createAWSService(AWS, context, account) {
       return promiseAllWithSlowFail(promises);
     }
 
-    function putAsgInstancesInStandby(instances) {
+    function putInstancesInStandby(instances) {
       let tasks = instances.map(instance => {
         return () => {
           return autoscaling.enterStandby({
             AutoScalingGroupName: instance.asg,
             InstanceIds: [instance.id],
-            ShouldDecrementDesiredCapacity: true
+            ShouldDecrementDesiredCapacity: true,
+            XRaySegment: logger.segment
           }).promise();
         };
       });
@@ -76,16 +81,6 @@ function createAWSService(AWS, context, account) {
           throw { message: `${errors.length} operations failed.`, errors: errors };
 
         return results;
-      });
-    }
-
-    function decrypt(cyphertext) {
-      let kms = new AWS.KMS();
-      return new Promise((resolve, reject) => {
-        kms.decrypt({ CiphertextBlob: new Buffer(cyphertext, 'base64') }, (err, data) => {
-          if (err) reject(err);
-          else resolve(data.Plaintext.toString('ascii'));
-        });
       });
     }
 
@@ -114,12 +109,11 @@ function createAWSService(AWS, context, account) {
     return {
       ec2: {
         switchInstancesOn,
-        switchInstancesOff,
-        putAsgInstancesInService,
-        putAsgInstancesInStandby
+        switchInstancesOff
       },
-      kms: {
-        decrypt
+      autoScaling: {
+        putInstancesInService,
+        putInstancesInStandby
       }
     };
   });
