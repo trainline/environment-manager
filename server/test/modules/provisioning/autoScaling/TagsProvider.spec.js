@@ -22,7 +22,7 @@ describe('TagsProvider:', () => {
       serverRole: {
         SecurityZone: 'Secure',
         ServerRoleName: 'Web',
-        ContactEmailTag: 'tango@trainline.com',
+        ContactEmailTag: 'test@email.com',
         ScheduleTag: '247',
       },
       cluster: {
@@ -43,7 +43,7 @@ describe('TagsProvider:', () => {
       SecurityZone: 'Secure',
       OwningCluster: 'Tango',
       Role: 'expected-role-name',
-      ContactEmail: 'tango@trainline.com',
+      ContactEmail: 'test@email.com',
       Schedule: '247',
     }));
 
@@ -62,7 +62,7 @@ describe('TagsProvider:', () => {
       serverRole: {
         SecurityZone: 'Secure',
         ServerRoleName: 'Web',
-        ContactEmailTag: 'tango@trainline.com',
+        ContactEmailTag: 'test@email.com',
         ScheduleTag: '247',
       },
       cluster: {
@@ -99,7 +99,7 @@ describe('TagsProvider:', () => {
       serverRole: {
         SecurityZone: 'Secure',
         ServerRoleName: 'Web',
-        ContactEmailTag: 'tango@trainline.com',
+        ContactEmailTag: 'test@email.com',
         ScheduleTag: null,
       },
       cluster: {

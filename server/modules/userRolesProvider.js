@@ -3,8 +3,7 @@
 'use strict';
 
 let _ = require('lodash');
-let awsAccounts = require('modules/awsAccounts');
-let sender = require('modules/sender');
+let permissionsDb = require('modules/data-access/permissions');
 
 module.exports = function UserRolesProvider() {
   this.getPermissionsFor = (names) => {
@@ -55,16 +54,7 @@ module.exports = function UserRolesProvider() {
   };
 
   let getPermissions = function (name) {
-    return awsAccounts.getMasterAccountName()
-      .then((masterAccountName) => {
-        let query = {
-          accountName: masterAccountName,
-          name: 'ScanDynamoResources',
-          resource: 'config/permissions',
-          filter: { Name: name }
-        };
-
-        return sender.sendQuery({ query });
-      });
+    return permissionsDb.get({ Name: name })
+      .then(result => (result === null ? [] : [result]));
   };
 };

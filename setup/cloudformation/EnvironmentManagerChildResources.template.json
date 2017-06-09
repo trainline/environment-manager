@@ -1,7 +1,12 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "Environment Manager Resources",
+    "Description": "Agent allowing Environment Manager to control this account",
     "Parameters": {
+        "pResourcePrefix": {
+            "Type": "String",
+            "Description": "Prefix for named AWS resources",
+            "Default": ""
+        },
         "pMasterAccountId": {
             "Type": "String",
             "Description": "Master AWS account ID",
@@ -18,160 +23,11 @@
             "Default": "",
             "Description": "S3 bucket for deployable packages.",
             "MinLength": "0"
-        },
-        "pCreateChildRole": {
-            "Type": "String",
-            "Default": "false",
-            "Description": "Create roleInfraEnvironmentManagerChild?",
-            "AllowedValues": [
-                "false",
-                "true"
-            ]
-        },
-        "pAlertSNSTopic": {
-            "Type": "String",
-            "Description": "SNS Topic ARN for lambda alerts."
-        }
-    },
-    "Conditions": {
-        "ThisIsMasterAccount": {
-            "Fn::Equals": [
-                {
-                    "Ref": "pMasterAccountId"
-                },
-                {
-                    "Ref": "AWS::AccountId"
-                }
-            ]
-        },
-        "CreateChildRole": {
-            "Fn::Equals": [
-                {
-                    "Ref": "pCreateChildRole"
-                },
-                "true"
-            ]
         }
     },
     "Resources": {
-        "lambdaInfraEnvironmentManagerScheduler": {
-            "Type": "AWS::Lambda::Function",
-            "Properties": {
-                "Code": "./lambda/InfraEnvironmentManagerScheduler/scheduler.zip",
-                "Description": "This function turns each Auto Scaling Group on or off based on its schedule tag.",
-                "FunctionName": "InfraEnvironmentManagerScheduler",
-                "Handler": "index.handler",
-                "MemorySize": 192,
-                "Role": {
-                    "Fn::GetAtt": [
-                        "roleInfraEnvironmentManagerScheduler",
-                        "Arn"
-                    ]
-                },
-                "Runtime": "nodejs4.3",
-                "Timeout": 90
-            }
-        },
-        "alertInfraEnvironmentManagerScheduler": {
-            "Type": "AWS::CloudWatch::Alarm",
-            "Properties": {
-                "ActionsEnabled": true,
-                "AlarmActions": [
-                    {
-                        "Ref": "pAlertSNSTopic"
-                    }
-                ],
-                "AlarmDescription": "If there is an error in this lambda, report to SNS topic.",
-                "AlarmName": "alertInfraEnvironmentManagerScheduler",
-                "ComparisonOperator": "GreaterThanThreshold",
-                "EvaluationPeriods": 1,
-                "MetricName": "Errors",
-                "Namespace": "AWS/Lambda",
-                "Dimensions": [
-                    {
-                        "Name": "FunctionName",
-                        "Value": "InfraEnvironmentManagerScheduler"
-                    }
-                ],
-                "Period": 60,
-                "Statistic": "Sum",
-                "Threshold": 0
-            }
-        },
-        "roleInfraEnvironmentManagerScheduler": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-                "AssumeRolePolicyDocument": {
-                    "Version": "2012-10-17",
-                    "Statement": [
-                        {
-                            "Effect": "Allow",
-                            "Principal": {
-                                "Service": "lambda.amazonaws.com"
-                            },
-                            "Action": "sts:AssumeRole"
-                        }
-                    ]
-                },
-                "ManagedPolicyArns": [
-                    "arn:aws:iam::aws:policy/CloudWatchLogsFullAccess"
-                ],
-                "Policies": [
-                    {
-                        "PolicyName": "roleInfraEnvironmentManagerSchedulerPolicy",
-                        "PolicyDocument": {
-                            "Version": "2012-10-17",
-                            "Statement": [
-                                {
-                                    "Effect": "Allow",
-                                    "Action": "dynamodb:Scan",
-                                    "Resource": [
-                                        {
-                                            "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Infra*"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "Effect": "Allow",
-                                    "Action": [
-                                        "dynamodb:GetItem",
-                                        "dynamodb:UpdateItem"
-                                    ],
-                                    "Resource": [
-                                        {
-                                            "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/InfraAsgIPs"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "Effect": "Allow",
-                                    "Action": [
-                                        "autoscaling:DescribeAutoScalingGroups",
-                                        "autoscaling:UpdateAutoScalingGroup",
-                                        "autoscaling:EnterStandby",
-                                        "autoscaling:ExitStandby"
-                                    ],
-                                    "Resource": "*"
-                                },
-                                {
-                                    "Effect": "Allow",
-                                    "Action": [
-                                        "ec2:DescribeInstances",
-                                        "ec2:StartInstances",
-                                        "ec2:StopInstances",
-                                        "ec2:ModifyInstanceAttribute"
-                                    ],
-                                    "Resource": "*"
-                                }
-                            ]
-                        }
-                    }
-                ]
-            }
-        },
         "roleInfraEnvironmentManagerChild": {
             "Type": "AWS::IAM::Role",
-            "Condition": "CreateChildRole",
             "Properties": {
                 "AssumeRolePolicyDocument": {
                     "Version": "2012-10-17",
@@ -201,33 +57,8 @@
                             "Statement": [
                                 {
                                     "Effect": "Allow",
-                                    "Action": [
-                                        "dynamodb:Batch*",
-                                        "dynamodb:DeleteItem",
-                                        "dynamodb:Describe*",
-                                        "dynamodb:Get*",
-                                        "dynamodb:List*",
-                                        "dynamodb:PutItem",
-                                        "dynamodb:Query",
-                                        "dynamodb:Scan",
-                                        "dynamodb:UpdateItem"
-                                    ],
-                                    "Resource": [
-                                        {
-                                            "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Config*"
-                                        },
-                                        {
-                                            "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Infra*"
-                                        },
-                                        {
-                                            "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/Environment*"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "Effect": "Allow",
                                     "Action": "s3:GetObject",
-                                    "Resource": "arn:aws:s3:::secureaccess-${AWS::AccountId}/Infra/EnvironmentManager/*"
+                                    "Resource": "arn:aws:s3:::secureaccess-${AWS::AccountId}/Infra/${pResourcePrefix}EnvironmentManager/*"
                                 },
                                 {
                                     "Effect": "Allow",
@@ -305,10 +136,10 @@
                                     ],
                                     "Resource": [
                                         {
-                                            "Fn::Sub": "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:footplate*"
+                                            "Fn::Sub": "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${pResourcePrefix}footplate*"
                                         },
                                         {
-                                            "Fn::Sub": "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:environment*"
+                                            "Fn::Sub": "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${pResourcePrefix}environment*"
                                         }
                                     ]
                                 }
@@ -316,7 +147,9 @@
                         }
                     }
                 ],
-                "RoleName": "roleInfraEnvironmentManagerChild"
+                "RoleName": {
+                    "Fn::Sub": "${pResourcePrefix}roleInfraEnvironmentManagerChild"
+                }
             }
         }
     },
