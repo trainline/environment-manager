@@ -1,29 +1,31 @@
 managedAccounts:
   - '223299770951'
+  - '825904718481'
 templateFile: EnvironmentManager.template.yaml
-s3bucket: cf-templates-fu10qiyv0iif-eu-west-1
+s3bucket: cf-templates-17epa2x80yesy-eu-west-1
 stackName: environment-manager
 parameters:
-  pMasterAccountId: '223299770951'
-  pConfigurationBucket: secrets.environment-manager.223299770951.eu-west-1
-  pSecretsBucket: secrets.environment-manager.223299770951.eu-west-1
-  pBackupsBucket: backups.environment-manager.223299770951.eu-west-1
-  pDeploymentLogsBucket: logs.slave.environment-manager.223299770951.eu-west-1
-  pPackagesBucket: packages.slave.environment-manager.223299770951.eu-west-1
-  pEc2KeyPair: EnvironmentManager
+  pResourcePrefix: test-
+  pMasterAccountId: '825904718481'
+  pConfigurationBucket: em-testing-config
+  pSecretsBucket: em-testing-secure
+  pBackupsBucket: em-testing-backup
+  pDeploymentLogsBucket: em-testing-deploy
+  pPackagesBucket: em-testing-deploy
+  pEc2KeyPair: em-testing-master-keypair
   ploadBalancerEnvironmentManagerSubnetIDs:
-    - subnet-1a0dbf42
-    - subnet-7a23501e
-    - subnet-45513e33
+    - subnet-5988e72f
+    - subnet-aa0477ce
+    - subnet-46d8651e
   pRedisSubnets:
-    - subnet-1a0dbf42
-    - subnet-7a23501e
-    - subnet-45513e33
-  pVpcBase: vpc-313cac55
+    - subnet-5988e72f
+    - subnet-aa0477ce
+    - subnet-46d8651e
+  pVpcBase: vpc-67ab3903
   # Allow requests to Environment Manager from this CIDR block
   pInternalSubnet: 10.0.0.0/8
   # Allow access to Environment Manager EC2 instances for system admin
   # Allow traffic between peers in the Consul cluster
   pEnvironmentManagerSecurityGroups:
-    - sg-7299620b
-    - sg-cf9863b6
+    - sg-631b1c1a
+    - sg-b58565d3

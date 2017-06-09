@@ -5,8 +5,13 @@ module.exports = function ({ managedAccounts }) {
 
     return {
         "AWSTemplateFormatVersion": "2010-09-09",
-        "Description": "Environment Manager Resources",
+        "Description": "Network and Compute resources for Environment Manager",
         "Parameters": {
+            "pResourcePrefix": {
+                "Type": "String",
+                "Description": "Prefix for named AWS resources",
+                "Default": ""
+            },
             "pConfigurationBucket": {
                 "Type": "String",
                 "Default": "",
@@ -107,156 +112,6 @@ module.exports = function ({ managedAccounts }) {
             }
         },
         "Resources": {
-            "ConfigDeploymentExecutionStatus": {
-                "Type": "AWS::DynamoDB::Table",
-                "Properties": {
-                    "AttributeDefinitions": [
-                        {
-                            "AttributeName": "DeploymentID",
-                            "AttributeType": "S"
-                        }
-                    ],
-                    "KeySchema": [
-                        {
-                            "AttributeName": "DeploymentID",
-                            "KeyType": "HASH"
-                        }
-                    ],
-                    "ProvisionedThroughput": {
-                        "ReadCapacityUnits": 10,
-                        "WriteCapacityUnits": 2
-                    },
-                    "TableName": "ConfigDeploymentExecutionStatus"
-                }
-            },
-            "AlertReadCapacityConfigDeploymentExecutionStatus": {
-                "Type": "AWS::CloudWatch::Alarm",
-                "Properties": {
-                    "ActionsEnabled": true,
-                    "AlarmActions": [{ "Ref": "pAlertSNSTopic" }],
-                    "AlarmDescription": "ReadCapacityConfigDeploymentExecutionStatus",
-                    "AlarmName": "AlertReadCapacityConfigDeploymentExecutionStatus",
-                    "ComparisonOperator": "GreaterThanThreshold",
-                    "Dimensions": [{ "Name": "TableName", "Value": "ConfigDeploymentExecutionStatus" }],
-                    "EvaluationPeriods": 1,
-                    // "InsufficientDataActions": [""]
-                    "MetricName": "ConsumedReadCapacityUnits",
-                    "Namespace": "AWS/DynamoDB",
-                    // "OKActions": [""]
-                    "Period": 60,
-                    "Statistic": "Sum",
-                    "Threshold": 8
-                }
-            },
-            "AlertWriteCapacityConfigDeploymentExecutionStatus": {
-                "Type": "AWS::CloudWatch::Alarm",
-                "Properties": {
-                    "ActionsEnabled": true,
-                    "AlarmActions": [{ "Ref": "pAlertSNSTopic" }],
-                    "AlarmDescription": "WriteCapacityConfigDeploymentExecutionStatus",
-                    "AlarmName": "AlertWriteCapacityConfigDeploymentExecutionStatus",
-                    "ComparisonOperator": "GreaterThanThreshold",
-                    "Dimensions": [{ "Name": "TableName", "Value": "ConfigDeploymentExecutionStatus" }],
-                    "EvaluationPeriods": 1,
-                    // "InsufficientDataActions": [""]
-                    "MetricName": "ConsumedWriteCapacityUnits",
-                    "Namespace": "AWS/DynamoDB",
-                    // "OKActions": [""]
-                    "Period": 60,
-                    "Statistic": "Sum",
-                    "Threshold": 1.6
-                }
-            },
-            "ConfigCompletedDeployments": {
-                "Type": "AWS::DynamoDB::Table",
-                "Properties": {
-                    "AttributeDefinitions": [
-                        {
-                            "AttributeName": "DeploymentID",
-                            "AttributeType": "S"
-                        },
-                        {
-                            "AttributeName": "StartTimestamp",
-                            "AttributeType": "S"
-                        },
-                        {
-                            "AttributeName": "StartDate",
-                            "AttributeType": "S"
-                        }
-                    ],
-                    "GlobalSecondaryIndexes": [
-                        {
-                            "IndexName": "StartDate-StartTimestamp-index",
-                            "KeySchema": [
-                                {
-                                    "AttributeName": "StartDate",
-                                    "KeyType": "HASH"
-                                },
-                                {
-                                    "AttributeName": "StartTimestamp",
-                                    "KeyType": "RANGE"
-                                }
-                            ],
-                            "Projection": {
-                                "ProjectionType": "ALL"
-                            },
-                            "ProvisionedThroughput": {
-                                "ReadCapacityUnits": 10,
-                                "WriteCapacityUnits": 2
-                            }
-                        }
-                    ],
-                    "KeySchema": [
-                        {
-                            "AttributeName": "DeploymentID",
-                            "KeyType": "HASH"
-                        }
-                    ],
-                    "ProvisionedThroughput": {
-                        "ReadCapacityUnits": 10,
-                        "WriteCapacityUnits": 2
-                    },
-                    "TableName": "ConfigCompletedDeployments"
-                }
-            },
-            "AlertReadCapacityConfigCompletedDeployments": {
-                "Type": "AWS::CloudWatch::Alarm",
-                "Properties": {
-                    "ActionsEnabled": true,
-                    "AlarmActions": [{ "Ref": "pAlertSNSTopic" }],
-                    "AlarmDescription": "ReadCapacityConfigCompletedDeployments",
-                    "AlarmName": "AlertReadCapacityConfigCompletedDeployments",
-                    "ComparisonOperator": "GreaterThanThreshold",
-                    "Dimensions": [{ "Name": "TableName", "Value": "ConfigCompletedDeployments" }],
-                    "EvaluationPeriods": 1,
-                    // "InsufficientDataActions": [""]
-                    "MetricName": "ConsumedReadCapacityUnits",
-                    "Namespace": "AWS/DynamoDB",
-                    // "OKActions": [""]
-                    "Period": 60,
-                    "Statistic": "Sum",
-                    "Threshold": 8
-                }
-            },
-            "AlertWriteCapacityConfigCompletedDeployments": {
-                "Type": "AWS::CloudWatch::Alarm",
-                "Properties": {
-                    "ActionsEnabled": true,
-                    "AlarmActions": [{ "Ref": "pAlertSNSTopic" }],
-                    "AlarmDescription": "WriteCapacityConfigCompletedDeployments",
-                    "AlarmName": "AlertWriteCapacityConfigCompletedDeployments",
-                    "ComparisonOperator": "GreaterThanThreshold",
-                    "Dimensions": [{ "Name": "TableName", "Value": "ConfigCompletedDeployments" }],
-                    "EvaluationPeriods": 1,
-                    // "InsufficientDataActions": [""]
-                    "MetricName": "ConsumedWriteCapacityUnits",
-                    "Namespace": "AWS/DynamoDB",
-                    // "OKActions": [""]
-                    "Period": 60,
-                    "Statistic": "Sum",
-                    "Threshold": 1.6
-                }
-            },
             "loadBalancerEnvironmentManager": {
                 "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
                 "Properties": {
@@ -292,7 +147,7 @@ module.exports = function ({ managedAccounts }) {
                         "Timeout": "3",
                         "UnhealthyThreshold": "5"
                     },
-                    "LoadBalancerName": "environmentmanager-elb",
+                    "LoadBalancerName": { "Fn::Sub": "${pResourcePrefix}environmentmanager-elb" },
                     "Listeners": [
                         {
                             "InstancePort": {
@@ -326,7 +181,7 @@ module.exports = function ({ managedAccounts }) {
                     "Tags": [
                         {
                             "Key": "Name",
-                            "Value": "sgInfraEnvironmentManager"
+                            "Value": { "Fn::Sub": "${pResourcePrefix}sgInfraEnvironmentManager" }
                         }
                     ]
                 }
@@ -359,7 +214,7 @@ module.exports = function ({ managedAccounts }) {
                     "Tags": [
                         {
                             "Key": "Name",
-                            "Value": "sgInfraEnvironmentManagerElb"
+                            "Value": { "Fn::Sub": "${pResourcePrefix}sgInfraEnvironmentManagerElb" }
                         }
                     ]
                 }
@@ -403,7 +258,7 @@ module.exports = function ({ managedAccounts }) {
                     "IamInstanceProfile": {
                         "Ref": "instanceProfileEnvironmentManager"
                     },
-                    "ImageId": "ami-f9dd458a",
+                    "ImageId": "ami-01ccc867",
                     "InstanceMonitoring": false,
                     "InstanceType": "t2.medium",
                     "KeyName": {
@@ -486,13 +341,13 @@ module.exports = function ({ managedAccounts }) {
                                         ],
                                         "Resource": [
                                             {
-                                                "Fn::Sub": "arn:aws:dynamodb:eu-west-1:${AWS::AccountId}:table/Config*"
+                                                "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${pResourcePrefix}Config*"
                                             },
                                             {
-                                                "Fn::Sub": "arn:aws:dynamodb:eu-west-1:${AWS::AccountId}:table/Infra*"
+                                                "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${pResourcePrefix}Infra*"
                                             },
                                             {
-                                                "Fn::Sub": "arn:aws:dynamodb:eu-west-1:${AWS::AccountId}:table/Environment*"
+                                                "Fn::Sub": "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${pResourcePrefix}Environment*"
                                             }
                                         ]
                                     },
@@ -531,9 +386,9 @@ module.exports = function ({ managedAccounts }) {
                                         "Effect": "Allow",
                                         "Resource": [
                                             {
-                                                "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/roleInfraEnvironmentManagerChild"
+                                                "Fn::Sub": "arn:aws:iam::${AWS::AccountId}:role/${pResourcePrefix}roleInfraEnvironmentManagerChild"
                                             }
-                                        ].concat(managedAccounts.map(accountNumber => `arn:aws:iam::${accountNumber}:role/roleInfraEnvironmentManagerChild`))
+                                        ].concat(managedAccounts.map(accountNumber => ({ 'Fn::Sub': `arn:aws:iam::${accountNumber}:role/\${pResourcePrefix}roleInfraEnvironmentManagerChild` })))
                                     },
                                     {
                                         "Effect": "Allow",
@@ -596,10 +451,10 @@ module.exports = function ({ managedAccounts }) {
                                         ],
                                         "Resource": [
                                             {
-                                                "Fn::Sub": "arn:aws:sns:eu-west-1:${AWS::AccountId}:footplate*"
+                                                "Fn::Sub": "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${pResourcePrefix}footplate*"
                                             },
                                             {
-                                                "Fn::Sub": "arn:aws:sns:eu-west-1:${AWS::AccountId}:environment*"
+                                                "Fn::Sub": "arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${pResourcePrefix}environment*"
                                             }
                                         ]
                                     }
@@ -607,7 +462,7 @@ module.exports = function ({ managedAccounts }) {
                             }
                         }
                     ],
-                    "RoleName": "roleInfraEnvironmentManager"
+                    "RoleName": { "Fn::Sub": "${pResourcePrefix}roleInfraEnvironmentManager" }
                 }
             },
             "instanceProfileEnvironmentManager": {

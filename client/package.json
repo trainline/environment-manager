@@ -1,6 +1,6 @@
 {
   "name": "EnvironmentManager",
-  "version": "3.49.3",
+  "version": "3.49.4",
   "author": {
     "name": "Platform Development",
     "email": "platform.development@thetrainline.com"
@@ -9,6 +9,8 @@
     "git-tag-version": false
   },
   "scripts": {
+    "build": "gulp build --gulpfile gulpfile.js -p -o build",
+    "postinstall": "bower install",
     "test": "gulp test",
     "test-ci": "gulp test -c",
     "lint": "eslint app/ gulp/ --ext .js --max-warnings 92",

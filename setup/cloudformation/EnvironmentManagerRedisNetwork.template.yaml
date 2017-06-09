@@ -1,8 +1,12 @@
 AWSTemplateFormatVersion: "2010-09-09"
 # A template for a stack that contains a subnet group and a pair
 # of security groups for an ElastiCache Redis cluster.
-Description: Environment Manager Resources
+Description: Network to host a Redis cluster for Environment Manager
 Parameters:
+  pResourcePrefix:
+    Type: String
+    Description: "Prefix for named AWS resources"
+    Default: ""
   pVpcBase:
     Type: "AWS::EC2::VPC::Id"
     Description: "VPC ID, syntax vpc-xxxxxxxx"
@@ -21,7 +25,7 @@ Resources:
       VpcId: !Ref pVpcBase
       Tags:
         - Key: Name
-          Value: sgEnvironmentManagerRedisAccess
+          Value: !Sub ${pResourcePrefix}sgEnvironmentManagerRedisAccess
   sgEnvironmentManagerRedisHost:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
@@ -29,7 +33,7 @@ Resources:
       VpcId: !Ref pVpcBase
       Tags:
         - Key: Name
-          Value: sgEnvironmentManagerRedisHost
+          Value: !Sub ${pResourcePrefix}sgEnvironmentManagerRedisHost
   sgiEnvironmentManagerRedisHost:
     Type: "AWS::EC2::SecurityGroupIngress"
     Properties:
