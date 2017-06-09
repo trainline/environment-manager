@@ -33,9 +33,9 @@
       "resolved": "https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz"
     },
     "aws-sdk": {
-      "version": "2.58.0",
-      "from": "aws-sdk@>=2.6.6 <3.0.0",
-      "resolved": "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.58.0.tgz"
+      "version": "2.66.0",
+      "from": "aws-sdk@2.66.0",
+      "resolved": "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.66.0.tgz"
     },
     "aws-sign2": {
       "version": "0.6.0",
@@ -350,9 +350,9 @@
       "resolved": "https://registry.npmjs.org/request-promise-core/-/request-promise-core-1.1.1.tgz"
     },
     "roast-lambda": {
-      "version": "0.1.8",
-      "from": "roast-lambda@>=0.1.8 <0.2.0",
-      "resolved": "https://registry.npmjs.org/roast-lambda/-/roast-lambda-0.1.8.tgz"
+      "version": "0.1.10",
+      "from": "roast-lambda@0.1.10",
+      "resolved": "https://registry.npmjs.org/roast-lambda/-/roast-lambda-0.1.10.tgz"
     },
     "safe-buffer": {
       "version": "5.0.1",
