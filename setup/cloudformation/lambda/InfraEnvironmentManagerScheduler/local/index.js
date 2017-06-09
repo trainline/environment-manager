@@ -8,7 +8,7 @@ let schedulerFactory = require('../scheduler');
 let awsConfig = { region: 'eu-west-1' };
 let em = emFactory.create(config.em);
 
-let context = { awsAccountId: 743871665500, awsRegion: 'eu-west-1', env: { CHILD_ACCOUNT_ROLE_NAME: 'roleInfraEMScheduler' } };
+let context = { awsAccountId: 123456789, awsRegion: 'eu-west-1', env: { CHILD_ACCOUNT_ROLE_NAME: 'enterRoleName' } };
 let scheduler = schedulerFactory.create(config, em, require('aws-sdk'), context);
 
 let write = result => console.log(JSON.stringify(result, null, 2));
