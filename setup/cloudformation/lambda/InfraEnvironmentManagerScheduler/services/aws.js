@@ -21,8 +21,7 @@ function createAWSService(AWS, context, account, logger) {
     function switchInstancesOn(instances) {
       return promiseAllWithSlowFail(instances.map(instance => {
         return ec2.startInstances({
-          InstanceIds: [instance.id],
-          XRaySegment: logger.segment
+          InstanceIds: [instance.id]
         }).promise();
       }));
     }
@@ -30,8 +29,7 @@ function createAWSService(AWS, context, account, logger) {
     function switchInstancesOff(instances) {
       return promiseAllWithSlowFail(instances.map(instance => {
         return ec2.stopInstances({
-          InstanceIds: [instance.id],
-          XRaySegment: logger.segment
+          InstanceIds: [instance.id]
         }).promise();
       }));
     }
@@ -41,8 +39,7 @@ function createAWSService(AWS, context, account, logger) {
         return () => {
           return autoscaling.exitStandby({
             AutoScalingGroupName: instance.asg,
-            InstanceIds: [instance.id],
-            XRaySegment: logger.segment
+            InstanceIds: [instance.id]
           }).promise();
         };
       });
@@ -57,8 +54,7 @@ function createAWSService(AWS, context, account, logger) {
           return autoscaling.enterStandby({
             AutoScalingGroupName: instance.asg,
             InstanceIds: [instance.id],
-            ShouldDecrementDesiredCapacity: true,
-            XRaySegment: logger.segment
+            ShouldDecrementDesiredCapacity: true
           }).promise();
         };
       });
