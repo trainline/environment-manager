@@ -223,7 +223,7 @@ describe('SecurityGroupsProvider:', () => {
             () => should.ok(false, 'Promise should fail'),
             error =>
             error.name.should.be.equal('Error') &&
-            error.toString().should.be.containEql('You need at least 1 SecurityGroup to start an ASG')
+            error.toString().should.be.containEql('Error: Security group "sgRoleTangoWeb" not found in "vpc-id" VPC. It is assigned by default given server role and cluster. It can be overwritten by specifying one or more security groups in the server role configuration.')
           );
 
         });
