@@ -5,7 +5,7 @@ const reporting = require('./reporting');
 
 describe('reporting', () => {
 
-  let actionGroups, changeResults;
+  let changeResults, actionGroups, testAccountResults;
 
   beforeEach(() => {
     actionGroups = {
@@ -29,40 +29,42 @@ describe('reporting', () => {
       putOutOfService: {
         success: true
       }
-    }
+    };
+
+    testAccountResults = [{ accountName: 'testAccount', details: { actionGroups, changeResults } }];
   });
 
   it('should report success if all tasks succeeded', () => {
-    let report = reporting.createReport({ actionGroups, changeResults }, true);
+    let report = reporting.createReport(testAccountResults, true);
     expect(report.success).to.equal(true);
   });
 
   it('should report failure if the switch instance on task failed', () => {
     changeResults.switchOn.success = false;
-    let report = reporting.createReport({ actionGroups, changeResults }, true);
+    let report = reporting.createReport(testAccountResults, true);
     expect(report.success).to.equal(false);
   });
 
   it('should report failure if the switch instance off task failed', () => {
     changeResults.switchOff.success = false;
-    let report = reporting.createReport({ actionGroups, changeResults }, true);
+    let report = reporting.createReport(testAccountResults, true);
     expect(report.success).to.equal(false);
   });
 
   it('should report failure if the put instance in service task failed', () => {
     changeResults.putInService.success = false;
-    let report = reporting.createReport({ actionGroups, changeResults }, true);
+    let report = reporting.createReport(testAccountResults, true);
     expect(report.success).to.equal(false);
   });
 
   it('should report failure if the put in standby task failed', () => {
     changeResults.putOutOfService.success = false;
-    let report = reporting.createReport({ actionGroups, changeResults }, true);
+    let report = reporting.createReport(testAccountResults, true);
     expect(report.success).to.equal(false);
   });
 
   it('should not show skipped instances if not requested', () => {
-    let report = reporting.createReport({ actionGroups, changeResults }, false);
+    let report = reporting.createReport(testAccountResults, false);
     expect(report.skippedInstances).to.be.undefined;
   });
 
