@@ -222,18 +222,24 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
               }
             }
 
-            // Validate Upstream exists if Proxy Pass specified
             if (location.ProxyPass) {
-              var proxyUpstreamName = location.ProxyPass.replace('http://', '').replace('https://', '');
+              let matchResults = location.ProxyPass.match(/^https?:\/\/([^$]+)/);
 
-              if (!_.includes(proxyUpstreamName, '.')) {
-                if ($scope.LBUpstreamData && $scope.LBUpstreamData.length > 0) {
-                  var matchFound = $scope.LBUpstreamData.some(function upstreamIsProxy(upstream) {
-                    return upstream.Value.UpstreamName === proxyUpstreamName;
-                  });
+              if (!matchResults) {
+                errors.push('Locations[' + i + '] - ProxyPass address is not valid. Check it begins with "http://" or "https://".');
+              } else {
+                var proxyUpstreamName = matchResults[1];
 
-                  if (!matchFound) {
-                    errors.push('Locations[' + i + '] - Upstream name in Proxy Pass not found. Please check spelling and capitalisation');
+                // Validate Upstream exists
+                if (!_.includes(proxyUpstreamName, '.')) {
+                  if ($scope.LBUpstreamData && $scope.LBUpstreamData.length > 0) {
+                    var matchFound = $scope.LBUpstreamData.some(function upstreamIsProxy(upstream) {
+                      return upstream.Value.UpstreamName === proxyUpstreamName;
+                    });
+
+                    if (!matchFound) {
+                      errors.push('Locations[' + i + '] - Upstream name in Proxy Pass not found. Please check spelling and capitalisation');
+                    }
                   }
                 }
               }
