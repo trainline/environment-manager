@@ -223,7 +223,7 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
             }
 
             if (location.ProxyPass) {
-              let matchResults = location.ProxyPass.match(/^https?:\/\/([^$]+)/);
+              var matchResults = location.ProxyPass.match(/^https?:\/\/([^$]+)/);
 
               if (!matchResults) {
                 errors.push('Locations[' + i + '] - ProxyPass address is not valid. Check it begins with "http://" or "https://".');
