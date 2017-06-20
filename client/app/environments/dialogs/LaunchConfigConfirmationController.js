@@ -20,9 +20,9 @@ angular.module('EnvironmentManager.environments').controller('LaunchConfigConfir
 
     var numInstances = parameters.asg.Instances.length;
     var numAZs = parameters.asg.AvailabilityZones.length;
-
     var numNewInstancesRequired = determineNumNewInstancesRequired(numInstances, numAZs);
 
+    vm.numAZs = numAZs;
     vm.numInstances = numInstances;
     vm.requiredInstancesForScalingRefresh = numInstances + numNewInstancesRequired;
 
