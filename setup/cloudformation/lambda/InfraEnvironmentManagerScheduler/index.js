@@ -14,7 +14,7 @@ exports.handler = rl.init({
     return co(function* () {
       let config = yield environment.getConfig(AWS, context);
       
-      let em = emFactory.create(config.em);
+      let em = emFactory.create(config.em, logger);
 
       let scheduler = schedulerFactory.create(config, em, AWS, context, logger);
       let result = yield scheduler.doScheduling();
