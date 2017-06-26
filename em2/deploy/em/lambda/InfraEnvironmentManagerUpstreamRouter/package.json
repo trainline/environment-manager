@@ -1,0 +1,35 @@
+{
+  "name": "infra-environment-manager-upstream-router",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {},
+  "scripts": {
+    "build-aws-resource": "pack-zip",
+    "lint": "eslint",
+    "test": "mocha **/*.spec.js"
+  },
+  "eslintConfig": {
+    "env": {
+      "es6": true,
+      "node": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+      "ecmaVersion": 6
+    },
+    "rules": {
+      "no-console": 0
+    }
+  },
+  "devDependencies": {
+    "eslint": "^3.4.0",
+    "mocha": "^3.3.0",
+    "mocha-testcheck": "^1.0.0-rc.0",
+    "pack-zip": "^0.2.2",
+    "proxyquire": "^1.7.11",
+    "should": "^11.2.1"
+  }
+}

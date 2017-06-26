@@ -1,0 +1,98 @@
+# Read the docs: https://serverless.com/framework/docs/
+service: em-accounts
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  variableSyntax: '\${{(((?!\${{).)+?)}}'
+  role: accountsRole
+  deploymentBucket: ${{opt:bucket}}
+  memorySize: 128
+  timeout: 10
+  versionFunctions: false
+  environment:
+    STAGE: ${{opt:stage}}
+
+functions:
+  all:
+    name: ${{opt:stage}}-em-accounts-all
+    handler: index.all
+    events:
+      - http:
+          path: config/accounts
+          method: get
+  get:
+    name: ${{opt:stage}}-em-accounts-get
+    handler: index.get
+    events:
+      - http:
+          path: config/accounts/{accountNumber}
+          method: get
+  put:
+    name: ${{opt:stage}}-em-accounts-put
+    handler: index.put
+    events:
+      - http:
+          path: config/accounts/{accountNumber}
+          method: put
+
+resources:
+  Resources:
+    accountsRole:
+      Type: AWS::IAM::Role
+      Properties:
+        Path: /
+        RoleName: role-${{opt:stage}}-em-accounts
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: role-${{opt:stage}}-em-accounts-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource:
+                    - Fn::Sub: 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*:*:*'
+                - Effect: Allow
+                  Action:
+                    - ec2:CreateNetworkInterface
+                    - ec2:DescribeNetworkInterfaces
+                    - ec2:DetachNetworkInterface
+                    - ec2:DeleteNetworkInterface
+                    - xray:PutTraceSegments
+                    - xray:PutTelemetryRecords
+                  Resource: '*'
+                - Effect: Allow
+                  Action:
+                    - dynamodb:Query
+                    - dynamodb:GetItem
+                    - dynamodb:PutItem
+                  Resource:
+                    - Fn::Sub: 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${{opt:stage}}-em-config-accounts'
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${{opt:stage}}-em-config-accounts
+        AttributeDefinitions:
+          - AttributeName: customer
+            AttributeType: S
+          - AttributeName: accountNumber
+            AttributeType: N
+        KeySchema:
+          - AttributeName: customer
+            KeyType: HASH
+          - AttributeName: accountNumber
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 10
+          WriteCapacityUnits: 10

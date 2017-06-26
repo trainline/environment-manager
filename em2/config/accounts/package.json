@@ -1,0 +1,25 @@
+{
+  "name": "em-get-accounts",
+  "version": "0.0.1",
+  "description": "Gets all AWS Accounts",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "serverless deploy --region eu-west-1"
+  },
+  "author": "Trainline",
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "roast-lambda": "0.x.x"
+  },
+  "files": [
+    "index.js",
+    "package.json",
+    "src/**",
+    "node_modules/**"
+  ],
+  "devDependencies": {
+    "co": "^4.6.0",
+    "request": "^2.81.0",
+    "request-promise": "^4.2.1"
+  }
+}

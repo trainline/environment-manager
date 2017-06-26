@@ -1,0 +1,77 @@
+# Read the docs: https://serverless.com/framework/docs/
+service: em-sessions
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  variableSyntax: '\${{(((?!\${{).)+?)}}'
+  role: sessionsRole
+  deploymentBucket: ${{opt:bucket}}
+  memorySize: 128
+  timeout: 10
+  versionFunctions: false
+  environment:
+    STAGE: ${{opt:stage}}
+
+functions:
+  authenticate:
+    name: ${{opt:stage}}-em-sessions-auth
+    handler: index.authenticate
+    events:
+      - http:
+          path: signin
+          method: post
+  getSession:
+    name: ${{opt:stage}}-em-sessions-get
+    handler: index.getSession
+    events:
+      - http:
+          path: session
+          method: get
+  createSession:
+    name: ${{opt:stage}}-em-sessions-create
+    handler: index.createSession
+    events:
+      - http:
+          path: session
+          method: post
+  storeSession:
+    name: ${{opt:stage}}-em-sessions-store
+    handler: index.storeSession
+    events:
+      - http:
+          path: session
+          method: put
+
+resources:
+  Resources:
+    sessionsRole:
+      Type: AWS::IAM::Role
+      Properties:
+        Path: /
+        RoleName: role-${{opt:stage}}-em-sessions
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: role-${{opt:stage}}-em-sessions-policy
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - logs:CreateLogGroup
+                    - logs:CreateLogStream
+                    - logs:PutLogEvents
+                  Resource:
+                    - Fn::Sub: 'arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/*:*:*'
+                - Effect: Allow
+                  Action:
+                    - xray:PutTraceSegments
+                    - xray:PutTelemetryRecords
+                  Resource: '*'
