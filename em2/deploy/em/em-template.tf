@@ -1665,8 +1665,8 @@ resource "aws_security_group" "sgEnvironmentManagerRedisHost" {
 # Upstreams #
 #############
 
-resource "aws_dynamodb_table" "tableInfraConfigLBUpstream" {
-  name           = "tableInfraConfigLBUpstream"
+resource "aws_dynamodb_table" "InfraConfigLBUpstream" {
+  name           = "InfraConfigLBUpstream"
   read_capacity  = 10
   write_capacity = 2
   hash_key       = "Key"

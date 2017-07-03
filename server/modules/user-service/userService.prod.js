@@ -97,6 +97,7 @@ module.exports = function UserService() {
         expiresIn: duration
       };
       let token = { sessionId: session.sessionId };
+
       return createSignedWebToken(token, sslComponents.privateKey, options);
     });
   }
