@@ -9,7 +9,7 @@ function createAWSService(AWS, context, account, logger) {
   return co(function*() {
     let awsConfig = { region: context.awsRegion };
 
-    if (account.AccountNumber !== context.awsAccountId) {
+    if (Number(account.AccountNumber) !== context.awsAccountId) {
       awsConfig.credentials = yield getCredentials();
     }
 
