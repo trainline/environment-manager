@@ -3,7 +3,7 @@
 
 let AWS = require('aws-sdk');
 let async = require('async');
-let guid = require('node-uuid');
+let guid = require('uuid/v1');
 let path = require('path');
 let user = require('modules/user');
 let server = require('index');
@@ -23,7 +23,7 @@ function arrangeAudit(item) {
 
   item.Audit = item.Audit || {};
 
-  item.Audit.TransactionID = item.Audit.TransactionID || guid.v1();
+  item.Audit.TransactionID = item.Audit.TransactionID || guid();
   item.Audit.User          = item.Audit.User          || 'test';
   item.Audit.LastChanged   = item.Audit.LastChanged   || new Date().toISOString();
   item.Audit.Version       = item.Audit.Version       || 0;

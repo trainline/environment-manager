@@ -2,10 +2,10 @@
 
 'use strict';
 
-let guid = require('node-uuid');
+let guid = require('uuid/v1');
 
 function createCommandId() {
-  return guid.v1();
+  return guid();
 }
 
 function createTimestamp() {

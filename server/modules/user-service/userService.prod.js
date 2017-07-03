@@ -5,7 +5,7 @@
 let _ = require('lodash');
 let ms = require('ms');
 let jsonwebtoken = require('jsonwebtoken');
-let guid = require('node-uuid');
+let guid = require('uuid/v1');
 let co = require('co');
 let User = require('modules/user');
 let userRolesProvider = new (require('modules/userRolesProvider'))();
@@ -71,7 +71,7 @@ module.exports = function UserService() {
       let permissions = yield userRolesProvider.getPermissionsFor(_.union([name], groups));
 
       return {
-        sessionId: guid.v1(),
+        sessionId: guid(),
         user: User.new(name, expiration, groups, permissions)
       };
     });

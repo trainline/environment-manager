@@ -3,7 +3,7 @@
 let co = require('co');
 let permissionsDb = require('modules/data-access/permissions');
 let logger = require('modules/logger');
-let guid = require('node-uuid');
+let guid = require('uuid/v1');
 let config = require('config');
 
 function checkAppPrerequisites() {
@@ -43,7 +43,7 @@ function insertDefaultAdminPermission() {
         Permissions: [{ Resource: '**', Access: 'ADMIN' }]
       },
       metadata: {
-        TransactionID: guid.v1(),
+        TransactionID: guid(),
         User: 'system'
       }
     });
