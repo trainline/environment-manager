@@ -4,10 +4,14 @@
 
 let gulp = require('gulp');
 let argv = require('yargs').argv;
+let path = require('path');
+let run = require('gulp-run');
 
-function build() {
-  let output = argv.o || './build';
+function output() {
+  return argv.o || './build';
+}
 
+function copy() {
   return gulp.src([
     '*api/**/*',
     '*commands/**/*',
@@ -24,10 +28,16 @@ function build() {
     'Enums.js',
     'globals.js',
     'index.js',
-    'npm-shrinkwrap.json',
     'package.json',
-    'tempMapResolver.js'
-  ]).pipe(gulp.dest(output));
+    'tempMapResolver.js',
+    'yarn.lock'
+  ]).pipe(gulp.dest(output()));
 }
 
-gulp.task('build', build);
+function yarn() {
+  return run('yarn install --production', { cwd: path.resolve(output()) }).exec();
+}
+
+gulp.task('copy', copy);
+gulp.task('yarn', ['copy'], yarn);
+gulp.task('build', ['yarn']);
