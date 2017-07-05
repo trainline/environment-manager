@@ -111,7 +111,7 @@ function putServiceSlicesToggle(req, res, next) {
   return toggleSlices(metadata.addMetadata({ environmentName, serviceName, user }))
     .then(data => res.json(data))
     .then(sns.publish({
-      message: `PUT /services/${serviceName}/toggle`,
+      message: `ENDPOINT=>PUT /services/${serviceName}/toggle\nPARAMS=>environment=${environmentName}::service=${serviceName}\n`,
       topic: sns.TOPICS.OPERATIONS_CHANGE,
       attributes: {
         Action: sns.ACTIONS.PUT,
