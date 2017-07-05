@@ -80,12 +80,12 @@ variable "backups_bucket" {
 
 variable "deployment_logs_bucket" {
   description = "Environment Manager deployment logs bucket"
-  default     = "deployment bucket"
+  default     = "em-testing-deploy"
 }
 
 variable "packages_bucket" {
   description = "Environment Manager packages bucket"
-  default     = "packages bucket"
+  default     = "em-testing-packages"
 }
 
 variable "managed_accounts" {

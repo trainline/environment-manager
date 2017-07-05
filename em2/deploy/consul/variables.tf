@@ -14,6 +14,14 @@ variable "user" {
   }
 }
 
+variable "vpc_id" {
+  default = "vpc-67ab3903"
+}
+
+variable "subnet_id" {
+  default = "subnet-b0e04bf9"
+}
+
 variable "ami" {
   description = "AWS AMI Id, if you change, make sure it is compatible with instance type, not all AMIs allow all instance types "
 
