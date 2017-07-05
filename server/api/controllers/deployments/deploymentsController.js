@@ -100,7 +100,12 @@ function postDeployment(req, res, next) {
     }
   })
     .then(sns.publish({
-      message: 'POST /deployments',
+      message: JSON.stringify({
+        Endpoint: {
+          Url: '/deployments',
+          Method: 'POST'
+        }
+      }),
       topic: sns.TOPICS.OPERATIONS_CHANGE,
       attributes: {
         Environment: environmentName,
@@ -160,7 +165,12 @@ function patchDeployment(req, res, next) {
     .then(data => res.json(data))
     .then(() => {
       sns.publish({
-        message: `PATCH /deployments/${key}`,
+        message: JSON.stringify({
+          Endpoint: {
+            Url: `/deployments/${key}`,
+            Method: 'PATCH'
+          }
+        }),
         topic: sns.TOPICS.OPERATIONS_CHANGE,
         attributes: {
           Environment: '',

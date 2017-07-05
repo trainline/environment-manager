@@ -24,7 +24,12 @@ function deleteTargetStateByEnvironment(req, res, next) {
   deleteTargetState.byEnvironment({ environmentName })
     .then(data => res.json(data))
     .then(sns.publish({
-      message: `DELETE /target-state/${environmentName}`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/target-state/${environmentName}`,
+          Method: 'DELETE'
+        }
+      }),
       topic: sns.TOPICS.OPERATIONS_CHANGE,
       attributes: {
         Action: sns.ACTIONS.DELETE,
@@ -45,7 +50,12 @@ function deleteTargetStateByService(req, res, next) {
   deleteTargetState.byService({ environmentName, serviceName })
     .then(data => res.json(data))
     .then(sns.publish({
-      message: `DELETE /target-state/${environmentName}/${serviceName}`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/target-state/${environmentName}/${serviceName}`,
+          Method: 'DELETE'
+        }
+      }),
       topic: sns.TOPICS.OPERATIONS_CHANGE,
       attributes: {
         Action: sns.ACTIONS.DELETE,
@@ -67,7 +77,12 @@ function deleteTargetStateByServiceVersion(req, res, next) {
   deleteTargetState.byServiceVersion({ environmentName, serviceName, serviceVersion })
     .then(data => res.json(data))
     .then(sns.publish({
-      message: `DELETE /target-state/${environmentName}/${serviceName}/${serviceVersion}`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/target-state/${environmentName}/${serviceName}/${serviceVersion}`,
+          Method: 'DELETE'
+        }
+      }),
       topic: sns.TOPICS.OPERATIONS_CHANGE,
       attributes: {
         Action: sns.ACTIONS.DELETE,

@@ -199,7 +199,12 @@ function putInstanceMaintenance(req, res, next) {
     res.send({ ok: true });
   })
     .then(sns.publish({
-      message: `PUT /instances/${id}/maintenance`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/instances/${id}/maintenance`,
+          Method: 'PUT'
+        }
+      }),
       topic: sns.TOPICS.OPERATIONS_CHANGE,
       attributes: {
         Action: sns.ACTIONS.PUT,

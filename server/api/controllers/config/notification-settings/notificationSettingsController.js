@@ -51,7 +51,12 @@ function postNotificationSettings(req, res, next) {
   return notificationSettings.create({ record, metadata })
     .then(data => res.json(data))
     .then(sns.publish({
-      message: 'Post /config/notification-settings',
+      message: JSON.stringify({
+        Endpoint: {
+          Url: '/config/notification-settings',
+          Method: 'POST'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.POST,
@@ -77,7 +82,12 @@ function putNotificationSettingsById(req, res, next) {
   return notificationSettings.replace({ record, metadata }, expectedVersion)
     .then(data => res.json(data))
     .then(sns.publish({
-      message: `Put /config/notification-settings/${notificationSettingsId}`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/config/notification-settings/${notificationSettingsId}`,
+          Method: 'PUT'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.PUT,
@@ -100,7 +110,12 @@ function deleteNotificationSettingsById(req, res, next) {
   return notificationSettings.delete({ key, metadata }, expectedVersion)
     .then(data => res.json(data))
     .then(sns.publish({
-      message: `Put /config/notification-settings/${notificationSettingsId}`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/config/notification-settings/${notificationSettingsId}`,
+          Method: 'DELETE'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.DELETE,

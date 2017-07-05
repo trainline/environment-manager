@@ -56,7 +56,12 @@ function postEnvironmentTypesConfig(req, res, next) {
   return configEnvironmentTypes.create({ record, metadata })
     .then(() => res.status(201).end())
     .then(sns.publish({
-      message: 'Post /config/environment-types',
+      message: JSON.stringify({
+        Endpoint: {
+          Url: '/config/environment-types',
+          Method: 'POST'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.POST,
@@ -81,7 +86,12 @@ function putEnvironmentTypeConfigByName(req, res, next) {
   return configEnvironmentTypes.replace({ record, metadata }, expectedVersion)
     .then(() => res.status(200).end())
     .then(sns.publish({
-      message: `Put /config/environment-types/${key}`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/config/environment-types/${key}`,
+          Method: 'PUT'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.PUT,
@@ -103,7 +113,12 @@ function deleteEnvironmentTypeConfigByName(req, res, next) {
   return configEnvironmentTypes.delete({ key, metadata })
     .then(() => res.status(200).end())
     .then(sns.publish({
-      message: `Delete /config/environment-types/${clusterName}`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/config/environment-types/${clusterName}`,
+          Method: 'DELETE'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.DELETE,
