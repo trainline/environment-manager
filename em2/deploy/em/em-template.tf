@@ -1,6 +1,24 @@
 # AWS
 provider "aws" {}
 
+terraform {
+  backend "s3" {
+    bucket = "daveandjake-remote-state"
+    key    = "state"
+    region = "eu-west-1"
+  }
+}
+
+data "terraform_remote_state" "remote-state" {
+  backend = "s3"
+
+  config {
+    bucket = "daveandjake-remote-state"
+    key    = "state"
+    region = "eu-west-1"
+  }
+}
+
 data "aws_region" "current" {
   current = true
 }
@@ -1346,39 +1364,39 @@ resource "aws_cloudwatch_metric_alarm" "AlertWriteCapacityConfigCompletedDeploym
   threshold          = "1.6"
 }
 
-resource "aws_elb" "loadBalancerEnvironmentManager" {
-  name            = "environmentmanager-elb"
-  security_groups = ["${aws_security_group.sgInfraEnvironmentManagerElb.id}"]
-  subnets         = "${var.load_balancer_em_subnet_ids}"
-  internal        = true
+# resource "aws_elb" "loadBalancerEnvironmentManager" {
+#   name            = "environmentmanager-elb"
+#   security_groups = ["${aws_security_group.sgInfraEnvironmentManagerElb.id}"]
+#   subnets         = "${var.subnet_ids["private_a"]}"
+#   internal        = true
 
-  # access_logs {
-  #   bucket        = "foo"
-  #   bucket_prefix = "bar"
-  #   interval      = 60
-  # }
+#   # access_logs {
+#   #   bucket        = "foo"
+#   #   bucket_prefix = "bar"
+#   #   interval      = 60
+#   # }
 
-  listener {
-    instance_port     = "${var.load_balancer_em_port}"
-    instance_protocol = "http"
-    lb_port           = "${var.load_balancer_em_listener_port}"
-    lb_protocol       = "http"
-  }
-  health_check {
-    healthy_threshold   = 2
-    unhealthy_threshold = 5
-    timeout             = 3
-    target              = "HTTP:${var.load_balancer_em_port}/${var.load_balancer_em_health_check}"
-    interval            = 5
-  }
-  cross_zone_load_balancing   = true
-  idle_timeout                = "${var.load_balancer_em_timeout}"
-  connection_draining         = true
-  connection_draining_timeout = "${var.load_balancer_em_timeout}"
-  tags {
-    Name = "foobar-terraform-elb"
-  }
-}
+#   listener {
+#     instance_port     = "${var.load_balancer_em_port}"
+#     instance_protocol = "http"
+#     lb_port           = "${var.load_balancer_em_listener_port}"
+#     lb_protocol       = "http"
+#   }
+#   health_check {
+#     healthy_threshold   = 2
+#     unhealthy_threshold = 5
+#     timeout             = 3
+#     target              = "HTTP:${var.load_balancer_em_port}/${var.load_balancer_em_health_check}"
+#     interval            = 5
+#   }
+#   cross_zone_load_balancing   = true
+#   idle_timeout                = "${var.load_balancer_em_timeout}"
+#   connection_draining         = true
+#   connection_draining_timeout = "${var.load_balancer_em_timeout}"
+#   tags {
+#     Name = "foobar-terraform-elb"
+#   }
+# }
 
 resource "aws_security_group" "sgInfraEnvironmentManager" {
   description = "Security Group for Environment Manager"
@@ -1584,26 +1602,26 @@ resource "aws_iam_role_policy" "roleInfraEnvironmentManagerPolicy" {
 EOF
 }
 
-resource "aws_autoscaling_group" "asgEnvironmentManager" {
-  default_cooldown          = 30
-  desired_capacity          = 2
-  health_check_grace_period = 30
-  health_check_type         = "EC2"
-  launch_configuration      = "${aws_launch_configuration.launchConfigEnvironmentManager.name}"
-  load_balancers            = ["${aws_elb.loadBalancerEnvironmentManager.id}"]
-  max_size                  = 4
-  min_size                  = 0
+# resource "aws_autoscaling_group" "asgEnvironmentManager" {
+#   default_cooldown          = 30
+#   desired_capacity          = 2
+#   health_check_grace_period = 30
+#   health_check_type         = "EC2"
+#   launch_configuration      = "${aws_launch_configuration.launchConfigEnvironmentManager.name}"
+#   load_balancers            = ["${aws_elb.loadBalancerEnvironmentManager.id}"]
+#   max_size                  = 4
+#   min_size                  = 0
 
-  tags = [
-    {
-      key                 = "Role"
-      value               = "EnvironmentManager"
-      propagate_at_launch = true
-    },
-  ]
+#   tags = [
+#     {
+#       key                 = "Role"
+#       value               = "EnvironmentManager"
+#       propagate_at_launch = true
+#     },
+#   ]
 
-  vpc_zone_identifier = "${var.load_balancer_em_subnet_ids}"
-}
+#   vpc_zone_identifier = "${var.load_balancer_em_subnet_ids}"
+# }
 
 # Missing 
 # SourceSecurityGroupId in sgiInfraEnvironmentManagerTcp40500fromSgInfraEnvironmentManagerElb
@@ -1618,14 +1636,19 @@ resource "aws_autoscaling_group" "asgEnvironmentManager" {
 #   subnet_ids = ["${var.redis_subnet_group_id}"]
 # }
 
+resource "aws_elasticache_subnet_group" "redis_subnet_group" {
+  name       = "redis-subnet-group"
+  subnet_ids = ["${var.subnet_ids["private_a"]}", "${var.subnet_ids["private_b"]}", "${var.subnet_ids["private_c"]}"]
+}
+
 resource "aws_elasticache_cluster" "redisEnvironmentManager" {
-  cluster_id = "environment-manager"
+  cluster_id = "em-cache-cluster"
   node_type  = "cache.t2.micro"
 
-  #subnet_group_name = "redis-subnet"
-  engine          = "redis"
-  num_cache_nodes = 1
-  port            = "${var.redis_port}"
+  subnet_group_name = "${aws_elasticache_subnet_group.redis_subnet_group.name}"
+  engine            = "redis"
+  num_cache_nodes   = 1
+  port              = "${var.redis_port}"
 
   tags = {
     Role = "EnvironmentManager"

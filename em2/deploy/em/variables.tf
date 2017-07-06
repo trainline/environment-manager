@@ -8,6 +8,14 @@ variable "resource_prefix" {
   default     = "em-prefix-"
 }
 
+variable "subnet_ids" {
+  default = {
+    private_a = "subnet-b0e04bf9"
+    private_b = "subnet-2731df7c"
+    private_c = "subnet-8669cbe1"
+  }
+}
+
 variable "cross_account_destination_table" {
   description = "Destination table for cross account writes."
   default     = "12345"
@@ -36,11 +44,6 @@ variable "load_balancer_em_health_check" {
 variable "load_balancer_em_listener_port" {
   description = "Environment Manager load balancer listener port"
   default     = 9001
-}
-
-variable "load_balancer_em_subnet_ids" {
-  description = "Environment Manager load balancer subnet ids"
-  default     = ["subnet-5988e72f"]
 }
 
 variable "vpc_id" {
