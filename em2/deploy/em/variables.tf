@@ -16,6 +16,10 @@ variable "subnet_ids" {
   }
 }
 
+variable "default_sg" {
+  default = "sg-b58565d3"
+}
+
 variable "cross_account_destination_table" {
   description = "Destination table for cross account writes."
   default     = "12345"
