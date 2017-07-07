@@ -90,7 +90,12 @@ function postEnvironmentsConfig(req, res, next) {
   ])
     .then(() => res.status(201).end())
     .then(sns.publish({
-      message: 'Post /config/environments',
+      message: JSON.stringify({
+        Endpoint: {
+          Url: '/config/environments',
+          Method: 'POST'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.POST,
@@ -116,7 +121,12 @@ function putEnvironmentConfigByName(req, res, next) {
   return configEnvironments.replace({ record, metadata }, expectedVersion)
     .then(() => res.status(200).end())
     .then(sns.publish({
-      message: `Put /config/clusters/${environmentName}`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/config/environments/${environmentName}`,
+          Method: 'PUT'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.PUT,
@@ -145,7 +155,12 @@ function deleteEnvironmentConfigByName(req, res, next) {
     .then(() => configEnvironments.delete({ key, metadata }))
     .then(() => res.status(200).end())
     .then(sns.publish({
-      message: `Delete /config/environments/${environmentName}`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/config/environments/${environmentName}`,
+          Method: 'DELETE'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.DELETE,

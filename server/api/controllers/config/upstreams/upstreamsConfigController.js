@@ -15,6 +15,7 @@ let param = require('api/api-utils/requestParam');
 let { validate } = require('commands/validators/lbUpstreamValidator');
 let { getByName: getAccount } = require('modules/awsAccounts');
 let InvalidItemSchemaError = require('modules/errors/InvalidItemSchemaError.class');
+const sns = require('modules/sns/EnvironmentManagerEvents');
 
 function rejectIfValidationFailed(validationResult) {
   if (!validationResult.isValid) {
@@ -94,6 +95,19 @@ function postUpstreamsConfig(req, res, next) {
       .then(rejectIfValidationFailed)
       .then(() => loadBalancerUpstreams.create({ record, metadata })))
     .then(() => res.status(200).end())
+    .then(sns.publish({
+      message: JSON.stringify({
+        Endpoint: {
+          Url: '/config/upstreams',
+          Method: 'POST'
+        }
+      }),
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.POST,
+        ID: ''
+      }
+    }))
     .catch(next);
 }
 
@@ -116,6 +130,19 @@ function putUpstreamConfigByName(req, res, next) {
       .then(rejectIfValidationFailed)
       .then(() => loadBalancerUpstreams.replace({ record, metadata }, expectedVersion)))
     .then(() => res.status(200).end())
+    .then(sns.publish({
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/config/upstreams/${key}`,
+          Method: 'PUT'
+        }
+      }),
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.PUT,
+        ID: ''
+      }
+    }))
     .catch(next);
 }
 

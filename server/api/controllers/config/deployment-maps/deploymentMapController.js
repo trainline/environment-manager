@@ -57,7 +57,12 @@ function postDeploymentMapsConfig(req, res, next) {
   return deploymentMaps.create({ record, metadata })
     .then(() => res.status(201).end())
     .then(sns.publish({
-      message: 'Post /config/deployment-maps',
+      message: JSON.stringify({
+        Endpoint: {
+          Url: '/config/deployment-maps',
+          Method: 'POST'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.POST,
@@ -82,7 +87,12 @@ function putDeploymentMapConfigByName(req, res, next) {
   return deploymentMaps.replace({ record, metadata }, expectedVersion)
     .then(() => res.status(200).end())
     .then(sns.publish({
-      message: `Put /config/deployment-maps/${key}`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/config/deployment-maps/${key}`,
+          Method: 'PUT'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.PUT,
@@ -102,7 +112,12 @@ function deleteDeploymentMapConfigByName(req, res, next) {
   return deploymentMaps.delete({ key, metadata })
     .then(() => res.status(200).end())
     .then(sns.publish({
-      message: `Delete /config/deployment-maps/${key}`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/config/deployment-maps/${key}`,
+          Method: 'DELETE'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.DELETE,

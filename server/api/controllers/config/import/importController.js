@@ -43,7 +43,12 @@ function putResourceImport(req, res, next) {
       sender.sendCommand({ command, user })
         .then(data => res.json(data))
         .then(sns.publish({
-          message: `Put /config/import/${req.swagger.params.resource.value}`,
+          message: JSON.stringify({
+            Endpoint: {
+              Url: `/config/import/${resource}`,
+              Method: 'PUT'
+            }
+          }),
           topic: sns.TOPICS.CONFIGURATION_CHANGE,
           attributes: {
             Action: sns.ACTIONS.PUT,

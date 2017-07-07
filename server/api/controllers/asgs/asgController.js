@@ -131,7 +131,12 @@ function putAsg(req, res, next) {
   })
     .then(data => res.json(data))
     .then(sns.publish({
-      message: `PUT /asgs/${autoScalingGroupName}`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/asgs/${autoScalingGroupName}`,
+          Method: 'PUT'
+        }
+      }),
       topic: sns.TOPICS.OPERATIONS_CHANGE,
       attributes: {
         Environment: environmentName,
@@ -159,7 +164,12 @@ function deleteAsg(req, res, next) {
         });
       })
       .then(sns.publish({
-        message: `DELETE /asgs/${autoScalingGroupName}`,
+        message: JSON.stringify({
+          Endpoint: {
+            Url: `/asgs/${autoScalingGroupName}`,
+            Method: 'DELETE'
+          }
+        }),
         topic: sns.TOPICS.OPERATIONS_CHANGE,
         attributes: {
           Environment: environmentName,
@@ -195,7 +205,12 @@ function putScalingSchedule(req, res, next) {
     res.json(data);
   })
     .then(sns.publish({
-      message: `PUT /asgs/${autoScalingGroupName}/scaling-schedule`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/asgs/${autoScalingGroupName}/scaling-schedule`,
+          Method: 'PUT'
+        }
+      }),
       topic: sns.TOPICS.OPERATIONS_CHANGE,
       attributes: {
         Environment: environmentName,
@@ -228,7 +243,12 @@ function putAsgSize(req, res, next) {
     })
       .then(data => res.json(data))
       .then(sns.publish({
-        message: `PUT /asgs/${autoScalingGroupName}/size`,
+        message: JSON.stringify({
+          Endpoint: {
+            Url: `/asgs/${autoScalingGroupName}/size`,
+            Method: 'PUT'
+          }
+        }),
         topic: sns.TOPICS.OPERATIONS_CHANGE,
         attributes: {
           Environment: environmentName,
@@ -256,7 +276,12 @@ function putAsgLaunchConfig(req, res, next) {
     })
       .then(res.json.bind(res))
       .then(sns.publish({
-        message: `PUT /asgs/${autoScalingGroupName}/launch-config`,
+        message: JSON.stringify({
+          Endpoint: {
+            Url: `/asgs/${autoScalingGroupName}/launch-config`,
+            Method: 'PUT'
+          }
+        }),
         topic: sns.TOPICS.OPERATIONS_CHANGE,
         attributes: {
           Environment: environmentName,

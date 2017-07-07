@@ -55,7 +55,12 @@ function postServicesConfig(req, res, next) {
   return services.create({ record, metadata })
     .then(() => res.status(201).end())
     .then(sns.publish({
-      message: 'Post /config/services',
+      message: JSON.stringify({
+        Endpoint: {
+          Url: '/config/services',
+          Method: 'POST'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.POST,
@@ -84,7 +89,12 @@ function putServiceConfigByName(req, res, next) {
   return services.replace({ record, metadata }, expectedVersion)
     .then(() => res.status(200).end())
     .then(sns.publish({
-      message: `Put /config/services/${serviceName}/${owningCluster}`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/config/services/${serviceName}/${owningCluster}`,
+          Method: 'PUT'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.PUT,
@@ -110,7 +120,12 @@ function deleteServiceConfigByName(req, res, next) {
   return services.delete({ key, metadata }, expectedVersion)
     .then(() => res.status(200).end())
     .then(sns.publish({
-      message: `Delete /config/services/${serviceName}/${owningCluster}`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/config/services/${serviceName}/${owningCluster}`,
+          Method: 'DELETE'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.DELETE,

@@ -30,7 +30,12 @@ function putUpstreamSlicesToggle(req, res, next) {
   return toggleSlices(command)
     .then(data => res.json(data))
     .then(sns.publish({
-      message: `PUT /upstreams/${upstreamName}/slices/toggle`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/upstreams/${upstreamName}/slices/toggle`,
+          Method: 'PUT'
+        }
+      }),
       topic: sns.TOPICS.OPERATIONS_CHANGE,
       attributes: {
         Action: sns.ACTIONS.PUT,

@@ -57,7 +57,12 @@ function postClustersConfig(req, res, next) {
   return clusters.create({ record, metadata })
     .then(() => res.status(201).end())
     .then(sns.publish({
-      message: 'POST /config/clusters',
+      message: JSON.stringify({
+        Endpoint: {
+          Url: '/config/clusters',
+          Method: 'POST'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.POST,
@@ -82,7 +87,12 @@ function putClusterConfigByName(req, res, next) {
   return clusters.replace({ record, metadata }, expectedVersion)
     .then(() => res.status(200).end())
     .then(sns.publish({
-      message: `Put /config/clusters/${key}`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/config/clusters/${key}`,
+          Method: 'PUT'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.PUT,
@@ -105,7 +115,12 @@ function deleteClusterConfigByName(req, res, next) {
   return clusters.delete({ key, metadata }, expectedVersion)
     .then(() => res.status(200).end())
     .then(sns.publish({
-      message: `Delete /config/clsuters/${key}`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/config/clusters/${key}`,
+          Method: 'DELETE'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.DELETE,

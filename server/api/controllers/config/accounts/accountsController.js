@@ -28,7 +28,12 @@ function postAccountsConfig(req, res, next) {
   })
     .then(() => res.status(201).end())
     .then(sns.publish({
-      message: 'POST /config/accounts',
+      message: JSON.stringify({
+        Endpoint: {
+          Url: '/config/accounts',
+          Method: 'POST'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.POST,
@@ -53,7 +58,12 @@ function putAccountConfigByName(req, res, next) {
   })
     .then(() => res.status(200).end())
     .then(sns.publish({
-      message: `PUT /config/accounts/${accountNumber}`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/config/accounts/${accountNumber}`,
+          Method: 'PUT'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.PUT,
@@ -76,7 +86,12 @@ function deleteAccountConfigByName(req, res, next) {
   })
     .then(() => res.status(200).end())
     .then(sns.publish({
-      message: `Delete /config/accounts/${accountNumber}`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/config/accounts/${accountNumber}`,
+          Method: 'DELETE'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.DELETE,

@@ -87,8 +87,8 @@ function getLBSettingsConfig(req, res, next) {
       return get();
     }
   })()
-  .then(data => res.json(data))
-  .catch(next);
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 /**
@@ -126,7 +126,12 @@ function postLBSettingsConfig(req, res, next) {
         .then(loadBalancerSettings.create)
         .then(() => res.status(201).end())
         .then(notify({
-          message: 'Post /config/lb-settings',
+          message: JSON.stringify({
+            Endpoint: {
+              Url: '/config/lb-settings',
+              Method: 'POST'
+            }
+          }),
           topic: sns.TOPICS.CONFIGURATION_CHANGE,
           attributes: {
             Action: sns.ACTIONS.POST,
@@ -153,7 +158,12 @@ function putLBSettingConfigByName(req, res, next) {
     .then(record => loadBalancerSettings.put({ record, metadata }, expectedVersion))
     .then(() => res.status(200).end())
     .then(notify({
-      message: 'Put /config/lb-settings',
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/config/lb-settings/${key.EnvironmentName}/${key.VHostName}`,
+          Method: 'PUT'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.POST,
@@ -177,7 +187,12 @@ function deleteLBSettingConfigByName(req, res, next) {
   return loadBalancerSettings.delete({ key, metadata }, expectedVersion)
     .then(() => res.status(200).end())
     .then(notify({
-      message: `Delete /config/lb-settings/${key.EnvironmentName}/${key.VHostName}`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/config/lb-settings/${key.EnvironmentName}/${key.VHostName}`,
+          Method: 'DELETE'
+        }
+      }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.DELETE,

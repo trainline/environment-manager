@@ -88,7 +88,12 @@ function putDeploymentLock(req, res, next) {
   return opsEnvironment.setDeploymentLock({ key, metadata, isLocked }, expectedVersion)
     .then(data => res.json(data))
     .then(sns.publish({
-      message: `PUT /environments/${environmentName}/deploy-lock`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/environments/${environmentName}/deploy-lock`,
+          Method: 'PUT'
+        }
+      }),
       topic: sns.TOPICS.OPERATIONS_CHANGE,
       attributes: {
         Environment: environmentName,
@@ -134,7 +139,12 @@ function putMaintenance(req, res, next) {
   return opsEnvironment.setMaintenance({ key, metadata, isInMaintenance }, expectedVersion)
     .then(data => res.json(data))
     .then(sns.publish({
-      message: `PUT /environments/${environmentName}/maintenance`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/environments/${environmentName}/maintenance`,
+          Method: 'PUT'
+        }
+      }),
       topic: sns.TOPICS.OPERATIONS_CHANGE,
       attributes: {
         Environment: environmentName,
@@ -212,7 +222,12 @@ function putEnvironmentSchedule(req, res, next) {
   return opsEnvironment.setSchedule({ key, metadata, schedule }, expectedVersion)
     .then(data => res.json(data))
     .then(sns.publish({
-      message: `PUT /environments/${environmentName}/schedule`,
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/environments/${environmentName}/schedule`,
+          Method: 'PUT'
+        }
+      }),
       topic: sns.TOPICS.OPERATIONS_CHANGE,
       attributes: {
         Environment: environmentName,
