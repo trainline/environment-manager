@@ -2,11 +2,13 @@
 
 'use strict';
 
+
 describe('UpstreamViewModel', function () {
   var UpstreamViewModel;
   var defaultHost = { DnsName: '', Port: null, FailTimeout: '30s', MaxFails: null, State: 'down', Weight: 1 };
 
   beforeEach(module('EnvironmentManager.configuration'));
+
   beforeEach(inject(function (_UpstreamViewModel_) {
     UpstreamViewModel = _UpstreamViewModel_;
   }));
