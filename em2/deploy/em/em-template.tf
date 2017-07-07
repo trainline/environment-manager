@@ -538,7 +538,7 @@ resource "aws_dynamodb_table" "InfraConfigAccounts" {
 
   attribute {
     name = "AccountNumber"
-    type = "S"
+    type = "N"
   }
 
   stream_view_type = "NEW_AND_OLD_IMAGES"
@@ -1523,7 +1523,8 @@ resource "aws_iam_role_policy" "roleInfraEnvironmentManagerPolicy" {
          ],
          "Resource": [
             "arn:aws:s3:::${var.deployment_logs_bucket}/*",
-            "arn:aws:s3:::${var.packages_bucket}/*"
+            "arn:aws:s3:::${var.packages_bucket}/*",
+            "arn:aws:s3:::${var.deployment_bucket}/*"
          ]
       },
       {
@@ -1596,7 +1597,20 @@ resource "aws_iam_role_policy" "roleInfraEnvironmentManagerPolicy" {
             "arn:aws:sns:eu-west-1:${data.aws_caller_identity.current.account_id}:footplate*",
             "arn:aws:sns:eu-west-1:${data.aws_caller_identity.current.account_id}:environment*"
          ]
-      }
+      },
+             {
+            "Effect" : "Allow",
+            "Action" : [
+                "sns:CreateTopic",
+                "sns:Publish",
+                "sns:Subscribe",
+                "sns:Unsubscribe"
+            ],
+            "Resource" : [
+                "arn:aws:sns:eu-west-1:${data.aws_caller_identity.current.account_id}:EnvironmentManagerConfigurationChange",
+                "arn:aws:sns:eu-west-1:${data.aws_caller_identity.current.account_id}:EnvironmentManagerOperationsChange"
+            ]
+        },
    ]
 }  
 EOF
@@ -1764,7 +1778,6 @@ resource "aws_dynamodb_table" "InfraConfigLBUpstream" {
 #   memory_size      = 128
 #   timeout          = 10
 
-
 #   environment {
 #     variables = {
 #       DESTINATION_TABLE = "${var.destination_table}"
@@ -1773,7 +1786,6 @@ resource "aws_dynamodb_table" "InfraConfigLBUpstream" {
 #   }
 # }
 
-
 # resource "aws_cloudwatch_metric_alarm" "alertInfraEnvironmentManagerUpstreamRouter" {
 #   alarm_name          = "${var.resource_prefix}alertInfraEnvironmentManagerUpstreamRouter"
 #   actions_enabled     = true
@@ -1781,11 +1793,9 @@ resource "aws_dynamodb_table" "InfraConfigLBUpstream" {
 #   alarm_description   = "AlertReadCapacityConfigEnvironments"
 #   comparison_operator = "GreaterThanThreshold"
 
-
 #   dimensions = {
 #     FunctionName = "lambdaInfraEnvironmentManagerUpstreamRouter"
 #   }
-
 
 #   evaluation_periods = "1"
 #   metric_name        = "Errors"
@@ -1795,3 +1805,38 @@ resource "aws_dynamodb_table" "InfraConfigLBUpstream" {
 #   threshold          = "8"
 # }
 
+resource "aws_s3_bucket" "config-bucket" {
+  bucket = "${var.configuration_bucket}"
+  acl    = "private"
+
+  tags {
+    Name = "em-daveandjake-config"
+  }
+}
+
+resource "aws_s3_bucket" "secure-bucket" {
+  bucket = "${var.secrets_bucket}"
+  acl    = "private"
+
+  tags {
+    Name = "em-daveandjake-secure"
+  }
+}
+
+resource "aws_s3_bucket" "deployment_bucket" {
+  bucket = "${var.deployment_bucket}"
+  acl    = "private"
+
+  tags {
+    Name = "em-daveandjake-deployment"
+  }
+}
+
+resource "aws_s3_bucket" "packages_bucket" {
+  bucket = "${var.packages_bucket}"
+  acl    = "private"
+
+  tags {
+    Name = "em-daveandjake-packages"
+  }
+}

@@ -72,12 +72,12 @@ variable "em_security_groups" {
 
 variable "configuration_bucket" {
   description = "Environment Manager configuration bucket"
-  default     = "configuration bucket"
+  default     = "em-daveandjake-config"
 }
 
 variable "secrets_bucket" {
   description = "Environment Manager secrets bucket"
-  default     = "secrets"
+  default     = "em-daveandjake-secure"
 }
 
 variable "backups_bucket" {
@@ -92,7 +92,12 @@ variable "deployment_logs_bucket" {
 
 variable "packages_bucket" {
   description = "Environment Manager packages bucket"
-  default     = "em-testing-packages"
+  default     = "em-daveandjake-packages"
+}
+
+variable "deployment_bucket" {
+  description = "Environment Manager packages bucket"
+  default     = "em-daveandjake-deployment"
 }
 
 variable "managed_accounts" {
