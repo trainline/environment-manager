@@ -1610,7 +1610,7 @@ resource "aws_iam_role_policy" "roleInfraEnvironmentManagerPolicy" {
                 "arn:aws:sns:eu-west-1:${data.aws_caller_identity.current.account_id}:EnvironmentManagerConfigurationChange",
                 "arn:aws:sns:eu-west-1:${data.aws_caller_identity.current.account_id}:EnvironmentManagerOperationsChange"
             ]
-        },
+        }
    ]
 }  
 EOF
