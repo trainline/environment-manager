@@ -1,3 +1,21 @@
+terraform {
+  backend "s3" {
+    bucket = "daveandjake-remote-state"
+    key    = "state-consul"
+    region = "eu-west-1"
+  }
+}
+
+data "terraform_remote_state" "remote-state" {
+  backend = "s3"
+
+  config {
+    bucket = "daveandjake-remote-state"
+    key    = "state-consul"
+    region = "eu-west-1"
+  }
+}
+
 resource "aws_instance" "server" {
   ami           = "${lookup(var.ami, "${var.region}-${var.platform}")}"
   instance_type = "${var.instance_type}"
