@@ -159,7 +159,7 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
 
       // Validate syntax structure and mandatory attributes
       var mandatoryFields = ['SchemaVersion', 'EnvironmentName', 'VHostName', 'Listen', 'ServerName', 'FrontEnd', 'Locations'];
-      var optionalFields = ['SSLCertificate', 'SSLKey', 'GreenPort', 'InstallCheckURL', 'UninstallScriptPath', 'SiteInMaintenance', 'RedirectToLower', 'TokeniseLocations'];
+      var optionalFields = ['Set', 'ProxySetHeaders', 'AddHeaders', 'SSLCertificate', 'SSLKey', 'GreenPort', 'InstallCheckURL', 'UninstallScriptPath', 'SiteInMaintenance', 'RedirectToLower', 'TokeniseLocations'];
       var errors = $scope.ValidateFields(value, mandatoryFields, optionalFields);
 
       // Validate Listen
@@ -181,6 +181,21 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
         errors = errors.concat($scope.ValidateArrayField(value.ServerName, 'ServerName', true));
       }
 
+      // Validate Set
+      if (value.Set) {
+        errors = errors.concat($scope.ValidateArrayField(value.Set, 'Set', true));
+      }
+
+      // Validate ProxySetHeaders
+      if (value.ProxySetHeaders) {
+        errors = errors.concat($scope.ValidateArrayField(value.ProxySetHeaders, 'ProxySetHeaders', true));
+      }
+
+      // Validate AddHeaders
+      if (value.AddHeaders) {
+        errors = errors.concat($scope.ValidateArrayField(value.AddHeaders, 'AddHeaders', true));
+      }
+
       // Validate Locations
       if (value.Locations) {
         var locationErrors = $scope.ValidateArrayField(value.Locations, 'Locations', true);
@@ -188,9 +203,11 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
 
         if (locationErrors.length == 0) {
           var locationMandatoryFields = ['Path'];
-          var locationOptionalFields = ['ServiceName', 'IfCondition', 'IfConditionPriority', 'Tokenise', 'ProxySetHeaders', 'ProxyPass', 'HealthCheck', 'ProxyHttpVersion', 'AddHeaders', 'ReturnCode', 'ReturnURI', 'MoreHeaders', 'RewriteCondition', 'RewriteURI', 'RewriteState', 'frompolicy', 'Priority', 'RawNginxConfig'];
+          var locationOptionalFields = ['Set', 'TryFiles', 'Rewrites', 'ServiceName', 'IfCondition', 'IfConditionPriority', 'Tokenise', 'ProxySetHeaders', 'ProxyPass', 'HealthCheck', 'ProxyHttpVersion', 'AddHeaders', 'ReturnCode', 'ReturnURI', 'MoreHeaders', 'RewriteCondition', 'RewriteURI', 'RewriteState', 'frompolicy', 'Priority', 'RawNginxConfig'];
           var healthCheckMandatoryFields = [];
           var healthCheckOptionalFields = ['Interval', 'Passes', 'Fails', 'URI'];
+          var rewriteMandatoryFields = ['Condition', 'URI', 'State'];
+          var rewriteOptionalFields = [];
           for (var i = 0; i < value.Locations.length; i++) {
             var location = value.Locations[i];
 
@@ -215,11 +232,20 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
               errors = errors.concat($scope.ValidateArrayField(location.AddHeaders, 'AddHeaders', false, 'Locations[' + i + ']'));
             }
 
+            if (location.Set) {
+              errors = errors.concat($scope.ValidateArrayField(location.Set, 'Set', false, 'Locations[' + i + ']'));
+            }
+
             // Check service name exists if specified
             if (location.ServiceName) {
               if ($scope.ServicesList.indexOf(location.ServiceName) == -1) {
                 errors.push('Locations[' + i + '] - Service Name not recognised. Please check spelling and capitalisation');
               }
+            }
+
+            // Validate rewrites
+            if (location.Rewrites) {
+              errors = errors.concat($scope.ValidateFields(location.Rewrites, rewriteMandatoryFields, rewriteOptionalFields, 'Locations[' + i + ']/Rewrites'));
             }
 
             if (location.ProxyPass) {
