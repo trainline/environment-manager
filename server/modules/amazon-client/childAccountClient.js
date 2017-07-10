@@ -3,7 +3,7 @@
 'use strict';
 
 let co = require('co');
-let guid = require('node-uuid');
+let guid = require('uuid/v1');
 let AWS = require('aws-sdk');
 let common = require('./common');
 let awsAccounts = require('modules/awsAccounts');
@@ -45,7 +45,7 @@ function assumeRole(roleARN) {
   let stsClient = new AWS.STS();
   let stsParameters = {
     RoleArn: roleARN,
-    RoleSessionName: guid.v1()
+    RoleSessionName: guid()
   };
 
   return stsClient.assumeRole(stsParameters).promise();

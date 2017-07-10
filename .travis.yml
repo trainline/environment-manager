@@ -1,0 +1,42 @@
+language: node_js
+node_js:
+- '7'
+
+cache:
+  directories:
+    - "${HOME}/.bower"
+    - "${HOME}/.cache/bower"
+  yarn: true
+
+install:
+  - yarn install --pure-lockfile
+  - (cd server && exec yarn install --pure-lockfile)
+  - (cd client && exec yarn install --pure-lockfile)
+
+before_script:
+  - yarn global add gulp
+
+script:
+  - (cd server && exec yarn test)
+  - (cd client && exec yarn test)
+
+after_success:
+  - yarn run gulp
+
+addons:
+  artifacts:
+    paths:
+      - $(git ls-files -o test-results | tr "\n" ":")
+
+deploy:
+  provider: s3
+  access_key_id: $ARTIFACTS_KEY
+  secret_access_key: $ARTIFACTS_SECRET
+  bucket: $ARTIFACTS_BUCKET
+  region: $ARTIFACTS_REGION
+  local_dir: dist
+  upload-dir: $DIST_DIR
+  skip_cleanup: true
+  on:
+    repo: trainline/environment-manager
+    all_branches: true

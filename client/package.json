@@ -11,7 +11,8 @@
   "scripts": {
     "build": "gulp build --gulpfile gulpfile.js -p -o build",
     "postinstall": "bower install",
-    "test": "gulp test",
+    "test": "npm run lint -s && npm run unit-test -s",
+    "unit-test": "gulp test",
     "test-ci": "gulp test -c",
     "lint": "eslint app/ gulp/ --ext .js --max-warnings 92",
     "lint-fix": "eslint app/ gulp/ --ext .js --fix"
@@ -75,5 +76,5 @@
     "run-sequence": "~1.2.2",
     "yargs": "^6.5.0"
   },
-  "license": "Apache License, Version 2.0"
+  "license": "Apache-2.0"
 }
