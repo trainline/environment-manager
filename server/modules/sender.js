@@ -2,7 +2,7 @@
 
 'use strict';
 
-let guid = require('node-uuid');
+let guid = require('uuid/v1');
 let logger = require('modules/logger');
 let commandMetadata = require('commands/utils/metadata');
 
@@ -37,7 +37,7 @@ function prepareQuery(parameters) {
   }
 
   if (parameters.user) {
-    query.queryId = guid.v1();
+    query.queryId = guid();
     query.username = parameters.user.getName();
   }
 
