@@ -3,9 +3,9 @@
 #Params
 CONSUL_VERSION=0.8.0
 CONSUL_DATACENTER=test1
-CONSUL_JOIN=172.31.10.55
+CONSUL_JOIN=172.31.97.249
 CDA_VERSION=2.1.0
-ACL_TOKEN=b40f4f5d-35c4-05de-79a0-46bfb9a55d23
+#ACL_TOKEN=b40f4f5d-35c4-05de-79a0-46bfb9a55d23
 
 #Update the OS 
 #Download dependencies
@@ -24,8 +24,17 @@ sudo mv consul /usr/local/bin/consul
 sudo mkdir -p /opt/consul/data
 sudo mkdir -p /etc/consul.d
 sudo touch /tmp/consul.service
-echo "-join=${CONSUL_JOIN} -CONSUL_DATACENTER=${CONSUL_DATACENTER} -data-dir=/opt/consul/data" > /tmp/consul_flags
-CONSUL_FLAGS=`cat /tmp/consul_flags`
+
+CLIENT_JSON="{
+  \"datacenter\": \"test1\",
+  \"server\": false,
+  \"data_dir\": \"/opt/consul/data\",
+  \"log_level\": \"INFO\",
+  \"enable_syslog\": true,
+  \"start_join\": [\"172.31.97.249\", \"172.31.114.16\", \"172.31.103.180\"]
+}"
+echo "$CLIENT_JSON" | sudo tee /etc/consul.d/client.json
+
 SERVICE="[Unit]
 Description=consul agent
 Wants=basic.target
@@ -34,7 +43,7 @@ After=basic.target network.target
 [Service]
 EnvironmentFile=-/etc/default/consul
 Restart=on-failure
-ExecStart=/usr/local/bin/consul agent $CONSUL_FLAGS -config-dir=/etc/consul.d
+ExecStart=/usr/local/bin/consul agent -config-dir=/etc/consul.d
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 
@@ -44,7 +53,6 @@ echo "$SERVICE" | sudo tee /tmp/consul.service
 sudo chown root:root /tmp/consul.service
 sudo mv /tmp/consul.service /etc/systemd/system/consul.service
 sudo chmod 0644 /etc/systemd/system/consul.service
-sudo mv /tmp/consul_flags /etc/default/consul
 sudo chown root:root /etc/default/consul
 sudo chmod 0644 /etc/default/consul
 
@@ -61,10 +69,6 @@ sudo iptables -I INPUT -s 0/0 -p udp --dport 8302 -j ACCEPT
 sudo iptables -I INPUT -s 0/0 -p tcp --dport 8302 -j ACCEPT
 sudo iptables-save
 
-#Start the Consul service
-sudo systemctl enable consul.service
-sudo systemctl start consul.service
-
 
 #Fetch the CDA
 cd /tmp
@@ -76,22 +80,27 @@ cd /tmp/consul-deployment-agent-${CDA_VERSION}
 sudo make init
 CONFIG=$"aws:
   # Credential for accessing S3. If not specified, IAM role on EC2 instance where agent is running will be used.
-  # access_key_id: <ACCESS KEY ID>
-  # aws_secret_access_key: <AWS SECRET ACCESS KEY>
+  access_key_id:
+  aws_secret_access_key:
   
   #Deployment log shipping location. If not specified, logs will not be shipped to S3
   #deployment_logs:
-  #  bucket_name: <BUCKET NAME>
-  #  key_prefix: <PREFIX VALUE>
+  #  bucket_name: 
+  #  key_prefix: 
 consul:
   #Consul ACL token configuration. If not specified, no token will be used to access Consul key-value store.
-  acl_token: $ACL_TOKEN
+  #acl_token: $ACL_TOKEN
 startup:
   # Path of the file used to signal instance readiness
   #semaphore_filepath: /some/path/semaphore.txt
   # Set to true to wait for instance readiness before triggering deployments. False otherwise.
   #wait_for_instance_readiness: true
 "
-sudo echo "$CONFIG" | sudo tee config/config.yml
+sudo echo "$CONFIG" | sudo tee config.yml
 
-python /tmp/consul-deployment-agent-${CDA_VERSION}/agent/core.py &
+#Start the Consul service
+sudo systemctl enable consul.service
+sudo systemctl start consul.service
+
+# Presumes running the agent like this...
+# python ./agent/core
