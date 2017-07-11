@@ -1507,8 +1507,32 @@ resource "aws_iam_role_policy" "roleInfraEnvironmentManagerPolicy" {
          ]
       },
       {
+        "Effect": "Allow",
+        "Action": [
+          "s3:GetBucketLocation",
+          "s3:ListAllMyBuckets"
+        ],
+        "Resource": [
+          "arn:aws:s3:::*"
+        ]
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "s3:ListBucket"
+        ],
+        "Resource": [
+          "arn:aws:s3:::${var.secrets_bucket}",
+          "arn:aws:s3:::${var.deployment_bucket}",
+          "arn:aws:s3:::${var.packages_bucket}",
+          "arn:aws:s3:::${var.deployment_logs_bucket}"
+        ]
+      },
+      {
          "Effect":"Allow",
-         "Action":"s3:GetObject",
+         "Action": [
+           "s3:GetObject" 
+         ],
          "Resource":[
             "arn:aws:s3:::${var.configuration_bucket}/*",
             "arn:aws:s3:::${var.secrets_bucket}/*",
@@ -1519,7 +1543,8 @@ resource "aws_iam_role_policy" "roleInfraEnvironmentManagerPolicy" {
          "Effect":"Allow",
          "Action": [
             "s3:GetObject",
-            "s3:PutObject"
+            "s3:PutObject",
+            "s3:GetObjectVersion"
          ],
          "Resource": [
             "arn:aws:s3:::${var.deployment_logs_bucket}/*",
@@ -1838,5 +1863,14 @@ resource "aws_s3_bucket" "packages_bucket" {
 
   tags {
     Name = "em-daveandjake-packages"
+  }
+}
+
+resource "aws_s3_bucket" "logs_bucket" {
+  bucket = "${var.deployment_logs_bucket}"
+  acl    = "private"
+
+  tags {
+    Name = "em-daveandjake-logs"
   }
 }

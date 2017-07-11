@@ -87,7 +87,7 @@ variable "backups_bucket" {
 
 variable "deployment_logs_bucket" {
   description = "Environment Manager deployment logs bucket"
-  default     = "em-testing-deploy"
+  default     = "em-daveandjake-logs"
 }
 
 variable "packages_bucket" {
