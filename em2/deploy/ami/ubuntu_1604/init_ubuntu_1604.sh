@@ -74,7 +74,8 @@ sudo iptables-save
 cd /tmp
 wget https://github.com/trainline/consul-deployment-agent/archive/${CDA_VERSION}.tar.gz -O consul-deployment-agent-${CDA_VERSION}.tar.gz --quiet
 tar xzvf consul-deployment-agent-${CDA_VERSION}.tar.gz
-cd /tmp/consul-deployment-agent-${CDA_VERSION}
+sudo mv /tmp/consul-deployment-agent-${CDA_VERSION} /opt/consul-deployment-agent-${CDA_VERSION}
+cd /opt/consul-deployment-agent-${CDA_VERSION}
 
 #'Install' the CDA
 sudo make init
