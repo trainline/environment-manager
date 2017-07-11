@@ -66,7 +66,6 @@
     "ms": "~0.7.2",
     "nconf": "~0.8.4",
     "newrelic": "~1.36.2",
-    "pluralize": "~3.0.0",
     "request": "~2.79.0",
     "require-directory": "~2.1.1",
     "retry": "~0.10.0",

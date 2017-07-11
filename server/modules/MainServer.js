@@ -27,7 +27,6 @@ let serverInstance;
 
 function createExpressApp() {
   /* eslint-disable global-require */
-  let routeInstaller = require('modules/routeInstaller');
   let httpHealthChecks = require('modules/httpHealthChecks');
   let routes = {
     home: require('routes/home'),
@@ -91,7 +90,6 @@ function createExpressApp() {
     app.get('/deployments/nodes/logs', authentication.denyUnauthorized, routes.deploymentNodeLogs);
 
     app.get('/em/initial-data', initialData);
-    app.use('/api', routeInstaller());
 
     app.use(swaggerMetadata);
     app.use(swaggerValidator);
