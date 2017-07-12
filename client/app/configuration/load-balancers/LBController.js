@@ -245,7 +245,11 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
 
             // Validate rewrites
             if (location.Rewrites) {
-              errors = errors.concat($scope.ValidateFields(location.Rewrites, rewriteMandatoryFields, rewriteOptionalFields, 'Locations[' + i + ']/Rewrites'));
+              $scope.ValidateArrayField(location.Rewrites, 'Locations[' + i + ']/Rewrites', true);
+
+              location.Rewrites.forEach(function(rewrite, j) {
+                errors = errors.concat($scope.ValidateFields(rewrite, rewriteMandatoryFields, rewriteOptionalFields, 'Locations[' + i + ']/Rewrites[' + j + ']'));
+              });
             }
 
             if (location.ProxyPass) {
