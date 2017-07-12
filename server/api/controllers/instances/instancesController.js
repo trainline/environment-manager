@@ -8,9 +8,8 @@ let ScanInstances = require('queryHandlers/ScanInstances');
 let ScanCrossAccountInstances = require('queryHandlers/ScanCrossAccountInstances');
 let EnterAutoScalingGroupInstancesToStandby = require('commands/asg/EnterAutoScalingGroupInstancesToStandby');
 let ExitAutoScalingGroupInstancesFromStandby = require('commands/asg/ExitAutoScalingGroupInstancesFromStandby');
-let DynamoHelper = require('api/api-utils/DynamoHelper');
+let asgips = require('modules/data-access/asgips');
 let Instance = require('models/Instance');
-let dynamoHelper = new DynamoHelper('asgips');
 let serviceTargets = require('modules/service-targets');
 let logger = require('modules/logger');
 let getInstanceState = require('modules/environment-state/getInstanceState');
@@ -165,7 +164,7 @@ function putInstanceMaintenance(req, res, next) {
     /**
      * Update ASG IPS table
      */
-    let entry = yield dynamoHelper.getByKey('MAINTENANCE_MODE', { accountName });
+    let entry = yield asgips.get(accountName, { AsgName: 'MAINTENANCE_MODE' });
     let ips = JSON.parse(entry.IPs);
     if (enable === true) {
       ips.push(instance.PrivateIpAddress);
@@ -173,7 +172,7 @@ function putInstanceMaintenance(req, res, next) {
     } else {
       _.pull(ips, instance.PrivateIpAddress);
     }
-    yield dynamoHelper.update('MAINTENANCE_MODE', { IPs: JSON.stringify(ips) }, entry.Version, req.user, { accountName });
+    yield asgips.put(accountName, { AsgName: 'MAINTENANCE_MODE', IPs: JSON.stringify(ips) });
 
     /**
      * Put instance to standby on AWS
