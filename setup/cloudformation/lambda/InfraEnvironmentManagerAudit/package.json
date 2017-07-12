@@ -8,7 +8,8 @@
   "dependencies": {},
   "scripts": {
     "build-aws-resource": "pack-zip",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "tape **/*.spec.js"
   },
   "eslintConfig": {
     "env": {
@@ -25,6 +26,8 @@
   },
   "devDependencies": {
     "eslint": "^3.4.0",
-    "pack-zip": "^0.2.2"
+    "pack-zip": "^0.2.2",
+    "proxyquire": "^1.8.0",
+    "tape": "^4.7.0"
   }
 }
