@@ -2,6 +2,7 @@
 'use strict';
 
 const AWS = require('aws-sdk');
+const console = require('console');
 const process = require('process');
 
 const DESTINATION_TABLE_NAME = process.env.DESTINATION_TABLE_NAME;
@@ -140,6 +141,10 @@ function asPutRequestItem(auditItem) {
 }
 
 function writeItems(items) {
+  if (items.length === 0) {
+    console.log('No items to process');
+    return Promise.resolve();
+  }
   let request = { RequestItems: {} };
   request.RequestItems[DESTINATION_TABLE_NAME] = items;
   return new Promise(function (resolve, reject) {
@@ -147,10 +152,11 @@ function writeItems(items) {
       if (error) {
         reject(error);
       } else {
-        let unprocessed = data.UnprocessedItems[DESTINATION_TABLE_NAME];
+        let { UnprocessedItems = {} } = data || {};
+        let unprocessed = UnprocessedItems[DESTINATION_TABLE_NAME];
         if (unprocessed) {
-          console.log('%d items remain to precess', unprocessed.length);
-          resolve(writeItems(dynamodb, unprocessed));
+          console.log('%d items remain to process', unprocessed.length);
+          resolve(writeItems(unprocessed));
         } else {
           resolve(`${items.length} audit record written.`);
         }
@@ -172,3 +178,5 @@ exports.handler = function (event, context, callback) {
     .then(succeed)
     .catch(fail);
 };
+
+exports.writeItems = writeItems;
