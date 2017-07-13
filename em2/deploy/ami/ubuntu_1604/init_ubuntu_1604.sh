@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
 
+#TODO:
+#Set the name of this instance
+
 #Params
 CONSUL_VERSION=0.8.0
 CONSUL_DATACENTER=test1
 CONSUL_JOIN=172.31.97.249
 CDA_VERSION=2.1.0
-#ACL_TOKEN=b40f4f5d-35c4-05de-79a0-46bfb9a55d23
+
+#TODO: get the token from parameters
+ACL_TOKEN=afc86aa9-af1a-8787-7960-73f53c1ece9b
 
 #Update the OS 
 #Download dependencies
@@ -25,16 +30,21 @@ sudo mkdir -p /opt/consul/data
 sudo mkdir -p /etc/consul.d
 sudo touch /tmp/consul.service
 
-CLIENT_JSON="{
-  \"datacenter\": \"test1\",
-  \"server\": false,
-  \"data_dir\": \"/opt/consul/data\",
-  \"log_level\": \"INFO\",
-  \"enable_syslog\": true,
-  \"start_join\": [\"172.31.97.249\", \"172.31.114.16\", \"172.31.103.180\"]
-}"
+CLIENT_JSON='{
+  "datacenter": "test1",
+  "server": false,
+  "data_dir": "/opt/consul/data",
+  "log_level": "INFO",
+  "enable_syslog": true,
+  "start_join": ["172.31.97.249", "172.31.114.16", "172.31.103.180"],
+  "acl_datacenter": "test1",
+  "acl_token": "5834f3a3-e6f2-d76e-c8b2-3d3cdd16b855",
+  "acl_enforce_version_8": false
+}'
 echo "$CLIENT_JSON" | sudo tee /etc/consul.d/client.json
 
+#TODO:
+#Add the name of the instance to the ExecStart line, "-node=name"
 SERVICE="[Unit]
 Description=consul agent
 Wants=basic.target
@@ -72,12 +82,36 @@ sudo iptables-save
 
 #Fetch the CDA
 cd /tmp
-wget https://github.com/trainline/consul-deployment-agent/archive/${CDA_VERSION}.tar.gz -O consul-deployment-agent-${CDA_VERSION}.tar.gz --quiet
-tar xzvf consul-deployment-agent-${CDA_VERSION}.tar.gz
-sudo mv /tmp/consul-deployment-agent-${CDA_VERSION} /opt/consul-deployment-agent-${CDA_VERSION}
-cd /opt/consul-deployment-agent-${CDA_VERSION}
+wget https://github.com/trainline/consul-deployment-agent/archive/${CDA_VERSION}.tar.gz -O em-agent-${CDA_VERSION}.tar.gz --quiet
+tar xzvf em-agent-${CDA_VERSION}.tar.gz
+sudo mv /tmp/em-agent-${CDA_VERSION} /opt/em-agent-${CDA_VERSION}
+cd /opt/em-agent-${CDA_VERSION}
+
+
+echo "$CDA_VERSION" | sudo tee /etc/em-agent
+CDA_SERVICE="[Unit]
+Description=Environment Manager Agent
+Wants=basic.target
+After=basic.target network.target
+
+[Service]
+EnvironmentFile=/etc/em-agent
+Restart=on-failure
+ExecStart=python /opt/em-agent-${CDA_VERSION}/agent/core.py
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target"
+echo "$CDA_SERVICE" | sudo tee /tmp/em-agent.service
+sudo chown root:root /tmp/em-agent.service
+sudo mv /tmp/cda.service /etc/systemd/system/em-agent.service
+sudo chmod 0644 /etc/systemd/system/em-agent.service
+sudo chown root:root /etc/em-agent
+sudo chmod 0644 /etc/em-agent
 
 #'Install' the CDA
+#TODO: Get the values for bucket name and prefix for logs from paaafrkasfjknas
 sudo make init
 CONFIG=$"aws:
   # Credential for accessing S3. If not specified, IAM role on EC2 instance where agent is running will be used.
@@ -85,12 +119,12 @@ CONFIG=$"aws:
   aws_secret_access_key:
   
   #Deployment log shipping location. If not specified, logs will not be shipped to S3
-  #deployment_logs:
-  #  bucket_name: 
-  #  key_prefix: 
+  deployment_logs:
+    bucket_name: em-daveandjake-logs 
+    key_prefix: logs
 consul:
   #Consul ACL token configuration. If not specified, no token will be used to access Consul key-value store.
-  #acl_token: $ACL_TOKEN
+  acl_token: $ACL_TOKEN
 startup:
   # Path of the file used to signal instance readiness
   #semaphore_filepath: /some/path/semaphore.txt
@@ -99,9 +133,13 @@ startup:
 "
 sudo echo "$CONFIG" | sudo tee config.yml
 
+
 #Start the Consul service
 sudo systemctl enable consul.service
 sudo systemctl start consul.service
+
+sudo systemctl enable em-agent.service
+sudo systemctl start em-agent.service
 
 # Presumes running the agent like this...
 # python ./agent/core

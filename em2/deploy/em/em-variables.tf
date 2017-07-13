@@ -1,3 +1,17 @@
+# Terraform Configuration
+
+variable "remote_state_bucket_name" {
+  description = "Remote State store in this bucket"
+  default     = "daveandjake-remote-state"
+}
+
+variable "remote_state_key" {
+  description = "Remote State key to store in remote state bucket"
+  default     = "state"
+}
+
+# End Terraform Configuration
+
 variable "master_account_id" {
   description = "Master Account ID"
   default     = "12345"

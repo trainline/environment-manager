@@ -9,3 +9,6 @@ sudo aws s3api get-object --bucket em-testing-init --key init_ubuntu_1604.sh ./i
 #execute init script
 sudo chmod 700 ./init_ubuntu_1604.sh
 sudo ./init_ubuntu_1604.sh
+
+PARAMETERS='{"":""}'
+echo PARAMETERS > /tmp/user_data
