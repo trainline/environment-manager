@@ -1779,10 +1779,9 @@ paths:
           in: query
           required: true
           type: string
-        - name: account
-          in: query
-          required: false
-          type: string
+          enum:
+            - merge
+            - replace
       responses:
         200:
           description: OK

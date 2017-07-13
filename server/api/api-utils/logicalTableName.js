@@ -10,7 +10,7 @@ const logicalTableNames = {
   lbupstream: 'InfraConfigLBUpstream',
   permissions: 'InfraConfigPermissions',
   services: 'ConfigServices'
-}
+};
 
 function logicalTableName(entityTypeName) {
   return logicalTableNames[entityTypeName];
