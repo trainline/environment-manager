@@ -2,6 +2,10 @@
 
 'use strict';
 
+let co = require('co');
+let _ = require('lodash');
+let getHostAccount = require('queryHandlers/GetAWSHostAccount');
+
 function getAwsAccounts(query) {
   let sender = require('modules/sender');
   let dynamoQuery = {
@@ -14,4 +18,13 @@ function getAwsAccounts(query) {
   return sender.sendQuery(childQuery);
 }
 
-module.exports = getAwsAccounts;
+module.exports = (query) => {
+  return co(function*() {
+    let accounts = {
+      master: yield getHostAccount(),
+      others: yield getAwsAccounts(query)
+    };
+
+    return _.union([accounts.master], accounts.others);
+  });
+};

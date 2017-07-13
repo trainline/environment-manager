@@ -8,6 +8,7 @@ const CACHE_KEY = 'AWSAccounts';
 let _ = require('lodash');
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
 let fetchAccounts = require('queryHandlers/GetAWSaccounts');
+let getMasterAccount = require('queryHandlers/GetAWSHostAccount');
 let cacheManager = require('modules/cacheManager');
 let accountsCache = cacheManager.create(CACHE_KEY, fetchAccounts, { stdTTL: TEN_MINUTES, logHits: false });
 
@@ -26,10 +27,6 @@ function getByName(accountName) {
       throw new ResourceNotFoundError(`AWS account ${accountName} not found`);
     }
   });
-}
-
-function getMasterAccount() {
-  return getAllAccounts().then(accounts => accounts.find(a => a.IsMaster));
 }
 
 function getMasterAccountName() {
