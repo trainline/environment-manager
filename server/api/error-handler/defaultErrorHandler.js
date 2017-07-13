@@ -48,11 +48,7 @@ function getStatusByErrorType(error) {
     case 'SecurityGroupNotFoundError':
     case 'TopicNotFoundError':
     case 'DynamoItemNotFoundError': return 404;
-
-    case 'DynamoConcurrencyError': return 409;
-
     case 'ResourceLockedError': return 423;
-
     case 'EvalError':
     case 'InternalError':
     case 'RangeError':
