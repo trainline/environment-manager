@@ -5,9 +5,8 @@
 let { getTableName: physicalTableName } = require('modules/awsResourceNameProvider');
 let Promise = require('bluebird');
 let logger = require('modules/logger');
-let { mkArn } = require('modules/data-access/dynamoTableArn');
 let describeDynamoTable = require('modules/data-access/describeDynamoTable');
-let { hashKeyAttributeName, tableArn } = require('modules/data-access/dynamoTableDescription');
+let { hashKeyAttributeName } = require('modules/data-access/dynamoTableDescription');
 let { DateTimeFormatterBuilder, LocalDate, ZoneId } = require('js-joda');
 let { makeWritable } = require('modules/data-access/dynamoItemFilter');
 let dynamoTable = require('modules/data-access/dynamoTable');
@@ -35,16 +34,14 @@ const DEFAULT_SCAN_EXPRESSIONS = {
 const ES_DATETIME_FORMAT = new DateTimeFormatterBuilder().appendInstant(3).toFormatter();
 
 function factory({ archivedDeploymentsTable, archivedDeploymentsIndex, runningDeploymentsTable }) {
-  let tableDescriptionPromise = args => mkArn(args).then(describeDynamoTable);
-
   let tableNames = [archivedDeploymentsTable, runningDeploymentsTable];
 
   function myTables() {
-    return Promise.resolve(tableNames.map(tableName => mkArn({ tableName })));
+    return Promise.resolve(tableNames);
   }
 
   function create(item) {
-    return tableDescriptionPromise({ tableName: runningDeploymentsTable }).then(description =>
+    return describeDynamoTable(runningDeploymentsTable).then(description =>
       fp.flow(
         makeWritable,
         record => ({
@@ -53,20 +50,19 @@ function factory({ archivedDeploymentsTable, archivedDeploymentsIndex, runningDe
             ConditionExpression: ['attribute_not_exists', ['at', hashKeyAttributeName(description)]]
           }
         }),
-        dynamoTable.create.bind(null, tableArn(description))
+        dynamoTable.create.bind(null, runningDeploymentsTable)
       )(item)
     );
   }
 
   function get(key) {
     let firstFoundOrNull = fp.flow(fp.find(x => x !== null), fp.defaultTo(null));
-    return Promise.map(myTables(), arn => dynamoTable.get(arn, key))
+    return Promise.map(myTables(), tableName => dynamoTable.get(tableName, key))
       .then(firstFoundOrNull);
   }
 
   function scanRunning(expressions) {
-    return mkArn({ tableName: runningDeploymentsTable })
-      .then(table => dynamoTable.scan(table, Object.assign({}, DEFAULT_SCAN_EXPRESSIONS, expressions)));
+    return dynamoTable.scan(runningDeploymentsTable, Object.assign({}, DEFAULT_SCAN_EXPRESSIONS, expressions));
   }
 
   function queryByDateRange(minInstant, maxInstant, expressions) {
@@ -98,8 +94,7 @@ function factory({ archivedDeploymentsTable, archivedDeploymentsIndex, runningDe
       }
 
       let firstPartition = LocalDate.ofInstant(maxInstant, ZoneId.UTC);
-      return mkArn({ tableName: archivedDeploymentsTable })
-      .then(table => loop(table, firstPartition, minInstant, []))
+      return loop(archivedDeploymentsTable, firstPartition, minInstant, [])
       .catch((error) => {
         logger.warn(error);
         return [];
@@ -113,13 +108,13 @@ function factory({ archivedDeploymentsTable, archivedDeploymentsIndex, runningDe
   }
 
   function update(expression) {
-    return tableDescriptionPromise({ tableName: runningDeploymentsTable }).then(description =>
+    return describeDynamoTable(runningDeploymentsTable).then(description =>
       fp.flow(
         ({ key, updateExpression }) => ({
           key,
           expressions: { UpdateExpression: updateExpression }
         }),
-        dynamoTable.update.bind(null, tableArn(description))
+        dynamoTable.update.bind(null, runningDeploymentsTable)
       )(expression)
     );
   }

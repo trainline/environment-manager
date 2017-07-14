@@ -5,7 +5,7 @@
 let fp = require('lodash/fp');
 let Promise = require('bluebird');
 let pages = require('modules/amazon-client/pages');
-let { DocumentClient, DynamoDB } = require('modules/data-access/dynamoClientFactory');
+let { createDynamoClient: DocumentClient, createLowLevelDynamoClient: DynamoDB } = require('modules/amazon-client/masterAccountClient');
 let { extractKey, keyAttributeNames } = require('modules/data-access/dynamoTableDescription');
 
 function byKeyEqualityComparer(tableDescription) {

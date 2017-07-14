@@ -10,9 +10,8 @@ let {
 let pages = require('modules/amazon-client/pages');
 let { compile } = require('modules/awsDynamo/dynamodbExpression');
 let { updateAuditMetadata } = require('modules/data-access/dynamoAudit');
-let { DocumentClient: documentClient } = require('modules/data-access/dynamoClientFactory');
+let { createDynamoClient: documentClient } = require('modules/amazon-client/masterAccountClient');
 let dynamoTable = require('modules/data-access/dynamoTable');
-let { mkArn } = require('modules/data-access/dynamoTableArn');
 let singleAccountDynamoTable = require('modules/data-access/singleAccountDynamoTable');
 let { setVersionOnUpdate } = require('modules/data-access/dynamoVersion');
 
@@ -111,9 +110,7 @@ function toggle(upstream, metadata) {
     })
   };
 
-  return mkArn({ tableName: TABLE_NAME })
-    .then(tableArn => dynamoTable.update.bind(null, tableArn))
-    .then(update => update(setVersionOnUpdate({ key, expressions })));
+  return dynamoTable.update(TABLE_NAME, setVersionOnUpdate({ key, expressions }));
 }
 
 module.exports = {

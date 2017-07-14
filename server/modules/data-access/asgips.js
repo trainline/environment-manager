@@ -4,7 +4,7 @@
 
 const LOGICAL_TABLE_NAME = 'InfraAsgIPs';
 
-let { DocumentClient } = require('modules/data-access/dynamoClientFactory');
+let { createDynamoClient: DocumentClient } = require('modules/amazon-client/childAccountClient');
 let { getTableName: physicalTableName } = require('modules/awsResourceNameProvider');
 
 const commonParams = Object.freeze({ TableName: physicalTableName(LOGICAL_TABLE_NAME) });

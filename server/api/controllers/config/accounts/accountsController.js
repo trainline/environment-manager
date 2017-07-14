@@ -64,7 +64,7 @@ function putAccountConfigByName(req, res, next) {
   let record = Object.assign(account, { AccountNumber });
 
   return validate(account)
-    .then(accounts.replace({ record, metadata }, expectedVersion))
+    .then(() => accounts.replace({ record, metadata }, expectedVersion))
     .then(() => res.status(200).end())
     .then(sns.publish({
       message: JSON.stringify({
