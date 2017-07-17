@@ -10,16 +10,11 @@ let sinon = require('sinon');
 
 let defaults = {
   'modules/awsResourceNameProvider': { getTableName: x => x },
-  'modules/data-access/describeDynamoTable': arn => Promise.resolve({
+  'modules/data-access/describeDynamoTable': () => Promise.resolve({
     Table: {
-      KeySchema: [{ KeyType: 'HASH', AttributeName: 'DeploymentID' }],
-      TableArn: arn
+      KeySchema: [{ KeyType: 'HASH', AttributeName: 'DeploymentID' }]
     }
   }),
-  'modules/data-access/dynamoTableArn': {
-    mkArn: ({ tableName, account }) =>
-      Promise.resolve(`${account || 'master-account'}:${tableName}`)
-  },
   'modules/logger': fakeLogger
 };
 
@@ -46,21 +41,21 @@ describe('deployments', function () {
       ];
       scenarios.forEach((table) => {
         it(`returns the deployment if it is found in ${table}`, function () {
-          let sut = withDynamoGet((arn, key) => (arn === `master-account:${table}`
+          let sut = withDynamoGet((tableName, key) => (tableName === `${table}`
             ? Promise.resolve({})
             : Promise.resolve(null)));
           return sut.get({ DeploymentID: '' }).should.finally.eql({});
         });
       });
     });
-    context('when a failure occurs accessing a table in the master account', function () {
+    context('when a failure occurs accessing a table', function () {
       let scenarios = [
         'ConfigDeploymentExecutionStatus',
         'ConfigCompletedDeployments'
       ];
       scenarios.forEach((table) => {
         it(`returns a rejected promise for ${table}`, function () {
-          let sut = withDynamoGet((arn, key) => (arn === `master-account:${table}`
+          let sut = withDynamoGet((tableName, key) => (tableName === `${table}`
             ? Promise.reject(new Error('BOOM!'))
             : Promise.resolve(null)));
           return sut.get({ DeploymentID: '' }).should.be.rejected();
@@ -80,7 +75,7 @@ describe('deployments', function () {
       let scan = sinon.spy(() => Promise.resolve([]));
       let sut = withScanAndQuery({ scan });
       return sut.queryByDateRange(Instant.parse('2000-01-01T00:00:00Z'), Instant.parse('2000-01-01T00:00:00Z'))
-        .then(() => sinon.assert.alwaysCalledWith(scan, 'master-account:ConfigDeploymentExecutionStatus'));
+        .then(() => sinon.assert.alwaysCalledWith(scan, 'ConfigDeploymentExecutionStatus'));
     });
     context('queries the ConfigCompletedDeployments table', function () {
       let query = sinon.spy(() => Promise.resolve([]));
@@ -89,10 +84,9 @@ describe('deployments', function () {
         let sut = withScanAndQuery({ query });
         results = sut.queryByDateRange(Instant.parse('2000-01-01T03:00:00.000Z'), Instant.parse('2000-01-03T23:59:00Z'));
       });
-      it('in each account', function () {
+      it('always', function () {
         return results.then(() => {
-          sinon.assert.alwaysCalledWith(query, sinon.match(/:ConfigCompletedDeployments$/));
-          sinon.assert.calledWith(query, sinon.match(/^master-account:/));
+          sinon.assert.alwaysCalledWith(query, sinon.match(/ConfigCompletedDeployments$/));
         });
       });
       it('for each day in the range', function () {

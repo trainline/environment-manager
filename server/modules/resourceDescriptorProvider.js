@@ -24,10 +24,7 @@ function ResourceDescriptorRepository(descriptors) {
 }
 
 let modules = [
-  '../resources',
-  '../resources/config',
-  '../resources/deployments',
-  '../resources/ops'
+  '../resources'
 ]
 .map(directoryPath => _.values(requireDirectory(module, directoryPath, { include: /Resource\.js/, recurse: false })));
 

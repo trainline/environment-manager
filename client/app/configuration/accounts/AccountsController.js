@@ -61,7 +61,7 @@ angular.module('EnvironmentManager.configuration').controller('AccountsControlle
     }
 
     function removeAccount(account) {
-      $http.delete('/api/v1/config/accounts/' + account.AccountNumber).then(function () {
+      $http.delete('/api/v1/config/accounts/' + account.AccountNumber, { headers: { 'expected-version': account.Version } }).then(function () {
         vm.refreshData();
       });
     }

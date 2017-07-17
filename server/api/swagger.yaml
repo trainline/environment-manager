@@ -1294,6 +1294,7 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/AccountConfig'
+        - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
           description: OK
@@ -1307,6 +1308,7 @@ paths:
           type: integer
           required: true
           in: path
+        - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
           description: OK
@@ -1777,10 +1779,9 @@ paths:
           in: query
           required: true
           type: string
-        - name: account
-          in: query
-          required: false
-          type: string
+          enum:
+            - merge
+            - replace
       responses:
         200:
           description: OK

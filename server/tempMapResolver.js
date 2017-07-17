@@ -29,7 +29,6 @@ let all = Object.assign(
   createMap('./commands/aws'),
   createMap('./commands/deployments'),
   createMap('./commands/launch-config'),
-  createMap('./commands/resources'),
   createMap('./commands/services'),
   createMap('./commands/slices'),
   createMap('./commands/validators')

@@ -8,7 +8,7 @@ let getAllASGs = require('queryHandlers/ScanCrossAccountAutoScalingGroups');
 let getAccountASGs = require('queryHandlers/ScanAutoScalingGroups');
 let getASG = require('queryHandlers/GetAutoScalingGroup');
 let AutoScalingGroup = require('models/AutoScalingGroup');
-let getDynamo = require('queryHandlers/GetDynamoResource');
+let asgips = require('modules/data-access/asgips');
 let GetLaunchConfiguration = require('queryHandlers/GetLaunchConfiguration');
 let SetLaunchConfiguration = require('commands/launch-config/SetLaunchConfiguration');
 let SetAutoScalingGroupSize = require('commands/asg/SetAutoScalingGroupSize');
@@ -81,11 +81,9 @@ function getAsgReadyByName(req, res, next) {
 function getAsgIps(req, res, next) {
   const key = req.swagger.params.name.value;
   const environmentName = req.swagger.params.environment.value;
-  const resource = 'asgips';
-  const exposeAudit = 'version-only';
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    getDynamo({ accountName, key, resource, exposeAudit }).then(data => res.json(data));
+    asgips.get(accountName, { AsgName: key }).then(data => res.json(data));
   }).catch(next);
 }
 
