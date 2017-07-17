@@ -1294,6 +1294,7 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/UpdateAccountConfig'
+        - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
           description: OK
@@ -1307,6 +1308,7 @@ paths:
           type: integer
           required: true
           in: path
+        - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
           description: OK
@@ -1777,10 +1779,9 @@ paths:
           in: query
           required: true
           type: string
-        - name: account
-          in: query
-          required: false
-          type: string
+          enum:
+            - merge
+            - replace
       responses:
         200:
           description: OK
@@ -2366,7 +2367,7 @@ definitions:
       Impersonate:
         type: boolean
       RoleArn:
-        type: string
+        type: [string, "null"]
   UpdateAccountConfig:
     type: object
     required:
@@ -2377,7 +2378,7 @@ definitions:
       IncludeAMIs:
         type: boolean
       RoleArn:
-        type: string
+        type: [string, "null"]
   NewAccountConfig:
     type: object
     required:
@@ -2391,7 +2392,7 @@ definitions:
       IncludeAMIs:
         type: boolean
       RoleArn:
-        type: string
+        type: [string, "null"]
   ClusterConfig:
     type: object
     required:

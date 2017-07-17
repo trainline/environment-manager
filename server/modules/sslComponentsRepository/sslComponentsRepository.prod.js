@@ -4,7 +4,6 @@
 
 let async = require('async');
 let S3GetObjectRequest = require('modules/S3GetObjectRequest');
-let awsAccounts = require('modules/awsAccounts');
 let amazonClientFactory = require('modules/amazon-client/childAccountClient');
 let sslComponentsCache = null;
 

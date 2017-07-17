@@ -22,6 +22,7 @@ angular.module('EnvironmentManager.configuration').controller('AccountController
         vm.isMaster = account.IsMaster;
         vm.roleName = !account.IsMaster ? account.RoleArn.substr(31) : ''; // ARN format makes string length fixed
         vm.includeAMIs = account.IncludeAMIs;
+        vm.version = account.Version;
       }
     }
 
@@ -50,7 +51,7 @@ angular.module('EnvironmentManager.configuration').controller('AccountController
 
         var promise;
         if (vm.isBeingEdited) {
-          promise = $http.put('/api/v1/config/accounts/' + accountNumber, newAccount);
+          promise = $http.put('/api/v1/config/accounts/' + accountNumber, newAccount, { headers: { 'expected-version': vm.version } });
         } else {
           promise = $http.post('/api/v1/config/accounts', newAccount);
         }

@@ -2,7 +2,6 @@
 
 'use strict';
 
-let awsAccounts = require('modules/awsAccounts');
 let getHostAccount = require('queryHandlers/GetAWSHostAccount');
 let childAWSclient = require('modules/amazon-client/childAccountClient');
 let logger = require('modules/logger');

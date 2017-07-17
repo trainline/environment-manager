@@ -5,7 +5,6 @@
 let config = require('config/');
 let LocalConfigurationProvider = require('./LocalConfigurationProvider');
 let S3ConfigurationProvider = require('./S3ConfigurationProvider');
-let awsAccounts = require('modules/awsAccounts');
 let logger = require('modules/logger');
 
 

@@ -7,9 +7,7 @@ const CACHE_KEY = 'AWSAccounts';
 
 let _ = require('lodash');
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
-let fetchAccounts = require('queryHandlers/GetAWSaccounts');
-let cacheManager = require('modules/cacheManager');
-let accountsCache = cacheManager.create(CACHE_KEY, fetchAccounts, { stdTTL: TEN_MINUTES, logHits: false });
+let { scan } = require('modules/data-access/accounts');
 
 function getByName(accountName) {
   let matches = val => accountName.toLowerCase() === val.toString().toLowerCase();
@@ -33,7 +31,7 @@ function getAMIsharingAccounts() {
 }
 
 function getAllAccounts() {
-  return accountsCache.get(CACHE_KEY);
+  return scan();
 }
 
 function flush() {

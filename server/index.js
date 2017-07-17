@@ -20,7 +20,6 @@ let ConfigurationProvider = require('modules/configuration/ConfigurationProvider
 let checkAppPrerequisites = require('modules/checkAppPrerequisites');
 let cacheManager = require('modules/cacheManager');
 let co = require('co');
-let awsAccounts = require('modules/awsAccounts');
 
 const fp = require('lodash/fp');
 const miniStack = require('modules/miniStack');

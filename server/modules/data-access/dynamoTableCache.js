@@ -6,9 +6,9 @@ let dynamoTable = require('modules/data-access/dynamoTable');
 let cacheManager = require('modules/cacheManager');
 let logger = require('modules/logger');
 
-function logError(message, tableArn) {
+function logError(message, tableName) {
   return (error) => {
-    logger.error(`${message}. table=${tableArn}`);
+    logger.error(`${message}. table=${tableName}`);
     logger.error(error);
   };
 }
@@ -16,43 +16,43 @@ function logError(message, tableArn) {
 function dynamoTableCache(logicalTableName, { ttl }) {
   let cache = cacheManager.create(logicalTableName, dynamoTable.scan, { stdTTL: ttl });
 
-  function create(tableArn, createSpec) {
-    return dynamoTable.create(tableArn, createSpec)
-      .then(_ => cache.del(tableArn).catch(logError('Could not invalidate cache', tableArn)));
+  function create(tableName, createSpec) {
+    return dynamoTable.create(tableName, createSpec)
+      .then(_ => cache.del(tableName).catch(logError('Could not invalidate cache', tableName)));
   }
 
-  function $delete(tableArn, deleteSpec) {
-    return dynamoTable.delete(tableArn, deleteSpec)
-      .then(_ => cache.del(tableArn).catch(logError('Could not invalidate cache', tableArn)));
+  function $delete(tableName, deleteSpec) {
+    return dynamoTable.delete(tableName, deleteSpec)
+      .then(_ => cache.del(tableName).catch(logError('Could not invalidate cache', tableName)));
   }
 
-  function get(tableArn, key) {
-    return dynamoTable.get(tableArn, key);
+  function get(tableName, key) {
+    return dynamoTable.get(tableName, key);
   }
 
-  function query(tableArn, expressions) {
-    return dynamoTable.query(tableArn, expressions);
+  function query(tableName, expressions) {
+    return dynamoTable.query(tableName, expressions);
   }
 
-  function replace(tableArn, replaceSpec) {
-    return dynamoTable.replace(tableArn, replaceSpec)
-      .then(_ => cache.del(tableArn).catch(logError('Could not invalidate cache', tableArn)));
+  function replace(tableName, replaceSpec) {
+    return dynamoTable.replace(tableName, replaceSpec)
+      .then(_ => cache.del(tableName).catch(logError('Could not invalidate cache', tableName)));
   }
 
-  function scan(tableArn, filter) {
+  function scan(tableName, filter) {
     if (filter) {
-      return dynamoTable.scan(tableArn, filter);
+      return dynamoTable.scan(tableName, filter);
     } else {
-      return cache.get(tableArn).catch((error) => {
-        logError('Could not get from cache', tableArn);
-        return dynamoTable.scan(tableArn);
+      return cache.get(tableName).catch((error) => {
+        logError('Could not get from cache', tableName);
+        return dynamoTable.scan(tableName);
       });
     }
   }
 
-  function update(tableArn, updateSpec) {
-    return dynamoTable.update(tableArn, updateSpec)
-      .then(_ => cache.del(tableArn).catch(logError('Could not invalidate cache', tableArn)));
+  function update(tableName, updateSpec) {
+    return dynamoTable.update(tableName, updateSpec)
+      .then(_ => cache.del(tableName).catch(logError('Could not invalidate cache', tableName)));
   }
 
   return {

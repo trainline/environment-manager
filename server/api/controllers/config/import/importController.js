@@ -3,40 +3,26 @@
 'use strict';
 
 let _ = require('lodash');
-
-let sender = require('modules/sender');
-let awsAccounts = require('modules/awsAccounts');
+let logicalTableName = require('api/api-utils/logicalTableName');
+let { getTableName } = require('modules/awsResourceNameProvider');
 const sns = require('modules/sns/EnvironmentManagerEvents');
+let dynamoImport = require('modules/data-access/dynamoImport');
 
 /**
  * PUT /config/import/{resource}
  */
 function putResourceImport(req, res, next) {
-  const resource = `config/${req.swagger.params.resource.value}`;
+  const resource = req.swagger.params.resource.value;
   const value = req.swagger.params.data.value;
   const mode = req.swagger.params.mode.value;
-  const user = req.user;
 
-  const accountName = req.swagger.params.account.value;
-
-  let commandName;
-  if (mode === 'replace') {
-    commandName = 'ReplaceDynamoResources';
-  } else if (mode === 'merge') {
-    commandName = 'MergeDynamoResources';
-  } else {
-    next(new Error(`Unknown mode "${mode}"`));
-    return;
-  }
-
-  let command = {
-    name: commandName,
-    resource,
-    items: _.concat(value),
-    accountName
+  let params = {
+    items: value,
+    table: getTableName(logicalTableName(resource)),
+    remove: mode === 'replace'
   };
 
-  sender.sendCommand({ command, user })
+  return dynamoImport(params)
     .then(data => res.json(data))
     .then(sns.publish({
       message: JSON.stringify({

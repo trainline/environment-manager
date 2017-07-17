@@ -3,17 +3,10 @@
 'use strict';
 
 let extractKey = require('modules/data-access/dynamoTableDescription').extractKey;
-let account = require('modules/data-access/dynamoTableArn').account;
-let tableName = require('modules/data-access/dynamoTableArn').tableName;
 let describeDynamoTable = require('modules/data-access/describeDynamoTable');
 let pages = require('modules/amazon-client/pages');
-let documentClient = require('modules/data-access/dynamoClientFactory').DocumentClient;
+let { createDynamoClient: DocumentClient } = require('modules/amazon-client/masterAccountClient');
 let compile = require('modules/awsDynamo/dynamodbExpression').compile;
-
-function dynamoClient(tableArn) {
-  let accountId = account(tableArn);
-  return documentClient(accountId);
-}
 
 function compileIfSet(expressions) {
   if (expressions && typeof expressions === 'object') {
@@ -28,38 +21,35 @@ let logError = params => (error) => {
   return Promise.reject(error);
 };
 
-function get(tableArn, key) {
+function get(TableName, key) {
   let params = {
-    TableName: tableName(tableArn),
+    TableName,
     Key: key
   };
-  return dynamoClient(tableArn)
+  return DocumentClient()
     .then(dynamo => dynamo.get(params).promise())
     .then(result => result.Item || null)
     .catch(logError);
 }
 
-function scan(tableArn, expressions) {
-  let TableName = tableName(tableArn);
+function scan(TableName, expressions) {
   let params = Object.assign({ TableName }, compileIfSet(expressions));
-  return dynamoClient(tableArn)
+  return DocumentClient()
     .then(dynamo => pages.flatten(rsp => rsp.Items, dynamo.scan(params)))
     .catch(logError(params));
 }
 
-function query(tableArn, expressions) {
-  let TableName = tableName(tableArn);
+function query(TableName, expressions) {
   let params = Object.assign({ TableName }, compileIfSet(expressions));
-  return dynamoClient(tableArn)
+  return DocumentClient()
     .then(dynamo => pages.flatten(rsp => rsp.Items, dynamo.query(params)))
     .catch(logError(params));
 }
 
-function create(tableArn, { record, expressions }) {
-  return describeDynamoTable(tableArn).then((tableDescription) => {
-    let TableName = tableName(tableArn);
+function create(TableName, { record, expressions }) {
+  return describeDynamoTable(TableName).then((tableDescription) => {
     let params = Object.assign({ TableName, Item: record }, compileIfSet(expressions));
-    return dynamoClient(tableArn)
+    return DocumentClient()
       .then(dynamo => dynamo.put(params).promise())
       .catch((error) => {
         if (error.code === 'ConditionalCheckFailedException') {
@@ -73,11 +63,10 @@ function create(tableArn, { record, expressions }) {
   });
 }
 
-function replace(tableArn, { record, expressions }) {
-  return describeDynamoTable(tableArn).then((tableDescription) => {
-    let TableName = tableName(tableArn);
+function replace(TableName, { record, expressions }) {
+  return describeDynamoTable(TableName).then((tableDescription) => {
     let params = Object.assign({ TableName, Item: record }, compileIfSet(expressions));
-    return dynamoClient(tableArn)
+    return DocumentClient()
       .then(dynamo => dynamo.put(params).promise())
       .catch((error) => {
         if (error.code === 'ConditionalCheckFailedException') {
@@ -91,11 +80,10 @@ function replace(tableArn, { record, expressions }) {
   });
 }
 
-function update(tableArn, { key, expressions }) {
-  return describeDynamoTable(tableArn).then((tableDescription) => {
-    let TableName = tableName(tableArn);
+function update(TableName, { key, expressions }) {
+  return describeDynamoTable(TableName).then((tableDescription) => {
     let params = Object.assign({ TableName, Key: key }, compileIfSet(expressions));
-    return dynamoClient(tableArn)
+    return DocumentClient()
       .then(dynamo => dynamo.update(params).promise())
       .catch((error) => {
         if (error.code === 'ConditionalCheckFailedException') {
@@ -109,11 +97,10 @@ function update(tableArn, { key, expressions }) {
   });
 }
 
-function $delete(tableArn, { key, expressions }) {
-  return describeDynamoTable(tableArn).then((tableDescription) => {
-    let TableName = tableName(tableArn);
+function $delete(TableName, { key, expressions }) {
+  return describeDynamoTable(TableName).then((tableDescription) => {
     let params = Object.assign({ TableName, Key: key }, compileIfSet(expressions));
-    return dynamoClient(tableArn)
+    return DocumentClient()
       .then(dynamo => dynamo.delete(params).promise())
       .catch((error) => {
         if (error.code === 'ConditionalCheckFailedException') {
