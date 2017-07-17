@@ -153,3 +153,8 @@ variable "upstream_router_execution_role" {
   description = "lambda function execution role for upstream router"
   default     = "arn value"
 }
+
+variable "init_script_bucket" {
+  description = "Bucket for all init scripts for AMI's"
+  default     = "em-testing-init"
+}

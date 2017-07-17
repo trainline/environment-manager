@@ -70,14 +70,45 @@ resource "aws_security_group" "consul" {
   description = "Consul internal traffic + maintenance."
   vpc_id      = "${var.vpc_id}"
 
-  // These are for internal consul traffic
+  # Server RPC (Default 8300). This is used by servers to handle incoming requests from other agents. TCP only
   ingress {
     from_port = 8300
-    to_port   = 8302
+    to_port   = 8300
     protocol  = "tcp"
     self      = true
   }
 
+  # Serf LAN (Default 8301). This is used to handle gossip in the LAN. Required by all agents. TCP and UDP
+  ingress {
+    from_port = 8301
+    to_port   = 8301
+    protocol  = "tcp"
+    self      = true
+  }
+
+  ingress {
+    from_port = 8301
+    to_port   = 8301
+    protocol  = "udp"
+    self      = true
+  }
+
+  # Serf WAN (Default 8302). This is used by servers to gossip over the WAN to other servers. TCP and UDP
+  ingress {
+    from_port = 8301
+    to_port   = 8301
+    protocol  = "tcp"
+    self      = true
+  }
+
+  ingress {
+    from_port = 8301
+    to_port   = 8301
+    protocol  = "udp"
+    self      = true
+  }
+
+  # CLI RPC (Default 8400). This is used by all agents to handle RPC from the CLI. TCP only
   ingress {
     from_port = 8400
     to_port   = 8400
@@ -85,10 +116,26 @@ resource "aws_security_group" "consul" {
     self      = true
   }
 
+  # HTTP API (Default 8500). This is used by clients to talk to the HTTP API. TCP only
   ingress {
     from_port = 8500
     to_port   = 8500
     protocol  = "tcp"
+    self      = true
+  }
+
+  # DNS Interface (Default 8600). Used to resolve DNS queries. TCP and UDP
+  ingress {
+    from_port = 8600
+    to_port   = 8600
+    protocol  = "tcp"
+    self      = true
+  }
+
+  ingress {
+    from_port = 8600
+    to_port   = 8600
+    protocol  = "udp"
     self      = true
   }
 
