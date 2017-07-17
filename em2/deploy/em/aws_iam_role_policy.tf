@@ -183,7 +183,8 @@ resource "aws_iam_role_policy" "roleInfraEnvironmentManagerPolicy" {
          "Resource":[
             "arn:aws:s3:::${var.configuration_bucket}/*",
             "arn:aws:s3:::${var.secrets_bucket}/*",
-            "arn:aws:s3:::${var.backups_bucket}/*"
+            "arn:aws:s3:::${var.backups_bucket}/*",
+            "arn:aws:s3:::${var.init_script_bucket}/*"
          ]
       },
       {
