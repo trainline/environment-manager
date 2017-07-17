@@ -162,12 +162,16 @@ function createCache(name, fn, options) {
     return cachePromise.then(cache => cache.set(key, normalizeValue(item)));
   }
 
+  function flush() {
+    return cachePromise.then(cache => cache.flush);
+  }
+
   return {
     get,
     del,
     // keys: cache.keys.bind(cache),
-    set: setInCache
-    // flushAll: cache.flushAll.bind(cache),
+    set: setInCache,
+    flush,
   };
 }
 

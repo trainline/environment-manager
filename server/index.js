@@ -50,12 +50,6 @@ function start() {
     let configurationProvider = new ConfigurationProvider();
     yield configurationProvider.init();
     yield cacheManager.flush();
-    let masterAccountName = yield awsAccounts.getMasterAccountName();
-
-    if (masterAccountName === undefined) {
-      logger.error('No Master account found. Check the Accounts Dynamo Table.');
-      process.exit(1);
-    }
 
     yield checkAppPrerequisites();
     config.logBootstrapValues();

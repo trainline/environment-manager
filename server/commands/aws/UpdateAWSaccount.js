@@ -8,21 +8,17 @@ let accountValidator = require('../validators/awsAccountValidator');
 
 function UpdateAWSAccount(command) {
   try {
-    return awsAccounts.getMasterAccountName()
-      .then((masterAccountName) => {
-        let account = command.account;
+    let account = command.account;
 
-        return accountValidator.validate(account).then((_) => {
-          let dynamoCommand = {
-            name: 'UpdateDynamoResource',
-            resource: 'config/accounts',
-            item: account,
-            accountName: masterAccountName
-          };
+    return accountValidator.validate(account).then((_) => {
+      let dynamoCommand = {
+        name: 'UpdateDynamoResource',
+        resource: 'config/accounts',
+        item: account
+      };
 
-          return sender.sendCommand({ command: dynamoCommand, parent: command }).then(awsAccounts.flush);
-        });
-      });
+      return sender.sendCommand({ command: dynamoCommand, parent: command }).then(awsAccounts.flush);
+    });
   } catch (error) {
     return Promise.reject(error);
   }

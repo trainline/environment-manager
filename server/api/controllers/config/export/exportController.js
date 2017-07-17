@@ -10,17 +10,12 @@ let awsAccounts = require('modules/awsAccounts');
  */
 function getResourceExport(req, res, next) {
   const resourceParam = req.swagger.params.resource.value;
-  const account = req.swagger.params.account.value;
+  const accountName = req.swagger.params.account.value;
 
-  return awsAccounts.getMasterAccountName()
-    .then((masterAccountName) => {
-      const accountName = account || masterAccountName;
+  let resource = `config/${resourceParam}`;
 
-      let resource = `config/${resourceParam}`;
-
-      return ScanDynamoResources({ resource, exposeAudit: 'full', accountName  })
-        .then(data => res.json(data)).catch(next);
-    });
+  return ScanDynamoResources({ resource, exposeAudit: 'full', accountName  })
+    .then(data => res.json(data)).catch(next);
 }
 
 module.exports = {

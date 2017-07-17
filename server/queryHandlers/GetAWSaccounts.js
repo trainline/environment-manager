@@ -20,11 +20,34 @@ function getAwsAccounts(query) {
 
 module.exports = (query) => {
   return co(function*() {
-    let accounts = {
-      master: yield getHostAccount(),
-      others: yield getAwsAccounts(query)
-    };
+    let storedAccounts = yield getAwsAccounts(query);
+    let hostAccount = yield getHostAccount();
 
-    return _.union([accounts.master], accounts.others);
+    let accounts = storedAccounts.map((account) => {
+      let isMaster = account.AccountNumber === hostAccount.id;
+      return {
+        AccountName: account.AccountName,
+        AccountNumber: account.AccountNumber,
+        RoleArn: account.RoleArn || undefined,
+        IncludeAMIs: account.IncludeAMIs,
+        IsMaster: isMaster,
+        IsProd: isMaster,
+        Impersonate: !isMaster
+      };
+    });
+
+    if(!accounts.some(account => account.AccountNumber === hostAccount.id)) {
+      accounts.push({
+        AccountName: 'Master',
+        AccountNumber: hostAccount.id,
+        IncludeAMIs: false,
+        IsMaster: true,
+        IsProd: true,
+        Impersonate: false
+      });
+    }
+
+    return accounts;
+
   });
 };

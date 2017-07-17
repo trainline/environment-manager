@@ -24,7 +24,6 @@ module.exports = function ConfigurationProvider() {
         .then(configuration => config.setUserValue('local', configuration), logger.error.bind(logger));
     }
 
-    return awsAccounts.getMasterAccount()
-      .then(loadConfiguration());
+    return loadConfiguration();
   };
 };

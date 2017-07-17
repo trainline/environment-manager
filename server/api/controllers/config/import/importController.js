@@ -17,46 +17,41 @@ function putResourceImport(req, res, next) {
   const mode = req.swagger.params.mode.value;
   const user = req.user;
 
-  const account = req.swagger.params.account.value;
+  const accountName = req.swagger.params.account.value;
 
-  awsAccounts.getMasterAccountName()
-    .then((masterAccountName) => {
-      const accountName = account || masterAccountName;
+  let commandName;
+  if (mode === 'replace') {
+    commandName = 'ReplaceDynamoResources';
+  } else if (mode === 'merge') {
+    commandName = 'MergeDynamoResources';
+  } else {
+    next(new Error(`Unknown mode "${mode}"`));
+    return;
+  }
 
-      let commandName;
-      if (mode === 'replace') {
-        commandName = 'ReplaceDynamoResources';
-      } else if (mode === 'merge') {
-        commandName = 'MergeDynamoResources';
-      } else {
-        next(new Error(`Unknown mode "${mode}"`));
-        return;
+  let command = {
+    name: commandName,
+    resource,
+    items: _.concat(value),
+    accountName
+  };
+
+  sender.sendCommand({ command, user })
+    .then(data => res.json(data))
+    .then(sns.publish({
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/config/import/${resource}`,
+          Method: 'PUT'
+        }
+      }),
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.PUT,
+        ID: req.swagger.params.resource.value
       }
-
-      let command = {
-        name: commandName,
-        resource,
-        items: _.concat(value),
-        accountName
-      };
-
-      sender.sendCommand({ command, user })
-        .then(data => res.json(data))
-        .then(sns.publish({
-          message: JSON.stringify({
-            Endpoint: {
-              Url: `/config/import/${resource}`,
-              Method: 'PUT'
-            }
-          }),
-          topic: sns.TOPICS.CONFIGURATION_CHANGE,
-          attributes: {
-            Action: sns.ACTIONS.PUT,
-            ID: req.swagger.params.resource.value
-          }
-        }))
-        .catch(next);
-    });
+    }))
+    .catch(next);
 }
 
 module.exports = {

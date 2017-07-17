@@ -9,19 +9,15 @@ let accountValidator = require('../validators/awsAccountValidator');
 function AddAWSAccount(command) {
   try {
     let account = command.account;
-    return awsAccounts.getMasterAccountName()
-      .then((masterAccountName) => {
-        return accountValidator.validate(account).then((_) => {
-          let dynamoCommand = {
-            name: 'CreateDynamoResource',
-            resource: 'config/accounts',
-            item: account,
-            accountName: masterAccountName
-          };
+    return accountValidator.validate(account).then((_) => {
+      let dynamoCommand = {
+        name: 'CreateDynamoResource',
+        resource: 'config/accounts',
+        item: account
+      };
 
-          return sender.sendCommand({ command: dynamoCommand, parent: command }).then(awsAccounts.flush);
-        });
-      });
+      return sender.sendCommand({ command: dynamoCommand, parent: command }).then(awsAccounts.flush);
+    });
   } catch (error) {
     return Promise.reject(error);
   }
