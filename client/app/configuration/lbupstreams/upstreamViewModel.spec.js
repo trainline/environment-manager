@@ -15,73 +15,91 @@ describe('UpstreamViewModel', function () {
 
   it('Should not show the form before the view is initialised', function () {
     var vm = createUpstreamViewModel();
+
     expect(vm.showForm).toBe(false);
   });
 
   it('Should show a loading indicator before the view is initialised', function () {
     var vm = createUpstreamViewModel();
+
     expect(vm.title).toBe('Loading...');
   });
 
   it('Should show the form once the view is initialised', function () {
     var vm = createAndInitUpstreamViewModel();
+
     expect(vm.showForm).toBe(true);
   });
 
   it('Should show title "Edit Upstream: ..." when editing an upstream', function () {
     var vm = createUpstreamViewModel({ mode: 'Edit' });
     init(vm, { upstream: createSimpleTestUpstream() });
+
     expect(vm.title).toBe('Edit Upstream: TestUpstream');
   });
 
   it('Should show title "Copy Upstream: ..." when editing an upstream', function () {
     var vm = createUpstreamViewModel({ mode: 'Copy' });
     init(vm, { upstream: createSimpleTestUpstream() });
+
     expect(vm.title).toBe('Copy Upstream: TestUpstream');
   });
 
   it('Should show the name field when copying an upstream', function () {
     var vm = createUpstreamViewModel({ mode: 'Copy' });
+
     expect(vm.showNameField).toBe(true);
   });
 
   it('Should show the name field when creating a new upstream', function () {
     var vm = createUpstreamViewModel({ mode: 'New' });
+
     expect(vm.showNameField).toBe(true);
   });
 
   it('Should not show the name field when editing a new upstream', function () {
     var vm = createUpstreamViewModel({ mode: 'Edit' });
+
     expect(vm.showNameField).toBe(false);
   });
 
   it('Should allow the environment to be edited when copying an upstream', function () {
     var vm = createUpstreamViewModel({ mode: 'Copy' });
+
     expect(vm.showEnvironmentEditorField).toBe(true);
+
     expect(vm.showEnvironmentReadOnlyField).toBe(false);
   });
 
   it('Should not allow the environment to be edited when creating a new upstream', function () {
     var vm = createUpstreamViewModel({ mode: 'New' });
+
     expect(vm.showEnvironmentEditorField).toBe(false);
+
     expect(vm.showEnvironmentReadOnlyField).toBe(true);
   });
 
   it('Should not allow the environment to be edited when editing an upstream', function () {
     var vm = createUpstreamViewModel({ mode: 'Edit' });
+
     expect(vm.showEnvironmentEditorField).toBe(false);
+
     expect(vm.showEnvironmentReadOnlyField).toBe(true);
   });
 
   it('Should allow config fields to be edited when creating a new upstream if the user has permission', function () {
     var vm = createAndInitUpstreamViewModel();
+
     expect(vm.configFieldsDisabled).toBe(false);
+
     expect(vm.configFieldsEnabled).toBe(true);
   });
 
   it('Should enable config fields when creating a new upstream', function () {
     var vm = createAndInitUpstreamViewModel();
+
     expect(vm.configFieldsDisabled).toBe(false);
+
     expect(vm.configFieldsEnabled).toBe(true);
   });
 
@@ -90,14 +108,18 @@ describe('UpstreamViewModel', function () {
     var testUser = createUserWhoCantEdit(testUpstream.Value.UpstreamName);
     var vm = createUpstreamViewModel({ mode: 'Edit', user: testUser });
     init(vm, { upstream: testUpstream });
+
     expect(vm.configFieldsDisabled).toBe(true);
+
     expect(vm.configFieldsEnabled).toBe(false);
   });
 
   it('Should disable config fields when the user does not have permissions to create upstreams', function () {
     var testUser = createUserWhoCantCreate();
     var vm = createUpstreamViewModel({ mode: 'New', user: testUser });
+
     expect(vm.configFieldsDisabled).toBe(true);
+
     expect(vm.configFieldsEnabled).toBe(false);
   });
 
@@ -105,25 +127,31 @@ describe('UpstreamViewModel', function () {
     var testUser = createAdminUser();
     var vm = createUpstreamViewModel({ mode: 'Edit', user: testUser });
     init(vm, { upstream: createSimpleTestUpstream() });
+
     expect(vm.configFieldsDisabled).toBe(false);
+
     expect(vm.configFieldsEnabled).toBe(true);
   });
 
   it('Should sort service names drop down', function () {
     var vm = createUpstreamViewModel();
     init(vm, { services: [{ ServiceName: 's2' }, { ServiceName: 's1' }] });
+
     expect(vm.services).toEqual(['s1', 's2']);
   });
 
   it('Should sort environment names drop down', function () {
     var vm = createUpstreamViewModel();
     init(vm, { environments: [{ EnvironmentName: 'e2' }, { EnvironmentName: 'e1' }] });
+
     expect(vm.environments).toEqual(['e1', 'e2']);
   });
 
   it('Should not show the service link if no service is selected', function () {
     var vm = createUpstreamViewModel();
+
     expect(vm.showServiceLink()).toBe(false);
+
     expect(vm.serviceLink()).toEqual(null);
   });
 
@@ -132,17 +160,21 @@ describe('UpstreamViewModel', function () {
     var testUpstream = createSimpleTestUpstream();
     init(vm, { upstream: testUpstream });
     testUpstream.Value.ServiceName = 's2';
+
     expect(vm.showServiceLink()).toBe(true);
+
     expect(vm.serviceLink()).toEqual('/#/config/services/s2/?Range=c2');
   });
 
   it('Should hide the toggle link when copying an upstream', function () {
     var vm = createUpstreamViewModel({ mode: 'Copy' });
+
     expect(vm.showToggleLink()).toBe(false);
   });
 
   it('Should hide the toggle link when creating an upstream', function () {
     var vm = createUpstreamViewModel({ mode: 'New' });
+
     expect(vm.showToggleLink()).toBe(false);
   });
 
@@ -152,6 +184,7 @@ describe('UpstreamViewModel', function () {
     init(vm, { upstream: testUpstream });
     testUpstream.Value.EnvironmentName = 'e01';
     testUpstream.Value.ServiceName = 'mysvc';
+
     expect(vm.showToggleLink()).toBe(true);
   });
 
@@ -161,27 +194,32 @@ describe('UpstreamViewModel', function () {
     init(vm, { upstream: testUpstream });
     testUpstream.Value.EnvironmentName = 'e01';
     testUpstream.Value.ServiceName = 'mysvc';
+
     expect(vm.toggleLink()).toEqual('/#/operations/upstreams?environment=e01&state=All&service=mysvc');
   });
 
   it('Should show new host line when creating a new Upstream', function () {
     var vm = createUpstreamViewModel({ mode: 'New' });
+
     expect(vm.newHost).toEqual(defaultHost);
   });
 
   it('Should show new host line when the new host button is clicked', function () {
     var vm = createUpstreamViewModel({ mode: 'Edit' });
     vm.createNewHost();
+
     expect(vm.newHost).toEqual(defaultHost);
   });
 
   it('Should not show new host line when editing an Upstream', function () {
     var vm = createUpstreamViewModel({ mode: 'Edit' });
+
     expect(vm.newHost).not.toBeDefined();
   });
 
   it('Should not show new host line when copying an Upstream', function () {
     var vm = createUpstreamViewModel({ mode: 'Copy' });
+
     expect(vm.newHost).not.toBeDefined();
   });
 
@@ -189,6 +227,7 @@ describe('UpstreamViewModel', function () {
     var vm = createAndInitUpstreamViewModel();
     vm.newHost.DnsName = 'test';
     vm.createNewHost();
+
     expect(vm.newHost).not.toEqual(defaultHost);
   });
 
@@ -196,36 +235,42 @@ describe('UpstreamViewModel', function () {
     var vm = createUpstreamViewModel();
     vm.newHost.DnsName = 'test';
     vm.clearNewHostEditor();
+
     expect(vm.newHost).not.toBeDefined();
   });
 
   it('Should report that the new host is valid if no all host fields have been entered', function () {
     var vm = createUpstreamViewModel();
     _.assign(vm.newHost, { DnsName: 'test', Port: 8080 });
+
     expect(vm.newHostIsValid()).toBe(true);
   });
 
   it('Should report that the new host is not valid if no Consul Service Name has been entered', function () {
     var vm = createUpstreamViewModel();
     _.assign(vm.newHost, { Port: 8080 });
+
     expect(vm.newHostIsValid()).toBe(false);
   });
 
   it('Should report that the new host is not valid if no Port has been entered', function () {
     var vm = createUpstreamViewModel();
     _.assign(vm.newHost, { DnsName: 'test' });
+
     expect(vm.newHostIsValid()).toBe(false);
   });
 
   it('Should report that the new host is not valid if no Weight has been entered', function () {
     var vm = createUpstreamViewModel();
     delete vm.newHost.Weight;
+
     expect(vm.newHostIsValid()).toBe(false);
   });
 
   it('Should show new host link when editing an upstream', function () {
     var vm = createUpstreamViewModel({ mode: 'Edit' });
     init(vm);
+
     expect(vm.showCreateHostLink()).toBe(true);
   });
 
@@ -233,6 +278,7 @@ describe('UpstreamViewModel', function () {
     var vm = createUpstreamViewModel({ mode: 'Edit' });
     init(vm);
     vm.createNewHost();
+
     expect(vm.showCreateHostLink()).toBe(false);
   });
 
@@ -241,20 +287,25 @@ describe('UpstreamViewModel', function () {
     var testUser = createUserWhoCantEdit();
     var vm = createUpstreamViewModel({ mode: 'Edit', user: testUser });
     init(vm, { upstream: testUpstream });
+
     expect(vm.showCreateHostLink()).toBe(false);
   });
 
   it('Should show an error instead of the form if an error occurred collecting data for initialisation', function () {
     var vm = createUpstreamViewModel();
     vm.errorOnInit('Something bad');
+
     expect(vm.showError).toBe(true);
+
     expect(vm.errorMessage).toBe('Something bad');
+
     expect(vm.showForm).toBe(false);
   });
 
   it('Should show a validation error when needed', function () {
     var vm = createUpstreamViewModel();
     vm.showValidationError('Something not right');
+
     expect(vm.validationError).toBe('Something not right');
   });
 
