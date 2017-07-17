@@ -4,7 +4,7 @@ require('should');
 let sinon = require('sinon');
 let proxyquire = require('proxyquire');
 
-let tableArn = 'arn:aws:dynamodb:eu-west-1:123456789012:table/some-table';
+let tableName = 'some-table';
 
 function dynamoTable(dynamo, dynamoExpressionCompiler) {
   return proxyquire('modules/data-access/dynamoTable', {
@@ -15,8 +15,8 @@ function dynamoTable(dynamo, dynamoExpressionCompiler) {
         ]
       }
     }),
-    'modules/data-access/dynamoClientFactory': {
-      DocumentClient: () => Promise.resolve(dynamo)
+    'modules/amazon-client/masterAccountClient': {
+      createDynamoClient: () => Promise.resolve(dynamo)
     },
     'modules/awsDynamo/dynamodbExpression': {
       compile: dynamoExpressionCompiler
@@ -47,7 +47,7 @@ describe('dynamoTable', function () {
         Item: item.record,
         ConditionExpression: ['=', ['at', 'ID'], ['val', 'a']]
       };
-      return sut.create(tableArn, item).then(_ => sinon.assert.calledWith(dynamo.put, sinon.match(expectedArgs)));
+      return sut.create(tableName, item).then(_ => sinon.assert.calledWith(dynamo.put, sinon.match(expectedArgs)));
     });
 
     it('returns the expected error when the item already exists', function () {
@@ -62,7 +62,7 @@ describe('dynamoTable', function () {
         }))
       };
       let sut = dynamoTable(dynamo);
-      return sut.create(tableArn, { record: { ID: 'A' } }).should.be.rejectedWith(/Could not create this item because an item with the same key already exists. table = some-table key = {"ID":"A"}\./);
+      return sut.create(tableName, { record: { ID: 'A' } }).should.be.rejectedWith(/Could not create this item because an item with the same key already exists. table = some-table key = {"ID":"A"}\./);
     });
   });
 
@@ -85,7 +85,7 @@ describe('dynamoTable', function () {
         Key: arg.key,
         ConditionExpression: ['=', ['at', 'ID'], ['val', 'a']]
       };
-      return sut.delete(tableArn, arg).then(_ => sinon.assert.calledWith(dynamo.delete, sinon.match(expectedArgs)));
+      return sut.delete(tableName, arg).then(_ => sinon.assert.calledWith(dynamo.delete, sinon.match(expectedArgs)));
     });
 
     it('returns the expected error when the item has been modified', function () {
@@ -100,7 +100,7 @@ describe('dynamoTable', function () {
         }))
       };
       let sut = dynamoTable(dynamo);
-      return sut.delete(tableArn, { key: { ID: 'A' } }).should.be.rejectedWith(/Could not delete this item because it has been modified. table = some-table key = {"ID":"A"}\./);
+      return sut.delete(tableName, { key: { ID: 'A' } }).should.be.rejectedWith(/Could not delete this item because it has been modified. table = some-table key = {"ID":"A"}\./);
     });
   });
 
@@ -117,7 +117,7 @@ describe('dynamoTable', function () {
         TableName: 'some-table',
         Key: key
       };
-      return sut.get(tableArn, key).then(_ => sinon.assert.calledWith(dynamo.get, sinon.match(expectedArgs)));
+      return sut.get(tableName, key).then(_ => sinon.assert.calledWith(dynamo.get, sinon.match(expectedArgs)));
     });
 
     it('returns the item if it exists', function () {
@@ -131,7 +131,7 @@ describe('dynamoTable', function () {
         }))
       };
       let sut = dynamoTable(dynamo);
-      return sut.get(tableArn, { ID: 'A' }).should.finally.eql(expectedItem);
+      return sut.get(tableName, { ID: 'A' }).should.finally.eql(expectedItem);
     });
 
     it('returns null when the item does not exist', function () {
@@ -141,7 +141,7 @@ describe('dynamoTable', function () {
         }))
       };
       let sut = dynamoTable(dynamo);
-      return sut.get(tableArn, { ID: 'A' }).should.finally.be.null();
+      return sut.get(tableName, { ID: 'A' }).should.finally.be.null();
     });
   });
 
@@ -167,7 +167,7 @@ describe('dynamoTable', function () {
         Item: item.record,
         ConditionExpression: ['=', ['at', 'ID'], ['val', 'a']]
       };
-      return sut.replace(tableArn, item).then(_ => sinon.assert.calledWith(dynamo.put, sinon.match(expectedArgs)));
+      return sut.replace(tableName, item).then(_ => sinon.assert.calledWith(dynamo.put, sinon.match(expectedArgs)));
     });
 
     it('returns the expected error when the item has been modified', function () {
@@ -182,7 +182,7 @@ describe('dynamoTable', function () {
         }))
       };
       let sut = dynamoTable(dynamo);
-      return sut.replace(tableArn, { record: { ID: 'A' } }).should.be.rejectedWith(/Could not update this item because it has been modified. table = some-table key = {"ID":"A"}\./);
+      return sut.replace(tableName, { record: { ID: 'A' } }).should.be.rejectedWith(/Could not update this item because it has been modified. table = some-table key = {"ID":"A"}\./);
     });
   });
 
@@ -197,7 +197,7 @@ describe('dynamoTable', function () {
       let expectedArgs = {
         TableName: 'some-table'
       };
-      return sut.scan(tableArn).then(_ => sinon.assert.calledWith(dynamo.scan, sinon.match(expectedArgs)));
+      return sut.scan(tableName).then(_ => sinon.assert.calledWith(dynamo.scan, sinon.match(expectedArgs)));
     });
 
     it('returns the items', function () {
@@ -215,7 +215,7 @@ describe('dynamoTable', function () {
         }))
       };
       let sut = dynamoTable(dynamo);
-      return sut.scan(tableArn).should.finally.eql(expectedItems);
+      return sut.scan(tableName).should.finally.eql(expectedItems);
     });
   });
 });

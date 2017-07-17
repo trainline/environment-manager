@@ -2,14 +2,11 @@
 
 'use strict';
 
-let account = require('modules/data-access/dynamoTableArn').account;
-let dynamoClient = require('modules/data-access/dynamoClientFactory').DynamoDB;
-let tableName = require('modules/data-access/dynamoTableArn').tableName;
+let { createLowLevelDynamoClient: DynamoDB } = require('modules/amazon-client/masterAccountClient');
 let memoize = require('modules/memoize');
 
-function describeTableArn(tableArn) {
-  return dynamoClient(account(tableArn))
-    .then(dynamo => dynamo.describeTable({ TableName: tableName(tableArn) }).promise());
+function describeTableArn(TableName) {
+  return DynamoDB().then(dynamo => dynamo.describeTable({ TableName }).promise());
 }
 
 /**

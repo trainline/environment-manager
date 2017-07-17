@@ -2,25 +2,21 @@
 
 'use strict';
 
-let ScanDynamoResources = require('queryHandlers/ScanDynamoResources');
-let awsAccounts = require('modules/awsAccounts');
+let { getTableName: physicalTableName } = require('modules/awsResourceNameProvider');
+let dynamoTable = require('modules/data-access/dynamoTable');
+let singleAccountDynamoTable = require('modules/data-access/singleAccountDynamoTable');
+let logicalTableName = require('api/api-utils/logicalTableName');
 
 /**
  * GET /config/export/{resource}
  */
 function getResourceExport(req, res, next) {
   const resourceParam = req.swagger.params.resource.value;
-  const account = req.swagger.params.account.value;
-
-  return awsAccounts.getMasterAccountName()
-    .then((masterAccountName) => {
-      const accountName = account || masterAccountName;
-
-      let resource = `config/${resourceParam}`;
-
-      return ScanDynamoResources({ resource, exposeAudit: 'full', accountName  })
-        .then(data => res.json(data)).catch(next);
-    });
+  return Promise.resolve()
+    .then(() => singleAccountDynamoTable(physicalTableName(logicalTableName(resourceParam)), dynamoTable))
+    .then(table => table.scan())
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 module.exports = {
