@@ -27,6 +27,7 @@ describe('TagsProvider:', () => {
       },
       cluster: {
         Name: 'Tango',
+        ShortName: 'ta'
       },
     };
 
@@ -37,11 +38,13 @@ describe('TagsProvider:', () => {
     var promise = target.get(configuration);
 
     // Assert
-    return promise.then(tags => should(tags).match({
+    return promise.then(tags => should(tags).eql({
       EnvironmentType: 'Prod',
       Environment: 'pr1',
       SecurityZone: 'Secure',
       OwningCluster: 'Tango',
+      OwningClusterShortName: 'ta',
+      OwningTeam: 'Tango',
       Role: 'expected-role-name',
       ContactEmail: 'test@email.com',
       Schedule: '247',

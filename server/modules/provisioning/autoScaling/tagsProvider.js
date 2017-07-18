@@ -10,11 +10,14 @@ module.exports = {
   get(configuration, sliceName) {
     assert(configuration, 'Expected \'configuration\' argument not to be null');
     let roleName = namingConventionProvider.getRoleName(configuration, sliceName);
+    let legacyTags = {
+      OwningCluster: configuration.cluster.Name,
+      OwningClusterShortName: configuration.cluster.ShortName
+    };
     let tags = {
       EnvironmentType: configuration.environmentTypeName,
       Environment: configuration.environmentName,
-      OwningCluster: configuration.cluster.Name,
-      OwningClusterShortName: configuration.cluster.ShortName,
+      OwningTeam: configuration.cluster.Name,
       Role: roleName,
       SecurityZone: configuration.serverRole.SecurityZone,
       Schedule: configuration.serverRole.ScheduleTag || '',
@@ -25,6 +28,6 @@ module.exports = {
       return Promise.reject(new ConfigurationError('Missing \'ContactEmail\' tag in configuration.'));
     }
 
-    return Promise.resolve(tags);
+    return Promise.resolve(Object.assign({}, legacyTags, tags));
   }
 };
