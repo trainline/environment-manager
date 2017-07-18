@@ -2353,6 +2353,7 @@ definitions:
       - IsProd
       - IsMaster
       - Impersonate
+      - Version
     properties:
       AccountName:
         type: string
@@ -2368,6 +2369,8 @@ definitions:
         type: boolean
       RoleArn:
         type: [string, "null"]
+      Version:
+        type: string
   UpdateAccountConfig:
     type: object
     required:
@@ -2392,7 +2395,7 @@ definitions:
       IncludeAMIs:
         type: boolean
       RoleArn:
-        type: [string, "null"]
+        type: string
   ClusterConfig:
     type: object
     required:

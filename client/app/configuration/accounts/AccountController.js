@@ -28,29 +28,21 @@ angular.module('EnvironmentManager.configuration').controller('AccountController
 
     vm.save = function (form) {
       if (validate(form)) {
-        var isMaster = !!vm.isMaster;
         var accountNumber = +vm.awsAccountNumber;
         var includeAMIs = vm.includeAMIs;
 
         var newAccount = {
           AccountName: vm.awsAccountName,
           AccountNumber: accountNumber,
-          IsMaster: isMaster,
-          IsProd: isMaster,
-          Impersonate: !isMaster,
           IncludeAMIs: includeAMIs
         };
 
-        if (!isMaster) {
+        if (!vm.isMaster) {
           newAccount.RoleArn = 'arn:aws:iam::' + accountNumber + ':role/' + vm.roleName;
-        } else {
-          // Our dynamo resources don't support deleting properties in updates.
-          // This is the next best thing.
-          newAccount.RoleArn = null;
         }
 
         var promise;
-        if (vm.isBeingEdited) {
+        if (vm.isBeingEdited && !!vm.version) {
           promise = $http.put('/api/v1/config/accounts/' + accountNumber, newAccount, { headers: { 'expected-version': vm.version } });
         } else {
           promise = $http.post('/api/v1/config/accounts', newAccount);
@@ -76,7 +68,7 @@ angular.module('EnvironmentManager.configuration').controller('AccountController
     }
 
     vm.loadFailed = false;
-    vm.isMaster = true;
+    vm.isMaster = false;
     vm.includeAMIs = false;
     vm.isBeingEdited = accountName !== 'add';
 
