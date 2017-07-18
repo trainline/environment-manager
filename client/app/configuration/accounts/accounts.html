@@ -20,18 +20,21 @@
           <th class="text-nowrap">Account Name</th>
           <th class="text-nowrap">Account Number</th>
           <th class="text-nowrap">Master</th>
+          <th class="text-nowrap">Use AMIs</th>
           <th ng-if="accounts.canDelete" class="text-nowrap command-header">Remove</th>
         </tr>
       </thead>
       <tbody>
         <tr ng-repeat="account in accounts.data">
           <td>
-            <a ng-href="/#/config/accounts/{{::account.AccountName}}">{{::account.AccountName}}</a>
+            <a ng-if="account.IsEditable" ng-href="/#/config/accounts/{{::account.AccountName}}">{{::account.AccountName}}</a>
+            <span ng-if="!account.IsEditable">{{::account.AccountName}}</span>
           </td>
           <td>{{::account.AccountNumber}}</td>
           <td>{{::account.IsMaster}}</td>
+          <td>{{::account.IncludeAMIs}}</td>
           <td ng-if="accounts.canDelete" class="command command-delete">
-            <span class="glyphicon glyphicon-remove" ng-click="accounts.attemptRemove(account)" title="Delete"></span>
+            <span class="glyphicon glyphicon-remove" ng-if="!account.IsMaster" ng-click="accounts.attemptRemove(account)" title="Delete"></span>
           </td>
         </tr>
       </tbody>

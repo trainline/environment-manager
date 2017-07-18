@@ -4,7 +4,7 @@
 
 const LOGICAL_TABLE_NAME = 'InfraConfigAccounts';
 
-let masterAccountSettings = require('config').getUserValue('local').masterAccount;
+let masterAccountSettings = require('config').getUserValue('local').masterAccount || {};
 
 let getHostAccount = require('queryHandlers/GetAWSHostAccount');
 let physicalTableName = require('modules/awsResourceNameProvider').getTableName;
@@ -32,7 +32,8 @@ function scan() {
         IsMaster: isMaster,
         IsProd: isMaster,
         Impersonate: !isMaster,
-        Audit: storedAccount.Audit
+        Audit: storedAccount.Audit,
+        IsEditable: true
       };
 
       if (account.IsMaster) {
@@ -42,31 +43,45 @@ function scan() {
       return account;
     });
 
-    console.log('**************************************')
-    console.log(accounts)
-
-    if(masterAccountSettings.allowUse && !masterAccount) {
-      accounts.push({
+    if(!masterAccountSettings.disableUse && !masterAccount) {
+      masterAccount = {
         AccountName: 'Master',
         AccountNumber: hostAccount.id,
         IncludeAMIs: !!masterAccountSettings.includeAMIs,
         IsMaster: true,
         IsProd: true,
         Impersonate: false
-      });
+      };
+      accounts.unshift(masterAccount);
     }
 
+    masterAccount.IsEditable = !masterAccountSettings.disableChanges;
     return accounts;
   });
 }
 
+function change(fn) {
+  return (...args) => {
+    return co(function*() {
+      let hostAccount = yield getHostAccount();
+      let isMaster = (args[0].record || args[0].key).AccountNumber === hostAccount.id;
+
+      if (isMaster && masterAccountSettings.disableChanges) {
+        throw new Error('Changes to the master account are not permitted');
+      }
+
+      return fn(...args);
+    });
+  };
+}
+
 module.exports = {
-  create: table.create,
-  delete: table.delete,
   get: table.get,
-  put: table.put,
   query: table.query,
-  replace: table.replace,
   scan: scan,
-  update: table.update
+  create: change(table.create),
+  delete: change(table.delete),
+  put: change(table.put),
+  replace: change(table.replace),
+  update: change(table.update)
 };
