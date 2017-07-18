@@ -42,3 +42,12 @@ resource "aws_s3_bucket" "logs_bucket" {
     Name = "em-daveandjake-logs"
   }
 }
+
+resource "aws_s3_bucket" "em-testing-init" {
+  bucket = "${var.init_script_bucket}"
+  acl    = "private"
+
+  tags {
+    Name = "em-testing-init"
+  }
+}

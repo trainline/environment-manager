@@ -22,6 +22,7 @@ chmod +x consul
 sudo mv consul /usr/local/bin/consul
 sudo mkdir -p /opt/consul/data
 
+
 # Read from the file we created
 DATACENTER=$(cat /tmp/consul-datacenter | tr -d '\n')
 SERVER_COUNT=$(cat /tmp/consul-server-count | tr -d '\n')
@@ -31,6 +32,7 @@ CONSUL_JOIN=$(cat /tmp/consul-server-addr | tr -d '\n')
 cat >/tmp/consul_flags << EOF
 CONSUL_FLAGS="-server -bootstrap-expect=${SERVER_COUNT} -join=${CONSUL_JOIN} -dc=${DATACENTER} -data-dir=/opt/consul/data -client=0.0.0.0"
 EOF
+#CONSUL_FLAGS="-server -bootstrap-expect=${SERVER_COUNT} -join=${CONSUL_JOIN} -dc=${DATACENTER} -data-dir=/opt/consul/data -client=0.0.0.0 -node=${NODENAME}"
 
 if [ -f /tmp/upstart.conf ];
 then

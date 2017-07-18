@@ -1,13 +1,44 @@
 #!/usr/bin/env bash
 
-#TODO:
-#Set the name of this instance
 
-#Params
+# Params
 CONSUL_VERSION=0.8.0
 CONSUL_DATACENTER=test1
 CONSUL_JOIN=172.31.97.249
 CDA_VERSION=2.1.0
+REGION=$(curl -s http://169.254.169.254/latest/dynamic/instance-identity/document | grep region | awk -F\" '{print $4}')
+
+#####################
+# Setup the AWS CLI #
+#####################
+
+sudo apt-get install awscli -y
+if [ ! -d ~/.aws ]; then
+  mkdir -p ~/.aws;
+fi
+AWS_CONFIGURATION="[default]
+region=$REGION
+output=json"
+echo "$AWS_CONFIGURATION" | sudo tee ~/.aws/credentials
+
+#####################
+# Name the instance #
+#####################
+
+INSTANCE_ID=$(ec2metadata --instance-id)
+# Get the environment tag value
+KEY=Environment
+ENVIRONMENT=$(aws ec2 describe-tags --filters "Name=resource-id,Values=$INSTANCE_ID" "Name=key,Values=$KEY" --region=$REGION --output=text | cut -f5)
+# Get the OwningClusterShortName tag value
+KEY=OwningClusterShortName
+OWNING_CLUSTER_SHORT_NAME=$(aws ec2 describe-tags --filters "Name=resource-id,Values=$INSTANCE_ID" "Name=key,Values=$KEY" --region=$REGION --output=text | cut -f5)
+# Strip the leading "i-" from the instance id
+NODE_NAME=${INSTANCE_ID#i-}
+# Create the "Name" tag value
+INSTANCE_NAME="$ENVIRONMENT-$OWNING_CLUSTER_SHORT_NAME-$NODE_NAME"
+# Set the name of this instance in this region
+aws --region $REGION ec2 create-tags --resources $INSTANCE_ID --tags "Key=Name,Value=$INSTANCE_NAME"
+
 
 #TODO: get the token from parameters
 ACL_TOKEN=afc86aa9-af1a-8787-7960-73f53c1ece9b
@@ -51,7 +82,6 @@ Wants=basic.target
 After=basic.target network.target
 
 [Service]
-EnvironmentFile=-/etc/default/consul
 Restart=on-failure
 ExecStart=/usr/local/bin/consul agent -config-dir=/etc/consul.d
 ExecReload=/bin/kill -HUP $MAINPID
@@ -63,8 +93,8 @@ echo "$SERVICE" | sudo tee /tmp/consul.service
 sudo chown root:root /tmp/consul.service
 sudo mv /tmp/consul.service /etc/systemd/system/consul.service
 sudo chmod 0644 /etc/systemd/system/consul.service
-sudo chown root:root /etc/default/consul
-sudo chmod 0644 /etc/default/consul
+sudo mkdir -p /etc/default
+
 
 #IP Tables Configuration
 sudo iptables -I INPUT -s 0/0 -p udp --dport 8500 -j ACCEPT
@@ -84,7 +114,7 @@ sudo iptables-save
 cd /tmp
 wget https://github.com/trainline/consul-deployment-agent/archive/${CDA_VERSION}.tar.gz -O em-agent-${CDA_VERSION}.tar.gz --quiet
 tar xzvf em-agent-${CDA_VERSION}.tar.gz
-sudo mv /tmp/em-agent-${CDA_VERSION} /opt/em-agent-${CDA_VERSION}
+sudo mv /tmp/consul-deployment-agent-${CDA_VERSION} /opt/em-agent-${CDA_VERSION}
 cd /opt/em-agent-${CDA_VERSION}
 
 
@@ -97,7 +127,7 @@ After=basic.target network.target
 [Service]
 EnvironmentFile=/etc/em-agent
 Restart=on-failure
-ExecStart=python /opt/em-agent-${CDA_VERSION}/agent/core.py
+ExecStart=/usr/bin/env python /opt/em-agent-${CDA_VERSION}/agent/core.py
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 
@@ -105,7 +135,7 @@ KillMode=process
 WantedBy=multi-user.target"
 echo "$CDA_SERVICE" | sudo tee /tmp/em-agent.service
 sudo chown root:root /tmp/em-agent.service
-sudo mv /tmp/cda.service /etc/systemd/system/em-agent.service
+sudo mv /tmp/em-agent.service /etc/systemd/system/em-agent.service
 sudo chmod 0644 /etc/systemd/system/em-agent.service
 sudo chown root:root /etc/em-agent
 sudo chmod 0644 /etc/em-agent
