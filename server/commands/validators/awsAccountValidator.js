@@ -2,17 +2,20 @@
 
 'use strict';
 
-let awsAccounts = require('modules/awsAccounts');
+let getHostAccount = require('queryHandlers/GetAWSHostAccount');
 let childAWSclient = require('modules/amazon-client/childAccountClient');
 let logger = require('modules/logger');
 let co = require('co');
 
 function validate(account) {
-  return awsAccounts.getMasterAccount().then((masterAccount) => {
-    let flags = ['IsProd', 'IsMaster', 'Impersonate', 'IncludeAMIs'];
+  return co(function* () {
+    let flags = ['IncludeAMIs'];
     let required = flags.concat(['AccountName', 'AccountNumber']);
 
-    if (!account.IsMaster || account.RoleArn === null) required.push('RoleArn');
+    let hostAccount = yield getHostAccount();
+    let isMaster = account.AccountNumber === hostAccount.id;
+
+    if (!isMaster) required.push('RoleArn');
 
     Object.keys(account).forEach((k) => {
       if (required.indexOf(k) < 0) throw new Error(`'${k}' is not a valid attribute.`);
@@ -26,16 +29,12 @@ function validate(account) {
       if (typeof account[f] !== 'boolean') throw new Error(`Attribute ${f} must be boolean`);
     });
 
-    if (account.IsMaster && {}.hasOwnProperty.call(account, 'RoleArn') && account.RoleArn !== null) {
+    if (isMaster && {}.hasOwnProperty.call(account, 'RoleArn') && account.RoleArn !== null) {
       throw new Error('Role ARN values can only be specified for child accounts');
     }
 
     validateAccountNumber(account.AccountNumber);
 
-    if (account.IsMaster && masterAccount !== undefined && account.AccountNumber !== masterAccount.AccountNumber) {
-      throw new Error(`The account '${masterAccount.AccountName}' is already set as the master account.`);
-    }
-  }).then(co.wrap(function* () {
     if (account.RoleArn !== undefined && account.RoleArn !== null) {
       try {
         yield childAWSclient.assumeRole(account.RoleArn);
@@ -46,7 +45,7 @@ function validate(account) {
     }
 
     return true;
-  }));
+  });
 }
 
 function validateAccountNumber(accountNumber) {

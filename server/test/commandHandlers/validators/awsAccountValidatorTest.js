@@ -10,7 +10,6 @@ let sinon = require('sinon');
 describe('awsAcccountValidator', function() {
   let sut;
   let data;
-  let awsAccounts;
   let masterAccount = undefined;
   let childAWSclient;
 
@@ -18,14 +17,7 @@ describe('awsAcccountValidator', function() {
     data = {
       AccountName: 'mock-test-account',
       AccountNumber: 354233317867,
-      IsProd: true,
-      IsMaster: true,
-      Impersonate: false,
       IncludeAMIs: false
-    };
-
-    awsAccounts = {
-      getMasterAccount: sinon.stub().returns(Promise.resolve(masterAccount))
     };
 
     childAWSclient = {
@@ -33,25 +25,19 @@ describe('awsAcccountValidator', function() {
     };
 
     sut = rewire('commands/validators/awsAccountValidator');
-    sut.__set__({ awsAccounts, childAWSclient });
+    sut.__set__({
+      childAWSclient,
+      getHostAccount: () => ({ id: 123456789123 })
+    });
   });
 
   describe('validate', () => {
-    ['AccountName', 'AccountNumber', 'IsProd', 'IsMaster', 'Impersonate'].forEach(prop => {
+    ['AccountName', 'AccountNumber'].forEach(prop => {
       it(`requires the ${prop} property`, () => {
         data[prop] = null;
         delete data[prop];
         return sut.validate(data).catch(error => {
           assert.equal(error.message, `Missing required attribute: ${prop}`);
-        });
-      });
-    });
-
-    ['IsProd', 'IsMaster', 'Impersonate'].forEach(flag => {
-      it(`requires ${flag} to be Boolean`, () => {
-        data[flag] = 'true';
-        return sut.validate(data).catch(error => {
-          assert.equal(error.message, `Attribute ${flag} must be boolean`);
         });
       });
     });
@@ -63,36 +49,10 @@ describe('awsAcccountValidator', function() {
       });
     });
 
-    it('does not throw for valid data', () => {
-      return sut.validate(data).then(result => {
-        assert.equal(result, true);
-      });
-    });
-
     describe('child accounts', () => {
       it('require a Role ARN value to be set', () => {
-        data.IsMaster = false;
         return sut.validate(data).catch(error => {
           assert.equal(error.message, 'Missing required attribute: RoleArn');
-        });
-      });
-    });
-
-    describe('master accounts', () => {
-      it('does not permit more than 1 master account', () => {
-        let existingMasterAccount = {
-          AccountName: 'another-account',
-          AccountNumber: 444443317867,
-          IsProd: true,
-          IsMaster: true,
-          Impersonate: false,
-          IncludeAMIs: false
-        };
-
-        awsAccounts.getMasterAccount = sinon.stub().returns(Promise.resolve(existingMasterAccount));
-
-        return sut.validate(data).catch(error => {
-          assert.equal(error.message, `The account '${existingMasterAccount.AccountName}' is already set as the master account.`);
         });
       });
     });
@@ -116,7 +76,6 @@ describe('awsAcccountValidator', function() {
 
   describe('Role ARNs without the required privileges', () => {
     beforeEach(() => {
-      data.IsMaster = false;
       data.RoleArn = 'arn:aws:iam::354233317867:role/testRole';
       childAWSclient.assumeRole = sinon.stub().throws(new Error());
     });
@@ -128,4 +87,3 @@ describe('awsAcccountValidator', function() {
     })
   });
 });
-

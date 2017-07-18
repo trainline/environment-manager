@@ -26,14 +26,6 @@ function getByName(accountName) {
   });
 }
 
-function getMasterAccount() {
-  return getAllAccounts().then(accounts => accounts.find(a => a.IsMaster));
-}
-
-function getMasterAccountName() {
-  return getMasterAccount().then(masterAccount => masterAccount.AccountName);
-}
-
 function getAMIsharingAccounts() {
   return getAllAccounts().then(accounts => accounts.filter(a => a.IncludeAMIs).map(a => a.AccountNumber));
 }
@@ -42,14 +34,8 @@ function getAllAccounts() {
   return scan();
 }
 
-function flush() {
-}
-
 module.exports = {
-  flush,
   all: getAllAccounts,
   getByName,
-  getMasterAccount,
-  getMasterAccountName,
   getAMIsharingAccounts
 };

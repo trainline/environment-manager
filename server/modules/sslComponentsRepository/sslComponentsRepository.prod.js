@@ -4,7 +4,6 @@
 
 let async = require('async');
 let S3GetObjectRequest = require('modules/S3GetObjectRequest');
-let awsAccounts = require('modules/awsAccounts');
 let amazonClientFactory = require('modules/amazon-client/childAccountClient');
 let sslComponentsCache = null;
 
@@ -28,50 +27,47 @@ module.exports = function SSLComponentsRepository() {
   };
 
   function loadSSLComponentsFromS3(mainCallback) {
-    awsAccounts.getMasterAccountName()
-      .then((masterAccountName) => {
-        async.waterfall([
-          // Creates a new instance of S3 client
-          (callback) => {
-            amazonClientFactory.createS3Client(masterAccountName).then(
-              client => callback(null, client),
-              error => callback(error)
-            );
-          },
+    async.waterfall([
+      // Creates a new instance of S3 client
+      (callback) => {
+        amazonClientFactory.createS3Client().then(
+          client => callback(null, client),
+          error => callback(error)
+        );
+      },
 
-          // SSL private key and certificate files are stored on S3.
-          // Following function creates a couple of request in order to download
-          // these two S3 objects.
-          (client, callback) => {
-            let privateKeyRequestParameters = {
-              bucketName: sslComponentsRepositoryConfiguration.getBucketName(),
-              objectPath: sslComponentsRepositoryConfiguration.getPrivateKeyObjectPath()
-            };
+      // SSL private key and certificate files are stored on S3.
+      // Following function creates a couple of request in order to download
+      // these two S3 objects.
+      (client, callback) => {
+        let privateKeyRequestParameters = {
+          bucketName: sslComponentsRepositoryConfiguration.getBucketName(),
+          objectPath: sslComponentsRepositoryConfiguration.getPrivateKeyObjectPath()
+        };
 
-            let privateKeyRequest = new S3GetObjectRequest(client, privateKeyRequestParameters);
+        let privateKeyRequest = new S3GetObjectRequest(client, privateKeyRequestParameters);
 
-            let certificateRequestParameters = {
-              bucketName: sslComponentsRepositoryConfiguration.getBucketName(),
-              objectPath: sslComponentsRepositoryConfiguration.getCertificateObjectPath()
-            };
+        let certificateRequestParameters = {
+          bucketName: sslComponentsRepositoryConfiguration.getBucketName(),
+          objectPath: sslComponentsRepositoryConfiguration.getCertificateObjectPath()
+        };
 
-            let certificateRequest = new S3GetObjectRequest(client, certificateRequestParameters);
+        let certificateRequest = new S3GetObjectRequest(client, certificateRequestParameters);
 
-            async.parallel({
-              privateKeyS3Object: privateKeyRequest.execute,
-              certificateS3Object: certificateRequest.execute
-            }, callback);
-          },
+        async.parallel({
+          privateKeyS3Object: privateKeyRequest.execute,
+          certificateS3Object: certificateRequest.execute
+        }, callback);
+      },
 
-          // Previous function returns a couple of S3 objects. The following one
-          // gets their content.
-          (response, callback) => {
-            callback(null, {
-              privateKey: response.privateKeyS3Object.Body.toString('utf8'),
-              certificate: response.certificateS3Object.Body.toString('utf8')
-            });
-          }
-        ], mainCallback);
-      });
+      // Previous function returns a couple of S3 objects. The following one
+      // gets their content.
+      (response, callback) => {
+        callback(null, {
+          privateKey: response.privateKeyS3Object.Body.toString('utf8'),
+          certificate: response.certificateS3Object.Body.toString('utf8')
+        });
+      }
+    ], mainCallback);
   }
 };

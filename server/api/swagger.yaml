@@ -1253,7 +1253,7 @@ paths:
     x-swagger-router-controller: accountsController
     get:
       operationId: getAccountsConfig
-      summary: List the AWS Accounts that associated with Environment Manager.
+      summary: List the AWS Accounts that are associated with Environment Manager.
       tags:
         - Accounts
       responses:
@@ -1271,7 +1271,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/AccountConfig'
+            $ref: '#/definitions/NewAccountConfig'
       tags:
         - Accounts
       responses:
@@ -1293,7 +1293,7 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/AccountConfig'
+            $ref: '#/definitions/UpdateAccountConfig'
         - $ref: '#/parameters/ExpectedVersionHeader'
       responses:
         200:
@@ -2349,14 +2349,18 @@ definitions:
     required:
       - AccountName
       - AccountNumber
+      - IncludeAMIs
       - IsProd
       - IsMaster
       - Impersonate
+      - Version
     properties:
       AccountName:
         type: string
       AccountNumber:
         type: integer
+      IncludeAMIs:
+        type: boolean
       IsProd:
         type: boolean
       IsMaster:
@@ -2365,6 +2369,33 @@ definitions:
         type: boolean
       RoleArn:
         type: [string, "null"]
+      Version:
+        type: string
+  UpdateAccountConfig:
+    type: object
+    required:
+      - AccountName
+    properties:
+      AccountName:
+        type: string
+      IncludeAMIs:
+        type: boolean
+      RoleArn:
+        type: [string, "null"]
+  NewAccountConfig:
+    type: object
+    required:
+      - AccountName
+      - AccountNumber
+    properties:
+      AccountName:
+        type: string
+      AccountNumber:
+        type: integer
+      IncludeAMIs:
+        type: boolean
+      RoleArn:
+        type: string
   ClusterConfig:
     type: object
     required:

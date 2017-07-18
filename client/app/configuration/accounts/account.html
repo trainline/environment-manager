@@ -67,23 +67,6 @@
         </div>
     </div>
 
-    <div class="form-group">
-        <div class="col-md-offset-1 col-md-2">
-            <div class="radio">
-                <label>
-                    <input type="radio" ng-model="account.isMaster" ng-value="true" checked>
-                    Master Account
-                </label>
-            </div>
-            <div class="radio">
-                <label>
-                    <input type="radio" ng-model="account.isMaster" ng-value="false">
-                    Child Account
-                </label>
-            </div>
-        </div>
-    </div>
-
     <div class="form-group" ng-hide="account.isMaster">
         <label for="aws-account-name" class="col-md-1 control-label">Role ARN:</label>
         <div class="col-md-4">

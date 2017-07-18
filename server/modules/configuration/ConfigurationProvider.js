@@ -5,7 +5,6 @@
 let config = require('config/');
 let LocalConfigurationProvider = require('./LocalConfigurationProvider');
 let S3ConfigurationProvider = require('./S3ConfigurationProvider');
-let awsAccounts = require('modules/awsAccounts');
 let logger = require('modules/logger');
 
 
@@ -24,7 +23,6 @@ module.exports = function ConfigurationProvider() {
         .then(configuration => config.setUserValue('local', configuration), logger.error.bind(logger));
     }
 
-    return awsAccounts.getMasterAccount()
-      .then(loadConfiguration());
+    return loadConfiguration();
   };
 };
