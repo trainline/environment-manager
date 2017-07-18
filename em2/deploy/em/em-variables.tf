@@ -158,3 +158,16 @@ variable "init_script_bucket" {
   description = "Bucket for all init scripts for AMI's"
   default     = "em-testing-init"
 }
+
+#
+# Environment Manager Installation
+#
+variable "em_release_bucket" {
+  description = "bucket for the environment manager to download from s3"
+  default     = "environment-manager-releases"
+}
+
+variable "em_release_key" {
+  description = "key for the environment manager to download from s3"
+  default     = "environment-manager/environment-manager-5.0.0.zip"
+}

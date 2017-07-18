@@ -32,31 +32,13 @@ CONSUL_JOIN=$(cat /tmp/consul-server-addr | tr -d '\n')
 cat >/tmp/consul_flags << EOF
 CONSUL_FLAGS="-server -bootstrap-expect=${SERVER_COUNT} -join=${CONSUL_JOIN} -dc=${DATACENTER} -data-dir=/opt/consul/data -client=0.0.0.0"
 EOF
-#CONSUL_FLAGS="-server -bootstrap-expect=${SERVER_COUNT} -join=${CONSUL_JOIN} -dc=${DATACENTER} -data-dir=/opt/consul/data -client=0.0.0.0 -node=${NODENAME}"
 
-if [ -f /tmp/upstart.conf ];
-then
-  echo "Installing Upstart service..."
-  sudo mkdir -p /etc/consul.d
-  sudo mkdir -p /etc/service
-  sudo chown root:root /tmp/upstart.conf
-  sudo mv /tmp/upstart.conf /etc/init/consul.conf
-  sudo chmod 0644 /etc/init/consul.conf
-else
-  echo "Installing Systemd service..."
-  sudo mkdir -p /etc/consul.d
-  sudo chown root:root /tmp/consul.service
-  sudo mv /tmp/consul.service /etc/systemd/system/consul.service
-  sudo chmod 0644 /etc/systemd/system/consul.service
-fi
 
-if [ -d /etc/sysconfig ];
-then
-  sudo mv /tmp/consul_flags /etc/sysconfig/consul
-  sudo chown root:root /etc/sysconfig/consul
-  sudo chmod 0644 /etc/sysconfig/consul
-else
-  sudo mv /tmp/consul_flags /etc/default/consul
-  sudo chown root:root /etc/default/consul
-  sudo chmod 0644 /etc/default/consul
-fi
+echo "Installing Systemd service..."
+sudo mkdir -p /etc/consul.d
+sudo chown root:root /tmp/consul.service
+sudo mv /tmp/consul.service /etc/systemd/system/consul.service
+sudo chmod 0644 /etc/systemd/system/consul.service
+sudo mv /tmp/consul_flags /etc/default/consul
+sudo chown root:root /etc/default/consul
+sudo chmod 0644 /etc/default/consul
