@@ -76,12 +76,8 @@ function change(fn) {
 }
 
 module.exports = {
-  get: table.get,
-  query: table.query,
   scan,
   create: change(table.create),
   delete: change(table.delete),
-  put: change(table.put),
-  replace: change(table.replace),
-  update: change(table.update)
+  replace: change(table.replace)
 };
