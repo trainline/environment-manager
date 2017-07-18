@@ -35,7 +35,7 @@
             <span class="help-block" ng-if="form.EnvironmentType.$dirty && form.EnvironmentType.$error.required">Environment Type is mandatory.</span>
         </div>
         <div class="form-group" ng-class="{'has-error': form.OwningClusters.$invalid}">
-            <label class="col-md-4 control-label text-left nowrap">Owning Cluster: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+            <label class="col-md-4 control-label text-left nowrap">Owning Team: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
             <div class="col-md-4">
                 <select class="form-control"
                         name="OwningClusters"
@@ -44,7 +44,7 @@
                     <option ng-repeat="cluster in OwningClustersList" ng-selected="{{cluster == Environment.Value.OwningCluster}}" value="{{cluster}}">{{cluster}}</option>
                 </select>
             </div>
-            <span class="help-block" ng-if="form.OwningClusters.$dirty && form.OwningClusters.$error.required">Owning cluster is mandatory.</span>
+            <span class="help-block" ng-if="form.OwningClusters.$dirty && form.OwningClusters.$error.required">Owning team is mandatory.</span>
         </div>
 
         <div class="form-group" ng-class="{'has-error': form.DeploymentMap.$invalid}">
