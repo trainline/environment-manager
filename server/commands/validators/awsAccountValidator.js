@@ -10,8 +10,8 @@ let co = require('co');
 function validate(account) {
   return co(function* () {
     let flags = ['IncludeAMIs'];
-    let required = flags.concat(['AccountName', 'AccountNumber'])
-    
+    let required = flags.concat(['AccountName', 'AccountNumber']);
+
     let hostAccount = yield getHostAccount();
     let isMaster = account.AccountNumber === hostAccount.id;
 

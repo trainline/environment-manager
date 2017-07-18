@@ -15,7 +15,7 @@ let co = require('co');
 let table = singleAccountDynamoTable(physicalTableName(LOGICAL_TABLE_NAME), dynamoTable);
 
 function scan() {
-  return co(function*() {
+  return co(function* () {
     let storedAccounts = yield table.scan();
     let hostAccount = yield getHostAccount();
 
@@ -43,7 +43,7 @@ function scan() {
       return account;
     });
 
-    if(!masterAccountSettings.disableUse && !masterAccount) {
+    if (!masterAccountSettings.disableUse && !masterAccount) {
       masterAccount = {
         AccountName: 'Master',
         AccountNumber: hostAccount.id,
@@ -62,7 +62,7 @@ function scan() {
 
 function change(fn) {
   return (...args) => {
-    return co(function*() {
+    return co(function* () {
       let hostAccount = yield getHostAccount();
       let isMaster = (args[0].record || args[0].key).AccountNumber === hostAccount.id;
 
@@ -78,7 +78,7 @@ function change(fn) {
 module.exports = {
   get: table.get,
   query: table.query,
-  scan: scan,
+  scan,
   create: change(table.create),
   delete: change(table.delete),
   put: change(table.put),

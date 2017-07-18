@@ -34,12 +34,7 @@ function getAllAccounts() {
   return scan();
 }
 
-function flush() {
-  accountsCache.flush();
-}
-
 module.exports = {
-  flush,
   all: getAllAccounts,
   getByName,
   getAMIsharingAccounts

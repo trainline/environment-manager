@@ -171,7 +171,7 @@ function createCache(name, fn, options) {
     del,
     // keys: cache.keys.bind(cache),
     set: setInCache,
-    flush,
+    flush
   };
 }
 
