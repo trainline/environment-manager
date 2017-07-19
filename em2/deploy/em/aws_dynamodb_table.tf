@@ -266,16 +266,6 @@ resource "aws_dynamodb_table" "lb_upstreams" {
     type = "S"
   }
 
-  attribute {
-    name = "Service"
-    type = "S"
-  }
-
-  attribute {
-    name = "Upstream"
-    type = "S"
-  }
-
   global_secondary_index {
     name            = "AccountId-index"
     hash_key        = "AccountId"

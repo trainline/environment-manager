@@ -1,5 +1,5 @@
 resource "aws_elasticache_cluster" "cache-cluster" {
-  cluster_id = "${var.stack}-${var.app}-cache-cluster"
+  cluster_id = "${var.stack}-${var.app}"
   node_type  = "cache.t2.micro"
 
   subnet_group_name  = "${var.redis_subnet_group}"

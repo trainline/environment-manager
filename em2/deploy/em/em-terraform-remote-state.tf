@@ -2,7 +2,7 @@
 terraform {
   backend "s3" {
     bucket = "daveandjake-remote-state"
-    key    = "argos"
+    key    = "dave"
     region = "eu-west-1"
   }
 }
@@ -13,6 +13,6 @@ data "terraform_remote_state" "remote_state" {
 
   config {
     bucket = "daveandjake-remote-state"
-    key    = "argos"
+    key    = "dave"
   }
 }

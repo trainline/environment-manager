@@ -1,7 +1,7 @@
 # Terraform Configuration
 
 variable "stack" {
-  default = "t1"
+  default = "dave"
 }
 
 variable "app" {
@@ -153,11 +153,11 @@ variable "em_release_key" {
 
 variable "packages_key_prefix" {
   description = "Environment Manager packages key prefix"
-  default     = "t1-packages"
+  default     = "dave-packages"
 }
 
 variable "redis_subnet_group" {
-  default = "redis_subnet_group"
+  default = "envir-sngen-1ksby99wxxs77"
 }
 
 variable "redis_address" {
