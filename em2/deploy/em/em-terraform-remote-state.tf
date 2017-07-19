@@ -1,8 +1,8 @@
 # Write the remote state
 terraform {
   backend "s3" {
-    bucket = "em-terraform-remote-state"
-    key    = "${var.stack}"
+    bucket = "daveandjake-remote-state"
+    key    = "argos"
     region = "eu-west-1"
   }
 }
@@ -12,7 +12,7 @@ data "terraform_remote_state" "remote_state" {
   backend = "s3"
 
   config {
-    bucket = "em-terraform-remote-state"
-    key    = "${var.stack}"
+    bucket = "daveandjake-remote-state"
+    key    = "argos"
   }
 }

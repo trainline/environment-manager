@@ -568,25 +568,6 @@ resource "aws_cloudwatch_metric_alarm" "alertInfraAsgScale" {
   threshold          = "0"
 }
 
-resource "aws_cloudwatch_metric_alarm" "alertInfraEnvironmentManagerLbSettingsRouter" {
-  alarm_name          = "alertInfraEnvironmentManagerLbSettingsRouter"
-  actions_enabled     = true
-  alarm_actions       = ["${aws_sns_topic.alert_sns_topic.arn}"]
-  alarm_description   = "Error propagating load balancer settings change to the destination account"
-  comparison_operator = "GreaterThanThreshold"
-
-  dimensions = {
-    FunctionName = "${aws_lambda_function.lambdaInfraEnvironmentManagerLbSettingsRouter.id}"
-  }
-
-  evaluation_periods = "1"
-  metric_name        = "Errors"
-  namespace          = "AWS/Lambda"
-  period             = "60"
-  statistic          = "Sum"
-  threshold          = "0"
-}
-
 resource "aws_cloudwatch_metric_alarm" "AlertReadCapacityConfigDeploymentExecutionStatus" {
   alarm_name          = "AlertReadCapacityConfigDeploymentExecutionStatus"
   actions_enabled     = true

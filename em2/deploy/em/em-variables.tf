@@ -1,5 +1,13 @@
 # Terraform Configuration
 
+variable "stack" {
+  default = "t1"
+}
+
+variable "app" {
+  default = "em"
+}
+
 variable "remote_state_bucket_name" {
   description = "Remote State store in this bucket"
   default     = "daveandjake-remote-state"
@@ -145,6 +153,11 @@ variable "em_release_key" {
 
 variable "packages_key_prefix" {
   description = "Environment Manager packages key prefix"
+  default     = "t1-packages"
+}
+
+variable "redis_subnet_group" {
+  default = "redis_subnet_group"
 }
 
 variable "redis_address" {
