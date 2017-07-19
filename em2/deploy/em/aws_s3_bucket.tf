@@ -16,15 +16,6 @@ resource "aws_s3_bucket" "secure-bucket" {
   }
 }
 
-resource "aws_s3_bucket" "deployment_bucket" {
-  bucket = "${var.deployment_bucket}"
-  acl    = "private"
-
-  tags {
-    Name = "em-daveandjake-deployment"
-  }
-}
-
 resource "aws_s3_bucket" "packages_bucket" {
   bucket = "${var.packages_bucket}"
   acl    = "private"

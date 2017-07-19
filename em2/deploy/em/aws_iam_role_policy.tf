@@ -170,7 +170,6 @@ resource "aws_iam_role_policy" "roleInfraEnvironmentManagerPolicy" {
         ],
         "Resource": [
           "arn:aws:s3:::${var.secrets_bucket}",
-          "arn:aws:s3:::${var.deployment_bucket}",
           "arn:aws:s3:::${var.packages_bucket}",
           "arn:aws:s3:::${var.deployment_logs_bucket}"
         ]
@@ -196,8 +195,7 @@ resource "aws_iam_role_policy" "roleInfraEnvironmentManagerPolicy" {
          ],
          "Resource": [
             "arn:aws:s3:::${var.deployment_logs_bucket}/*",
-            "arn:aws:s3:::${var.packages_bucket}/*",
-            "arn:aws:s3:::${var.deployment_bucket}/*"
+            "arn:aws:s3:::${var.packages_bucket}/*"
          ]
       },
       {

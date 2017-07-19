@@ -1,35 +1,36 @@
-resource "aws_security_group" "sgInfraEnvironmentManager" {
-  description = "Security Group for Environment Manager"
-  vpc_id      = "${var.vpc_id}"
+resource "aws_security_group" "sg_environment_manager" {
+  name   = "sg-${var.stack}-environment-manager"
+  vpc_id = "${var.vpc_id}"
 
   tags = {
-    Name = "sgInfraEnvironmentManager"
+    Name = "sg-${var.stack}-environment-manager"
   }
 }
 
-resource "aws_security_group" "sgInfraEnvironmentManagerElb" {
-  name        = "sgInfraEnvironmentManager"
-  description = "Security Group for Environment Manager"
-  vpc_id      = "${var.vpc_id}"
+resource "aws_security_group" "sg_environment_manager_elb" {
+  name   = "sg-${var.stack}-environment-manager-elb"
+  vpc_id = "${var.vpc_id}"
 
   tags = {
-    Name = "sgInfraEnvironmentManagerElb"
+    Name = "sg-${var.stack}-environment-manager-elb"
   }
 }
 
-resource "aws_security_group" "sgEnvironmentManagerRedisAccess" {
+resource "aws_security_group" "sg-environment-manager-redis-access" {
+  name   = "sg-${var.stack}-environment-manager-redis"
   vpc_id = "${var.vpc_base}"
 
   tags = {
-    Name = "sgEnvironmentManagerRedisAccess"
+    Name = "sg-${var.stack}-environment-manager-redis"
   }
 }
 
-resource "aws_security_group" "sgEnvironmentManagerRedisHost" {
+resource "aws_security_group" "sg-environment-manager-redis-host" {
+  name   = "sg-${var.stack}-environment-manager-redis-host"
   vpc_id = "${var.vpc_base}"
 
   tags = {
-    Name = "sgEnvironmentManagerRedisHost"
+    Name = "sg-${var.stack}-environment-manager-redis-host"
   }
 
   ingress {

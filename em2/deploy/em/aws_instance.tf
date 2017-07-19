@@ -3,7 +3,7 @@ resource "aws_instance" "environment-manager" {
   instance_type          = "t2.medium"
   key_name               = "em-testing-master-keypair-2"
   count                  = 1
-  vpc_security_group_ids = ["${aws_security_group.sgInfraEnvironmentManager.id}"]
+  vpc_security_group_ids = ["${aws_security_group.sg_environment_manager.id}"]
   subnet_id              = "${var.subnet_ids["private_a"]}"
 
   connection {

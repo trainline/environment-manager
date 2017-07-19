@@ -105,7 +105,7 @@
 ########################################
 # resource "aws_elb" "loadBalancerEnvironmentManager" {
 #   name            = "environmentmanager-elb"
-#   security_groups = ["${aws_security_group.sgInfraEnvironmentManagerElb.id}"]
+#   security_groups = ["${aws_security_group.sg_environment_managerElb.id}"]
 #   subnets         = "${var.subnet_ids["private_a"]}"
 #   internal        = true
 #   # access_logs {
@@ -153,7 +153,7 @@
 #   vpc_zone_identifier = "${var.load_balancer_em_subnet_ids}"
 # }
 # Missing 
-# SourceSecurityGroupId in sgiInfraEnvironmentManagerTcp40500fromSgInfraEnvironmentManagerElb
+# SourceSecurityGroupId in sgiInfraEnvironmentManagerTcp40500fromsg_environment_manager_elb
 # Managed policy arn for roleInfraEnvironmentManager
 #############################
 # Environment Manager Redis #
@@ -183,7 +183,7 @@
 # resource "aws_cloudwatch_metric_alarm" "alertInfraEnvironmentManagerUpstreamRouter" {
 #   alarm_name          = "${var.resource_prefix}alertInfraEnvironmentManagerUpstreamRouter"
 #   actions_enabled     = true
-#   alarm_actions       = ["${aws_sns_topic.AlertSNSTopic.arn}"]
+#   alarm_actions       = ["${aws_sns_topic.alert_sns_topic.arn}"]
 #   alarm_description   = "AlertReadCapacityConfigEnvironments"
 #   comparison_operator = "GreaterThanThreshold"
 #   dimensions = {

@@ -109,11 +109,6 @@ variable "packages_bucket" {
   default     = "em-daveandjake-packages"
 }
 
-variable "deployment_bucket" {
-  description = "Environment Manager packages bucket"
-  default     = "em-daveandjake-deployment"
-}
-
 variable "managed_accounts" {
   description = "Emvironment Manager managed accounts"
   default     = ["account", "account2"]
