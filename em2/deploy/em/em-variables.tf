@@ -22,6 +22,11 @@ variable "resource_prefix" {
   default     = "em-prefix-"
 }
 
+variable "is_production" {
+  description = "Environment Manager in production mode"
+  default     = true
+}
+
 variable "subnet_ids" {
   default = {
     private_a = "subnet-b0e04bf9"
@@ -89,6 +94,11 @@ variable "configuration_bucket" {
   default     = "em-daveandjake-config"
 }
 
+variable "configuration_key" {
+  description = "Environment Manager configuration key"
+  default     = "config.json"
+}
+
 variable "secrets_bucket" {
   description = "Environment Manager secrets bucket"
   default     = "em-daveandjake-secure"
@@ -107,6 +117,20 @@ variable "deployment_logs_bucket" {
 variable "packages_bucket" {
   description = "Environment Manager packages bucket"
   default     = "em-daveandjake-packages"
+}
+
+variable "packages_key_prefix" {
+  description = "Environment Manager packages key prefix"
+}
+
+variable "redis_address" {
+  description = "Environment Manager Redis Address"
+  default     = "em-cache-cluster.qcyyv8.0001.euw1.cache.amazonaws.com"
+}
+
+variable "redis_crypto_key" {
+  description = "Environment Manager Redis Crypto Key"
+  default     = "abcdefg"
 }
 
 variable "deployment_bucket" {
