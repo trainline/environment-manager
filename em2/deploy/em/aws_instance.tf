@@ -36,6 +36,7 @@ resource "aws_instance" "environment-manager" {
   provisioner "remote-exec" {
     scripts = [
       "${path.module}/scripts/environment-manager-env-variables.sh",
+      "${path.module}/scripts/install_environment_manager.sh",
       "${path.module}/scripts/install_consul.sh",
     ]
   }
