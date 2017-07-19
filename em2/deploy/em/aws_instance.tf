@@ -21,14 +21,14 @@ resource "aws_instance" "environment-manager" {
     inline = [
       "mkdir -p /tmp/em/",
       "echo ${data.aws_region.current.name} > /tmp/em/EM_AWS_REGION",
-      "echo em-daveandjake-config > /tmp/em/EM_AWS_S3_BUCKET",
-      "echo config.json > /tmp/em/EM_AWS_S3_KEY",
-      "echo em-daveandjake-packages > /tmp/em/EM_PACKAGES_BUCKET",
-      "echo packages > /tmp/em/EM_PACKAGES_KEY_PREFIX",
-      "echo em-cache-cluster.qcyyv8.0001.euw1.cache.amazonaws.com > /tmp/em/EM_REDIS_ADDRESS",
-      "echo 11211 > /tmp/em/EM_REDIS_PORT",
-      "echo abcdefg > /tmp/em/EM_REDIS_CRYPTO_KEY",
-      "echo true > /tmp/em/IS_PRODUCTION",
+      "echo ${var.configuration_bucket} > /tmp/em/EM_AWS_S3_BUCKET",
+      "echo ${var.configuration_key} > /tmp/em/EM_AWS_S3_KEY",
+      "echo ${var.packages_bucket} > /tmp/em/EM_PACKAGES_BUCKET",
+      "echo ${var.packages_key_prefix} > /tmp/em/EM_PACKAGES_KEY_PREFIX",
+      "echo ${var.redis_address} > /tmp/em/EM_REDIS_ADDRESS",
+      "echo ${var.redis_port} > /tmp/em/EM_REDIS_PORT",
+      "echo ${var.redis_crypto_key} > /tmp/em/EM_REDIS_CRYPTO_KEY",
+      "echo ${var.is_production} > /tmp/em/IS_PRODUCTION",
       "echo ${data.aws_region.current.name} > /tmp/em/AWS_REGION",
     ]
   }
