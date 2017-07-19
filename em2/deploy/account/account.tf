@@ -1,4 +1,4 @@
-resource "aws_s3_bucket" "config-bucket" {
+resource "aws_s3_bucket" "config_bucket" {
   bucket = "${var.configuration_bucket}"
   acl    = "private"
 
@@ -7,8 +7,8 @@ resource "aws_s3_bucket" "config-bucket" {
   }
 }
 
-resource "aws_s3_bucket" "secure-bucket" {
-  bucket = "${var.secrets_bucket}"
+resource "aws_s3_bucket" "secure_bucket" {
+  bucket = "${var.secure_bucket}"
   acl    = "private"
 
   tags {
@@ -34,7 +34,7 @@ resource "aws_s3_bucket" "logs_bucket" {
   }
 }
 
-resource "aws_s3_bucket" "em-testing-init" {
+resource "aws_s3_bucket" "newco_environment_manager_public" {
   bucket = "${var.init_script_bucket}"
   acl    = "private"
 

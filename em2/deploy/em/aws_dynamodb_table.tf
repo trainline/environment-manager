@@ -1,5 +1,5 @@
-resource "aws_dynamodb_table" "ConfigEnvironments" {
-  name           = "ConfigEnvironments"
+resource "aws_dynamodb_table" "environments" {
+  name           = "${var.stack}-${var.app}-ConfigEnvironments"
   read_capacity  = 10
   write_capacity = 2
   hash_key       = "EnvironmentName"
@@ -13,8 +13,8 @@ resource "aws_dynamodb_table" "ConfigEnvironments" {
   stream_view_type = "NEW_AND_OLD_IMAGES"
 }
 
-resource "aws_dynamodb_table" "ConfigServices" {
-  name             = "ConfigServices"
+resource "aws_dynamodb_table" "services" {
+  name             = "${var.stack}-${var.app}-ConfigServices"
   read_capacity    = 10
   write_capacity   = 2
   hash_key         = "ServiceName"
@@ -33,8 +33,8 @@ resource "aws_dynamodb_table" "ConfigServices" {
   }
 }
 
-resource "aws_dynamodb_table" "ConfigDeploymentMaps" {
-  name             = "ConfigDeploymentMaps"
+resource "aws_dynamodb_table" "deployment_maps" {
+  name             = "${var.stack}-${var.app}-ConfigDeploymentMaps"
   read_capacity    = 10
   write_capacity   = 2
   hash_key         = "DeploymentMapName"
@@ -47,42 +47,8 @@ resource "aws_dynamodb_table" "ConfigDeploymentMaps" {
   }
 }
 
-resource "aws_dynamodb_table" "ConfigLBSettings" {
-  name             = "ConfigLBSettings"
-  read_capacity    = 10
-  write_capacity   = 2
-  hash_key         = "EnvironmentHostName"
-  range_key        = "VHostName"
-  stream_view_type = "NEW_AND_OLD_IMAGES"
-  stream_enabled   = true
-
-  attribute {
-    name = "EnvironmentHostName"
-    type = "S"
-  }
-
-  attribute {
-    name = "VHostName"
-    type = "S"
-  }
-}
-
-resource "aws_dynamodb_table" "ConfigLBUpstream" {
-  name             = "ConfigLBUpstream"
-  read_capacity    = 10
-  write_capacity   = 2
-  hash_key         = "key"
-  stream_view_type = "NEW_AND_OLD_IMAGES"
-  stream_enabled   = true
-
-  attribute {
-    name = "key"
-    type = "S"
-  }
-}
-
-resource "aws_dynamodb_table" "ConfigNotificationSettings" {
-  name             = "ConfigNotificationSettings"
+resource "aws_dynamodb_table" "notification_settings" {
+  name             = "${var.stack}-${var.app}-ConfigNotificationSettings"
   read_capacity    = 10
   write_capacity   = 2
   hash_key         = "NotificationSettingsId"
@@ -95,8 +61,8 @@ resource "aws_dynamodb_table" "ConfigNotificationSettings" {
   }
 }
 
-resource "aws_dynamodb_table" "ConfigEnvironmentTypes" {
-  name             = "ConfigEnvironmentTypes"
+resource "aws_dynamodb_table" "environment_types" {
+  name             = "${var.stack}-${var.app}-ConfigEnvironmentTypes"
   read_capacity    = 10
   write_capacity   = 2
   hash_key         = "EnvironmentType"
@@ -108,20 +74,8 @@ resource "aws_dynamodb_table" "ConfigEnvironmentTypes" {
   }
 }
 
-resource "aws_dynamodb_table" "InfraAsgIPs" {
-  name           = "InfraAsgIPs"
-  read_capacity  = 10
-  write_capacity = 2
-  hash_key       = "AsgName"
-
-  attribute {
-    name = "AsgName"
-    type = "S"
-  }
-}
-
-resource "aws_dynamodb_table" "InfraChangeAudit" {
-  name           = "InfraChangeAudit"
+resource "aws_dynamodb_table" "audit" {
+  name           = "${var.stack}-${var.app}-InfraChangeAudit"
   read_capacity  = 20
   write_capacity = 5
   hash_key       = "AuditID"
@@ -151,8 +105,8 @@ resource "aws_dynamodb_table" "InfraChangeAudit" {
   }
 }
 
-resource "aws_dynamodb_table" "InfraConfigAccounts" {
-  name           = "InfraConfigAccounts"
+resource "aws_dynamodb_table" "accounts" {
+  name           = "${var.stack}-${var.app}-InfraConfigAccounts"
   read_capacity  = 10
   write_capacity = 2
   hash_key       = "AccountNumber"
@@ -165,8 +119,8 @@ resource "aws_dynamodb_table" "InfraConfigAccounts" {
   stream_view_type = "NEW_AND_OLD_IMAGES"
 }
 
-resource "aws_dynamodb_table" "InfraConfigClusters" {
-  name           = "InfraConfigClusters"
+resource "aws_dynamodb_table" "clusters" {
+  name           = "${var.stack}-${var.app}-InfraConfigClusters"
   read_capacity  = 10
   write_capacity = 2
   hash_key       = "ClusterName"
@@ -179,8 +133,8 @@ resource "aws_dynamodb_table" "InfraConfigClusters" {
   stream_view_type = "NEW_AND_OLD_IMAGES"
 }
 
-resource "aws_dynamodb_table" "InfraConfigPermissions" {
-  name           = "InfraConfigPermissions"
+resource "aws_dynamodb_table" "permissions" {
+  name           = "${var.stack}-${var.app}-InfraConfigPermissions"
   read_capacity  = 10
   write_capacity = 2
   hash_key       = "Name"
@@ -193,20 +147,8 @@ resource "aws_dynamodb_table" "InfraConfigPermissions" {
   stream_view_type = "NEW_AND_OLD_IMAGES"
 }
 
-resource "aws_dynamodb_table" "InfraEnvManagerSessions" {
-  name           = "InfraEnvManagerSessions"
-  read_capacity  = 10
-  write_capacity = 2
-  hash_key       = "UserName"
-
-  attribute {
-    name = "UserName"
-    type = "S"
-  }
-}
-
-resource "aws_dynamodb_table" "InfraOpsEnvironment" {
-  name           = "InfraOpsEnvironment"
+resource "aws_dynamodb_table" "ops_environments" {
+  name           = "${var.stack}-${var.app}-InfraOpsEnvironment"
   read_capacity  = 10
   write_capacity = 2
   hash_key       = "EnvironmentName"
@@ -219,8 +161,8 @@ resource "aws_dynamodb_table" "InfraOpsEnvironment" {
   stream_view_type = "NEW_AND_OLD_IMAGES"
 }
 
-resource "aws_dynamodb_table" "tableInfraConfigLbSettings" {
-  name           = "tableInfraConfigLbSettings"
+resource "aws_dynamodb_table" "lb_settings" {
+  name           = "${var.stack}-${var.app}-InfraConfigLbSettings"
   read_capacity  = 10
   write_capacity = 2
   hash_key       = "EnvironmentName"
@@ -253,8 +195,8 @@ resource "aws_dynamodb_table" "tableInfraConfigLbSettings" {
   stream_view_type = "NEW_AND_OLD_IMAGES"
 }
 
-resource "aws_dynamodb_table" "ConfigDeploymentExecutionStatus" {
-  name           = "ConfigDeploymentExecutionStatus"
+resource "aws_dynamodb_table" "deployment_execution_status" {
+  name           = "${var.stack}-${var.app}-ConfigDeploymentExecutionStatus"
   read_capacity  = 10
   write_capacity = 2
   hash_key       = "DeploymentID"
@@ -265,8 +207,8 @@ resource "aws_dynamodb_table" "ConfigDeploymentExecutionStatus" {
   }
 }
 
-resource "aws_dynamodb_table" "ConfigCompletedDeployments" {
-  name           = "ConfigCompletedDeployments"
+resource "aws_dynamodb_table" "completed_deployments" {
+  name           = "${var.stack}-${var.app}-ConfigCompletedDeployments"
   read_capacity  = 10
   write_capacity = 2
   hash_key       = "DeploymentID"
@@ -298,8 +240,8 @@ resource "aws_dynamodb_table" "ConfigCompletedDeployments" {
   stream_view_type = "NEW_AND_OLD_IMAGES"
 }
 
-resource "aws_dynamodb_table" "InfraConfigLBUpstream" {
-  name           = "InfraConfigLBUpstream"
+resource "aws_dynamodb_table" "lb_upstreams" {
+  name           = "${var.stack}-${var.app}-InfraConfigLBUpstream"
   read_capacity  = 10
   write_capacity = 2
   hash_key       = "Key"
@@ -324,16 +266,15 @@ resource "aws_dynamodb_table" "InfraConfigLBUpstream" {
     type = "S"
   }
 
-  # attribute {
-  #   name = "Service"
-  #   type = "S"
-  # }
+  attribute {
+    name = "Service"
+    type = "S"
+  }
 
-
-  # attribute {
-  #   name = "Upstream"
-  #   type = "S"
-  # }
+  attribute {
+    name = "Upstream"
+    type = "S"
+  }
 
   global_secondary_index {
     name            = "AccountId-index"
@@ -343,6 +284,7 @@ resource "aws_dynamodb_table" "InfraConfigLBUpstream" {
     read_capacity   = 2
     projection_type = "ALL"
   }
+
   global_secondary_index {
     name            = "Environment-Key-index"
     hash_key        = "Environment"
@@ -351,6 +293,7 @@ resource "aws_dynamodb_table" "InfraConfigLBUpstream" {
     read_capacity   = 2
     projection_type = "ALL"
   }
+
   global_secondary_index {
     name               = "LoadBalancerGroup-index"
     hash_key           = "LoadBalancerGroup"
@@ -360,19 +303,20 @@ resource "aws_dynamodb_table" "InfraConfigLBUpstream" {
     projection_type    = "ALL"
     non_key_attributes = ["Service", "Upstream"]
   }
+
   stream_view_type = "NEW_AND_OLD_IMAGES"
 }
 
 # Outputs
 
 output "ConfigLBUpstream_stream_arn" {
-  value = "${aws_dynamodb_table.ConfigLBUpstream.stream_arn}"
+  value = "${aws_dynamodb_table.lb_upstreams.stream_arn}"
 }
 
 output "ConfigNotificationSettings_stream_arn" {
-  value = "${aws_dynamodb_table.ConfigNotificationSettings.stream_arn}"
+  value = "${aws_dynamodb_table.notification_settings.stream_arn}"
 }
 
 output "tableInfraConfigLbSettings_stream_arn" {
-  value = "${aws_dynamodb_table.tableInfraConfigLbSettings.stream_arn}"
+  value = "${aws_dynamodb_table.lb_settings.stream_arn}"
 }

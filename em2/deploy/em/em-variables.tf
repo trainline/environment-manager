@@ -103,7 +103,7 @@ variable "configuration_key" {
   default     = "config.json"
 }
 
-variable "secrets_bucket" {
+variable "secure_bucket" {
   description = "Consul ACL token storage"
   default     = "em-daveandjake-secure"
 }
@@ -123,8 +123,6 @@ variable "packages_bucket" {
   default     = "em-daveandjake-packages"
 }
 
-<<<<<<< HEAD
-=======
 variable "deployment_bucket" {
   description = "PACKAGES VS DEPLOYMENT?"
   default     = "em-daveandjake-deployment"
@@ -159,7 +157,6 @@ variable "redis_crypto_key" {
   default     = "abcdefg"
 }
 
->>>>>>> e015b0ed723c51fe59d361a72ac5cbf234cbcf99
 variable "managed_accounts" {
   description = "Emvironment Manager managed accounts"
   default     = ["account", "account2"]

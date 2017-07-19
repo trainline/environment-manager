@@ -1,36 +1,36 @@
-resource "aws_security_group" "sg_environment_manager" {
-  name   = "sg-${var.stack}-environment-manager"
+resource "aws_security_group" "app" {
+  name   = "${var.stack}-${var.app}"
   vpc_id = "${var.vpc_id}"
 
   tags = {
-    Name = "sg-${var.stack}-environment-manager"
+    Name = "${var.stack}-${var.app}"
   }
 }
 
-resource "aws_security_group" "sg_environment_manager_elb" {
-  name   = "sg-${var.stack}-environment-manager-elb"
+resource "aws_security_group" "elb" {
+  name   = "${var.stack}-${var.app}-elb"
   vpc_id = "${var.vpc_id}"
 
   tags = {
-    Name = "sg-${var.stack}-environment-manager-elb"
+    Name = "${var.stack}-${var.app}-elb"
   }
 }
 
-resource "aws_security_group" "sg-environment-manager-redis-access" {
-  name   = "sg-${var.stack}-environment-manager-redis"
+resource "aws_security_group" "redis_access" {
+  name   = "${var.stack}-${var.app}-redis-access"
   vpc_id = "${var.vpc_base}"
 
   tags = {
-    Name = "sg-${var.stack}-environment-manager-redis"
+    Name = "${var.stack}-${var.app}-redis-access"
   }
 }
 
-resource "aws_security_group" "sg-environment-manager-redis-host" {
-  name   = "sg-${var.stack}-environment-manager-redis-host"
+resource "aws_security_group" "redis_host" {
+  name   = "${var.stack}-${var.app}-redis-host"
   vpc_id = "${var.vpc_base}"
 
   tags = {
-    Name = "sg-${var.stack}-environment-manager-redis-host"
+    Name = "${var.stack}-${var.app}-redis-host"
   }
 
   ingress {

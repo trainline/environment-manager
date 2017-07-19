@@ -1,6 +1,6 @@
-resource "aws_iam_role_policy" "roleInfraEnvironmentManagerAuditWriterPolicy" {
-  name = "roleInfraEnvironmentManagerAuditWriterPolicy"
-  role = "${aws_iam_role.roleInfraEnvironmentManagerAuditWriter.id}"
+resource "aws_iam_role_policy" "audit_writer" {
+  name = "policy-${var.stack}-${var.app}-audit-writer"
+  role = "${aws_iam_role.audit_writer.id}"
 
   policy = <<EOF
 {
@@ -19,116 +19,9 @@ resource "aws_iam_role_policy" "roleInfraEnvironmentManagerAuditWriterPolicy" {
 EOF
 }
 
-resource "aws_iam_role_policy" "roleInfraAsgScalePolicy" {
-  name = "roleInfraAsgScalePolicy"
-  role = "${aws_iam_role.roleInfraAsgScale.id}"
-
-  policy = <<EOF
-{  
-   "Version":"2012-10-17",
-   "Statement":[  
-      {  
-         "Effect":"Allow",
-         "Action":[  
-            "ec2:Describe*",
-            "ec2:DeleteVolume",
-            "ec2:RunInstances",
-            "ec2:StartInstances",
-            "ec2:StopInstances",
-            "ec2:TerminateInstances",
-            "ec2:UnmonitorInstances"
-         ],
-         "Resource":[  
-            "*"
-         ]
-      },
-      {  
-         "Effect":"Allow",
-         "Action":"elasticloadbalancing:Describe*",
-         "Resource":"*"
-      },
-      {  
-         "Effect":"Allow",
-         "Action":[  
-            "cloudwatch:ListMetrics",
-            "cloudwatch:GetMetricStatistics",
-            "cloudwatch:Describe*"
-         ],
-         "Resource":"*"
-      },
-      {  
-         "Effect":"Allow",
-         "Action":[  
-            "autoscaling:Describe*",
-            "autoscaling:PutLifecycleHook",
-            "autoscaling:ResumeProcesses",
-            "autoscaling:SuspendProcesses",
-            "autoscaling:CreateOrUpdateScalingTrigger",
-            "autoscaling:CreateOrUpdateTags",
-            "autoscaling:DeleteAutoScalingGroup",
-            "autoscaling:PutScalingPolicy",
-            "autoscaling:PutScheduledUpdateGroupAction",
-            "autoscaling:PutNotificationConfiguration",
-            "autoscaling:SetDesiredCapacity",
-            "autoscaling:SuspendProcesses",
-            "autoscaling:TerminateInstanceInAutoScalingGroup",
-            "autoscaling:UpdateAutoScalingGroup"
-         ],
-         "Resource":[  
-            "*"
-         ]
-      },
-      {  
-         "Effect":"Allow",
-         "Action":[  
-            "sns:ConfirmSubscription",
-            "sns:ListTopics",
-            "sns:Publish",
-            "sns:Subscribe",
-            "sns:Unsubscribe"
-         ],
-         "Resource":[  
-            "arn:aws:sns:eu-west-1:${data.aws_caller_identity.current.account_id}:tl-governator-stop",
-            "arn:aws:sns:eu-west-1:${data.aws_caller_identity.current.account_id}:asgLambdaScale",
-            "arn:aws:sns:eu-west-1:${data.aws_caller_identity.current.account_id}:InfraGovernator",
-            "arn:aws:sns:eu-west-1:${data.aws_caller_identity.current.account_id}:InfraAsgLambdaScale"
-         ]
-      },
-      {  
-         "Effect":"Allow",
-         "Action":[  
-            "dynamodb:*"
-         ],
-         "Resource":[  
-            "arn:aws:dynamodb:eu-west-1:${data.aws_caller_identity.current.account_id}:table/ConfigAsgIPs",
-            "arn:aws:dynamodb:eu-west-1:${data.aws_caller_identity.current.account_id}:table/InfraAsgIPs"
-         ]
-      },
-      {  
-         "Effect":"Allow",
-         "Action":[  
-            "iam:PassRole"
-         ],
-         "Resource":[  
-            "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/roleInfraAsgScale"
-         ]
-      },
-      {  
-         "Action":"sts:AssumeRole",
-         "Effect":"Allow",
-         "Resource":[  
-            "arn:aws:iam::${var.master_account_id}:role/roleInfraAsgScale",
-            "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/roleInfraAsgScale"
-         ]
-      }
-   ]
-}
-EOF
-}
-
-resource "aws_iam_role_policy" "roleInfraEnvironmentManagerPolicy" {
-  name = "roleInfraEnvironmentManagerPolicy"
-  role = "${aws_iam_role.roleInfraEnvironmentManager.name}"
+resource "aws_iam_role_policy" "app" {
+  name = "policy-${var.stack}-${var.app}-app"
+  role = "${aws_iam_role.app.name}"
 
   policy = <<EOF
 {
@@ -169,7 +62,7 @@ resource "aws_iam_role_policy" "roleInfraEnvironmentManagerPolicy" {
           "s3:ListBucket"
         ],
         "Resource": [
-          "arn:aws:s3:::${var.secrets_bucket}",
+          "arn:aws:s3:::${var.secure_bucket}",
           "arn:aws:s3:::${var.packages_bucket}",
           "arn:aws:s3:::${var.deployment_logs_bucket}"
         ]
@@ -181,7 +74,7 @@ resource "aws_iam_role_policy" "roleInfraEnvironmentManagerPolicy" {
          ],
          "Resource":[
             "arn:aws:s3:::${var.configuration_bucket}/*",
-            "arn:aws:s3:::${var.secrets_bucket}/*",
+            "arn:aws:s3:::${var.secure_bucket}/*",
             "arn:aws:s3:::${var.backups_bucket}/*",
             "arn:aws:s3:::${var.init_script_bucket}/*"
          ]

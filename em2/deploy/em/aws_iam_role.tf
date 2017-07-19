@@ -1,5 +1,5 @@
-resource "aws_iam_role" "roleInfraEnvironmentManagerAudit" {
-  name = "roleInfraEnvironmentManagerAudit"
+resource "aws_iam_role" "audit" {
+  name = "role-${var.stack}-${var.app}-audit"
 
   assume_role_policy = <<EOF
 {
@@ -18,8 +18,8 @@ resource "aws_iam_role" "roleInfraEnvironmentManagerAudit" {
 EOF
 }
 
-resource "aws_iam_role" "roleInfraEnvironmentManagerAuditWriter" {
-  name = "roleInfraEnvironmentManagerAuditWriter"
+resource "aws_iam_role" "audit_writer" {
+  name = "role-${var.stack}-${var.app}-audit-writer"
 
   assume_role_policy = <<EOF
 {
@@ -38,27 +38,8 @@ resource "aws_iam_role" "roleInfraEnvironmentManagerAuditWriter" {
 EOF
 }
 
-resource "aws_iam_role" "roleInfraAsgScale" {
-  name = "roleInfraAsgScale"
-
-  assume_role_policy = <<EOF
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Principal": {
-                "Service": "lambda.amazonaws.com"
-            },
-            "Action": "sts:AssumeRole"
-        }
-    ]
-}
-EOF
-}
-
-resource "aws_iam_role" "roleInfraEnvironmentManager" {
-  name = "roleInfraEnvironmentManager"
+resource "aws_iam_role" "app" {
+  name = "role-${var.stack}-${var.app}"
 
   assume_role_policy = <<EOF
 {
@@ -74,10 +55,4 @@ resource "aws_iam_role" "roleInfraEnvironmentManager" {
    ]
 }
 EOF
-}
-
-# Outputs
-
-output "roleInfraEnvironmentManagerAudit_id" {
-  value = "${aws_iam_role.roleInfraEnvironmentManagerAudit.name}"
 }
