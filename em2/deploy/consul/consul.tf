@@ -26,15 +26,9 @@ resource "aws_instance" "server" {
   subnet_id              = "${var.subnet_id}"
 
   connection {
-    type         = "ssh"
-    user         = "${lookup(var.user, var.platform)}"
-    private_key  = "${file("${var.key_path}")}"
-    bastion_host = "34.250.64.29"
-    bastion_port = 22
-    bastion_user = "${lookup(var.user, var.platform)}"
-
-    # bastion_password = ""
-    bastion_private_key = "${file("${var.key_path}")}"
+    type        = "ssh"
+    user        = "${lookup(var.user, var.platform)}"
+    private_key = "${file("${var.key_path}")}"
   }
 
   #Instance tags

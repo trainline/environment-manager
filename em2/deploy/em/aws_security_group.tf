@@ -5,6 +5,20 @@ resource "aws_security_group" "app" {
   tags = {
     Name = "${var.stack}-${var.app}"
   }
+
+  ingress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["${var.app_sg_cidr_inbound}"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["${var.app_sg_cidr_outbound}"]
+  }
 }
 
 resource "aws_security_group" "elb" {

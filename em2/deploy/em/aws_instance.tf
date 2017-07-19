@@ -6,6 +6,11 @@ resource "aws_instance" "app" {
   vpc_security_group_ids = ["${aws_security_group.app.id}"]
   subnet_id              = "${var.subnet_ids["private_a"]}"
 
+  connection {
+    user        = "ubuntu"
+    private_key = "${file("~/.ssh/em-testing-master-keypair-2.pem")}"
+  }
+
   # Create all variables required by scripts in the /tmp/em folder.
   provisioner "remote-exec" {
     inline = [

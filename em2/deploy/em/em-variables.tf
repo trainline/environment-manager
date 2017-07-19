@@ -157,7 +157,7 @@ variable "packages_key_prefix" {
 }
 
 variable "redis_subnet_group" {
-  default = "redis_subnet_group"
+  default = "envir-sngen-1ksby99wxxs77"
 }
 
 variable "redis_address" {
@@ -210,7 +210,10 @@ variable "upstream_router_execution_role" {
   default     = "arn value"
 }
 
-#
-# Environment Manager Installation
-#
+variable "app_sg_cidr_inbound" {
+  default = ["172.27.224.0/20", "172.31.0.0/16"]
+}
 
+variable "app_sg_cidr_outbound" {
+  default = ["0.0.0.0/0"]
+}
