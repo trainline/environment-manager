@@ -89,34 +89,58 @@ variable "em_security_groups" {
   default     = [1, 2, 3, 4, 5]
 }
 
+#
+# Environment Manager Buckets
+#
+
 variable "configuration_bucket" {
-  description = "Environment Manager configuration bucket"
+  description = "Configuration Files"
   default     = "em-daveandjake-config"
 }
 
 variable "configuration_key" {
-  description = "Environment Manager configuration key"
+  description = "The configuration file to be used by Environment Manager"
   default     = "config.json"
 }
 
 variable "secrets_bucket" {
-  description = "Environment Manager secrets bucket"
+  description = "Consul ACL token storage"
   default     = "em-daveandjake-secure"
 }
 
 variable "backups_bucket" {
-  description = "Environment Manager backups bucket"
+  description = "NO IDEA"
   default     = "backups"
 }
 
 variable "deployment_logs_bucket" {
-  description = "Environment Manager deployment logs bucket"
+  description = "Storage for Environment Manager Logs"
   default     = "em-daveandjake-logs"
 }
 
 variable "packages_bucket" {
-  description = "Environment Manager packages bucket"
+  description = "PACKAGES VS DEPLOYMENT?"
   default     = "em-daveandjake-packages"
+}
+
+variable "deployment_bucket" {
+  description = "PACKAGES VS DEPLOYMENT?"
+  default     = "em-daveandjake-deployment"
+}
+
+variable "init_script_bucket" {
+  description = "Initialization scripts for Environment Manager AMIs"
+  default     = "em-testing-init"
+}
+
+variable "em_release_bucket" {
+  description = "Environment Manager release packages"
+  default     = "environment-manager-releases"
+}
+
+variable "em_release_key" {
+  description = "key for the environment manager to download from s3"
+  default     = "environment-manager/environment-manager-5.0.0.zip"
 }
 
 variable "packages_key_prefix" {
@@ -131,11 +155,6 @@ variable "redis_address" {
 variable "redis_crypto_key" {
   description = "Environment Manager Redis Crypto Key"
   default     = "abcdefg"
-}
-
-variable "deployment_bucket" {
-  description = "Environment Manager packages bucket"
-  default     = "em-daveandjake-deployment"
 }
 
 variable "managed_accounts" {
@@ -178,20 +197,7 @@ variable "upstream_router_execution_role" {
   default     = "arn value"
 }
 
-variable "init_script_bucket" {
-  description = "Bucket for all init scripts for AMI's"
-  default     = "em-testing-init"
-}
-
 #
 # Environment Manager Installation
 #
-variable "em_release_bucket" {
-  description = "bucket for the environment manager to download from s3"
-  default     = "environment-manager-releases"
-}
 
-variable "em_release_key" {
-  description = "key for the environment manager to download from s3"
-  default     = "environment-manager/environment-manager-5.0.0.zip"
-}
