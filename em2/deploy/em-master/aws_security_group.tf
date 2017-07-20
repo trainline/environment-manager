@@ -32,7 +32,7 @@ resource "aws_security_group" "elb" {
 
 resource "aws_security_group" "redis_access" {
   name   = "${var.stack}-${var.app}-redis-access"
-  vpc_id = "${var.vpc_base}"
+  vpc_id = "${var.vpc_id}"
 
   tags = {
     Name = "${var.stack}-${var.app}-redis-access"
@@ -41,7 +41,7 @@ resource "aws_security_group" "redis_access" {
 
 resource "aws_security_group" "redis_host" {
   name   = "${var.stack}-${var.app}-redis-host"
-  vpc_id = "${var.vpc_base}"
+  vpc_id = "${var.vpc_id}"
 
   tags = {
     Name = "${var.stack}-${var.app}-redis-host"

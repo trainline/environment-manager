@@ -35,7 +35,7 @@ resource "aws_elb" "app" {
   # }
 
   listener {
-    instance_port     = 8080
+    instance_port     = "${var.load_balancer_em_port}"
     instance_protocol = "http"
     lb_port           = 80
     lb_protocol       = "http"
@@ -51,7 +51,7 @@ resource "aws_elb" "app" {
     interval            = 10
   }
   cross_zone_load_balancing   = true
-  idle_timeout                = 60
+  idle_timeout                = "${var.load_balancer_em_timeout}"
   connection_draining         = true
   connection_draining_timeout = 60
   tags {
