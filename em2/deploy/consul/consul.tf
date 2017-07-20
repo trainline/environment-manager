@@ -16,6 +16,8 @@ data "terraform_remote_state" "remote-state" {
   }
 }
 
+
+
 resource "aws_instance" "server" {
   ami           = "${lookup(var.ami, "${var.region}-${var.platform}")}"
   instance_type = "${var.instance_type}"
@@ -57,6 +59,11 @@ resource "aws_instance" "server" {
       "${path.module}/scripts/iptables.sh",
     ]
   }
+}
+
+resource "aws_iam_instance_profile" "consul" {
+  name = "${var.stack}-${var.app}-consul"
+  role = "${aws_iam_role.app.name}"
 }
 
 resource "aws_security_group" "consul" {

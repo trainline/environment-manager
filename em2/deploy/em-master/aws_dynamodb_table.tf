@@ -10,6 +10,8 @@ resource "aws_dynamodb_table" "environments" {
     type = "S"
   }
 
+  
+
   stream_view_type = "NEW_AND_OLD_IMAGES"
 }
 

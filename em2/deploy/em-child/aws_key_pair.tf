@@ -1,4 +1,0 @@
-resource "aws_key_pair" {
-  key_name   = "em-testing-master-keypair-2"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCcBhpqK5NZ8XIkV/zHk1JH/6uPlNxG9DcXDkEfctVBcNNfm6g7WujI2qFJQCQsVQHLbqsgOJcy4ZL/GTSEL/9yys7OJJrIVnfqvsZKYOJg7kcpBVw47+4XJx06s4EzNRTBpFwz5WqHgysGoI5INwSYfUaSLxKcmjo7u8Pr2a0ixvcYr9FhG56nUWFfFeR5gfT9UbcB74jGr/ebll2gkFNyD9AKnlYmbY2I0pvzuFSfLiGFfqw6glEhQj78DdITPm+Qvvsx2UF1dBXqzDz3wujRZlospUHjKl6SsQXt9Aufvcx/SkVAs8+cUphCNpx0byvb4SiDiw+MBGvsOqXDmb/h em-testing-master-keypair-2"
-}

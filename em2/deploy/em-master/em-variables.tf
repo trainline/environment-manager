@@ -217,3 +217,16 @@ variable "app_sg_cidr_inbound" {
 variable "app_sg_cidr_outbound" {
   default = ["0.0.0.0/0"]
 }
+
+variable scheduler_package {
+  type    = "string"
+  default = "./lambda/scheduler/out/scheduler-0.0.1.zip"
+}
+
+variable scheduler_env_vars {
+  type = "map"
+}
+
+variable scheduler_kms_key_arn {
+  type = "string"
+}

@@ -14,23 +14,7 @@ resource "aws_iam_role_policy_attachment" "scheduler_role_policy_attach" {
   policy_arn = "${aws_iam_policy.scheduler_role_policy.arn}"
 }
 
-resource "aws_iam_role" "scheduler_role" {
-  name = "role-em-scheduler"
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "lambda.amazonaws.com"
-      },
-      "Effect": "Allow"
-    }
-  ]
-}
-EOF
-}
+
 
 resource "aws_iam_policy" "scheduler_role_policy" {
   name = "policy-em-scheduler"

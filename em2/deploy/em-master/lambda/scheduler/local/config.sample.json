@@ -1,0 +1,14 @@
+{
+  "em": {
+    "host": "https://environment-manager-domain-name",
+    "credentials": {
+      "username": "username",
+      "password": "password"
+    }
+  },
+  "limitToEnvironment": "xxx",
+  "whatIf": true,
+  "listSkippedInstances": true,
+  "ignoreASGInstances": false,
+  "errorOnFailure": true
+}

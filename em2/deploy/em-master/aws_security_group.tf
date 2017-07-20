@@ -54,3 +54,15 @@ resource "aws_security_group" "redis_host" {
     to_port   = "${var.redis_port}"
   }
 }
+
+resource "aws_security_group" "scheduler_sg" {
+  name        = "em-scheduler"
+  description = "Allow all outbound traffic"
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
