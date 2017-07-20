@@ -48,3 +48,7 @@ client/index-build-temp.html
 publish_id.txt
 version.txt
 environment-manager-*.zip
+
+.terraform
+terraform.tfstate.backup
+**/*.tfvars
