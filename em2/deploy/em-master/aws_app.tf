@@ -17,7 +17,7 @@ resource "aws_launch_configuration" "app" {
   instance_type        = "t2.micro"
   key_name             = "em-testing-master-keypair-2"
   iam_instance_profile = "${aws_iam_instance_profile.app.id}"
-  user_data            = "SOMETHING::${var.something}\n${file("${path.module}/scripts/app/user-data.sh")}"
+  user_data            = "${file("${path.module}/scripts/app/user-data.sh")}"
 
   lifecycle {
     create_before_destroy = true

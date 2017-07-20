@@ -12,7 +12,7 @@
 
 resource "aws_lambda_function" "scheduler" {
   filename         = "${var.scheduler_package}"
-  function_name    = "em-scheduler"
+  function_name    = "${var.stack}-${var.app}-scheduler"
   description      = "Turns on/off instances based on instance, asg or environment schedule"
   memory_size      = 320
   timeout          = 30
@@ -20,8 +20,6 @@ resource "aws_lambda_function" "scheduler" {
   handler          = "index.handler"
   source_code_hash = "${base64sha256(file("${var.scheduler_package}"))}"
   runtime          = "nodejs6.10"
-
-  kms_key_arn = "${var.scheduler_kms_key_arn}"
 
   vpc_config {
     subnet_ids         = ["${var.subnet_ids["private_a"]}", "${var.subnet_ids["private_b"]}", "${var.subnet_ids["private_c"]}"]

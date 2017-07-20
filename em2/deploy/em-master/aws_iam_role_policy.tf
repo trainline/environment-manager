@@ -179,3 +179,41 @@ resource "aws_iam_role_policy" "app" {
 }  
 EOF
 }
+
+resource "aws_iam_policy" "scheduler_role_policy" {
+  name = "policy-em-scheduler"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "ec2:CreateNetworkInterface",
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:DescribeInstances",
+        "ec2:DeleteNetworkInterface",
+        "ec2:StartInstances",
+        "ec2:StopInstances",
+        "autoscaling:EnterStandby",
+        "autoscaling:ExitStandby",
+        "xray:PutTelemetryRecords",
+        "xray:PutTraceSegments",
+        "sts:AssumeRole",
+        "kms:Decrypt"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "scheduler_role_policy_attach" {
+  role       = "${aws_iam_role.scheduler_role.name}"
+  policy_arn = "${aws_iam_policy.scheduler_role_policy.arn}"
+}

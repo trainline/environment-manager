@@ -6,21 +6,7 @@ variable "bucket_deployments" {
   default = ""
 }
 
-variable scheduler_package {
-  type = "string"
-}
 
-variable scheduler_vpc_subnet_ids {
-  type = "list"
-}
-
-variable scheduler_env_vars {
-  type = "map"
-}
-
-variable scheduler_kms_key_arn {
-  type = "string"
-}
 
 # Consul
 
