@@ -22,10 +22,9 @@ echo "$AWS_CONFIGURATION" | sudo tee ~/.aws/credentials
 #####################
 
 INSTANCE_ID=$(ec2metadata --instance-id)
-ENVIRONMENT=$(aws ec2 describe-tags --filters "Name=resource-id,Values=$INSTANCE_ID" "Name=key,Values=Environment" --region=$REGION --output=text | cut -f5)
-OWNING_CLUSTER_SHORT_NAME=$(aws ec2 describe-tags --filters "Name=resource-id,Values=$INSTANCE_ID" "Name=key,Values=OwningClusterShortName" --region=$REGION --output=text | cut -f5)
+ASG_NAME=$(aws ec2 describe-tags --filters "Name=resource-id,Values=$INSTANCE_ID" "Name=key,Values=aws:autoscaling:groupName" --region=$REGION --output=text | cut -f5)
 NODE_NAME=${INSTANCE_ID#i-}
-INSTANCE_NAME="$ENVIRONMENT-$OWNING_CLUSTER_SHORT_NAME-$NODE_NAME"
+INSTANCE_NAME="$ASG_NAME-$NODE_NAME"
 
 echo "Setting name of the instance to $INSTANCE_NAME"
 aws --region $REGION ec2 create-tags --resources $INSTANCE_ID --tags "Key=Name,Value=$INSTANCE_NAME"
