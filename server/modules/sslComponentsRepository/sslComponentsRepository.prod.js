@@ -4,7 +4,7 @@
 
 let async = require('async');
 let S3GetObjectRequest = require('modules/S3GetObjectRequest');
-let amazonClientFactory = require('modules/amazon-client/childAccountClient');
+let amazonClientFactory = require('modules/amazon-client/masterAccountClient');
 let sslComponentsCache = null;
 
 module.exports = function SSLComponentsRepository() {
