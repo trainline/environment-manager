@@ -76,7 +76,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
               Operation: target.Value || {}
             };
 
-            var scheduleAction = target.Value.ScheduleStatus;
+            var scheduleAction = (target.Value || {}).ScheduleStatus;
             result.Operation.getScheduleAction = function () { return scheduleAction; };
 
             return result;

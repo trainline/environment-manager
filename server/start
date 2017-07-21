@@ -1,0 +1,12 @@
+#! /bin/bash
+
+# This script is called by systemd to start environment-manager
+# it sets up the environment and then runs Environment Manager
+# in place of the shell
+
+# Use the EC2 metadata service to look up the AWS region in which this server is running
+# and set the region Environment Manager will use when querying its management resources
+export EM_AWS_REGION=$(curl --silent --show-error http://169.254.169.254/2016-09-02/dynamic/instance-identity/document | jq --raw-output '.region')
+echo "EM_AWS_REGION=${EM_AWS_REGION}" >&2
+
+exec npm start

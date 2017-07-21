@@ -16,7 +16,7 @@
     </select>
   </div>
   <div class="form-group">
-    <label class="control-label text-left">Cluster:</label>
+    <label class="control-label text-left">Team:</label>
   </div>
   <div class="form-group">
     <select class="form-control" ng-model="vm.selectedOwningCluster" ng-change="vm.refresh()">
@@ -62,7 +62,7 @@
     <table class="table">
       <thead>
         <tr>
-          <th class="text-nowrap" ng-if="vm.selectedOwningCluster == 'Any'">Owning Cluster</th>
+          <th class="text-nowrap" ng-if="vm.selectedOwningCluster == 'Any'">Owning Team</th>
           <th class="text-nowrap">Instance</th>
           <th class="text-nowrap">Role</th>
           <th class="text-nowrap">Launch Date</th>

@@ -14,7 +14,7 @@
     <div class="col-md-12" ng-show="vm.dataFound">
         <form name="form" id="EnvironmentDetails" class="form-horizontal">
             <div class="form-group" ng-class="{'has-error': form.OwningClusters.$invalid}">
-                <label class="col-md-1 control-label text-left nowrap">Owning Cluster: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+                <label class="col-md-1 control-label text-left nowrap">Owning Team: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
                 <div class="col-md-2" ng-if="vm.canUser('edit')">
                     <select class="form-control"
                             name="OwningClusters"
@@ -26,7 +26,7 @@
                 <div class="col-md-2" ng-if="!vm.canUser('edit')">
                     <label class="control-label text-left nonbold">{{vm.newEnvironment.OwningCluster}}</label>
                 </div>
-                <span class="help-block" ng-if="form.OwningClusters.$dirty && form.OwningClusters.$error.required">Owning cluster is mandatory.</span>
+                <span class="help-block" ng-if="form.OwningClusters.$dirty && form.OwningClusters.$error.required">Owning team is mandatory.</span>
             </div>
 
             <div class="form-group" ng-class="{'has-error': form.DeploymentMap.$invalid}">
