@@ -29,7 +29,7 @@ function get(TableName, key) {
   return DocumentClient()
     .then(dynamo => dynamo.get(params).promise())
     .then(result => result.Item || null)
-    .catch(logError);
+    .catch(logError(params));
 }
 
 function scan(TableName, expressions) {
