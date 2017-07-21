@@ -29,6 +29,7 @@ function copy() {
     'globals.js',
     'index.js',
     'package.json',
+    'start',
     'tempMapResolver.js',
     'yarn.lock'
   ]).pipe(gulp.dest(output()));

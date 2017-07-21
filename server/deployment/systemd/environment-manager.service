@@ -4,7 +4,7 @@ Conflicts=environment-manager-debug.service
 [Service]
 EnvironmentFile=/etc/environment-manager.env
 WorkingDirectory=/opt/environment-manager/
-ExecStart=/usr/bin/npm start
+ExecStart=/opt/environment-manager/start
 
 Restart=always
 StandardOutput=syslog
