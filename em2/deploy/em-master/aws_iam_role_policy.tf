@@ -181,7 +181,7 @@ EOF
 }
 
 resource "aws_iam_policy" "scheduler_role_policy" {
-  name = "policy-em-scheduler"
+  name = "policy-${var.stack}-${var.app}-scheduler"
 
   policy = <<EOF
 {

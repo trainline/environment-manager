@@ -58,7 +58,7 @@ EOF
 }
 
 resource "aws_iam_role" "scheduler_role" {
-  name = "role-em-scheduler"
+  name = "role-${var.stack}-${var.app}-scheduler"
 
   assume_role_policy = <<EOF
 {

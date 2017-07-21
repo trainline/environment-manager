@@ -2,16 +2,14 @@
 'use strict'
 
 let config = require('./config.json');
-let awsFactory = require('../services/aws');
 let emFactory = require('../services/em');
 let schedulerFactory = require('../scheduler');
 
-let awsConfig = { account: 'enter-account-name', region: 'eu-west-1' };
+let awsConfig = { region: 'eu-west-1' };
+let em = emFactory.create(config.em);
 
-let aws = awsFactory.create({ region: awsConfig.region });
-let em = emFactory.create(awsConfig.account, config.em);
-
-let scheduler = schedulerFactory.create(config, em, aws.ec2);
+let context = { awsAccountId: 123456789, awsRegion: 'eu-west-1', env: { CHILD_ACCOUNT_ROLE_NAME: 'enterRoleName' } };
+let scheduler = schedulerFactory.create(config, em, require('aws-sdk'), context);
 
 let write = result => console.log(JSON.stringify(result, null, 2));
 

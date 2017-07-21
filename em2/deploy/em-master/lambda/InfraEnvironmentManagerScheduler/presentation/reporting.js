@@ -3,45 +3,49 @@
 
 const _ = require('lodash');
 
-function createReport(details, listSkippedInstances) {
-
-  let success =
-    details.changeResults.switchOff.success &&
-    details.changeResults.switchOn.success &&
-    details.changeResults.putInService.success &&
-    details.changeResults.putOutOfService.success;
+function createReport(accounts, listSkippedInstances) {
+  let success = _.every(accounts, accountWasSuccessfullyScheduled);
 
   let result = {
     success: success,
-    switchOn: {
-      result: details.changeResults.switchOn,
-      instances: details.actionGroups.switchOn
-    },
-    switchOff: {
-      result: details.changeResults.switchOff,
-      instances: details.actionGroups.switchOff
-    },
-    putInService: {
-      result: details.changeResults.putInService,
-      instances: details.actionGroups.putInService
-    },
-    putOutOfService: {
-      result: details.changeResults.putOutOfService,
-      instances: details.actionGroups.putOutOfService
-    }
-  }
-
-  if (listSkippedInstances)
-    result.skip = details.actionGroups.skip;
+    accountReports: accounts.map(account => createAccountReport(account, listSkippedInstances))
+  };
 
   return result;
 }
 
-function getInstanceTagValue(instance, tagName) {
-  if (instance.Tags) {
-    let tag = _.first(instance.Tags.filter(tag => tag.Key.toLowerCase() === tagName.toLowerCase()));
-    if (tag) return tag.Value;
-  }
+function createAccountReport(account, listSkippedInstances) {
+  let result = {
+    accountName: account.accountName,
+    switchOn: {
+      result: account.details.changeResults.switchOn,
+      instances: account.details.actionGroups.switchOn
+    },
+    switchOff: {
+      result: account.details.changeResults.switchOff,
+      instances: account.details.actionGroups.switchOff
+    },
+    putInService: {
+      result: account.details.changeResults.putInService,
+      instances: account.details.actionGroups.putInService
+    },
+    putOutOfService: {
+      result: account.details.changeResults.putOutOfService,
+      instances: account.details.actionGroups.putOutOfService
+    }
+  };
+
+  if (listSkippedInstances)
+    result.skip = account.details.actionGroups.skip;
+
+  return result;
+}
+
+function accountWasSuccessfullyScheduled(account) {
+  return account.details.changeResults.switchOff.success &&
+    account.details.changeResults.switchOn.success &&
+    account.details.changeResults.putInService.success &&
+    account.details.changeResults.putOutOfService.success;
 }
 
 module.exports = {

@@ -4,29 +4,32 @@
 const co = require('co');
 const _ = require('lodash');
 
+const awsFactory = require('./services/aws');
 const reporting = require('./presentation/reporting');
 
-function createScheduler(config, em, ec2) {
-
+function createScheduler(config, em, AWS, context, logger) {
   function doScheduling () {
     return co(function*() {
+      let accounts = yield getAccounts();
 
-      let allScheduledActions = yield getScheduledActions();
-      let scheduledActions = maybeFilterActionsForASGInstances(allScheduledActions);
+      let accountResults = yield accounts.map((account) => {
+        return co(function*() {
+          let aws = yield awsFactory.create(AWS, context, account, logger);
+          
+          let allScheduledActions = yield getScheduledActions(account);
+          let scheduledActions = maybeFilterActionsForASGInstances(allScheduledActions);
+          let actionGroups = groupActionsByType(scheduledActions);
 
-      let actionGroups = groupActionsByType(scheduledActions);
+          let changeResults = yield performChanges(aws, actionGroups);
 
-      let changeResults = yield performChanges(actionGroups);
+          return {
+            accountName: account.AccountName,
+            details: { actionGroups, changeResults }
+          };
+        });
+      });
 
-      return reporting.createReport({ actionGroups, changeResults }, config.listSkippedInstances);
-
-    }).catch(err => {
-
-      return {
-        success: false,
-        error: printableError(err),
-      };
-
+      return reporting.createReport(accountResults, config.listSkippedInstances);
     });
   }
 
@@ -37,25 +40,22 @@ function createScheduler(config, em, ec2) {
     return instanceActions.filter(instanceAction => !instanceAction.instance.asg);
   }
 
-  function printableError(err) {
-    if (err instanceof Error) {
-      return {
-        message: err.message,
-        stack: err.stack
-      };
-    }
+  function getAccounts() {
+    return co(function*() {
+      let allAccounts = yield em.getAccounts();
 
-    return err;
+      if (!config.limitToAccounts.length) return allAccounts;
+      return allAccounts.filter(x => _.includes(config.limitToAccounts, x.AccountName));
+    });
   }
 
-  function getScheduledActions() {
-    return em.getScheduledInstanceActions().then(instanceActions => {
+  function getScheduledActions(account) {
+    return em.getScheduledInstanceActions(account.AccountName).then(instanceActions => {
       return instanceActions.filter(x => environmentMatchesFilter(x.instance.environment, config.limitToEnvironment));
     });
   }
 
   function groupActionsByType(instanceActions) {
-
     let result = { switchOn: [], switchOff: [], putInService: [], putOutOfService: [], skip: [] };
 
     instanceActions.forEach(instanceAction => {
@@ -63,34 +63,28 @@ function createScheduler(config, em, ec2) {
     });
 
     return result;
-
   }
 
   function environmentMatchesFilter(environmentName, environmentFilter) {
-
     if (!environmentFilter) return true;
     if (!environmentName) return false;
 
     var re = new RegExp(environmentFilter);
     return re.test(environmentName);
-
   }
 
-  function performChanges(actionGroups) {
+  function performChanges(aws, actionGroups) {
     return co(function*() {
-    
       return {
-        switchOn: yield performChange(ec2.switchInstancesOn, actionGroups.switchOn),
-        switchOff: yield performChange(ec2.switchInstancesOff, actionGroups.switchOff),
-        putInService: yield performChange(ec2.putAsgInstancesInService, actionGroups.putInService),
-        putOutOfService: yield performChange(ec2.putAsgInstancesInStandby, actionGroups.putOutOfService)
+        switchOn: yield performChange(aws.ec2.switchInstancesOn, actionGroups.switchOn),
+        switchOff: yield performChange(aws.ec2.switchInstancesOff, actionGroups.switchOff),
+        putInService: yield performChange(aws.autoScaling.putInstancesInService, actionGroups.putInService),
+        putOutOfService: yield performChange(aws.autoScaling.putInstancesInStandby, actionGroups.putOutOfService)
       };
-
     });
   }
 
   function performChange(doChange, actions) {
-
     if (!actions.length || config.whatIf) {
       return Promise.resolve({ success: true });
     }
@@ -100,11 +94,9 @@ function createScheduler(config, em, ec2) {
     return doChange(instances)
       .then(() => { return { success: true }; })
       .catch(err => { return { success: false, error: err }; });
-
   }
 
   return { doScheduling };
-
 }
 
 module.exports = {

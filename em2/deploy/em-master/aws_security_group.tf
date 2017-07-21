@@ -56,7 +56,7 @@ resource "aws_security_group" "redis_host" {
 }
 
 resource "aws_security_group" "scheduler_sg" {
-  name        = "em-scheduler"
+  name        = "${var.stack}-${var.app}-scheduler"
   description = "Allow all outbound traffic"
 
   egress {

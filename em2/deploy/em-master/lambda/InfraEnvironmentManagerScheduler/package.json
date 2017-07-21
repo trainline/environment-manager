@@ -4,22 +4,35 @@
   "description": "Starts and stops instances and ASGs scheduled by Environment Manager",
   "main": "index.js",
   "scripts": {
-    "build-aws-resource": "pack-zip",
+    "build": "node build",
     "test": "mocha ./**/*.spec.js",
     "test-ci": "npm test -- --reporter mocha-teamcity-reporter --timeout 4000"
   },
   "author": "Trainline",
-  "license": "ISC",
+  "license": "Apache-2.0",
+  "files": [
+    "index.js",
+    "scheduler.js",
+    "environment.js",
+    "package.json",
+    "presentation/**",
+    "services/**",
+    "node_modules/**"
+  ],
   "dependencies": {
-    "aws-sdk": "^2.6.6",
+    "aws-sdk": "^2.70.0",
     "co": "^4.6.0",
     "later": "^1.2.0",
     "lodash": "^4.16.3",
     "request": "^2.75.0",
-    "request-promise": "^4.1.1"
+    "request-promise": "^4.1.1",
+    "roast-lambda": "^0.1.11",
+    "uuid": "^3.0.1"
   },
   "devDependencies": {
+    "archiver-promise": "^1.0.0",
     "chai": "^3.5.0",
+    "fs-extra": "^3.0.1",
     "mocha": "^3.1.2",
     "mocha-teamcity-reporter": "^1.1.1",
     "pack-zip": "^0.2.2",
