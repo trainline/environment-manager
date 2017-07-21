@@ -17,7 +17,7 @@
         <select class="form-control" ng-model="vm.selected.status" ng-options="status for status in vm.options.statuses" ng-change="vm.update()"></select>
       </div>
       <div class="form-group">
-        <label class="control-label text-left">Cluster:</label>
+        <label class="control-label text-left">Team:</label>
       </div>
       <div class="form-group">
         <select class="form-control" ng-model="vm.selected.cluster" ng-options="cluster for cluster in vm.options.clusters" ng-change="vm.update()">Any</select>
@@ -59,7 +59,7 @@
         <thead>
           <tr>
             <th class="text-nowrap">Server Role</th>
-            <th class="text-nowrap">Owning Cluster</th>
+            <th class="text-nowrap">Owning Team</th>
             <th class="text-nowrap">Services</th>
             <th class="text-nowrap" current-desired-title="{{vm.view.allServersCount}}">Servers ({{ vm.view.allServersCount }})</th>
             <th class="text-nowrap">AMI</th>

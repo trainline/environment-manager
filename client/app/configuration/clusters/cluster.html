@@ -1,7 +1,7 @@
 <div class="row page-title">
     <div class="col-md-12">
-        <h2 ng-if="!EditMode">New Cluster</h2>
-        <h2 ng-if="EditMode">Edit Cluster {{Cluster.ClusterName}}</h2>
+        <h2 ng-if="!EditMode">New Team</h2>
+        <h2 ng-if="EditMode">Edit Team {{Cluster.ClusterName}}</h2>
     </div>
 </div>
 
@@ -10,7 +10,7 @@
 <form name="form" id="Cluster" class="form-horizontal" ng-show="DataFound || !EditMode">
 
     <div class="form-group" ng-if="!EditMode" ng-class="{'has-error': form.ClusterName.$invalid}">
-        <label class="col-md-1 control-label text-left nowrap">Cluster Name: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+        <label class="col-md-1 control-label text-left nowrap">Team Name: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
         <div class="col-md-2">
             <input type="text"
                    name="ClusterName"
@@ -23,9 +23,9 @@
                    pattern="[a-zA-Z]+[a-zA-Z0-9]*"
                    ng-readonly="!!EditMode || !canUser('edit')" />
         </div>
-        <span class="help-block" ng-if="form.ClusterName.$dirty && form.ClusterName.$error.required">Cluster name is mandatory.</span>
-        <span class="help-block" ng-if="form.ClusterName.$dirty && form.ClusterName.$error.duplicated">A Cluster already exists with the same name.</span>
-        <span class="help-block" ng-if="form.ClusterName.$dirty && form.ClusterName.$error.pattern">Cluster name must be a single alphanumeric word.</span>
+        <span class="help-block" ng-if="form.ClusterName.$dirty && form.ClusterName.$error.required">Team name is mandatory.</span>
+        <span class="help-block" ng-if="form.ClusterName.$dirty && form.ClusterName.$error.duplicated">A Team already exists with the same name.</span>
+        <span class="help-block" ng-if="form.ClusterName.$dirty && form.ClusterName.$error.pattern">Team name must be a single alphanumeric word.</span>
     </div>
     <div class="form-group" ng-class="{'has-error': form.ShortName.$invalid}">
         <label class="col-md-1 control-label text-left nowrap">Short Name Code: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
