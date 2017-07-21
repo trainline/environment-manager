@@ -1,3 +1,15 @@
+# VPC
+
+variable "vpc_cidr" {}
+variable "nacl_ingress_cidr" {}
+variable "nacl_egress_cidr" {}
+
+variable "subnet_cidr" {
+  type = "map"
+}
+
+# Other
+
 variable "configuration_bucket" {}
 
 variable "configuration_key" {
