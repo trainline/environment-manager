@@ -133,14 +133,14 @@ function putUpstreamConfigByName(req, res, next) {
     .then(sns.publish({
       message: JSON.stringify({
         Endpoint: {
-          Url: `/config/upstreams/${key}`,
+          Url: `/config/upstreams/${JSON.stringify(key)}`,
           Method: 'PUT'
         }
       }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.PUT,
-        ID: ''
+        ID: `${JSON.stringify(key)}`
       }
     }))
     .catch(next);
