@@ -18,7 +18,7 @@ variable "secure_bucket" {}
 
 variable "backups_bucket" {}
 
-variable "configuration_bucket" {}
+variable "configuration_key" {}
 
 variable "deployment_logs_bucket" {}
 
@@ -41,12 +41,6 @@ variable "redis_address" {}
 variable "redis_crypto_key" {}
 
 variable "redis_port" {}
-
-# Load Balancer
-
-variable "load_balancer_em_timeout" {}
-
-variable "load_balancer_em_port" {}
 
 # Security Groups
 
