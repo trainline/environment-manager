@@ -14,10 +14,6 @@ variable "init_script_bucket" {}
 
 variable scheduler_package {}
 
-variable scheduler_env_vars {
-  type = "map"
-}
-
 # Redis
 
 variable "redis_subnet_group" {}

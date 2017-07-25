@@ -27,7 +27,9 @@ resource "aws_lambda_function" "scheduler" {
   }
 
   environment {
-    variables = "${var.scheduler_env_vars}"
+    variables {
+      EM_HOST = "http://${aws_elb.app.dns_name}"
+    }
   }
 }
 
