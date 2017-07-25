@@ -1,3 +1,33 @@
+resource "aws_subnet" "elb_a" {
+  vpc_id            = "${aws_vpc.main.id}"
+  availability_zone = "${var.subnet_availability_zones["a"]}"
+  cidr_block        = "${var.subnet_cidr["elb_a"]}"
+
+  tags {
+    Name = "ELB A"
+  }
+}
+
+resource "aws_subnet" "elb_b" {
+  vpc_id            = "${aws_vpc.main.id}"
+  availability_zone = "${var.subnet_availability_zones["b"]}"
+  cidr_block        = "${var.subnet_cidr["elb_b"]}"
+
+  tags {
+    Name = "ELB B"
+  }
+}
+
+resource "aws_subnet" "elb_c" {
+  vpc_id            = "${aws_vpc.main.id}"
+  availability_zone = "${var.subnet_availability_zones["c"]}"
+  cidr_block        = "${var.subnet_cidr["elb_c"]}"
+
+  tags {
+    Name = "ELB C"
+  }
+}
+
 resource "aws_subnet" "public_a" {
   vpc_id            = "${aws_vpc.main.id}"
   availability_zone = "${var.subnet_availability_zones["a"]}"

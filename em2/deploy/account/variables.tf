@@ -10,10 +10,6 @@ variable "vpc_dhcp_domain_name" {}
 
 variable "vpc_dhcp_domain_name_servers" {}
 
-# aws_default_route_table
-
-variable "default_route_table_cidr" {}
-
 # aws_subnet
 variable "subnet_availability_zones" {
   type = "map"
