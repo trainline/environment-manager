@@ -8,20 +8,18 @@ if (process.env.NEW_RELIC_APP_NAME !== undefined) {
 }
 
 global.Promise = require('bluebird');
+let AWS = require('aws-sdk');
+let co = require('co');
+const fp = require('lodash/fp');
 
-require('app-module-path').addPath(__dirname);
-
+require('app-module-path').addPath(__dirname); // must be executed before requiring modules outside node_modules.
 let config = require('config/');
-
 let logger = require('modules/logger');
 
 // TODO conver to singleton
 let ConfigurationProvider = require('modules/configuration/ConfigurationProvider');
 let checkAppPrerequisites = require('modules/checkAppPrerequisites');
 let cacheManager = require('modules/cacheManager');
-let co = require('co');
-
-const fp = require('lodash/fp');
 const miniStack = require('modules/miniStack');
 const mini = miniStack.build();
 
@@ -46,6 +44,8 @@ let servers;
 
 function start() {
   co(function* () { // eslint-disable-line func-names
+    AWS.config.setPromisesDependency(Promise);
+    AWS.config.update({ region: config.get('EM_AWS_REGION') });
     let configurationProvider = new ConfigurationProvider();
     yield configurationProvider.init();
     yield cacheManager.flush();

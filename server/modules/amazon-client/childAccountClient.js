@@ -2,10 +2,8 @@
 
 'use strict';
 
-let co = require('co');
 let guid = require('uuid/v1');
 let AWS = require('aws-sdk');
-let common = require('./common');
 let awsAccounts = require('modules/awsAccounts');
 
 module.exports = {
@@ -20,15 +18,12 @@ module.exports = {
 };
 
 function createClientWithRole(ClientType) {
-  return co.wrap(function* clientFactory(accountName) {
-    let account = yield awsAccounts.getByName(accountName);
-    let options = common.getOptions();
-    if (account.Impersonate && account.RoleArn !== undefined) {
-      options.credentials = yield getCredentials(account.RoleArn);
-    }
-
-    return common.create(ClientType, options);
-  });
+  return accountName =>
+    awsAccounts.getByName(accountName)
+      .then(({ Impersonate, RoleArn }) => (Impersonate && RoleArn !== undefined
+        ? getCredentials(RoleArn).then(credentials => ({ credentials }))
+        : Promise.resolve({})))
+      .then(options => new ClientType(options));
 }
 
 function getCredentials(roleARN) {

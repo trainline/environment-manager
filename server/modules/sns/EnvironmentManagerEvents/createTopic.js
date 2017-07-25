@@ -1,7 +1,6 @@
 'use strict';
 
 let aws = require('aws-sdk');
-aws.config.update({ region: 'eu-west-1' });
 
 function passSafetyNet(name) {
   let root = name.split('/')[0];
