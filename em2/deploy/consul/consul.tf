@@ -62,7 +62,7 @@ resource "aws_instance" "server" {
 }
 
 resource "aws_iam_instance_profile" "consul" {
-  name = "${var.stack}-${var.app}-consul"
+  name = "${var.stack}-consul"
   role = "${aws_iam_role.app.name}"
 }
 

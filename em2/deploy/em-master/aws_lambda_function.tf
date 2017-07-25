@@ -1,6 +1,6 @@
 # resource "aws_lambda_function" "audit" {
 #   filename         = "./lambda/InfraEnvironmentManagerAudit/infra-environment-manager-audit.zip"
-#   function_name    = "${var.stack}-${var.app}-audit"
+#   function_name    = "${var.stack}-audit"
 #   role             = "${aws_iam_role.audit.arn}"
 #   handler          = "index.handler"
 #   source_code_hash = "${base64sha256(file("./lambda/InfraEnvironmentManagerAudit/infra-environment-manager-audit.zip"))}"
@@ -12,7 +12,7 @@
 
 resource "aws_lambda_function" "scheduler" {
   filename         = "${var.scheduler_package}"
-  function_name    = "${var.stack}-${var.app}-scheduler"
+  function_name    = "${var.stack}-scheduler"
   description      = "Turns on/off instances based on instance, asg or environment schedule"
   memory_size      = 320
   timeout          = 30

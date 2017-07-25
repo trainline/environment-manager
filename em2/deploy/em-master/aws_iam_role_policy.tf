@@ -1,5 +1,5 @@
 resource "aws_iam_role_policy" "audit_writer" {
-  name = "policy-${var.stack}-${var.app}-audit-writer"
+  name = "policy-${var.stack}-audit-writer"
   role = "${aws_iam_role.audit_writer.id}"
 
   policy = <<EOF
@@ -20,7 +20,7 @@ EOF
 }
 
 resource "aws_iam_role_policy" "app" {
-  name = "policy-${var.stack}-${var.app}-app"
+  name = "policy-${var.stack}-app"
   role = "${aws_iam_role.app.name}"
 
   policy = <<EOF
@@ -41,9 +41,9 @@ resource "aws_iam_role_policy" "app" {
             "dynamodb:UpdateItem"
          ],
          "Resource":[
-            "arn:aws:dynamodb:eu-west-1:${data.aws_caller_identity.current.account_id}:table/${var.stack}-${var.app}-Config*",
-            "arn:aws:dynamodb:eu-west-1:${data.aws_caller_identity.current.account_id}:table/${var.stack}-${var.app}-Infra*",
-            "arn:aws:dynamodb:eu-west-1:${data.aws_caller_identity.current.account_id}:table/${var.stack}-${var.app}-Environment*"
+            "arn:aws:dynamodb:eu-west-1:${data.aws_caller_identity.current.account_id}:table/${var.stack}-Config*",
+            "arn:aws:dynamodb:eu-west-1:${data.aws_caller_identity.current.account_id}:table/${var.stack}-Infra*",
+            "arn:aws:dynamodb:eu-west-1:${data.aws_caller_identity.current.account_id}:table/${var.stack}-Environment*"
          ]
       },
       {
@@ -62,9 +62,9 @@ resource "aws_iam_role_policy" "app" {
           "s3:ListBucket"
         ],
         "Resource": [
-          "arn:aws:s3:::${var.secure_bucket}",
-          "arn:aws:s3:::${var.packages_bucket}",
-          "arn:aws:s3:::${var.deployment_logs_bucket}"
+          "arn:aws:s3:::${var.secure_bucket}/${var.stack}",
+          "arn:aws:s3:::${var.bucket}/${var.stack}/packages",
+          "arn:aws:s3:::${var.bucket}/${var.stack}/logs"
         ]
       },
       {
@@ -73,8 +73,8 @@ resource "aws_iam_role_policy" "app" {
            "s3:GetObject" 
          ],
          "Resource":[
-            "arn:aws:s3:::${var.secure_bucket}/*",
-            "arn:aws:s3:::${var.backups_bucket}/*",
+            "arn:aws:s3:::${var.secure_bucket}/${var.stack}/*",
+            "arn:aws:s3:::${var.bucket}/${var.stack}/backups/*",
             "arn:aws:s3:::${var.init_script_bucket}/*"
          ]
       },
@@ -86,8 +86,8 @@ resource "aws_iam_role_policy" "app" {
             "s3:GetObjectVersion"
          ],
          "Resource": [
-            "arn:aws:s3:::${var.deployment_logs_bucket}/*",
-            "arn:aws:s3:::${var.packages_bucket}/*"
+            "arn:aws:s3:::${var.bucket}/${var.stack}/logs/*",
+            "arn:aws:s3:::${var.bucket}/${var.stack}/packages/*"
          ]
       },
       {
@@ -180,7 +180,7 @@ EOF
 }
 
 resource "aws_iam_policy" "scheduler_role_policy" {
-  name = "policy-${var.stack}-${var.app}-scheduler"
+  name = "policy-${var.stack}-scheduler"
 
   policy = <<EOF
 {

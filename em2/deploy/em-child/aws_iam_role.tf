@@ -1,5 +1,5 @@
 resource "aws_iam_role" "app" {
-  name = "role-${var.stack}-${var.app}-child"
+  name = "role-${var.stack}-child"
 
   assume_role_policy = <<EOF
 {

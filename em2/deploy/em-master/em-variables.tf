@@ -2,25 +2,11 @@
 
 variable "stack" {}
 
-variable "app" {}
-
-variable "is_production" {}
-
-variable "packages_key_prefix" {}
-
 # Buckets
 
-variable "packages_bucket" {}
-
-variable "deployment_bucket" {}
+variable "bucket" {}
 
 variable "secure_bucket" {}
-
-variable "backups_bucket" {}
-
-variable "configuration_key" {}
-
-variable "deployment_logs_bucket" {}
 
 variable "init_script_bucket" {}
 
@@ -35,12 +21,6 @@ variable scheduler_env_vars {
 # Redis
 
 variable "redis_subnet_group" {}
-
-variable "redis_address" {}
-
-variable "redis_crypto_key" {}
-
-variable "redis_port" {}
 
 # Security Groups
 

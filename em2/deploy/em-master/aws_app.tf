@@ -1,6 +1,6 @@
 resource "aws_autoscaling_group" "app" {
   vpc_zone_identifier       = ["${var.subnet_ids["private_a"]}", "${var.subnet_ids["private_b"]}", "${var.subnet_ids["private_c"]}"]
-  name                      = "${var.stack}-${var.app}"
+  name                      = "${var.stack}"
   max_size                  = 5
   min_size                  = 0
   health_check_grace_period = 30
@@ -16,19 +16,19 @@ data "template_file" "user_data" {
 
   vars {
     region              = "${data.aws_region.current.name}"
-    resource_prefix     = "${var.stack}-${var.app}-"
+    resource_prefix     = "${var.stack}-"
     secure_bucket       = "${var.secure_bucket}"
-    config_key          = "${var.configuration_key}"
-    packages_bucket     = "${var.packages_bucket}"
-    packages_key_prefix = "${var.packages_key_prefix}"
+    config_key          = "${var.stack}/config.json"
+    packages_bucket     = "${var.bucket}"
+    packages_key_prefix = "${var.stack}/packages"
     redis_address       = "${aws_elasticache_cluster.cache-cluster.cache_nodes.0.address}"
-    redis_port          = "${var.redis_port}"
-    redis_key_key       = "${var.redis_crypto_key}"
+    redis_port          = "${aws_elasticache_cluster.cache-cluster.cache_nodes.0.port}"
+    redis_key_key       = "${var.stack}/keys/redis.key"
   }
 }
 
 resource "aws_launch_configuration" "app" {
-  name_prefix          = "${var.stack}-${var.app}-"
+  name_prefix          = "${var.stack}-"
   image_id             = "${data.aws_ami.ubuntu.id}"
   instance_type        = "t2.micro"
   key_name             = "em-testing-master-keypair-2"
@@ -42,7 +42,7 @@ resource "aws_launch_configuration" "app" {
 }
 
 resource "aws_elb" "app" {
-  name    = "${var.stack}-${var.app}"
+  name    = "${var.stack}"
   subnets = ["${var.subnet_ids["public_a"]}", "${var.subnet_ids["public_b"]}", "${var.subnet_ids["public_c"]}"]
 
   listener {
@@ -68,6 +68,6 @@ resource "aws_elb" "app" {
   cross_zone_load_balancing = true
 
   tags {
-    Name = "${var.stack}-${var.app}"
+    Name = "${var.stack}"
   }
 }

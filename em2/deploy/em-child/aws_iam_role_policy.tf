@@ -1,5 +1,5 @@
 resource "aws_iam_role_policy" "app" {
-  name = "policy-${var.stack}-${var.app}-child"
+  name = "policy-${var.stack}-child"
   role = "${aws_iam_role.app.name}"
 
   policy = <<EOF
