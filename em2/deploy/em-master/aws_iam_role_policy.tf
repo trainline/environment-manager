@@ -41,9 +41,9 @@ resource "aws_iam_role_policy" "app" {
             "dynamodb:UpdateItem"
          ],
          "Resource":[
-            "arn:aws:dynamodb:eu-west-1:${data.aws_caller_identity.current.account_id}:table/Config*",
-            "arn:aws:dynamodb:eu-west-1:${data.aws_caller_identity.current.account_id}:table/Infra*",
-            "arn:aws:dynamodb:eu-west-1:${data.aws_caller_identity.current.account_id}:table/Environment*"
+            "arn:aws:dynamodb:eu-west-1:${data.aws_caller_identity.current.account_id}:table/${var.stack}-${var.app}-Config*",
+            "arn:aws:dynamodb:eu-west-1:${data.aws_caller_identity.current.account_id}:table/${var.stack}-${var.app}-Infra*",
+            "arn:aws:dynamodb:eu-west-1:${data.aws_caller_identity.current.account_id}:table/${var.stack}-${var.app}-Environment*"
          ]
       },
       {
@@ -73,7 +73,6 @@ resource "aws_iam_role_policy" "app" {
            "s3:GetObject" 
          ],
          "Resource":[
-            "arn:aws:s3:::${var.configuration_bucket}/*",
             "arn:aws:s3:::${var.secure_bucket}/*",
             "arn:aws:s3:::${var.backups_bucket}/*",
             "arn:aws:s3:::${var.init_script_bucket}/*"
