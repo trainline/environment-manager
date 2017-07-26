@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket = "daveandjake-remote-state"
+    bucket = "terraform-em-remote-state"
     key    = "state-consul"
     region = "eu-west-1"
   }
@@ -10,13 +10,11 @@ data "terraform_remote_state" "remote-state" {
   backend = "s3"
 
   config {
-    bucket = "daveandjake-remote-state"
+    bucket = "terraform-em-remote-state"
     key    = "state-consul"
     region = "eu-west-1"
   }
 }
-
-
 
 resource "aws_instance" "server" {
   ami           = "${lookup(var.ami, "${var.region}-${var.platform}")}"
@@ -28,9 +26,11 @@ resource "aws_instance" "server" {
   subnet_id              = "${var.subnet_id}"
 
   connection {
-    type        = "ssh"
-    user        = "${lookup(var.user, var.platform)}"
-    private_key = "${file("${var.key_path}")}"
+    agent               = false
+    bastion_host        = "34.249.97.224"
+    bastion_port        = 22
+    bastion_user        = "ubuntu"
+    bastion_private_key = "${file("~/.ssh/linux-bastion.pem")}"
   }
 
   #Instance tags
@@ -59,11 +59,6 @@ resource "aws_instance" "server" {
       "${path.module}/scripts/iptables.sh",
     ]
   }
-}
-
-resource "aws_iam_instance_profile" "consul" {
-  name = "${var.stack}-${var.app}-consul"
-  role = "${aws_iam_role.app.name}"
 }
 
 resource "aws_security_group" "consul" {

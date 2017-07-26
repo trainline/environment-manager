@@ -14,13 +14,9 @@ variable "user" {
   }
 }
 
-variable "vpc_id" {
-  default = "vpc-67ab3903"
-}
+variable "vpc_id" {}
 
-variable "subnet_id" {
-  default = "subnet-b0e04bf9"
-}
+variable "subnet_id" {}
 
 variable "ami" {
   description = "AWS AMI Id, if you change, make sure it is compatible with instance type, not all AMIs allow all instance types "
@@ -90,17 +86,8 @@ variable "service_conf_dest" {
   }
 }
 
-variable "key_name" {
-  description = "SSH key name in your AWS account for AWS instances."
-}
-
-variable "key_path" {
-  description = "Path to the private key specified by key_name."
-}
-
 variable "region" {
-  default     = "eu-west-1"
-  description = "The region of AWS, for AMI lookups."
+  default = "eu-west-1"
 }
 
 variable "servers" {
