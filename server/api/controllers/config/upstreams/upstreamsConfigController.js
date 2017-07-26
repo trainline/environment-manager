@@ -105,7 +105,7 @@ function postUpstreamsConfig(req, res, next) {
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.POST,
-        ID: ''
+        ID: '_'
       }
     }))
     .catch(next);
@@ -133,8 +133,20 @@ function putUpstreamConfigByName(req, res, next) {
     .then(sns.publish({
       message: JSON.stringify({
         Endpoint: {
-          Url: `/config/upstreams/${JSON.stringify(key)}`,
-          Method: 'PUT'
+          Url: `/config/upstreams/${param('name', req)}`,
+          Method: 'PUT',
+          Parameters: [
+            {
+              Name: 'name',
+              Type: 'path',
+              Value: (param('name', req)) || ''
+            },
+            {
+              Name: 'body',
+              Type: 'body',
+              Value: JSON.stringify(body) || ''
+            }
+          ]
         }
       }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
