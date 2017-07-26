@@ -2350,9 +2350,6 @@ definitions:
       - AccountName
       - AccountNumber
       - IncludeAMIs
-      - IsProd
-      - IsMaster
-      - Impersonate
       - Version
     properties:
       AccountName:
@@ -2360,12 +2357,6 @@ definitions:
       AccountNumber:
         type: integer
       IncludeAMIs:
-        type: boolean
-      IsProd:
-        type: boolean
-      IsMaster:
-        type: boolean
-      Impersonate:
         type: boolean
       RoleArn:
         type: [string, "null"]
