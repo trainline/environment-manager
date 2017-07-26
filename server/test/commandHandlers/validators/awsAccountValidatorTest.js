@@ -26,8 +26,7 @@ describe('awsAcccountValidator', function() {
 
     sut = rewire('commands/validators/awsAccountValidator');
     sut.__set__({
-      childAWSclient,
-      getHostAccount: () => ({ id: 123456789123 })
+      childAWSclient
     });
   });
 

@@ -19,8 +19,7 @@ angular.module('EnvironmentManager.configuration').controller('AccountController
       } else {
         vm.awsAccountName = account.AccountName;
         vm.awsAccountNumber = account.AccountNumber;
-        vm.isMaster = account.IsMaster;
-        vm.roleName = !account.IsMaster ? account.RoleArn.substr(31) : ''; // ARN format makes string length fixed
+        vm.roleName = account.RoleArn.substr(31); // ARN format makes string length fixed
         vm.includeAMIs = account.IncludeAMIs;
         vm.version = account.Version;
       }
@@ -34,12 +33,9 @@ angular.module('EnvironmentManager.configuration').controller('AccountController
         var newAccount = {
           AccountName: vm.awsAccountName,
           AccountNumber: accountNumber,
-          IncludeAMIs: includeAMIs
+          IncludeAMIs: includeAMIs,
+          RoleArn: 'arn:aws:iam::' + accountNumber + ':role/' + vm.roleName
         };
-
-        if (!vm.isMaster) {
-          newAccount.RoleArn = 'arn:aws:iam::' + accountNumber + ':role/' + vm.roleName;
-        }
 
         var promise;
         if (vm.isBeingEdited && !!vm.version) {
@@ -68,7 +64,6 @@ angular.module('EnvironmentManager.configuration').controller('AccountController
     }
 
     vm.loadFailed = false;
-    vm.isMaster = false;
     vm.includeAMIs = false;
     vm.isBeingEdited = accountName !== 'add';
 
