@@ -1,5 +1,5 @@
 resource "aws_dynamodb_table" "environments" {
-  name           = "${var.stack}-${var.app}-ConfigEnvironments"
+  name           = "${var.stack}-ConfigEnvironments"
   read_capacity  = 10
   write_capacity = 2
   hash_key       = "EnvironmentName"
@@ -16,7 +16,7 @@ resource "aws_dynamodb_table" "environments" {
 }
 
 resource "aws_dynamodb_table" "services" {
-  name             = "${var.stack}-${var.app}-ConfigServices"
+  name             = "${var.stack}-ConfigServices"
   read_capacity    = 10
   write_capacity   = 2
   hash_key         = "ServiceName"
@@ -36,7 +36,7 @@ resource "aws_dynamodb_table" "services" {
 }
 
 resource "aws_dynamodb_table" "deployment_maps" {
-  name             = "${var.stack}-${var.app}-ConfigDeploymentMaps"
+  name             = "${var.stack}-ConfigDeploymentMaps"
   read_capacity    = 10
   write_capacity   = 2
   hash_key         = "DeploymentMapName"
@@ -50,7 +50,7 @@ resource "aws_dynamodb_table" "deployment_maps" {
 }
 
 resource "aws_dynamodb_table" "notification_settings" {
-  name             = "${var.stack}-${var.app}-ConfigNotificationSettings"
+  name             = "${var.stack}-ConfigNotificationSettings"
   read_capacity    = 10
   write_capacity   = 2
   hash_key         = "NotificationSettingsId"
@@ -64,7 +64,7 @@ resource "aws_dynamodb_table" "notification_settings" {
 }
 
 resource "aws_dynamodb_table" "environment_types" {
-  name             = "${var.stack}-${var.app}-ConfigEnvironmentTypes"
+  name             = "${var.stack}-ConfigEnvironmentTypes"
   read_capacity    = 10
   write_capacity   = 2
   hash_key         = "EnvironmentType"
@@ -77,7 +77,7 @@ resource "aws_dynamodb_table" "environment_types" {
 }
 
 resource "aws_dynamodb_table" "audit" {
-  name           = "${var.stack}-${var.app}-InfraChangeAudit"
+  name           = "${var.stack}-InfraChangeAudit"
   read_capacity  = 20
   write_capacity = 5
   hash_key       = "AuditID"
@@ -108,7 +108,7 @@ resource "aws_dynamodb_table" "audit" {
 }
 
 resource "aws_dynamodb_table" "accounts" {
-  name           = "${var.stack}-${var.app}-InfraConfigAccounts"
+  name           = "${var.stack}-InfraConfigAccounts"
   read_capacity  = 10
   write_capacity = 2
   hash_key       = "AccountNumber"
@@ -122,7 +122,7 @@ resource "aws_dynamodb_table" "accounts" {
 }
 
 resource "aws_dynamodb_table" "clusters" {
-  name           = "${var.stack}-${var.app}-InfraConfigClusters"
+  name           = "${var.stack}-InfraConfigClusters"
   read_capacity  = 10
   write_capacity = 2
   hash_key       = "ClusterName"
@@ -136,7 +136,7 @@ resource "aws_dynamodb_table" "clusters" {
 }
 
 resource "aws_dynamodb_table" "permissions" {
-  name           = "${var.stack}-${var.app}-InfraConfigPermissions"
+  name           = "${var.stack}-InfraConfigPermissions"
   read_capacity  = 10
   write_capacity = 2
   hash_key       = "Name"
@@ -150,7 +150,7 @@ resource "aws_dynamodb_table" "permissions" {
 }
 
 resource "aws_dynamodb_table" "ops_environments" {
-  name           = "${var.stack}-${var.app}-InfraOpsEnvironment"
+  name           = "${var.stack}-InfraOpsEnvironment"
   read_capacity  = 10
   write_capacity = 2
   hash_key       = "EnvironmentName"
@@ -164,7 +164,7 @@ resource "aws_dynamodb_table" "ops_environments" {
 }
 
 resource "aws_dynamodb_table" "lb_settings" {
-  name           = "${var.stack}-${var.app}-InfraConfigLbSettings"
+  name           = "${var.stack}-InfraConfigLbSettings"
   read_capacity  = 10
   write_capacity = 2
   hash_key       = "EnvironmentName"
@@ -198,7 +198,7 @@ resource "aws_dynamodb_table" "lb_settings" {
 }
 
 resource "aws_dynamodb_table" "deployment_execution_status" {
-  name           = "${var.stack}-${var.app}-ConfigDeploymentExecutionStatus"
+  name           = "${var.stack}-ConfigDeploymentExecutionStatus"
   read_capacity  = 10
   write_capacity = 2
   hash_key       = "DeploymentID"
@@ -210,7 +210,7 @@ resource "aws_dynamodb_table" "deployment_execution_status" {
 }
 
 resource "aws_dynamodb_table" "completed_deployments" {
-  name           = "${var.stack}-${var.app}-ConfigCompletedDeployments"
+  name           = "${var.stack}-ConfigCompletedDeployments"
   read_capacity  = 10
   write_capacity = 2
   hash_key       = "DeploymentID"
@@ -243,7 +243,7 @@ resource "aws_dynamodb_table" "completed_deployments" {
 }
 
 resource "aws_dynamodb_table" "lb_upstreams" {
-  name           = "${var.stack}-${var.app}-InfraConfigLBUpstream"
+  name           = "${var.stack}-InfraConfigLBUpstream"
   read_capacity  = 10
   write_capacity = 2
   hash_key       = "Key"

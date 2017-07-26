@@ -1,9 +1,9 @@
 resource "aws_security_group" "app" {
-  name   = "${var.stack}-${var.app}"
+  name   = "${var.stack}"
   vpc_id = "${var.vpc_id}"
 
   tags = {
-    Name = "${var.stack}-${var.app}"
+    Name = "${var.stack}"
   }
 
   ingress {
@@ -22,11 +22,11 @@ resource "aws_security_group" "app" {
 }
 
 resource "aws_security_group" "elb" {
-  name   = "${var.stack}-${var.app}-elb"
+  name   = "${var.stack}-elb"
   vpc_id = "${var.vpc_id}"
 
   tags = {
-    Name = "${var.stack}-${var.app}-elb"
+    Name = "${var.stack}-elb"
   }
 
   ingress {
@@ -45,32 +45,32 @@ resource "aws_security_group" "elb" {
 }
 
 resource "aws_security_group" "redis_access" {
-  name   = "${var.stack}-${var.app}-redis-access"
+  name   = "${var.stack}-redis-access"
   vpc_id = "${var.vpc_id}"
 
   tags = {
-    Name = "${var.stack}-${var.app}-redis-access"
+    Name = "${var.stack}-redis-access"
   }
 }
 
 resource "aws_security_group" "redis_host" {
-  name   = "${var.stack}-${var.app}-redis-host"
+  name   = "${var.stack}-redis-host"
   vpc_id = "${var.vpc_id}"
 
   tags = {
-    Name = "${var.stack}-${var.app}-redis-host"
+    Name = "${var.stack}-redis-host"
   }
 
   ingress {
     protocol  = "tcp"
     self      = true
-    from_port = "${var.redis_port}"
-    to_port   = "${var.redis_port}"
+    from_port = "${aws_elasticache_cluster.cache-cluster.cache_nodes.0.port}"
+    to_port   = "${aws_elasticache_cluster.cache-cluster.cache_nodes.0.port}"
   }
 }
 
 resource "aws_security_group" "scheduler_sg" {
-  name        = "${var.stack}-${var.app}-scheduler"
+  name        = "${var.stack}-scheduler"
   description = "Allow all outbound traffic"
 
   egress {

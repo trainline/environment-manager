@@ -1,5 +1,5 @@
 resource "aws_iam_role" "audit" {
-  name = "role-${var.stack}-${var.app}-audit"
+  name = "role-${var.stack}-audit"
 
   assume_role_policy = <<EOF
 {
@@ -19,7 +19,7 @@ EOF
 }
 
 resource "aws_iam_role" "audit_writer" {
-  name = "role-${var.stack}-${var.app}-audit-writer"
+  name = "role-${var.stack}-audit-writer"
 
   assume_role_policy = <<EOF
 {
@@ -39,7 +39,7 @@ EOF
 }
 
 resource "aws_iam_role" "app" {
-  name = "role-${var.stack}-${var.app}"
+  name = "role-${var.stack}"
 
   assume_role_policy = <<EOF
 {
@@ -58,7 +58,7 @@ EOF
 }
 
 resource "aws_iam_role" "scheduler_role" {
-  name = "role-${var.stack}-${var.app}-scheduler"
+  name = "role-${var.stack}-scheduler"
 
   assume_role_policy = <<EOF
 {
