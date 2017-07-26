@@ -26,10 +26,10 @@ resource "aws_instance" "server" {
   subnet_id              = "${var.subnet_id}"
 
   connection {
-    agent               = false
+    user                = "ubuntu"
+    private_key         = "${file("${var.key_path}")}"
     bastion_host        = "34.249.97.224"
     bastion_port        = 22
-    bastion_user        = "ubuntu"
     bastion_private_key = "${file("~/.ssh/linux-bastion.pem")}"
   }
 

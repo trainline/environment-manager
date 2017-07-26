@@ -18,6 +18,10 @@ variable "vpc_id" {}
 
 variable "subnet_id" {}
 
+variable "key_name" {}
+
+variable "key_path" {}
+
 variable "ami" {
   description = "AWS AMI Id, if you change, make sure it is compatible with instance type, not all AMIs allow all instance types "
 
