@@ -1,16 +1,25 @@
-# VPC
+# aws_vpc
 
 variable "vpc_cidr" {}
-variable "nacl_ingress_cidr" {}
-variable "nacl_egress_cidr" {}
+
+variable "vpc_name" {}
+
+# aws_vpc_dhcp_options
+
+variable "vpc_dhcp_domain_name" {}
+
+variable "vpc_dhcp_domain_name_servers" {}
+
+# aws_subnet
+variable "subnet_availability_zones" {
+  type = "map"
+}
 
 variable "subnet_cidr" {
   type = "map"
 }
 
 # Other
-
-variable "configuration_bucket" {}
 
 variable "configuration_key" {
   description = "The configuration file to be used by Environment Manager"
