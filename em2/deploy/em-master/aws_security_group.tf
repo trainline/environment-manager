@@ -72,6 +72,7 @@ resource "aws_security_group" "redis_host" {
 resource "aws_security_group" "scheduler_sg" {
   name        = "${var.stack}-scheduler"
   description = "Allow all outbound traffic"
+  vpc_id      = "${var.vpc_id}"
 
   egress {
     from_port   = 0

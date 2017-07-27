@@ -43,7 +43,7 @@ resource "aws_launch_configuration" "app" {
 
 resource "aws_elb" "app" {
   name    = "${var.stack}"
-  subnets = ["${var.subnet_ids["public_a"]}", "${var.subnet_ids["public_b"]}", "${var.subnet_ids["public_c"]}"]
+  subnets = ["${var.subnet_ids["elb_a"]}", "${var.subnet_ids["elb_b"]}", "${var.subnet_ids["elb_c"]}"]
 
   listener {
     instance_port     = 8080
