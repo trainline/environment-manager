@@ -37,8 +37,8 @@ function validate(account) {
 }
 
 function validateAccountNumber(accountNumber) {
-  if (!Number.isInteger(accountNumber) || String(accountNumber).length !== 12) {
-    throw new Error('AccountNumber must be a 12 digit integer');
+  if (!Number.isInteger(accountNumber) || accountNumber > 999999999999) {
+    throw new Error('AccountNumber must be a (max) 12 digit integer');
   }
 }
 

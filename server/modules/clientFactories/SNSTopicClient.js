@@ -3,6 +3,7 @@
 'use strict';
 
 let co = require('co');
+let _ = require('lodash');
 let AwsError = require('modules/errors/AwsError.class');
 let TopicNotFoundError = require('modules/errors/TopicNotFoundError.class');
 let config = require('config');
@@ -28,7 +29,8 @@ module.exports = function SNSTopicClient(accountName) {
   };
 
   function getTopicArnByConvention(topicName, awsAccount) {
-    let topicArn = `arn:aws:sns:${AWS_REGION}:${awsAccount.AccountNumber}:${topicName}`;
+    let accountNumber = _.padStart(awsAccount.AccountNumber, 12, '0');
+    let topicArn = `arn:aws:sns:${AWS_REGION}:${accountNumber}:${topicName}`;
     return Promise.resolve(topicArn);
   }
 };

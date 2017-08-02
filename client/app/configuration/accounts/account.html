@@ -67,20 +67,26 @@
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="aws-account-name" class="col-md-1 control-label">Role ARN:</label>
+    <div class="form-group" ng-class="{'has-error': form.awsAccountRole.$invalid && form.awsAccountRole.$dirty}">
+        <label for="aws-account-role" class="col-md-1 control-label">Role ARN:</label>
         <div class="col-md-4">
             <div class="input-group">
                 <span class="input-group-addon" id="arn-prefix">
                     <small><em>arn:aws:iam::{{::account.awsAccountNumber}}:role/</em></small>
                 </span>
-                <input type="text"
+                <input name="awsAccountRole"
+                       type="text"
                        class="form-control"
                        placeholder="Role Name"
                        aria-describedby="arn-prefix"
+                       required
                        ng-model="account.roleName">
             </div>
         </div>
+        <span class="help-block"
+              ng-if="form.awsAccountRole.$dirty && form.awsAccountRole.$error.required">
+            AWS Role is required
+        </span>
     </div>
 
     <div class="form-group" style="margin-top: 30px">
