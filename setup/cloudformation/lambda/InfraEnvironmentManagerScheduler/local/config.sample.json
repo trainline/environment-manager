@@ -6,7 +6,7 @@
       "password": "password"
     }
   },
-  "limitToEnvironment": "xxx",
+  "limitToAccounts": [],
   "whatIf": true,
   "listSkippedInstances": true,
   "ignoreASGInstances": false,
