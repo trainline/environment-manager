@@ -34,7 +34,7 @@ angular.module('EnvironmentManager.configuration').controller('AccountController
           AccountName: vm.awsAccountName,
           AccountNumber: accountNumber,
           IncludeAMIs: includeAMIs,
-          RoleArn: 'arn:aws:iam::' + vm.awsAccountNumber + ':role/' + vm.roleName
+          RoleArn: 'arn:aws:iam::' + _.padStart(accountNumber, 12, '0') + ':role/' + vm.roleName
         };
 
         var promise;
