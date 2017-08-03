@@ -10,7 +10,7 @@ let valid = {
 
 let invalid = err => ({ isValid: false, err });
 
-function validateDnsName(dnsName, isProd) {
+function validateDnsName(dnsName) {
   let consulMatch = /^[^\.]*?-[^\.]*$/.exec(dnsName);
   if (consulMatch) return valid;
 
@@ -52,12 +52,12 @@ function validatePort(port, service) {
   return valid;
 }
 
-exports.validate = (upstream, account, services) => {
+exports.validate = (upstream, services) => {
   let hosts = upstream.Value.Hosts;
 
   if (hosts) {
     for (let host of hosts) {
-      let dnsCheck = validateDnsName(host.DnsName, account.IsProd);
+      let dnsCheck = validateDnsName(host.DnsName);
       if (!dnsCheck.isValid) {
         return dnsCheck;
       }

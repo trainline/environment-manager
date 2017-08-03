@@ -20,9 +20,8 @@ module.exports = {
 function createClientWithRole(ClientType) {
   return accountName =>
     awsAccounts.getByName(accountName)
-      .then(({ Impersonate, RoleArn }) => (Impersonate && RoleArn !== undefined
-        ? getCredentials(RoleArn).then(credentials => ({ credentials }))
-        : Promise.resolve({})))
+      .then(({ RoleArn }) => (getCredentials(RoleArn)))
+      .then(credentials => ({ credentials }))
       .then(options => new ClientType(options));
 }
 

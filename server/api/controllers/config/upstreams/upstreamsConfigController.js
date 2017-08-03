@@ -91,7 +91,7 @@ function postUpstreamsConfig(req, res, next) {
 
   return Promise.join(accountP, newRecordP, serviceP,
     (account, record, svc) => Promise.resolve()
-      .then(() => validate(oldRecord, account, svc))
+      .then(() => validate(oldRecord, svc))
       .then(rejectIfValidationFailed)
       .then(() => loadBalancerUpstreams.create({ record, metadata })))
     .then(() => res.status(200).end())
@@ -126,7 +126,7 @@ function putUpstreamConfigByName(req, res, next) {
 
   return Promise.join(accountP, newRecordP, serviceP,
     (account, record, svc) => Promise.resolve()
-      .then(() => validate(oldRecord, account, svc))
+      .then(() => validate(oldRecord, svc))
       .then(rejectIfValidationFailed)
       .then(() => loadBalancerUpstreams.replace({ record, metadata }, expectedVersion)))
     .then(() => res.status(200).end())
