@@ -14,7 +14,7 @@ function getImagesVisibleToAccount(accountId, filter) {
   function getImagesOwners() {
     return awsAccounts.getAMIsharingAccounts()
       .then(accounts => _.uniq(accounts.concat(accountId))
-        .map(_.toString));
+        .map(acc => _.padStart(acc, 12, '0')));
   }
 
   function buildRequest(query) {
