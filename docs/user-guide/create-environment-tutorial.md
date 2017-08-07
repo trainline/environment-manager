@@ -1,7 +1,0 @@
----
-title: Tutorial - Creating an Environment
-layout: docs
-weight: 10
-draft: true
----
-
