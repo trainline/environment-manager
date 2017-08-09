@@ -99,7 +99,14 @@ function postUpstreamsConfig(req, res, next) {
       message: JSON.stringify({
         Endpoint: {
           Url: '/config/upstreams',
-          Method: 'POST'
+          Method: 'POST',
+          Parameters: [
+            {
+              Name: 'body',
+              Type: 'body',
+              Value: body || ''
+            }
+          ]
         }
       }),
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
@@ -144,7 +151,7 @@ function putUpstreamConfigByName(req, res, next) {
             {
               Name: 'body',
               Type: 'body',
-              Value: JSON.stringify(body) || ''
+              Value: body || ''
             }
           ]
         }
