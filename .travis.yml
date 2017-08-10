@@ -20,7 +20,7 @@ script:
   - (cd client && exec npm test)
 
 after_success:
-  - npm run gulp
+  - gulp
 
 addons:
   artifacts:
