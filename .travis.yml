@@ -13,7 +13,7 @@ install:
   - (cd client && exec npm install)
 
 before_script:
-  - npm install -g gulp
+  - npm install -g gulp-cli
 
 script:
   - (cd server && exec npm test)
