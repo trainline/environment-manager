@@ -6,22 +6,21 @@ cache:
   directories:
     - "${HOME}/.bower"
     - "${HOME}/.cache/bower"
-  yarn: true
 
 install:
-  - yarn install --pure-lockfile
-  - (cd server && exec yarn install --pure-lockfile)
-  - (cd client && exec yarn install --pure-lockfile)
+  - npm install
+  - (cd server && exec npm install)
+  - (cd client && exec npm install)
 
 before_script:
-  - yarn global add gulp
+  - npm install -g gulp
 
 script:
-  - (cd server && exec yarn test)
-  - (cd client && exec yarn test)
+  - (cd server && exec npm test)
+  - (cd client && exec npm test)
 
 after_success:
-  - yarn run gulp
+  - npm run gulp
 
 addons:
   artifacts:
