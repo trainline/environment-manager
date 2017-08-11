@@ -17,8 +17,10 @@ before_script:
   - yarn global add gulp
 
 script:
-  - (cd server && exec yarn test)
-  - (cd client && exec yarn test)
+  - cd server
+  - yarn test
+  - cd client
+  - yarn test
 
 after_success:
   - yarn run gulp
