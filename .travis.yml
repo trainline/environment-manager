@@ -10,20 +10,15 @@ cache:
 
 install:
   - yarn install --pure-lockfile
-  - cd server
-  - yarn install --pure-lockfile
-  - cd ../client
-  - yarn install --pure-lockfile
+  - (cd server && exec yarn install --pure-lockfile)
+  - (cd client && exec yarn install --pure-lockfile)
 
 before_script:
   - yarn global add gulp
 
 script:
-  - cd ../server
-  - yarn test
-  - cd ../client
-  - yarn test
-  - cd ..
+  - (cd server && exec yarn test)
+  - (cd client && exec yarn test)
 
 after_success:
   - yarn run gulp
