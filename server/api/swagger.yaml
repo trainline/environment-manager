@@ -2183,7 +2183,6 @@ paths:
         - $ref: '#/parameters/package-id'
         - $ref: '#/parameters/package-version'
         - $ref: '#/parameters/package-environment'
-        - $ref: '#/parameters/package-slice'
       responses:
         201:
           $ref: '#/responses/package-created'
@@ -3412,15 +3411,6 @@ parameters:
     type: string
     pattern: ^[A-Za-z0-9]+$
     required: true
-  package-slice:
-    name: slice
-    description: The name of the slice targeted by this package.
-    in: formData
-    type: string
-    enum:
-      - blue
-      - green
-    required: false
   package-content:
     name: package
     description: The package file.
