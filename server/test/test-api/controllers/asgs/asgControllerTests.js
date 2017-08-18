@@ -16,10 +16,14 @@ function mkreq(params) {
 function assertItCallsErrorCallbackWhenEnvironmentNotFound(req, handlerFunctionName) {
   context('when the environment search returns a rejected promise', function () {
     let environment = {
-      getAccountNameForEnvironment: sinon.spy(() => Promise.reject(new Error('BOOM!')))
+      getAccountNameForEnvironment: () => Promise.reject(new Error('BOOM!'))
     };
     let sut = proxyquire('api/controllers/asgs/asgController', {
-      'models/Environment': environment
+      'models/Environment': environment,
+      'modules/data-access/opsEnvironment': {
+        get: () => Promise.resolve()
+      },
+      'modules/sns/EnvironmentManagerEvents': { publish: () => () => undefined }
     });
     it('it calls the Express error callback', function () {
       let res = null;
@@ -31,45 +35,68 @@ function assertItCallsErrorCallbackWhenEnvironmentNotFound(req, handlerFunctionN
   });
 }
 
+function assertMutationPreventedWhenEnvironmentLocked(req, handlerFunctionName) {
+  context('when the environment search returns a locked environment', function () {
+    let sut = proxyquire('api/controllers/asgs/asgController', {
+      'models/Environment': {
+        getAccountNameForEnvironment: () => Promise.resolve('my-account')
+      },
+      'modules/data-access/opsEnvironment': {
+        get: () => Promise.resolve({ Value: { DeploymentsLocked: true } })
+      },
+      'modules/sns/EnvironmentManagerEvents': { publish: () => () => undefined }
+    });
+    it('it returns an error response', function () {
+      let res = {
+        status: sinon.spy(() => ({}))
+      };
+      let next = sinon.spy(error => Promise.resolve());
+      return sut[handlerFunctionName](req, res, next)
+        .then(() => sinon.assert.calledWith(res.status, 400));
+    });
+  });
+}
+
 describe('asgController', function () {
-  let req = mkreq({ account: 'my-account', body: {}, environment: 'my-env', name: 'my-name' });
+  let req = mkreq({ account: 'my-account', body: { value: {} }, environment: 'my-env', name: 'my-name' });
+
   describe('getAsgByName', function () {
-    assertItCallsErrorCallbackWhenEnvironmentNotFound(req, 'getAsgByName');
+    assertItCallsErrorCallbackWhenEnvironmentNotFound(req, this.title);
   });
 
   describe('getAsgs', function () {
-    assertItCallsErrorCallbackWhenEnvironmentNotFound(req, 'getAsgs');
+    assertItCallsErrorCallbackWhenEnvironmentNotFound(req, this.title);
   });
 
   describe('getAsgIps', function () {
-    assertItCallsErrorCallbackWhenEnvironmentNotFound(req, 'getAsgIps');
+    assertItCallsErrorCallbackWhenEnvironmentNotFound(req, this.title);
   });
 
   describe('getAsgLaunchConfig', function () {
-    assertItCallsErrorCallbackWhenEnvironmentNotFound(req, 'getAsgLaunchConfig');
+    assertItCallsErrorCallbackWhenEnvironmentNotFound(req, this.title);
   });
 
   describe('getScalingSchedule', function () {
-    assertItCallsErrorCallbackWhenEnvironmentNotFound(req, 'getScalingSchedule');
+    assertItCallsErrorCallbackWhenEnvironmentNotFound(req, this.title);
   });
 
   describe('deleteAsg', function () {
-    assertItCallsErrorCallbackWhenEnvironmentNotFound(req, 'deleteAsg');
+    assertMutationPreventedWhenEnvironmentLocked(req, this.title);
+  });
+
+  describe('putAsg', function () {
+    assertMutationPreventedWhenEnvironmentLocked(req, this.title);
   });
 
   describe('putScalingSchedule', function () {
-    assertItCallsErrorCallbackWhenEnvironmentNotFound(req, 'putScalingSchedule');
-  });
-
-  describe('putScalingSchedule', function () {
-    assertItCallsErrorCallbackWhenEnvironmentNotFound(req, 'putScalingSchedule');
+    assertMutationPreventedWhenEnvironmentLocked(req, this.title);
   });
 
   describe('putAsgSize', function () {
-    assertItCallsErrorCallbackWhenEnvironmentNotFound(req, 'putAsgSize');
+    assertMutationPreventedWhenEnvironmentLocked(req, this.title);
   });
 
   describe('putAsgLaunchConfig', function () {
-    assertItCallsErrorCallbackWhenEnvironmentNotFound(req, 'putAsgLaunchConfig');
+    assertMutationPreventedWhenEnvironmentLocked(req, this.title);
   });
 });
