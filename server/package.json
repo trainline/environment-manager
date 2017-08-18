@@ -79,8 +79,6 @@
     "eslint": "^3.11.1",
     "eslint-config-airbnb-base": "^10.0.1",
     "eslint-plugin-import": "^2.2.0",
-    "gulp": "^3.9.1",
-    "gulp-run": "^1.7.1",
     "mocha": "^3.2.0",
     "mocha-duplicate-reporter": "^0.2.1",
     "mocha-teamcity-reporter": "^1.1.1",
@@ -90,8 +88,7 @@
     "rewire": "^2.5.2",
     "should": "^11.1.1",
     "sinon": "^1.17.6",
-    "supertest": "^2.0.1",
-    "yargs": "^6.5.0"
+    "supertest": "^2.0.1"
   },
   "engines": {
     "node": ">=6.7.0",
