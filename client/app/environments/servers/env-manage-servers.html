@@ -26,13 +26,15 @@
         <label class="control-label text-left">Server Role:</label>
       </div>
       <div class="form-group">
-        <input type="search" class="form-control" ng-model="vm.selected.serverRole" uib-typeahead="serverRole for serverRole in vm.view.allServerRoles | filter:$viewValue" ng-model-options="{debounce: 250}" ng-change="vm.update()" typeahead-on-select="vm.update()" />
+        <input type="search" class="form-control" ng-model="vm.selected.serverRole" uib-typeahead="serverRole for serverRole in vm.view.allServerRoles | filter:$viewValue"
+          ng-model-options="{debounce: 250}" ng-change="vm.update()" typeahead-on-select="vm.update()" />
       </div>
       <div class="form-group">
         <label class="control-label text-left">Service Name:</label>
       </div>
       <div class="form-group">
-        <input type="search" class="form-control" ng-model="vm.selected.serviceName" uib-typeahead="serviceName for serviceName in vm.view.allServiceNames | filter:$viewValue" ng-model-options="{debounce: 250}" ng-change="vm.update()" typeahead-on-select="vm.update()" />
+        <input type="search" class="form-control" ng-model="vm.selected.serviceName" uib-typeahead="serviceName for serviceName in vm.view.allServiceNames | filter:$viewValue"
+          ng-model-options="{debounce: 250}" ng-change="vm.update()" typeahead-on-select="vm.update()" />
       </div>
 
     </form>
@@ -43,7 +45,7 @@
         <span class="glyphicon glyphicon-ok-sign success"></span> Healthy: <strong>{{vm.view.aggregations.servers.healthy.count}} </strong>
       </span>
 
-     <span data-ng-if="vm.selected.status === 'Any' || vm.selected.status === 'Warning'" class="status-summary">
+      <span data-ng-if="vm.selected.status === 'Any' || vm.selected.status === 'Warning'" class="status-summary">
         <span class="glyphicon glyphicon-exclamation-sign warning"></span> Warning: <strong>{{vm.view.aggregations.servers.warning.count}} </strong>
       </span>
 
@@ -55,6 +57,62 @@
     <hr />
 
     <div ng-show="vm.view.hasRoles">
+      <div ng-show="vm.view.unhealthyRoles && vm.view.unhealthyRoles.length > 0">
+        <h3>Transitioning Server Roles</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th class="text-nowrap">Server Role</th>
+              <th class="text-nowrap">Owning Team</th>
+              <th class="text-nowrap">Services</th>
+              <th class="text-nowrap" current-desired-title="{{vm.view.allServersCount}}">Servers ({{ vm.view.allServersCount }})</th>
+              <th class="text-nowrap">AMI</th>
+              <th class="text-nowrap">Out of Date</th>
+              <th class="text-nowrap">Schedule</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="role in vm.view.unhealthyRoles">
+              <td style="white-space: nowrap">
+                <span uib-tooltip="{{ role.serverRole.status.reason }}" tooltip-placement="top-right" class="serverRoleName glyphicon {{role.serverRole.status.class}}"></span>
+
+                <a ng-click="vm.showInstanceDetails(role.asgName)" ng-if="!role.isBeingDeleted">{{role.serverRole.name}}</a>
+                <span ng-if="role.isBeingDeleted">{{role.serverRole.name}} (being deleted)</span>
+              </td>
+              <td>{{role.owningCluster}}</td>
+              <td>
+                <ul class="no-bullets">
+                  <li ng-repeat="service in role.services">
+                    <span class="glyphicon {{::service.status.class}}"></span> {{service.name}} v{{service.version}}
+                  </li>
+                </ul>
+              </td>
+              <td style="text-align: center" current-desired-title="{{role.size}}">
+                <a ng-click="vm.showInstanceDetails(role.asgName, 'instances')">{{::role.size}}</a>
+              </td>
+              <td><a ng-click="vm.showInstanceDetails(role.asgName, 'launchConfig')">{{::role.ami.name}}</a></td>
+              <td>
+                <a ng-click="vm.showInstanceDetails(role.asgName, 'launchConfig')">
+                    <span ng-if="role.ami.isLatestStable">
+                        <span class="glyphicon glyphicon-ok-sign ok"></span> Up to date
+                    </span>
+                    <span ng-if="!role.ami.isLatestStable">
+                        <span ng-if="role.ami.age !== '-'" class="glyphicon glyphicon-exclamation-sign warning"></span> {{::role.ami.age}}
+                    </span>
+                </a>
+              </td>
+              <td>
+                <a ng-if="role.hasScalingSchedule" ng-click="vm.showInstanceDetails(role.asgName, 'schedule')">Scheduled Scaling</a>
+                <a ng-if="!role.hasScalingSchedule" ng-click="vm.showInstanceDetails(role.asgName, 'schedule')">
+                  <schedule-viewer schedule="role.schedule" simple-view="true"></schedule-viewer>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Healthy Server Roles</h3>
       <table class="table">
         <thead>
           <tr>
@@ -68,7 +126,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat="role in vm.view.roles">
+          <tr ng-repeat="role in vm.view.healthyRoles">
             <td style="white-space: nowrap">
               <span uib-tooltip="{{ role.serverRole.status.reason }}" tooltip-placement="top-right" class="serverRoleName glyphicon {{role.serverRole.status.class}}"></span>
 
@@ -79,8 +137,7 @@
             <td>
               <ul class="no-bullets">
                 <li ng-repeat="service in role.services">
-                  <span class="glyphicon {{::service.status.class}}"></span>
-                  {{service.name}} v{{service.version}}
+                  <span class="glyphicon {{::service.status.class}}"></span> {{service.name}} v{{service.version}}
                 </li>
               </ul>
             </td>
@@ -89,7 +146,7 @@
             </td>
             <td><a ng-click="vm.showInstanceDetails(role.asgName, 'launchConfig')">{{::role.ami.name}}</a></td>
             <td>
-                <a ng-click="vm.showInstanceDetails(role.asgName, 'launchConfig')">
+              <a ng-click="vm.showInstanceDetails(role.asgName, 'launchConfig')">
                     <span ng-if="role.ami.isLatestStable">
                         <span class="glyphicon glyphicon-ok-sign ok"></span> Up to date
                     </span>
