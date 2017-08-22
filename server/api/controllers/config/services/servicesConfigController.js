@@ -54,7 +54,7 @@ function postServicesConfig(req, res, next) {
   delete record.Version;
   return services.create({ record, metadata })
     .then(() => res.status(201).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: '/config/services',
@@ -88,7 +88,7 @@ function putServiceConfigByName(req, res, next) {
 
   return services.replace({ record, metadata }, expectedVersion)
     .then(() => res.status(200).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/config/services/${serviceName}/${owningCluster}`,
@@ -119,7 +119,7 @@ function deleteServiceConfigByName(req, res, next) {
 
   return services.delete({ key, metadata }, expectedVersion)
     .then(() => res.status(200).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/config/services/${serviceName}/${owningCluster}`,

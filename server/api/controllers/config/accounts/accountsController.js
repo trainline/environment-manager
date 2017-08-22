@@ -36,7 +36,7 @@ function postAccountsConfig(req, res, next) {
   return validate(account)
     .then(() => accounts.create({ record, metadata }))
     .then(() => res.status(201).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: '/config/accounts',
@@ -66,7 +66,7 @@ function putAccountConfigByName(req, res, next) {
   return validate(account)
     .then(() => accounts.replace({ record, metadata }, expectedVersion))
     .then(() => res.status(200).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/config/accounts/${AccountNumber}`,
@@ -92,7 +92,7 @@ function deleteAccountConfigByName(req, res, next) {
 
   return accounts.delete({ key: { AccountNumber }, metadata }, expectedVersion)
     .then(() => res.status(200).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/config/accounts/${AccountNumber}`,

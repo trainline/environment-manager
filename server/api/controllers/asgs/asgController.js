@@ -128,7 +128,7 @@ function putAsg(req, res, next) {
     parameters
   })
     .then(data => res.json(data))
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/asgs/${autoScalingGroupName}`,
@@ -161,7 +161,7 @@ function deleteAsg(req, res, next) {
           Ok: status
         });
       })
-      .then(sns.publish({
+      .then(() => sns.publish({
         message: JSON.stringify({
           Endpoint: {
             Url: `/asgs/${autoScalingGroupName}`,
@@ -202,7 +202,7 @@ function putScalingSchedule(req, res, next) {
 
     res.json(data);
   })
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/asgs/${autoScalingGroupName}/scaling-schedule`,
@@ -240,7 +240,7 @@ function putAsgSize(req, res, next) {
       autoScalingGroupMaxSize
     })
       .then(data => res.json(data))
-      .then(sns.publish({
+      .then(() => sns.publish({
         message: JSON.stringify({
           Endpoint: {
             Url: `/asgs/${autoScalingGroupName}/size`,
@@ -273,7 +273,7 @@ function putAsgLaunchConfig(req, res, next) {
       data
     })
       .then(res.json.bind(res))
-      .then(sns.publish({
+      .then(() => sns.publish({
         message: JSON.stringify({
           Endpoint: {
             Url: `/asgs/${autoScalingGroupName}/launch-config`,
