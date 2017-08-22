@@ -87,7 +87,7 @@ function putDeploymentLock(req, res, next) {
 
   return opsEnvironment.setDeploymentLock({ key, metadata, isLocked }, expectedVersion)
     .then(data => res.json(data))
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/environments/${environmentName}/deploy-lock`,
@@ -138,7 +138,7 @@ function putMaintenance(req, res, next) {
 
   return opsEnvironment.setMaintenance({ key, metadata, isInMaintenance }, expectedVersion)
     .then(data => res.json(data))
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/environments/${environmentName}/maintenance`,
@@ -221,7 +221,7 @@ function putEnvironmentSchedule(req, res, next) {
 
   return opsEnvironment.setSchedule({ key, metadata, schedule }, expectedVersion)
     .then(data => res.json(data))
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/environments/${environmentName}/schedule`,

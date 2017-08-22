@@ -110,7 +110,7 @@ function putServiceSlicesToggle(req, res, next) {
 
   return toggleSlices(metadata.addMetadata({ environmentName, serviceName, user }))
     .then(data => res.json(data))
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify(
         {
           Endpoint: {

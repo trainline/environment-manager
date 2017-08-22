@@ -56,7 +56,7 @@ function postPermissionsConfig(req, res, next) {
   delete record.Version;
   return permissions.create({ record, metadata })
     .then(() => res.status(201).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: '/config/permissions',
@@ -86,7 +86,7 @@ function putPermissionConfigByName(req, res, next) {
 
   return permissions.replace({ record, metadata }, expectedVersion)
     .then(() => res.status(200).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/config/permissions/${key}`,
@@ -114,7 +114,7 @@ function deletePermissionConfigByName(req, res, next) {
 
   return permissions.delete({ key, metadata }, expectedVersion)
     .then(() => res.status(200).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/config/permissions/${key}`,

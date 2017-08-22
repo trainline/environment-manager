@@ -24,7 +24,7 @@ function putResourceImport(req, res, next) {
 
   return dynamoImport(params)
     .then(data => res.json(data))
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/config/import/${resource}`,

@@ -56,7 +56,7 @@ function postDeploymentMapsConfig(req, res, next) {
   delete record.Version;
   return deploymentMaps.create({ record, metadata })
     .then(() => res.status(201).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: '/config/deployment-maps',
@@ -86,7 +86,7 @@ function putDeploymentMapConfigByName(req, res, next) {
 
   return deploymentMaps.replace({ record, metadata }, expectedVersion)
     .then(() => res.status(200).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/config/deployment-maps/${key}`,
@@ -111,7 +111,7 @@ function deleteDeploymentMapConfigByName(req, res, next) {
 
   return deploymentMaps.delete({ key, metadata })
     .then(() => res.status(200).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/config/deployment-maps/${key}`,

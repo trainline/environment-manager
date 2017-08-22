@@ -50,7 +50,7 @@ function postNotificationSettings(req, res, next) {
   delete record.Version;
   return notificationSettings.create({ record, metadata })
     .then(data => res.json(data))
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: '/config/notification-settings',
@@ -81,7 +81,7 @@ function putNotificationSettingsById(req, res, next) {
   delete record.Version;
   return notificationSettings.replace({ record, metadata }, expectedVersion)
     .then(data => res.json(data))
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/config/notification-settings/${notificationSettingsId}`,
@@ -109,7 +109,7 @@ function deleteNotificationSettingsById(req, res, next) {
   let metadata = getMetadataForDynamoAudit(req);
   return notificationSettings.delete({ key, metadata }, expectedVersion)
     .then(data => res.json(data))
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/config/notification-settings/${notificationSettingsId}`,

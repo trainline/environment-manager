@@ -23,7 +23,7 @@ function deleteTargetStateByEnvironment(req, res, next) {
 
   deleteTargetState.byEnvironment({ environmentName })
     .then(data => res.json(data))
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/target-state/${environmentName}`,
@@ -49,7 +49,7 @@ function deleteTargetStateByService(req, res, next) {
 
   deleteTargetState.byService({ environmentName, serviceName })
     .then(data => res.json(data))
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/target-state/${environmentName}/${serviceName}`,
@@ -76,7 +76,7 @@ function deleteTargetStateByServiceVersion(req, res, next) {
 
   deleteTargetState.byServiceVersion({ environmentName, serviceName, serviceVersion })
     .then(data => res.json(data))
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/target-state/${environmentName}/${serviceName}/${serviceVersion}`,

@@ -197,7 +197,7 @@ function putInstanceMaintenance(req, res, next) {
 
     res.send({ ok: true });
   })
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/instances/${id}/maintenance`,

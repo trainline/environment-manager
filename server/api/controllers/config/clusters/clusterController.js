@@ -56,7 +56,7 @@ function postClustersConfig(req, res, next) {
   delete record.Version;
   return clusters.create({ record, metadata })
     .then(() => res.status(201).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: '/config/clusters',
@@ -86,7 +86,7 @@ function putClusterConfigByName(req, res, next) {
 
   return clusters.replace({ record, metadata }, expectedVersion)
     .then(() => res.status(200).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/config/clusters/${key}`,
@@ -114,7 +114,7 @@ function deleteClusterConfigByName(req, res, next) {
 
   return clusters.delete({ key, metadata }, expectedVersion)
     .then(() => res.status(200).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/config/clusters/${key}`,
