@@ -12,10 +12,10 @@ angular.module('EnvironmentManager.common').factory('linkHeader',
         throw new Error('input must not be of zero length');
       }
 
-        // Split parts by comma
+      // Split parts by comma
       var parts = header.split(',');
       var links = {};
-        // Parse each part into a named link
+      // Parse each part into a named link
       for (var i = 0; i < parts.length; i++) {
         var section = parts[i].split(';');
         if (section.length !== 2) {

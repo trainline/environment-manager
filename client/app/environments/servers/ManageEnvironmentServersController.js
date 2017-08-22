@@ -118,11 +118,11 @@ angular.module('EnvironmentManager.environments')
     }
 
     function addDeploymentStatus(statuses) {
-      let data = removeUnwantedStatuses(statuses);
-      let roles = collectServerRoles(vm.view);
+      var data = removeUnwantedStatuses(statuses);
+      var roles = collectServerRoles(vm.view);
 
       return $q.all(roles.map(function (role) {
-        let result = data.find(function (elem) {
+        var result = data.find(function (elem) {
           return elem['aws:autoscaling:groupName'] === role.asgName;
         });
         role.info = role.info || {};
@@ -138,7 +138,7 @@ angular.module('EnvironmentManager.environments')
 
     function removeUnwantedStatuses(statuses) {
       return statuses.data.filter(function (status) {
-        let s = status.DeploymentStatus.toLowerCase();
+        var s = status.DeploymentStatus.toLowerCase();
         if (s !== 'failed' && s !== 'success') {
           return true;
         } else {

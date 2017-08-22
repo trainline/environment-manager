@@ -12,9 +12,9 @@ angular.module('EnvironmentManager.common').factory('targetStateService', functi
       };
 
       return $http.patch(url, data)
-      .then(function (result) {
-        return result.data;
-      }, $rootScope.$broadcast.bind($rootScope, 'error'));
+        .then(function (result) {
+          return result.data;
+        }, $rootScope.$broadcast.bind($rootScope, 'error'));
     }
   };
 });

@@ -127,6 +127,10 @@ amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
 
+angular-loading-bar@^0.9.0:
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/angular-loading-bar/-/angular-loading-bar-0.9.0.tgz#37ef52c25f102c216e7b3cdfd2fc5a5df9628e45"
+
 angular-templatecache@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/angular-templatecache/-/angular-templatecache-0.0.1.tgz#66c7e98a368872e000bf184e479c7dda1e15882b"
