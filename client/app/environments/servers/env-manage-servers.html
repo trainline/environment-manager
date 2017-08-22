@@ -6,7 +6,6 @@
     <span class="glyphicon glyphicon-refresh" ng-click="vm.refresh()" title="Refresh data"></span>
   </div>
 </div>
-<spinner ng-if="vm.dataLoading"></spinner>
 <div class="row env-servers" ng-if="!vm.dataLoading">
   <div class="col-md-12">
     <form id="SearchFilter" class="form-inline">
@@ -57,9 +56,10 @@
     <hr />
 
     <div ng-show="vm.view.hasRoles">
+
       <div ng-show="vm.view.unhealthyRoles && vm.view.unhealthyRoles.length > 0">
         <h3>Transitioning Server Roles</h3>
-        <table class="table">
+        <table st-table="vm.view.unhealthyRoles" class="table table-striped">
           <thead>
             <tr>
               <th class="text-nowrap">Server Role</th>
@@ -69,6 +69,7 @@
               <th class="text-nowrap">AMI</th>
               <th class="text-nowrap">Out of Date</th>
               <th class="text-nowrap">Schedule</th>
+              <th class="text-nowrap">Deployments</th>
             </tr>
           </thead>
           <tbody>
@@ -107,46 +108,56 @@
                   <schedule-viewer schedule="role.schedule" simple-view="true"></schedule-viewer>
                 </a>
               </td>
+              <td>
+                <span ng-if="!vm.roleInformation" class="glyphicon glyphicon-hourglass"></span>
+                <span ng-if="vm.roleInformation">
+                  <span ng-if="!role.info.deployments" class="glyphicon glyphicon-thumbs-up"> None in Progress</span>
+                <span ng-if="role.info.deployments" class="glyphicon glyphicon-warning-sign"> Deployments in Progress</span>
+                </span>
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
+      <hr />
 
-      <h3>Healthy Server Roles</h3>
-      <table class="table">
-        <thead>
-          <tr>
-            <th class="text-nowrap">Server Role</th>
-            <th class="text-nowrap">Owning Team</th>
-            <th class="text-nowrap">Services</th>
-            <th class="text-nowrap" current-desired-title="{{vm.view.allServersCount}}">Servers ({{ vm.view.allServersCount }})</th>
-            <th class="text-nowrap">AMI</th>
-            <th class="text-nowrap">Out of Date</th>
-            <th class="text-nowrap">Schedule</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="role in vm.view.healthyRoles">
-            <td style="white-space: nowrap">
-              <span uib-tooltip="{{ role.serverRole.status.reason }}" tooltip-placement="top-right" class="serverRoleName glyphicon {{role.serverRole.status.class}}"></span>
+      <div ng-show="vm.view.healthyRoles && vm.view.healthyRoles.length > 0">
+        <h3>Healthy Server Roles</h3>
+        <table st-table="vm.view.healthyRoles" class="table table-striped">
+          <thead>
+            <tr>
+              <th class="text-nowrap">Server Role</th>
+              <th class="text-nowrap">Owning Team</th>
+              <th class="text-nowrap">Services</th>
+              <th class="text-nowrap" current-desired-title="{{vm.view.allServersCount}}">Servers ({{ vm.view.allServersCount }})</th>
+              <th class="text-nowrap">AMI</th>
+              <th class="text-nowrap">Out of Date</th>
+              <th class="text-nowrap">Schedule</th>
+              <th class="text-nowrap">Deployments</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="role in vm.view.healthyRoles">
+              <td style="white-space: nowrap">
+                <span uib-tooltip="{{ role.serverRole.status.reason }}" tooltip-placement="top-right" class="serverRoleName glyphicon {{role.serverRole.status.class}}"></span>
 
-              <a ng-click="vm.showInstanceDetails(role.asgName)" ng-if="!role.isBeingDeleted">{{role.serverRole.name}}</a>
-              <span ng-if="role.isBeingDeleted">{{role.serverRole.name}} (being deleted)</span>
-            </td>
-            <td>{{role.owningCluster}}</td>
-            <td>
-              <ul class="no-bullets">
-                <li ng-repeat="service in role.services">
-                  <span class="glyphicon {{::service.status.class}}"></span> {{service.name}} v{{service.version}}
-                </li>
-              </ul>
-            </td>
-            <td style="text-align: center" current-desired-title="{{role.size}}">
-              <a ng-click="vm.showInstanceDetails(role.asgName, 'instances')">{{::role.size}}</a>
-            </td>
-            <td><a ng-click="vm.showInstanceDetails(role.asgName, 'launchConfig')">{{::role.ami.name}}</a></td>
-            <td>
-              <a ng-click="vm.showInstanceDetails(role.asgName, 'launchConfig')">
+                <a ng-click="vm.showInstanceDetails(role.asgName)" ng-if="!role.isBeingDeleted">{{role.serverRole.name}}</a>
+                <span ng-if="role.isBeingDeleted">{{role.serverRole.name}} (being deleted)</span>
+              </td>
+              <td>{{role.owningCluster}}</td>
+              <td>
+                <ul class="no-bullets">
+                  <li ng-repeat="service in role.services">
+                    <span class="glyphicon {{::service.status.class}}"></span> {{service.name}} v{{service.version}}
+                  </li>
+                </ul>
+              </td>
+              <td style="text-align: center" current-desired-title="{{role.size}}">
+                <a ng-click="vm.showInstanceDetails(role.asgName, 'instances')">{{::role.size}}</a>
+              </td>
+              <td><a ng-click="vm.showInstanceDetails(role.asgName, 'launchConfig')">{{::role.ami.name}}</a></td>
+              <td>
+                <a ng-click="vm.showInstanceDetails(role.asgName, 'launchConfig')">
                     <span ng-if="role.ami.isLatestStable">
                         <span class="glyphicon glyphicon-ok-sign ok"></span> Up to date
                     </span>
@@ -154,16 +165,30 @@
                         <span ng-if="role.ami.age !== '-'" class="glyphicon glyphicon-exclamation-sign warning"></span> {{::role.ami.age}}
                     </span>
                 </a>
-            </td>
-            <td>
-              <a ng-if="role.hasScalingSchedule" ng-click="vm.showInstanceDetails(role.asgName, 'schedule')">Scheduled Scaling</a>
-              <a ng-if="!role.hasScalingSchedule" ng-click="vm.showInstanceDetails(role.asgName, 'schedule')">
-                <schedule-viewer schedule="role.schedule" simple-view="true"></schedule-viewer>
-              </a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+              </td>
+              <td>
+                <a ng-if="role.hasScalingSchedule" ng-click="vm.showInstanceDetails(role.asgName, 'schedule')">Scheduled Scaling</a>
+                <a ng-if="!role.hasScalingSchedule" ng-click="vm.showInstanceDetails(role.asgName, 'schedule')">
+                  <schedule-viewer schedule="role.schedule" simple-view="true"></schedule-viewer>
+                </a>
+              </td>
+              <td>
+                <span ng-if="!vm.roleInformation" class="glyphicon glyphicon-hourglass"></span>
+                <span ng-if="vm.roleInformation">
+                  <span ng-if="!role.info.deployments" class="glyphicon glyphicon-thumbs-up"> None in Progress</span>
+                <span ng-if="role.info.deployments" class="glyphicon glyphicon-warning-sign"> Deployments in Progress</span>
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+
+      </div>
+      <hr />
+
+
+
     </div>
 
     <div ng-show="!vm.dataFound" class="empty-servers">

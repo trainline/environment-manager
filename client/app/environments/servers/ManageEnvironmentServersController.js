@@ -6,10 +6,11 @@
 
 angular.module('EnvironmentManager.environments')
   .controller('ManageEnvironmentServersController',
-  function ($rootScope, $routeParams, $http, $q, cachedResources, resources, $uibModal, accountMappingService, serversView, QuerySync, environmentDeploy, $scope, serviceDiscovery) {
+  function ($rootScope, $routeParams, $http, $q, cachedResources, resources, $uibModal, accountMappingService, serversView, QuerySync, environmentDeploy, $scope, serviceDiscovery, enums) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
+    vm.roleInformation = false;
 
     var querySync = new QuerySync(vm, {
       environment: {
@@ -80,6 +81,7 @@ angular.module('EnvironmentManager.environments')
     }
 
     vm.refresh = function () {
+      vm.roleInformation = false;
       querySync.updateQuery();
 
       vm.dataLoading = true;
@@ -92,22 +94,12 @@ angular.module('EnvironmentManager.environments')
 
         if (vm.dataFound) {
           vm.update()
-            .then(function (data) {
-              data.unhealthyRoles.map(function (role) {
-                serviceDiscovery.getASGState(vm.selected.environment.EnvironmentName, role.asgName)
-                  .then(function (state) {
-                    //console.log(state)
-                  })
-              });
-              data.healthyRoles.map(function (role) {
-                serviceDiscovery.getASGState(vm.selected.environment.EnvironmentName, role.asgName)
-                  .then(function (state) {
-                    //console.log(state)
-                  })
-              });
-            });
+            .then(getInstanceStatusesFromLastHour)
+            .then(addDeploymentStatus)
+            .then(roleInformationFound);
         }
       });
+
       promise.finally(function () {
         vm.dataLoading = false;
       });
@@ -115,10 +107,58 @@ angular.module('EnvironmentManager.environments')
       return promise;
     };
 
+    function getInstanceStatusesFromLastHour() {
+      var dateRange = { name: 'Last hour', value: 1 * enums.MILLISECONDS.PerHour };
+      var oneHourAgo = new Date((new Date().getTime() - dateRange.value)).toISOString();
+      var params = {
+        include_deployments_status: true,
+        since: oneHourAgo
+      };
+      return $http.get('/api/v1/instances', { params: params });
+    }
+
+    function addDeploymentStatus(statuses) {
+      let data = removeUnwantedStatuses(statuses);
+      let roles = collectServerRoles(vm.view);
+
+      return $q.all(roles.map(function (role) {
+        let result = data.find(function (elem) {
+          return elem['aws:autoscaling:groupName'] === role.asgName;
+        });
+        role.info = role.info || {};
+        if (result) {
+          role.info.deployments = true
+          return result;
+        } else {
+          role.info.deployments = false
+          return null;
+        }
+      }));
+    }
+
+    function removeUnwantedStatuses(statuses) {
+      return statuses.data.filter(function (status) {
+        let s = status.DeploymentStatus.toLowerCase();
+        if (s !== 'failed' && s !== 'success') {
+          return true;
+        } else {
+          return false;
+        }
+      });
+    }
+
+    function collectServerRoles(view) {
+      return view.healthyRoles.concat(view.unhealthyRoles);
+    }
+
+    function roleInformationFound() {
+      vm.roleInformation = true;
+    }
+
     vm.update = function () {
       querySync.updateQuery();
       vm.view = serversView(vm.data, vm.selected)
-      return $q.resolve(vm.view);
+      return $q.resolve();
     };
 
     vm.loadDeployDialog = function () {

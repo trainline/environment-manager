@@ -1,5 +1,13 @@
 {
   "name": "EnvironmentManager",
   "version": "6.0.2",
-  "dependencies": {}
+  "lockfileVersion": 1,
+  "requires": true,
+  "dependencies": {
+    "angular-loading-bar": {
+      "version": "0.9.0",
+      "resolved": "https://registry.npmjs.org/angular-loading-bar/-/angular-loading-bar-0.9.0.tgz",
+      "integrity": "sha1-N+9Swl8QLCFuezzf0vxaXflijkU="
+    }
+  }
 }

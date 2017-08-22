@@ -1,180 +1,186 @@
 <!DOCTYPE html>
 <html ng-app="EnvironmentManager">
-  <head>
-    <title>Environment Manager</title>
-    <base href="/" />
-    <link rel="stylesheet" href="assets/css/bootstrap-3.3.5/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="assets/css/angular-ui-tree.min.css" />
-    <link rel="stylesheet" href="assets/css/angular-ui-grid.min.css" />
-    <link rel="stylesheet" href="assets/css/select.min.css" />
-    <link rel="stylesheet" href="styles/app-generated.css" />
-    <link rel="stylesheet" href="assets/css/jsondiffpatch.css"/>
 
-    <link href="assets/images/favicon.ico" rel="SHORTCUT ICON"/>
-    <link href="assets/images/favicon-32x32.png" rel="icon" type="image/png" sizes="32x32">
-    <link href="assets/images/favicon-16x16.png" rel="icon" type="image/png" sizes="16x16">
+<head>
+  <title>Environment Manager</title>
+  <base href="/" />
+  <link rel="stylesheet" href="assets/css/bootstrap-3.3.5/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="assets/css/angular-ui-tree.min.css" />
+  <link rel="stylesheet" href="assets/css/angular-ui-grid.min.css" />
+  <link rel="stylesheet" href="assets/css/select.min.css" />
+  <link rel="stylesheet" href="styles/app-generated.css" />
+  <link rel="stylesheet" href="assets/css/jsondiffpatch.css" />
+  <link rel="stylesheet" href="bower_components/angular-loading-bar/build/loading-bar.min.css">
 
-    <!-- Libraries -->
-    <!-- build:js scripts/lib.js -->
-    <script type="text/javascript" src="bower_components/jsondiffpatch/public/build/jsondiffpatch-full.js"></script>
-    <script type="text/javascript" src="bower_components/jsondiffpatch/public/build/jsondiffpatch-formatters.js"></script>
+  <link href="assets/images/favicon.ico" rel="SHORTCUT ICON" />
+  <link href="assets/images/favicon-32x32.png" rel="icon" type="image/png" sizes="32x32">
+  <link href="assets/images/favicon-16x16.png" rel="icon" type="image/png" sizes="16x16">
 
-    <script type="text/javascript" src="assets/lib/ace.js"></script>
-    <script type="text/javascript" src="assets/lib/ajv.min.js"></script>
-    <script type="text/javascript" src="assets/lib/mode-json.js"></script>
-    <script type="text/javascript" src="assets/lib/worker-json.js"></script>
-    <script type="text/javascript" src="assets/lib/ext-searchbox.js"></script>
-    <script type="text/javascript" src="bower_components/angular/angular.js"></script>
-    <script type="text/javascript" src="bower_components/angular-route/angular-route.js"></script>
-    <script type="text/javascript" src="assets/lib/ui-ace.min.js"></script>
-    <script type="text/javascript" src="assets/lib/angular-file-saver.bundle.min.js"></script>
-    <script type="text/javascript" src="bower_components/moment/min/moment.min.js"></script>
-    <script type="text/javascript" src="bower_components/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
-    <script type="text/javascript" src="assets/lib/angular-moment.min.js"></script>
-    <script type="text/javascript" src="assets/lib/ui-bootstrap-tpls-2.1.3.min.js"></script>
-    <script type="text/javascript" src="assets/lib/linq.min.js"></script>
-    <script type="text/javascript" src="assets/lib/spin.min.js"></script>
-    <script type="text/javascript" src="assets/lib/thenBy.min.js"></script>
-    <script type="text/javascript" src="bower_components/angular-ui-tree/dist/angular-ui-tree.js"></script>
-    <script type="text/javascript" src="assets/lib/ui-grid.min.js"></script>
-    <script type="text/javascript" src="bower_components/later/later.min.js"></script>
-    <script type="text/javascript" src="bower_components/lodash/dist/lodash.min.js"></script>
-    <script type="text/javascript" src="bower_components/prettycron/prettycron.js"></script>
-    <script type="text/javascript" src="assets/lib/glob-intersection.js"></script>
-    <script type="text/javascript" src="assets/lib/select.min.js"></script>
-    <script type="text/javascript" src="bower_components/clipboard/dist/clipboard.min.js"></script>
-    <script type="text/javascript" src="bower_components/ngclipboard/dist/ngclipboard.min.js"></script>
-    <!-- endbuild -->
+  <!-- Libraries -->
+  <!-- build:js scripts/lib.js -->
+  <script type="text/javascript" src="bower_components/jsondiffpatch/public/build/jsondiffpatch-full.js"></script>
+  <script type="text/javascript" src="bower_components/jsondiffpatch/public/build/jsondiffpatch-formatters.js"></script>
 
-    <script type="text/javascript" src="user.js"></script>
-    <script src="/em/initial-data"></script>
-    <!-- <script src="/api/initial-data"></script> -->
+  <script type="text/javascript" src="assets/lib/ace.js"></script>
+  <script type="text/javascript" src="assets/lib/ajv.min.js"></script>
+  <script type="text/javascript" src="assets/lib/mode-json.js"></script>
+  <script type="text/javascript" src="assets/lib/worker-json.js"></script>
+  <script type="text/javascript" src="assets/lib/ext-searchbox.js"></script>
+  <script type="text/javascript" src="bower_components/angular/angular.js"></script>
+  <script type="text/javascript" src="bower_components/angular-route/angular-route.js"></script>
+  <script type="text/javascript" src="assets/lib/ui-ace.min.js"></script>
+  <script type="text/javascript" src="assets/lib/angular-file-saver.bundle.min.js"></script>
+  <script type="text/javascript" src="bower_components/moment/min/moment.min.js"></script>
+  <script type="text/javascript" src="bower_components/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
+  <script type="text/javascript" src="assets/lib/angular-moment.min.js"></script>
+  <script type="text/javascript" src="assets/lib/ui-bootstrap-tpls-2.1.3.min.js"></script>
+  <script type="text/javascript" src="assets/lib/linq.min.js"></script>
+  <script type="text/javascript" src="assets/lib/spin.min.js"></script>
+  <script type="text/javascript" src="assets/lib/thenBy.min.js"></script>
+  <script type="text/javascript" src="bower_components/angular-ui-tree/dist/angular-ui-tree.js"></script>
+  <script type="text/javascript" src="assets/lib/ui-grid.min.js"></script>
+  <script type="text/javascript" src="bower_components/later/later.min.js"></script>
+  <script type="text/javascript" src="bower_components/lodash/dist/lodash.min.js"></script>
+  <script type="text/javascript" src="bower_components/prettycron/prettycron.js"></script>
+  <script type="text/javascript" src="assets/lib/glob-intersection.js"></script>
+  <script type="text/javascript" src="assets/lib/select.min.js"></script>
+  <script type="text/javascript" src="bower_components/clipboard/dist/clipboard.min.js"></script>
+  <script type="text/javascript" src="bower_components/ngclipboard/dist/ngclipboard.min.js"></script>
+  <script type="text/javascript" src="bower_components/angular-loading-bar/build/loading-bar.min.js"></script>
+  <script type="text/javascript" src="bower_components/angular-smart-table/dist/smart-table.min.js"></script>
 
-    <!-- build:js scripts/app.js -->
-    <!-- inject:js -->
-    <script src="app/operations/operations.module.js"></script>
-    <script src="app/operations/upstream/directives/lbServersStatesCell.js"></script>
-    <script src="app/environments/environments.module.js"></script>
-    <script src="app/environments/dialogs/asg/asgSingleService.js"></script>
-    <script src="app/environments/dialogs/asg/asgSingleInstance.js"></script>
-    <script src="app/environments/dialogs/asg/asgServices.js"></script>
-    <script src="app/environments/dialogs/asg/asgInstances.js"></script>
-    <script src="app/environments/dialogs/asg/asgDistribution.js"></script>
-    <script src="app/operations/upstream/UpstreamDetailsModalController.js"></script>
-    <script src="app/operations/upstream/OpsUpstreamController.js"></script>
-    <script src="app/operations/upstream/ASGSelectionModalController.js"></script>
-    <script src="app/operations/maintenance/OpsMaintenanceController.js"></script>
-    <script src="app/operations/maintenance/MainteinanceAddServerModalController.js"></script>
-    <script src="app/operations/deployments/opsDeploymentsList.js"></script>
-    <script src="app/operations/deployments/opsDeploymentsInstances.js"></script>
-    <script src="app/operations/deployments/OpsDeploymentsController.js"></script>
-    <script src="app/operations/deployments/DeploymentDetailsModalController.js"></script>
-    <script src="app/operations/amis/OpsAMIsController.js"></script>
-    <script src="app/environments/summary/EnvironmentsSummaryController.js"></script>
-    <script src="app/environments/settings/ManageEnvironmentSettingsController.js"></script>
-    <script src="app/environments/servers/serversView.js"></script>
-    <script src="app/environments/servers/ManageEnvironmentServersController.js"></script>
-    <script src="app/environments/schedule/ManageEnvironmentScheduleController.js"></script>
-    <script src="app/environments/directives/serviceDiffWithTargetState.js"></script>
-    <script src="app/environments/directives/lbStatusView.js"></script>
-    <script src="app/environments/directives/healthChecks.js"></script>
-    <script src="app/environments/directives/currentDesiredTitle.js"></script>
-    <script src="app/environments/dialogs/LaunchConfigConfirmationController.js"></script>
-    <script src="app/environments/dialogs/DeployModalController.js"></script>
-    <script src="app/environments/dialogs/CreateEnvironmentController.js"></script>
-    <script src="app/environments/dialogs/ASGDetailsModalController.js"></script>
-    <script src="app/configuration/configuration.module.js"></script>
-    <script src="app/configuration/services/permissionsValidationService.js"></script>
-    <script src="app/configuration/services/lbBulkOperationService.js"></script>
-    <script src="app/configuration/services/deploymentMapConverter.js"></script>
-    <script src="app/configuration/services/arrayItemHashDetectorService.js"></script>
-    <script src="app/configuration/pick-ami/PickAmiController.js"></script>
-    <script src="app/configuration/permissions/PermissionsController.js"></script>
-    <script src="app/configuration/permissions/PermissionController.js"></script>
-    <script src="app/common/common.module.js"></script>
-    <script src="app/configuration/notification-settings/notificationSettingsList.js"></script>
-    <script src="app/configuration/notification-settings/notificationSettingsEntry.js"></script>
-    <script src="app/configuration/load-balancers/LBsController.js"></script>
-    <script src="app/configuration/load-balancers/LBUpstreamsController.js"></script>
-    <script src="app/configuration/load-balancers/LBUpstreamController.js"></script>
-    <script src="app/configuration/load-balancers/LBController.js"></script>
-    <script src="app/configuration/load-balancers/LBCloneController.js"></script>
-    <script src="app/configuration/lbupstreams/upstreamViewModel.js"></script>
-    <script src="app/configuration/import/ImportController.js"></script>
-    <script src="app/configuration/export/ExportController.js"></script>
-    <script src="app/configuration/environment-types/EnvironmentTypesController.js"></script>
-    <script src="app/configuration/environment-types/EnvironmentTypeController.js"></script>
-    <script src="app/configuration/em-services/ServicesController.js"></script>
-    <script src="app/configuration/em-services/ServiceController.js"></script>
-    <script src="app/configuration/deployment-maps/copyServerRole.js"></script>
-    <script src="app/configuration/deployment-maps/DeploymentMapsController.js"></script>
-    <script src="app/configuration/deployment-maps/DeploymentMapTargetController.js"></script>
-    <script src="app/configuration/deployment-maps/DeploymentMapCreateController.js"></script>
-    <script src="app/configuration/deployment-maps/DeploymentMapController.js"></script>
-    <script src="app/configuration/clusters/ClustersController.js"></script>
-    <script src="app/configuration/clusters/ClusterController.js"></script>
-    <script src="app/configuration/audit/AuditController.js"></script>
-    <script src="app/configuration/audit/AuditCompareModalController.js"></script>
-    <script src="app/configuration/accounts/AccountsController.js"></script>
-    <script src="app/configuration/accounts/AccountController.js"></script>
-    <script src="app/compare/compare.module.js"></script>
-    <script src="app/compare/services/serviceComparison.js"></script>
-    <script src="app/compare/services/comparableResources.js"></script>
-    <script src="app/compare/services/upstreamService.js"></script>
-    <script src="app/compare/services/ResourceComparison.js"></script>
-    <script src="app/compare/directives/serviceCell.js"></script>
-    <script src="app/compare/diff-viewer/DiffViewerController.js"></script>
-    <script src="app/common/utils/QuerySync.js"></script>
-    <script src="app/common/services/targetStateService.js"></script>
-    <script src="app/common/services/taggable.js"></script>
-    <script src="app/common/services/serviceDiscovery.js"></script>
-    <script src="app/common/services/schemaValidatorService.js"></script>
-    <script src="app/common/services/rolesService.js"></script>
-    <script src="app/common/services/resourcesService.js"></script>
-    <script src="app/common/services/remoteResourceFactoryService.js"></script>
-    <script src="app/common/services/modalService.js"></script>
-    <script src="app/common/services/localResourceFactoryService.js"></script>
-    <script src="app/common/services/loading.js"></script>
-    <script src="app/common/services/linkHeaderService.js"></script>
-    <script src="app/common/services/instancesService.js"></script>
-    <script src="app/common/services/environmentDeployService.js"></script>
-    <script src="app/common/services/enumsService.js"></script>
-    <script src="app/common/services/comparisons.js"></script>
-    <script src="app/common/services/cachedResourcesService.js"></script>
-    <script src="app/common/services/awsService.js"></script>
-    <script src="app/common/services/accountMappingService.js"></script>
-    <script src="app/common/models/UpstreamConfig.js"></script>
-    <script src="app/common/models/Image.js"></script>
-    <script src="app/common/models/Environment.js"></script>
-    <script src="app/common/models/DeploymentMap.js"></script>
-    <script src="app/common/models/Deployment.js"></script>
-    <script src="app/common/models/AutoScalingGroup.js"></script>
-    <script src="app/common/directives/validJsonDirective.js"></script>
-    <script src="app/common/directives/uniqueAmongDirective.js"></script>
-    <script src="app/common/directives/spinner.js"></script>
-    <script src="app/common/directives/scheduleViewer.js"></script>
-    <script src="app/common/directives/scheduleEditor.js"></script>
-    <script src="app/common/directives/scalingScheduleEditor.js"></script>
-    <script src="app/common/directives/scalingCronEditor.js"></script>
-    <script src="app/common/directives/multipleEmails.js"></script>
-    <script src="app/common/directives/loadingOverlay.js"></script>
-    <script src="app/common/directives/jsonDiffPatchDirective.js"></script>
-    <script src="app/common/directives/healthStatus.js"></script>
-    <script src="app/common/directives/defaultIfEmptyDirective.js"></script>
-    <script src="app/common/directives/cronEditor.js"></script>
-    <script src="app/common/common-modal/CommonModalController.js"></script>
-    <script src="app/operations/ToggleServiceModalController.js"></script>
-    <script src="app/compare/CompareController.js"></script>
-    <script src="app/common/utilities.js"></script>
-    <script src="app/common/loginForm.js"></script>
-    <script src="app/common/MainController.js"></script>
-    <script src="app/app.module.js"></script>
-    <!-- endinject -->
-    <!-- endbuild -->
+  <!-- endbuild -->
 
-  </head>
-  <body>
-    <div class="main-full">
+  <script type="text/javascript" src="user.js"></script>
+  <script src="/em/initial-data"></script>
+  <!-- <script src="/api/initial-data"></script> -->
+
+  <!-- build:js scripts/app.js -->
+  <!-- inject:js -->
+  <script src="app/operations/operations.module.js"></script>
+  <script src="app/operations/upstream/directives/lbServersStatesCell.js"></script>
+  <script src="app/environments/environments.module.js"></script>
+  <script src="app/environments/dialogs/asg/asgSingleService.js"></script>
+  <script src="app/environments/dialogs/asg/asgSingleInstance.js"></script>
+  <script src="app/environments/dialogs/asg/asgServices.js"></script>
+  <script src="app/environments/dialogs/asg/asgInstances.js"></script>
+  <script src="app/environments/dialogs/asg/asgDistribution.js"></script>
+  <script src="app/operations/upstream/UpstreamDetailsModalController.js"></script>
+  <script src="app/operations/upstream/OpsUpstreamController.js"></script>
+  <script src="app/operations/upstream/ASGSelectionModalController.js"></script>
+  <script src="app/operations/maintenance/OpsMaintenanceController.js"></script>
+  <script src="app/operations/maintenance/MainteinanceAddServerModalController.js"></script>
+  <script src="app/operations/deployments/opsDeploymentsList.js"></script>
+  <script src="app/operations/deployments/opsDeploymentsInstances.js"></script>
+  <script src="app/operations/deployments/OpsDeploymentsController.js"></script>
+  <script src="app/operations/deployments/DeploymentDetailsModalController.js"></script>
+  <script src="app/operations/amis/OpsAMIsController.js"></script>
+  <script src="app/environments/summary/EnvironmentsSummaryController.js"></script>
+  <script src="app/environments/settings/ManageEnvironmentSettingsController.js"></script>
+  <script src="app/environments/servers/serversView.js"></script>
+  <script src="app/environments/servers/ManageEnvironmentServersController.js"></script>
+  <script src="app/environments/schedule/ManageEnvironmentScheduleController.js"></script>
+  <script src="app/environments/directives/serviceDiffWithTargetState.js"></script>
+  <script src="app/environments/directives/lbStatusView.js"></script>
+  <script src="app/environments/directives/healthChecks.js"></script>
+  <script src="app/environments/directives/currentDesiredTitle.js"></script>
+  <script src="app/environments/dialogs/LaunchConfigConfirmationController.js"></script>
+  <script src="app/environments/dialogs/DeployModalController.js"></script>
+  <script src="app/environments/dialogs/CreateEnvironmentController.js"></script>
+  <script src="app/environments/dialogs/ASGDetailsModalController.js"></script>
+  <script src="app/configuration/configuration.module.js"></script>
+  <script src="app/configuration/services/permissionsValidationService.js"></script>
+  <script src="app/configuration/services/lbBulkOperationService.js"></script>
+  <script src="app/configuration/services/deploymentMapConverter.js"></script>
+  <script src="app/configuration/services/arrayItemHashDetectorService.js"></script>
+  <script src="app/configuration/pick-ami/PickAmiController.js"></script>
+  <script src="app/configuration/permissions/PermissionsController.js"></script>
+  <script src="app/configuration/permissions/PermissionController.js"></script>
+  <script src="app/common/common.module.js"></script>
+  <script src="app/configuration/notification-settings/notificationSettingsList.js"></script>
+  <script src="app/configuration/notification-settings/notificationSettingsEntry.js"></script>
+  <script src="app/configuration/load-balancers/LBsController.js"></script>
+  <script src="app/configuration/load-balancers/LBUpstreamsController.js"></script>
+  <script src="app/configuration/load-balancers/LBUpstreamController.js"></script>
+  <script src="app/configuration/load-balancers/LBController.js"></script>
+  <script src="app/configuration/load-balancers/LBCloneController.js"></script>
+  <script src="app/configuration/lbupstreams/upstreamViewModel.js"></script>
+  <script src="app/configuration/import/ImportController.js"></script>
+  <script src="app/configuration/export/ExportController.js"></script>
+  <script src="app/configuration/environment-types/EnvironmentTypesController.js"></script>
+  <script src="app/configuration/environment-types/EnvironmentTypeController.js"></script>
+  <script src="app/configuration/em-services/ServicesController.js"></script>
+  <script src="app/configuration/em-services/ServiceController.js"></script>
+  <script src="app/configuration/deployment-maps/copyServerRole.js"></script>
+  <script src="app/configuration/deployment-maps/DeploymentMapsController.js"></script>
+  <script src="app/configuration/deployment-maps/DeploymentMapTargetController.js"></script>
+  <script src="app/configuration/deployment-maps/DeploymentMapCreateController.js"></script>
+  <script src="app/configuration/deployment-maps/DeploymentMapController.js"></script>
+  <script src="app/configuration/clusters/ClustersController.js"></script>
+  <script src="app/configuration/clusters/ClusterController.js"></script>
+  <script src="app/configuration/audit/AuditController.js"></script>
+  <script src="app/configuration/audit/AuditCompareModalController.js"></script>
+  <script src="app/configuration/accounts/AccountsController.js"></script>
+  <script src="app/configuration/accounts/AccountController.js"></script>
+  <script src="app/compare/compare.module.js"></script>
+  <script src="app/compare/services/serviceComparison.js"></script>
+  <script src="app/compare/services/comparableResources.js"></script>
+  <script src="app/compare/services/upstreamService.js"></script>
+  <script src="app/compare/services/ResourceComparison.js"></script>
+  <script src="app/compare/directives/serviceCell.js"></script>
+  <script src="app/compare/diff-viewer/DiffViewerController.js"></script>
+  <script src="app/common/utils/QuerySync.js"></script>
+  <script src="app/common/services/targetStateService.js"></script>
+  <script src="app/common/services/taggable.js"></script>
+  <script src="app/common/services/serviceDiscovery.js"></script>
+  <script src="app/common/services/schemaValidatorService.js"></script>
+  <script src="app/common/services/rolesService.js"></script>
+  <script src="app/common/services/resourcesService.js"></script>
+  <script src="app/common/services/remoteResourceFactoryService.js"></script>
+  <script src="app/common/services/modalService.js"></script>
+  <script src="app/common/services/localResourceFactoryService.js"></script>
+  <script src="app/common/services/loading.js"></script>
+  <script src="app/common/services/linkHeaderService.js"></script>
+  <script src="app/common/services/instancesService.js"></script>
+  <script src="app/common/services/environmentDeployService.js"></script>
+  <script src="app/common/services/enumsService.js"></script>
+  <script src="app/common/services/comparisons.js"></script>
+  <script src="app/common/services/cachedResourcesService.js"></script>
+  <script src="app/common/services/awsService.js"></script>
+  <script src="app/common/services/accountMappingService.js"></script>
+  <script src="app/common/models/UpstreamConfig.js"></script>
+  <script src="app/common/models/Image.js"></script>
+  <script src="app/common/models/Environment.js"></script>
+  <script src="app/common/models/DeploymentMap.js"></script>
+  <script src="app/common/models/Deployment.js"></script>
+  <script src="app/common/models/AutoScalingGroup.js"></script>
+  <script src="app/common/directives/validJsonDirective.js"></script>
+  <script src="app/common/directives/uniqueAmongDirective.js"></script>
+  <script src="app/common/directives/spinner.js"></script>
+  <script src="app/common/directives/scheduleViewer.js"></script>
+  <script src="app/common/directives/scheduleEditor.js"></script>
+  <script src="app/common/directives/scalingScheduleEditor.js"></script>
+  <script src="app/common/directives/scalingCronEditor.js"></script>
+  <script src="app/common/directives/multipleEmails.js"></script>
+  <script src="app/common/directives/loadingOverlay.js"></script>
+  <script src="app/common/directives/jsonDiffPatchDirective.js"></script>
+  <script src="app/common/directives/healthStatus.js"></script>
+  <script src="app/common/directives/defaultIfEmptyDirective.js"></script>
+  <script src="app/common/directives/cronEditor.js"></script>
+  <script src="app/common/common-modal/CommonModalController.js"></script>
+  <script src="app/operations/ToggleServiceModalController.js"></script>
+  <script src="app/compare/CompareController.js"></script>
+  <script src="app/common/utilities.js"></script>
+  <script src="app/common/loginForm.js"></script>
+  <script src="app/common/MainController.js"></script>
+  <script src="app/app.module.js"></script>
+  <!-- endinject -->
+  <!-- endbuild -->
+
+</head>
+
+<body>
+  <div class="main-full">
     <login-form ng-if="!loggedIn"></login-form>
     <div ng-controller="MainController as main" ng-if="loggedIn" ng-cloak="">
       <loading-overlay></loading-overlay>
@@ -259,11 +265,12 @@
       </div>
 
     </div>
+  </div>
+  <footer>
+    <div style="margin-left: auto">
+      <a data-ng-if="showDebug" target="_blank" href="chrome://inspect#devices">node:inspect:{{debugAddress}}</a>
     </div>
-      <footer>
-        <div style="margin-left: auto">
-          <a data-ng-if="showDebug" target="_blank" href="chrome://inspect#devices">node:inspect:{{debugAddress}}</a>
-        </div>
-      </footer>
-  </body>
+  </footer>
+</body>
+
 </html>

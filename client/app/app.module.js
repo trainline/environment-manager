@@ -13,12 +13,18 @@ var app = angular.module('EnvironmentManager', [
   'EnvironmentManager.environments',
   'EnvironmentManager.operations',
   'EnvironmentManager.configuration',
-  'EnvironmentManager.compare'
+  'EnvironmentManager.compare',
+  'angular-loading-bar',
+  'smart-table'
 ]);
+
+app.config(['cfpLoadingBarProvider', function (cfpLoadingBarProvider) {
+  cfpLoadingBarProvider.includeSpinner = false;
+}]);
 
 // Setup global routes
 app.config(function ($routeProvider, $compileProvider) {
-  $compileProvider.preAssignBindingsEnabled(true); 
+  $compileProvider.preAssignBindingsEnabled(true);
   $routeProvider
     .when('/', {
       templateUrl: '/app/environments/summary/env-summary.html',
