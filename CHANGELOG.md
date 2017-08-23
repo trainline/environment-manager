@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
+## [6.1.1] - 2017-08-23
+
+### Fixed
+- JavaScript and CSS files added to accessible location for angular-loading-bar and angular-smart-table.
+
 ## [6.1.0] - 2017-08-23
 
 ### Added
