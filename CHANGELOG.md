@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
+### Added
+- _Transitioning Server Roles_ section at the top of the servers page highlighting auto scaling groups that are changing size. [#311]
+- _Deployments_ column on the servers page highlighting auto scaling groups with deployments in progress. [#311]
+
 ### Changed
 - Locking an environment prevents modifications to auto scaling groups. [#310]
 
@@ -27,6 +31,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [Unreleased]: https://github.com/trainline/environment-manager/compare/6.0.2...HEAD
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
+[#311]: https://github.com/trainline/environment-manager/pull/311
 [#310]: https://github.com/trainline/environment-manager/pull/310
 [#309]: https://github.com/trainline/environment-manager/pull/309
 [#308]: https://github.com/trainline/environment-manager/pull/308
