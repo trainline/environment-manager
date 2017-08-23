@@ -18,10 +18,10 @@
     "email": "platform.development@thetrainline.com"
   },
   "license": "Apache-2.0",
-  "dependencies": {},
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-run": "^1.7.1",
-    "gulp-vinyl-zip": "^2.0.0"
+    "gulp-vinyl-zip": "^2.0.0",
+    "rimraf": "^2.6.1"
   }
 }

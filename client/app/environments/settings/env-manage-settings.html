@@ -91,10 +91,11 @@
                 <div class="col-md-3">
                     <label>
                         <input type="checkbox" data-ng-model="vm.newEnvironment.IsLocked" />
-                        <span class="glyphicon glyphicon-lock" aria-hidden="true"></span> Lock Deployments</label>
+                        <span class="glyphicon glyphicon-lock" aria-hidden="true"></span> Lock Environment</label>
                     <p>
                         <em>
-                            This will prevent any further deployments to this environment until it is unlocked.
+                            Prevent deployment of services and modifications to auto scaling groups in this environment.
+                            Any operations in progress will continue to completion.
                         </em>
                     </p>
                 </div>
@@ -107,7 +108,7 @@
                         <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Maintenance Mode</label>
                     <p>
                         <em>
-                            This will cause users of publicly available services in this environment to see a maintenance page.
+                            Users of publicly available services in this environment will see a maintenance page.
                         </em>
                     </p>
                 </div>

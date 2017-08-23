@@ -8,10 +8,15 @@ cache:
     - "${HOME}/.cache/bower"
   yarn: true
 
+# https://yarnpkg.com/en/docs/install-ci#travis-tab
+before_install:
+  - curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 0.27.5
+  - export PATH=$HOME/.yarn/bin:$PATH
+
 install:
-  - yarn install --pure-lockfile
-  - (cd server && exec yarn install --pure-lockfile)
-  - (cd client && exec yarn install --pure-lockfile)
+  - yarn install --frozen-lockfile
+  - (cd server && exec yarn install --frozen-lockfile)
+  - (cd client && exec yarn install --frozen-lockfile)
 
 before_script:
   - yarn global add gulp

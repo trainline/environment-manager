@@ -55,7 +55,7 @@ function postEnvironmentTypesConfig(req, res, next) {
   delete record.Version;
   return configEnvironmentTypes.create({ record, metadata })
     .then(() => res.status(201).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: '/config/environment-types',
@@ -85,7 +85,7 @@ function putEnvironmentTypeConfigByName(req, res, next) {
 
   return configEnvironmentTypes.replace({ record, metadata }, expectedVersion)
     .then(() => res.status(200).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/config/environment-types/${key}`,
@@ -112,7 +112,7 @@ function deleteEnvironmentTypeConfigByName(req, res, next) {
 
   return configEnvironmentTypes.delete({ key, metadata })
     .then(() => res.status(200).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/config/environment-types/${clusterName}`,

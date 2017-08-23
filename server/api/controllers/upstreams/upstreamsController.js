@@ -29,7 +29,7 @@ function putUpstreamSlicesToggle(req, res, next) {
   const command = metadata.addMetadata({ environmentName, upstreamName, user });
   return toggleSlices(command)
     .then(data => res.json(data))
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/upstreams/${upstreamName}/slices/toggle`,

@@ -95,7 +95,7 @@ function postUpstreamsConfig(req, res, next) {
       .then(rejectIfValidationFailed)
       .then(() => loadBalancerUpstreams.create({ record, metadata })))
     .then(() => res.status(200).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: '/config/upstreams',
@@ -137,7 +137,7 @@ function putUpstreamConfigByName(req, res, next) {
       .then(rejectIfValidationFailed)
       .then(() => loadBalancerUpstreams.replace({ record, metadata }, expectedVersion)))
     .then(() => res.status(200).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/config/upstreams/${param('name', req)}`,

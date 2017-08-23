@@ -181,7 +181,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
           }
 
           vm.currentDistribution = asgDistributionService.calcDistribution(vm.deploymentAzsList, vm.asg);
-          vm.getLBStatus().finally(function(){
+          vm.getLBStatus().finally(function () {
             vm.loadingUpstreamStatus = false;
           });
 
@@ -198,12 +198,12 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       });
     };
 
-    vm.getLBStatus = function() {
+    vm.getLBStatus = function () {
       var env = parameters.environment.EnvironmentName;
       var params = { account: 'all' };
 
-      return resources.config.lbUpstream.all(params).then(function(upstreams) {
-        return vm.getLBData(env).then(function(lbs) {
+      return resources.config.lbUpstream.all(params).then(function (upstreams) {
+        return vm.getLBData(env).then(function (lbs) {
           var instances = vm.asgState.Instances;
 
           vm.upstreamStatusData.lbs = lbs;
@@ -213,9 +213,9 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       });
     }
 
-    vm.getLBData = function(env) {
-      return accountMappingService.getEnvironmentLoadBalancers(env).then(function(lbNames){
-        return $q.all(lbNames.map(function(lbName){
+    vm.getLBData = function (env) {
+      return accountMappingService.getEnvironmentLoadBalancers(env).then(function (lbNames) {
+        return $q.all(lbNames.map(function (lbName) {
           var url = ['api', 'v1', 'load-balancer', lbName].join('/');
           return $http.get(url).then(function (response) {
             var upstreams = response.data;
@@ -280,15 +280,17 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
             availabilityZoneName: vm.asgUpdate.AvailabilityZone
           }
         };
-        vm.asg.updateAutoScalingGroup(updated).then(function () {
-          loading.lockPage(false);
-          modal.information({
-            title: 'ASG Updated',
-            message: 'ASG update successful. You can monitor instance changes by using the Refresh Icon in the top right of the window.<br/><br/><b>Note:</b> During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection draining before termination.'
-          }).then(function () {
+        vm.asg.updateAutoScalingGroup(updated)
+          .then(function () {
+            modal.information({
+              title: 'ASG Updated',
+              message: 'ASG update successful. You can monitor instance changes by using the Refresh Icon in the top right of the window.<br/><br/><b>Note:</b> During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection draining before termination.'
+            });
+          })
+          .finally(function () {
+            loading.lockPage(false);
             vm.refresh();
           });
-        });
       });
     };
 
@@ -361,13 +363,13 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
           title: 'ASG Schedule Updated',
           message: 'ASG schedule updated successfully.'
         });
-      }).catch(function(err){
+      }).catch(function (err) {
         if (err.status === 404) {
           modal.error('Error', 'An error has occurred: ' + err.data.error);
         } else {
           throw err;
         }
-      }).finally(function() {
+      }).finally(function () {
         resetForm();
         vm.refresh();
       });

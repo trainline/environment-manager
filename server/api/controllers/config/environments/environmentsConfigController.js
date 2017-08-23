@@ -89,7 +89,7 @@ function postEnvironmentsConfig(req, res, next) {
     opsEnvironment.create({ record: opsEnv, metadata })
   ])
     .then(() => res.status(201).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: '/config/environments',
@@ -120,7 +120,7 @@ function putEnvironmentConfigByName(req, res, next) {
 
   return configEnvironments.replace({ record, metadata }, expectedVersion)
     .then(() => res.status(200).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/config/environments/${environmentName}`,
@@ -154,7 +154,7 @@ function deleteEnvironmentConfigByName(req, res, next) {
     .then(() => opsEnvironment.delete({ key, metadata }))
     .then(() => configEnvironments.delete({ key, metadata }))
     .then(() => res.status(200).end())
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/config/environments/${environmentName}`,

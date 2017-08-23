@@ -99,7 +99,7 @@ function postDeployment(req, res, next) {
       res.json(deployment);
     }
   })
-    .then(sns.publish({
+    .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: '/deployments',
@@ -163,22 +163,21 @@ function patchDeployment(req, res, next) {
     }
   })
     .then(data => res.json(data))
-    .then(() => {
-      sns.publish({
-        message: JSON.stringify({
-          Endpoint: {
-            Url: `/deployments/${key}`,
-            Method: 'PATCH'
-          }
-        }),
-        topic: sns.TOPICS.OPERATIONS_CHANGE,
-        attributes: {
-          Environment: '',
-          Action: sns.ACTIONS.PATCH,
-          ID: key
+    .then(() => sns.publish({
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/deployments/${key}`,
+          Method: 'PATCH'
         }
-      });
+      }),
+      topic: sns.TOPICS.OPERATIONS_CHANGE,
+      attributes: {
+        Environment: '',
+        Action: sns.ACTIONS.PATCH,
+        ID: key
+      }
     })
+    )
     .catch(next);
 }
 
