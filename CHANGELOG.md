@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
+## [6.1.0] - 2017-08-23
+
 ### Added
 - _Transitioning Server Roles_ section at the top of the servers page highlighting auto scaling groups that are changing size. [#311]
 - _Deployments_ column on the servers page highlighting auto scaling groups with deployments in progress. [#311]
@@ -28,7 +30,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/6.0.2...HEAD
+[Unreleased]: https://github.com/trainline/environment-manager/compare/v6.1.0...HEAD
+[6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
 [#311]: https://github.com/trainline/environment-manager/pull/311
