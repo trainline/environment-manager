@@ -19,7 +19,7 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
     vm.version = 0;
     vm.ports = {
       range: {
-        lower: 40000, 
+        lower: 40000,
         upper: 41000
       },
       blue: {
@@ -80,17 +80,17 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
 
     function fetchPortNumbers() {
       $http({
-          method: 'GET',
-          url: '/api/v1/config/services',
-          headers: { 'expected-version': vm.version }
-        }).then(function (result) {
-          var ports = extractPortNumbers(result.data);
-          vm.ports.blue.existing = ports.blue;
-          vm.ports.green.existing = ports.green;
-        }).then(function () {
-          vm.getBluePort = findNewPort({range: vm.ports.range, ports: vm.ports.blue.existing});
-          vm.getGreenPort = findNewPort({range: vm.ports.range, ports: vm.ports.green.existing});
-        });
+        method: 'GET',
+        url: '/api/v1/config/services',
+        headers: { 'expected-version': vm.version }
+      }).then(function (result) {
+        var ports = extractPortNumbers(result.data);
+        vm.ports.blue.existing = ports.blue;
+        vm.ports.green.existing = ports.green;
+      }).then(function () {
+        vm.getBluePort = findNewPort({ range: vm.ports.range, ports: vm.ports.blue.existing });
+        vm.getGreenPort = findNewPort({ range: vm.ports.range, ports: vm.ports.green.existing });
+      });
     }
 
     function extractPortNumbers(data) {
@@ -109,7 +109,7 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       //Add all the ports to a single array. 
       //It doesn't matter whether they come from green or blue. 
       data.forEach(function (item) {
-        if(item.Value) {
+        if (item.Value) {
           vm.ports.used.push(item.Value.GreenPort * 1);
           vm.ports.used.push(item.Value.BluePort * 1);
         }
@@ -161,10 +161,10 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
     function findNewPort(config) {
       return function () {
         var newPort = 0;
-        for(var i = config.range.lower; i <= config.range.upper; i += 1) {
-          if(config.ports.indexOf(i) === -1) {
-           newPort = i;
-           break;
+        for (var i = config.range.lower; i <= config.range.upper; i += 1) {
+          if (config.ports.indexOf(i) === -1) {
+            newPort = i;
+            break;
           }
 
         }
@@ -190,8 +190,8 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
 
     vm.getUnusedPort = function () {
       var port = null;
-      for(var i = vm.ports.range.lower; i < vm.ports.range.upper; i += 1) {
-        if(portIsAvailable(i)) {
+      for (var i = vm.ports.range.lower; i < vm.ports.range.upper; i += 1) {
+        if (portIsAvailable(i)) {
           port = i;
           break;
         }
@@ -217,15 +217,15 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
     vm.checkPorts = function () {
       checkGreenPort();
       checkBluePort();
-      if(vm.service.Value.GreenPort === null) {
+      if (vm.service.Value.GreenPort === null) {
         vm.portsValid = true;
         return;
       }
-      if(vm.service.Value.BluePort === null) {
+      if (vm.service.Value.BluePort === null) {
         vm.portsValid = true;
         return;
       }
-      if(vm.service.Value.GreenPort === vm.service.Value.BluePort) {
+      if (vm.service.Value.GreenPort === vm.service.Value.BluePort) {
         vm.portsValid = false;
       } else {
         vm.portsValid = true;
@@ -241,8 +241,8 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
     }
 
     function checkBluePort() {
-      if(vm.ports.used.indexOf(vm.service.Value.BluePort) !== -1 
-          && vm.service.Value.BluePort !== vm.ports.blue.current) {
+      if (vm.ports.used.indexOf(vm.service.Value.BluePort) !== -1
+        && vm.service.Value.BluePort !== vm.ports.blue.current) {
         vm.ports.blue.taken = true;
       } else {
         vm.ports.blue.taken = false;
@@ -250,8 +250,8 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
     }
 
     function checkGreenPort() {
-      if(vm.ports.used.indexOf(vm.service.Value.GreenPort) !== -1 
-          && vm.service.Value.GreenPort !== vm.ports.green.current) {
+      if (vm.ports.used.indexOf(vm.service.Value.GreenPort) !== -1
+        && vm.service.Value.GreenPort !== vm.ports.green.current) {
         vm.ports.green.taken = true;
       } else {
         vm.ports.green.taken = false;
@@ -261,6 +261,24 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
     vm.canUser = function () {
       return userHasPermission;
     };
+
+    vm.getOwningTeamEmail = function () {
+      $http({
+        method: 'get',
+        url: '/api/v1/config/clusters/' + vm.service.OwningCluster,
+        headers: { 'expected-version': $scope.Version }
+      })
+        .then(function (response) {
+          try {
+            if (!response.data.Value.GroupEmailAddress) throw void 0;
+
+            vm.service.Value.PrimaryContact = response.data.Value.GroupEmailAddress;
+          } catch (e) {
+            console.log("[INFO] :: There is currently no email specified against this team.")
+          }
+        });
+
+    }
 
     vm.save = function () {
       var saveMethod;
