@@ -28,7 +28,7 @@
             </div>
             <span class="help-block" ng-if="form.ServiceName.$dirty && form.ServiceName.$error.required">Service name is mandatory.</span>
             <span class="help-block" ng-if="form.ServiceName.$dirty && form.ServiceName.$error.duplicated">A Service already exists with the same name.</span>
-            <span class="help-block" ng-if="form.ServiceName.$dirty && form.ServiceName.$error.pattern">Service name must contain only alphanumeric characters.</span>            >>>>>>> master
+            <span class="help-block" ng-if="form.ServiceName.$dirty && form.ServiceName.$error.pattern">Service name must contain only alphanumeric characters.</span>
         </div>
         <div class="form-group" ng-class="{'has-error': form.OwningClusters.$invalid} && form.OwningClusters.$dirty">
             <label class="col-sm-12 control-label text-left nowrap em-form-label">Owning Team: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
