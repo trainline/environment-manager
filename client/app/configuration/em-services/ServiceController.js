@@ -126,10 +126,30 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       vm.service.Value.BluePort = value;
     }
 
+    var dependency = {
+      Name: ''
+    };
+
+    // todo: remove 
+    var count = 0;
+
+    vm.addDependency = function () {
+      var newDep = angular.copy(dependency);
+      newDep.Name = String(count++)
+      vm.service.Value.Dependencies.push(newDep);
+      console.log(vm.service.Value.Dependencies)
+    }
+
+    vm.removeDependency = function (index) {
+      vm.service.Value.Dependencies.splice(index, 1);
+    }
+
     function readItem(name, range) {
       resources.config.services.get({ key: name, range: range }).then(function (data) {
         vm.dataFound = true;
         vm.service = readableService(data);
+        // todo: remove
+        vm.service.Value.Dependencies = [{Name: "Service"}];
         vm.ports.green.current = vm.service.Value.GreenPort;
         vm.ports.blue.current = vm.service.Value.BluePort;
         vm.version = data.Version;
