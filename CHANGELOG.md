@@ -5,6 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
+## [6.2.0] - 25-08-2017
+### Changed
+- 'config/services' page layout logically grouped
+- 'config/services' page now contains fields for "new relic", "elk", "jira" and "wiki" links.
+- 'config/services' primary contact pattern no longer validates on only alphanumeric characters. Email addresses are permissible.
+- 'config/services' primary contact now provides a button to allow you to obtain the owning teams email address, if one exists and to use that as the primary contact details.
+- 'config/services' page now allow you to list dependencies of your service. This field contains a typeahead for services in the same environment while you can also just add free text if you choose to.
+
+## [Released]
+
 ## [6.1.1] - 2017-08-23
 ### Fixed
 - Resolved missing UI dependencies.
