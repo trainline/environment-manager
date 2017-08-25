@@ -1,0 +1,19 @@
+{
+  "name": "touch-dynamodb-table",
+  "version": "0.1.0",
+  "description": "AWS Lambda Function to touch each record in a DynamoDB table",
+  "main": "index.js",
+  "author": "merlin.taylor@thetrainline.com",
+  "license": "Apache-2.0",
+  "scripts": {
+    "test": "tap *.spec.js"
+  },
+  "devDependencies": {
+    "eslint": "^4.5.0",
+    "proxyquire": "^1.8.0",
+    "tap": "^10.7.2"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.102.0"
+  }
+}
