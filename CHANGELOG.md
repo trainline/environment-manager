@@ -5,13 +5,12 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
-## [6.3.0]
-
-### Changed
-
-- Added CustomErrorCodes and CacheTime LB Settings
-
 ## [Released]
+
+## [6.3.0] - 2017-08-25
+
+### Added
+- Added CustomErrorCodes and CacheTime LB Settings
 
 ## [6.2.0] - 2017-08-25
 
