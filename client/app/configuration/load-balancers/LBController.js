@@ -159,7 +159,7 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
 
       // Validate syntax structure and mandatory attributes
       var mandatoryFields = ['SchemaVersion', 'EnvironmentName', 'VHostName', 'Listen', 'ServerName', 'FrontEnd', 'Locations'];
-      var optionalFields = ['Set', 'ProxySetHeaders', 'AddHeaders', 'SSLCertificate', 'SSLKey', 'GreenPort', 'InstallCheckURL', 'UninstallScriptPath', 'SiteInMaintenance', 'RedirectToLower', 'TokeniseLocations'];
+      var optionalFields = ['Set', 'ProxySetHeaders', 'AddHeaders', 'SSLCertificate', 'SSLKey', 'GreenPort', 'InstallCheckURL', 'UninstallScriptPath', 'SiteInMaintenance', 'RedirectToLower', 'TokeniseLocations', 'CustomErrorCodes', 'CacheTime'];
       var errors = $scope.ValidateFields(value, mandatoryFields, optionalFields);
 
       // Validate Listen
@@ -196,6 +196,20 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
         errors = errors.concat($scope.ValidateArrayField(value.AddHeaders, 'AddHeaders', true));
       }
 
+      // Validate CustomErrorCodes
+      if (value.CustomErrorCodes) {
+        var customErrorCodeErrors = $scope.ValidateArrayField(value.CustomErrorCodes, 'CustomErrorCodes', true);
+        errors = errors.concat(customErrorCodeErrors);
+
+        if (customErrorCodeErrors.length == 0) {
+          value.CustomErrorCodes.forEach(function(errorCode, j) {
+            if (!errorCode.match(/^(\d{3}|all)$/)) {
+              errors = errors.concat('Attribute CustomErrorCodes[' + j + '] must be "all" or a valid 3 digit number.')
+            }
+          });
+        }
+      }
+
       // Validate Locations
       if (value.Locations) {
         var locationErrors = $scope.ValidateArrayField(value.Locations, 'Locations', true);
@@ -203,7 +217,7 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
 
         if (locationErrors.length == 0) {
           var locationMandatoryFields = ['Path'];
-          var locationOptionalFields = ['Set', 'TryFiles', 'Rewrites', 'ServiceName', 'IfCondition', 'IfConditionPriority', 'Tokenise', 'ProxySetHeaders', 'ProxyPass', 'HealthCheck', 'ProxyHttpVersion', 'AddHeaders', 'ReturnCode', 'ReturnURI', 'MoreHeaders', 'RewriteCondition', 'RewriteURI', 'RewriteState', 'frompolicy', 'Priority', 'RawNginxConfig'];
+          var locationOptionalFields = ['Set', 'TryFiles', 'Rewrites', 'ServiceName', 'IfCondition', 'IfConditionPriority', 'Tokenise', 'ProxySetHeaders', 'ProxyPass', 'HealthCheck', 'ProxyHttpVersion', 'AddHeaders', 'ReturnCode', 'ReturnURI', 'MoreHeaders', 'RewriteCondition', 'RewriteURI', 'RewriteState', 'frompolicy', 'Priority', 'RawNginxConfig', 'CustomErrorCodes', 'CacheTime'];
           var healthCheckMandatoryFields = [];
           var healthCheckOptionalFields = ['Interval', 'Passes', 'Fails', 'URI'];
           var rewriteMandatoryFields = ['Condition', 'URI', 'State'];
@@ -234,6 +248,25 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
 
             if (location.Set) {
               errors = errors.concat($scope.ValidateArrayField(location.Set, 'Set', false, 'Locations[' + i + ']'));
+            }
+
+            if (location.CacheTime) {
+              if (!location.CacheTime.match(/^\d*[smh]$/)) {
+                errors.push('Attribute Locations[' + i + ']/CacheTime must be a valid number of seconds, minutes or hours. e.g. 10m');
+              }
+            }
+
+            if (location.CustomErrorCodes) {
+              var customErrorCodeErrors = $scope.ValidateArrayField(location.CustomErrorCodes, 'CustomErrorCodes', false, 'Locations[' + i + ']');
+              errors = errors.concat(customErrorCodeErrors);
+
+              if (customErrorCodeErrors.length == 0) {
+                location.CustomErrorCodes.forEach(function(errorCode, j) {
+                  if (!errorCode.match(/^(\d{3}|all)$/)) {
+                    errors.push('Attribute Locations[' + i + ']/CustomErrorCodes[' + j + '] must be "all" or a valid 3 digit number.')
+                  }
+                });
+              }
             }
 
             // Check service name exists if specified
