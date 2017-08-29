@@ -6,7 +6,7 @@
 
 // Manage specific LoadBalancer Setting
 angular.module('EnvironmentManager.configuration').controller('LBController',
-  function ($scope, $routeParams, $location, $q, $http, resources, cachedResources, modal, accountMappingService) {
+  function ($scope, $routeParams, $location, $q, $http, resources, cachedResources, modal, accountMappingService, schemaValidatorService) {
     $scope.LBSetting = {};
     $scope.LBUpstreamData = [];
     $scope.Version = 0;
@@ -26,16 +26,13 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
       EnvironmentName: '',
       VHostName: '',
       Listen: [
-        { IP: '', Port: '', SSL: true }
+        { Port: '' }
       ],
-      SSLCertificate: '',
-      SSLKey: '',
       ServerName: [''],
       FrontEnd: false,
-      TokeniseLocations: false,
       Locations: [{
         Path: '',
-        ServiceName: '',
+        Priority: 1,
         IfCondition: '',
         IfConditionPriority: 1,
         Tokenise: false,
@@ -54,8 +51,18 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
         MoreHeaders: ['header:value'],
         RewriteCondition: '',
         RewriteURI: '',
-        RewriteState: ''
-      },]
+        RewriteState: '',
+        Rewrites: {
+          Condition: '',
+          URI: '',
+          State: ''
+        },
+        RawNginxConfig: '',
+        Set: '',
+        TryFiles: '',
+        CustomErrorCodes: [ "all" ],
+        CacheTime: ''
+      }]
     };
 
     var DefaultValue = JSON.stringify(configStructure, null, 4);
@@ -155,176 +162,8 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
     };
 
     $scope.ValidateJson = function (value) {
-      var errors = [];
-
-      // Validate syntax structure and mandatory attributes
-      var mandatoryFields = ['SchemaVersion', 'EnvironmentName', 'VHostName', 'Listen', 'ServerName', 'FrontEnd', 'Locations'];
-      var optionalFields = ['Set', 'ProxySetHeaders', 'AddHeaders', 'SSLCertificate', 'SSLKey', 'GreenPort', 'InstallCheckURL', 'UninstallScriptPath', 'SiteInMaintenance', 'RedirectToLower', 'TokeniseLocations', 'CustomErrorCodes', 'CacheTime'];
-      var errors = $scope.ValidateFields(value, mandatoryFields, optionalFields);
-
-      // Validate Listen
-      if (value.Listen) {
-        var listenErrors = $scope.ValidateArrayField(value.Listen, 'Listen', true);
-        errors = errors.concat(listenErrors);
-
-        if (listenErrors.length == 0) {
-          var listenMandatoryFields = ['Port'];
-          var listenOptionalFields = ['IP', 'SSL'];
-          for (var i = 0; i < value.Listen.length; i++) {
-            errors = errors.concat($scope.ValidateFields(value.Listen[i], listenMandatoryFields, listenOptionalFields, 'Listen[' + i + ']'));
-          }
-        }
-      }
-
-      // Validate Server Name
-      if (value.ServerName) {
-        errors = errors.concat($scope.ValidateArrayField(value.ServerName, 'ServerName', true));
-      }
-
-      // Validate Set
-      if (value.Set) {
-        errors = errors.concat($scope.ValidateArrayField(value.Set, 'Set', true));
-      }
-
-      // Validate ProxySetHeaders
-      if (value.ProxySetHeaders) {
-        errors = errors.concat($scope.ValidateArrayField(value.ProxySetHeaders, 'ProxySetHeaders', true));
-      }
-
-      // Validate AddHeaders
-      if (value.AddHeaders) {
-        errors = errors.concat($scope.ValidateArrayField(value.AddHeaders, 'AddHeaders', true));
-      }
-
-      // Validate CustomErrorCodes
-      if (value.CustomErrorCodes) {
-        var customErrorCodeErrors = $scope.ValidateArrayField(value.CustomErrorCodes, 'CustomErrorCodes', true);
-        errors = errors.concat(customErrorCodeErrors);
-
-        if (customErrorCodeErrors.length == 0) {
-          value.CustomErrorCodes.forEach(function(errorCode, j) {
-            if (!errorCode.match(/^(\d{3}|all)$/)) {
-              errors = errors.concat('Attribute CustomErrorCodes[' + j + '] must be "all" or a valid 3 digit number.')
-            }
-          });
-        }
-      }
-
-      // Validate Locations
-      if (value.Locations) {
-        var locationErrors = $scope.ValidateArrayField(value.Locations, 'Locations', true);
-        errors = errors.concat(locationErrors);
-
-        if (locationErrors.length == 0) {
-          var locationMandatoryFields = ['Path'];
-          var locationOptionalFields = ['Set', 'TryFiles', 'Rewrites', 'ServiceName', 'IfCondition', 'IfConditionPriority', 'Tokenise', 'ProxySetHeaders', 'ProxyPass', 'HealthCheck', 'ProxyHttpVersion', 'AddHeaders', 'ReturnCode', 'ReturnURI', 'MoreHeaders', 'RewriteCondition', 'RewriteURI', 'RewriteState', 'frompolicy', 'Priority', 'RawNginxConfig', 'CustomErrorCodes', 'CacheTime'];
-          var healthCheckMandatoryFields = [];
-          var healthCheckOptionalFields = ['Interval', 'Passes', 'Fails', 'URI'];
-          var rewriteMandatoryFields = ['Condition', 'URI', 'State'];
-          var rewriteOptionalFields = [];
-          for (var i = 0; i < value.Locations.length; i++) {
-            var location = value.Locations[i];
-
-            // Check structure
-            errors = errors.concat($scope.ValidateFields(location, locationMandatoryFields, locationOptionalFields, 'Locations[' + i + ']'));
-
-            // Validate health check
-            if (location.HealthCheck) {
-              errors = errors.concat($scope.ValidateFields(location.HealthCheck, healthCheckMandatoryFields, healthCheckOptionalFields, 'Locations[' + i + ']/HealthCheck'));
-            }
-
-            // Validate arrays
-            if (location.ProxySetHeaders) {
-              errors = errors.concat($scope.ValidateArrayField(location.ProxySetHeaders, 'ProxySetHeaders', false, 'Locations[' + i + ']'));
-            }
-
-            if (location.MoreHeaders) {
-              errors = errors.concat($scope.ValidateArrayField(location.MoreHeaders, 'MoreHeaders', false, 'Locations[' + i + ']'));
-            }
-
-            if (location.AddHeaders) {
-              errors = errors.concat($scope.ValidateArrayField(location.AddHeaders, 'AddHeaders', false, 'Locations[' + i + ']'));
-            }
-
-            if (location.Set) {
-              errors = errors.concat($scope.ValidateArrayField(location.Set, 'Set', false, 'Locations[' + i + ']'));
-            }
-
-            if (location.CacheTime) {
-              if (!location.CacheTime.match(/^\d*[smh]$/)) {
-                errors.push('Attribute Locations[' + i + ']/CacheTime must be a valid number of seconds, minutes or hours. e.g. 10m');
-              }
-            }
-
-            if (location.CustomErrorCodes) {
-              var customErrorCodeErrors = $scope.ValidateArrayField(location.CustomErrorCodes, 'CustomErrorCodes', false, 'Locations[' + i + ']');
-              errors = errors.concat(customErrorCodeErrors);
-
-              if (customErrorCodeErrors.length == 0) {
-                location.CustomErrorCodes.forEach(function(errorCode, j) {
-                  if (!errorCode.match(/^(\d{3}|all)$/)) {
-                    errors.push('Attribute Locations[' + i + ']/CustomErrorCodes[' + j + '] must be "all" or a valid 3 digit number.')
-                  }
-                });
-              }
-            }
-
-            // Check service name exists if specified
-            if (location.ServiceName) {
-              if ($scope.ServicesList.indexOf(location.ServiceName) == -1) {
-                errors.push('Locations[' + i + '] - Service Name not recognised. Please check spelling and capitalisation');
-              }
-            }
-
-            // Validate rewrites
-            if (location.Rewrites) {
-              $scope.ValidateArrayField(location.Rewrites, 'Locations[' + i + ']/Rewrites', true);
-
-              location.Rewrites.forEach(function(rewrite, j) {
-                errors = errors.concat($scope.ValidateFields(rewrite, rewriteMandatoryFields, rewriteOptionalFields, 'Locations[' + i + ']/Rewrites[' + j + ']'));
-              });
-            }
-
-            if (location.ProxyPass) {
-              var matchResults = location.ProxyPass.match(/^https?:\/\/([^$]+)/);
-
-              if (!matchResults) {
-                errors.push('Locations[' + i + '] - ProxyPass address is not valid. Check it begins with "http://" or "https://".');
-              } else {
-                var proxyUpstreamName = matchResults[1];
-
-                // Validate Upstream exists
-                if (!_.includes(proxyUpstreamName, '.')) {
-                  if ($scope.LBUpstreamData && $scope.LBUpstreamData.length > 0) {
-                    var matchFound = $scope.LBUpstreamData.some(function upstreamIsProxy(upstream) {
-                      return upstream.Value.UpstreamName === proxyUpstreamName;
-                    });
-
-                    if (!matchFound) {
-                      errors.push('Locations[' + i + '] - Upstream name in Proxy Pass not found. Please check spelling and capitalisation');
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-
-      // Semantic validations only if structure OK
-      if (errors.length > 0) return errors;
-
-      // Environment name in Value must match Environment selected
-      if ($scope.LBSetting.EnvironmentName != value.EnvironmentName) {
-        errors.push('EnvironmentName in JSON value must match the selected Environment');
-      }
-
-      // VHostName must match
-      if ($scope.LBSetting.VHostName != value.VHostName) {
-        errors.push('VHostName in JSON value must match the specified Virtual Host Name');
-      }
-
-      return (errors.length > 0) ? errors : null;
+      var validator = schemaValidatorService('LBSettings');
+      return validator(value);
     };
 
     function BackToSummary(environment) {

@@ -17,7 +17,8 @@ angular.module('EnvironmentManager.common')
 
     $log.log('Loading JSON Schemas...');
     [
-      'EnvironmentType'
+      'EnvironmentType',
+      'LBSettings'
     ].map(load);
 
     // Dont't know how to ensure all the schemas are loaded before returning.
