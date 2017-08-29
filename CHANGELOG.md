@@ -5,6 +5,11 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
+## [6.4.1] - 2017-08-29
+
+### Changed
+- Load balancer settings validation implemented using [JSON schema](http://json-schema.org/). [#319]
+
 ### Fixed
 - Fix bad function name introduced [in #318](https://github.com/trainline/environment-manager/pull/318/commits/6d4438e9a3b4bdf72acf585af168e22331526a96#diff-6752f398f8c4161aeb1830026b8b8b98R15).
 
@@ -62,13 +67,15 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/v6.4.0...HEAD
+[Unreleased]: https://github.com/trainline/environment-manager/compare/v6.4.1...HEAD
+[6.4.1]: https://github.com/trainline/environment-manager/compare/6.4.0...v6.4.1
 [6.4.0]: https://github.com/trainline/environment-manager/compare/6.3.0...v6.4.0
 [6.3.0]: https://github.com/trainline/environment-manager/compare/6.2.0...6.3.0
 [6.2.0]: https://github.com/trainline/environment-manager/compare/v6.1.0...6.2.0
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
+[#319]: https://github.com/trainline/environment-manager/pull/319
 [#318]: https://github.com/trainline/environment-manager/pull/318
 [#311]: https://github.com/trainline/environment-manager/pull/311
 [#310]: https://github.com/trainline/environment-manager/pull/310
