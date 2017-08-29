@@ -1,0 +1,110 @@
+{
+  "id": "LBSettings",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Load Balancer Settings",
+  "type": "object",
+  "required": ["SchemaVersion", "EnvironmentName", "VHostName", "Listen", "ServerName", "FrontEnd", "Locations"],
+  "additionalProperties": false,
+  "properties": {
+    "SchemaVersion": { "$ref": "#/definitions/numeric" },
+    "EnvironmentName": { "$ref": "#/definitions/nonEmptyString" },
+    "VHostName": { "$ref": "#/definitions/nonEmptyString" },
+    "FrontEnd": { "type": "boolean" },
+    "ServerName": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/nonEmptyString" }
+    },
+    "Listen": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["Port"],
+        "additionalProperties": false,
+        "properties": {
+          "Port": { "type": "number" }
+        }
+      }
+    },
+    "Locations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["Path"],
+        "additionalProperties": false,
+        "properties": {
+          "Path": { "$ref": "#/definitions/nonEmptyString" },
+          "Priority": { "type": "number" },
+          "IfCondition": { "$ref": "#/definitions/nonEmptyString" },
+          "IfConditionPriority": { "type": "number" },
+          "Tokenise": { "type": "boolean" },
+          "ProxySetHeaders": { "type": "array", "items": { "$ref": "#/definitions/nonEmptyString" } },
+          "ProxyPass": { "$ref": "#/definitions/nonEmptyString" },
+          "HealthCheck": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "Interval": { "type": "string", "pattern": "^\\d*[smh]$" },
+              "Fails": { "$ref": "#/definitions/numeric" },
+              "Passes": { "$ref": "#/definitions/numeric" },
+              "URI": { "$ref": "#/definitions/nonEmptyString" }
+            }
+          },
+          "ProxyHttpVersion": { "$ref": "#/definitions/nonEmptyString" },
+          "AddHeaders": { "type": "array", "items": { "$ref": "#/definitions/nonEmptyString" } },
+          "ReturnCode": { "$ref": "#/definitions/numeric" },
+          "ReturnURI": { "$ref": "#/definitions/nonEmptyString" },
+          "MoreHeaders": { "type": "array", "items": { "$ref": "#/definitions/nonEmptyString" } },
+          "RewriteCondition": { "$ref": "#/definitions/nonEmptyString" },
+          "RewriteURI": { "$ref": "#/definitions/nonEmptyString" },
+          "RewriteState": { "$ref": "#/definitions/nonEmptyString" },
+          "Rewrites": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "Condition": { "$ref": "#/definitions/nonEmptyString" },
+                "URI": { "$ref": "#/definitions/nonEmptyString" },
+                "State": { "$ref": "#/definitions/nonEmptyString" }
+              }
+            }
+          },
+          "RawNginxConfig": { "$ref": "#/definitions/nonEmptyString" },
+          "Set": { "type": "array", "items": { "$ref": "#/definitions/nonEmptyString" } },
+          "TryFiles": { "$ref": "#/definitions/nonEmptyString" },
+          "CustomErrorCodes": {
+            "type": "array",
+            "items": { "type": "string", "pattern": "^(\\d{3}|all)$" }
+          },
+          "CacheTime": { "$ref": "#/definitions/nonEmptyString" }
+        }
+      }
+    },
+    "Set": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/nonEmptyString" }
+    },
+    "ProxySetHeaders": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/nonEmptyString" }
+    },
+    "AddHeaders": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/nonEmptyString" }
+    },
+    "SiteInMaintenance": { "type": "boolean" },
+    "CustomErrorCodes": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^(\\d{3}|all)$" }
+    }
+  },
+  "definitions": {
+    "numeric": {
+      "anyOf": [
+        { "type": "string", "pattern": "^\\d*$" },
+        { "type": "number" }
+      ]
+    },
+    "nonEmptyString": { "type": "string", "minLength": 1 }
+  }
+}
