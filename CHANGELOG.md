@@ -5,10 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
+## [6.4.0] - 2017-08-29
+
 ### Added
 - A user can change the owner of a service. [#318]
-
-## [Released]
 
 ## [6.3.0] - 2017-08-25
 
@@ -59,7 +59,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/v6.1.0...HEAD
+[Unreleased]: https://github.com/trainline/environment-manager/compare/v6.4.0...HEAD
+[6.4.0]: https://github.com/trainline/environment-manager/compare/6.3.0...v6.4.0
+[6.3.0]: https://github.com/trainline/environment-manager/compare/6.2.0...6.3.0
+[6.2.0]: https://github.com/trainline/environment-manager/compare/v6.1.0...6.2.0
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
