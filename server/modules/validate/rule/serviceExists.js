@@ -13,20 +13,8 @@ function serviceExists(service) {
     title: 'Service Not Found',
     detail: `service name: ${service}`
   });
-  let duplicateServiceFound = () => ({
-    title: 'Duplicate Service Found',
-    detail: `service name: ${service}`
-  });
-  return servicesDb.named(service)
-    .then((rsp) => {
-      if (rsp.length === 1) {
-        return [];
-      } else if (rsp.length < 1) {
-        return serviceNotFound();
-      } else {
-        return duplicateServiceFound();
-      }
-    },
+  return servicesDb.get({ ServiceName: service })
+    .then((rsp => (rsp ? [] : serviceNotFound())),
     (err) => {
       log.warn(err);
       return serviceNotFound();

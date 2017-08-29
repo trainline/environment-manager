@@ -52,7 +52,7 @@ function validatePort(port, service) {
   return valid;
 }
 
-exports.validate = (upstream, services) => {
+exports.validate = (upstream, service) => {
   let hosts = upstream.Value.Hosts;
 
   if (hosts) {
@@ -62,8 +62,8 @@ exports.validate = (upstream, services) => {
         return dnsCheck;
       }
 
-      if (services && services.length === 1) {
-        let portCheck = validatePort(host.Port, services[0]);
+      if (service) {
+        let portCheck = validatePort(host.Port, service);
         if (!portCheck.isValid) {
           return portCheck;
         }

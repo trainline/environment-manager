@@ -25,9 +25,14 @@ function factory(physicalTableName, dynamoTable) {
     );
   }
 
-  function $delete(item, expectedVersion) {
+  function $delete(item, expectedVersion, { ConditionExpression } = {}) {
     let { key, metadata } = item;
-    return dynamoTable.update(physicalTableName, softDelete({ key, metadata, expectedVersion }))
+    let keyExpresionPair = softDelete({ key, metadata, expectedVersion });
+    if (ConditionExpression) {
+      let { expressions } = keyExpresionPair;
+      expressions.ConditionExpression = ['and', ConditionExpression, expressions.ConditionExpression];
+    }
+    return dynamoTable.update(physicalTableName, keyExpresionPair)
       .then(_ => dynamoTable.delete(physicalTableName, { key }));
   }
 

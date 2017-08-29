@@ -12,8 +12,8 @@ let loadBalancerUpstreams = require('modules/data-access/loadBalancerUpstreams')
 
 function ToggleUpstreamByServiceVerifier(toggleCommand) {
   this.verifyUpstreams = (upstreams) => {
-    return servicesDb.named(upstreams[0].Service)
-      .then(([service]) => asPortMapping(service))
+    return servicesDb.get({ ServiceName: upstreams[0].Service })
+      .then(asPortMapping)
       .then(portMapping => Promise.map(upstreams, upstream => detectUpstreamInconsistency(upstream, portMapping)));
   };
 
