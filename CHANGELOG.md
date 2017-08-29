@@ -5,7 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
-## [6.4.0] - 2017-08-29
+### Fixed
+- Fix bad function name introduced [in #318](https://github.com/trainline/environment-manager/pull/318/commits/6d4438e9a3b4bdf72acf585af168e22331526a96#diff-6752f398f8c4161aeb1830026b8b8b98R15).
+
+## [6.4.0] - 2017-08-29 [YANKED]
 
 ### Added
 - A user can change the owner of a service. [#318]

@@ -12,7 +12,7 @@ class Service {
   }
 
   static getByName(name) {
-    return servicesDb.ServiceName({ ServiceName: name })
+    return servicesDb.get({ ServiceName: name })
       .then(obj => (obj ? new Service(obj) : null));
   }
 }
