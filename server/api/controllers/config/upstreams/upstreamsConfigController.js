@@ -87,7 +87,7 @@ function postUpstreamsConfig(req, res, next) {
   let oldRecord = omit('version')(body);
   let newRecordP = convertToNewModel(oldRecord);
   let accountP = newRecordP.then(({ AccountId }) => getAccount(AccountId));
-  let serviceP = services.named(oldRecord.Value.ServiceName);
+  let serviceP = services.get({ ServiceName: oldRecord.Value.ServiceName });
 
   return Promise.join(accountP, newRecordP, serviceP,
     (account, record, svc) => Promise.resolve()
@@ -129,7 +129,7 @@ function putUpstreamConfigByName(req, res, next) {
   let oldRecord = flow(assign(key), omit('version'))({ Value: body });
   let newRecordP = convertToNewModel(oldRecord);
   let accountP = newRecordP.then(({ AccountId }) => getAccount(AccountId));
-  let serviceP = services.named(oldRecord.Value.ServiceName);
+  let serviceP = services.get({ ServiceName: oldRecord.Value.ServiceName });
 
   return Promise.join(accountP, newRecordP, serviceP,
     (account, record, svc) => Promise.resolve()

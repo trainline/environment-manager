@@ -34,8 +34,7 @@ function getServicesConfig(req, res, next) {
  */
 function getServiceConfigByName(req, res, next) {
   let key = {
-    ServiceName: param('name', req),
-    OwningCluster: param('cluster', req)
+    ServiceName: param('name', req)
   };
   return services.get(key)
     .then(when(hasValue, convertToApiModel))
@@ -64,7 +63,7 @@ function postServicesConfig(req, res, next) {
       topic: sns.TOPICS.CONFIGURATION_CHANGE,
       attributes: {
         Action: sns.ACTIONS.POST,
-        ID: ''
+        ID: `${body.ServiceName}`
       }
     }))
     .catch(next);
@@ -76,14 +75,11 @@ function postServicesConfig(req, res, next) {
 function putServiceConfigByName(req, res, next) {
   let serviceName = param('name', req);
   let owningCluster = param('cluster', req);
-  let key = {
-    ServiceName: serviceName,
-    OwningCluster: owningCluster
-  };
+  let key = { ServiceName: serviceName };
   const expectedVersion = param('expected-version', req);
   const body = param('body', req);
   let metadata = getMetadataForDynamoAudit(req);
-  let record = Object.assign(key, { Value: body });
+  let record = Object.assign(key, { OwningCluster: owningCluster }, { Value: body });
   delete record.Version;
 
   return services.replace({ record, metadata }, expectedVersion)
@@ -110,14 +106,11 @@ function putServiceConfigByName(req, res, next) {
 function deleteServiceConfigByName(req, res, next) {
   let serviceName = param('name', req);
   let owningCluster = param('cluster', req);
-  let key = {
-    ServiceName: serviceName,
-    OwningCluster: owningCluster
-  };
+  let key = { ServiceName: serviceName };
   const expectedVersion = param('expected-version', req);
   let metadata = getMetadataForDynamoAudit(req);
 
-  return services.delete({ key, metadata }, expectedVersion)
+  return services.delete({ key, metadata }, expectedVersion, { ConditionExpression: ['=', ['at', 'OwningCluster'], ['val', owningCluster]] })
     .then(() => res.status(200).end())
     .then(() => sns.publish({
       message: JSON.stringify({

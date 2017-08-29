@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
+### Added
+- A user can change the owner of a service. [#318]
+
 ## [Released]
 
 ## [6.3.0] - 2017-08-25
@@ -60,6 +63,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
+[#318]: https://github.com/trainline/environment-manager/pull/318
 [#311]: https://github.com/trainline/environment-manager/pull/311
 [#310]: https://github.com/trainline/environment-manager/pull/310
 [#309]: https://github.com/trainline/environment-manager/pull/309

@@ -49,10 +49,10 @@ module.exports = {
 };
 
 function getServiceByName(serviceName) {
-  return servicesDb.named(serviceName)
-    .then(services =>
-      (services.length ?
-        Promise.resolve(services[0].Value) :
+  return servicesDb.get({ ServiceName: serviceName })
+    .then(service =>
+      (service ?
+        Promise.resolve(service.Value) :
         Promise.reject(new ConfigurationError(`Service "${serviceName}" not found.`))))
     .catch((error) => {
       throw new Error(`An error has occurred retrieving "${serviceName}" service: ${error.message}`);

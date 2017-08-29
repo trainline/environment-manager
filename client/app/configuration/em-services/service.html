@@ -33,7 +33,7 @@
         <div class="form-group" ng-class="{'has-error': form.OwningClusters.$invalid} && form.OwningClusters.$dirty">
             <label class="col-sm-12 control-label text-left nowrap em-form-label">Owning Team: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
             <div class="col-sm-8">
-                <select class="form-control" name="OwningClusters" required="" ng-model="vm.service.OwningCluster" ng-disabled="!!vm.editMode || !vm.canUser('edit')">
+                <select class="form-control" name="OwningClusters" required="" ng-model="vm.service.OwningCluster" ng-disabled="!vm.canUser('edit')">
                 <option ng-repeat="cluster in vm.owningClustersList" ng-selected="{{cluster == vm.service.OwningCluster}}" value="{{cluster}}">{{cluster}}</option>
             </select>
             </div>

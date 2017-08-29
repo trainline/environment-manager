@@ -2,6 +2,7 @@
 
 'use strict';
 
+let Promise = require('bluebird');
 let co = require('co');
 let _ = require('lodash');
 let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
@@ -51,11 +52,8 @@ function* handleQuery(query, inputUpstreams) {
   let serviceNames = [...new Set(upstreams.map(upstream => upstream.ServiceName))];
 
   // Gets all services from DynamoDB table
-  let promises = serviceNames.map(serviceName => servicesDb.named(serviceName));
-
-  let services = yield Promise.all(promises);
-  let hasLength = x => x && x.length;
-  services = _(services).filter(hasLength).flatten();
+  let services = yield Promise.map(serviceNames, ServiceName => servicesDb.get({ ServiceName }))
+    .then(ss => ss.filter(s => s));
 
   // Assigning blue/green port reference to the found slices
   function getServicesPortMapping(sliceServices) {
