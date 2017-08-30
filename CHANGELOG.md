@@ -5,6 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
+## [6.4.2]
+
+### Fixed
+- Throws a 404 instead of 500 when resources required for authorization are no found. [#385]
+
+## [Released]
+
 ## [6.4.1] - 2017-08-29
 
 ### Changed
