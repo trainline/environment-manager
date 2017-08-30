@@ -5,6 +5,11 @@
 let logger = require('modules/logger');
 let authorize = require('modules/authorizer');
 
+let errorResponseCodes = {
+  BadRequestError: 400,
+  ResourceNotFoundError: 404
+};
+
 function authorizeRequest(authorizer, request, response, next) {
   if (!request.user) {
     response.status(401);
@@ -35,8 +40,9 @@ function handleSecureRequest(authorizer, request, response, next) {
       return sendUnauthorizedResponse(authorizationResult.unsatisfiedPermissions, response);
     }
   }).catch((error) => {
-    if (error.name === 'BadRequestError') {
-      response.status(400);
+    let errorCode = errorResponseCodes[error.name];
+    if (errorCode) {
+      response.status(errorCode);
       response.send(error.message);
     } else {
       sendAuthorizationErrorResponse(error, response);

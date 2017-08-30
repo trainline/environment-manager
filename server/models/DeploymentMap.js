@@ -3,7 +3,7 @@
 'use strict';
 
 let _ = require('lodash');
-let ConfigurationError = require('modules/errors/ConfigurationError.class');
+let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
 let deploymentMaps = require('modules/data-access/deploymentMaps');
 
 class DeploymentMap {
@@ -16,7 +16,7 @@ class DeploymentMap {
     return deploymentMaps.get({ DeploymentMapName: deploymentMapName })
       .then(deploymentMap => (deploymentMap !== null
         ? new DeploymentMap(deploymentMap.Value)
-        : Promise.reject(new ConfigurationError(`Deployment map "${deploymentMapName}" not found.`))),
+        : Promise.reject(new ResourceNotFoundError(`Deployment map "${deploymentMapName}" not found.`))),
         error => Promise.reject(
           new Error(`An error has occurred retrieving "${deploymentMapName}" deployment map: ${error.message}`)));
   }
@@ -27,7 +27,7 @@ class DeploymentMap {
     );
 
     if (deploymentTargets.length === 0) {
-      throw new ConfigurationError(
+      throw new ResourceNotFoundError(
         `Target server role cannot be identified through "${serviceName}" service because there ` +
         'is no reference to it in the deployment map.'
       );
