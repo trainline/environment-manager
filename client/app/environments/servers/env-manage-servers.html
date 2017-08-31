@@ -1,4 +1,4 @@
-﻿<div class="row">
+<div class="row">
   <div class="col-md-12">
     <h2>Servers in {{vm.selected.environment.EnvironmentName}}</h2>
   </div>
@@ -175,8 +175,8 @@
               <td>
                 <span ng-if="!vm.roleInformation" class="glyphicon glyphicon-hourglass"></span>
                 <span ng-if="vm.roleInformation">
-                  <span ng-if="!role.info.deployments" class="glyphicon glyphicon-thumbs-up"> None in Progress</span>
-                <span ng-if="role.info.deployments" class="glyphicon glyphicon-warning-sign"> Deployments in Progress</span>
+                  <span ng-if="!role.info.deployments">None</span>
+                  <span ng-if="role.info.deployments"><span class="glyphicon glyphicon-warning-sign warning"></span> Deployments in Progress</span>
                 </span>
               </td>
             </tr>
