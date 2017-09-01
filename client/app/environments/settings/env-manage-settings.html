@@ -1,8 +1,10 @@
 <div class="row page-title">
-  <div class="col-md-12"><h2>Settings for {{vm.environment.EnvironmentName}}</h2></div>
-  <div id="RefreshData">
-    <span class="glyphicon glyphicon-refresh" ng-click="vm.refresh()" title="Refresh data"></span>
-  </div>
+    <div class="col-md-12">
+        <h2>Settings for {{vm.environment.EnvironmentName}}</h2>
+    </div>
+    <div id="RefreshData">
+        <span class="glyphicon glyphicon-refresh" ng-click="vm.refresh()" title="Refresh data"></span>
+    </div>
 </div>
 
 <spinner ng-show="vm.dataLoading"></spinner>
@@ -16,10 +18,7 @@
             <div class="form-group" ng-class="{'has-error': form.OwningClusters.$invalid}">
                 <label class="col-md-1 control-label text-left nowrap">Owning Team: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
                 <div class="col-md-2" ng-if="vm.canUser('edit')">
-                    <select class="form-control"
-                            name="OwningClusters"
-                            required=""
-                            ng-model="vm.newEnvironment.OwningCluster">
+                    <select class="form-control" name="OwningClusters" required="" ng-model="vm.newEnvironment.OwningCluster">
                         <option ng-repeat="cluster in vm.owningClustersList" ng-selected="{{cluster == vm.newEnvironment.OwningCluster}}" value="{{cluster}}">{{cluster}}</option>
                     </select>
                 </div>
@@ -32,10 +31,7 @@
             <div class="form-group" ng-class="{'has-error': form.DeploymentMap.$invalid}">
                 <label class="col-md-1 control-label text-left nowrap">Deployment Map: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
                 <div class="col-md-2" ng-if="vm.canUser('edit')">
-                    <select class="form-control"
-                            name="DeploymentMap"
-                            required=""
-                            ng-model="vm.newEnvironment.DeploymentMap">
+                    <select class="form-control" name="DeploymentMap" required="" ng-model="vm.newEnvironment.DeploymentMap">
                         <option ng-repeat="map in vm.deploymentMapsList" ng-selected="{{map == vm.newEnvironment.DeploymentMap}}" value="{{map}}">{{map}}</option>
                     </select>
                 </div>
@@ -65,10 +61,13 @@
                   aria-hidden="true">
                 </span>
                 </label>
-                <div class="col-md-8 env-settings-alert-settings" >
-                        <input type="radio" name="AlertSettings" id="environment-owner" value="EnvironmentOwner" ng-model="vm.newEnvironment.AlertSettings" ng-required="!vm.newEnvironment.AlertSettings" /> <label for="environment-owner">Environment Owner</label><br/>
-                        <input type="radio" name="AlertSettings" id="service-owner" value="ServiceOwner" ng-model="vm.newEnvironment.AlertSettings" ng-required="!vm.newEnvironment.AlertSettings" /> <label for="service-owner">Service Owner</label><br/>
-                        <input type="radio" name="AlertSettings" id="custom-setting" value="Custom" ng-model="vm.newEnvironment.AlertSettings" ng-required="!vm.newEnvironment.AlertSettings" /> <label for="custom-setting">Custom</label>
+                <div class="col-md-8 env-settings-alert-settings">
+                    <input type="radio" name="AlertSettings" id="environment-owner" value="EnvironmentOwner" ng-model="vm.newEnvironment.AlertSettings"
+                        ng-required="!vm.newEnvironment.AlertSettings" /> <label for="environment-owner">Environment Owner</label><br/>
+                    <input type="radio" name="AlertSettings" id="service-owner" value="ServiceOwner" ng-model="vm.newEnvironment.AlertSettings"
+                        ng-required="!vm.newEnvironment.AlertSettings" /> <label for="service-owner">Service Owner</label><br/>
+                    <input type="radio" name="AlertSettings" id="custom-setting" value="Custom" ng-model="vm.newEnvironment.AlertSettings" ng-required="!vm.newEnvironment.AlertSettings"
+                    /> <label for="custom-setting">Custom</label>
                 </div>
                 <span class="help-block" ng-if="form.AlertSettings.$dirty && form.AlertSettings.$error.required">Alert Settings is mandatory.</span>
             </div>
@@ -76,10 +75,7 @@
             <div class="form-group" ng-class="{'has-error': form.NotificationSettings.$invalid}" ng-if="vm.newEnvironment.AlertSettings == 'Custom'">
                 <label class="col-md-4 control-label text-left nowrap"></label>
                 <div class="col-md-2">
-                    <select class="form-control"
-                            name="NotificationSettings"
-                            required=""
-                            ng-model="vm.newEnvironment.NotificationSettingsId">
+                    <select class="form-control" name="NotificationSettings" required="" ng-model="vm.newEnvironment.NotificationSettingsId">
                         <option ng-repeat="item in vm.notificationSettingsList" ng-selected="{{item.NotificationSettingsId == Environment.Value.NotificationSettingsId}}" value="{{item.NotificationSettingsId}}">{{item.NotificationSettingsId}}</option>
                     </select>
                 </div>
@@ -120,5 +116,21 @@
                 </div>
             </div>
         </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <fieldset>
+            <legend class="alert alert-danger">Danger Zone</legend>
+
+            <div class="col-sm-4">
+                <p><strong>Reset cache data in this environment</strong></p>
+                <p><em>Message to all machines in the environment requesting that they clear their caches. (POST /diagnostics/cachereset)</em></p>
+            </div>
+            <div class="col-sm-4 col-sm-offset-4">
+                <button class="btn btn-danger pull-right em-align-vertical" ng-click="vm.resetCache()">Reset</button>
+            </div>
+        </fieldset>
     </div>
 </div>
