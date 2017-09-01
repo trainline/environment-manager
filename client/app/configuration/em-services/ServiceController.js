@@ -61,6 +61,7 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
 
         resources.config.services.all().then(function (services) {
           vm.serviceNames = _.map(services, 'ServiceName');
+          vm.servicesList = vm.serviceNames.sort();
         }),
 
         fetchPortNumbers()
