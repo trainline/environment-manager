@@ -11,6 +11,8 @@ let overallServiceHealth = require('modules/environment-state/getOverallServiceH
 let metadata = require('commands/utils/metadata');
 let Environment = require('models/Environment');
 let sns = require('modules/sns/EnvironmentManagerEvents');
+let consulClient = require('modules/consul-client');
+
 
 function isEmptyResponse(data) {
   return Array.isArray(data) && data.length === 0;

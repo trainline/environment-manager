@@ -8,12 +8,16 @@
     cacheservice.$inject = ['$http']
 
     function cacheservice($http) {
+        var url = '/flushcache/';
+
         return {
-            reset: reset
+            flush: flush
         }
 
-        function reset(environment) {
-            console.log('Sending HTTP for reset: POST ' + environment + '/diagnostics/cachereset');
+        function flush(environment, hosts) {
+            return $http.post(url + environment, {
+                hosts: hosts
+            });
         }
     }
 })()

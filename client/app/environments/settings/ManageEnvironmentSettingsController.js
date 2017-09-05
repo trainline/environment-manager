@@ -6,7 +6,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('ManageEnvironmentSettingsController',
-  function ($rootScope, $routeParams, $location, $http, $q, modal, resources, cachedResources, Environment, upstreamservice) {
+  function ($rootScope, $routeParams, $location, $http, $q, modal, resources, cachedResources, Environment, upstreamservice, cacheservice) {
     var vm = this;
 
     vm.environment = {};
@@ -54,10 +54,17 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
 
     vm.resetCache = function () {
       return resetCacheConfirmationModal(vm.environment.EnvironmentName)
-        .then(function () { return upstreamservice.all(); })
-          .catch(function (e) {
-            // handle the cancel action
-          });
+        .then(function () {
+          console.log('environment name ', vm.environment.EnvironmentName)
+          return upstreamservice.dns(vm.environment.EnvironmentName);
+        })
+        .then(function (dns) {
+          console.log(dns)
+          return cacheservice.flush(vm.environment.EnvironmentName, dns)
+        })
+        .catch(function (e) {
+          console.error(e)
+        });
     };
 
     function resetCacheConfirmationModal() {
