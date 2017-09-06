@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
+### Fixed
+- Extend ELK link max length to 2048. [#323]
+
 ## [6.4.2]
 
 ### Fixed
@@ -82,6 +85,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
+[#323]: https://github.com/trainline/environment-manager/pull/323
 [#319]: https://github.com/trainline/environment-manager/pull/319
 [#318]: https://github.com/trainline/environment-manager/pull/318
 [#311]: https://github.com/trainline/environment-manager/pull/311
