@@ -1,23 +1,23 @@
+'use strict';
+
 (function () {
-    'use strict';
+  angular
+    .module('EnvironmentManager.common')
+    .factory('cacheservice', cacheservice);
 
-    angular
-        .module('EnvironmentManager.common')
-        .factory('cacheservice', cacheservice);
+  cacheservice.$inject = ['$http'];
 
-    cacheservice.$inject = ['$http']
+  function cacheservice($http) {
+    var url = '/flushcache/';
 
-    function cacheservice($http) {
-        var url = '/flushcache/';
+    return {
+      flush: flush
+    };
 
-        return {
-            flush: flush
-        }
-
-        function flush(environment, hosts) {
-            return $http.post(url + environment, {
-                hosts: hosts
-            });
-        }
+    function flush(environment, hosts) {
+      return $http.post(url + environment, {
+        hosts: hosts
+      });
     }
-})()
+  }
+}());

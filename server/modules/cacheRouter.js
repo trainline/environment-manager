@@ -4,45 +4,18 @@
 
 let express = require('express');
 let router = express.Router();
-let consulClient = require('modules/consul-client');
 let assert = require('assert');
+let remoteCacheFlush = require('modules/remoteCacheFlush');
 
 router.post('/:environment', (req, res) => {
-  Promise.resolve()
-    .then(() => {
-      assert(req.body.hosts);
+  assert(req.body.hosts);
 
-      let environment = req.params.environment;
-      let hosts = req.body.hosts;
+  const hosts = req.body.hosts;
+  const environment = req.params.environment;
 
-      let clientInstance; 
-
-      return consulClient.create({ environment, promisify: true})
-        .then((newClientInstance) => {
-          console.log('*************************************************')
-          console.log('*************************************************')
-          console.log('*************************************************')
-          console.log('*************************************************')
-          clientInstance = newClientInstance;
-          return clientInstance.catalog.service.list()
-        })
-        .then(console.log)
-        .then(() => {
-          clientInstance.catalog.node.list()
-            .then(console.log)
-        });
-
-
-      consulClient.create({ environment, promisify: true })
-        .then((clientInstance) => {
-          return clientInstance.catalog.node.list();
-        })
-        .then(value => { 
-          return res.json(req.body.hosts.map(x => x + '44444')) })
-    })
-    .catch(e => {
-      res.status(400).json({ error: '`Hosts` is a required value in the body of this request.' });
-    });
+  remoteCacheFlush.flush(environment, hosts)
+    .then(() => res.status(200).send('Well done!'))
+    .catch(e => res.status(400).send('whoops: ', e.message));
 });
 
 module.exports = {
