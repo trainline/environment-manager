@@ -21,6 +21,7 @@ describe('remoteCacheFlush', () => {
     assert(typeof sut.flush === 'function');
   });
 
+  // eslint-disable-next-line max-len
   it('should return list of addresses where ip is taken from node, port is taken from host and the host.host and node.ServiceName match', (done) => {
     sut.flush('c50', MockData().Hosts)
       .then((addresses) => {
