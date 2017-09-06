@@ -23,7 +23,7 @@
      */
     function dns(environmentName) {
       return UpstreamConfig.getAll()
-        .then(getUpstreamsThatMatchEnvironment.bind(environmentName))
+        .then(getUpstreamsThatMatchEnvironment.bind(null, environmentName))
         .then(generateListOfHosts);
     }
   }
