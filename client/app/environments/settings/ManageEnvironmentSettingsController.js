@@ -54,17 +54,8 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
 
     vm.resetCache = function () {
       return resetCacheConfirmationModal(vm.environment.EnvironmentName)
-        .then(function () {
-          console.log('environment name ', vm.environment.EnvironmentName)
-          return upstreamservice.dns(vm.environment.EnvironmentName);
-        })
-        .then(function (dns) {
-          console.log(dns)
-          return cacheservice.flush(vm.environment.EnvironmentName, dns)
-        })
-        .catch(function (e) {
-          console.error(e)
-        });
+        .then(upstreamservice.dns.bind(null, vm.environment.EnvironmentName))
+        .then(cacheservice.flush.bind(null, vm.environment.EnvironmentName));
     };
 
     function resetCacheConfirmationModal() {

@@ -49,6 +49,7 @@ function createAddresses(hosts) {
         });
       });
     });
+    console.log(addresses);
     return addresses;
   };
 }
