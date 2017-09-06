@@ -1,6 +1,7 @@
 'use strict';
 
 let consulClient = require('modules/consul-client');
+let _ = require('lodash');
 
 function flush(environment, hosts) {
   let clientInstance;
@@ -38,16 +39,9 @@ function flush(environment, hosts) {
 function createAddresses(hosts) {
   return (nodesLists) => {
     let addresses = [];
-    hosts.forEach((hostList) => {
-      hostList.forEach((host) => {
-        nodesLists.forEach((nodeList) => {
-          nodeList.forEach((node) => {
-            if (node.ServiceName === host.host) {
-              addresses.push(`https://${node.Address}:${host.port}/diagnostics/cachereset`);
-            }
-          });
-        });
-      });
+    _.flatten(hosts).forEach((host) => {
+      let node = _.flatten(nodesLists).find(n => n.ServiceName === host.host);
+      if (node) addresses.push(`https://${node.Address}:${host.port}/diagnostics/cachereset`);
     });
     return addresses;
   };
