@@ -4,7 +4,7 @@
 const rewire = require('rewire');
 const assert = require('assert');
 
-describe.only('remoteCacheFlush', () => {
+describe('remoteCacheFlush', () => {
   let sut;
 
   beforeEach(() => {
