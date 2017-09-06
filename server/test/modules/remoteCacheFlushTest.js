@@ -10,22 +10,7 @@ describe('remoteCacheFlush', () => {
   beforeEach(() => {
     sut = rewire('modules/remoteCacheFlush');
     // eslint-disable-next-line no-underscore-dangle
-    sut.__set__('consulClient', {
-      create: () => {
-        return Promise.resolve({
-          catalog: {
-            service: {
-              list: () => {
-                return Promise.resolve(MockData().Services);
-              },
-              nodes: (s) => {
-                return Promise.resolve(MockData().Nodes.filter(x => x.ServiceName === s));
-              }
-            }
-          }
-        });
-      }
-    });
+    sut.__set__('consulClient', MockConsulClient());
   });
 
   it('should exist', () => {
@@ -36,7 +21,7 @@ describe('remoteCacheFlush', () => {
     assert(typeof sut.flush === 'function');
   });
 
-  it('should return list of addresses', (done) => {
+  it('should return list of addresses where ip is taken from node, port is taken from host and the host.host and node.ServiceName match', (done) => {
     sut.flush('c50', MockData().Hosts)
       .then((addresses) => {
         assert.deepEqual(addresses, [
@@ -47,6 +32,27 @@ describe('remoteCacheFlush', () => {
       });
   });
 });
+
+function MockConsulClient() {
+  return {
+    create: () => {
+      return Promise.resolve({
+        catalog: {
+          service: {
+            // Should provide 'all' services to the caller
+            list: () => {
+              return Promise.resolve(MockData().Services);
+            },
+            // Should response by providing a list of nodes which match the service provided
+            nodes: (s) => {
+              return Promise.resolve(MockData().Nodes.filter(x => x.ServiceName === s));
+            }
+          }
+        }
+      });
+    }
+  };
+}
 
 function MockData() {
   return {
