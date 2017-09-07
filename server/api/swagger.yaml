@@ -2529,7 +2529,6 @@ definitions:
     properties:
       NotificationSettingsId:
         type: string
-        pattern: ^[A-Za-z0-9_\-]+$
       Version:
         type: integer
       Value:
@@ -2763,6 +2762,7 @@ definitions:
         enum:
           - EnvironmentOwner
           - ServiceOwner
+          - ContactEmailTag
           - Custom
       NotificationSettingsId:
         type: string
