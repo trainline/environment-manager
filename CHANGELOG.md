@@ -5,9 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
-## [6.4.2]
+## [6.5.0]
+
+### Added
+- Notifications can be sent to the ContactEmail tag of the instance [#395]
 
 ### Fixed
+- Times New Roman Font on Servers screen
 - Throws a 404 instead of 500 when resources required for authorization are no found. [#385]
 
 ## [Released]
