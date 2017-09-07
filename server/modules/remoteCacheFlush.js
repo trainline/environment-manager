@@ -2,6 +2,8 @@
 
 let consulClient = require('modules/consul-client');
 let _ = require('lodash');
+let request = require('request');
+let logger = require('modules/logger');
 
 function flush(environment, hosts) {
   let clientInstance;
@@ -12,6 +14,7 @@ function flush(environment, hosts) {
     .then(convertServiceObjectToListOfServices)
     .then(getNodesForServices)
     .then(createAddresses(hosts))
+    .then(sendRequestToAddresses)
     .catch((e) => {
       return { error: e.message };
     });
@@ -45,6 +48,13 @@ function createAddresses(hosts) {
     });
     return addresses;
   };
+}
+
+function sendRequestToAddresses(addresses) {
+  addresses.forEach((address) => {
+    logger.info(`[CacheReset::Sent] to ${address}`);
+    request.post(address);
+  });
 }
 
 module.exports = {

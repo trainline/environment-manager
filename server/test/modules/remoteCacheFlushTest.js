@@ -3,25 +3,33 @@
 // eslint-disable-next-line no-unused-vars
 const rewire = require('rewire');
 const assert = require('assert');
+const sinon = require('sinon');
 
 describe('remoteCacheFlush', () => {
   let sut;
+  let MockRequest;
 
   beforeEach(() => {
     sut = rewire('modules/remoteCacheFlush');
     // eslint-disable-next-line no-underscore-dangle
     sut.__set__('consulClient', MockConsulClient());
+    MockRequest = {
+      post: sinon.spy()
+    };
+    // eslint-disable-next-line no-underscore-dangle
+    sut.__set__('request', MockRequest);
   });
 
-  // eslint-disable-next-line max-len
-  it('should return list of addresses where ip is taken from node, port is taken from host and the host.host and node.ServiceName match', (done) => {
+  it('should make a post request for each address found', (done) => {
     sut.flush('c50', MockData().Hosts)
       .then((addresses) => {
-        assert.deepEqual(addresses, [
-          'https://1.1.1.1:1111/diagnostics/cachereset',
-          'https://1.3.5.7:4444/diagnostics/cachereset'
-        ]);
+        MockData().Expectations.Addresses.forEach((address) => {
+          assert(MockRequest.post.calledWith(address));
+        });
         done();
+      })
+      .catch((e) => {
+        done(e);
       });
   });
 });
@@ -70,6 +78,12 @@ function MockData() {
         ServiceName: 'c50-serviceDeLaCheese-blue',
         Address: '1.3.5.7'
       }
-    ]
+    ],
+    Expectations: {
+      Addresses: [
+        'https://1.1.1.1:1111/diagnostics/cachereset',
+        'https://1.3.5.7:4444/diagnostics/cachereset'
+      ]
+    }
   };
 }
