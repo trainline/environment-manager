@@ -107,17 +107,18 @@ function sendRequestToAddresses(token, addresses) {
 }
 
 function getToken(EnvironmentName) {
-  return configEnvironments.get({ EnvironmentName })
+  let key = { EnvironmentName };
+  return configEnvironments.get(key)
     .then(getEnvironmentTypeValue)
     .then(getCacheResetKeyForEnvironment);
 
   function getEnvironmentTypeValue(environment) {
-    return environment.EnvironmentType;
+    return environment.Value.EnvironmentType;
   }
 
   function getCacheResetKeyForEnvironment(environmentType) {
     try {
-      let value = config.getUserValue('local').CacheReset[environmentType];
+      let value = config.getUserValue('local').CacheReset[environmentType].plain;
       return value;
     } catch (e) {
       return `[No Cache Reset Key Found] :: ${environmentType}`;
