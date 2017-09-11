@@ -66,7 +66,7 @@ function createAddresses(hosts) {
     _.flatten(hosts).forEach((host) => {
       let node = _.flatten(nodesLists).find((n) => {
         // todo: Configuration String endpoint to store these ignore strings
-        return stripPrefix(n.ServiceName) === host.host;
+        return stripPrefix(n.ServiceName).toLowerCase() === host.host.toLowerCase();
       });
       if (node) {
         let ip = node.Address;
