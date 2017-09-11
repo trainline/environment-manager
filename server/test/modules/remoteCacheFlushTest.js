@@ -21,14 +21,16 @@ describe('remoteCacheFlush', () => {
     // eslint-disable-next-line no-underscore-dangle
     sut.__set__('configEnvironments', {
       get: sinon.stub().returns(Promise.resolve(
-        { EnvironmentType: 'cluster' }
+        { Value: { EnvironmentType: 'Cluster' } }
       ))
     });
     // eslint-disable-next-line no-underscore-dangle
     sut.__set__('config', {
       getUserValue: sinon.stub().returns({
         CacheReset: {
-          cluster: 'aaa'
+          Cluster: {
+            plain: 'aaa'
+          }
         }
       })
     });
