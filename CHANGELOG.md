@@ -5,7 +5,14 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
-## [6.5.0]
+## [6.5.1]
+
+### Fixed
+- Set the blue and green port numbers in the consul kv store for use by the deployment agent.
+
+## [Released]
+
+## [6.5.0] - 2017-09-07
 
 ### Added
 - Notifications can be sent to the ContactEmail tag of the instance [#395]
@@ -13,8 +20,6 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ### Fixed
 - Times New Roman Font on Servers screen
 - Throws a 404 instead of 500 when resources required for authorization are no found. [#385]
-
-## [Released]
 
 ## [6.4.1] - 2017-08-29
 
