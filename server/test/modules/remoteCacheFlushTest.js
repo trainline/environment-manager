@@ -5,7 +5,7 @@ const rewire = require('rewire');
 const assert = require('assert');
 const sinon = require('sinon');
 
-describe.only('remoteCacheFlush', () => {
+describe('remoteCacheFlush', () => {
   let sut;
   let MockRequest;
 
