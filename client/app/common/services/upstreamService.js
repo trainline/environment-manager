@@ -13,11 +13,16 @@
       dns: dns
     };
 
+    /**
+     * Get all upstream data, irrespective of environment.
+     */
     function all() {
       return UpstreamConfig.getAll();
     }
 
     /**
+     * Create a list of hosts for target {{environment}}.
+     * A host contains the {{DNS/IP/Consul}} name, the ip and the environment from which it came.
      * @param {String} environmentName
      * @return {Array : [ HostList [ Host, Host ]]}
      */

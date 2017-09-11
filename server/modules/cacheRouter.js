@@ -14,8 +14,8 @@ router.post('/:environment', (req, res) => {
   const environment = req.params.environment;
 
   remoteCacheFlush.flush(environment, hosts)
-    .then(() => res.status(200).json({ success: '.../diagnostics/cachereset sent.' }))
-    .catch(e => res.status(400).json({ error: e.message }));
+    .then(() => res.status(200).send('[cachereset::success]'))
+    .catch(e => res.status(400).send('[cachereset::error]: ', e.message));
 });
 
 module.exports = {
