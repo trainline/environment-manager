@@ -56,6 +56,14 @@
                 <button type="button" class="btn btn-default" ng-if="vm.canUser('edit')" ng-click="vm.getOwningTeamEmail()">Get Owning Team Email</button>
             </div>
         </div>
+
+        <div class="form-group">
+            <div class="col-sm-4 checkbox">
+                <label>
+                    <input type="checkbox" ng-model="vm.service.Value.IsOne"> Is 1P?
+                </label>
+            </div>
+        </div>
     </fieldset>
 
     <fieldset>
@@ -64,9 +72,9 @@
 
             <div class="form-group">
                 <div class="col-sm-6">
-                    <select class="form-control" name="dependencies" required="" ng-model="dep.Name" ng-disabled="!vm.canUser('edit')">
-                    <option ng-repeat="service in vm.servicesList" ng-selected="{{service == dep.Name}}" value="{{service}}">{{service}}</option>
-                </select>
+
+                    <input type="search" name="Dependency_{{$index}}" class="form-control" ng-model="dep.Name" uib-typeahead="s for s in vm.serviceNames | filter:$viewValue"
+                        ng-model-options="{debounce: 200}" ng-readonly="!vm.canUser('edit')" />
                 </div>
                 <div class="col-sm-2">
                     <button type="button" class="btn btn-danger" ng-click="vm.removeDependency($index)"><span class="glyphicon glyphicon-minus"></span> Remove</button>
@@ -168,7 +176,7 @@
         <legend>Monitoring</legend>
 
         <div class="form-group">
-            <label class="col-sm-12 em-form-label control-label text-left">New Relic URL:</label>
+            <label class="col-sm-12 em-form-label control-label text-left">New Relic APM Link:</label>
             <div class="col-sm-8">
                 <input type="text" name="NewRelicUrl" class="form-control" autofocus maxlength="256" ng-model="vm.service.Value.NewRelicUrl"
                     ng-readonly="!vm.canUser('edit')" />
@@ -176,13 +184,53 @@
         </div>
 
         <div class="form-group">
+            <label class="col-sm-12 em-form-label control-label text-left">New Relic Insights:</label>
+            <div class="col-sm-8">
+                <input type="text" name="NewRelicInsightsUrl" class="form-control" autofocus maxlength="256" ng-model="vm.service.Value.NewRelicInsightsUrl"
+                    ng-readonly="!vm.canUser('edit')" />
+            </div>
+        </div>
+
+        <div class="form-group">
             <label class="col-sm-12 em-form-label control-label text-left">ELK URL:</label>
             <div class="col-sm-8">
-                <input type="text" name="ElkUrl" class="form-control" autofocus maxlength="256" ng-model="vm.service.Value.ElkUrl" ng-readonly="!vm.canUser('edit')"
+                <input type="text" name="ElkUrl" class="form-control" autofocus maxlength="2048" ng-model="vm.service.Value.ElkUrl" ng-readonly="!vm.canUser('edit')"
                 />
             </div>
         </div>
     </fieldset>
+
+    <fieldset>
+        <legend>Tags</legend>
+        <div class="row" ng-if="vm.service.Value.Tags.length > 0">
+            <div class="col-sm-4">
+                <span><strong>Key</strong></span>
+            </div>
+            <div class="col-sm-8">
+                <span><strong>Value</strong></span>
+            </div>
+        </div>
+        <div ng-repeat="tag in vm.service.Value.Tags">
+            <div class="form-group">
+                <div class="col-sm-4">
+                    <input type="text" name="TagKey_{{$index}}" class="form-control" ng-model="tag.Key" ng-readonly="!vm.canUser('edit')" />
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" name="TagValue_{{$index}}" class="form-control" ng-model="tag.Value" ng-readonly="!vm.canUser('edit')"
+                    />
+                </div>
+                <div class="col-sm-2">
+                    <button type="button" class="btn btn-danger" ng-click="vm.removeTag($index)"><span class="glyphicon glyphicon-minus"></span> Remove</button>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-8">
+                <button class="btn btn-success" ng-click="vm.addTag()"><span class="glyphicon glyphicon-plus"></span> Add</button>
+            </div>
+        </div>
+    </fieldset>
+
     <div class="form-group">
         <div class="col-sm-4">
             <button type="button" class="btn btn-default" ng-click="vm.cancel()">

@@ -1105,6 +1105,45 @@ paths:
       responses:
         200:
           description: OK
+  /target-state/{environment}/{service}/toggle-status:
+    x-swagger-router-controller: targetStateController
+    put:
+      operationId: toggleServiceStatusHandler
+      summary: Disable/Enable a service in the target state key value store.
+      tags:
+        - Target State
+      x-authorizer: environments
+      parameters:
+        - name: environment
+          in: path
+          type: string
+          required: true
+        - name: service
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required:
+              - Enable
+              - Slice
+              - ServerRole
+              - EnvironmentType
+            properties:
+              Enable:
+                type: boolean
+              Slice:
+                type: string
+              ServerRole:
+                type: string
+              EnvironmentType:
+                type: string
+      responses:
+        200:
+          description: OK
   /target-state/{environment}/{service}/{version}:
     x-swagger-router-controller: targetStateController
     delete:
@@ -2529,7 +2568,6 @@ definitions:
     properties:
       NotificationSettingsId:
         type: string
-        pattern: ^[A-Za-z0-9_\-]+$
       Version:
         type: integer
       Value:
@@ -2763,6 +2801,7 @@ definitions:
         enum:
           - EnvironmentOwner
           - ServiceOwner
+          - ContactEmailTag
           - Custom
       NotificationSettingsId:
         type: string

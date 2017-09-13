@@ -11,6 +11,7 @@ let activeDeploymentsStatusProvider = require('modules/monitoring/activeDeployme
 let deploymentLogger = require('modules/DeploymentLogger');
 const sns = require('modules/sns/EnvironmentManagerEvents');
 let { ifNotFound, notFoundMessage } = require('api/api-utils/ifNotFound');
+const { toggleServiceStatus } = require('modules/toggleServiceStatus');
 
 /**
  * GET /deployments
@@ -194,9 +195,7 @@ function switchDeployment(key, enable, user) {
     let slice = deployment.Value.ServiceSlice;
     let service = deployment.Value.ServiceName;
 
-    let command = { name: 'ToggleTargetStatus', service, environment, slice, serverRole, enable };
-
-    return sender.sendCommand({ user, command });
+    return toggleServiceStatus({ environment, service, slice, enable, serverRole, user });
   });
 }
 
