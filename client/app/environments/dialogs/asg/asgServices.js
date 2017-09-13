@@ -62,7 +62,7 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
         modal.confirmation({
           title: 'Delete Auto Scaling Group?',
           message: 'There are no longer any active services for this ASG. Would you like ' +
-            'to delete the ASG and it\'s associated Launch Configuration?',
+          'to delete the ASG and it\'s associated Launch Configuration?',
           severity: 'Warning'
         }).then(function () {
           vm.asg.delete().then(function () {
@@ -79,19 +79,27 @@ angular.module('EnvironmentManager.environments').component('asgServices', {
         promise = modal.confirmation({
           title: 'Disable service deployment?',
           message: 'This will prevent service <strong>' + service.Name + (service.Slice === 'none' ? '' : service.Slice) +
-            ' version ' + service.Version + '</strong> from ' +
-            'being deployed to new instances from now on. It will NOT affect any existing machines.' +
-            'You can use this option to effectively uninstall this service by scaling the ASG to create a new set of servers.<br/>' +
-            'Are you sure you want to continue?',
+          ' version ' + service.Version + '</strong> from ' +
+          'being deployed to new instances from now on. It will NOT affect any existing machines.' +
+          'You can use this option to effectively uninstall this service by scaling the ASG to create a new set of servers.<br/>' +
+          'Are you sure you want to continue?',
           severity: 'Warning'
         });
       }
       promise.then(function () {
-        targetStateService.changeDeploymentAction(service.DeploymentId, enableService).then(function (result) {
-          service.Action = result.Action;
-          checkIfAllServicesDisabled();
-          vm.refresh();
-        });
+        var environment = vm.asg.Environment;
+        var serviceName = service.Name;
+        var enable = enableService;
+        var slice = service.Slice;
+        var serverRole = vm.asg.Role;
+        var EnvironmentType = vm.asg.EnvironmentType;
+
+        targetStateService.toggleServiceStatus(environment, serviceName, slice, enable, serverRole, EnvironmentType)
+          .then(function (result) {
+            service.Action = result.Action;
+            checkIfAllServicesDisabled();
+            vm.refresh();
+          });
       }, function () {
         service.installationEnabled = true;
       });

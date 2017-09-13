@@ -4,6 +4,7 @@
 
 let GetServerRoles = require('queryHandlers/services/GetServerRoles');
 let deleteTargetState = require('modules/environment-state/deleteTargetState');
+const { toggleServiceStatus } = require('modules/toggleServiceStatus');
 const sns = require('modules/sns/EnvironmentManagerEvents');
 
 /**
@@ -93,9 +94,27 @@ function deleteTargetStateByServiceVersion(req, res, next) {
     .catch(next);
 }
 
+/**
+ * PUT /target-state/{environment}/{service}/toggle-status
+ */
+function toggleServiceStatusHandler(req, res, next) {
+  const environment = req.swagger.params.environment.value;
+  const service = req.swagger.params.service.value;
+  const body = req.swagger.params.body.value;
+  const enable = body.Enable;
+  const slice = body.Slice;
+  const serverRole = body.ServerRole;
+  const user = req.user;
+
+  toggleServiceStatus({ environment, service, slice, enable, serverRole, user })
+    .then((data) => { res.json(data); })
+    .catch(next);
+}
+
 module.exports = {
   getTargetState,
   deleteTargetStateByEnvironment,
   deleteTargetStateByService,
-  deleteTargetStateByServiceVersion
+  deleteTargetStateByServiceVersion,
+  toggleServiceStatusHandler
 };
