@@ -72,6 +72,7 @@
 
             <div class="form-group">
                 <div class="col-sm-6">
+
                     <input type="search" name="Dependency_{{$index}}" class="form-control" ng-model="dep.Name" uib-typeahead="s for s in vm.serviceNames | filter:$viewValue"
                         ng-model-options="{debounce: 200}" ng-readonly="!vm.canUser('edit')" />
                 </div>
