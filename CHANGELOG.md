@@ -8,12 +8,19 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ### Fixed
 - Extend ELK link max length to 2048. [#323]
 
-## [6.4.2]
+## [6.5.1]
 
 ### Fixed
-- Throws a 404 instead of 500 when resources required for authorization are no found. [#385]
+- Set the blue and green port numbers in the consul kv store for use by the deployment agent.
 
-## [Released]
+## [6.5.0] - 2017-09-07
+
+### Added
+- Notifications can be sent to the ContactEmail tag of the instance [#395]
+
+### Fixed
+- Times New Roman Font on Servers screen
+- Throws a 404 instead of 500 when resources required for authorization are no found. [#385]
 
 ## [6.4.1] - 2017-08-29
 
@@ -77,7 +84,9 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/v6.4.1...HEAD
+[Unreleased]: https://github.com/trainline/environment-manager/compare/v6.5.1...HEAD
+[6.5.1]: https://github.com/trainline/environment-manager/compare/v6.5.0...v6.5.1
+[6.5.0]: https://github.com/trainline/environment-manager/compare/v6.4.1...v6.5.0
 [6.4.1]: https://github.com/trainline/environment-manager/compare/6.4.0...v6.4.1
 [6.4.0]: https://github.com/trainline/environment-manager/compare/6.3.0...v6.4.0
 [6.3.0]: https://github.com/trainline/environment-manager/compare/6.2.0...6.3.0

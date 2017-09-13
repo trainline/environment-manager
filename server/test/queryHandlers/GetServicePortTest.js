@@ -21,12 +21,12 @@ describe('GetServicePortConfig', function() {
   }
 
   function mockService(bluePort, greenPort) {
-    return [{
+    return {
       Value: {
         BluePort: bluePort,
         GreenPort: greenPort
       }
-    }];
+    };
   }
   
   it('returns default port value for empty input', () => {
