@@ -3,10 +3,21 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [6.6.0]
 
+### Added
+- Cache Reset button in the settings page of an environment. [#389]
+- New Relic Insights field added to Monitoring section of Service settings page. [#399] 
+- "Tags" available in Service settings page. Key value pairs can now be added to any service. [#400]
+- "1P" check box added to Service settings page. [#400]
+]
 ### Fixed
 - Extend ELK link max length to 2048. [#323]
+
+### Changed
+- "New Relic" field in Service settings page changed to "New Relic APM link". [#399]
+- Allow users to disable services deployed prior to 01.2017. [#233]
+- Dependencies on the Service settings page not limited to a drop down of services. [#390]
 
 ## [6.5.1]
 
