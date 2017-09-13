@@ -184,6 +184,12 @@ function patchDeployment(req, res, next) {
 
 function switchDeployment(key, enable, user) {
   return deploymentsHelper.get({ key }).then((deployment) => {
+    // Old deployments don't have 'ServerRoleName' and 'RuntimeServerRoleName' fields.
+    // Unfortunately we are unable to determine these from existing data.
+    if (deployment.Value.ServerRoleName === undefined || deployment.Value.RuntimeServerRoleName === undefined) {
+      throw new Error('This operation is unsupported for Deployments started before 01.2017. If you would like to use this feature,'
+        + 'please redeploy your service before trying again, or contact Platform Dev team.');
+    }
     let serverRole = deployment.Value.RuntimeServerRoleName;
     let environment = deployment.Value.EnvironmentName;
     let slice = deployment.Value.ServiceSlice;
