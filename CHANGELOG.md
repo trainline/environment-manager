@@ -6,18 +6,18 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ## [6.6.0]
 
 ### Added
-- Cache Reset button in the settings page of an environment. [#389]
-- New Relic Insights field added to Monitoring section of Service settings page. [#399] 
-- "Tags" available in Service settings page. Key value pairs can now be added to any service. [#400]
-- "1P" check box added to Service settings page. [#400]
+- Cache Reset button in the settings page of an environment. [#324]
+- New Relic Insights field added to Monitoring section of Service settings page. [#326] 
+- "Tags" available in Service settings page. Key value pairs can now be added to any service. [#322]
+- "1P" check box added to Service settings page. [#322]
 ]
 ### Fixed
 - Extend ELK link max length to 2048. [#323]
 
 ### Changed
-- "New Relic" field in Service settings page changed to "New Relic APM link". [#399]
-- Allow users to disable services deployed prior to 01.2017. [#233]
-- Dependencies on the Service settings page not limited to a drop down of services. [#390]
+- "New Relic" field in Service settings page changed to "New Relic APM link". [#326]
+- Allow users to disable services deployed prior to 01.2017. [#327]
+- Dependencies on the Service settings page not limited to a drop down of services. [#321]
 
 ## [6.5.1]
 
@@ -114,3 +114,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#308]: https://github.com/trainline/environment-manager/pull/308
 [#307]: https://github.com/trainline/environment-manager/pull/307
 [#305]: https://github.com/trainline/environment-manager/pull/305
+[#324]: https://github.com/trainline/environment-manager/pull/324
+[#326]: https://github.com/trainline/environment-manager/pull/326
+[#322]: https://github.com/trainline/environment-manager/pull/322
+[#327]: https://github.com/trainline/environment-manager/pull/327
+[#321]: https://github.com/trainline/environment-manager/pull/321
