@@ -20,6 +20,7 @@ let initialData = require('api/em-internal/controllers/initial-data');
 let httpServerFactory = require('modules/http-server-factory');
 let loggingMiddleware = require('modules/express-middleware/loggingMiddleware');
 let deprecateMiddleware = require('modules/express-middleware/deprecateMiddleware');
+let cacheRouter = require('modules/cacheRouter');
 
 const APP_VERSION = require('config').get('APP_VERSION');
 
@@ -83,6 +84,7 @@ function createExpressApp() {
     app.use('/schema', authentication.allowUnknown, express.static(`${PUBLIC_DIR}/schema`));
 
     app.use('/diagnostics/healthchecks', httpHealthChecks.router);
+    app.use('/flushcache', cacheRouter.router);
 
     app.use(cookieAuthentication.middleware);
     app.use(tokenAuthentication.middleware);
