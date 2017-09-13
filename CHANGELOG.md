@@ -5,12 +5,13 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
+### Fixed
+- Extend ELK link max length to 2048. [#323]
+
 ## [6.5.1]
 
 ### Fixed
 - Set the blue and green port numbers in the consul kv store for use by the deployment agent.
-
-## [Released]
 
 ## [6.5.0] - 2017-09-07
 
@@ -83,7 +84,9 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/v6.4.1...HEAD
+[Unreleased]: https://github.com/trainline/environment-manager/compare/v6.5.1...HEAD
+[6.5.1]: https://github.com/trainline/environment-manager/compare/v6.5.0...v6.5.1
+[6.5.0]: https://github.com/trainline/environment-manager/compare/v6.4.1...v6.5.0
 [6.4.1]: https://github.com/trainline/environment-manager/compare/6.4.0...v6.4.1
 [6.4.0]: https://github.com/trainline/environment-manager/compare/6.3.0...v6.4.0
 [6.3.0]: https://github.com/trainline/environment-manager/compare/6.2.0...6.3.0
@@ -91,6 +94,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
+[#323]: https://github.com/trainline/environment-manager/pull/323
 [#319]: https://github.com/trainline/environment-manager/pull/319
 [#318]: https://github.com/trainline/environment-manager/pull/318
 [#311]: https://github.com/trainline/environment-manager/pull/311
