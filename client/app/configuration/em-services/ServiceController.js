@@ -144,6 +144,25 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       vm.service.Value.Dependencies.splice(index, 1);
     }
 
+    var tag = {
+      Key: '',
+      Value: ''
+    };
+
+    vm.addTag = function () {
+      var newTag = angular.copy(tag);
+      try {
+        vm.service.Value.Tags.push(newTag);
+      } catch (e) {
+        vm.service.Value.Tags = [];
+        vm.service.Value.Tags.push(newTag);
+      }
+    }
+
+    vm.removeTag = function (index) {
+      vm.service.Value.Tags.splice(index, 1);
+    }
+
     function readItem(name, range) {
       resources.config.services.get({ key: name, range: range }).then(function (data) {
         vm.dataFound = true;

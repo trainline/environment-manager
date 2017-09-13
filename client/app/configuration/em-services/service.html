@@ -56,6 +56,14 @@
                 <button type="button" class="btn btn-default" ng-if="vm.canUser('edit')" ng-click="vm.getOwningTeamEmail()">Get Owning Team Email</button>
             </div>
         </div>
+
+        <div class="form-group">
+            <div class="col-sm-4 checkbox">
+                <label>
+                    <input type="checkbox" ng-model="vm.service.Value.IsOne"> Is 1P?
+                </label>
+            </div>
+        </div>
     </fieldset>
 
     <fieldset>
@@ -64,7 +72,8 @@
 
             <div class="form-group">
                 <div class="col-sm-6">
-                    <input type="search" name="Dependency_{{$index}}" class="form-control" ng-model="dep.Name" uib-typeahead="s for s in vm.serviceNames | filter:$viewValue" ng-model-options="{debounce: 200}" ng-readonly="!vm.canUser('edit')" />
+                    <input type="search" name="Dependency_{{$index}}" class="form-control" ng-model="dep.Name" uib-typeahead="s for s in vm.serviceNames | filter:$viewValue"
+                        ng-model-options="{debounce: 200}" ng-readonly="!vm.canUser('edit')" />
                 </div>
                 <div class="col-sm-2">
                     <button type="button" class="btn btn-danger" ng-click="vm.removeDependency($index)"><span class="glyphicon glyphicon-minus"></span> Remove</button>
@@ -189,6 +198,38 @@
             </div>
         </div>
     </fieldset>
+
+    <fieldset>
+        <legend>Tags</legend>
+        <div class="row" ng-if="vm.service.Value.Tags.length > 0">
+            <div class="col-sm-4">
+                <span><strong>Key</strong></span>
+            </div>
+            <div class="col-sm-8">
+                <span><strong>Value</strong></span>
+            </div>
+        </div>
+        <div ng-repeat="tag in vm.service.Value.Tags">
+            <div class="form-group">
+                <div class="col-sm-4">
+                    <input type="text" name="TagKey_{{$index}}" class="form-control" ng-model="tag.Key" ng-readonly="!vm.canUser('edit')" />
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" name="TagValue_{{$index}}" class="form-control" ng-model="tag.Value" ng-readonly="!vm.canUser('edit')"
+                    />
+                </div>
+                <div class="col-sm-2">
+                    <button type="button" class="btn btn-danger" ng-click="vm.removeTag($index)"><span class="glyphicon glyphicon-minus"></span> Remove</button>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-8">
+                <button class="btn btn-success" ng-click="vm.addTag()"><span class="glyphicon glyphicon-plus"></span> Add</button>
+            </div>
+        </div>
+    </fieldset>
+
     <div class="form-group">
         <div class="col-sm-4">
             <button type="button" class="btn btn-default" ng-click="vm.cancel()">
