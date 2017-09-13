@@ -4,7 +4,7 @@ const rewire = require('rewire');
 const sinon = require('sinon');
 const assert = require('assert');
 
-describe.only('toggleServiceStatus', () => {
+describe('toggleServiceStatus', () => {
   let sut;
   let senderSpy;
 
