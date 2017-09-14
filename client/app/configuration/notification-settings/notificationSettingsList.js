@@ -7,17 +7,23 @@ angular.module('EnvironmentManager.common')
   .component('notificationSettingsList', {
     templateUrl: '/app/configuration/notification-settings/notificationSettingsList.html',
     controllerAs: 'vm',
-    controller: function ($scope, $http, modal) {
+    controller: function ($scope, $http, $location, modal) {
       var vm = this;
 
       vm.canPost = user.hasPermission({ access: 'POST', resource: '/config/notification-settings' });
       vm.canDelete = user.hasPermission({ access: 'DELETE', resource: '/config/notification-settings/*' });
+
+      vm.searchNotifications;
 
       function refresh() {
         $http.get('/api/v1/config/notification-settings').then(function (response) {
           vm.data = response.data;
         });
       }
+
+      vm.addNewNotification = function () {
+        $location.path( '/config/notification-settings/add' );
+      };
 
       vm.delete = function (entry) {
         var id = entry.NotificationSettingsId;
