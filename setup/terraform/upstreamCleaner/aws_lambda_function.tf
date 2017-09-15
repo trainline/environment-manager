@@ -8,7 +8,7 @@ resource "aws_lambda_function" "upstream_cleaner" {
 
   environment {
     variables = {
-      TABLE_NAME = "ConfigLBUpstream"
+      TABLE_NAME = "${var.upstream_table_name}"
     }
   }
 }
