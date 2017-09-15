@@ -16,6 +16,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
     vm.environmentTypesList = [];
     vm.selectedEnvironmentType = SHOW_ALL_OPTION;
     vm.selectedOwningCluster = SHOW_ALL_OPTION;
+    vm.environmentFilter;
 
     vm.dataLoading = false;
 
