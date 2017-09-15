@@ -32,8 +32,8 @@ angular.module('EnvironmentManager.common').factory('UpstreamConfig',
       });
     };
 
-    UpstreamConfig.deleteByKey = function (key, account) {
-      return $http.delete(baseUrl + '/' + encodeURIComponent(key), { params: { account: account } });
+    UpstreamConfig.deleteByKey = function (key) {
+      return $http.delete(baseUrl + '/' + encodeURIComponent(key));
     };
 
     UpstreamConfig.createWithDefaults = function (environmentName) {
@@ -44,12 +44,18 @@ angular.module('EnvironmentManager.common').factory('UpstreamConfig',
           EnvironmentName: environmentName,
           ZoneSize: '128k',
           LoadBalancingMethod: 'least_conn',
-          Hosts: []
+          Hosts: [],
+          MarkForDelete: false,
+          MarkForDeleteTimestamp: 0
         },
         Version: 0
       };
       return new UpstreamConfig(data);
     };
+
+    function getUtcTimestampForTwentyMinutesFromNow() {
+      return moment(new Date()).add(20, 'minutes').valueOf();
+    }
 
     _.assign(UpstreamConfig.prototype, {
       update: function (key) {
@@ -57,6 +63,22 @@ angular.module('EnvironmentManager.common').factory('UpstreamConfig',
           method: 'put',
           url: baseUrl + '/' + encodeURIComponent(key),
           data: this.Value,
+          headers: { 'expected-version': this.Version }
+        });
+      },
+
+      markForDelete: function (key) {
+        var updatedData = Object.assign({},
+          this.Value,
+          {
+            MarkForDelete: true,
+            MarkForDeleteTimestamp: getUtcTimestampForTwentyMinutesFromNow()
+          }
+        );
+        return $http({
+          method: 'put',
+          url: baseUrl + '/' + encodeURIComponent(key),
+          data: updatedData,
           headers: { 'expected-version': this.Version }
         });
       },

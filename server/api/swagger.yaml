@@ -3152,6 +3152,10 @@ definitions:
               type: integer
       LoadBalancingMethod:
         type: string
+      MarkForDelete:
+        type: boolean
+      MarkForDeleteTimestamp:
+        type: integer
       SchemaVersion:
         type: integer
       ServiceName:

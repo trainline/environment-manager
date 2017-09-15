@@ -1,7 +1,9 @@
 <div class="row">
-  <div class="col-md-12"><h2>Load Balancer Upstream Settings</h2></div>
+  <div class="col-md-12">
+    <h2>Load Balancer Upstream Settings</h2>
+  </div>
   <div id="RefreshData">
-  <span class="glyphicon glyphicon-refresh" ng-click="vm.refresh()" title="Refresh data"></span>
+    <span class="glyphicon glyphicon-refresh" ng-click="vm.refresh()" title="Refresh data"></span>
   </div>
 </div>
 
@@ -18,7 +20,8 @@
     <label class="control-label text-left">Service:</label>
   </div>
   <div class="form-group">
-    <input type="search" name="ServiceName" class="form-control" ng-model="vm.selectedService" ng-change="vm.updateFilter()" />
+    <input type="search" name="ServiceName" class="form-control" ng-model="vm.selectedService" ng-change="vm.updateFilter()"
+    />
   </div>
   <div class="form-group">
     <button type="button" class="btn btn-default right" ng-click="vm.newItem()" ng-if="vm.canUser('post')">Create New...</button>
@@ -35,7 +38,7 @@
   </div>
   <div class="col-md-12" ng-if="vm.data.length > 0">
 
-    <table id="upstreams" class="table">
+    <table id="upstreams" class="table table-striped">
       <thead>
         <tr>
           <th class="text-nowrap">Upstream</th>
@@ -60,7 +63,14 @@
       </thead>
       <tbody>
         <tr ng-repeat="upstream in vm.data | orderBy : 'Value.UpstreamName' ">
-          <td><a ng-click="vm.edit(upstream)">{{upstream.Value.UpstreamName}}</a></td>
+          <td>
+            <div ng-if="upstream.Value.MarkForDelete">
+              <span class="glyphicon glyphicon-trash"  title="Marked for delete." ng-if="upstream.Value.MarkForDelete"></span> {{upstream.Value.UpstreamName}}
+            </div>
+            <div ng-if="!upstream.Value.MarkForDelete">
+              <a ng-click="vm.edit(upstream)">{{upstream.Value.UpstreamName}}</a>
+            </div>
+          </td>
           <td>{{upstream.Value.ServiceName}}</td>
           <td>
             <table class="hostSummary" ng-show="upstream.Value.Hosts.length > 0">
@@ -68,8 +78,8 @@
                 <td class="upstream-host-dns">{{host.DnsName}}</td>
                 <td class="upstream-host-port">{{host.Port}}</td>
                 <td class="upstream-host-state">
-                  <span ng-if="host.State=='up'" class="status-up"><span class="glyphicon glyphicon-triangle-top"></span> Up</span>
-                  <span ng-if="host.State=='down'" class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span> Down</span>
+                  <span ng-if="host.State=='up'" class="status-up"><span class="glyphicon glyphicon-triangle-top"></span>                  Up</span>
+                  <span ng-if="host.State=='down'" class="status-down"><span class="glyphicon glyphicon-triangle-bottom"></span>                  Down</span>
                 </td>
               </tr>
             </table>
@@ -90,7 +100,7 @@
                   <a ng-click="vm.copy(upstream)"><span class="glyphicon glyphicon-duplicate command-copy"></span> Copy...</a>
                 </li>
                 <li role="menuitem">
-                  <a ng-click="vm.delete(upstream)" ><span class="glyphicon glyphicon-remove command-delete"></span> Delete...</a>
+                  <a ng-click="vm.markForDelete(upstream)"><span class="glyphicon glyphicon-remove command-delete"></span> Delete...</a>
                 </li>
               </ul>
             </div>
