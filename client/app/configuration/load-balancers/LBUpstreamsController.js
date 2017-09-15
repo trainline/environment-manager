@@ -95,7 +95,6 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamsContro
 
     vm.markForDelete = function (upstreamData) {
       var upstream = new UpstreamConfig(upstreamData);
-      console.log('Upstream ', upstream);
       upstream.markForDelete(upstream.key, (new Date()).getTime());
     }
 
