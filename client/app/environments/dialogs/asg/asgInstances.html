@@ -20,19 +20,25 @@
       </thead>
       <tbody>
         <tr ng-repeat="instance in vm.asgState.Instances | orderBy : ['Name', 'LifecycleState', 'Status', 'Ip']">
-          <td><health-status status='instance.OverallHealth'></health-status> 
+          <td>
+            <health-status status='instance.OverallHealth'></health-status>
             Name: {{ instance.Name || '-'}}
             <br />&nbsp; &nbsp; &nbsp;ID: {{ instance.InstanceId || '-'}}
           </td>
-          <td>{{ instance.PrivateIpAddress }}
-            <!-- TODO: could be array -->
-          </td>
+          <td>{{ instance.PrivateIpAddress }}</td>
           <td>{{ instance.AvailabilityZone }}</td>
           <td>{{ instance.InstanceType }}</td>
           <td>{{ instance.LifecycleState }}
             <br />{{ instance.State }}
           </td>
-          <td><a ng-click="vm.showAsgSingleInstance(instance)">{{ instance.RunningServicesCount }} services</a> <span ng-if="instance.MissingOrUnexpectedServices" class="glyphicon glyphicon-exclamation-sign warning" title="Missing or unexpected services present"></span>
+          <td>
+            <div ng-if="instance.RunningServicesCount > 0">
+              <a ng-click="vm.showAsgSingleInstance(instance)">{{ instance.RunningServicesCount }} services </a>
+            </div>
+            <div ng-if="instance.RunningServicesCount < 1">
+              <span>{{ instance.RunningServicesCount }} services </span>
+            </div>
+            <span ng-if="instance.MissingOrUnexpectedServices" class="glyphicon glyphicon-exclamation-sign warning" title="Missing or unexpected services present"></span>
           </td>
           <td>
             <span ng-if="instance.Ami.Name">
@@ -44,8 +50,10 @@
           </td>
           <td>
             <span ng-if="instance.LatestAmi">
-              <span ng-if="instance.UsingLatestAmi"><span class="glyphicon glyphicon-ok-sign ok"></span> Up to date</span>
-            <span ng-if="!instance.UsingLatestAmi"><span class="glyphicon glyphicon-exclamation-sign warning"></span> {{ instance.DaysBehindLatest }} Days</span>
+              <span ng-if="instance.UsingLatestAmi"><span class="glyphicon glyphicon-ok-sign ok"></span> Up to
+            date</span>
+            <span ng-if="!instance.UsingLatestAmi"><span class="glyphicon glyphicon-exclamation-sign warning"></span> {{
+            instance.DaysBehindLatest }} Days</span>
             </span>
             <span ng-if="!instance.LatestAmi">-</span>
           </td>
