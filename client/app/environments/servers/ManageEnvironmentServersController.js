@@ -6,7 +6,7 @@
 
 angular.module('EnvironmentManager.environments')
   .controller('ManageEnvironmentServersController',
-  function ($rootScope, $routeParams, $http, $q, cachedResources, resources, $uibModal, accountMappingService, serversView, QuerySync, environmentDeploy, $scope, serviceDiscovery, enums) {
+  function ($rootScope, $routeParams, $http, $q, cachedResources, resources, $uibModal, accountMappingService, serversView, QuerySync, environmentDeploy, $scope, serviceDiscovery, enums, modal, asgservice) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -144,6 +144,32 @@ angular.module('EnvironmentManager.environments')
         } else {
           return false;
         }
+      });
+    }
+
+    vm.canDeleteAsg = function (asgName) {
+      return user.hasPermission({ access: 'DELETE', resource: '/asgs/' + asgName });
+    }
+
+    vm.deleteAsg = function (asgName) {
+      deleteAsgConfirmationModal(asgName)
+        .then(function () {
+          var params = {
+            environmentName: vm.selected.environment.EnvironmentName,
+            asgName: asgName
+          };
+          return asgservice.delete(params);
+        });
+    }
+
+    function deleteAsgConfirmationModal(asgName) {
+      return modal.confirmation({
+        title: 'WARNING!!! Deleting ASG: ' + asgName,
+        message:
+        'Are you sure you want to delete this ASG: <strong>' + asgName + '</strong>?<br />',
+        action: 'Delete ASG',
+        severity: 'Danger',
+        acknowledge: 'I am sure I want to delete this ASG: ' + asgName + '.'
       });
     }
 
