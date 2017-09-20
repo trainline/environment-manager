@@ -5,7 +5,7 @@ let _ = require('lodash');
 
 const DEFAULT_PORT = 0;
 
-const getPort = (service, colour) => _.get(service, [0, 'Value', `${colour}Port`]);
+const getPort = (service, colour) => _.get(service, ['Value', `${colour}Port`]);
 
 function intOrDefault(maybePort) {
   let port = Number(maybePort);

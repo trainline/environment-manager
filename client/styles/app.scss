@@ -912,3 +912,8 @@ div.InstanceDetails > div.modal-dialog { width: auto; margin-left: 100px; margin
 .em-form-label {
   padding-bottom: 5px
 }
+
+.em-align-vertical {
+   display: table-cell;
+   vertical-align: middle;
+}

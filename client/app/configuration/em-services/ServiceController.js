@@ -61,6 +61,7 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
 
         resources.config.services.all().then(function (services) {
           vm.serviceNames = _.map(services, 'ServiceName');
+          vm.servicesList = vm.serviceNames.sort();
         }),
 
         fetchPortNumbers()
@@ -142,6 +143,25 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
 
     vm.removeDependency = function (index) {
       vm.service.Value.Dependencies.splice(index, 1);
+    }
+
+    var tag = {
+      Key: '',
+      Value: ''
+    };
+
+    vm.addTag = function () {
+      var newTag = angular.copy(tag);
+      try {
+        vm.service.Value.Tags.push(newTag);
+      } catch (e) {
+        vm.service.Value.Tags = [];
+        vm.service.Value.Tags.push(newTag);
+      }
+    }
+
+    vm.removeTag = function (index) {
+      vm.service.Value.Tags.splice(index, 1);
     }
 
     function readItem(name, range) {

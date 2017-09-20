@@ -3,14 +3,35 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [6.6.0]
 
-## [6.4.2]
+### Added
+- Cache Reset button in the settings page of an environment. [#324]
+- New Relic Insights field added to Monitoring section of Service settings page. [#326] 
+- "Tags" available in Service settings page. Key value pairs can now be added to any service. [#322]
+- "1P" check box added to Service settings page. [#322]
+]
+### Fixed
+- Extend ELK link max length to 2048. [#323]
+
+### Changed
+- "New Relic" field in Service settings page changed to "New Relic APM link". [#326]
+- Allow users to disable services deployed prior to 01.2017. [#327]
+- Dependencies on the Service settings page not limited to a drop down of services. [#321]
+
+## [6.5.1]
 
 ### Fixed
-- Throws a 404 instead of 500 when resources required for authorization are no found. [#385]
+- Set the blue and green port numbers in the consul kv store for use by the deployment agent.
 
-## [Released]
+## [6.5.0] - 2017-09-07
+
+### Added
+- Notifications can be sent to the ContactEmail tag of the instance [#395]
+
+### Fixed
+- Times New Roman Font on Servers screen
+- Throws a 404 instead of 500 when resources required for authorization are no found. [#385]
 
 ## [6.4.1] - 2017-08-29
 
@@ -74,7 +95,9 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/v6.4.1...HEAD
+[Unreleased]: https://github.com/trainline/environment-manager/compare/v6.5.1...HEAD
+[6.5.1]: https://github.com/trainline/environment-manager/compare/v6.5.0...v6.5.1
+[6.5.0]: https://github.com/trainline/environment-manager/compare/v6.4.1...v6.5.0
 [6.4.1]: https://github.com/trainline/environment-manager/compare/6.4.0...v6.4.1
 [6.4.0]: https://github.com/trainline/environment-manager/compare/6.3.0...v6.4.0
 [6.3.0]: https://github.com/trainline/environment-manager/compare/6.2.0...6.3.0
@@ -82,6 +105,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
+[#323]: https://github.com/trainline/environment-manager/pull/323
 [#319]: https://github.com/trainline/environment-manager/pull/319
 [#318]: https://github.com/trainline/environment-manager/pull/318
 [#311]: https://github.com/trainline/environment-manager/pull/311
@@ -90,3 +114,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#308]: https://github.com/trainline/environment-manager/pull/308
 [#307]: https://github.com/trainline/environment-manager/pull/307
 [#305]: https://github.com/trainline/environment-manager/pull/305
+[#324]: https://github.com/trainline/environment-manager/pull/324
+[#326]: https://github.com/trainline/environment-manager/pull/326
+[#322]: https://github.com/trainline/environment-manager/pull/322
+[#327]: https://github.com/trainline/environment-manager/pull/327
+[#321]: https://github.com/trainline/environment-manager/pull/321
