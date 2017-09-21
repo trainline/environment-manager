@@ -4,7 +4,6 @@
 
 let assert = require('assert');
 let co = require('co');
-let ms = require('ms');
 let DeploymentCommandHandlerLogger = require('commands/deployments/DeploymentCommandHandlerLogger');
 let autoScalingGroupClientFactory = require('modules/clientFactories/autoScalingGroupClientFactory');
 
