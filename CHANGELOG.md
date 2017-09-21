@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- Dialogies which shows the services installed on instances were showing 'missing' when the instance was in an 'in progress' state for deployment. This was causing confusion. No, if the instance is in an 'in progress' state, you are told that, rather than a 'missing' message for your services. [#334]
+
 ## [6.6.0]
 
 ### Added
@@ -119,3 +124,4 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#322]: https://github.com/trainline/environment-manager/pull/322
 [#327]: https://github.com/trainline/environment-manager/pull/327
 [#321]: https://github.com/trainline/environment-manager/pull/321
+[#334]: https://github.com/trainline/environment-manager/pull/334
