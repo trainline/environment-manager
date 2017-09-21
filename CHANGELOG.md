@@ -3,10 +3,20 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [6.7.0]
+
+### Added
+- A filter control has been added to the Environments page [#331]
+- A filter for Alert Notifcations. [#329]
+- A delete button has been added to the Servers page in the Web Client. [#333]
+
+### Fixed
+- You can no longer delete an upstream that is in use by NGINX. The upstream will be tagged so that it 'can' be deleted at a later date. Enough time is given for Puppet to inform NGINX of upstream updates, after that time, upstreams marked for delete will be removed. Note: You are still prohibited from deleting an upstream that is in use by an Environment Manager Load Balancer configuration. [#330]
 
 ### Changed
-- Dialogies which shows the services installed on instances were showing 'missing' when the instance was in an 'in progress' state for deployment. This was causing confusion. No, if the instance is in an 'in progress' state, you are told that, rather than a 'missing' message for your services. [#334]
+- Dialogues which shows the services installed on instances were showing 'missing' when the instance was in an 'in progress' state for deployment. This was causing confusion. No, if the instance is in an 'in progress' state, you are told that, rather than a 'missing' message for your services. [#334]
+- ASG dialogue did not handle having 0 services in a graceful way. Now if there are no services to link to, there is no link. [#332]
+- Tables in the Web Client have all been changed to style with stripes. [#329]
 
 ## [6.6.0]
 
@@ -125,3 +135,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#327]: https://github.com/trainline/environment-manager/pull/327
 [#321]: https://github.com/trainline/environment-manager/pull/321
 [#334]: https://github.com/trainline/environment-manager/pull/334
+[#331]: https://github.com/trainline/environment-manager/pull/331
+[#332]: https://github.com/trainline/environment-manager/pull/332
+[#330]: https://github.com/trainline/environment-manager/pull/330
+[#329]: https://github.com/trainline/environment-manager/pull/329
+[#333]: https://github.com/trainline/environment-manager/pull/333
