@@ -93,6 +93,11 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamsContro
       $scope.ViewAuditHistory('LB Upstream', encodeURIComponent(upstream.key));
     };
 
+    vm.markForDelete = function (upstreamData) {
+      var upstream = new UpstreamConfig(upstreamData);
+      upstream.markForDelete(upstream.key, (new Date()).getTime());
+    }
+
     vm.delete = function (upstream) {
       var key = upstream.key;
       var name = upstream.Value.UpstreamName;
@@ -125,7 +130,7 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamsContro
               action: 'Delete',
               severity: 'Danger'
             }).then(function () {
-              UpstreamConfig.deleteByKey(key, accountName).then(function () {
+              UpstreamConfig.markForDelete(key).then(function () {
                 cachedResources.config.lbUpstream.flush();
                 vm.refresh();
               });

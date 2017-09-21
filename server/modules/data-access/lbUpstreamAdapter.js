@@ -27,6 +27,8 @@ function convertToOldModel(model) {
       SlowStart: model.SlowStart,
       UpStreamKeepalives: model.UpStreamKeepalives,
       UpstreamName: model.Upstream,
+      MarkForDelete: model.MarkForDelete,
+      MarkForDeleteTimestamp: model.MarkForDeleteTimestamp,
       ZoneSize: model.ZoneSize
     }
   };
@@ -58,7 +60,9 @@ function convertToNewModel(model) {
             SlowStart: model.Value.SlowStart,
             Upstream: model.Value.UpstreamName,
             UpStreamKeepalives: model.Value.UpStreamKeepalives,
-            ZoneSize: model.Value.ZoneSize
+            ZoneSize: model.Value.ZoneSize,
+            MarkForDelete: model.Value.MarkForDelete,
+            MarkForDeleteTimestamp: model.Value.MarkForDeleteTimestamp
           }));
       }
     });
