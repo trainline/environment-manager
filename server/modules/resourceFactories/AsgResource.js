@@ -147,10 +147,6 @@ function AsgResource(accountId) {
     throw standardifyError(error, request.AutoScalingGroupName);
   }));
 
-  this.attachLifecycleHook = request => asgClient().then(client => client.putLifecycleHook(request).promise().catch((error) => {
-    throw standardifyError(error, request.AutoScalingGroupName);
-  }));
-
   this.describeScheduledActions = request => asgClient().then(client => client.describeScheduledActions(request).promise().then(result => result.ScheduledUpdateGroupActions).catch((error) => {
     throw standardifyError(error, request.AutoScalingGroupName);
   }));

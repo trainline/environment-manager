@@ -30,13 +30,9 @@ module.exports = function CreateAutoScalingGroupCommandHandler(command) {
     yield createAutoScalingGroup(logger, autoScalingGroupClient, request);
 
     logger.info(`AutoScalingGroup [${autoScalingGroupName}] has been created`);
+
     logger.info(`Configuring [${autoScalingGroupName}] AutoScalingGroup...`);
-
-    yield [
-      attachNotificationsByTemplate(logger, autoScalingGroupClient, template),
-      attachLifecycleHooksByTemplate(logger, autoScalingGroupClient, template)
-    ];
-
+    yield attachNotificationsByTemplate(logger, autoScalingGroupClient, template);
     logger.info(`AutoScalingGroup [${autoScalingGroupName}] has been configured`);
   });
 };
@@ -59,24 +55,6 @@ function attachNotificationsByTemplate(logger, autoScalingGroupClient, template)
   });
 }
 
-function attachLifecycleHooksByTemplate(logger, autoScalingGroupClient, template) {
-  return co(function* () {
-    let autoScalingGroupName = template.autoScalingGroupName;
-    let requests = getAttachLifecycleHookRequests(template);
-
-    if (!requests.length) {
-      logger.info(`No lifecycle hook has to be attached to [${autoScalingGroupName}] AutoScalingGroup`);
-      return;
-    }
-
-    logger.info(`Attaching lifecycle hooks to [${autoScalingGroupName}] AutoScalingGroup...`);
-
-    yield requests.map(request => attachLifecycleHook(autoScalingGroupClient, request));
-
-    logger.info(`All lifecycle hooks have been attached to [${autoScalingGroupName}] AutoScalingGroup`);
-  });
-}
-
 // ----------------------------------------------------------------------------------------------
 // Functions to promisify [autoScalingGroupClient] interface
 
@@ -86,10 +64,6 @@ function createAutoScalingGroup(logger, autoScalingGroupClient, request) {
 
 function attachNotifications(autoScalingGroupClient, request) {
   return autoScalingGroupClient.attachNotifications(request);
-}
-
-function attachLifecycleHook(autoScalingGroupClient, request) {
-  return autoScalingGroupClient.attachLifecycleHook(request);
 }
 
 // ----------------------------------------------------------------------------------------------
@@ -129,24 +103,6 @@ function getAttachNotificationsRequests(template) {
       AutoScalingGroupName: template.autoScalingGroupName,
       TopicARN: mapping.topicArn,
       NotificationTypes: mapping.notificationTypes
-    };
-
-    return request;
-  });
-
-  return requests;
-}
-
-function getAttachLifecycleHookRequests(template) {
-  let requests = template.lifecycleHooks.map((hook) => {
-    let request = {
-      AutoScalingGroupName: template.autoScalingGroupName,
-      LifecycleHookName: hook.name,
-      LifecycleTransition: hook.type,
-      RoleARN: hook.roleArn,
-      NotificationTargetARN: hook.topicArn,
-      HeartbeatTimeout: (ms(hook.heartbeatTimeout) / 1000),
-      DefaultResult: hook.defaultResult
     };
 
     return request;

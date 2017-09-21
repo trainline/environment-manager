@@ -6,7 +6,6 @@ let assert = require('assert');
 let co = require('co');
 let topicNotificationMappingProvider = require('modules/provisioning/autoScaling/topicNotificationMappingProvider');
 let namingConventionProvider = require('modules/provisioning/namingConventionProvider');
-let lifecycleHooksProvider = require('modules/provisioning/autoScaling/lifecycleHooksProvider');
 let subnetsProvider = require('modules/provisioning/autoScaling/subnetsProvider');
 let tagsProvider = require('modules/provisioning/autoScaling/tagsProvider');
 
@@ -17,7 +16,6 @@ module.exports = {
     return co(function* () {
       let sliceNames = configuration.serverRole.FleetPerSlice ? ['blue', 'green'] : [null];
       let topicNotificationMapping = yield topicNotificationMappingProvider.get(accountName);
-      let lifecycleHooks = yield lifecycleHooksProvider.get(accountName);
       let subnets = yield subnetsProvider.get(configuration);
       let templates = [];
 
@@ -44,8 +42,7 @@ module.exports = {
           },
           subnets,
           tags,
-          topicNotificationMapping,
-          lifecycleHooks
+          topicNotificationMapping
         });
       }
 
