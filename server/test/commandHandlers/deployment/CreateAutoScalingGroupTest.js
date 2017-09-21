@@ -14,7 +14,6 @@ describe('CreateAutoScalingGroup', function() {
   const autoScalingGroupName = 'auto-scaling-group';
   const launchConfigurationName = 'launch-configuration';
   const topicNotificationMapping = [];
-  const lifecycleHooks = [];
   const min = 1;
   const desired = 2;
   const max = 3;
@@ -28,7 +27,6 @@ describe('CreateAutoScalingGroup', function() {
     autoScalingGroupName,
     launchConfigurationName,
     topicNotificationMapping,
-    lifecycleHooks,
     size,
     subnets,
     tags

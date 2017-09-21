@@ -55,16 +55,6 @@ module.exports = {
     InstanceTerminateError: 'autoscaling:EC2_INSTANCE_TERMINATE_ERROR'
   },
 
-  LifecycleHookType: {
-    InstanceLaunching: 'autoscaling:EC2_INSTANCE_LAUNCHING',
-    InstanceTerminating: 'autoscaling:EC2_INSTANCE_TERMINATING'
-  },
-
-  LifecycleHookDefaultResult: {
-    Continue: 'CONTINUE',
-    Abandon: 'ABANDON'
-  },
-
   ServiceAction: {
     INSTALL: 'Install',
     IGNORE: 'Ignore'

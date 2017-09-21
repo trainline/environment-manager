@@ -121,7 +121,6 @@ resource "aws_iam_role_policy" "app" {
             "autoscaling:AttachInstances*",
             "autoscaling:PutNotificationConfiguration",
             "autoscaling:PutScheduledUpdateGroupAction",
-            "autoscaling:PutLifecycleHook",
             "autoscaling:CreateOrUpdateTags",
             "autoscaling:EnterStandby",
             "autoscaling:ExitStandby"

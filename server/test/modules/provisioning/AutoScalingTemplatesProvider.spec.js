@@ -25,12 +25,6 @@ describe("AutoScalingTemplatesProvider:", () => {
     }
   ]; 
 
-  var expectedLifecycleHooks = [
-    {
-      name: "10min-draining"
-    }
-  ]; 
-
   describe("when server role does not create two different ASGs for blue/green deployment", () => {
 
     var configuration = {
@@ -55,10 +49,6 @@ describe("AutoScalingTemplatesProvider:", () => {
     it("should be possible to abtain a single ASG template", () => {
 
       // Arrange
-      var lifecycleHooksProviderMock = {
-        get: sinon.stub().returns(Promise.resolve(expectedLifecycleHooks))
-      };
-
       var topicNotificationMappingProviderMock = {
         get: sinon.stub().returns(Promise.resolve(expectedTopicNotificationMapping))
       };
@@ -80,7 +70,6 @@ describe("AutoScalingTemplatesProvider:", () => {
       autoScalingTemplatesProvider.__set__({
         topicNotificationMappingProvider: topicNotificationMappingProviderMock,
         namingConventionProvider: namingConventionProviderMock,
-        lifecycleHooksProvider: lifecycleHooksProviderMock,
         subnetsProvider: subnetsProviderMock,
         tagsProvider: tagsProviderMock,
       })
@@ -104,15 +93,11 @@ describe("AutoScalingTemplatesProvider:", () => {
           },
           subnets: expectedSubnets,
           tags: expectedTags,
-          topicNotificationMapping: expectedTopicNotificationMapping,
-          lifecycleHooks: expectedLifecycleHooks
+          topicNotificationMapping: expectedTopicNotificationMapping
         });
 
         topicNotificationMappingProviderMock.get.called.should.be.true();
         topicNotificationMappingProviderMock.get.getCall(0).args.should.match([accountName]);
-
-        lifecycleHooksProviderMock.get.called.should.be.true();
-        lifecycleHooksProviderMock.get.getCall(0).args.should.match([accountName]);
 
         namingConventionProviderMock.getAutoScalingGroupName.called.should.be.true();
         namingConventionProviderMock.getAutoScalingGroupName.getCall(0).args.should.match(
@@ -162,10 +147,6 @@ describe("AutoScalingTemplatesProvider:", () => {
     it("should be possible to abtain two ASG templates", () => {
 
       // Arrange
-      var lifecycleHooksProviderMock = {
-        get: sinon.stub().returns(Promise.resolve(expectedLifecycleHooks))
-      };
-
       var topicNotificationMappingProviderMock = {
         get: sinon.stub().returns(Promise.resolve(expectedTopicNotificationMapping))
       };
@@ -187,7 +168,6 @@ describe("AutoScalingTemplatesProvider:", () => {
       autoScalingTemplatesProvider.__set__({
         topicNotificationMappingProvider: topicNotificationMappingProviderMock,
         namingConventionProvider: namingConventionProviderMock,
-        lifecycleHooksProvider: lifecycleHooksProviderMock,
         subnetsProvider: subnetsProviderMock,
         tagsProvider: tagsProviderMock,
       })
@@ -211,15 +191,11 @@ describe("AutoScalingTemplatesProvider:", () => {
           },
           subnets: expectedSubnets,
           tags: expectedTags,
-          topicNotificationMapping: expectedTopicNotificationMapping,
-          lifecycleHooks: expectedLifecycleHooks          
+          topicNotificationMapping: expectedTopicNotificationMapping
         });
 
         topicNotificationMappingProviderMock.get.called.should.be.true();
         topicNotificationMappingProviderMock.get.getCall(0).args.should.match([accountName]);
-
-        lifecycleHooksProviderMock.get.called.should.be.true();
-        lifecycleHooksProviderMock.get.getCall(0).args.should.match([accountName]);
 
         namingConventionProviderMock.getAutoScalingGroupName.called.should.be.true();
 
