@@ -17,6 +17,8 @@
     "moment-timezone": "^0.5.11",
     "angular-loading-bar": "^0.9.0",
     "angular-smart-table": "^2.1.8",
+    "Tourist.js": "tourist#^0.1.2",
+    "backbone"
     "jquery": "^3.2.1"
   },
   "devDependencies": {

@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ## [Unreleased]
 
 ### Added
+- When a user logs in to Environment Manager and the they have not seen this release before, they will be presented with a notification and a link to the release notes. [#337]
 - The 'healthy' check mark was confusing to users. The check mark would show up while there were various other 'warnings' on that same instance. To show what that green check mark actually means, a tooltip has been added to explain. [#338]
 
 ### Fixed
@@ -151,4 +152,5 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#330]: https://github.com/trainline/environment-manager/pull/330
 [#329]: https://github.com/trainline/environment-manager/pull/329
 [#333]: https://github.com/trainline/environment-manager/pull/333
+[#337]: https://github.com/trainline/environment-manager/pull/337
 [#338]: https://github.com/trainline/environment-manager/pull/338
