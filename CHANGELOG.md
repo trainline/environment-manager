@@ -8,6 +8,12 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ### Added
 - The 'healthy' check mark was confusing to users. The check mark would show up while there were various other 'warnings' on that same instance. To show what that green check mark actually means, a tooltip has been added to explain. [#338]
 
+### Fixed
+
+- Faulty permissions challenge on service status toggling operations
+
+## [Released]
+
 ## [6.7.0]
 
 ### Added
