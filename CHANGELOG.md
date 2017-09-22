@@ -6,7 +6,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ## [Unreleased]
 
 ### Added
-- When a user logs in to Environment Manager and the they have not seen this release before, they will be presented with a notification and a link to the release notes.
+- When a user logs in to Environment Manager and the they have not seen this release before, they will be presented with a notification and a link to the release notes. [#337]
 
 ## [6.7.0]
 
@@ -145,3 +145,4 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#330]: https://github.com/trainline/environment-manager/pull/330
 [#329]: https://github.com/trainline/environment-manager/pull/329
 [#333]: https://github.com/trainline/environment-manager/pull/333
+[#337]: https://github.com/trainline/environment-manager/pull/337
