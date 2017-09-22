@@ -41,7 +41,7 @@
     <hr />
     <div class="server-status-container" data-ng-class="{'empty-summary': !vm.dataFound}">
       <span data-ng-if="vm.selected.status === 'Any' || vm.selected.status === 'Healthy'" class="status-summary">
-        <span class="glyphicon glyphicon-ok-sign success"></span> Healthy: <strong>{{vm.view.aggregations.servers.healthy.count}} </strong>
+        <span class="glyphicon glyphicon-ok-sign success tooltip-healthy"></span> Healthy: <strong>{{vm.view.aggregations.servers.healthy.count}} </strong>
       </span>
 
       <span data-ng-if="vm.selected.status === 'Any' || vm.selected.status === 'Warning'" class="status-summary">

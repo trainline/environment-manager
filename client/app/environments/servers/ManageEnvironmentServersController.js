@@ -92,11 +92,20 @@ angular.module('EnvironmentManager.environments')
         vm.data = data;
         vm.dataFound = data.Value && data.Value.length > 0;
 
+        var healthTemplate = [
+          '<h1><span class="glyphicon glyphicon-question-sign"></span> What is Healthy</h1>',
+          '<p><strong>System Status Checks</strong> (the system is reachable) is <strong>passing</strong>',
+          '<p><strong>Instance Status Checks</strong> (the operating system is accepting traffic) is <strong>passing</p></p>'
+        ].join('\n');
+
         if (vm.dataFound) {
           vm.update()
             .then(getInstanceStatusesFromLastHour)
             .then(addDeploymentStatus)
-            .then(roleInformationFound);
+            .then(roleInformationFound)
+            .then(function () {
+              Tipped.create('.tooltip-healthy', $('<p/>').html(healthTemplate), { position: 'topleft' });
+            });
         }
       });
 
