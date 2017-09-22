@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- When a user logs in to Environment Manager and the they have not seen this release before, they will be presented with a notification and a link to the release notes.
+
 ## [6.7.0]
 
 ### Added
