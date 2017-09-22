@@ -15,7 +15,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## [Released]
 
-## [6.7.0]
+## [6.7.0] 2017-09-21
 
 ### Added
 - A filter control has been added to the Environments page [#331]
@@ -30,7 +30,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - ASG dialogue did not handle having 0 services in a graceful way. Now if there are no services to link to, there is no link. [#332]
 - Tables in the Web Client have all been changed to style with stripes. [#329]
 
-## [6.6.0]
+## [6.6.0] 2017-09-13
 
 ### Added
 - Cache Reset button in the settings page of an environment. [#324]
@@ -46,7 +46,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - Allow users to disable services deployed prior to 01.2017. [#327]
 - Dependencies on the Service settings page not limited to a drop down of services. [#321]
 
-## [6.5.1]
+## [6.5.1] 2017-09-11
 
 ### Fixed
 - Set the blue and green port numbers in the consul kv store for use by the deployment agent.
