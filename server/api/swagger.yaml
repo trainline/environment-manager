@@ -1112,7 +1112,7 @@ paths:
       summary: Disable/Enable a service in the target state key value store.
       tags:
         - Target State
-      x-authorizer: environments
+      x-authorizer: toggle-service-status
       parameters:
         - name: environment
           in: path
