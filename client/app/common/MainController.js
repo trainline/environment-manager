@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.common').controller('MainController',
-  function ($rootScope, $scope, $route, $routeParams, $http, $location, $window, modal, Environment, environmentDeploy) {
+  function ($rootScope, $scope, $route, $routeParams, $http, $location, $window, modal, Environment, environmentDeploy, releasenotesservice) {
     var vm = this;
 
     vm.appVersion = $window.version;
@@ -15,10 +15,14 @@ angular.module('EnvironmentManager.common').controller('MainController',
     $rootScope.WorkingEnvironment = { EnvironmentName: '' }; // For Environments section only, selected Environment from Sidebar drop-down
 
     function init() {
+
+
       Environment.all().then(function (environments) {
         $scope.ParentEnvironmentsList = _.map(environments, 'EnvironmentName').sort();
       }).then(function () {
         if (!$rootScope.WorkingEnvironment.EnvironmentName) $rootScope.WorkingEnvironment.EnvironmentName = $scope.ParentEnvironmentsList[0];
+
+        releasenotesservice.show(vm.appVersion);
       });
     }
 
@@ -112,7 +116,7 @@ angular.module('EnvironmentManager.common').controller('MainController',
       return errors;
     };
 
-    $scope.showDeployDialog = function() {
+    $scope.showDeployDialog = function () {
       environmentDeploy.callDeployHandler();
     }
 

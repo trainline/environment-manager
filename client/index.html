@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="styles/app-generated.css" />
   <link rel="stylesheet" href="assets/css/jsondiffpatch.css" />
   <link rel="stylesheet" href="assets/css/loading-bar.min.css">
+  <link rel="stylesheet" href="assets/css/tourist.css">
 
   <link href="assets/images/favicon.ico" rel="SHORTCUT ICON" />
   <link href="assets/images/favicon-32x32.png" rel="icon" type="image/png" sizes="32x32">
@@ -48,7 +49,9 @@
   <script type="text/javascript" src="bower_components/ngclipboard/dist/ngclipboard.min.js"></script>
   <script type="text/javascript" src="assets/lib/loading-bar.min.js"></script>
   <script type="text/javascript" src="assets/lib/smart-table.min.js"></script>
-
+  <script type="text/javascript" src="assets/lib/jquery.min.js"></script>
+  <script type="text/javascript" src="assets/lib/backbone-min.js"></script>
+  <script type="text/javascript" src="assets/lib/tourist.min.js"></script>
   <!-- endbuild -->
 
   <script type="text/javascript" src="user.js"></script>
@@ -130,6 +133,8 @@
   <script src="app/compare/directives/serviceCell.js"></script>
   <script src="app/compare/diff-viewer/DiffViewerController.js"></script>
   <script src="app/common/utils/QuerySync.js"></script>
+  <script src="app/common/services/localStorageService.js"></script>  
+  <script src="app/common/services/releaseNotesService.js"></script>
   <script src="app/common/services/upstreamService.js"></script>
   <script src="app/common/services/cacheService.js"></script>
   <script src="app/common/services/asgService.js"></script>
@@ -189,7 +194,7 @@
       <loading-overlay></loading-overlay>
       <header>
         <a href="#/"><img id="logo" src="assets/images/logo.jpg" height="30"/></a>
-        <h1 title="Environment Manager {{main.appVersion}}"><a href="#/">Environment Manager</a></h1>
+        <h1 class="shepherd-release" title="Environment Manager {{main.appVersion}}"><a href="#/">Environment Manager</a></h1>
         <nav>
           <ul>
             <li><a href="#/environments" ng-class="{active: main.getSection()=='environments'}">Environments</a></li>
