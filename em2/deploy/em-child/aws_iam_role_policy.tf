@@ -60,7 +60,6 @@ resource "aws_iam_role_policy" "app" {
                 "autoscaling:AttachInstances*",
                 "autoscaling:PutNotificationConfiguration",
                 "autoscaling:PutScheduledUpdateGroupAction",
-                "autoscaling:PutLifecycleHook",
                 "autoscaling:CreateOrUpdateTags",
                 "autoscaling:EnterStandby",
                 "autoscaling:ExitStandby"
@@ -112,6 +111,7 @@ resource "aws_iam_role_policy_attachment" "scheduler_role_policy_attach" {
 
 resource "aws_iam_policy" "scheduler_role_policy" {
   name = "policy-em-scheduler"
+
   policy = <<EOF
 {
   "Version": "2012-10-17",
