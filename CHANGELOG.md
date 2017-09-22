@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- The 'healthy' check mark was confusing to users. The check mark would show up while there were various other 'warnings' on that same instance. To show what that green check mark actually means, a tooltip has been added to explain. [#338]
+
 ## [6.7.0]
 
 ### Added
@@ -140,3 +145,4 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#330]: https://github.com/trainline/environment-manager/pull/330
 [#329]: https://github.com/trainline/environment-manager/pull/329
 [#333]: https://github.com/trainline/environment-manager/pull/333
+[#338]: https://github.com/trainline/environment-manager/pull/338
