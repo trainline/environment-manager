@@ -49,6 +49,7 @@ publish_id.txt
 version.txt
 environment-manager-*.zip
 
-.terraform
-terraform.tfstate.backup
+**/.terraform
+**/terraform.tfstate
+**/terraform.tfstate.backup
 **/*.tfvars
