@@ -3,7 +3,9 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [Released]
+
+## [6.8.0] 2017-09-25
 
 ### Added
 - When a user logs in to Environment Manager and the they have not seen this release before, they will be presented with a notification and a link to the release notes. [#337]
@@ -128,6 +130,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
 [Unreleased]: https://github.com/trainline/environment-manager/compare/v6.8.0...HEAD
+[6.8.0]: https://github.com/trainline/environment-manager/compare/v6.7.0...v6.8.0
 [6.5.1]: https://github.com/trainline/environment-manager/compare/v6.5.0...v6.5.1
 [6.5.0]: https://github.com/trainline/environment-manager/compare/v6.4.1...v6.5.0
 [6.4.1]: https://github.com/trainline/environment-manager/compare/6.4.0...v6.4.1
