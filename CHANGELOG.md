@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- The API was allowing a deployment with a configuration that had already been used to be deployed again. This was causing the deployment to never finish. The API now checks your provided configuration against service deployments that have been carried out already for that version. [#343]
+
 ## [Released]
 
 ## [6.8.0] 2017-09-25
@@ -164,3 +169,4 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#338]: https://github.com/trainline/environment-manager/pull/338
 [#336]: https://github.com/trainline/environment-manager/pull/336
 [#340]: https://github.com/trainline/environment-manager/pull/340
+[#343]: https://github.com/trainline/environment-manager/pull/343
