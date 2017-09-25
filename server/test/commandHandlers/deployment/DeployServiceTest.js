@@ -146,7 +146,7 @@ describe('DeployService', function () {
     });
   });
 
-  describe.only('when the deployment has occured with this confugration before', () => {
+  describe('when the deployment has occured with this confugration before', () => {
     it('should fail the deployment', (done) => {
       let command = createCommand();
       command.serviceName = 'ServiceName';
