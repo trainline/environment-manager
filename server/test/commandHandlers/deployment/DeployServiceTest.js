@@ -21,6 +21,7 @@ describe('DeployService', function () {
   let packagePathProvider;
   let sender;
   let deploymentLogger;
+  let serviceDiscovery;
 
   const S3_PACKAGE = 's3://acme-bucket/em/binaries/package-3.1.0.tar';
   const ACCOUNT_NAME = 'acmeAccount';
@@ -92,6 +93,16 @@ describe('DeployService', function () {
       updateStatus: sinon.stub(),
       started: sinon.stub().returns(Promise.resolve({}))
     };
+    serviceDiscovery = {
+      getAllServices: sinon.stub().returns(Promise.resolve(
+        {
+          'c50-ServiceName-blue': {
+            version: '1.0.1',
+            slice: 'blue'
+          }
+        }
+      ))
+    };
     const GetServicePortConfig = x => ({ blue: 0, green: 0 });
 
     sut.__set__({ // eslint-disable-line no-underscore-dangle
@@ -104,7 +115,8 @@ describe('DeployService', function () {
       packagePathProvider,
       sender,
       deploymentLogger,
-      GetServicePortConfig
+      GetServicePortConfig,
+      serviceDiscovery
     });
   });
 
@@ -129,6 +141,23 @@ describe('DeployService', function () {
     it('should throw if slice is \'none\'', (done) => {
       sut(command).catch((error) => {
         assert.ok(error.message.indexOf('Unknown slice') === 0);
+        done();
+      });
+    });
+  });
+
+  describe.only('when the deployment has occured with this confugration before', () => {
+    it('should fail the deployment', (done) => {
+      let command = createCommand();
+      command.serviceName = 'ServiceName';
+      command.serviceVersion = '1.0.1';
+      command.serviceSlice = 'blue';
+      command.mode = 'bg';
+
+      sut(command).catch((error) => {
+        assert.ok(error.message.indexOf(`
+This service, at this version, on this slice has already been deployed.
+Please deploy a newer version of this service.`.trim()) > -1);
         done();
       });
     });
