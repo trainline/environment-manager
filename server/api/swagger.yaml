@@ -1043,6 +1043,13 @@ paths:
           in: query
           type: string
           required: true
+        - name: active
+          in: query
+          required: false
+          type: string
+          enum:
+          - blue
+          - green
       responses:
         200:
           description: OK
@@ -1285,6 +1292,13 @@ paths:
           in: query
           type: string
           required: true
+        - name: active
+          in: query
+          required: false
+          type: string
+          enum:
+          - blue
+          - green
       responses:
         200:
           description: OK

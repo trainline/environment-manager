@@ -105,10 +105,11 @@ function getServiceSlices(req, res, next) {
  */
 function putServiceSlicesToggle(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
+  const activeSlice = req.swagger.params.active.value;
   const serviceName = req.swagger.params.service.value;
   const user = req.user;
 
-  return toggleSlices(metadata.addMetadata({ environmentName, serviceName, user }))
+  return toggleSlices(metadata.addMetadata({ environmentName, serviceName, activeSlice, user }))
     .then(data => res.json(data))
     .then(() => sns.publish({
       message: JSON.stringify(
@@ -126,6 +127,11 @@ function putServiceSlicesToggle(req, res, next) {
                 Name: 'environment',
                 Type: 'query',
                 Value: environmentName || ''
+              },
+              {
+                Name: 'active',
+                Type: 'query',
+                Value: activeSlice || ''
               }
             ]
           }
@@ -134,7 +140,8 @@ function putServiceSlicesToggle(req, res, next) {
       attributes: {
         Action: sns.ACTIONS.PUT,
         ID: serviceName,
-        Environment: environmentName
+        Environment: environmentName,
+        ActiveSlice: activeSlice
       }
     }))
     .catch(next);

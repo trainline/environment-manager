@@ -23,24 +23,43 @@ function getUpstreamSlices(req, res, next) {
  */
 function putUpstreamSlicesToggle(req, res, next) {
   const upstreamName = req.swagger.params.name.value;
+  const activeSlice = req.swagger.params.active.value;
   const environmentName = req.swagger.params.environment.value;
   const user = req.user;
 
-  const command = metadata.addMetadata({ environmentName, upstreamName, user });
+  const command = metadata.addMetadata({ environmentName, upstreamName, activeSlice, user });
   return toggleSlices(command)
     .then(data => res.json(data))
     .then(() => sns.publish({
       message: JSON.stringify({
         Endpoint: {
           Url: `/upstreams/${upstreamName}/slices/toggle`,
-          Method: 'PUT'
+          Method: 'PUT',
+          Parameters: [
+            {
+              Name: 'upstream',
+              Type: 'path',
+              Value: upstreamName || ''
+            },
+            {
+              Name: 'environment',
+              Type: 'query',
+              Value: environmentName || ''
+            },
+            {
+              Name: 'active',
+              Type: 'query',
+              Value: activeSlice || ''
+            }
+          ]
         }
       }),
       topic: sns.TOPICS.OPERATIONS_CHANGE,
       attributes: {
         Action: sns.ACTIONS.PUT,
         ID: upstreamName,
-        Environment: environmentName
+        Environment: environmentName,
+        ActiveSlice: activeSlice
       }
     }))
     .catch(next);
