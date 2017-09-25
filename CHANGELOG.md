@@ -8,10 +8,15 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ### Added
 - When a user logs in to Environment Manager and the they have not seen this release before, they will be presented with a notification and a link to the release notes. [#337]
 - The 'healthy' check mark was confusing to users. The check mark would show up while there were various other 'warnings' on that same instance. To show what that green check mark actually means, a tooltip has been added to explain. [#338]
+- Logging around cache resetting has been improved on the server side. [#340]
 
 ### Fixed
 
 - Faulty permissions challenge on service status toggling operations
+
+### Changed
+
+- Instances can now terminate without the 10 minute wait period. [#336]
 
 ## [Released]
 
@@ -122,7 +127,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/v6.5.1...HEAD
+[Unreleased]: https://github.com/trainline/environment-manager/compare/v6.8.0...HEAD
 [6.5.1]: https://github.com/trainline/environment-manager/compare/v6.5.0...v6.5.1
 [6.5.0]: https://github.com/trainline/environment-manager/compare/v6.4.1...v6.5.0
 [6.4.1]: https://github.com/trainline/environment-manager/compare/6.4.0...v6.4.1
