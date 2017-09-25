@@ -159,3 +159,5 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#333]: https://github.com/trainline/environment-manager/pull/333
 [#337]: https://github.com/trainline/environment-manager/pull/337
 [#338]: https://github.com/trainline/environment-manager/pull/338
+[#336]: https://github.com/trainline/environment-manager/pull/336
+[#340]: https://github.com/trainline/environment-manager/pull/340
