@@ -137,7 +137,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/v6.8.0...HEAD
+[Unreleased]: https://github.com/trainline/environment-manager/compare/v6.9.0...HEAD
+[6.9.0]: https://github.com/trainline/environment-manager/compare/v6.8.0...v6.9.0
 [6.8.0]: https://github.com/trainline/environment-manager/compare/v6.7.0...v6.8.0
 [6.5.1]: https://github.com/trainline/environment-manager/compare/v6.5.0...v6.5.1
 [6.5.0]: https://github.com/trainline/environment-manager/compare/v6.4.1...v6.5.0
