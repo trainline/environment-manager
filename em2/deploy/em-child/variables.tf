@@ -1,21 +1,22 @@
-variable "bucket_logs" {
-  default = ""
+terraform {
+  backend "s3" {
+    bucket = "newco-remote-state-master"
+    key    = "em-child"
+    region = "eu-west-1"
+  }
 }
 
-variable "bucket_deployments" {
-  default = ""
-}
+variable "stack" {}
 
+variable "bucket" {}
 
+variable "master_account" {}
 
-# Consul
+variable "ec2_key_pair" {}
 
-variable "platform" {
-  default     = "xenial"
-  description = "The OS Platform"
-}
+variable "ec2_key_pair_path" {}
 
-variable "user" {
+variable "platform_users" {
   default = {
     xenial  = "ubuntu"
     trusty  = "ubuntu"
@@ -26,12 +27,17 @@ variable "user" {
   }
 }
 
-variable "vpc_id" {
-  default = "vpc-67ab3903"
+variable vpc_id {}
+
+variable "subnet_id" {}
+
+variable "num_servers" {
+  default = 3
 }
 
-variable "subnet_id" {
-  default = "subnet-b0e04bf9"
+variable "platform" {
+  default     = "xenial"
+  description = "The OS Platform"
 }
 
 variable "ami" {
@@ -100,37 +106,4 @@ variable "service_conf_dest" {
     centos7 = "consul.service"
     rhel7   = "consul.service"
   }
-}
-
-variable "key_name" {
-  description = "SSH key name in your AWS account for AWS instances."
-}
-
-variable "key_path" {
-  description = "Path to the private key specified by key_name."
-}
-
-variable "region" {
-  default     = "eu-west-1"
-  description = "The region of AWS, for AMI lookups."
-}
-
-variable "servers" {
-  default     = "3"
-  description = "The number of Consul servers to launch."
-}
-
-variable "datacenter" {
-  default     = "dc1"
-  description = "Consul datacenter name."
-}
-
-variable "instance_type" {
-  default     = "t2.small"
-  description = "AWS Instance type, if you change, make sure it is compatible with AMI, not all AMIs allow all instance types "
-}
-
-variable "tagName" {
-  default     = "consul"
-  description = "Name tag for the servers"
 }

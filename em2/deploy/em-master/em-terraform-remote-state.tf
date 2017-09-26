@@ -1,8 +1,8 @@
 # Write the remote state
 terraform {
   backend "s3" {
-    bucket = "daveandjake-remote-state"
-    key    = "dave"
+    bucket = "newco-remote-state-master"
+    key    = "demo"
     region = "eu-west-1"
   }
 }

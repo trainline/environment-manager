@@ -5,7 +5,7 @@ resource "aws_autoscaling_group" "app" {
   min_size                  = 0
   health_check_grace_period = 30
   health_check_type         = "ELB"
-  desired_capacity          = 2
+  desired_capacity          = 1
   force_delete              = true
   launch_configuration      = "${aws_launch_configuration.app.name}"
   load_balancers            = ["${aws_elb.app.name}"]
@@ -31,7 +31,7 @@ resource "aws_launch_configuration" "app" {
   name_prefix          = "${var.stack}-"
   image_id             = "${data.aws_ami.ubuntu.id}"
   instance_type        = "t2.micro"
-  key_name             = "em-testing-master-keypair-2"
+  key_name             = "${var.ec2_key_pair}"
   iam_instance_profile = "${aws_iam_instance_profile.app.id}"
   user_data            = "${data.template_file.user_data.rendered}"
   security_groups      = ["${aws_security_group.app.id}"]

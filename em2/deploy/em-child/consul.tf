@@ -1,39 +1,20 @@
-terraform {
-  backend "s3" {
-    bucket = "daveandjake-remote-state"
-    key    = "state-consul"
-    region = "eu-west-1"
-  }
-}
-
-data "terraform_remote_state" "remote-state" {
-  backend = "s3"
-
-  config {
-    bucket = "daveandjake-remote-state"
-    key    = "state-consul"
-    region = "eu-west-1"
-  }
-}
-
 resource "aws_instance" "server" {
-  ami           = "${lookup(var.ami, "${var.region}-${var.platform}")}"
-  instance_type = "${var.instance_type}"
-  key_name      = "${var.key_name}"
-
-  count                  = "${var.servers}"
+  ami                    = "${lookup(var.ami, "${data.aws_region.current.name}-${var.platform}")}"
+  instance_type          = "t2.micro"
+  key_name               = "${var.ec2_key_pair}"
+  count                  = "${var.num_servers}"
   vpc_security_group_ids = ["${aws_security_group.consul.id}"]
   subnet_id              = "${var.subnet_id}"
 
   connection {
     type        = "ssh"
-    user        = "${lookup(var.user, var.platform)}"
-    private_key = "${file("${var.key_path}")}"
+    user        = "${lookup(var.platform_users, var.platform)}"
+    private_key = "${file("${var.ec2_key_pair_path}")}"
   }
 
   #Instance tags
   tags {
-    Name       = "${var.tagName}-${count.index}"
+    Name       = "consul-${count.index}"
     ConsulRole = "Server"
   }
 
@@ -44,8 +25,8 @@ resource "aws_instance" "server" {
 
   provisioner "remote-exec" {
     inline = [
-      "echo ${var.datacenter} > /tmp/consul-datacenter",
-      "echo ${var.servers} > /tmp/consul-server-count",
+      "echo dc1 > /tmp/consul-datacenter",
+      "echo ${var.num_servers} > /tmp/consul-server-count",
       "echo ${aws_instance.server.0.private_dns} > /tmp/consul-server-addr",
     ]
   }
