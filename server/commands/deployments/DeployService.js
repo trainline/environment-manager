@@ -75,7 +75,7 @@ const formatServiceName = (s) => {
   if (serviceParts.length > 1) serviceParts.shift();
   if (serviceParts.length > 1 &&
     (serviceParts[1].toLowerCase() === 'blue' || serviceParts[1].toLowerCase() === 'green')) serviceParts.pop();
-  return { ...s, service: serviceParts.join('') };
+  return Object.assign(s, { service: serviceParts.join('') });
 };
 
 const matchServiceWithDeployments = t => (s) => {
