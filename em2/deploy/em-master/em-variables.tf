@@ -2,6 +2,8 @@
 
 variable "stack" {}
 
+variable "ec2_key_pair" {}
+
 # Buckets
 
 variable "bucket" {}
