@@ -5,6 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
+### Fixed
+- Logging for cache reset was causing server errors due to not having access to a user object. This has been resolved. [#344]
+
 ### Added
 - Toggle APIs now support the ability to explicitly set the desired state of an upstream or service
 
@@ -167,3 +170,4 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#338]: https://github.com/trainline/environment-manager/pull/338
 [#336]: https://github.com/trainline/environment-manager/pull/336
 [#340]: https://github.com/trainline/environment-manager/pull/340
+[#344]: https://github.com/trainline/environment-manager/pull/344
