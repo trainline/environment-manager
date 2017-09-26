@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [6.9.0] 2017-09-26
 
 ### Fixed
 
@@ -11,7 +11,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - Logging for cache reset was causing server errors due to not having access to a user object. This has been resolved. [#344]
 
 ### Added
-- Toggle APIs now support the ability to explicitly set the desired state of an upstream or service
+- Toggle APIs now support the ability to explicitly set the desired state of an upstream or service [#342]
 
 ## [Released]
 
@@ -172,5 +172,6 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#338]: https://github.com/trainline/environment-manager/pull/338
 [#336]: https://github.com/trainline/environment-manager/pull/336
 [#340]: https://github.com/trainline/environment-manager/pull/340
+[#342]: https://github.com/trainline/environment-manager/pull/342
 [#343]: https://github.com/trainline/environment-manager/pull/343
 [#344]: https://github.com/trainline/environment-manager/pull/344
