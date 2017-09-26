@@ -96,8 +96,16 @@ function scan(environment) {
     });
 }
 
-function toggle(upstream, metadata) {
-  let invert = state => (state.toUpperCase() === 'UP' ? 'down' : 'up');
+function determineState(host, toggleCommand, servicePortMappings) {
+  if (toggleCommand.activeSlice) {
+    return servicePortMappings[host.Port].toLowerCase() ===
+      toggleCommand.activeSlice.toLowerCase() ? 'up' : 'down';
+  }
+  return host.State.toUpperCase() === 'UP' ? 'down' : 'up';
+}
+
+function toggle(upstream, metadata, toggleCommand, servicePortMappings) {
+  let invert = host => determineState(host, toggleCommand, servicePortMappings);
 
   let key = { Key: upstream.Key };
   let expressions = {
@@ -105,7 +113,7 @@ function toggle(upstream, metadata) {
       ...(upstream.Hosts.map((host, i) => ['=', ['at', 'Hosts', i, 'State'], ['val', host.State]]))],
     UpdateExpression: updateAuditMetadata({
       updateExpression: ['update',
-        ...(upstream.Hosts.map((host, i) => ['set', ['at', 'Hosts', i, 'State'], ['val', invert(host.State)]]))],
+        ...(upstream.Hosts.map((host, i) => ['set', ['at', 'Hosts', i, 'State'], ['val', invert(host)]]))],
       metadata
     })
   };

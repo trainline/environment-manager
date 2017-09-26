@@ -12,20 +12,9 @@ let loadBalancerUpstreams = require('modules/data-access/loadBalancerUpstreams')
 
 function ToggleUpstreamByServiceVerifier(toggleCommand) {
   this.verifyUpstreams = (upstreams) => {
-    return servicesDb.get({ ServiceName: upstreams[0].Service })
-      .then(asPortMapping)
+    return getServicePortMappings(upstreams[0].Service)
       .then(portMapping => Promise.map(upstreams, upstream => detectUpstreamInconsistency(upstream, portMapping)));
   };
-
-  function asPortMapping(service) {
-    let portMapping = {};
-    if (service) {
-      if (service.Value.BluePort) portMapping[service.Value.BluePort] = 'Blue';
-      if (service.Value.GreenPort) portMapping[service.Value.GreenPort] = 'Green';
-    }
-
-    return portMapping;
-  }
 
   function detectUpstreamInconsistency(upstream, portMapping) {
     if (upstream.Hosts.length === 0) {
@@ -61,6 +50,21 @@ function ToggleUpstreamByServiceVerifier(toggleCommand) {
     let message = `Upstream named "${upstream.Upstream}" which refers to "${upstream.Service}" service in "${upstream.Environment}" environment ${reason}.`;
     return Promise.reject(new InconsistentSlicesStatusError(message));
   }
+}
+
+function getServicePortMappings(serviceName) {
+  return servicesDb.get({ ServiceName: serviceName })
+    .then(asPortMapping);
+}
+
+function asPortMapping(service) {
+  let portMapping = {};
+  if (service) {
+    if (service.Value.BluePort) portMapping[service.Value.BluePort] = 'Blue';
+    if (service.Value.GreenPort) portMapping[service.Value.GreenPort] = 'Green';
+  }
+
+  return portMapping;
 }
 
 function ToggleUpstreamByNameVerifier(resourceName) {
@@ -112,7 +116,8 @@ function UpstreamToggler(senderInstance, toggleCommand) {
   };
   return {
     toggleUpstream(upstream) {
-      return loadBalancerUpstreams.toggle(upstream, metadata);
+      return getServicePortMappings(upstream.Service)
+        .then(portMappings => loadBalancerUpstreams.toggle(upstream, metadata, toggleCommand, portMappings));
     }
   };
 }
