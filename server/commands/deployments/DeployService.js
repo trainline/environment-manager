@@ -64,7 +64,7 @@ function checkNotAlreadyDeployed({ environmentName, target }) {
 const services = envName => serviceDiscovery.getAllServices(envName);
 
 const servicesList = servicesValue => Object.keys(servicesValue).reduce(
-  (acc, key) => [...acc, ...[{ service: key, ...servicesValue[key] }]],
+  (acc, key) => [...acc, ...[Object.assign({ service: key }, servicesValue[key])]],
   []
 );
 
