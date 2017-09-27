@@ -32,7 +32,14 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
         vm.deploymentSettings.Mode = deploymentMethods[0].Value;
       });
 
-      cachedResources.config.deploymentMaps.all().then(function (deploymentMaps) {
+      var waitForConfig = Promise.all([
+        cachedResources.config.deploymentMaps.all(),
+        cachedResources.config.services.all()
+      ]);
+
+      waitForConfig.then(function (config) {
+        var deploymentMaps = config[0];
+        var allServices = config[1];
         var deployMapName = vm.environment.Value.DeploymentMap;
         if (deployMapName) {
           var deployMap = cachedResources.config.deploymentMaps.getByName(deployMapName, 'DeploymentMapName', deploymentMaps);
@@ -40,10 +47,11 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
             var services = [];
             deployMap.Value.DeploymentTarget.forEach(function (target) {
               target.Services.forEach(function (service) {
+                var serviceConfig = _.find(allServices, { ServiceName: service.ServiceName });
                 var obj = _.find(services, { ServiceName: service.ServiceName });
                 if (obj !== undefined) {
                   obj.ServerRoleNames.push(target.ServerRoleName);
-                } else {
+                } else if (serviceConfig !== undefined) {
                   services.push({
                     ServiceName: service.ServiceName,
                     ServerRoleNames: [target.ServerRoleName]

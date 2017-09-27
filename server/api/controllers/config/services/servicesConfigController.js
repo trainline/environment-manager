@@ -22,22 +22,38 @@ function convertToApiModel(persistedModel) {
  * GET /config/services
  */
 function getServicesConfig(req, res, next) {
+  const returnDeleted = req.query.returnDeleted === 'true';
   const cluster = param('cluster', req);
-  return (cluster ? services.ownedBy(cluster) : services.scan())
+  return (cluster ? services.ownedBy(cluster, returnDeleted) : services.scan(returnDeleted))
     .then(data => data.map(convertToApiModel))
     .then(data => res.json(data))
     .catch(next);
 }
 
 /**
- * GET /config/services/{name}/{cluster}
+ * GET /config/services/{name}
  */
 function getServiceConfigByName(req, res, next) {
-  let key = {
-    ServiceName: param('name', req)
-  };
+  let key = { ServiceName: param('name', req) };
   return services.get(key)
     .then(when(hasValue, convertToApiModel))
+    .then(ifNotFound(notFoundMessage('service')))
+    .then(send => send(res))
+    .catch(next);
+}
+
+/**
+ * GET /config/services/{name}/{cluster}
+ */
+function getServiceConfigByNameAndCluster(req, res, next) {
+  let key = { ServiceName: param('name', req) };
+  let owningCluster = param('cluster', req);
+
+  let existsAndIsOwnedByCluster = x => hasValue(x) && 
+    (x.OwningCluster.toLowerCase() === owningCluster.toLowerCase());
+
+  return services.get(key)
+    .then(when(existsAndIsOwnedByCluster, convertToApiModel))
     .then(ifNotFound(notFoundMessage('service')))
     .then(send => send(res))
     .catch(next);
@@ -101,16 +117,49 @@ function putServiceConfigByName(req, res, next) {
 }
 
 /**
- * DELETE /config/services/{name}/{cluster}
+ * DELETE /config/services/{name}
  */
 function deleteServiceConfigByName(req, res, next) {
+  let serviceName = param('name', req);
+  let key = { ServiceName: serviceName };
+  const expectedVersion = param('expected-version', req);
+  let metadata = getMetadataForDynamoAudit(req);
+
+  let updateExpression = ['update',
+    ['set', ['at', 'Deleted'], ['val', 'true']]
+  ];
+  return services.update({ key, metadata, updateExpression }, expectedVersion)
+    .then(() => res.status(200).end())
+    .then(() => sns.publish({
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/config/services/${serviceName}`,
+          Method: 'DELETE'
+        }
+      }),
+      topic: sns.TOPICS.CONFIGURATION_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.DELETE,
+        ID: serviceName
+      }
+    }))
+    .catch(next);
+}
+
+/**
+ * DELETE /config/services/{name}/{cluster} [DEPRECATED]
+ */
+function deleteServiceConfigByNameAndCluster(req, res, next) {
   let serviceName = param('name', req);
   let owningCluster = param('cluster', req);
   let key = { ServiceName: serviceName };
   const expectedVersion = param('expected-version', req);
   let metadata = getMetadataForDynamoAudit(req);
 
-  return services.delete({ key, metadata }, expectedVersion, { ConditionExpression: ['=', ['at', 'OwningCluster'], ['val', owningCluster]] })
+  let updateExpression = ['update',
+    ['set', ['at', 'Deleted'], ['val', 'true']]
+  ];
+  return services.update({ key, metadata, updateExpression }, expectedVersion, { ConditionExpression: ['=', ['at', 'OwningCluster'], ['val', owningCluster]] })
     .then(() => res.status(200).end())
     .then(() => sns.publish({
       message: JSON.stringify({
@@ -131,7 +180,9 @@ function deleteServiceConfigByName(req, res, next) {
 module.exports = {
   getServicesConfig,
   getServiceConfigByName,
+  getServiceConfigByNameAndCluster,
   postServicesConfig,
   putServiceConfigByName,
-  deleteServiceConfigByName
+  deleteServiceConfigByName,
+  deleteServiceConfigByNameAndCluster
 };
