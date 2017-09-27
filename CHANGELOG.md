@@ -9,6 +9,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 - The ability to delete a service (can be restored when services are mistakenly deleted) [#346]
 
+### Changed
+
+- Deprecated GET and DELETE /config/services/{name}/{cluster} endpoints. See API docs.
+
 ## [Released]
 
 ## [6.9.0] 2017-09-26
