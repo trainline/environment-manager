@@ -49,7 +49,7 @@ function getServiceConfigByNameAndCluster(req, res, next) {
   let key = { ServiceName: param('name', req) };
   let owningCluster = param('cluster', req);
 
-  let existsAndIsOwnedByCluster = x => hasValue(x) && 
+  let existsAndIsOwnedByCluster = x => hasValue(x) &&
     (x.OwningCluster.toLowerCase() === owningCluster.toLowerCase());
 
   return services.get(key)

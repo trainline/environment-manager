@@ -13,6 +13,7 @@ let table = cachedSingleAccountDynamoTable(physicalTableName(LOGICAL_TABLE_NAME)
 function get(...args) {
   return table.get(...args).then((service) => {
     if (service && !service.Deleted) return service;
+    return undefined;
   });
 }
 
@@ -32,7 +33,7 @@ function getScanSettings(options) {
     ...(options.returnDeleted ? [] : [['<>', ['at', 'Deleted'], ['val', 'true']]])
   ];
 
-  if (predicates.length === 0) return;
+  if (predicates.length === 0) return undefined;
 
   let filter = predicates.length === 1 ? predicates[0] : ['and', ...predicates];
   return { FilterExpression: filter };
