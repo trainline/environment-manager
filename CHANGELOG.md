@@ -6,7 +6,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ## [Unreleased]
 
 ### Added
-- Toggle APIs now support the ability to explicitly set the desired state of an upstream or service
+- Toggle APIs now support the ability to explicitly set the desired state of an upstream or service [#342]
+- The ability to delete a service (can be restored when services are mistakenly deleted) [#346]
 
 ## [Released]
 
@@ -167,3 +168,5 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#338]: https://github.com/trainline/environment-manager/pull/338
 [#336]: https://github.com/trainline/environment-manager/pull/336
 [#340]: https://github.com/trainline/environment-manager/pull/340
+[#342]: https://github.com/trainline/environment-manager/pull/342
+[#346]: https://github.com/trainline/environment-manager/pull/346
