@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- The ability to delete a service (can be restored when services are mistakenly deleted) [#346]
+
+## [Released]
+
 ## [6.9.0] 2017-09-26
 
 ### Fixed
@@ -12,9 +20,6 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Added
 - Toggle APIs now support the ability to explicitly set the desired state of an upstream or service [#342]
-- The ability to delete a service (can be restored when services are mistakenly deleted) [#346]
-
-## [Released]
 
 ## [6.8.0] 2017-09-25
 
