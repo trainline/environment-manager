@@ -1,3 +1,8 @@
+resource "aws_iam_instance_profile" "instance_profile" {
+  name = "${var.stack}-default-instance-profile"
+  role = "${aws_iam_role.app.name}"
+}
+
 resource "aws_iam_role" "app" {
   name = "role-${var.stack}-child"
 
@@ -11,26 +16,22 @@ resource "aws_iam_role" "app" {
             "Service":"ec2.amazonaws.com"
          },
          "Action":"sts:AssumeRole"
+      },
+      {
+        "Action": "sts:AssumeRole",
+        "Principal": {
+          "Service": "lambda.amazonaws.com"
+        },
+        "Effect": "Allow"
+      },
+      {
+        "Effect": "Allow",
+        "Principal": {
+          "AWS": "arn:aws:iam::${var.master_account}:root"
+        },
+        "Action": "sts:AssumeRole"
       }
    ]
-}
-EOF
-}
-
-resource "aws_iam_role" "scheduler_role" {
-  name = "role-em-scheduler"
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "lambda.amazonaws.com"
-      },
-      "Effect": "Allow"
-    }
-  ]
 }
 EOF
 }

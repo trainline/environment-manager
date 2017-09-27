@@ -19,12 +19,14 @@ let EnvironmentHelper = require('models/Environment');
 let OpsEnvironment = require('models/OpsEnvironment');
 let ResourceLockedError = require('modules/errors/ResourceLockedError');
 let GetServicePortConfig = require('queryHandlers/GetServicePortConfig');
+let serviceDiscovery = require('modules/service-discovery');
 
 module.exports = function DeployServiceCommandHandler(command) {
   return co(function* () {
     let deployment = yield validateCommandAndCreateDeployment(command);
     let destination = yield packagePathProvider.getS3Path(deployment);
     let sourcePackage = getSourcePackageByCommand(command);
+    let environmentName = command.environmentName;
 
     if (command.isDryRun) {
       return {
@@ -33,13 +35,62 @@ module.exports = function DeployServiceCommandHandler(command) {
       };
     }
 
+    let target = {
+      serviceName: command.serviceName,
+      version: command.serviceVersion,
+      slice: command.serviceSlice
+    };
+
     // Run asynchronously, we don't wait for deploy to finish intentionally
-    deploy(deployment, destination, sourcePackage, command);
+    yield checkNotAlreadyDeployed({ environmentName, target })
+      .then(() => {
+        deploy(deployment, destination, sourcePackage, command);
+      });
 
     let accountName = deployment.accountName;
     yield deploymentLogger.started(deployment, accountName);
     return deployment;
   });
+};
+
+function checkNotAlreadyDeployed({ environmentName, target }) {
+  return services(environmentName)
+    .then(servicesList)
+    .then(servicesNames)
+    .then(matchServiceWithDeployments(target))
+    .then(handlePreviousDeployment);
+}
+
+const services = envName => serviceDiscovery.getAllServices(envName);
+
+const servicesList = servicesValue => Object.keys(servicesValue).reduce(
+  (acc, key) => [...acc, ...[Object.assign({ service: key }, servicesValue[key])]],
+  []
+);
+
+const servicesNames = servicesListValue => servicesListValue.map(formatServiceName);
+
+const formatServiceName = (s) => {
+  let serviceParts = s.service.split('-');
+  if (serviceParts.length > 1) serviceParts.shift();
+  if (serviceParts.length > 1 &&
+    (serviceParts[1].toLowerCase() === 'blue' || serviceParts[1].toLowerCase() === 'green')) serviceParts.pop();
+  return Object.assign(s, { service: serviceParts.join('') });
+};
+
+const matchServiceWithDeployments = t => (s) => {
+  return s.some(x => x.service === t.serviceName
+    && x.version === t.version
+    && x.slice === t.slice);
+};
+
+const handlePreviousDeployment = (already) => {
+  if (already) {
+    throw new Error(`
+This service, at this version, on this slice has already been deployed.
+Please deploy a newer version of this service.`.trim());
+  }
+  return 0;
 };
 
 function validateCommandAndCreateDeployment(command) {

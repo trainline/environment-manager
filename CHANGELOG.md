@@ -3,7 +3,12 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [6.9.0] 2017-09-26
+
+### Fixed
+
+- The API was allowing a deployment with a configuration that had already been used to be deployed again. This was causing the deployment to never finish. The API now checks your provided configuration against service deployments that have been carried out already for that version. [#343]
+- Logging for cache reset was causing server errors due to not having access to a user object. This has been resolved. [#344]
 
 ### Added
 - Toggle APIs now support the ability to explicitly set the desired state of an upstream or service [#342]
@@ -133,7 +138,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/v6.8.0...HEAD
+[Unreleased]: https://github.com/trainline/environment-manager/compare/v6.9.0...HEAD
+[6.9.0]: https://github.com/trainline/environment-manager/compare/v6.8.0...v6.9.0
 [6.8.0]: https://github.com/trainline/environment-manager/compare/v6.7.0...v6.8.0
 [6.5.1]: https://github.com/trainline/environment-manager/compare/v6.5.0...v6.5.1
 [6.5.0]: https://github.com/trainline/environment-manager/compare/v6.4.1...v6.5.0
@@ -169,4 +175,6 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#336]: https://github.com/trainline/environment-manager/pull/336
 [#340]: https://github.com/trainline/environment-manager/pull/340
 [#342]: https://github.com/trainline/environment-manager/pull/342
+[#343]: https://github.com/trainline/environment-manager/pull/343
+[#344]: https://github.com/trainline/environment-manager/pull/344
 [#346]: https://github.com/trainline/environment-manager/pull/346

@@ -72,11 +72,7 @@ resource "aws_iam_role_policy" "app" {
          "Action": [
            "s3:GetObject" 
          ],
-         "Resource":[
-            "arn:aws:s3:::${var.secure_bucket}/${var.stack}/*",
-            "arn:aws:s3:::${var.bucket}/${var.stack}/backups/*",
-            "arn:aws:s3:::${var.init_script_bucket}/*"
-         ]
+         "Resource": "*"
       },
       {
          "Effect":"Allow",
@@ -93,9 +89,7 @@ resource "aws_iam_role_policy" "app" {
       {
          "Action":"sts:AssumeRole",
          "Effect":"Allow",
-         "Resource": [
-           "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/roleInfraEnvironmentManagerChild"
-         ]
+         "Resource": "*"
       },
       {
          "Effect":"Allow",
@@ -121,6 +115,7 @@ resource "aws_iam_role_policy" "app" {
             "autoscaling:AttachInstances*",
             "autoscaling:PutNotificationConfiguration",
             "autoscaling:PutScheduledUpdateGroupAction",
+            "autoscaling:PutLifecycleHook",
             "autoscaling:CreateOrUpdateTags",
             "autoscaling:EnterStandby",
             "autoscaling:ExitStandby"
