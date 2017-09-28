@@ -13,6 +13,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 - Deprecated GET and DELETE /config/services/{name}/{cluster} endpoints. See API docs.
 
+### Fixed
+
+- Environment Manager Sensu Alerts for Node
+
 ## [Released]
 
 ## [6.9.0] 2017-09-26
