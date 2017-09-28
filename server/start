@@ -9,4 +9,4 @@
 export EM_AWS_REGION=$(curl --silent --show-error http://169.254.169.254/2016-09-02/dynamic/instance-identity/document | jq --raw-output '.region')
 echo "EM_AWS_REGION=${EM_AWS_REGION}" >&2
 
-exec npm start
+exec /usr/bin/node index.js
