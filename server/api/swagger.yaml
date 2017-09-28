@@ -2065,11 +2065,44 @@ paths:
       responses:
         201:
           description: OK
-  /config/services/{name}/{cluster}:
+  /config/service/{name}:
     x-swagger-router-controller: servicesConfigController
     get:
       operationId: getServiceConfigByName
       summary: Get a specific service configuration.
+      tags:
+        - Service
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The service config
+          schema:
+            $ref: '#/definitions/ServiceConfig'
+    delete:
+      operationId: deleteServiceConfigByName
+      summary: Delete a service configuration.
+      tags:
+        - Service
+      x-authorizer: services
+      parameters:
+        - name: name
+          in: path
+          type: string
+          required: true
+        - $ref: '#/parameters/ExpectedVersionHeader'
+      responses:
+        200:
+          description: OK
+  /config/services/{name}/{cluster}:
+    x-swagger-router-controller: servicesConfigController
+    get:
+      operationId: getServiceConfigByNameAndCluster
+      deprecated: true
+      summary: '[DEPRECATED] Use GET /config/service/{name}'
       tags:
         - Service
       parameters:
@@ -2087,8 +2120,9 @@ paths:
           schema:
             $ref: '#/definitions/ServiceConfig'
     delete:
-      operationId: deleteServiceConfigByName
-      summary: Delete a service configuration.
+      operationId: deleteServiceConfigByNameAndCluster
+      deprecated: true
+      summary: '[DEPRECATED] Use DELETE /config/service/{name}'
       tags:
         - Service
       x-authorizer: services

@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- The ability to delete a service (can be restored when services are mistakenly deleted) [#346]
+
+### Changed
+
+- Deprecated GET and DELETE /config/services/{name}/{cluster} endpoints. See API docs.
+
+## [Released]
+
 ## [6.9.0] 2017-09-26
 
 ### Fixed
@@ -12,8 +24,6 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Added
 - Toggle APIs now support the ability to explicitly set the desired state of an upstream or service [#342]
-
-## [Released]
 
 ## [6.8.0] 2017-09-25
 
@@ -176,3 +186,4 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#342]: https://github.com/trainline/environment-manager/pull/342
 [#343]: https://github.com/trainline/environment-manager/pull/343
 [#344]: https://github.com/trainline/environment-manager/pull/344
+[#346]: https://github.com/trainline/environment-manager/pull/346

@@ -10,10 +10,33 @@ let cachedSingleAccountDynamoTable = require('modules/data-access/cachedSingleAc
 
 let table = cachedSingleAccountDynamoTable(physicalTableName(LOGICAL_TABLE_NAME), { ttl: TTL });
 
-function ownedBy(owningCluster) {
-  return table.scan({
-    FilterExpression: ['=', ['at', 'OwningCluster'], ['val', owningCluster]]
+function get(...args) {
+  return table.get(...args).then((service) => {
+    if (service && !service.Deleted) return service;
+    return undefined;
   });
 }
 
-module.exports = Object.assign({}, table, { ownedBy });
+function ownedBy(owningCluster, returnDeleted) {
+  let settings = getScanSettings({ owningCluster, returnDeleted });
+  return table.scan(settings);
+}
+
+function scan(returnDeleted) {
+  let settings = getScanSettings({ returnDeleted });
+  return table.scan(settings);
+}
+
+function getScanSettings(options) {
+  let predicates = [
+    ...(options.owningCluster ? [['=', ['at', 'OwningCluster'], ['val', options.owningCluster]]] : []),
+    ...(options.returnDeleted ? [] : [['<>', ['at', 'Deleted'], ['val', 'true']]])
+  ];
+
+  if (predicates.length === 0) return undefined;
+
+  let filter = predicates.length === 1 ? predicates[0] : ['and', ...predicates];
+  return { FilterExpression: filter };
+}
+
+module.exports = Object.assign({}, table, { ownedBy, scan, get });
