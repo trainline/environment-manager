@@ -16,6 +16,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ### Fixed
 
 - Environment Manager Sensu Alerts for Node
+- [Truncation of service version identifiers at 50 characters in the UI](https://gitlab.tools.trainline.eu/capitainetrain/mweb/issues/487). Service version identifiers now limited to 100 characters in UI and API. User notified if a longer version identifier is pasted into UI. [#347]
 
 ## [Released]
 
@@ -191,3 +192,4 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#343]: https://github.com/trainline/environment-manager/pull/343
 [#344]: https://github.com/trainline/environment-manager/pull/344
 [#346]: https://github.com/trainline/environment-manager/pull/346
+[#347]: https://github.com/trainline/environment-manager/pull/347
