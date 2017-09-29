@@ -48,10 +48,11 @@
                name="Version"
                class="form-control"
                required=""
-               maxlength="50"
+               ng-maxlength="100"
                ng-model="vm.deploymentSettings.Version" />
       </div>
       <span class="help-block" ng-if="form.Version.$dirty && form.Version.$error.required">Service version is mandatory.</span>
+      <span class="help-block" ng-if="form.Version.$dirty && form.Version.$error.maxlength">Service version is too long.</span>
     </div>
     <div class="form-group">
       <label class="col-md-3 control-label text-left">Mode:</label>

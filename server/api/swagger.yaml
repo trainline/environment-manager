@@ -3323,6 +3323,7 @@ definitions:
         type: string
       version:
         type: string
+        maxLength: 100
       mode:
         type: string
         enum:
@@ -3495,6 +3496,7 @@ parameters:
     required: true
     type: string
     pattern: (0|[1-9]\d*)(\.(0|[1-9]\d*)){2}(-[\da-zA-Z\-]+(\.[\da-zA-Z\-]+)*)?(\+[\da-zA-Z\-]+(\.[\da-zA-Z\-]+)*)?
+    maxLength: 100
   package-environment:
     name: environment
     description: The name of the environment targeted by this package.
