@@ -21,7 +21,6 @@ describe('DeployService', function () {
   let packagePathProvider;
   let sender;
   let deploymentLogger;
-  let serviceDiscovery;
 
   const S3_PACKAGE = 's3://acme-bucket/em/binaries/package-3.1.0.tar';
   const ACCOUNT_NAME = 'acmeAccount';

@@ -19,7 +19,6 @@ let EnvironmentHelper = require('models/Environment');
 let OpsEnvironment = require('models/OpsEnvironment');
 let ResourceLockedError = require('modules/errors/ResourceLockedError');
 let GetServicePortConfig = require('queryHandlers/GetServicePortConfig');
-let serviceDiscovery = require('modules/service-discovery');
 
 module.exports = function DeployServiceCommandHandler(command) {
   return co(function* () {
