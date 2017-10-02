@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.9.5] 2017-10-02
+
+### Changed
+
+- There was a check in place for deployments that have been carried out already for the version you are requesting. This check has now been removed, allowing you to deploy the same version again. [#348]
+
 ## [6.9.4] 2017-09-29
 
 ### Added
@@ -192,3 +198,4 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#344]: https://github.com/trainline/environment-manager/pull/344
 [#346]: https://github.com/trainline/environment-manager/pull/346
 [#347]: https://github.com/trainline/environment-manager/pull/347
+[#348]: https://github.com/trainline/environment-manager/pull/348
