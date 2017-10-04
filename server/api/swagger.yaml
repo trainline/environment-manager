@@ -1053,6 +1053,54 @@ paths:
       responses:
         200:
           description: OK
+
+  /environment/{environment}/sync-services/jobs:
+    x-swagger-router-controller: syncEnvironmentServicesController
+    post:
+      operationId: postSyncEnvironmentServicesSe
+      summary: Synchronise the versions of services deployed in {environment} with those deployed in other environments
+      tags:
+        - Environment
+        - Job
+        - Service
+      parameters:
+        - name: environment
+          description: The environment to modify
+          in: path
+          type: string
+          required: true
+        - name: body
+          description: The services to copy and the environments from which to copy them
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/EnvironmentServices'
+      responses:
+        202:
+          description: Accepted
+  /environment/{environment}/sync-services/job/{JobId}:
+    x-swagger-router-controller: syncEnvironmentServicesController
+    get:
+      operationId: getSyncEnvironmentServicesJob
+      summary: Get job {JobId} synchronising service versions
+      tags:
+        - Environment
+        - Job
+        - Service
+      parameters:
+        - name: environment
+          description: The environment modified by this job
+          in: path
+          type: string
+          required: true
+        - name: JobId
+          description: The job ID
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
   /target-state/{environment}:
     x-swagger-router-controller: targetStateController
     get:
@@ -3475,7 +3523,22 @@ definitions:
       - blue
       - green
       - none
-
+  EnvironmentServices:
+    type: array
+    items:
+      type: object
+      description: A dictionary whose keys are service names and whose values are environments
+      properties:
+        Environment:
+          type: string
+          minLength: 1
+        Service:
+          type: string
+          minLength: 1
+      required:
+        - Environment
+        - Service
+    minLength: 1
 parameters:
   ExpectedVersionHeader:
     name: expected-version

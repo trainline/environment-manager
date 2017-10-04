@@ -6,5 +6,6 @@ let config = require('config');
 let resourcePrefix = config.get('EM_AWS_RESOURCE_PREFIX');
 
 module.exports = {
+  getQueueName: queueName => `${resourcePrefix}${queueName}`,
   getTableName: tableName => `${resourcePrefix}${tableName}`
 };
