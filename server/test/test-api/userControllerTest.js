@@ -6,7 +6,7 @@ let sinon = require('sinon');
 let rewire = require('rewire');
 let assert = require('assert');
 
-describe.only('userController', function() {
+describe('userController', function() {
   let sut;
   
   beforeEach(() => {
