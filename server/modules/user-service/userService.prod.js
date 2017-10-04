@@ -13,9 +13,9 @@ let logger = require('modules/logger');
 let UserSessionStore = require('modules/userSessionStore');
 let Promise = require('bluebird');
 
-const AES = require('crypto-js/aes');
+const SHA256 = require('crypto-js/sha256');
+const promisify = require('util')
 const uuidv4 = require('uuid/v4');
-const md5 = require('md5');
 
 module.exports = function UserService() {
   let sslComponentsRepository = new (require('modules/sslComponentsRepository'))();
@@ -29,15 +29,12 @@ module.exports = function UserService() {
       let scope = credentials.scope || 'api';
       let durationInMillis = ms(duration);
       let expiration = getExpiration(durationInMillis);
-
       let userSession = yield authenticate(credentials, expiration, scope);
-      const salt = uuidv4();
 
       let session = {
         sessionId: userSession.sessionId,
         user: userSession.user.toJson(),
-        salt,
-        password: AES.encrypt(credentials.password, salt)
+        password: SHA256(credentials.password)
       };
 
       yield storeSession(session, scope, durationInMillis);
@@ -53,8 +50,8 @@ module.exports = function UserService() {
       let session = yield getExistingSessionForUser(credentials, scope);
 
       if (session) {
-        if (session.password === AES.decrypt(credentials.password, session.salt)) {
-          return {
+        if (session.password === SHA256(credentials.password)) {
+          return {  
             sessionId: session.sessionId,
             user: User.parse(session.user)
           };
@@ -168,6 +165,6 @@ module.exports = function UserService() {
   }
 
   function getLatestSessionIdForUserAndScope(username, scope) {
-    return `latest-${scope}-session-${md5(username)}`;
+    return `latest-${scope}-session-${SHA256(username)}`;
   }
 };

@@ -61,7 +61,6 @@
     "jsonwebtoken": "~7.1.9",
     "later": "~1.2.0",
     "lodash": "~4.17.2",
-    "md5": "~2.2.1",
     "moment": "~2.17.1",
     "moment-timezone": "~0.5.11",
     "ms": "~0.7.2",
