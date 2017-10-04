@@ -50,7 +50,7 @@ module.exports = function UserService() {
 
       if (session) {
         if (session.password === SHA256(credentials.password)) {
-          return {  
+          return {
             sessionId: session.sessionId,
             user: User.parse(session.user)
           };
@@ -93,7 +93,7 @@ module.exports = function UserService() {
     return co(function* () {
       let sslComponents = yield sslComponentsRepository.get();
       let options = {
-        // TODO: Look into whether can upgrade this algorithm 
+        // TODO: Look into whether can upgrade this algorithm
         algorithm: 'RS256',
         expiresIn: duration
       };
