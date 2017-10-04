@@ -21,7 +21,7 @@
             </td>
             <td>
               <div ng-if="instance.serviceObject.DeploymentStatus == 'In Progress'">
-                <span>class="glyphicon glyphicon-refresh"></span> In Progress
+                <span class="glyphicon glyphicon-refresh"></span> In Progress
               </div>
               <div ng-if="instance.serviceObject.DeploymentStatus != 'In Progress'">
                 <service-diff-with-target-state state="instance.serviceObject.DiffWithTargetState"></service-diff-with-target-state>
