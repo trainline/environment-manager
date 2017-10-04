@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+[Unreleased]
+
+### Changed
+- Use of `MD5` hashing has been replaced with `SHA256`. [#349]
+- Use of `uuidv1` within user authentication has been replaced with `uuidv4`. [#349]
+
 ## [6.9.5] 2017-10-02
 
 ### Changed
@@ -200,3 +206,4 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#346]: https://github.com/trainline/environment-manager/pull/346
 [#347]: https://github.com/trainline/environment-manager/pull/347
 [#348]: https://github.com/trainline/environment-manager/pull/348
+[#349]: https://github.com/trainline/environment-manager/pull/349
