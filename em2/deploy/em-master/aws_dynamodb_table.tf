@@ -299,6 +299,33 @@ resource "aws_dynamodb_table" "lb_upstreams" {
   stream_view_type = "NEW_AND_OLD_IMAGES"
 }
 
+resource "aws_dynamodb_table" "jobs" {
+  name           = "${var.stack}-InfraEnvironmentManagerJobs"
+  read_capacity  = 10
+  write_capacity = 10
+  hash_key       = "JobId"
+
+  attribute {
+    name = "JobId "
+    type = "S"
+  }
+
+  attribute {
+    name = "Status"
+    type = "S"
+  }
+
+  global_secondary_index {
+    name            = "Status-index"
+    hash_key        = "Status"
+    write_capacity  = 2
+    read_capacity   = 10
+    projection_type = "ALL"
+  }
+
+  stream_view_type = "NEW_AND_OLD_IMAGES"
+}
+
 # Outputs
 
 output "ConfigLBUpstream_stream_arn" {
