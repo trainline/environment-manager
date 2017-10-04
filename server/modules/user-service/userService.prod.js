@@ -14,7 +14,6 @@ let UserSessionStore = require('modules/userSessionStore');
 let Promise = require('bluebird');
 
 const SHA256 = require('crypto-js/sha256');
-const promisify = require('util')
 const uuidv4 = require('uuid/v4');
 
 module.exports = function UserService() {

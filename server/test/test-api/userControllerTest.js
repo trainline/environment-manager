@@ -12,7 +12,7 @@ describe.only('userController', function() {
   beforeEach(() => {
     let userService = {
       authenticateUser: (creds, duration) => {
-        if (creds.username === 'correct' && (creds.password === 'correct' || creds.api_key === 'good_api_key')) {
+        if (creds.username === 'correct' && creds.password === 'correct') {
           return Promise.resolve(true);
         } else {
           return Promise.reject('wrong password');
