@@ -6,13 +6,13 @@ let sinon = require('sinon');
 let rewire = require('rewire');
 let assert = require('assert');
 
-describe('userController', function() {
+describe.only('userController', function() {
   let sut;
   
   beforeEach(() => {
     let userService = {
       authenticateUser: (creds, duration) => {
-        if (creds.username === 'correct' && creds.password === 'correct') {
+        if (creds.username === 'correct' && (creds.password === 'correct' || creds.api_key === 'good_api_key')) {
           return Promise.resolve(true);
         } else {
           return Promise.reject('wrong password');
