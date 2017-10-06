@@ -23,7 +23,7 @@ module.exports = {
     return co(function* () {
       let environmentName = request.params.environment || request.body.environment;
       let serviceName = request.params.service || request.body.service;
-      let serverRole = request.body.serverRole;
+      let serverRole = request.body.server_role;
       let environment = yield Environment.getByName(environmentName);
       let deploymentMap = yield deploymentMaps.get({ DeploymentMapName: environment.DeploymentMap });
 
