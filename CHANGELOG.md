@@ -6,9 +6,17 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ## [Unreleased]
 
 ### Added
-- APIs for synchronising service versions across environments
+- APIs for synchronising service versions across environments [#351]
     - POST /environment/{environment}/sync-services/jobs
     - GET /environment/{environment}/sync-services/job/{JobId}
+
+### Changed
+- Use of `MD5` hashing has been replaced with `SHA256`. [#349]
+- Use of `uuidv1` within user authentication has been replaced with `uuidv4`. [#349]
+
+### Fixed
+
+- HTML classes moved within the span element which were outside the span as plain text. [#350]
 
 ## [6.9.5] 2017-10-02
 
@@ -207,3 +215,6 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#346]: https://github.com/trainline/environment-manager/pull/346
 [#347]: https://github.com/trainline/environment-manager/pull/347
 [#348]: https://github.com/trainline/environment-manager/pull/348
+[#349]: https://github.com/trainline/environment-manager/pull/349
+[#350]: https://github.com/trainline/environment-manager/pull/350
+[#351]: https://github.com/trainline/environment-manager/pull/351
