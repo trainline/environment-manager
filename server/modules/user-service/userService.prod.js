@@ -5,15 +5,16 @@
 let _ = require('lodash');
 let ms = require('ms');
 let jsonwebtoken = require('jsonwebtoken');
-let guid = require('uuid/v1');
 let co = require('co');
 let User = require('modules/user');
 let userRolesProvider = new (require('modules/userRolesProvider'))();
 let activeDirectoryAdapter = require('modules/active-directory-adapter');
 let logger = require('modules/logger');
-let md5 = require('md5');
 let UserSessionStore = require('modules/userSessionStore');
 let Promise = require('bluebird');
+
+const SHA256 = require('crypto-js/sha256');
+const uuidv4 = require('uuid/v4');
 
 module.exports = function UserService() {
   let sslComponentsRepository = new (require('modules/sslComponentsRepository'))();
@@ -27,13 +28,12 @@ module.exports = function UserService() {
       let scope = credentials.scope || 'api';
       let durationInMillis = ms(duration);
       let expiration = getExpiration(durationInMillis);
-
       let userSession = yield authenticate(credentials, expiration, scope);
 
       let session = {
         sessionId: userSession.sessionId,
         user: userSession.user.toJson(),
-        password: md5(credentials.password)
+        password: SHA256(credentials.password)
       };
 
       yield storeSession(session, scope, durationInMillis);
@@ -44,19 +44,12 @@ module.exports = function UserService() {
     });
   }
 
-  function signOut(encryptedToken) {
-    return co(function* () {
-      let token = yield readToken(encryptedToken);
-      return yield deleteSessionFromStore(token.sessionId);
-    });
-  }
-
   function authenticate(credentials, expiration, scope) {
     return co(function* () {
       let session = yield getExistingSessionForUser(credentials, scope);
 
       if (session) {
-        if (session.password === md5(credentials.password)) {
+        if (session.password === SHA256(credentials.password)) {
           return {
             sessionId: session.sessionId,
             user: User.parse(session.user)
@@ -71,9 +64,16 @@ module.exports = function UserService() {
       let permissions = yield userRolesProvider.getPermissionsFor(_.union([name], groups));
 
       return {
-        sessionId: guid(),
+        sessionId: uuidv4(),
         user: User.new(name, expiration, groups, permissions)
       };
+    });
+  }
+
+  function signOut(encryptedToken) {
+    return co(function* () {
+      let token = yield readToken(encryptedToken);
+      return yield deleteSessionFromStore(token.sessionId);
     });
   }
 
@@ -93,6 +93,7 @@ module.exports = function UserService() {
     return co(function* () {
       let sslComponents = yield sslComponentsRepository.get();
       let options = {
+        // TODO: Look into whether can upgrade this algorithm
         algorithm: 'RS256',
         expiresIn: duration
       };
@@ -163,6 +164,6 @@ module.exports = function UserService() {
   }
 
   function getLatestSessionIdForUserAndScope(username, scope) {
-    return `latest-${scope}-session-${md5(username)}`;
+    return `latest-${scope}-session-${SHA256(username)}`;
   }
 };

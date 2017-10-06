@@ -3,15 +3,21 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+[Unreleased]
+
+### Changed
+- Use of `MD5` hashing has been replaced with `SHA256`. [#349]
+- Use of `uuidv1` within user authentication has been replaced with `uuidv4`. [#349]
+
+### Fixed
+
+- HTML classes moved within the span element which were outside the span as plain text. [#350]
+
 ## [6.9.5] 2017-10-02
 
 ### Changed
 
 - There was a check in place for deployments that have been carried out already for the version you are requesting. This check has now been removed, allowing you to deploy the same version again. [#348]
-
-### Fixed
-
-- HTML classes moved within the span element which were outside the span as plain text. [#350]
 
 ## [6.9.4] 2017-09-29
 
@@ -204,4 +210,5 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#346]: https://github.com/trainline/environment-manager/pull/346
 [#347]: https://github.com/trainline/environment-manager/pull/347
 [#348]: https://github.com/trainline/environment-manager/pull/348
+[#349]: https://github.com/trainline/environment-manager/pull/349
 [#350]: https://github.com/trainline/environment-manager/pull/350
