@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Removed package path from deployment UI [#???]
+
 ## [6.9.6] 2017-10-06
 
 ### Added
@@ -171,6 +177,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
+[Unreleased]: https://github.com/trainline/environment-manager/compare/v6.9.6...master
+
 [6.9.6]: https://github.com/trainline/environment-manager/compare/6.9.5...v6.9.6
 [6.9.5]: https://github.com/trainline/environment-manager/compare/v6.9.4...6.9.5
 [6.9.4]: https://github.com/trainline/environment-manager/compare/v6.9.0...v6.9.4
@@ -185,6 +193,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
+[#???]: https://github.com/trainline/environment-manager/pull/???
 [#323]: https://github.com/trainline/environment-manager/pull/323
 [#319]: https://github.com/trainline/environment-manager/pull/319
 [#318]: https://github.com/trainline/environment-manager/pull/318
