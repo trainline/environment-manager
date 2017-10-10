@@ -90,6 +90,12 @@ function postDeployment(req, res, next) {
     isDryRun
   };
 
+  if (packagePath) {
+    let now = new Date().toUTCString();
+    res.locals.deprecated = true;
+    res.append('Warning', `299 - Package Location property is deprecated for deployments."${now}"`);
+  }
+
   sender.sendCommand({ command, user: req.user }).then((deployment) => {
     if (deployment.isDryRun) {
       res.status(200);
