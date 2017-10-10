@@ -24,6 +24,7 @@ function flush(environment, hosts) {
     .then(getNodesForServices)
     .then(createAddresses(hosts))
     .then((addresses) => { return sendRequestToAddresses(token, addresses); })
+    .then((results) => { console.log('RESULTS: ', results); return results; })
     .catch((e) => {
       logger.error('Cache Reset Error: ', e);
       return { error: e.message };
@@ -82,6 +83,8 @@ function createAddresses(hosts) {
 }
 
 function sendRequestToAddresses(token, addresses) {
+  let results = [];
+
   addresses.forEach((address) => {
     let options = {
       method: 'POST',
@@ -97,13 +100,19 @@ function sendRequestToAddresses(token, addresses) {
 
     request.post(options, (error, response, body) => {
       if (response && response.statusCode === 401) {
-        logger.error('401 received: ', JSON.stringify(options));
+        let message = `401 received: ${JSON.stringify(options)}`;
+        results.push(Promise.resolve({ status: 'info', message }));
+        logger.error(message);
       }
       if (response && response.statusCode === 200) {
-        logger.info('200 received: ', JSON.stringify(options));
+        let message = `'200 received: ${JSON.stringify(options)}`;
+        results.push(Promise.resolve({ status: 'success', message }));
+        logger.info(message);
       }
     });
   });
+
+  return Promise.all(results);
 }
 
 function getToken(EnvironmentName) {

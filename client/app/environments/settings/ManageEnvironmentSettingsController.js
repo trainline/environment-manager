@@ -55,7 +55,22 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
     vm.resetCache = function () {
       return resetCacheConfirmationModal(vm.environment.EnvironmentName)
         .then(upstreamservice.dns.bind(null, vm.environment.EnvironmentName))
-        .then(cacheservice.flush.bind(null, vm.environment.EnvironmentName));
+        .then(cacheservice.flush.bind(null, vm.environment.EnvironmentName))
+        .then(function (results) { vm.resetCacheResults = ''; vm.resetCacheResults = results.data; })
+    };
+
+    vm.resetCacheResults = '';
+    
+    vm.getResetCacheResultsInfo = function () {
+      return vm.resetCacheResults.filter(function (x) {
+        return x.status.toLowerCase() === 'info';
+      });
+    };
+    
+    vm.getResetCacheResultsSuccess = function () {
+      return vm.resetCacheResults.filter(function (x) {
+        return x.status.toLowerCase() === 'success';
+      });
     };
 
     function resetCacheConfirmationModal() {

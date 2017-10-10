@@ -19,7 +19,7 @@ router.post('/:environment', (req, res) => {
     .then(() => {
       logger.info(`Request to reset cache in ${environment} by user ${req.user.getName()}`);
       return remoteCacheFlush.flush(environment, hosts)
-        .then(() => res.status(200).send('[cachereset::success]'));
+        .then(results => res.status(200).json(results));
     })
     .catch(e => res.status(400).send('[cachereset::error]: ', e.message));
 });
