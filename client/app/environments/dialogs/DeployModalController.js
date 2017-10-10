@@ -22,7 +22,6 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
       SelectedService: '',
       Mode: '',
       Version: '',
-      PackagePath: '',
       Slice: 'blue'
     };
 
@@ -118,10 +117,6 @@ angular.module('EnvironmentManager.environments').controller('DeployModalControl
           slice: vm.deploymentSettings.Mode === 'bg' ? vm.deploymentSettings.Slice : undefined
         }
       };
-
-      if (vm.deploymentSettings.PackagePath) {
-        config.data.packageLocation = vm.deploymentSettings.PackagePath;
-      }
 
       if (vm.dryRunEnabled === true) {
         config.params = { dry_run:true };
