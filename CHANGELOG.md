@@ -190,7 +190,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 [Unreleased]: https://github.com/trainline/environment-manager/compare/v6.9.10...master
 
-[6.9.7]: https://github.com/trainline/environment-manager/compare/6.9.9...v6.9.10
+[6.9.10]: https://github.com/trainline/environment-manager/compare/6.9.9...v6.9.10
+[6.9.7]: https://github.com/trainline/environment-manager/compare/6.9.6...v6.9.9
 [6.9.6]: https://github.com/trainline/environment-manager/compare/6.9.5...v6.9.6
 [6.9.5]: https://github.com/trainline/environment-manager/compare/v6.9.4...6.9.5
 [6.9.4]: https://github.com/trainline/environment-manager/compare/v6.9.0...v6.9.4
