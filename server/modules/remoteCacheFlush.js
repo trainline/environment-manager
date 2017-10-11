@@ -102,7 +102,11 @@ function sendRequestToAddresses(token, addresses) {
       body: {
         token
       },
-      json: true
+      json: true,
+      metadata: {
+        Host: address.Host,
+        ServiceName: address.ServiceName
+      }
     };
 
     results.push(new Promise((resolve, reject) => {
