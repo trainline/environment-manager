@@ -36,7 +36,7 @@ describe('remoteCacheFlush', () => {
     });
   });
 
-  it('should make a post request for each address found', (done) => {
+  it('should make a post request for each address found', () => {
     // sut.flush('c50', MockData().Hosts)
     //   .then((addresses) => {
     //     MockData().Expectations.Addresses.forEach((address) => {
