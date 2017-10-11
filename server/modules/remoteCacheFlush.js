@@ -24,7 +24,7 @@ function flush(environment, hosts) {
     .then(getNodesForServices)
     .then(createAddresses(hosts))
     .then((addresses) => { return sendRequestToAddresses(token, addresses); })
-    .then((results) => { console.log('RESULTS: ', results); return results; })
+    .then(results => results)
     .catch((e) => {
       logger.error('Cache Reset Error: ', e);
       return { error: e.message };
