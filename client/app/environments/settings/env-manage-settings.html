@@ -135,4 +135,28 @@
             </div>
         </fieldset>
     </div>
+    <div class="col-sm-12">
+        <div ng-if="vm.resetCacheResults">
+            <table class="table">
+                <thead>
+                    <th>Status</th>
+                    <th>Message</th>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="result in vm.getResetCacheResultsInfo()">
+                        <td><span class="label label-{{result.status}}">{{result.status}}</span></td>
+                        <td>{{result.message}}</td>
+                    </tr>
+                    <tr ng-repeat="result in vm.getResetCacheResultsSuccess()">
+                        <td><span class="label label-{{result.status}}">{{result.status}}</span></td>
+                        <td>{{result.message}}</td>
+                    </tr>
+                    <tr ng-repeat="result in vm.getResetCacheResultsDefault()">
+                        <td><span class="label label-{{result.status}}">{{result.status}}</span></td>
+                        <td>{{result.message}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
