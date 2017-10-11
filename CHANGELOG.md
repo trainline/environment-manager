@@ -8,6 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ### Changed
 
 - Removed package path from deployment UI [#352]
+- Deprecated the package location property from deployment API [#353]
 
 ## [6.9.6] 2017-10-06
 
@@ -193,6 +194,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
+[#353]: https://github.com/trainline/environment-manager/pull/353
 [#352]: https://github.com/trainline/environment-manager/pull/352
 [#323]: https://github.com/trainline/environment-manager/pull/323
 [#319]: https://github.com/trainline/environment-manager/pull/319
