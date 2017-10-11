@@ -107,6 +107,10 @@ function MockData() {
         Address: '1.3.5.7'
       },
       {
+        ServiceName: 'c50-serviceDeLaCheese-blue',
+        Address: '1.3.5.11'
+      },
+      {
         ServiceName: 'c50-upstream-blue',
         Address: '1.2.1.2'
       },
@@ -119,6 +123,7 @@ function MockData() {
       Addresses: [
         'https://1.1.1.1:1111/diagnostics/cachereset',
         'https://1.3.5.7:4444/diagnostics/cachereset',
+        'https://1.3.5.11:4444/diagnostics/cachereset',
         'https://1.2.1.2:1212/diagnostics/cachereset',
         'https://3.3.3.3:3333/diagnostics/cachereset'
       ]
