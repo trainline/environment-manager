@@ -7,10 +7,6 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Added
 
-- Display cache reset results in the UI. [#354]
-
-### Added
-
 - Cache reset request now displays all results of the calls it made within the UI. [#354]
 
 ### Changed
