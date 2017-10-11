@@ -2,7 +2,7 @@
 
 // eslint-disable-next-line no-unused-vars
 const rewire = require('rewire');
-const assert = require('assert');
+//const assert = require('assert');
 const sinon = require('sinon');
 
 describe('remoteCacheFlush', () => {
