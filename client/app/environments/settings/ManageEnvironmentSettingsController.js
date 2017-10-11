@@ -73,6 +73,12 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
       });
     };
 
+    vm.getResetCacheResultsDefault = function () {
+      return vm.resetCacheResults.filter(function (x) {
+        return x.status.toLowerCase() === 'default';
+      });
+    };
+
     function resetCacheConfirmationModal() {
       return modal.confirmation({
         title: 'WARNING!!! Resetting cache for all services in ' + vm.environment.EnvironmentName,

@@ -103,10 +103,13 @@ function sendRequestToAddresses(token, addresses) {
         let message = `401 received: ${JSON.stringify(options)}`;
         results.push(Promise.resolve({ status: 'info', message }));
         logger.error(message);
-      }
-      if (response && response.statusCode === 200) {
+      } else if (response && response.statusCode === 200) {
         let message = `'200 received: ${JSON.stringify(options)}`;
         results.push(Promise.resolve({ status: 'success', message }));
+        logger.info(message);
+      } else {
+        let message = `'Non 200-401 received: ${JSON.stringify(options)}`;
+        results.push(Promise.resolve({ status: 'default', message }));
         logger.info(message);
       }
     });

@@ -151,6 +151,10 @@
                         <td><span class="label label-{{result.status}}">{{result.status}}</span></td>
                         <td>{{result.message}}</td>
                     </tr>
+                    <tr ng-repeat="result in vm.getResetCacheResultsDefault()">
+                        <td><span class="label label-{{result.status}}">{{result.status}}</span></td>
+                        <td>{{result.message}}</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
