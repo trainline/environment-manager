@@ -99,6 +99,7 @@ function sendRequestToAddresses(token, addresses) {
       headers: {
         'Content-Type': 'application/json'
       },
+      timeout: 10000,
       body: {
         token
       },
