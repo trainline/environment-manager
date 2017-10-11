@@ -82,6 +82,13 @@ function createAddresses(hosts) {
   };
 }
 
+const stripToken = (options) => {
+  if (options.token && !options.token.startsWith('[No Cache Reset Key Found]')) {
+    delete options.token;
+  }
+  return options;
+};
+
 function sendRequestToAddresses(token, addresses) {
   let results = [];
 
@@ -98,21 +105,26 @@ function sendRequestToAddresses(token, addresses) {
       json: true
     };
 
-    request.post(options, (error, response, body) => {
-      if (response && response.statusCode === 401) {
-        let message = `401 received: ${JSON.stringify(options)}`;
-        results.push(Promise.resolve({ status: 'info', message }));
-        logger.error(message);
-      } else if (response && response.statusCode === 200) {
-        let message = `'200 received: ${JSON.stringify(options)}`;
-        results.push(Promise.resolve({ status: 'success', message }));
-        logger.info(message);
-      } else {
-        let message = `'Non 200-401 received: ${JSON.stringify(options)}`;
-        results.push(Promise.resolve({ status: 'default', message }));
-        logger.info(message);
-      }
-    });
+    results.push(new Promise((resolve, reject) => {
+      request.post(options, (error, response, body) => {
+        if (response && response.statusCode === 401) {
+          let message = `401 received: ${JSON.stringify(stripToken(options))}`;
+          let result = ({ status: 'info', message });
+          resolve(result);
+          logger.error(message);
+        } else if (response && response.statusCode === 200) {
+          let message = `'200 received: ${JSON.stringify(stripToken(options))}`;
+          let result = ({ status: 'success', message });
+          logger.info(message);
+          resolve(result);
+        } else {
+          let message = `'Non 200-401 received: ${JSON.stringify(stripToken(options))}`;
+          let result = ({ status: 'default', message });
+          logger.info(message);
+          resolve(result);
+        }
+      });
+    }));
   });
 
   return Promise.all(results);
