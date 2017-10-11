@@ -24,6 +24,7 @@ function flush(environment, hosts) {
     .then(getNodesForServices)
     .then(createAddresses(hosts))
     .then((addresses) => { return sendRequestToAddresses(token, addresses); })
+    .then(results => results)
     .catch((e) => {
       logger.error('Cache Reset Error: ', e);
       return { error: e.message };
@@ -81,7 +82,16 @@ function createAddresses(hosts) {
   };
 }
 
+const stripToken = (options) => {
+  if (options.token && !options.token.startsWith('[No Cache Reset Key Found]')) {
+    delete options.token;
+  }
+  return options;
+};
+
 function sendRequestToAddresses(token, addresses) {
+  let results = [];
+
   addresses.forEach((address) => {
     let options = {
       method: 'POST',
@@ -92,18 +102,36 @@ function sendRequestToAddresses(token, addresses) {
       body: {
         token
       },
-      json: true
+      json: true,
+      metadata: {
+        Host: address.Host,
+        ServiceName: address.ServiceName
+      }
     };
 
-    request.post(options, (error, response, body) => {
-      if (response && response.statusCode === 401) {
-        logger.error('401 received: ', JSON.stringify(options));
-      }
-      if (response && response.statusCode === 200) {
-        logger.info('200 received: ', JSON.stringify(options));
-      }
-    });
+    results.push(new Promise((resolve, reject) => {
+      request.post(options, (error, response, body) => {
+        if (response && response.statusCode === 401) {
+          let message = `401 received: ${JSON.stringify(stripToken(options))}`;
+          let result = ({ status: 'info', message });
+          resolve(result);
+          logger.error(message);
+        } else if (response && response.statusCode === 200) {
+          let message = `'200 received: ${JSON.stringify(stripToken(options))}`;
+          let result = ({ status: 'success', message });
+          logger.info(message);
+          resolve(result);
+        } else {
+          let message = `'Non 200-401 received: ${JSON.stringify(stripToken(options))}`;
+          let result = ({ status: 'default', message });
+          logger.info(message);
+          resolve(result);
+        }
+      });
+    }));
   });
+
+  return Promise.all(results);
 }
 
 function getToken(EnvironmentName) {

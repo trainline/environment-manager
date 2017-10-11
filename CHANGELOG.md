@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## [Unreleased]
 
+### Added
+
+- Cache reset request now displays all results of the calls it made within the UI. [#354]
+
 ### Changed
 
 - Removed package path from deployment UI [#352]
@@ -229,3 +233,4 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#349]: https://github.com/trainline/environment-manager/pull/349
 [#350]: https://github.com/trainline/environment-manager/pull/350
 [#351]: https://github.com/trainline/environment-manager/pull/351
+[#354]: https://github.com/trainline/environment-manager/pull/354
