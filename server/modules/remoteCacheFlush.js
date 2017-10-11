@@ -65,16 +65,18 @@ function createAddresses(hosts) {
   return (nodesLists) => {
     let addresses = [];
     _.flatten(hosts).forEach((host) => {
-      let node = _.flatten(nodesLists).find((n) => {
+      let nodes = _.flatten(nodesLists).filter((n) => {
         // todo: Configuration String endpoint to store these ignore strings
         return stripPrefix(n.ServiceName).toLowerCase() === host.host.toLowerCase();
       });
-      if (node) {
-        let ip = node.Address;
-        addresses.push({
-          Address: `https://${ip}:${host.port}/diagnostics/cachereset`,
-          Host: host.host,
-          ServiceName: node.ServiceName
+      if (nodes) {
+        nodes.forEach((node) => {
+          let ip = node.Address;
+          addresses.push({
+            Address: `https://${ip}:${host.port}/diagnostics/cachereset`,
+            Host: host.host,
+            ServiceName: node.ServiceName
+          });
         });
       }
     });
@@ -113,17 +115,17 @@ function sendRequestToAddresses(token, addresses) {
     results.push(new Promise((resolve, reject) => {
       request.post(options, (error, response, body) => {
         if (response && response.statusCode === 401) {
-          let message = `401 received: ${JSON.stringify(stripToken(options))}`;
+          let message = `401 received: ${JSON.stringify(stripToken(options.body))}`;
           let result = ({ status: 'info', message });
           resolve(result);
           logger.error(message);
         } else if (response && response.statusCode === 200) {
-          let message = `'200 received: ${JSON.stringify(stripToken(options))}`;
+          let message = `'200 received: ${JSON.stringify(stripToken(options.body))}`;
           let result = ({ status: 'success', message });
           logger.info(message);
           resolve(result);
         } else {
-          let message = `'Non 200-401 received: ${JSON.stringify(stripToken(options))}`;
+          let message = `'Non 200-401 received: ${JSON.stringify(stripToken(options.body))}`;
           let result = ({ status: 'default', message });
           logger.info(message);
           resolve(result);
