@@ -35,6 +35,7 @@ angular.module('EnvironmentManager.common')
         }), '; ');
         var useTimeZone = vm.timezone && vm.timezone.trim().toLowerCase() !== 'utc';
         vm.schedule = cronString + (useTimeZone ? ' | ' + vm.timezone : '');
+        updateChart();
       };
 
       vm.add = function () {
@@ -54,6 +55,56 @@ angular.module('EnvironmentManager.common')
         }
       };
 
+      function parseScheduleTag(scheduleTag) {
+        var parts = scheduleTag.split('|');
+        var serialisedCrons = parts[0].split(';');
+        var schedules = serialisedCrons.map(function (item) {
+          var parts = item.split(':');
+
+          var action = parts[0].trim().toLowerCase() === 'start' ? 1 : 0;
+          var cron = parts[1].trim();
+
+          var occurrences = getWeeklyOccurrences(cron);
+          return occurrences.map(time => ({ time: moment.tz(time, 'UTC'), action }));
+        });
+        return _.sortBy(_.flatten(schedules), schedule => schedule.time.format('YYYY-MM-DDTHH:mm:ss'));
+      }
+
+      function getWeeklyOccurrences(cron) {
+        var schedule = later.parse.cron(cron);
+        var startOfWeek = moment.utc().startOf('week').toDate();
+        var endOfWeek = moment.utc().endOf('week').toDate();
+        return later.schedule(schedule).next(7, startOfWeek, endOfWeek);
+      }
+
+      function* interpolateWeeklyActionsAsStates(actions) {
+        var lastActionOfTheWeek = _.last(actions);
+        if (!lastActionOfTheWeek) return;
+
+        yield [Date.parse(moment.utc().startOf('week').format('YYYY-MM-DDTHH:mm:ss')), lastActionOfTheWeek.action];
+
+        var previousAction;
+        for (var current of actions) {
+          var previous = previousAction || lastActionOfTheWeek;
+
+          if (current.action !== previous.action) {
+            yield [Date.parse(moment(current.time).subtract(1, 'second').format('YYYY-MM-DDTHH:mm:ss')), previous.action];
+          }
+          yield [Date.parse(current.time.format('YYYY-MM-DDTHH:mm:ss')), current.action];
+
+          previousAction = current;
+        }
+        
+        yield [Date.parse(moment.utc().endOf('week').format('YYYY-MM-DDTHH:mm:ss')), lastActionOfTheWeek.action];
+      }
+
+      function updateChart() {
+        if (vm.chartConfig) {
+          var weeklyActions = parseScheduleTag(vm.schedule);
+          vm.chartConfig.series[0].data = Array.from(interpolateWeeklyActionsAsStates(weeklyActions));
+        }
+      }
+
       function loadSchedule() {
         vm.crons = [];
         vm.timezone = 'UTC';
@@ -66,6 +117,7 @@ angular.module('EnvironmentManager.common')
             vm.timezone = parts[1].trim();
           }
         }
+        updateChart();
       }
 
       $scope.$on('cron-updated', function () {
@@ -77,5 +129,68 @@ angular.module('EnvironmentManager.common')
       });
 
       loadSchedule();
+
+      function formatValue(val) {
+        if (val === 1) return 'On';
+        if (val === 0) return 'Off';
+        return null
+      }
+  
+      function formatDate(date) {
+        return moment(date).format('ddd HH:mm:ss');
+      }
+  
+      vm.chartConfig = {
+  
+        chart: {
+          width: 600,
+          height: 125
+        },
+    
+        tooltip: {
+          formatter: function() {
+            return `<b>Time: </b> ${formatDate(this.x)}<br /><b>State:</b> ${formatValue(this.y)}`;
+          }
+        },
+    
+        xAxis: {
+            type: 'datetime',
+            title: null,
+            dateTimeLabelFormats: {
+              day: '%a'
+            },
+            offset: 10
+        },
+        
+        credits: { enabled: false },
+        
+        yAxis: {
+          min: 0,
+          max: 1,
+          title: null,
+          labels: {
+            formatter: function() { return formatValue(this.value); }
+          },
+          gridLineWidth: 0
+        },
+    
+        series: [{
+            type: 'line',
+            data: []
+        }],
+        
+        navigation: {
+            buttonOptions: {
+                enabled: false
+            }
+        },
+        
+        title: null,
+        
+        legend: {
+          enabled: false
+        }
+  
+      };
     }
   });
