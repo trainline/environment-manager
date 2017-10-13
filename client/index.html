@@ -85,6 +85,7 @@
   <script src="app/environments/settings/ManageEnvironmentSettingsController.js"></script>
   <script src="app/environments/servers/serversView.js"></script>
   <script src="app/environments/servers/ManageEnvironmentServersController.js"></script>
+  <script src="app/environments/sync/ManageEnvironmentSyncController.js"></script>  
   <script src="app/environments/schedule/ManageEnvironmentScheduleController.js"></script>
   <script src="app/environments/directives/serviceDiffWithTargetState.js"></script>
   <script src="app/environments/directives/lbStatusView.js"></script>
@@ -263,6 +264,7 @@
             <ul>
               <li><a href="#/environment/servers?environment={{WorkingEnvironment.EnvironmentName}}" ng-class="{active: $route.current.menusection == 'EnvServers'}">Servers</a></li>
               <li><a href="#/environment/schedule?environment={{WorkingEnvironment.EnvironmentName}}" ng-class="{active: $route.current.menusection == 'EnvSchedule'}">Schedule</a></li>
+              <li><a href="#/environment/sync?environment={{WorkingEnvironment.EnvironmentName}}" ng-class="{active: $route.current.menusection == 'EnvSync'}">Sync</a></li>
               <li><a href="#/environment/settings?environment={{WorkingEnvironment.EnvironmentName}}" ng-class="{active: $route.current.menusection == 'EnvSettings'}">Settings</a></li>
               <!--<li><a href="#/environment/infrastructure?environment={{WorkingEnvironment.EnvironmentName}}" ng-class="{active: $route.current.menusection == 'EnvInfrastructure'}">Infrastructure</a></li>-->
             </ul>

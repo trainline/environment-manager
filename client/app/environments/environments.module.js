@@ -22,6 +22,12 @@ angular.module('EnvironmentManager.environments').config(function ($routeProvide
       reloadOnSearch: false,
       menusection: 'EnvSchedule'
     })
+    .when('/environment/sync/', {
+      templateUrl: '/app/environments/sync/env-manage-sync.html',
+      controller: 'ManageEnvironmentSyncController as vm',
+      reloadOnSearch: false,
+      menusection: 'EnvSync'
+    })
     .when('/environment/settings/', {
       templateUrl: '/app/environments/settings/env-manage-settings.html',
       controller: 'ManageEnvironmentSettingsController as vm',
