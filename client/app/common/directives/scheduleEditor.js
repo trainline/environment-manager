@@ -101,7 +101,7 @@ angular.module('EnvironmentManager.common')
       function updateChart() {
         if (vm.chartConfig) {
           var weeklyActions = parseScheduleTag(vm.schedule);
-          vm.chartConfig.series[0].data = Array.from(interpolateWeeklyActionsAsStates(weeklyActions));
+          vm.chartConfig.series[1].data = Array.from(interpolateWeeklyActionsAsStates(weeklyActions));
         }
       }
 
@@ -133,7 +133,7 @@ angular.module('EnvironmentManager.common')
       function formatValue(val) {
         if (val === 1) return 'On';
         if (val === 0) return 'Off';
-        return null
+        return null;
       }
   
       function formatDate(date) {
@@ -175,8 +175,14 @@ angular.module('EnvironmentManager.common')
         },
     
         series: [{
-            type: 'line',
-            data: []
+          type: 'column',
+          color: '#ddd',
+          data: [
+            [Date.parse(moment.utc()), 1]
+          ]
+        },{
+          type: 'line',
+          data: []
         }],
         
         navigation: {
