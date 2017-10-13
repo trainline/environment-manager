@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Changed
 
-- SHA256 has been removed from the authentication module. [#]
+- SHA256 has been removed from the authentication module. [#357]
 
 ## [6.9.11]
 
@@ -194,8 +194,9 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/v6.9.11...master
+[Unreleased]: https://github.com/trainline/environment-manager/compare/v6.9.12...master
 
+[6.9.12]: https://github.com/trainline/environment-manager/compare/6.9.11...v6.9.12
 [6.9.10]: https://github.com/trainline/environment-manager/compare/6.9.9...v6.9.11
 [6.9.7]: https://github.com/trainline/environment-manager/compare/6.9.6...v6.9.9
 [6.9.6]: https://github.com/trainline/environment-manager/compare/6.9.5...v6.9.6
@@ -249,3 +250,4 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#351]: https://github.com/trainline/environment-manager/pull/351
 [#354]: https://github.com/trainline/environment-manager/pull/354
 [#356]: https://github.com/trainline/environment-manager/pull/356
+[#357]: https://github.com/trainline/environment-manager/pull/357
