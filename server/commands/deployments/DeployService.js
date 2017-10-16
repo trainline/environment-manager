@@ -19,8 +19,6 @@ let EnvironmentHelper = require('models/Environment');
 let OpsEnvironment = require('models/OpsEnvironment');
 let ResourceLockedError = require('modules/errors/ResourceLockedError');
 let GetServicePortConfig = require('queryHandlers/GetServicePortConfig');
-let resolveDeploymentDestination = require('modules/deployment/resolveDeploymentDestination');
-let deploymentMaps = require('modules/data-access/deploymentMaps');
 
 module.exports = function DeployServiceCommandHandler(command) {
   return co(function* () {
@@ -46,7 +44,7 @@ module.exports = function DeployServiceCommandHandler(command) {
 
 function validateCommandAndCreateDeployment(command) {
   return co(function* () {
-    const { mode, environmentName, serverRole, serviceSlice, serviceName, serviceVersion } = command;
+    const { mode, environmentName, serviceSlice, serviceName, serviceVersion } = command;
 
     if (mode === 'overwrite' && serviceSlice !== undefined && serviceSlice !== 'none') {
       throw new Error('Slice must be set to \'none\' in overwrite mode.');
@@ -77,39 +75,32 @@ function validateCommandAndCreateDeployment(command) {
       }
     }
 
-    const environment = yield EnvironmentHelper.getByName(environmentName);
-    const opsEnvironment = yield OpsEnvironment.getByName(environmentName);
+    const environment = yield EnvironmentHelper.getByName(command.environmentName);
+    const opsEnvironment = yield OpsEnvironment.getByName(command.environmentName);
     const environmentType = yield environment.getEnvironmentType();
     command.accountName = environmentType.AWSAccountName;
-    const servicePortConfig = yield GetServicePortConfig(serviceName, serviceSlice);
+    const servicePortConfig = yield GetServicePortConfig(command.serviceName, command.serviceSlice);
 
     if (opsEnvironment.Value.DeploymentsLocked) {
       throw new ResourceLockedError(`The environment ${environmentName} is currently locked for deployments. Contact the environment owner.`);
     }
 
-    let DeploymentMapName = environment.DeploymentMap;
-    let deploymentMap = yield deploymentMaps.get({ DeploymentMapName });
-    if (!deploymentMap) {
-      throw new Error(`The deployment map referenced by the environment does not exist: environment = ${environmentName}, deployment map = ${DeploymentMapName}`);
-    }
-    let serverRoleName = resolveDeploymentDestination(deploymentMap, { serverRole, service: serviceName });
-
     let configuration = yield infrastructureConfigurationProvider.get(
-      environmentName, serviceName, serverRoleName
+      command.environmentName, command.serviceName, command.serverRoleName
     );
 
-    let roleName = namingConventionProvider.getRoleName(configuration, serviceSlice);
+    let roleName = namingConventionProvider.getRoleName(configuration, command.serviceSlice);
 
     let deploymentContract = new DeploymentContract({
       id: command.commandId,
       environmentTypeName: configuration.environmentTypeName,
-      environmentName,
-      serviceName,
-      serviceVersion,
-      serviceSlice: serviceSlice || '',
+      environmentName: command.environmentName,
+      serviceName: command.serviceName,
+      serviceVersion: command.serviceVersion,
+      serviceSlice: command.serviceSlice || '',
       servicePortConfig,
       serverRole: roleName,
-      serverRoleName,
+      serverRoleName: command.serverRoleName,
       clusterName: configuration.cluster.Name,
       accountName: command.accountName,
       username: command.username
