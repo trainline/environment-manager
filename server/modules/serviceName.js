@@ -23,7 +23,7 @@ function format(environment, service, slice) {
   return `${environment}-${service}${formatSlice(slice)}`;
 }
 
-function formatSQN(service, slice) {
+function format2(service, slice) {
   validateRequired(/^[^-]+$/, 'service', service);
   validateOptional(/^[^-]+$/, 'slice', slice);
   return `${service}${formatSlice(slice)}`;
@@ -41,6 +41,6 @@ function parse(environmentQualifiedName) {
 
 module.exports = {
   format,
-  formatSQN,
+  format2,
   parse
 };

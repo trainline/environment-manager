@@ -7,7 +7,7 @@ const rewire = require('rewire');
 const sinon = require('sinon');
 const _ = require('lodash');
 
-describe('commands/deployments/DeployService', function () {
+describe('DeployService', function () {
   let sut;
   let s3PackageLocator;
   let EnvironmentHelper;
@@ -93,8 +93,6 @@ describe('commands/deployments/DeployService', function () {
       started: sinon.stub().returns(Promise.resolve({}))
     };
 
-    let resolveDeploymentDestination = () => 'acmeRoleName';
-    let deploymentMaps = { get() { return Promise.resolve({}); } };
     const GetServicePortConfig = x => ({ blue: 0, green: 0 });
 
     sut.__set__({ // eslint-disable-line no-underscore-dangle
@@ -107,9 +105,7 @@ describe('commands/deployments/DeployService', function () {
       packagePathProvider,
       sender,
       deploymentLogger,
-      GetServicePortConfig,
-      resolveDeploymentDestination,
-      deploymentMaps
+      GetServicePortConfig
     });
   });
 
