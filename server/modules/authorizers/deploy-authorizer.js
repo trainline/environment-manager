@@ -21,7 +21,6 @@ module.exports = {
     return co(function* () {
       let environmentName = request.params.environment || request.body.environment;
       let serviceName = request.params.service || request.body.service;
-      let serverRole = request.body.serverRole;
 
       let environment = yield Environment.getByName(environmentName);
       let deploymentMap = yield environment.getDeploymentMap();
