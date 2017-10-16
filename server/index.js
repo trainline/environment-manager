@@ -20,7 +20,6 @@ let logger = require('modules/logger');
 let ConfigurationProvider = require('modules/configuration/ConfigurationProvider');
 let checkAppPrerequisites = require('modules/checkAppPrerequisites');
 let cacheManager = require('modules/cacheManager');
-let jobEngine = require('job-engine');
 const miniStack = require('modules/miniStack');
 const mini = miniStack.build();
 
@@ -47,7 +46,6 @@ function start() {
   co(function* () { // eslint-disable-line func-names
     AWS.config.setPromisesDependency(Promise);
     AWS.config.update({ region: config.get('EM_AWS_REGION') });
-
     let configurationProvider = new ConfigurationProvider();
     yield configurationProvider.init();
     yield cacheManager.flush();
@@ -58,7 +56,6 @@ function start() {
     // eslint-disable-next-line global-require
     let mainServer = require('modules/MainServer');
     yield mainServer.start();
-    yield jobEngine.ensureStarted();
   }).catch((error) => {
     if (error !== undefined && error.stack !== undefined) {
       // eslint-disable-next-line no-console

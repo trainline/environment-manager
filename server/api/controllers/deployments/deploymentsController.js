@@ -75,7 +75,7 @@ function postDeployment(req, res, next) {
   const packagePath = body.packageLocation;
   const mode = body.mode || 'overwrite';
   const serviceSlice = body.slice || 'none';
-  const serverRole = body.server_role;
+  const serverRoleName = req.serverRoleName;
   const isDryRun = req.swagger.params.dry_run.value;
 
   let command = {
@@ -86,7 +86,7 @@ function postDeployment(req, res, next) {
     serviceSlice,
     mode,
     packagePath,
-    serverRole,
+    serverRoleName,
     isDryRun
   };
 

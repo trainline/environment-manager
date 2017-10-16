@@ -17,7 +17,7 @@ module.exports = {
   get(environmentName, serviceName, serverRoleName) {
     assert(environmentName, 'Expected \'environmentName\' argument not to be null or empty');
     assert(serviceName, 'Expected \'serviceName\' argument not to be null or empty');
-    assert(serverRoleName, 'Expected \'serverRoleName\' argument not to be null or empty');
+    assert(serverRoleName, 'Expected \'serviceName\' argument not to be null or empty');
 
     return co(function* () {
       let environment = yield Environment.getByName(environmentName);

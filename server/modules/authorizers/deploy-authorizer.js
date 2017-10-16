@@ -8,8 +8,6 @@ let BadRequestError = require('modules/errors/BadRequestError.class');
 let infrastructureConfigurationProvider = require('modules/provisioning/infrastructureConfigurationProvider');
 let logger = require('modules/logger');
 let Environment = require('models/Environment');
-let resolveDeploymentDestination = require('modules/deployment/resolveDeploymentDestination');
-let deploymentMaps = require('modules/data-access/deploymentMaps');
 let co = require('co');
 
 // Only deployments targeted to Secure subnet in Production require an additional permission
@@ -23,11 +21,26 @@ module.exports = {
     return co(function* () {
       let environmentName = request.params.environment || request.body.environment;
       let serviceName = request.params.service || request.body.service;
-      let serverRole = request.body.server_role;
-      let environment = yield Environment.getByName(environmentName);
-      let deploymentMap = yield deploymentMaps.get({ DeploymentMapName: environment.DeploymentMap });
 
-      let serverRoleName = resolveDeploymentDestination(deploymentMap, { serverRole, service: serviceName });
+      let environment = yield Environment.getByName(environmentName);
+      let deploymentMap = yield environment.getDeploymentMap();
+      let serverRoles = _.map(yield deploymentMap.getServerRolesByServiceName(serviceName), 'ServerRoleName');
+
+      let serverRoleName;
+      let inputServerRole = request.query.server_role || request.body.server_role || request.body.serverRole;
+      if (inputServerRole) {
+        serverRoleName = inputServerRole;
+        if (serverRoles.indexOf(serverRoleName) === -1) {
+          return Promise.reject(new BadRequestError(`"${serverRoleName}" is not a potential target for deploy of "${serviceName}", available roles: ${serverRoles.join(', ')}`));
+        }
+      } else if (serverRoles.length !== 1) {
+        return Promise.reject(new BadRequestError(`"server_role" param required, available server roles for "${serviceName}": ${serverRoles.join(', ')}`));
+      } else {
+        serverRoleName = serverRoles[0];
+      }
+
+      // Attach serverRoles to request object
+      request.serverRoleName = serverRoleName;
 
       let requiredPermissions = [];
       let requiredPermission = {
