@@ -6,7 +6,9 @@ let awsMasterClient = require('modules/amazon-client/masterAccountClient');
 let cacheManager = require('modules/cacheManager');
 let logger = require('modules/logger');
 
-cacheManager.create('ConsulToken', createToken, { stdTTL: 10 });
+const TTL = 10 * 60; // seconds
+
+cacheManager.create('ConsulToken', createToken, { stdTTL: TTL });
 
 /**
  * retrieve a ConsulToken
