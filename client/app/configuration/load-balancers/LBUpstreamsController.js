@@ -93,6 +93,8 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamsContro
       $scope.ViewAuditHistory('LB Upstream', encodeURIComponent(upstream.key));
     };
 
+    // TODO: Deploy lambda to mark for delete.
+    // TODO: Check that the upstream is not in use before marking for delete.
     vm.markForDelete = function (upstreamData) {
       var upstream = new UpstreamConfig(upstreamData);
       upstream.markForDelete(upstream.key, (new Date()).getTime());
