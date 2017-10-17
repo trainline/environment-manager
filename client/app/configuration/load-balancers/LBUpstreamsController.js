@@ -132,7 +132,7 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamsContro
               action: 'Delete',
               severity: 'Danger'
             }).then(function () {
-              UpstreamConfig.markForDelete(key).then(function () {
+              UpstreamConfig.deleteByKey(key).then(function () {
                 cachedResources.config.lbUpstream.flush();
                 vm.refresh();
               });
