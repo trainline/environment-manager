@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* eslint-disable no-undef */
 
 'use strict';
 
@@ -59,15 +60,17 @@ angular.module('EnvironmentManager.common')
         var parts = scheduleTag.split('|');
         var serialisedCrons = parts[0].split(';');
         var schedules = serialisedCrons.map(function (item) {
-          var parts = item.split(':');
+          var subParts = item.split(':');
 
-          var action = parts[0].trim().toLowerCase() === 'start' ? 1 : 0;
-          var cron = parts[1].trim();
+          var action = subParts[0].trim().toLowerCase() === 'start' ? 1 : 0;
+          var cron = subParts[1].trim();
 
           var occurrences = getWeeklyOccurrences(cron);
-          return occurrences.map(time => ({ time: moment.tz(time, 'UTC'), action }));
+          return occurrences.map(function (time) {
+            return { time: moment.tz(time, 'UTC'), action: action };
+          });
         });
-        return _.sortBy(_.flatten(schedules), schedule => schedule.time.format('YYYY-MM-DDTHH:mm:ss'));
+        return _.sortBy(_.flatten(schedules), function (schedule) { return schedule.time.format('YYYY-MM-DDTHH:mm:ss'); });
       }
 
       function getWeeklyOccurrences(cron) {
@@ -77,25 +80,29 @@ angular.module('EnvironmentManager.common')
         return later.schedule(schedule).next(7, startOfWeek, endOfWeek);
       }
 
-      function* interpolateWeeklyActionsAsStates(actions) {
+      function interpolateWeeklyActionsAsStates(actions) {
         var lastActionOfTheWeek = _.last(actions);
-        if (!lastActionOfTheWeek) return;
+        if (!lastActionOfTheWeek) return [];
 
-        yield [Date.parse(moment.utc().startOf('week').format('YYYY-MM-DDTHH:mm:ss')), lastActionOfTheWeek.action];
+        var results = [];
+
+        results.push([Date.parse(moment.utc().startOf('week').format('YYYY-MM-DDTHH:mm:ss')), lastActionOfTheWeek.action]);
 
         var previousAction;
-        for (var current of actions) {
+        actions.forEach(function (current) {
           var previous = previousAction || lastActionOfTheWeek;
 
           if (current.action !== previous.action) {
-            yield [Date.parse(moment(current.time).subtract(1, 'second').format('YYYY-MM-DDTHH:mm:ss')), previous.action];
+            results.push([Date.parse(moment(current.time).subtract(1, 'second').format('YYYY-MM-DDTHH:mm:ss')), previous.action]);
           }
-          yield [Date.parse(current.time.format('YYYY-MM-DDTHH:mm:ss')), current.action];
+          results.push([Date.parse(current.time.format('YYYY-MM-DDTHH:mm:ss')), current.action]);
 
           previousAction = current;
-        }
-        
-        yield [Date.parse(moment.utc().endOf('week').format('YYYY-MM-DDTHH:mm:ss')), lastActionOfTheWeek.action];
+        });
+
+        results.push([Date.parse(moment.utc().endOf('week').format('YYYY-MM-DDTHH:mm:ss')), lastActionOfTheWeek.action]);
+
+        return results;
       }
 
       function updateChart() {
@@ -135,68 +142,68 @@ angular.module('EnvironmentManager.common')
         if (val === 0) return 'Off';
         return null;
       }
-  
+
       function formatDate(date) {
         return moment(date).format('ddd HH:mm:ss');
       }
-  
+
       vm.chartConfig = {
-  
+
         chart: {
           width: 600,
           height: 125
         },
-    
+
         tooltip: {
-          formatter: function() {
-            return `<b>Time: </b> ${formatDate(this.x)}<br /><b>State:</b> ${formatValue(this.y)}`;
+          formatter: function () {
+            return '<b>Time: </b> ' + formatDate(this.x) + '<br /><b>State:</b> ' + formatValue(this.y);
           }
         },
-    
+
         xAxis: {
-            type: 'datetime',
-            title: null,
-            dateTimeLabelFormats: {
-              day: '%a'
-            },
-            offset: 10
+          type: 'datetime',
+          title: null,
+          dateTimeLabelFormats: {
+            day: '%a'
+          },
+          offset: 10
         },
-        
+
         credits: { enabled: false },
-        
+
         yAxis: {
           min: 0,
           max: 1,
           title: null,
           labels: {
-            formatter: function() { return formatValue(this.value); }
+            formatter: function () { return formatValue(this.value); }
           },
           gridLineWidth: 0
         },
-    
+
         series: [{
           type: 'column',
           color: '#ddd',
           data: [
             [Date.parse(moment.utc()), 1]
           ]
-        },{
+        }, {
           type: 'line',
           data: []
         }],
-        
+
         navigation: {
-            buttonOptions: {
-                enabled: false
-            }
+          buttonOptions: {
+            enabled: false
+          }
         },
-        
+
         title: null,
-        
+
         legend: {
           enabled: false
         }
-  
+
       };
     }
   });
