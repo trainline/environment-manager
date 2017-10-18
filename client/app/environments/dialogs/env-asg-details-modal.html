@@ -63,11 +63,11 @@
       <uib-tab heading="Schedule &amp; Scaling" index="'schedule'">
         <form name="formScaling" class="form-horizontal">
           <div class="form-group">
-            <label class="col-md-1 control-label text-left nowrap">Scaling Mode:</label>
+            <label class="col-md-1 control-label text-left nowrap">Schedule Mode:</label>
             <div class="col-md-2">
-              <select class="form-control" ng-model="vm.selectedScheduleMode">
-                <option ng-repeat="mode in vm.scheduleModes" value="{{mode.type}}">{{mode.label}}</option>
-              </select>
+              <label ng-repeat="mode in vm.scheduleModes" class="control-label text-left inline-radio nonbold">
+                <input type="radio" ng-model="vm.selectedScheduleMode" value="{{mode.type}}" /> {{mode.label}}
+              </label>
             </div>
           </div>
           <div ng-if="vm.selectedScheduleMode == 'scaling'">

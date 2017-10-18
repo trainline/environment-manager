@@ -37,10 +37,10 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
     vm.scheduleModes = [{
       type: 'schedule',
-      label: 'Full ASG schedule'
+      label: 'Simple (On/Off)'
     }, {
       type: 'scaling',
-      label: 'Scheduled server scaling'
+      label: 'Scaling'
     }];
 
     vm.upstreamStatusData = {};

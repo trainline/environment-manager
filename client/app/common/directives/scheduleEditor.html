@@ -1,23 +1,19 @@
 <div class="schedule-editor">
-  <div ng-show="vm.showDefault">
-    <label class="control-label text-left nonbold">
+  <div ng-show="vm.showDefault || vm.showOn || vm.showOff">
+    <label ng-show="vm.showDefault" class="control-label text-left inline-radio nonbold">
       <input type="radio" ng-model="vm.schedule" value="" /> Environment Default
-    </label><br />
-  </div>
-  <div ng-show="vm.showOn">
-    <label class="control-label text-left nonbold">
+    </label>
+    <label ng-show="vm.showOn" class="control-label text-left inline-radio nonbold">
       <input type="radio" ng-model="vm.schedule" value="ON"> Always On
-    </label><br />
-  </div>
-  <div ng-show="vm.showOff">
-    <label class="control-label text-left nonbold">
+    </label>
+    <label class="control-label text-left inline-radio nonbold">
       <input type="radio" ng-model="vm.schedule" value="OFF"> Off
-    </label><br />
+    </label>
   </div>
   <div ng-show="vm.showSpecific">
     <label class="control-label text-left nonbold">
-      <input type="radio" ng-click="vm.useSpecificClicked()" ng-checked="vm.schedule.indexOf(':') >= 0"> Use specific times
-    </label><br />
+      <input type="radio" ng-click="vm.useSpecificClicked()" ng-checked="vm.schedule.indexOf(':') >= 0"> Use specific times...
+    </label><br /><br />
   </div>
   <div ng-show="vm.schedule.indexOf(':') >= 0 || !vm.showSpecific" class="schedule-timezone form-inline">
     <label class="control-label text-left nonbold">Time Zone: </label>
