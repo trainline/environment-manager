@@ -63,7 +63,7 @@ angular.module('EnvironmentManager.common')
           var subParts = item.split(':');
 
           var action = subParts[0].trim().toLowerCase() === 'start' ? 1 : 0;
-          var cron = subParts[1].trim();
+          var cron = subParts[1];
 
           var occurrences = getWeeklyOccurrences(cron);
           return occurrences.map(function (time) {
@@ -74,9 +74,12 @@ angular.module('EnvironmentManager.common')
       }
 
       function getWeeklyOccurrences(cron) {
+        if (!cron) return [];
+
         var schedule = later.parse.cron(cron);
         var startOfWeek = moment.utc().startOf('week').toDate();
         var endOfWeek = moment.utc().endOf('week').toDate();
+        
         return later.schedule(schedule).next(7, startOfWeek, endOfWeek);
       }
 
