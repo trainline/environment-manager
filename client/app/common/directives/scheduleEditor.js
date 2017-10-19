@@ -83,7 +83,7 @@ angular.module('EnvironmentManager.common')
         var schedule = later.parse.cron(cron);
         var startOfWeek = moment.utc().startOf('week').toDate();
         var endOfWeek = moment.utc().endOf('week').toDate();
-        
+
         return later.schedule(schedule).next(7, startOfWeek, endOfWeek);
       }
 

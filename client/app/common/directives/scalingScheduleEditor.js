@@ -1,4 +1,5 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+/* eslint-disable no-undef */
 
 'use strict';
 
@@ -89,7 +90,7 @@ angular.module('EnvironmentManager.common')
           results.push([Date.parse(moment.utc().endOf('week').format('YYYY-MM-DDTHH:mm:ss')), lastActionOfTheWeek.action]);
 
           return results;
-      }
+        }
 
         function updateChart() {
           if ($scope.chartConfig) {
