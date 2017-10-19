@@ -31,11 +31,15 @@ angular.module('EnvironmentManager.common')
       };
 
       vm.updateSchedule = function () {
-        var cronString = _.join(vm.crons.map(function (cron) {
-          return cron.cron;
-        }), '; ');
-        var useTimeZone = vm.timezone && vm.timezone.trim().toLowerCase() !== 'utc';
-        vm.schedule = cronString + (useTimeZone ? ' | ' + vm.timezone : '');
+        if (!vm.crons.length) {
+          vm.schedule = 'NOSCHEDULE';
+        } else {
+          var cronString = _.join(vm.crons.map(function (cron) {
+            return cron.cron;
+          }), '; ');
+          var useTimeZone = vm.timezone && vm.timezone.trim().toLowerCase() !== 'utc';
+          vm.schedule = cronString + (useTimeZone ? ' | ' + vm.timezone : '');
+        }
         updateChart();
       };
 
@@ -111,7 +115,7 @@ angular.module('EnvironmentManager.common')
       function updateChart() {
         if (vm.chartConfig) {
           var weeklyActions = parseScheduleTag(vm.schedule);
-          vm.chartConfig.series[1].data = Array.from(interpolateWeeklyActionsAsStates(weeklyActions));
+          vm.chartConfig.series[0].data = interpolateWeeklyActionsAsStates(weeklyActions);
         }
       }
 
@@ -185,12 +189,6 @@ angular.module('EnvironmentManager.common')
         },
 
         series: [{
-          type: 'column',
-          color: '#ddd',
-          data: [
-            [Date.parse(moment.utc()), 1]
-          ]
-        }, {
           type: 'line',
           data: []
         }],

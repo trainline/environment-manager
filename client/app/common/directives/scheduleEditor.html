@@ -28,7 +28,7 @@
   
   <button ng-show="vm.schedule.indexOf(':') >= 0 || !vm.showSpecific" class="btn btn-default" ng-click="vm.add()">Add time</button>
 
-  <div ng-if="(vm.schedule.indexOf(':') >= 0 || !vm.showSpecific) && vm.chartConfig">
+  <div ng-show="vm.chartConfig && vm.chartConfig.series[0].data.length">
     <br /><br /><highchart id="scheduleChart" config="vm.chartConfig"></highchart>
   </div>
 </div>
