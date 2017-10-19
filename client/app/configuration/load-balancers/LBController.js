@@ -164,42 +164,64 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
     $scope.ValidateJson = function (value) {
       var validator = schemaValidatorService('LBSettings');
       var jsonValid = validator(value);
-      if (!jsonValid) return $scope.CustomRules(value);
+      if (!jsonValid) {
+        console.log('running custom rules')
+        var result = $scope.CustomRules(value);
+        console.log(result)
+        return result;
+      }
       else return jsonValid;
     };
 
     $scope.CustomRules = function (value) {
+      console.log('start custom rules')
       var rules = [
         upstreamExists
       ];
+      console.log('custom rules defined')
 
       var results = rules.map(function (r) {
-        return r(value);
+        console.log('running rule')
+        var result = r(value);
+        console.log('result: ', result);
+        return result;
       })
         .filter(function (r) {
           return r.length > 0;
         });
+
+      console.log('done in custom rules')
+      console.log(results)
 
       return results.length > 0 ? results : null;
     }
 
     function upstreamExists(value) {
       var errors = [];
+      console.log(1)
       if (value.Locations) {
-        value.Locations.map(function (location) {
+        console.log(2)
+        value.Locations.forEach(function (location) {
+          console.log(3)
           if (location.ProxyPass) {
+            console.log(4)
             var matchResults = location.ProxyPass.match(/^https?:\/\/([^$]+)/);
             if (!matchResults) {
+              console.log(5)
               errors.push('Locations[' + i + '] - ProxyPass address is not valid. Check it begins with "http://" or "https://".');
             } else {
+              console.log(6)
               var proxyUpstreamName = matchResults[1];
               // Validate Upstream exists
               if (!_.includes(proxyUpstreamName, '.')) {
+                console.log(7)
                 if ($scope.LBUpstreamData && $scope.LBUpstreamData.length > 0) {
+                  console.log(8)
                   var matchFound = $scope.LBUpstreamData.some(function upstreamIsProxy(upstream) {
                     return upstream.Value.UpstreamName === proxyUpstreamName;
                   });
                   if (!matchFound) {
+                    console.log(9)
                     errors.push('Locations[' + i + '] - Upstream name in Proxy Pass not found. Please check spelling and capitalisation');
                   }
                 }
