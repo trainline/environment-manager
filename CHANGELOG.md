@@ -7,12 +7,15 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Added
 
-- Scheduled scaling visualisation
-- Made ASG scaling tab a little more intuitive
+- Scheduled scaling visualisation [#362]
+
+### Changed
+
+- Made ASG scaling tab a little more intuitive [#362]
 
 ### Fixed
 
-- Schedule visualisation bugs
+- Schedule visualisation bugs [#362]
 
 ## [6.10.0] - 2017-10-17
 
@@ -239,6 +242,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
+[#362]: https://github.com/trainline/environment-manager/pull/362
 [#358]: https://github.com/trainline/environment-manager/pull/358
 [#353]: https://github.com/trainline/environment-manager/pull/360
 [#353]: https://github.com/trainline/environment-manager/pull/353
