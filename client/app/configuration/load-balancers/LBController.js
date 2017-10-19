@@ -230,6 +230,8 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
           }
         });
       }
+      console.log('complete')
+      console.log(errors)
       return errors;
     }
 
