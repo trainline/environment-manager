@@ -164,9 +164,12 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
     $scope.ValidateJson = function (value) {
       var validator = schemaValidatorService('LBSettings');
       var schemaErrors = validator(value);
-      if (!schemaErrors) {
-        var result = $scope.CustomRules(value);
-        if (result.length) return result[0];
+      if (schemaErrors === null) {
+        try {
+          var result = $scope.CustomRules(value);
+          if (result.length > 0) return result[0];
+          else return null;
+        } catch (e) { return null; }
       } else return schemaErrors;
     };
 
@@ -181,9 +184,6 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
         .filter(function (r) {
           return r.length > 0;
         });
-
-        console.log(typeof results)
-      console.log(results)
 
       return results.length > 0 ? results : null;
     }
