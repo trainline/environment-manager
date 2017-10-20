@@ -15,7 +15,8 @@ var app = angular.module('EnvironmentManager', [
   'EnvironmentManager.configuration',
   'EnvironmentManager.compare',
   'angular-loading-bar',
-  'smart-table'
+  'smart-table',
+  'highcharts-ng'
 ]);
 
 app.config(['cfpLoadingBarProvider', function (cfpLoadingBarProvider) {

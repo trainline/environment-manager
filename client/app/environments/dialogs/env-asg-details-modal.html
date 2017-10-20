@@ -63,16 +63,16 @@
       <uib-tab heading="Schedule &amp; Scaling" index="'schedule'">
         <form name="formScaling" class="form-horizontal">
           <div class="form-group">
-            <label class="col-md-1 control-label text-left nowrap">Scaling Mode:</label>
+            <label class="col-md-1 control-label text-left nowrap">Schedule Mode:</label>
             <div class="col-md-2">
-              <select class="form-control" ng-model="vm.selectedScheduleMode">
-                <option ng-repeat="mode in vm.scheduleModes" value="{{mode.type}}">{{mode.label}}</option>
-              </select>
+              <label ng-repeat="mode in vm.scheduleModes" class="control-label text-left inline-radio nonbold">
+                <input type="radio" ng-model="vm.selectedScheduleMode" value="{{mode.type}}" /> {{mode.label}}
+              </label>
             </div>
           </div>
           <div ng-if="vm.selectedScheduleMode == 'scaling'">
             <div class="form-group">
-              <label class="col-md-1 control-label text-left nowrap">Scaling Schedule:</label>
+              <label class="col-md-1 control-label text-left nowrap">Schedule:</label>
               <div class="col-md-8">
                 <scaling-schedule-editor schedule="vm.asgUpdate.ScalingSchedule" min-size="vm.asg.MinSize" max-size="vm.asg.MaxSize"></scaling-schedule-editor>
               </div>
@@ -80,7 +80,7 @@
           </div>
           <div ng-if="vm.selectedScheduleMode == 'schedule'">
             <div class="form-group" ng-class="{'has-error': formScaling.DefaultSchedule.$invalid}">
-              <label class="col-md-1 control-label text-left nowrap">ASG Schedule:</label>
+              <label class="col-md-1 control-label text-left nowrap">Schedule:</label>
               <div class="col-md-8">
                 <schedule-editor show-on="true" show-off="true" show-default="true" show-specific="true" schedule="vm.asgUpdate.NewSchedule"></schedule-editor>
               </div>
