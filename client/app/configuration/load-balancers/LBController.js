@@ -60,7 +60,7 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
         RawNginxConfig: '',
         Set: '',
         TryFiles: '',
-        CustomErrorCodes: [ "all" ],
+        CustomErrorCodes: ["all"],
         CacheTime: ''
       }]
     };
@@ -102,6 +102,23 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
 
               $scope.LBSetting = data;
               $scope.LBSetting.Value = JSON.stringify(data.Value, null, 4);
+              $scope.LBSetting.Data = Object.assign({}, JSON.parse(data.Value));
+              $scope.LBSetting.Data.ServerName = $scope.LBSetting.Data.ServerName.map(function (s) {
+                return { Value: s };
+              });
+
+              $scope.LBSetting.Data.Locations.forEach(function (location) {
+                Object.assign({
+                  ProxySetHeader: { Value: 'Dummy Value' }
+                }, location);
+              });
+
+              $scope.LBSetting.Data.Locations.push({
+                ProxySetHeaders: {
+                  Value: 'Dummy Value'
+                }
+              });
+
               $scope.Version = data.Version;
               $scope.DataFound = true;
               if ($scope.PageMode == 'Edit') {

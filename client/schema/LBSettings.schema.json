@@ -3,7 +3,14 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Load Balancer Settings",
   "type": "object",
-  "required": ["SchemaVersion", "EnvironmentName", "VHostName", "Listen", "ServerName", "FrontEnd", "Locations"],
+  "required": [
+    "SchemaVersion",
+    "EnvironmentName", 
+    "VHostName",
+    "Listen",
+    "ServerName",
+    "FrontEnd",
+    "Locations"],
   "additionalProperties": false,
   "properties": {
     "SchemaVersion": { "$ref": "#/definitions/numeric" },

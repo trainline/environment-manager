@@ -1,26 +1,162 @@
-<div class="row page-title">
-    <div class="col-md-12">
-        <h2 ng-show="PageMode == 'New'">New Load Balancer Setting</h2>
-        <h2 ng-show="PageMode == 'Copy'">Copy Load Balancer Setting: {{CopyFromName}}</h2>
-        <h2 ng-show="PageMode == 'Edit'">Edit Load Balancer Setting: {{LBSetting.VHostName}}</h2>
-    </div>
-</div>
-
 <div ng-show="(PageMode == 'Edit' || PageMode == 'Copy') && !DataFound">No data found.</div>
+{{LBSetting.Data}}
+<form class="pure-form pure-form-aligned">
+    <fieldset>
+        <legend>
+            <span ng-show="PageMode == 'New'">New Load Balancer Setting</span>
+            <span ng-show="PageMode == 'Copy'">Copy Load Balancer Setting: {{CopyFromName}}</span>
+            <span ng-show="PageMode == 'Edit'">Edit Load Balancer Setting: {{LBSetting.VHostName}}</span>
+        </legend>
+
+        <div class="pure-control-group">
+            <label for="schema-version">Schema Version</label>
+            <input ng-model="LBSetting.Data.SchemaVersion" id="schema-version" class="pure-u-1-3" type="text" placeholder="Schema Version">
+            <span class="pure-form-message-inline">This is a required field.</span>
+        </div>
+
+        <div class="pure-control-group">
+            <label for="environment-name">Environment Name</label>
+            <input ng-model="LBSetting.Data.EnvironmentName" id="environment-name" class="pure-u-1-3" type="text" placeholder="Environment Name">
+            <span class="pure-form-message-inline">This is a required field.</span>
+        </div>
+
+        <div class="pure-control-group">
+            <label for="v-host-name">VHost Name</label>
+            <input ng-model="LBSetting.Data.VHostName" id="v-host-name" class="pure-input-1-3" type="text" placeholder="VHost Name">
+            <span class="pure-form-message-inline">This is a required field.</span>
+        </div>
+
+        <div class="pure-control-group">
+            <label for="front-end" class="pure-checkbox">Front End?</label>
+            <input ng-model="LBSetting.Data.FrontEnd" id="front-end" class="pure-input-1-3" type="checkbox" value="">
+            <span class="pure-form-message-inline">This is a required field.</span>
+        </div>
+
+        <div class="pure-control-group">
+            <fieldset>
+                <legend>Server Names</legend>
+                <div class="pure-control-group">
+                    <span ng-repeat="serverName in LBSetting.Data.ServerName">
+                        <label for="server-name">Server Name Value</label>
+                        <input ng-model="serverName.Value" id="server-name" class="pure-input-1-3" type="text" placeholder="Server Name">
+                    </span>
+                    <button type="submit" class="pure-button pure-button-warning">Remove Server Name</button>
+                    <span class="pure-form-message-inline">This is a required field.</span>
+                </div>
+            </fieldSet>
+        </div>
+
+        <fieldset>
+            <legend>Listen</legend>
+            <div class="pure-control-group">
+                <span ng-repeat="listen in LBSetting.Data.Listen">
+                    <label for="port_$index">Port</label>
+                    <input ng-model="listen.Port" id="port_$index" class="pure-input-1-3" type="text" placeholder="Ports">
+                </span>
+                <button type="submit" class="pure-button pure-button-warning">Remove Listen</button>
+                <span class="pure-form-message-inline">This is a required field.</span>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>Locations</legend>
+            <div class="pure-control-group">
+                <span ng-repeat="location in LBSetting.Data.Locations">
+                    <div class="pure-u-2-3">
+                        <div class="pure-control-group">
+                            <label for="location_path_$index">Path</label>
+                            <input ng-model="location.Path" id="location_path_$index" class="pure-input-3-4 " type="text" placeholder="Path">
+                        </div>
+
+                        <div class="pure-control-group">
+                            <label for="location_priority_$index">Priority</label>
+                            <input ng-model="location.Priority" id="locations_priority_$index" class="pure-input-3-4" type="text" placeholder="Priority">
+                        </div>
+
+                        <div class="pure-control-group">
+                            <label for="location_if-condition_$index">If Condition</label>
+                            <input ng-model="location.IfCondition" id="locations_if-condition_$index" class="pure-input-3-4" type="text" placeholder="If Condition">
+                        </div>
+
+                        <div class="pure-control-group">
+                            <label for="location_if-condition-priority_$index">If Confition Priority</label>
+                            <input ng-model="location.IfConditionPriority" id="locations_if-condition-priority_$index" class="pure-input-3-4" type="text"
+                                placeholder="If Condition Priority">
+                        </div>
+
+                        <div class="pure-control-group">
+                            <label for="location_tokenise_$index" class="pure-checkbox">Tokenise?</label>
+                            <input ng-model="location.Tokenise" id="location_tokenise_$index" class="pure-input-3-4" type="checkbox" value="">
+                        </div>
+
+                        <div class="pure-control-group">
+                            <div class="pure-control-group">
+                                <label for="">Proxy Set Headers </label>
+                            </div>
+                            <span ng-repeat="proxySetHeader in location.ProxySetHeaders">
+                                <div class="pure-u-2-3">
+                                    <div class="pure-control-group">
+                                        <label for="proxy-set-header_$index">Proxy Set Header</label>
+                                        <input ng-model="proxySetHeader.Value" id="proxy-set-header_$index" class="pure-input-3-4" type="text" placeholder="Proxy Set Header">
+                                    </div>
+                                    <div class="pure-control-group">
+                                        <label for=""></label>
+                                        <button type="button" class="pure-button pure-button-warning">Remove Proxy Set Header</button>
+                                    </div>
+                                </div>
+                            </span>
+                            <div class="pure-control-group">
+                                <label for=""></label>
+                                <button type="button" class="pure-button pure-button-warning">Add New Proxy Set Header</button>
+                            </div>
+                        </div>
+                    </div>
+                </span>
+                <div class="pure-control-group">
+                    <label for=""></label>
+                    <button type="button" class="pure-button pure-button-warning">Add New Location</button>
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="pure-control-group">
+            <label for="set">Set</label>
+            <input ng-model="LBSetting.Data.Set" id="set" class="pure-input-1-3" type="text" placeholder="Set">
+        </div>
+
+        <div class="pure-control-group">
+            <label for="proxy-set-headers">Proxy Set Headers</label>
+            <input ng-model="LBSetting.Data.ProxySetHeaders" id="proxy-set-headers" class="pure-input-1-3" type="text" placeholder="Proxy Set Headers">
+        </div>
+
+        <div class="pure-control-group">
+            <label for="site-in-maintenance">Site In Maintenance</label>
+            <input ng-model="LBSetting.Data.SiteInMaintenance" id="site-in-maintenance" class="pure-input-1-3" type="text" placeholder="Site In Maintenance">
+        </div>
+
+        <div class="pure-control-group">
+            <label for="custom-error-codes">Custom Error Codes</label>
+            <input ng-model="LBSetting.Data.CustomErrorCodes" id="custom-error-codes" class="pure-input-1-3" type="text" placeholder="Custom Error Codes">
+        </div>
+
+        <div class="pure-controls">
+            <label for="cb" class="pure-checkbox">
+                <input id="cb" type="checkbox"> I've read the terms and conditions
+            </label>
+
+            <button type="submit" class="pure-button pure-button-primary">Submit</button>
+        </div>
+    </fieldset>
+</form>
 
 <form name="form" class="form-horizontal" ng-show="DataFound || PageMode == 'New'">
     <div class="form-group" ng-if="PageMode != 'Edit'" ng-class="{'has-error': form.VHostName.$invalid}">
-        <label class="col-md-1 control-label text-left">Virtual Host Name: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+        <label class="col-md-1 control-label text-left">Virtual Host Name:
+            <span class="glyphicon glyphicon-asterisk mandatory"></span>
+        </label>
         <div class="col-md-2">
-            <input type="text"
-                   name="VHostName"
-                   class="form-control"
-                   required=""
-                   autofocus
-                   maxlength="64"
-                   pattern="[\w-.]+"
-                   ng-model="LBSetting.VHostName"
-                   ng-readonly="PageMode == 'Edit' || !canUser('edit')" />
+            <input type="text" name="VHostName" class="form-control" required="" autofocus maxlength="64" pattern="[\w-.]+" ng-model="LBSetting.VHostName"
+                ng-readonly="PageMode == 'Edit' || !canUser('edit')" />
         </div>
         <span class="help-block" ng-if="form.VHostName.$dirty && form.VHostName.$error.required">Virtual Host Name is mandatory.</span>
         <span class="help-block" ng-if="form.VHostName.$dirty && form.VHostName.$error.pattern">Virtual Host Name cannot contain spaces or special characters.</span>
@@ -29,29 +165,24 @@
         -->
     </div>
     <div class="form-group" ng-class="{'has-error': form.EnvironmentName.$invalid}">
-        <label class="col-md-1 control-label text-left nowrap">Environment: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+        <label class="col-md-1 control-label text-left nowrap">Environment:
+            <span class="glyphicon glyphicon-asterisk mandatory"></span>
+        </label>
         <div class="col-md-2">
-            <select class="form-control"
-                    name="EnvironmentName"
-                    required=""
-                    ng-model="LBSetting.EnvironmentName"
-                    ng-disabled="PageMode == 'Edit' || !canUser('edit')">
+            <select class="form-control" name="EnvironmentName" required="" ng-model="LBSetting.EnvironmentName" ng-disabled="PageMode == 'Edit' || !canUser('edit')">
                 <option ng-repeat="env in EnvironmentsList" ng-selected="{{env == LBSetting.EnvironmentName}}" value="{{env}}">{{env}}</option>
             </select>
         </div>
         <span class="help-block" ng-if="form.EnvironmentName.$error.required">Environment is mandatory.</span>
     </div>
+
     <div class="form-group" ng-class="{'has-error': form.Value.$invalid}">
-        <label class="col-md-1 control-label text-left">Value: <span class="glyphicon glyphicon-question-sign" ng-click="ShowSchemaHelp()"></span></label>
+        <label class="col-md-1 control-label text-left">Value:
+            <span class="glyphicon glyphicon-question-sign" ng-click="ShowSchemaHelp()"></span>
+        </label>
         <div class="col-md-6">
-            <div id="configLBSettingValue"
-                 ui-ace="{ mode: 'json' }"
-                 name="Value"
-                 required=""
-                 valid-json="ValidateJson"
-                 ng-readonly="!canUser('edit')"
-                 ng-model="LBSetting.Value"
-                 ng-model-options="{ debounce: 100 }">
+            <div id="configLBSettingValue" ui-ace="{ mode: 'json' }" name="Value" required="" valid-json="ValidateJson" ng-readonly="!canUser('edit')"
+                ng-model="LBSetting.Value" ng-model-options="{ debounce: 100 }">
             </div>
         </div>
         <span class="help-block" ng-if="form.Value.$error.required">Value field is mandatory.</span>
