@@ -21,13 +21,20 @@ angular.module('EnvironmentManager.common')
       'LBSettings'
     ].map(load);
 
-    // Dont't know how to ensure all the schemas are loaded before returning.
-    return validator;
-
     function validator(schemaId) {
       var validator = ajv.getSchema(schemaId);
       return validateUsing(validator);
     }
+
+    validator.getSchema = function (id) {
+      return $http.get(addressOf(id))
+        .then(function (response) {
+          return response.data;
+        });
+    };
+
+    // Dont't know how to ensure all the schemas are loaded before returning.
+    return validator;
 
     function addressOf(schemaId) {
       return '/schema/' + schemaId + '.schema.json';

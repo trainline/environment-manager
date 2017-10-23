@@ -8,7 +8,8 @@ angular.module('EnvironmentManager.configuration', [
   'ui.bootstrap',
   'ui.tree',
   'ngFileSaver',
-  'EnvironmentManager.common'
+  'EnvironmentManager.common',
+  'schemaForm'
 ]);
 
 angular.module('EnvironmentManager.configuration').config(function ($routeProvider) {

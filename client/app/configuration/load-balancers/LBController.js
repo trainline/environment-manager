@@ -21,6 +21,18 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
 
     var ReturnPath = '/config/loadbalancers'; // Plus Environment name to get back to the previous selection
 
+    $scope.schema = '';
+  
+    $scope.form = [
+      '*',
+      {
+        type: 'submit',
+        title: 'Save'
+      }
+    ];
+  
+    $scope.model = {};
+
     var configStructure = {
       SchemaVersion: 1,
       EnvironmentName: '',
@@ -60,7 +72,7 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
         RawNginxConfig: '',
         Set: '',
         TryFiles: '',
-        CustomErrorCodes: [ "all" ],
+        CustomErrorCodes: ["all"],
         CacheTime: ''
       }]
     };
@@ -83,7 +95,21 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
 
         cachedResources.config.services.all().then(function (services) {
           $scope.ServicesList = _.map(services, 'ServiceName');
-        })
+        }),
+
+        schemaValidatorService.getSchema('LBSettings')
+          .then(function (data) {
+            $scope.schema = {
+              type: 'object',
+              properties: {
+                hhhhhhh: { type: 'string', minLength: 2, title: 'Name', description: 'Name or alias' },
+                title: {
+                  type: 'string',
+                  enum: ['dr', 'jr', 'sir', 'mrs', 'mr', 'NaN', 'dj']
+                }
+              }
+            };
+          })
       ]).then(function () {
         $scope.PageMode = mode ? mode : 'Edit';
         if ($scope.PageMode == 'Edit' || $scope.PageMode == 'Copy') {
