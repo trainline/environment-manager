@@ -14,7 +14,7 @@ let DIFF_STATE = Enums.DIFF_STATE;
 let HEALTH_STATUS = Enums.HEALTH_STATUS;
 
 describe('getASGState', () => {
-  let getASGState = rewire('modules/environment-state/getASGState');
+  let getASGState = rewire('../../../modules/environment-state/getASGState');
 
   describe('getServicesSummary', () => {
     let getServicesSummary;

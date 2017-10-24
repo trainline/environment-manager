@@ -29,7 +29,7 @@ describe('ToggleTargetStatus', function() {
       setTargetState: sinon.stub().returns(Promise.resolve({}))
     };
 
-    sut = rewire('commands/services/ToggleTargetStatus');
+    sut = rewire('../../../commands/services/ToggleTargetStatus');
     sut.__set__({ serviceTargets });
   });
 

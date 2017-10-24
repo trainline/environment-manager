@@ -50,7 +50,7 @@ describe('enterAutoScalingGroupInstancesToStandby', function() {
     };
 
 
-    sut = rewire('commands/asg/EnterAutoScalingGroupInstancesToStandby.js');
+    sut = rewire('../../commands/asg/EnterAutoScalingGroupInstancesToStandby.js');
     sut.__set__({
       sender: senderMock,
       resourceProvider: resourceProviderMock,

@@ -36,8 +36,8 @@ describe('KeyNameProvider:', () => {
       var accountName = 'Sandbox';
 
       // Act
-      var target = proxyquire('modules/provisioning/launchConfiguration/keyNameProvider', {
-        'modules/sender': senderMock
+      var target = proxyquire('../../../../modules/provisioning/launchConfiguration/keyNameProvider', {
+        '../../sender': senderMock
       });
       var promise = target.get(configuration, accountName);
 
@@ -85,8 +85,8 @@ describe('KeyNameProvider:', () => {
         var accountName = 'Sandbox';
 
         // Act
-        var target = proxyquire('modules/provisioning/launchConfiguration/keyNameProvider', {
-          'modules/sender': senderMock
+        var target = proxyquire('../../../../modules/provisioning/launchConfiguration/keyNameProvider', {
+          '../../sender': senderMock
         });
         var promise = target.get(configuration, accountName);
 
@@ -129,8 +129,8 @@ describe('KeyNameProvider:', () => {
       var accountName = 'Sandbox';
 
       // Act
-      var target = proxyquire('modules/provisioning/launchConfiguration/keyNameProvider', {
-        'modules/sender': senderMock
+      var target = proxyquire('../../../../modules/provisioning/launchConfiguration/keyNameProvider', {
+        '../../sender': senderMock
       });
       var promise = target.get(configuration, accountName);
 
@@ -177,8 +177,8 @@ describe('KeyNameProvider:', () => {
     var accountName = 'Sandbox';
 
     // Act
-    var target = proxyquire('modules/provisioning/launchConfiguration/keyNameProvider', {
-      'modules/sender': senderMock
+    var target = proxyquire('../../../../modules/provisioning/launchConfiguration/keyNameProvider', {
+      '../../sender': senderMock
     });
     var promise = target.get(configuration, accountName);
 

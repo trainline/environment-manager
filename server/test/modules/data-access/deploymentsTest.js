@@ -9,20 +9,20 @@ let proxyquire = require('proxyquire');
 let sinon = require('sinon');
 
 let defaults = {
-  'modules/awsResourceNameProvider': { getTableName: x => x },
-  'modules/data-access/describeDynamoTable': () => Promise.resolve({
+  '../awsResourceNameProvider': { getTableName: x => x },
+  './describeDynamoTable': () => Promise.resolve({
     Table: {
       KeySchema: [{ KeyType: 'HASH', AttributeName: 'DeploymentID' }]
     }
   }),
-  'modules/logger': fakeLogger
+  '../logger': fakeLogger
 };
 
 describe('deployments', function () {
   describe('get', function () {
-    let withDynamoGet = get => proxyquire('modules/data-access/deployments',
+    let withDynamoGet = get => proxyquire('../../../modules/data-access/deployments',
       Object.assign({}, defaults, {
-        'modules/data-access/dynamoTable': { get }
+        './dynamoTable': { get }
       }));
     it('returns null when the deployment is not found', function () {
       let sut = withDynamoGet(() => Promise.resolve(null));
@@ -64,9 +64,9 @@ describe('deployments', function () {
     });
   });
   describe('queryByDateRange', function () {
-    let withScanAndQuery = ({ query, scan }) => proxyquire('modules/data-access/deployments',
+    let withScanAndQuery = ({ query, scan }) => proxyquire('../../../modules/data-access/deployments',
       Object.assign({}, defaults, {
-        'modules/data-access/dynamoTable': {
+        './dynamoTable': {
           query: query || (() => Promise.resolve([])),
           scan: scan || (() => Promise.resolve([]))
         }

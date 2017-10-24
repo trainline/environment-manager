@@ -7,18 +7,18 @@ let proxyquire = require('proxyquire');
 let tableName = 'some-table';
 
 function dynamoTable(dynamo, dynamoExpressionCompiler) {
-  return proxyquire('modules/data-access/dynamoTable', {
-    'modules/data-access/describeDynamoTable': () => Promise.resolve({
+  return proxyquire('../../../modules/data-access/dynamoTable', {
+    './describeDynamoTable': () => Promise.resolve({
       Table: {
         KeySchema: [
           { AttributeName: 'ID', KeyType: 'HASH' }
         ]
       }
     }),
-    'modules/amazon-client/masterAccountClient': {
+    '../amazon-client/masterAccountClient': {
       createDynamoClient: () => Promise.resolve(dynamo)
     },
-    'modules/awsDynamo/dynamodbExpression': {
+    '../awsDynamo/dynamodbExpression': {
       compile: dynamoExpressionCompiler
     }
   });

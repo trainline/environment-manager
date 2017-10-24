@@ -6,7 +6,7 @@
 let should = require("should");
 let sinon = require("sinon");
 let rewire = require('rewire');
-const autoScalingTemplatesProvider = rewire('modules/provisioning/autoScalingTemplatesProvider');
+const autoScalingTemplatesProvider = rewire('../../../modules/provisioning/autoScalingTemplatesProvider');
 
 describe("AutoScalingTemplatesProvider:", () => {
 

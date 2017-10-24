@@ -42,15 +42,15 @@ describe('DeploymentLogger', function () {
       sender = {
         sendCommand: sinon.spy(() => Promise.resolve())
       };
-      sut = proxyquire('modules/DeploymentLogger', {
-        'modules/data-access/deployments': deployments,
-        'modules/systemUser': {},
-        'modules/DeploymentLogsStreamer': function () {
+      sut = proxyquire('../../modules/DeploymentLogger', {
+        './data-access/deployments': deployments,
+        './systemUser': {},
+        './DeploymentLogsStreamer': function () {
           this.flush = function () { return Promise.resolve(); };
           this.log = function () { return Promise.resolve(); };
         },
-        'modules/sender': sender,
-        'modules/logger': fakeLogger
+        './sender': sender,
+        './logger': fakeLogger
       });
     });
 

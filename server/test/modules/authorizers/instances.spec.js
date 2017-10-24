@@ -7,7 +7,7 @@ let sinon = require('sinon');
 let assert = require('assert');
 let rewire = require('rewire');
 
-let instances = rewire('modules/authorizers/instances');
+let instances = rewire('../../../modules/authorizers/instances');
 
 describe('instances authorisor', () => {
   let stubRequest;

@@ -8,11 +8,11 @@ let sinon = require('sinon');
 
 function commonStubs() {
   return {
-    'modules/data-access/deployments': {
+    '../data-access/deployments': {
       get: () => Promise.resolve(null)
     },
-    'modules/configurationCache': {},
-    'modules/sender': {
+    '../configurationCache': {},
+    '../sender': {
       sendQuery: () => Promise.resolve({})
     }
   };
@@ -22,8 +22,8 @@ describe('deployments-helper', () => {
   describe('queryDeployment', () => {
     it('returns null if the deployment is not found', () => {
       let get = sinon.spy(() => Promise.resolve(null));
-      let sut = proxyquire('modules/queryHandlersUtil/deployments-helper', Object.assign(commonStubs(), {
-        'modules/data-access/deployments': { get }
+      let sut = proxyquire('../../../modules/queryHandlersUtil/deployments-helper', Object.assign(commonStubs(), {
+        '../data-access/deployments': { get }
       }));
       return sut.get({ key: '' }).should.finally.be.null();
     });
@@ -35,11 +35,11 @@ describe('deployments-helper', () => {
         AccountName: 'master-account'
       });
       let get = () => Promise.resolve({ Value: { Status: 'success' } });
-      let sut = proxyquire('modules/queryHandlersUtil/deployments-helper', Object.assign(commonStubs(), {
-        'modules/data-access/deployments': {
+      let sut = proxyquire('../../../modules/queryHandlersUtil/deployments-helper', Object.assign(commonStubs(), {
+        '../data-access/deployments': {
           get
         },
-        'modules/configurationCache': {
+        '../configurationCache': {
           getEnvironmentTypeByName: envType => Promise.resolve({ AWSAccountName: 'master-account' })
         }
       }));
@@ -50,7 +50,7 @@ describe('deployments-helper', () => {
     it('returns a deployment with expected number nodes', () => {
       const expectedNodes = 14;
       let stubs = commonStubs();
-      stubs['modules/sender'] = { sendQuery: () => Promise.resolve({ value: { ExpectedNodeDeployments: expectedNodes } }) };
+      stubs['../sender'] = { sendQuery: () => Promise.resolve({ value: { ExpectedNodeDeployments: expectedNodes } }) };
 
       let Deployment = require('../../../models/Deployment');
       let expected = new Deployment({
@@ -59,11 +59,11 @@ describe('deployments-helper', () => {
         ExpectedNodes: expectedNodes
       });
       let get = () => Promise.resolve({ Value: { Status: 'success' } });
-      let sut = proxyquire('modules/queryHandlersUtil/deployments-helper', Object.assign(stubs, {
-        'modules/data-access/deployments': {
+      let sut = proxyquire('../../../modules/queryHandlersUtil/deployments-helper', Object.assign(stubs, {
+        '../data-access/deployments': {
           get
         },
-        'modules/configurationCache': {
+        '../configurationCache': {
           getEnvironmentTypeByName: envType => Promise.resolve({ AWSAccountName: 'master-account' })
         }
       }));
@@ -74,7 +74,7 @@ describe('deployments-helper', () => {
     it('returns multiple deployments with expected number nodes', () => {
       const expectedNodes = 6;
       let stubs = commonStubs();
-      stubs['modules/sender'] = {
+      stubs['../sender'] = {
         sendQuery: () => Promise.resolve([
           { value: { ExpectedNodeDeployments: expectedNodes } },
           { value: { ExpectedNodeDeployments: expectedNodes * 2 } }
@@ -88,11 +88,11 @@ describe('deployments-helper', () => {
         ExpectedNodes: expectedNodes
       });
       let get = () => Promise.resolve({ Value: { Status: 'success' } });
-      let sut = proxyquire('modules/queryHandlersUtil/deployments-helper', Object.assign(stubs, {
-        'modules/data-access/deployments': {
+      let sut = proxyquire('../../../modules/queryHandlersUtil/deployments-helper', Object.assign(stubs, {
+        '../data-access/deployments': {
           get
         },
-        'modules/configurationCache': {
+        '../configurationCache': {
           getEnvironmentTypeByName: envType => Promise.resolve({ AWSAccountName: 'master-account' })
         }
       }));

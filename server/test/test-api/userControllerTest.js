@@ -26,7 +26,7 @@ describe('userController', function() {
       getCookieDuration: sinon.stub().returns(10)
     };
 
-    sut = rewire('api/controllers/user/userController');
+    sut = rewire('../../api/controllers/user/userController');
     sut.__set__({
       userService,
       cookieConfiguration

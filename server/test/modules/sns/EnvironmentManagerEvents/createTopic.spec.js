@@ -10,7 +10,7 @@ describe('Create Event', () => {
 
   beforeEach(() => {
     createTopicSpy = sinon.spy((name, cb) => { cb(); });
-    sut = rewire('modules/sns/EnvironmentManagerEvents/createTopic');
+    sut = rewire('../../../../modules/sns/EnvironmentManagerEvents/createTopic');
     /* eslint-disable no-underscore-dangle */
     sut.__set__('aws', {
       SNS: function SNS() {

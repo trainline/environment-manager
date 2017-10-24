@@ -33,8 +33,8 @@ describe("ImageProvider", () => {
         sendQuery: sinon.stub().returns(Promise.resolve([expectedImage].map(imageSummary.summaryOf).sort(imageSummary.compare)))
       };
       let imageNameOrType = "oel-7-ttl-nodejs-0.1.4";
-      let target = proxyquire('modules/provisioning/launchConfiguration/imageProvider', {
-        'modules/sender': senderMock
+      let target = proxyquire('../../../../modules/provisioning/launchConfiguration/imageProvider', {
+        '../../sender': senderMock
       });
       let promise = target.get(imageNameOrType);
       
@@ -66,8 +66,8 @@ describe("ImageProvider", () => {
         };
 
         let imageNameOrType = "oel-7-ttl-nodejs-0.1.4";
-        let target = proxyquire('modules/provisioning/launchConfiguration/imageProvider', {
-          'modules/sender': senderMock
+        let target = proxyquire('../../../../modules/provisioning/launchConfiguration/imageProvider', {
+          '../../sender': senderMock
         });
         let promise = target.get(imageNameOrType);
 
@@ -112,8 +112,8 @@ describe("ImageProvider", () => {
       };
 
       let imageNameOrType = "oel-7-ttl-nodejs";
-      let target = proxyquire('modules/provisioning/launchConfiguration/imageProvider', {
-        'modules/sender': senderMock
+      let target = proxyquire('../../../../modules/provisioning/launchConfiguration/imageProvider', {
+        '../../sender': senderMock
       });
 
       return target.get(imageNameOrType, true).then(image => {
@@ -180,8 +180,8 @@ describe("ImageProvider", () => {
         };
 
         let imageNameOrType = "oel-7-ttl-nodejs";
-        let target = proxyquire('modules/provisioning/launchConfiguration/imageProvider', {
-          'modules/sender': senderMock
+        let target = proxyquire('../../../../modules/provisioning/launchConfiguration/imageProvider', {
+          '../../sender': senderMock
         });
 
         let promise = target.get(imageNameOrType);

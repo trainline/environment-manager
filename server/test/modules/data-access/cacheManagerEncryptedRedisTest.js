@@ -41,9 +41,9 @@ describe('encrypted Redis cache manager', function () {
                 };
             }
 
-            sut = proxyquire('modules/data-access/cacheManagerEncryptedRedis', {
+            sut = proxyquire('../../../modules/data-access/cacheManagerEncryptedRedis', {
                 'ioredis': fakeRedis,
-                'modules/logger': silent,
+                '../logger': silent,
             });
         });
 
@@ -96,9 +96,9 @@ describe('encrypted Redis cache manager', function () {
                 };
             }
 
-            sut = proxyquire('modules/data-access/cacheManagerEncryptedRedis', {
+            sut = proxyquire('../../../modules/data-access/cacheManagerEncryptedRedis', {
                 'ioredis': fakeRedis,
-                'modules/logger': silent,
+                '../logger': silent,
             });
         });
 
@@ -131,9 +131,9 @@ describe('encrypted Redis cache manager', function () {
                 };
             }
 
-            sut = proxyquire('modules/data-access/cacheManagerEncryptedRedis', {
+            sut = proxyquire('../../../modules/data-access/cacheManagerEncryptedRedis', {
                 'ioredis': fakeRedis,
-                'modules/logger': silent,
+                '../logger': silent,
             });
         });
 

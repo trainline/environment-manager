@@ -10,7 +10,7 @@ describe('Publish Event', () => {
   let publishSpy;
 
   beforeEach(() => {
-    sut = rewire('modules/sns/EnvironmentManagerEvents/publishEvent');
+    sut = rewire('../../../../modules/sns/EnvironmentManagerEvents/publishEvent');
     publishSpy = sinon.spy((name, cb) => { return cb(null, 'result value'); });
     // eslint-disable-next-line no-underscore-dangle
     sut.__set__('aws', {

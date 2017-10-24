@@ -49,7 +49,7 @@ describe('GetAccountByEnvironment', function() {
     configCache.getEnvironmentByName = resolveStub(CANNED_ENVIRONMENT);
     configCache.getEnvironmentTypeByName = resolveStub(CANNED_ENV_TYPE);
 
-    sut = rewire('commands/aws/GetAccountByEnvironment');
+    sut = rewire('../../commands/aws/GetAccountByEnvironment');
     sut.__set__({ configCache });
   });
 

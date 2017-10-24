@@ -27,7 +27,7 @@ describe('deleteTargetState', () => {
       removeTargetState: sinon.stub().returns(Promise.resolve([]))
     };
 
-    deleteTargetState = rewire('modules/environment-state/deleteTargetState');
+    deleteTargetState = rewire('../../../modules/environment-state/deleteTargetState');
     deleteTargetState.__set__('serviceTargets', serviceTargetsMock);
   });
 

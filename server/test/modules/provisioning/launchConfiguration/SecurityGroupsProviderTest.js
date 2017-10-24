@@ -65,8 +65,8 @@ describe('SecurityGroupsProvider:', () => {
         before('getting security groups by configuration, image and account', () => {
 
           // Act
-          let SecurityGroup = proxyquire('models/SecurityGroup', { 'modules/sender': senderMock });
-          var target = proxyquire('modules/provisioning/launchConfiguration/securityGroupsProvider', { 'models/SecurityGroup': SecurityGroup });
+          let SecurityGroup = proxyquire('../../../../models/SecurityGroup', { '../modules/sender': senderMock });
+          var target = proxyquire('../../../../modules/provisioning/launchConfiguration/securityGroupsProvider', { '../../../models/SecurityGroup': SecurityGroup });
           promise = target.getFromConfiguration(configuration, image, accountName, loggerMock);
 
         });
@@ -169,8 +169,8 @@ describe('SecurityGroupsProvider:', () => {
         before('getting security groups by configuration, image and account', () => {
 
           // Act
-          let SecurityGroup = proxyquire('models/SecurityGroup', { 'modules/sender': senderMock });
-          var target = proxyquire('modules/provisioning/launchConfiguration/securityGroupsProvider', { 'models/SecurityGroup': SecurityGroup });
+          let SecurityGroup = proxyquire('../../../../models/SecurityGroup', { '../modules/sender': senderMock });
+          var target = proxyquire('../../../../modules/provisioning/launchConfiguration/securityGroupsProvider', { '../../../models/SecurityGroup': SecurityGroup });
           promise = target.getFromConfiguration(configuration, image, accountName, loggerMock);
 
         });
@@ -211,8 +211,8 @@ describe('SecurityGroupsProvider:', () => {
         before('getting security groups by configuration, image and account', () => {
 
           // Act
-          let SecurityGroup = proxyquire('models/SecurityGroup', { 'modules/sender': senderMock });
-          var target = proxyquire('modules/provisioning/launchConfiguration/securityGroupsProvider', { 'models/SecurityGroup': SecurityGroup });
+          let SecurityGroup = proxyquire('../../../../models/SecurityGroup', { '../modules/sender': senderMock });
+          var target = proxyquire('../../../../modules/provisioning/launchConfiguration/securityGroupsProvider', { '../../../models/SecurityGroup': SecurityGroup });
           promise = target.getFromConfiguration(configuration, image, accountName, loggerMock);
 
         });
@@ -290,8 +290,8 @@ describe('SecurityGroupsProvider:', () => {
         before('getting security groups by configuration, image and account', () => {
 
           // Act
-          let SecurityGroup = proxyquire('models/SecurityGroup', { 'modules/sender': senderMock });
-          var target = proxyquire('modules/provisioning/launchConfiguration/securityGroupsProvider', { 'models/SecurityGroup': SecurityGroup });
+          let SecurityGroup = proxyquire('../../../../models/SecurityGroup', { '../modules/sender': senderMock });
+          var target = proxyquire('../../../../modules/provisioning/launchConfiguration/securityGroupsProvider', { '../../../models/SecurityGroup': SecurityGroup });
           promise = target.getFromConfiguration(configuration, image, accountName, loggerMock);
 
         });
@@ -384,8 +384,8 @@ describe('SecurityGroupsProvider:', () => {
         before('getting security groups by configuration, image and account', () => {
 
           // Act
-          let SecurityGroup = proxyquire('models/SecurityGroup', { 'modules/sender': senderMock });
-          var target = proxyquire('modules/provisioning/launchConfiguration/securityGroupsProvider', { 'models/SecurityGroup': SecurityGroup });
+          let SecurityGroup = proxyquire('../../../../models/SecurityGroup', { '../modules/sender': senderMock });
+          var target = proxyquire('../../../../modules/provisioning/launchConfiguration/securityGroupsProvider', { '../../../models/SecurityGroup': SecurityGroup });
           promise = target.getFromConfiguration(configuration, image, accountName, loggerMock);
 
         });
@@ -471,8 +471,8 @@ describe('SecurityGroupsProvider:', () => {
       before('getting security groups by configuration, image and account', () => {
 
         // Act
-        let SecurityGroup = proxyquire('models/SecurityGroup', { 'modules/sender': senderMock });
-        var target = proxyquire('modules/provisioning/launchConfiguration/securityGroupsProvider', { 'models/SecurityGroup': SecurityGroup });
+        let SecurityGroup = proxyquire('../../../../models/SecurityGroup', { '../modules/sender': senderMock });
+        var target = proxyquire('../../../../modules/provisioning/launchConfiguration/securityGroupsProvider', { '../../../models/SecurityGroup': SecurityGroup });
         promise = target.getFromConfiguration(configuration, image, accountName, loggerMock);
 
       });

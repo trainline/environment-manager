@@ -101,7 +101,7 @@ describe('ScanServersStatus', function() {
   };
 
   beforeEach(() => {
-    sut = rewire('queryHandlers/ScanServersStatus');
+    sut = rewire('../../queryHandlers/ScanServersStatus');
     sut.__set__({
       sender,
       Instance: InstanceMock,

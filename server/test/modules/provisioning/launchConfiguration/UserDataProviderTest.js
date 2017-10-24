@@ -6,7 +6,7 @@
 let should = require("should");
 let sinon = require("sinon");
 let rewire = require('rewire');
-const userDataProvider = rewire('modules/provisioning/launchConfiguration/userDataProvider');
+const userDataProvider = rewire('../../../../modules/provisioning/launchConfiguration/userDataProvider');
 
 describe("UserDataProvider:", () => {
 

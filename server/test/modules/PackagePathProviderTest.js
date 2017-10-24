@@ -43,7 +43,7 @@ describe('PackagePathProvider:', () => {
       getEnvironmentTypeByName: sinon.stub().returns(Promise.resolve(expectedEnvironmentType)),
     };
 
-    const Target = rewire('modules/PackagePathProvider');
+    const Target = rewire('../../modules/PackagePathProvider');
     Target.__set__('configCache', configCache);
 
     // Act

@@ -27,7 +27,7 @@ describe('TopicNotificationMappingProvider:', () => {
   before(() => {
 
     var target = proxyquire(
-      'modules/provisioning/autoScaling/topicNotificationMappingProvider', { 'modules/sender': senderMock }
+      '../../../../modules/provisioning/autoScaling/topicNotificationMappingProvider', { '../../sender': senderMock }
     );
     promise = target.get(accountName);
 

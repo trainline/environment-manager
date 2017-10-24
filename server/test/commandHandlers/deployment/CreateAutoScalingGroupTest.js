@@ -44,7 +44,7 @@ describe('CreateAutoScalingGroup', function() {
     autoScalingGroupClientFactory = { create: sinon.stub().returns(Promise.resolve(autoScalingClientMock)) };
     command = { name, accountName, template };
 
-    sut = rewire('commands/deployments/CreateAutoScalingGroup.js');
+    sut = rewire('../../../commands/deployments/CreateAutoScalingGroup.js');
     sut.__set__({ autoScalingGroupClientFactory });
   });
 

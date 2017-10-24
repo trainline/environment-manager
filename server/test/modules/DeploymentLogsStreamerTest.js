@@ -38,9 +38,9 @@ describe('DeploymentLogsStreamer', function () {
       };
     })();
 
-    let DeploymentLogsStreamer = proxyquire('modules/DeploymentLogsStreamer', {
-      'modules/data-access/deployments': fakeDeployment,
-      'modules/logger': fakeLogger,
+    let DeploymentLogsStreamer = proxyquire('../../modules/DeploymentLogsStreamer', {
+      './data-access/deployments': fakeDeployment,
+      './logger': fakeLogger,
       'timers': fakeTimer
     });
     deploymentLogsStreamer = new DeploymentLogsStreamer();

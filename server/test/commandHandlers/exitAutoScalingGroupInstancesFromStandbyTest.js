@@ -50,7 +50,7 @@ describe('exitAutoScalingGroupInstancesToStandby', function() {
       sendCommand: sinon.stub().returns(Promise.resolve())
     };
 
-    sut = rewire('commands/asg/ExitAutoScalingGroupInstancesFromStandby.js');
+    sut = rewire('../../commands/asg/ExitAutoScalingGroupInstancesFromStandby.js');
     sut.__set__({
       sender: senderMock,
       resourceProvider: resourceProviderMock,

@@ -17,8 +17,8 @@ describe('describeDynamoTable', function () {
   };
 
   before(function () {
-    sut = proxyquire('modules/data-access/describeDynamoTable', {
-      'modules/amazon-client/masterAccountClient': dynamoClientFactory
+    sut = proxyquire('../../../modules/data-access/describeDynamoTable', {
+      '../amazon-client/masterAccountClient': dynamoClientFactory
     });
   });
 

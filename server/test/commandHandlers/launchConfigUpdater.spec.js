@@ -6,7 +6,7 @@
 let should = require('should');
 let sinon  = require('sinon');
 let rewire = require('rewire');
-let target = rewire('commands/launch-config/launchConfigUpdater');
+let target = rewire('../../commands/launch-config/launchConfigUpdater');
 
 describe('launchConfigUpdater: ', () => {
 

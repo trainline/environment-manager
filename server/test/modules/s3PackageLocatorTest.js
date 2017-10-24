@@ -12,8 +12,8 @@ const should = require('should');
 describe('S3 Package Locator', function () {
     let sut;
     before(function () {
-        sut = proxyquire('modules/s3PackageLocator', {
-            config: {
+        sut = proxyquire('../../modules/s3PackageLocator', {
+            '../config': {
                 get: x => x,
             }
         })

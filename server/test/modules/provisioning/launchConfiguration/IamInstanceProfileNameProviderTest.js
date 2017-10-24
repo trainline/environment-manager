@@ -31,7 +31,7 @@ describe('IamInstanceProfileNameProvider:', () => {
       };
 
       // Act
-      let target = proxyquire('modules/provisioning/launchConfiguration/iamInstanceProfileNameProvider', { 'modules/sender': senderMock });
+      let target = proxyquire('../../../../modules/provisioning/launchConfiguration/iamInstanceProfileNameProvider', { '../../sender': senderMock });
       let promise = target.get(configuration, accountName);
 
       // Assert
@@ -69,7 +69,7 @@ describe('IamInstanceProfileNameProvider:', () => {
         };
 
         // Act
-        let target = proxyquire('modules/provisioning/launchConfiguration/iamInstanceProfileNameProvider', { 'modules/sender': senderMock });
+        let target = proxyquire('../../../../modules/provisioning/launchConfiguration/iamInstanceProfileNameProvider', { '../../sender': senderMock });
         let promise = target.get(configuration, accountName);
 
         // Assert
@@ -104,7 +104,7 @@ describe('IamInstanceProfileNameProvider:', () => {
       };
 
       // Act
-      let target = proxyquire('modules/provisioning/launchConfiguration/iamInstanceProfileNameProvider', { 'modules/sender': senderMock });
+      let target = proxyquire('../../../../modules/provisioning/launchConfiguration/iamInstanceProfileNameProvider', { '../../sender': senderMock });
       let promise = target.get(configuration, accountName);
 
       // Assert
@@ -144,7 +144,7 @@ describe('IamInstanceProfileNameProvider:', () => {
         };
 
         // Act
-        let target = proxyquire('modules/provisioning/launchConfiguration/iamInstanceProfileNameProvider', { 'modules/sender': senderMock });
+        let target = proxyquire('../../../../modules/provisioning/launchConfiguration/iamInstanceProfileNameProvider', { '../../sender': senderMock });
         let promise = target.get(configuration, accountName);
 
         // Assert

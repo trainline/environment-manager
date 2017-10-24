@@ -16,14 +16,14 @@ var asgClient = {
 describe('Describing [AsgResource]', () => {
 
   before(function () {
-    AsgResource = proxyquire('modules/resourceFactories/AsgResource', {
-      'modules/cacheManager': {
+    AsgResource = proxyquire('../../../modules/resourceFactories/AsgResource', {
+      '../cacheManager': {
         create: (name, fn) => ({
           get: fn,
           del: () => Promise.resolve(undefined)
         })
       },
-      'modules/amazon-client/childAccountClient': {
+      '../amazon-client/childAccountClient': {
         createASGClient: () => Promise.resolve(asgClient),
       }
     });

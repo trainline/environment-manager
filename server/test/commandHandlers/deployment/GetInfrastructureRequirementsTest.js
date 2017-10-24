@@ -59,11 +59,11 @@ describe('GetInfrastructureRequirements:', () => {
       }
     };
 
-    let mod = proxyquire('commands/deployments/GetInfrastructureRequirements', {
-      'modules/provisioning/autoScalingTemplatesProvider': mocks.autoScalingTemplatesProvider,
-      'modules/sender': mocks.sender,
-      'modules/provisioning/infrastructureConfigurationProvider': mocks.infrastructureConfigurationProvider,
-      'modules/provisioning/launchConfigurationTemplatesProvider': mocks.launchConfigurationTemplatesProvider
+    let mod = proxyquire('../../../commands/deployments/GetInfrastructureRequirements', {
+      '../../modules/provisioning/autoScalingTemplatesProvider': mocks.autoScalingTemplatesProvider,
+      '../../modules/sender': mocks.sender,
+      '../../modules/provisioning/infrastructureConfigurationProvider': mocks.infrastructureConfigurationProvider,
+      '../../modules/provisioning/launchConfigurationTemplatesProvider': mocks.launchConfigurationTemplatesProvider
     });
     return mod;
   }
