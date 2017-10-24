@@ -60,7 +60,7 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
         RawNginxConfig: '',
         Set: '',
         TryFiles: '',
-        CustomErrorCodes: [ "all" ],
+        CustomErrorCodes: ["all"],
         CacheTime: ''
       }]
     };
@@ -163,8 +163,58 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
 
     $scope.ValidateJson = function (value) {
       var validator = schemaValidatorService('LBSettings');
-      return validator(value);
+      var schemaErrors = validator(value);
+      if (schemaErrors === null) {
+        try {
+          var result = $scope.CustomRules(value);
+          if (result.length > 0) return result[0];
+          else return null;
+        } catch (e) { return null; }
+      } else return schemaErrors;
     };
+
+    $scope.CustomRules = function (value) {
+      var rules = [
+        upstreamExists
+      ];
+
+      var results = rules.map(function (r) {
+        return r(value);
+      })
+        .filter(function (r) {
+          return r.length > 0;
+        });
+
+      return results.length > 0 ? results : null;
+    }
+
+    function upstreamExists(value) {
+      var errors = [];
+      if (value.Locations) {
+        value.Locations.forEach(function (location, i) {
+          if (location.ProxyPass) {
+            var matchResults = location.ProxyPass.match(/^https?:\/\/([^$]+)/);
+            if (!matchResults) {
+              errors.push('Locations[' + i + '] - ProxyPass address is not valid. Check it begins with "http://" or "https://".');
+            } else {
+              var proxyUpstreamName = matchResults[1];
+              // Validate Upstream exists
+              if (!_.includes(proxyUpstreamName, '.')) {
+                if ($scope.LBUpstreamData && $scope.LBUpstreamData.length > 0) {
+                  var matchFound = $scope.LBUpstreamData.some(function upstreamIsProxy(upstream) {
+                    return upstream.Value.UpstreamName === proxyUpstreamName;
+                  });
+                  if (!matchFound) {
+                    errors.push('Locations[' + i + '] - Upstream name in Proxy Pass not found. Please check spelling and capitalisation');
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+      return errors;
+    }
 
     function BackToSummary(environment) {
       $location.search('lb_environment', environment);
