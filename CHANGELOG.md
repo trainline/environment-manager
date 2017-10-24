@@ -3,12 +3,12 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html). View [Unreleased] changes here.
 
-[unreleased]
+## [6.11.1] - 2017-10-19
 
-### Changed
+### Fixed
 
 - Custom rules for load balancer settings editor. Prevents non existing upstreams being added. [#363]
-- Mark for delete removed pending lambda deployment permissions. Once lambda is in place, mark for delete functionality will be turned back on. [#363]
+- Mark for delete removed pending TTL settings change in AWS. [#363]
 
 ## [6.11.0] - 2017-10-19
 
