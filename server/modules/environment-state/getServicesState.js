@@ -5,11 +5,11 @@
 let _ = require('lodash');
 let co = require('co');
 
-let Enums = require('Enums');
+let Enums = require('../../Enums');
 let DIFF_STATE = Enums.DIFF_STATE;
 let DEPLOYMENT_STATUS = Enums.DEPLOYMENT_STATUS;
-let logger = require('modules/logger');
-let serviceTargets = require('modules/service-targets');
+let logger = require('../logger');
+let serviceTargets = require('../service-targets');
 
 const HEALTH_GOOD = Enums.HEALTH_STATUS.Healthy;
 const HEALTH_BAD = Enums.HEALTH_STATUS.Error;

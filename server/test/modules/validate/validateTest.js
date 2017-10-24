@@ -7,7 +7,7 @@
 'use strict';
 
 /* eslint-disable import/no-extraneous-dependencies */
-let makeValidateFunction = require('modules/validate');
+let makeValidateFunction = require('../../../modules/validate');
 /* eslint-enable import/no-extraneous-dependencies */
 
 let sinon = require('sinon');

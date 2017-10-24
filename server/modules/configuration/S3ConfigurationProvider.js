@@ -2,8 +2,8 @@
 
 'use strict';
 
-let masterAccountClient = require('modules/amazon-client/masterAccountClient');
-let config = require('config');
+let masterAccountClient = require('../amazon-client/masterAccountClient');
+let config = require('../../config');
 
 const S3_BUCKET = config.get('EM_AWS_S3_BUCKET');
 const S3_KEY = config.get('EM_AWS_S3_KEY');

@@ -2,7 +2,7 @@
 
 'use strict';
 
-let config = require('config');
+let config = require('../../config');
 const modulePath = config.get('IS_PRODUCTION') ?
   './activeDirectoryAdapter.prod.js' :
   './activeDirectoryAdapter.mock.js';

@@ -3,7 +3,7 @@
 'use strict';
 
 require('should');
-let fakeLogger = require('test/utils/fakeLogger');
+let fakeLogger = require('../../utils/fakeLogger');
 let { Instant } = require('js-joda');
 let proxyquire = require('proxyquire');
 let sinon = require('sinon');

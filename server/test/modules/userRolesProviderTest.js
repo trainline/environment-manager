@@ -4,7 +4,7 @@
 'use strict';
 
 let should = require('should');
-let Target = require('modules/userRolesProvider');
+let Target = require('../../modules/userRolesProvider');
 
 describe('UserRolesProvider:', () => {
 

@@ -3,8 +3,8 @@
 'use strict';
 
 let assert = require('assert');
-let getSlices = require('modules/queryHandlersUtil/getSlices');
-let loadBalancerUpstreams = require('modules/data-access/loadBalancerUpstreams');
+let getSlices = require('../../modules/queryHandlersUtil/getSlices');
+let loadBalancerUpstreams = require('../../modules/data-access/loadBalancerUpstreams');
 
 module.exports = function GetSlicesByUpstream(query) {
   assert.equal(typeof query.environmentName, 'string');

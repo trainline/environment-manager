@@ -3,8 +3,8 @@
 'use strict';
 
 let _ = require('lodash');
-let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
-let deploymentMaps = require('modules/data-access/deploymentMaps');
+let ResourceNotFoundError = require('../modules/errors/ResourceNotFoundError.class');
+let deploymentMaps = require('../modules/data-access/deploymentMaps');
 
 class DeploymentMap {
 

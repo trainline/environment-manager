@@ -3,8 +3,8 @@
 'use strict';
 
 let co = require('co');
-let environments = require('modules/data-access/configEnvironments');
-let services = require('modules/data-access/services');
+let environments = require('../data-access/configEnvironments');
+let services = require('../data-access/services');
 
 module.exports = {
   getRules(request) {

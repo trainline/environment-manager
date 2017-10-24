@@ -2,8 +2,8 @@
 
 'use strict';
 
-let userService = require('modules/user-service');
-let cookieAuthenticationConfiguration = require('modules/authentications/cookieAuthenticationConfiguration');
+let userService = require('../user-service');
+let cookieAuthenticationConfiguration = require('./cookieAuthenticationConfiguration');
 
 module.exports = {
   middleware(req, res, next) {

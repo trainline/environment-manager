@@ -2,7 +2,7 @@
 
 'use strict';
 
-let serviceTargets = require('modules/service-targets');
+let serviceTargets = require('../../modules/service-targets');
 
 module.exports = function SetTargetMaintenanceState(command) {
   let accountName = command.accountName;

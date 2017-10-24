@@ -3,8 +3,8 @@
 'use strict';
 
 let _ = require('lodash');
-let Enums = require('Enums');
-let DeploymentValidationError = require('modules/errors/DeploymentValidationError.class');
+let Enums = require('../../../Enums');
+let DeploymentValidationError = require('../../errors/DeploymentValidationError.class');
 const SupportedSliceNames = _.values(Enums.SliceName);
 
 module.exports = {

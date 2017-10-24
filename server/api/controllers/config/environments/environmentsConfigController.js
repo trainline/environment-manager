@@ -7,23 +7,23 @@ const KEY_NAME = 'EnvironmentName';
 let _ = require('lodash');
 let Promise = require('bluebird');
 
-let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMetadataForDynamoAudit;
-let removeAuditMetadata = require('modules/data-access/dynamoAudit').removeAuditMetadata;
-let versionOf = require('modules/data-access/dynamoVersion').versionOf;
-let param = require('api/api-utils/requestParam');
+let getMetadataForDynamoAudit = require('../../../api-utils/requestMetadata').getMetadataForDynamoAudit;
+let removeAuditMetadata = require('../../../../modules/data-access/dynamoAudit').removeAuditMetadata;
+let versionOf = require('../../../../modules/data-access/dynamoVersion').versionOf;
+let param = require('../../../api-utils/requestParam');
 
-let configEnvironments = require('modules/data-access/configEnvironments');
-let opsEnvironment = require('modules/data-access/opsEnvironment');
-let loadBalancerUpstreams = require('modules/data-access/loadBalancerUpstreams');
-let loadBalancerSettings = require('modules/data-access/loadBalancerSettings');
+let configEnvironments = require('../../../../modules/data-access/configEnvironments');
+let opsEnvironment = require('../../../../modules/data-access/opsEnvironment');
+let loadBalancerUpstreams = require('../../../../modules/data-access/loadBalancerUpstreams');
+let loadBalancerSettings = require('../../../../modules/data-access/loadBalancerSettings');
 
-let EnvironmentType = require('models/EnvironmentType');
+let EnvironmentType = require('../../../../models/EnvironmentType');
 
-let consul = require('modules/service-targets/consul');
-const sns = require('modules/sns/EnvironmentManagerEvents');
+let consul = require('../../../../modules/service-targets/consul');
+const sns = require('../../../../modules/sns/EnvironmentManagerEvents');
 
-let { hasValue, when } = require('modules/functional');
-let { ifNotFound, notFoundMessage } = require('api/api-utils/ifNotFound');
+let { hasValue, when } = require('../../../../modules/functional');
+let { ifNotFound, notFoundMessage } = require('../../../api-utils/ifNotFound');
 
 function attachMetadata(input) {
   input.Version = versionOf(input);

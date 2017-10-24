@@ -6,7 +6,7 @@
 let should = require("should");
 let sinon = require("sinon");
 let proxyquire = require('proxyquire');
-let imageSummary = require('modules/machineImage/imageSummary');
+let imageSummary = require('../../../../modules/machineImage/imageSummary');
 
 describe("ImageProvider", () => {
   describe('with an AMI image name', () => {

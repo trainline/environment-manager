@@ -4,8 +4,8 @@
 
 let co = require('co');
 let _ = require('lodash');
-let Environment = require('models/Environment');
-let sender = require('modules/sender');
+let Environment = require('../models/Environment');
+let sender = require('../modules/sender');
 
 function tagsToMap(tags) {
   let map = {};

@@ -2,8 +2,8 @@
 
 'use strict';
 
-let logger = require('modules/logger');
-let deploymentLogger = require('modules/DeploymentLogger');
+let logger = require('../../modules/logger');
+let deploymentLogger = require('../../modules/DeploymentLogger');
 
 module.exports = function DeploymentCommandHandlerLogger(commandOrDeploymentId) {
   let deploymentId = (() => {

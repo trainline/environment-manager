@@ -2,7 +2,7 @@
 
 'use strict';
 
-let serviceDiscovery = require('modules/service-discovery');
+let serviceDiscovery = require('../../modules/service-discovery');
 
 module.exports = function GetNode(query) {
   return serviceDiscovery.getNode(query.environment, query.nodeName);

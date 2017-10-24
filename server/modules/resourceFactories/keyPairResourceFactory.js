@@ -2,10 +2,10 @@
 
 'use strict';
 
-let amazonClientFactory = require('modules/amazon-client/childAccountClient');
+let amazonClientFactory = require('../amazon-client/childAccountClient');
 
-let AwsError = require('modules/errors/AwsError.class');
-let KeyPairNotFoundError = require('modules/errors/KeyPairNotFoundError.class');
+let AwsError = require('../errors/AwsError.class');
+let KeyPairNotFoundError = require('../errors/KeyPairNotFoundError.class');
 
 function KeyPairResource(client) {
   this.client = client;

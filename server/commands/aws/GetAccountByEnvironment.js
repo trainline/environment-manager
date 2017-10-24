@@ -4,7 +4,7 @@
 
 'use strict';
 
-let configCache = require('modules/configurationCache');
+let configCache = require('../../modules/configurationCache');
 
 /**
  * Attempts to map a given environment name to the internal AWS account name

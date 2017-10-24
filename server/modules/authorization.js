@@ -2,8 +2,8 @@
 
 'use strict';
 
-let logger = require('modules/logger');
-let authorize = require('modules/authorizer');
+let logger = require('./logger');
+let authorize = require('./authorizer');
 
 let errorResponseCodes = {
   BadRequestError: 400,

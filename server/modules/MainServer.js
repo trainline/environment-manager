@@ -5,33 +5,33 @@
 let express = require('express');
 let bodyParser = require('body-parser');
 let cookieParser = require('cookie-parser');
-let logger = require('modules/logger');
-let config = require('config/');
+let logger = require('./logger');
+let config = require('../config');
 let compression = require('compression');
 let expressRequestId = require('express-request-id');
-let ServerFactoryConfiguration = require('modules/serverFactoryConfiguration');
+let ServerFactoryConfiguration = require('./serverFactoryConfiguration');
 let serverFactoryConfiguration = new ServerFactoryConfiguration();
-let tokenAuthentication = require('modules/authentications/tokenAuthentication');
-let cookieAuthentication = require('modules/authentications/cookieAuthentication');
-let authentication = require('modules/authentication');
-let deploymentMonitorScheduler = require('modules/monitoring/DeploymentMonitorScheduler');
-let apiV1 = require('api/v1');
-let initialData = require('api/em-internal/controllers/initial-data');
-let httpServerFactory = require('modules/http-server-factory');
-let loggingMiddleware = require('modules/express-middleware/loggingMiddleware');
-let deprecateMiddleware = require('modules/express-middleware/deprecateMiddleware');
-let cacheRouter = require('modules/cacheRouter');
+let tokenAuthentication = require('./authentications/tokenAuthentication');
+let cookieAuthentication = require('./authentications/cookieAuthentication');
+let authentication = require('./authentication');
+let deploymentMonitorScheduler = require('./monitoring/DeploymentMonitorScheduler');
+let apiV1 = require('../api/v1');
+let initialData = require('../api/em-internal/controllers/initial-data');
+let httpServerFactory = require('./http-server-factory');
+let loggingMiddleware = require('./express-middleware/loggingMiddleware');
+let deprecateMiddleware = require('./express-middleware/deprecateMiddleware');
+let cacheRouter = require('./cacheRouter');
 
-const APP_VERSION = require('config').get('APP_VERSION');
+const APP_VERSION = require('../config').get('APP_VERSION');
 
 let serverInstance;
 
 function createExpressApp() {
   /* eslint-disable global-require */
-  let httpHealthChecks = require('modules/httpHealthChecks');
+  let httpHealthChecks = require('./httpHealthChecks');
   let routes = {
-    home: require('routes/home'),
-    deploymentNodeLogs: require('routes/deploymentNodeLogs')
+    home: require('../routes/home'),
+    deploymentNodeLogs: require('../routes/deploymentNodeLogs')
   };
   /* eslint-enable */
 

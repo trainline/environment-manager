@@ -2,13 +2,13 @@
 
 'use strict';
 
-let systemUser = require('modules/systemUser');
-let sender = require('modules/sender');
-let deployments = require('modules/data-access/deployments');
-let DeploymentLogsStreamer = require('modules/DeploymentLogsStreamer');
+let systemUser = require('./systemUser');
+let sender = require('./sender');
+let deployments = require('./data-access/deployments');
+let DeploymentLogsStreamer = require('./DeploymentLogsStreamer');
 let deploymentLogsStreamer = new DeploymentLogsStreamer();
-let Enums = require('Enums');
-let logger = require('modules/logger');
+let Enums = require('../Enums');
+let logger = require('./logger');
 
 module.exports = {
   started(deployment, accountName) {

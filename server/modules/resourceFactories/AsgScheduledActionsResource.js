@@ -2,8 +2,8 @@
 
 'use strict';
 
-let AwsError = require('modules/errors/AwsError.class');
-let AutoScalingGroupNotFoundError = require('modules/errors/AutoScalingGroupNotFoundError.class');
+let AwsError = require('../errors/AwsError.class');
+let AutoScalingGroupNotFoundError = require('../errors/AutoScalingGroupNotFoundError.class');
 
 function AsgScheduledActionsResource(client) {
   function describeScheduledActions(name) {

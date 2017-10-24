@@ -7,16 +7,16 @@
  */
 
 /* eslint-disable import/no-extraneous-dependencies */
-let environmentExistsRule = require('modules/validate/rule/environmentExists');
-let log = require('modules/logger'); // eslint-disable import/no-extraneous-dependencies
-let makeValidationFunction = require('modules/validate');
-let masterAccountClient = require('modules/amazon-client/masterAccountClient'); // eslint-disable-line import/no-extraneous-dependencies
-let s3PackageLocator = require('modules/s3PackageLocator');
-let serviceExistsRule = require('modules/validate/rule/serviceExists');
-let dynamicResponseCreator = require('api/controllers/package-upload-url/dynamicResponseCreator');
+let environmentExistsRule = require('../../../modules/validate/rule/environmentExists');
+let log = require('../../../modules/logger'); // eslint-disable import/no-extraneous-dependencies
+let makeValidationFunction = require('../../../modules/validate');
+let masterAccountClient = require('../../../modules/amazon-client/masterAccountClient'); // eslint-disable-line import/no-extraneous-dependencies
+let s3PackageLocator = require('../../../modules/s3PackageLocator');
+let serviceExistsRule = require('../../../modules/validate/rule/serviceExists');
+let dynamicResponseCreator = require('./dynamicResponseCreator');
 /* eslint-enable import/no-extraneous-dependencies */
 
-let config = require('config');
+let config = require('../../../config');
 let _ = require('lodash/fp');
 
 const EM_PACKAGE_UPLOAD_TIMEOUT = config.get('EM_PACKAGES_UPLOAD_TIMEOUT') || 600;

@@ -5,10 +5,10 @@
 let _ = require('lodash');
 let co = require('co');
 let moment = require('moment');
-let logger = require('modules/logger');
-let sender = require('modules/sender');
-let AutoScalingGroup = require('models/AutoScalingGroup');
-let Instance = require('models/Instance');
+let logger = require('../modules/logger');
+let sender = require('../modules/sender');
+let AutoScalingGroup = require('../models/AutoScalingGroup');
+let Instance = require('../models/Instance');
 
 module.exports = co.wrap(ScanServersStatusQueryHandler);
 

@@ -3,14 +3,14 @@
 'use strict';
 
 let co = require('co');
-let DeploymentCommandHandlerLogger = require('commands/deployments/DeploymentCommandHandlerLogger');
-let DeploymentValidationError = require('modules/errors/DeploymentValidationError.class');
-let launchConfigurationTemplatesProvider = require('modules/provisioning/launchConfigurationTemplatesProvider');
-let configProvider = require('modules/provisioning/infrastructureConfigurationProvider');
-let asgTemplatesProvider = require('modules/provisioning/autoScalingTemplatesProvider');
-let namingConvention = require('modules/provisioning/namingConventionProvider');
-let sender = require('modules/sender');
-let getASG = require('queryHandlers/GetAutoScalingGroup');
+let DeploymentCommandHandlerLogger = require('./DeploymentCommandHandlerLogger');
+let DeploymentValidationError = require('../../modules/errors/DeploymentValidationError.class');
+let launchConfigurationTemplatesProvider = require('../../modules/provisioning/launchConfigurationTemplatesProvider');
+let configProvider = require('../../modules/provisioning/infrastructureConfigurationProvider');
+let asgTemplatesProvider = require('../../modules/provisioning/autoScalingTemplatesProvider');
+let namingConvention = require('../../modules/provisioning/namingConventionProvider');
+let sender = require('../../modules/sender');
+let getASG = require('../../queryHandlers/GetAutoScalingGroup');
 let _ = require('lodash');
 
 module.exports = function GetInfrastructureRequirements(command) {

@@ -2,8 +2,8 @@
 
 'use strict';
 
-let Environment = require('models/Environment');
-let Service = require('models/Service');
+let Environment = require('../../models/Environment');
+let Service = require('../../models/Service');
 
 let fp = require('lodash/fp');
 

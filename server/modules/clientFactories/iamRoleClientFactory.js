@@ -2,7 +2,7 @@
 
 'use strict';
 
-let IAMRoleClient = require('modules/clientFactories/IAMRoleClient');
+let IAMRoleClient = require('./IAMRoleClient');
 
 module.exports = {
   create(parameters) {

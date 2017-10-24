@@ -5,9 +5,9 @@
 let express = require('express');
 let router = express.Router();
 let assert = require('assert');
-let remoteCacheFlush = require('modules/remoteCacheFlush');
-let cookieAuthentication = require('modules/authentications/cookieAuthentication');
-let logger = require('modules/logger');
+let remoteCacheFlush = require('./remoteCacheFlush');
+let cookieAuthentication = require('./authentications/cookieAuthentication');
+let logger = require('./logger');
 
 router.post('/:environment', (req, res) => {
   assert(req.body.hosts);

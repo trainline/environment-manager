@@ -5,12 +5,12 @@
 let _ = require('lodash');
 let moment = require('moment');
 let co = require('co');
-let sender = require('modules/sender');
-let EnvironmentType = require('models/EnvironmentType');
-let Environment = require('models/Environment');
-let serviceTargets = require('modules/service-targets');
-let resourceProvider = require('modules/resourceProvider');
-let logger = require('modules/logger');
+let sender = require('../modules/sender');
+let EnvironmentType = require('./EnvironmentType');
+let Environment = require('./Environment');
+let serviceTargets = require('../modules/service-targets');
+let resourceProvider = require('../modules/resourceProvider');
+let logger = require('../modules/logger');
 let TaggableMixin = require('./TaggableMixin');
 
 class AutoScalingGroup {

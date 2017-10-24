@@ -3,8 +3,8 @@
 'use strict';
 
 let validators = [
-  require('modules/deployment/validators/blueGreenDeploymentValidator'),
-  require('modules/deployment/validators/uniqueServiceVersionDeploymentValidator')
+  require('./validators/blueGreenDeploymentValidator'),
+  require('./validators/uniqueServiceVersionDeploymentValidator')
 ];
 
 module.exports = validators;

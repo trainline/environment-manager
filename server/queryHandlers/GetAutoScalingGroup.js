@@ -3,7 +3,7 @@
 'use strict';
 
 let assert = require('assert');
-let getASG = require('modules/queryHandlersUtil/getASG');
+let getASG = require('../modules/queryHandlersUtil/getASG');
 
 module.exports = function GetAutoScalingGroup(query) {
   assert(query.accountName);

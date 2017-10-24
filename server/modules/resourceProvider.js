@@ -3,7 +3,7 @@
 'use strict';
 
 let requireDirectory = require('require-directory');
-let resourceDescriptorProvider = require('modules/resourceDescriptorProvider');
+let resourceDescriptorProvider = require('./resourceDescriptorProvider');
 let _ = require('lodash');
 
 let modulesTree = requireDirectory(module, { include: /ResourceFactory\.js/ });

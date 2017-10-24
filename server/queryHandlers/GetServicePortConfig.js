@@ -1,6 +1,6 @@
 'use strict';
 
-let Service = require('models/Service');
+let Service = require('../models/Service');
 let _ = require('lodash');
 
 const DEFAULT_PORT = 0;

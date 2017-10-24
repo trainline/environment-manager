@@ -2,8 +2,8 @@
 
 let assert = require('assert');
 let co = require('co');
-let DeploymentCommandHandlerLogger = require('commands/deployments/DeploymentCommandHandlerLogger');
-let resourceProvider = require('modules/resourceProvider');
+let DeploymentCommandHandlerLogger = require('./DeploymentCommandHandlerLogger');
+let resourceProvider = require('../../modules/resourceProvider');
 let _ = require('lodash');
 
 module.exports = function CreateLaunchConfigurationCommandHandler(command) {

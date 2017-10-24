@@ -9,7 +9,7 @@ let rewire = require('rewire');
 
 let _ = require('lodash');
 
-let Enums = require('Enums');
+let Enums = require('../../../Enums');
 let DIFF_STATE = Enums.DIFF_STATE;
 let HEALTH_STATUS = Enums.HEALTH_STATUS;
 

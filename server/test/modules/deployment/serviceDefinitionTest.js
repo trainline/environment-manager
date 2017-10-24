@@ -5,8 +5,8 @@
 
 let should = require('should');
 
-let DeploymentContract = require('modules/deployment/DeploymentContract');
-let serviceDefinition = require('modules/deployment/serviceDefinition');
+let DeploymentContract = require('../../../modules/deployment/DeploymentContract');
+let serviceDefinition = require('../../../modules/deployment/serviceDefinition');
 
 describe('ServiceDefinitionKeyValueProvider:', () => {
 

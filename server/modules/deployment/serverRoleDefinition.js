@@ -2,7 +2,7 @@
 
 'use strict';
 
-let Enums = require('Enums');
+let Enums = require('../../Enums');
 
 function getKeyValue(deployment) {
   let deploymentId = deployment.id;

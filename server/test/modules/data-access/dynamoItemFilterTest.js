@@ -3,7 +3,7 @@
 'use strict';
 
 let should = require('should');
-let dynamoItemFilter = require('modules/data-access/dynamoItemFilter');
+let dynamoItemFilter = require('../../../modules/data-access/dynamoItemFilter');
 
 let str = s => JSON.stringify(s, (key, value) => (value === undefined ? 'undefined' : value));
 

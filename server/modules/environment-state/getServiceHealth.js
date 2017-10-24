@@ -16,11 +16,11 @@ let {
   reduce,
   toPairs
 } = require('lodash/fp');
-let GetServerRoles = require('queryHandlers/services/GetServerRoles');
-let AutoScalingGroup = require('models/AutoScalingGroup');
-let serviceDiscovery = require('modules/service-discovery');
-let { createEC2Client } = require('modules/amazon-client/childAccountClient');
-let { fullyQualifiedServiceNamesFor } = require('modules/environment-state/serverRoleFilters');
+let GetServerRoles = require('../../queryHandlers/services/GetServerRoles');
+let AutoScalingGroup = require('../../models/AutoScalingGroup');
+let serviceDiscovery = require('../service-discovery');
+let { createEC2Client } = require('../amazon-client/childAccountClient');
+let { fullyQualifiedServiceNamesFor } = require('./serverRoleFilters');
 let {
   compare,
   currentState,
@@ -29,8 +29,8 @@ let {
   desiredTopologyOf,
   instancesOf,
   instancesRequestFor,
-  summariseComparison } = require('modules/environment-state/healthReporter');
-let { getAccountNameForEnvironment } = require('models/Environment');
+  summariseComparison } = require('./healthReporter');
+let { getAccountNameForEnvironment } = require('../../models/Environment');
 
 function getAutoScalingGroups(environmentQualifiedRoleNames) {
   return Promise.map(environmentQualifiedRoleNames,

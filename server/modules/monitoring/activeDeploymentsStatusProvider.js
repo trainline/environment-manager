@@ -10,14 +10,14 @@ let DEPLOYMENT_MAXIMUM_THRESHOLD = ms('90m');
 let DEPLOYMENT_MINIMUM_THRESHOLD = ms('30s');
 let DEFAULT_SERVICE_INSTALLATION_TIMEOUT = '30m';
 
-let Enums = require('Enums');
-let BaseError = require('modules/errors/BaseError.class');
-let deployments = require('modules/data-access/deployments');
-let sender = require('modules/sender');
-let infrastructureConfigurationProvider = require('modules/provisioning/infrastructureConfigurationProvider');
-let namingConventionProvider = require('modules/provisioning/namingConventionProvider');
-let logger = require('modules/logger');
-let Environment = require('models/Environment');
+let Enums = require('../../Enums');
+let BaseError = require('../errors/BaseError.class');
+let deployments = require('../data-access/deployments');
+let sender = require('../sender');
+let infrastructureConfigurationProvider = require('../provisioning/infrastructureConfigurationProvider');
+let namingConventionProvider = require('../provisioning/namingConventionProvider');
+let logger = require('../logger');
+let Environment = require('../../models/Environment');
 
 module.exports = {
 

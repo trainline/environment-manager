@@ -6,13 +6,13 @@ let _ = require('lodash');
 let fs = require('fs');
 let co = require('co');
 let ms = require('ms');
-let logger = require('modules/logger');
-let activeDeploymentsStatusProvider = require('modules/monitoring/activeDeploymentsStatusProvider');
+let logger = require('../logger');
+let activeDeploymentsStatusProvider = require('./activeDeploymentsStatusProvider');
 
 let DEFAULT_INFRASTRUCTURE_PROVISIONING_TIMEOUT = '60m';
-let Enums = require('Enums');
-let NodeDeploymentStatus = require('Enums').NodeDeploymentStatus;
-let deploymentLogger = require('modules/DeploymentLogger');
+let Enums = require('../../Enums');
+let NodeDeploymentStatus = require('../../Enums').NodeDeploymentStatus;
+let deploymentLogger = require('../DeploymentLogger');
 
 module.exports = {
   monitorActiveDeployments() {

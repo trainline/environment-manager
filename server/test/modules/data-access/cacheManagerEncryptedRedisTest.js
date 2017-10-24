@@ -5,7 +5,7 @@
 'use strict'
 
 require('should');
-let emCrypto = require('modules/emCrypto');
+let emCrypto = require('../../../modules/emCrypto');
 let fp = require('lodash/fp');
 let proxyquire = require('proxyquire');
 let timers = require('timers');

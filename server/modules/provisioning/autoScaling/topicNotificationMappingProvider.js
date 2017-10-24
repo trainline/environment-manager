@@ -2,8 +2,8 @@
 
 'use strict';
 
-let AutoScalingNotificationType = require('Enums').AutoScalingNotificationType;
-let sender = require('modules/sender');
+let AutoScalingNotificationType = require('../../../Enums').AutoScalingNotificationType;
+let sender = require('../../sender');
 
 const TopicsToNotify = [
   'InfraAsgLambdaScale'

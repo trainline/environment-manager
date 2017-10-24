@@ -3,7 +3,7 @@
 'use strict';
 
 require('should');
-const sut = require('modules/awsDynamo/dynamodbExpression');
+const sut = require('../../../modules/awsDynamo/dynamodbExpression');
 
 describe('dynamodb expression', function () {
   describe('compile', function () {

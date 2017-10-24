@@ -2,20 +2,20 @@
 
 'use strict';
 
-let GetASGState = require('queryHandlers/GetASGState');
-let ScanServersStatus = require('queryHandlers/ScanServersStatus');
+let GetASGState = require('../../../queryHandlers/GetASGState');
+let ScanServersStatus = require('../../../queryHandlers/ScanServersStatus');
 let co = require('co');
-let Environment = require('models/Environment');
-let OpsEnvironment = require('models/OpsEnvironment');
+let Environment = require('../../../models/Environment');
+let OpsEnvironment = require('../../../models/OpsEnvironment');
 let Promise = require('bluebird');
-let environmentProtection = require('modules/authorizers/environmentProtection');
+let environmentProtection = require('../../../modules/authorizers/environmentProtection');
 let _ = require('lodash');
-let opsEnvironment = require('modules/data-access/opsEnvironment');
-let param = require('api/api-utils/requestParam');
-let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMetadataForDynamoAudit;
-const sns = require('modules/sns/EnvironmentManagerEvents');
-let { when } = require('modules/functional');
-let { ifNotFound, notFoundMessage } = require('api/api-utils/ifNotFound');
+let opsEnvironment = require('../../../modules/data-access/opsEnvironment');
+let param = require('../../api-utils/requestParam');
+let getMetadataForDynamoAudit = require('../../api-utils/requestMetadata').getMetadataForDynamoAudit;
+const sns = require('../../../modules/sns/EnvironmentManagerEvents');
+let { when } = require('../../../modules/functional');
+let { ifNotFound, notFoundMessage } = require('../../api-utils/ifNotFound');
 
 let environmentNotFound = notFoundMessage('environment');
 

@@ -3,14 +3,14 @@
 'use strict';
 
 let co = require('co');
-let DeploymentCommandHandlerLogger = require('commands/deployments/DeploymentCommandHandlerLogger');
-let sender = require('modules/sender');
-let consulClient = require('modules/consul-client');
-let serverRoleProvider = require('modules/deployment/serverRoleDefinition');
-let serviceInstallationProvider = require('modules/deployment/serviceInstallationDefinition');
-let serviceDefinitionProvider = require('modules/deployment/serviceDefinition');
-let serviceDeploymentProvider = require('modules/deployment/serviceDeploymentDefinition');
-let deploymentDefinitionProvider = require('modules/deployment/deploymentDefinition');
+let DeploymentCommandHandlerLogger = require('./DeploymentCommandHandlerLogger');
+let sender = require('../../modules/sender');
+let consulClient = require('../../modules/consul-client');
+let serverRoleProvider = require('../../modules/deployment/serverRoleDefinition');
+let serviceInstallationProvider = require('../../modules/deployment/serviceInstallationDefinition');
+let serviceDefinitionProvider = require('../../modules/deployment/serviceDefinition');
+let serviceDeploymentProvider = require('../../modules/deployment/serviceDeploymentDefinition');
+let deploymentDefinitionProvider = require('../../modules/deployment/deploymentDefinition');
 
 module.exports = function PushDeploymentCommandHandler(command) {
   const logger = new DeploymentCommandHandlerLogger(command);

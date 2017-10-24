@@ -10,10 +10,10 @@ let getInstanceState = require('./getInstanceState');
 let getServicesState = require('./getServicesState');
 let getAWSInstances = require('./getAWSInstances');
 
-let AutoScalingGroup = require('models/AutoScalingGroup');
-let logger = require('modules/logger');
-let Environment = require('models/Environment');
-let Enums = require('Enums');
+let AutoScalingGroup = require('../../models/AutoScalingGroup');
+let logger = require('../logger');
+let Environment = require('../../models/Environment');
+let Enums = require('../../Enums');
 let DIFF_STATE = Enums.DIFF_STATE;
 let HEALTH_STATUS = Enums.HEALTH_STATUS;
 

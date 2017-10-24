@@ -1,7 +1,7 @@
 'use strict';
 
 require('should');
-let sut = require('modules/environment-state/healthReporter');
+let sut = require('../../../modules/environment-state/healthReporter');
 
 describe('healthReporter', function () {
   describe('desiredState', function () {

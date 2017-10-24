@@ -7,12 +7,12 @@
 'use strict';
 
 let cacheManager = require('cache-manager');
-let cacheManagerEncryptedRedis = require('modules/data-access/cacheManagerEncryptedRedis');
-let config = require('config');
-let emCrypto = require('modules/emCrypto');
+let cacheManagerEncryptedRedis = require('./data-access/cacheManagerEncryptedRedis');
+let config = require('../config');
+let emCrypto = require('./emCrypto');
 let fp = require('lodash/fp');
-let logger = require('modules/logger');
-let masterAccountClient = require('modules/amazon-client/masterAccountClient');
+let logger = require('./logger');
+let masterAccountClient = require('./amazon-client/masterAccountClient');
 
 const DEFAULT_TTL_SECONDS = 10;
 const REDIS_READ_TIMEOUT = 1000;

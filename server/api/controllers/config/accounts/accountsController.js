@@ -2,13 +2,13 @@
 
 'use strict';
 
-let accounts = require('modules/data-access/accounts');
-let { getMetadataForDynamoAudit } = require('api/api-utils/requestMetadata');
-let param = require('api/api-utils/requestParam');
-let { validate } = require('commands/validators/awsAccountValidator');
-let { versionOf } = require('modules/data-access/dynamoVersion');
-let { removeAuditMetadata } = require('modules/data-access/dynamoAudit');
-let sns = require('modules/sns/EnvironmentManagerEvents');
+let accounts = require('../../../../modules/data-access/accounts');
+let { getMetadataForDynamoAudit } = require('../../../api-utils/requestMetadata');
+let param = require('../../../api-utils/requestParam');
+let { validate } = require('../../../../commands/validators/awsAccountValidator');
+let { versionOf } = require('../../../../modules/data-access/dynamoVersion');
+let { removeAuditMetadata } = require('../../../../modules/data-access/dynamoAudit');
+let sns = require('../../../../modules/sns/EnvironmentManagerEvents');
 
 function convertToApiModel(persistedModel) {
   let apiModel = removeAuditMetadata(persistedModel);

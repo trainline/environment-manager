@@ -4,7 +4,7 @@
 
 let assert = require('assert');
 let co = require('co');
-let ConfigurationError = require('modules/errors/ConfigurationError.class');
+let ConfigurationError = require('../../errors/ConfigurationError.class');
 let _ = require('lodash');
 
 const SECURE_SECURITY_ZONE = 'Secure';

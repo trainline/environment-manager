@@ -2,12 +2,12 @@
 
 'use strict';
 
-let { attachAuditMetadata, updateAuditMetadata } = require('modules/data-access/dynamoAudit');
-let describeDynamoTable = require('modules/data-access/describeDynamoTable');
-let { hashKeyAttributeName } = require('modules/data-access/dynamoTableDescription');
-let { makeWritable } = require('modules/data-access/dynamoItemFilter');
-let dynamoVersion = require('modules/data-access/dynamoVersion');
-let { softDelete } = require('modules/data-access/dynamoSoftDelete');
+let { attachAuditMetadata, updateAuditMetadata } = require('./dynamoAudit');
+let describeDynamoTable = require('./describeDynamoTable');
+let { hashKeyAttributeName } = require('./dynamoTableDescription');
+let { makeWritable } = require('./dynamoItemFilter');
+let dynamoVersion = require('./dynamoVersion');
+let { softDelete } = require('./dynamoSoftDelete');
 let fp = require('lodash/fp');
 
 function factory(physicalTableName, dynamoTable) {

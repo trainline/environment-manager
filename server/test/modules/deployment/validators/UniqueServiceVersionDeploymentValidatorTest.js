@@ -6,7 +6,7 @@
 require('should');
 let sinon = require('sinon');
 let proxyquire = require('proxyquire');
-let DeploymentContract = require('modules/deployment/DeploymentContract');
+let DeploymentContract = require('../../../../modules/deployment/DeploymentContract');
 
 function validator(deployments, sender) {
   return proxyquire('modules/deployment/validators/uniqueServiceVersionDeploymentValidator', {

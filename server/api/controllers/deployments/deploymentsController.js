@@ -2,16 +2,16 @@
 
 'use strict';
 
-let deploymentsHelper = require('modules/queryHandlersUtil/deployments-helper');
-let GetNodeDeploymentLog = require('queryHandlers/deployments/GetNodeDeploymentLog');
+let deploymentsHelper = require('../../../modules/queryHandlersUtil/deployments-helper');
+let GetNodeDeploymentLog = require('../../../queryHandlers/deployments/GetNodeDeploymentLog');
 let co = require('co');
-let sender = require('modules/sender');
-let Enums = require('Enums');
-let activeDeploymentsStatusProvider = require('modules/monitoring/activeDeploymentsStatusProvider');
-let deploymentLogger = require('modules/DeploymentLogger');
-const sns = require('modules/sns/EnvironmentManagerEvents');
-let { ifNotFound, notFoundMessage } = require('api/api-utils/ifNotFound');
-const { toggleServiceStatus } = require('modules/toggleServiceStatus');
+let sender = require('../../../modules/sender');
+let Enums = require('../../../Enums');
+let activeDeploymentsStatusProvider = require('../../../modules/monitoring/activeDeploymentsStatusProvider');
+let deploymentLogger = require('../../../modules/DeploymentLogger');
+const sns = require('../../../modules/sns/EnvironmentManagerEvents');
+let { ifNotFound, notFoundMessage } = require('../../api-utils/ifNotFound');
+const { toggleServiceStatus } = require('../../../modules/toggleServiceStatus');
 
 /**
  * GET /deployments

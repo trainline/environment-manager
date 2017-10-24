@@ -2,8 +2,8 @@
 
 'use strict';
 
-let { updateAuditMetadata } = require('modules/data-access/dynamoAudit');
-let { compareAndSetVersionOnUpdate, setVersionOnUpdate } = require('modules/data-access/dynamoVersion');
+let { updateAuditMetadata } = require('./dynamoAudit');
+let { compareAndSetVersionOnUpdate, setVersionOnUpdate } = require('./dynamoVersion');
 let { flow } = require('lodash/fp');
 
 function softDelete({ key, metadata, expectedVersion }) {

@@ -3,19 +3,19 @@
 'use strict';
 
 let Promise = require('bluebird');
-let logger = require('modules/logger');
+let logger = require('../../../../modules/logger');
 let { assign, flatten, flow, map, omit } = require('lodash/fp');
-let { versionOf } = require('modules/data-access/dynamoVersion');
-let { removeAuditMetadata } = require('modules/data-access/dynamoAudit');
-let { convertToNewModel, convertToOldModel } = require('modules/data-access/lbUpstreamAdapter');
-let loadBalancerUpstreams = require('modules/data-access/loadBalancerUpstreams');
-let services = require('modules/data-access/services');
-let { getMetadataForDynamoAudit } = require('api/api-utils/requestMetadata');
-let param = require('api/api-utils/requestParam');
-let { validate } = require('commands/validators/lbUpstreamValidator');
-let { getByName: getAccount } = require('modules/awsAccounts');
-let InvalidItemSchemaError = require('modules/errors/InvalidItemSchemaError.class');
-const sns = require('modules/sns/EnvironmentManagerEvents');
+let { versionOf } = require('../../../../modules/data-access/dynamoVersion');
+let { removeAuditMetadata } = require('../../../../modules/data-access/dynamoAudit');
+let { convertToNewModel, convertToOldModel } = require('../../../../modules/data-access/lbUpstreamAdapter');
+let loadBalancerUpstreams = require('../../../../modules/data-access/loadBalancerUpstreams');
+let services = require('../../../../modules/data-access/services');
+let { getMetadataForDynamoAudit } = require('../../../api-utils/requestMetadata');
+let param = require('../../../api-utils/requestParam');
+let { validate } = require('../../../../commands/validators/lbUpstreamValidator');
+let { getByName: getAccount } = require('../../../../modules/awsAccounts');
+let InvalidItemSchemaError = require('../../../../modules/errors/InvalidItemSchemaError.class');
+const sns = require('../../../../modules/sns/EnvironmentManagerEvents');
 
 function rejectIfValidationFailed(validationResult) {
   if (!validationResult.isValid) {

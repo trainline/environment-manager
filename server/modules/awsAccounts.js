@@ -6,8 +6,8 @@ const TEN_MINUTES = 10 * 60;
 const CACHE_KEY = 'AWSAccounts';
 
 let _ = require('lodash');
-let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
-let { scan } = require('modules/data-access/accounts');
+let ResourceNotFoundError = require('./errors/ResourceNotFoundError.class');
+let { scan } = require('./data-access/accounts');
 
 function getByName(accountName) {
   let matches = val => accountName.toLowerCase() === val.toString().toLowerCase();

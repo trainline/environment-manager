@@ -2,11 +2,11 @@
 
 'use strict';
 
-let extractKey = require('modules/data-access/dynamoTableDescription').extractKey;
-let describeDynamoTable = require('modules/data-access/describeDynamoTable');
-let pages = require('modules/amazon-client/pages');
-let { createDynamoClient: DocumentClient } = require('modules/amazon-client/masterAccountClient');
-let compile = require('modules/awsDynamo/dynamodbExpression').compile;
+let extractKey = require('./dynamoTableDescription').extractKey;
+let describeDynamoTable = require('./describeDynamoTable');
+let pages = require('../amazon-client/pages');
+let { createDynamoClient: DocumentClient } = require('../amazon-client/masterAccountClient');
+let compile = require('../awsDynamo/dynamodbExpression').compile;
 
 function compileIfSet(expressions) {
   if (expressions && typeof expressions === 'object') {

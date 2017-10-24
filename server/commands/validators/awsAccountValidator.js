@@ -2,8 +2,8 @@
 
 'use strict';
 
-let childAWSclient = require('modules/amazon-client/childAccountClient');
-let logger = require('modules/logger');
+let childAWSclient = require('../../modules/amazon-client/childAccountClient');
+let logger = require('../../modules/logger');
 let co = require('co');
 
 function validate(account) {

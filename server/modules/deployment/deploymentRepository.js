@@ -2,8 +2,8 @@
 
 'use strict';
 
-let awsMasterClient = require('modules/amazon-client/masterAccountClient');
-let awsResourceNameProvider = require('modules/awsResourceNameProvider');
+let awsMasterClient = require('../amazon-client/masterAccountClient');
+let awsResourceNameProvider = require('../awsResourceNameProvider');
 
 const day = (() => {
   let startOfDay = (i, t) => new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), t.getUTCDate() + i));

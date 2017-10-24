@@ -4,11 +4,11 @@
 
 let url = require('url');
 let request = require('request');
-let utils = require('modules/utilities');
-let logger = require('modules/logger');
+let utils = require('../utilities');
+let logger = require('../logger');
 
-let HttpRequestError = require('modules/errors/HttpRequestError.class');
-let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
+let HttpRequestError = require('../errors/HttpRequestError.class');
+let ResourceNotFoundError = require('../errors/ResourceNotFoundError.class');
 
 function NginxUpstreamsResource() {
   function httpErrorToError(error) {

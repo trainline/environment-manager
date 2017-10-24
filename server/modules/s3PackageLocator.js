@@ -5,10 +5,10 @@
 /* Defines functions to locate a package in S3 given its name, version and (optionally) environment
  */
 
-let config = require('config');
+let config = require('../config');
 let fp = require('lodash/fp');
-let masterAccountClient = require('modules/amazon-client/masterAccountClient');
-let s3Url = require('modules/amazon-client/s3Url');
+let masterAccountClient = require('./amazon-client/masterAccountClient');
+let s3Url = require('./amazon-client/s3Url');
 
 const EM_PACKAGES_BUCKET = config.get('EM_PACKAGES_BUCKET');
 const EM_PACKAGES_KEY_PREFIX = config.get('EM_PACKAGES_KEY_PREFIX');

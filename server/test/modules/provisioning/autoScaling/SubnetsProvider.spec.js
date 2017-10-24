@@ -6,7 +6,7 @@
 var should = require('should');
 var sinon = require('sinon');
 
-var subnetsProvider = require('modules/provisioning/autoScaling/subnetsProvider');
+var subnetsProvider = require('../../../../modules/provisioning/autoScaling/subnetsProvider');
 
 describe('SubnetsProvider:', () => {
 

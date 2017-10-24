@@ -2,10 +2,10 @@
 
 'use strict';
 
-let AsgResource = require('modules/resourceFactories/AsgResource');
-let awsAccounts = require('modules/awsAccounts');
+let AsgResource = require('./AsgResource');
+let awsAccounts = require('../awsAccounts');
 let fp = require('lodash/fp');
-let logger = require('modules/logger');
+let logger = require('../logger');
 
 function getAccountId(accountName) {
   return awsAccounts.getByName(accountName)

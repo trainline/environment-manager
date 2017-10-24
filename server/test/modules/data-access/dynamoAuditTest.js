@@ -3,7 +3,7 @@
 'use strict';
 
 require('should');
-let dynamoAudit = require('modules/data-access/dynamoAudit');
+let dynamoAudit = require('../../../modules/data-access/dynamoAudit');
 let sinon = require('sinon');
 
 describe('dynamoAudit', function () {

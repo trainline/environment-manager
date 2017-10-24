@@ -3,7 +3,7 @@
 'use strict';
 
 let AWS = require('aws-sdk');
-let memoize = require('modules/memoize');
+let memoize = require('../memoize');
 
 let myIdentity = memoize(() => (new AWS.STS()).getCallerIdentity().promise());
 

@@ -1,6 +1,6 @@
 'use strict';
 
-let miniStack = require('modules/miniStack');
+let miniStack = require('../../modules/miniStack');
 let path = require('path').posix;
 require('should');
 

@@ -3,14 +3,14 @@
 'use strict';
 
 let _ = require('lodash');
-let amazonClientFactory = require('modules/amazon-client/childAccountClient');
-let AwsError = require('modules/errors/AwsError.class');
-let AutoScalingGroupNotFoundError = require('modules/errors/AutoScalingGroupNotFoundError.class');
-let AutoScalingGroupAlreadyExistsError = require('modules/errors/AutoScalingGroupAlreadyExistsError.class');
-let cacheManager = require('modules/cacheManager');
+let amazonClientFactory = require('../amazon-client/childAccountClient');
+let AwsError = require('../errors/AwsError.class');
+let AutoScalingGroupNotFoundError = require('../errors/AutoScalingGroupNotFoundError.class');
+let AutoScalingGroupAlreadyExistsError = require('../errors/AutoScalingGroupAlreadyExistsError.class');
+let cacheManager = require('../cacheManager');
 let fp = require('lodash/fp');
-let logger = require('modules/logger');
-let pages = require('modules/amazon-client/pages');
+let logger = require('../logger');
+let pages = require('../amazon-client/pages');
 
 function getAllAsgsInAccount(accountId, names) {
   logger.debug(`Describing all ASGs in account "${accountId}"...`);
@@ -50,7 +50,7 @@ function AsgResource(accountId) {
       }
     })();
 
-    let AutoScalingGroup = require('models/AutoScalingGroup'); // Making this require global results in a module dependency cycle!
+    let AutoScalingGroup = require('../../models/AutoScalingGroup'); // Making this require global results in a module dependency cycle!
     return asgCache.get(accountId).then(fp.flow(fp.filter(predicate), fp.map(asg => new AutoScalingGroup(asg))));
   }
 

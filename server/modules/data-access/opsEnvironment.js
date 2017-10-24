@@ -5,8 +5,8 @@
 const LOGICAL_TABLE_NAME = 'InfraOpsEnvironment';
 const TTL = 1200; // seconds
 
-let physicalTableName = require('modules/awsResourceNameProvider').getTableName;
-let cachedSingleAccountDynamoTable = require('modules/data-access/cachedSingleAccountDynamoTable');
+let physicalTableName = require('../awsResourceNameProvider').getTableName;
+let cachedSingleAccountDynamoTable = require('./cachedSingleAccountDynamoTable');
 
 let table = cachedSingleAccountDynamoTable(physicalTableName(LOGICAL_TABLE_NAME), { ttl: TTL });
 

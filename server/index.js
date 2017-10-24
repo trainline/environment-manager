@@ -13,14 +13,14 @@ let co = require('co');
 const fp = require('lodash/fp');
 
 require('app-module-path').addPath(__dirname); // must be executed before requiring modules outside node_modules.
-let config = require('config/');
-let logger = require('modules/logger');
+let config = require('./config');
+let logger = require('./modules/logger');
 
 // TODO conver to singleton
-let ConfigurationProvider = require('modules/configuration/ConfigurationProvider');
-let checkAppPrerequisites = require('modules/checkAppPrerequisites');
-let cacheManager = require('modules/cacheManager');
-const miniStack = require('modules/miniStack');
+let ConfigurationProvider = require('./modules/configuration/ConfigurationProvider');
+let checkAppPrerequisites = require('./modules/checkAppPrerequisites');
+let cacheManager = require('./modules/cacheManager');
+const miniStack = require('./modules/miniStack');
 const mini = miniStack.build();
 
 process.on('unhandledRejection', (err, promise) => {
@@ -54,7 +54,7 @@ function start() {
     config.logBootstrapValues();
 
     // eslint-disable-next-line global-require
-    let mainServer = require('modules/MainServer');
+    let mainServer = require('./modules/MainServer');
     yield mainServer.start();
   }).catch((error) => {
     if (error !== undefined && error.stack !== undefined) {

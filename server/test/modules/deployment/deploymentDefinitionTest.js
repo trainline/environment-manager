@@ -5,8 +5,8 @@
 
 var should = require('should');
 
-var DeploymentContract = require('modules/deployment/DeploymentContract');
-var deploymentDefinition = require('modules/deployment/deploymentDefinition');
+var DeploymentContract = require('../../../modules/deployment/DeploymentContract');
+var deploymentDefinition = require('../../../modules/deployment/deploymentDefinition');
 
 describe('DeploymentKeyValueProvider:', () => {
 

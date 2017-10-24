@@ -29,7 +29,7 @@ describe('deployments-helper', () => {
     });
 
     it('returns a deployment with unknown number of expected nodes', () => {
-      let Deployment = require('models/Deployment');
+      let Deployment = require('../../../models/Deployment');
       let expected = new Deployment({
         Value: { Status: 'success' },
         AccountName: 'master-account'
@@ -52,7 +52,7 @@ describe('deployments-helper', () => {
       let stubs = commonStubs();
       stubs['modules/sender'] = { sendQuery: () => Promise.resolve({ value: { ExpectedNodeDeployments: expectedNodes } }) };
 
-      let Deployment = require('models/Deployment');
+      let Deployment = require('../../../models/Deployment');
       let expected = new Deployment({
         Value: { Status: 'success' },
         AccountName: 'master-account',
@@ -81,7 +81,7 @@ describe('deployments-helper', () => {
         ])
       };
 
-      let Deployment = require('models/Deployment');
+      let Deployment = require('../../../models/Deployment');
       let expected = new Deployment({
         Value: { Status: 'success' },
         AccountName: 'master-account',

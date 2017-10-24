@@ -3,8 +3,8 @@
 'use strict';
 
 require('should');
-let dynamoVersion = require('modules/data-access/dynamoVersion');
-let compile = require('modules/awsDynamo/dynamodbExpression').compile;
+let dynamoVersion = require('../../../modules/data-access/dynamoVersion');
+let compile = require('../../../modules/awsDynamo/dynamodbExpression').compile;
 
 describe('dynamoVersion', function () {
   describe('compareAndSetVersionOnReplace', function () {

@@ -2,8 +2,8 @@
 
 'use strict';
 
-let { createLowLevelDynamoClient: DynamoDB } = require('modules/amazon-client/masterAccountClient');
-let memoize = require('modules/memoize');
+let { createLowLevelDynamoClient: DynamoDB } = require('../amazon-client/masterAccountClient');
+let memoize = require('../memoize');
 
 function describeTableArn(TableName) {
   return DynamoDB().then(dynamo => dynamo.describeTable({ TableName }).promise());

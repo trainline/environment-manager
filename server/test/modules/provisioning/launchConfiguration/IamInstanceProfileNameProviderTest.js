@@ -6,7 +6,7 @@
 let should = require('should');
 let sinon = require('sinon');
 let proxyquire = require('proxyquire');
-let InstanceProfileNotFoundError = require('modules/errors/InstanceProfileNotFoundError.class');
+let InstanceProfileNotFoundError = require('../../../../modules/errors/InstanceProfileNotFoundError.class');
 
 const accountName = 'Sandbox';
 

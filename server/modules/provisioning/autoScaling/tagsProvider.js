@@ -3,8 +3,8 @@
 'use strict';
 
 let assert = require('assert');
-let namingConventionProvider = require('modules/provisioning/namingConventionProvider');
-let ConfigurationError = require('modules/errors/ConfigurationError.class');
+let namingConventionProvider = require('../namingConventionProvider');
+let ConfigurationError = require('../../errors/ConfigurationError.class');
 
 module.exports = {
   get(configuration, sliceName) {

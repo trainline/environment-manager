@@ -3,8 +3,8 @@
 'use strict';
 
 let co = require('co');
-let awsAccounts = require('modules/awsAccounts');
-let sender = require('modules/sender');
+let awsAccounts = require('../awsAccounts');
+let sender = require('../sender');
 
 function* handler(query, simpleScanQueryName) {
   let results = [];

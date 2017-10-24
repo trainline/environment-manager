@@ -2,9 +2,9 @@
 
 'use strict';
 
-let logger = require('modules/logger');
-let simpleHttp = require('modules/simple-http');
-let s3Url = require('modules/amazon-client/s3Url');
+let logger = require('../../modules/logger');
+let simpleHttp = require('../../modules/simple-http');
+let s3Url = require('../../modules/amazon-client/s3Url');
 
 function PackageMover(deploymentLogger) {
   this.downloadPackage = function (url) {

@@ -1,7 +1,7 @@
 'use strict';
 
 require('should');
-let { format } = require('modules/serviceName');
+let { format } = require('../modules/serviceName');
 
 describe('serviceName', function () {
   describe('format', function () {

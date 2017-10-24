@@ -1,7 +1,7 @@
 'use strict';
 
 require('should');
-let { tagsOf } = require('modules/consulDataStructures');
+let { tagsOf } = require('../../modules/consulDataStructures');
 
 describe('tagsOf', function () {
   context('when given an object without any tags', function () {

@@ -7,7 +7,7 @@
 'use strict';
 
 const should = require('should');
-const sut = require('modules/amazon-client/s3Url');
+const sut = require('../../../modules/amazon-client/s3Url');
 
 describe('s3Url', function () {
     describe('when I parse', function () {

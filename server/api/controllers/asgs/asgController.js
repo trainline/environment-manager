@@ -5,21 +5,21 @@
 let Promise = require('bluebird');
 let _ = require('lodash');
 let co = require('co');
-let getAllASGs = require('queryHandlers/ScanCrossAccountAutoScalingGroups');
-let getAccountASGs = require('queryHandlers/ScanAutoScalingGroups');
-let getASG = require('queryHandlers/GetAutoScalingGroup');
-let AutoScalingGroup = require('models/AutoScalingGroup');
-let asgips = require('modules/data-access/asgips');
-let GetLaunchConfiguration = require('queryHandlers/GetLaunchConfiguration');
-let SetLaunchConfiguration = require('commands/launch-config/SetLaunchConfiguration');
-let SetAutoScalingGroupSize = require('commands/asg/SetAutoScalingGroupSize');
-let SetAutoScalingGroupSchedule = require('commands/asg/SetAutoScalingGroupSchedule');
-let UpdateAutoScalingGroup = require('commands/asg/UpdateAutoScalingGroup');
-let GetAutoScalingGroupScheduledActions = require('queryHandlers/GetAutoScalingGroupScheduledActions');
-let getASGReady = require('modules/environment-state/getASGReady');
-let Environment = require('models/Environment');
-let sns = require('modules/sns/EnvironmentManagerEvents');
-let opsEnvironment = require('modules/data-access/opsEnvironment');
+let getAllASGs = require('../../../queryHandlers/ScanCrossAccountAutoScalingGroups');
+let getAccountASGs = require('../../../queryHandlers/ScanAutoScalingGroups');
+let getASG = require('../../../queryHandlers/GetAutoScalingGroup');
+let AutoScalingGroup = require('../../../models/AutoScalingGroup');
+let asgips = require('../../../modules/data-access/asgips');
+let GetLaunchConfiguration = require('../../../queryHandlers/GetLaunchConfiguration');
+let SetLaunchConfiguration = require('../../../commands/launch-config/SetLaunchConfiguration');
+let SetAutoScalingGroupSize = require('../../../commands/asg/SetAutoScalingGroupSize');
+let SetAutoScalingGroupSchedule = require('../../../commands/asg/SetAutoScalingGroupSchedule');
+let UpdateAutoScalingGroup = require('../../../commands/asg/UpdateAutoScalingGroup');
+let GetAutoScalingGroupScheduledActions = require('../../../queryHandlers/GetAutoScalingGroupScheduledActions');
+let getASGReady = require('../../../modules/environment-state/getASGReady');
+let Environment = require('../../../models/Environment');
+let sns = require('../../../modules/sns/EnvironmentManagerEvents');
+let opsEnvironment = require('../../../modules/data-access/opsEnvironment');
 
 class ValidationError extends Error {
   constructor(obj) {

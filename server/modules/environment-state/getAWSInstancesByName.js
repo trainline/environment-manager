@@ -4,7 +4,7 @@
 
 let _ = require('lodash');
 let co = require('co');
-let resourceProvider = require('modules/resourceProvider');
+let resourceProvider = require('../resourceProvider');
 
 function* getAWSInstances(accountName, instancesIds) {
   let resource = yield resourceProvider.getInstanceByName('instances', { accountName });

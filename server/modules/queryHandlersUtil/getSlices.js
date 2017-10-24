@@ -5,8 +5,8 @@
 let Promise = require('bluebird');
 let co = require('co');
 let _ = require('lodash');
-let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
-let servicesDb = require('modules/data-access/services');
+let ResourceNotFoundError = require('../errors/ResourceNotFoundError.class');
+let servicesDb = require('../data-access/services');
 
 function hostFilter(active) {
   if (active === true) {

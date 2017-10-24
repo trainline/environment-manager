@@ -6,7 +6,7 @@ const assert = require('assert');
 
 describe('serviceStateUtils', function () {
   let sut;
-  beforeEach(() => { sut = require('modules/environment-state/serviceStateUtils'); });
+  beforeEach(() => { sut = require('../../../modules/environment-state/serviceStateUtils'); });
 
   describe('getServiceAndSlice', function () {
     [

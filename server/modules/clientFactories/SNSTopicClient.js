@@ -4,11 +4,11 @@
 
 let co = require('co');
 let _ = require('lodash');
-let AwsError = require('modules/errors/AwsError.class');
-let TopicNotFoundError = require('modules/errors/TopicNotFoundError.class');
-let config = require('config');
-let awsAccounts = require('modules/awsAccounts');
-let amazonClientFactory = require('modules/amazon-client/childAccountClient');
+let AwsError = require('../errors/AwsError.class');
+let TopicNotFoundError = require('../errors/TopicNotFoundError.class');
+let config = require('../../config');
+let awsAccounts = require('../awsAccounts');
+let amazonClientFactory = require('../amazon-client/childAccountClient');
 
 const AWS_REGION = config.get('EM_AWS_REGION');
 

@@ -2,12 +2,12 @@
 
 'use strict';
 
-let logger = require('modules/logger');
+let logger = require('../logger');
 let Redis = require('ioredis');
-let config = require('config');
+let config = require('../../config');
 let co = require('co');
-let emCrypto = require('modules/emCrypto');
-let masterAccountClient = require('modules/amazon-client/masterAccountClient');
+let emCrypto = require('../emCrypto');
+let masterAccountClient = require('../amazon-client/masterAccountClient');
 
 const EM_REDIS_ADDRESS = config.get('EM_REDIS_ADDRESS');
 const EM_REDIS_PORT = config.get('EM_REDIS_PORT');

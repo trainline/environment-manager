@@ -3,9 +3,9 @@
 'use strict';
 
 let retry = require('retry');
-let HttpRequestError = require('modules/errors/HttpRequestError.class');
-let consulClient = require('modules/consul-client');
-let logger = require('modules/logger');
+let HttpRequestError = require('../../errors/HttpRequestError.class');
+let consulClient = require('../../consul-client');
+let logger = require('../../logger');
 let _ = require('lodash');
 let assert = require('assert');
 

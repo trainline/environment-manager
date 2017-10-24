@@ -2,9 +2,9 @@
 
 'use strict';
 
-let configEnvironments = require('modules/data-access/configEnvironments');
-let configEnvironmentTypes = require('modules/data-access/configEnvironmentTypes');
-let ConfigurationError = require('modules/errors/ConfigurationError.class');
+let configEnvironments = require('./data-access/configEnvironments');
+let configEnvironmentTypes = require('./data-access/configEnvironmentTypes');
+let ConfigurationError = require('./errors/ConfigurationError.class');
 
 function getEnvironmentByName(environmentName) {
   return configEnvironments.get({ EnvironmentName: environmentName })

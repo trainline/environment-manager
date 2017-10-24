@@ -3,8 +3,8 @@
 'use strict';
 
 let co = require('co');
-let DeploymentCommandHandlerLogger = require('commands/deployments/DeploymentCommandHandlerLogger');
-let sender = require('modules/sender');
+let DeploymentCommandHandlerLogger = require('./DeploymentCommandHandlerLogger');
+let sender = require('../../modules/sender');
 let _ = require('lodash');
 
 module.exports = function ProvideInfrastructure(command) {

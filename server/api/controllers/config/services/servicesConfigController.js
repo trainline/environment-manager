@@ -2,15 +2,15 @@
 
 'use strict';
 
-let services = require('modules/data-access/services');
-let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMetadataForDynamoAudit;
-let param = require('api/api-utils/requestParam');
-let versionOf = require('modules/data-access/dynamoVersion').versionOf;
-let removeAuditMetadata = require('modules/data-access/dynamoAudit').removeAuditMetadata;
-const sns = require('modules/sns/EnvironmentManagerEvents');
+let services = require('../../../../modules/data-access/services');
+let getMetadataForDynamoAudit = require('../../../api-utils/requestMetadata').getMetadataForDynamoAudit;
+let param = require('../../../api-utils/requestParam');
+let versionOf = require('../../../../modules/data-access/dynamoVersion').versionOf;
+let removeAuditMetadata = require('../../../../modules/data-access/dynamoAudit').removeAuditMetadata;
+const sns = require('../../../../modules/sns/EnvironmentManagerEvents');
 
-let { hasValue, when } = require('modules/functional');
-let { ifNotFound, notFoundMessage } = require('api/api-utils/ifNotFound');
+let { hasValue, when } = require('../../../../modules/functional');
+let { ifNotFound, notFoundMessage } = require('../../../api-utils/ifNotFound');
 
 function convertToApiModel(persistedModel) {
   let apiModel = removeAuditMetadata(persistedModel);

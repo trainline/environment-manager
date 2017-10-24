@@ -3,7 +3,7 @@
 'use strict';
 
 let assert = require('assert');
-let SecurityGroup = require('models/SecurityGroup');
+let SecurityGroup = require('../../../models/SecurityGroup');
 let _ = require('lodash');
 
 /**

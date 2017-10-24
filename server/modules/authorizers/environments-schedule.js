@@ -3,7 +3,7 @@
 'use strict';
 
 let co = require('co');
-let configEnvironments = require('modules/data-access/configEnvironments');
+let configEnvironments = require('../data-access/configEnvironments');
 let environmentProtection = require('./environmentProtection');
 
 const ACTION = environmentProtection.SCHEDULE_ENVIRONMENT;

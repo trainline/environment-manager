@@ -2,7 +2,7 @@
 
 'use strict';
 
-let getASGState = require('modules/environment-state/getASGState');
+let getASGState = require('../modules/environment-state/getASGState');
 
 module.exports = function GetServerState(query) {
   return getASGState(query.environmentName, query.asgName);

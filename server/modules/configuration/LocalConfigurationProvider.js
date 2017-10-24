@@ -5,7 +5,7 @@
 module.exports = function LocalConfigurationProvider() {
   this.get = () => {
     try {
-      let configuration = require('configuration');
+      let configuration = require('../../configuration.json'); // eslint-disable-line import/no-unresolved
       return Promise.resolve(configuration);
     } catch (error) {
       if (error.code === 'MODULE_NOT_FOUND') {

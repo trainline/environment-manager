@@ -1,7 +1,7 @@
 'use strict';
 
-let Enums = require('Enums');
-let fakeLogger = require('test/utils/fakeLogger');
+let Enums = require('../../Enums');
+let fakeLogger = require('../utils/fakeLogger');
 let fp = require('lodash/fp');
 let proxyquire = require('proxyquire').noCallThru();
 require('should');

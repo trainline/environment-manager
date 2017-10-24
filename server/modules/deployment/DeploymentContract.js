@@ -2,7 +2,7 @@
 
 'use strict';
 
-let deploymentValidators = require('modules/deployment/deploymentValidators');
+let deploymentValidators = require('./deploymentValidators');
 let _ = require('lodash');
 
 class DeploymentContract {

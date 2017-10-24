@@ -1,7 +1,7 @@
 'use strict';
 
 require('should');
-let { createServerRoleFilter } = require('modules/environment-state/serverRoleFilters');
+let { createServerRoleFilter } = require('../../../modules/environment-state/serverRoleFilters');
 
 describe('createServerRoleFilter', function () {
   context('when filtering by no criteria', function () {

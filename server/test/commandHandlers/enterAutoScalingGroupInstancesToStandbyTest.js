@@ -7,7 +7,7 @@ let sinon = require('sinon');
 let should = require('should');
 let rewire = require('rewire');
 let assert = require('assert');
-let InvalidOperationError = require('modules/errors/InvalidOperationError.class');
+let InvalidOperationError = require('../../modules/errors/InvalidOperationError.class');
 
 describe('enterAutoScalingGroupInstancesToStandby', function() {
 

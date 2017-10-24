@@ -3,9 +3,9 @@
 'use strict';
 
 let ms = require('ms');
-let User = require('modules/user');
-let utils = require('modules/utilities');
-let ActiveDirectoryError = require('modules/errors/ActiveDirectoryError.class');
+let User = require('../user');
+let utils = require('../utilities');
+let ActiveDirectoryError = require('../errors/ActiveDirectoryError.class');
 
 function authenticateUser(credentials, duration) {
   if (!credentials.username) {

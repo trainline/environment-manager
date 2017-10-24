@@ -3,8 +3,8 @@
 'use strict';
 
 let url = require('url');
-let sender = require('modules/sender');
-let logger = require('modules/logger');
+let sender = require('../modules/sender');
+let logger = require('../modules/logger');
 
 module.exports = (request, response) => {
   let params = url.parse(request.url, true).query;

@@ -6,7 +6,7 @@ let _ = require('lodash');
 
 function getSlicesByService(serviceName, environmentName, accountName, user) {
   return new Promise((resolve, reject) => {
-    let sender = require('modules/sender');
+    let sender = require('../sender');
 
     let query = {
       name: 'GetSlicesByService',

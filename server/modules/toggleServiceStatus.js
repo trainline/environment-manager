@@ -2,7 +2,7 @@
 
 'use strict';
 
-let sender = require('modules/sender');
+let sender = require('./sender');
 
 function toggleServiceStatus({ environment, service, slice, enable, serverRole, user }) {
   const name = 'ToggleTargetStatus';

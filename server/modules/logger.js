@@ -4,7 +4,7 @@
 
 let winston = require('winston');
 let AWS = require('aws-sdk');
-let config = require('config/');
+let config = require('../config');
 let fp = require('lodash/fp');
 
 const EM_LOG_LEVEL = config.get('EM_LOG_LEVEL').toLowerCase();

@@ -2,10 +2,10 @@
 
 'use strict';
 
-const amazonClientFactory = require('modules/amazon-client/childAccountClient');
+const amazonClientFactory = require('../amazon-client/childAccountClient');
 
-const AwsError = require('modules/errors/AwsError.class');
-const KeyPairNotFoundError = require('modules/errors/KeyPairNotFoundError.class');
+const AwsError = require('../errors/AwsError.class');
+const KeyPairNotFoundError = require('../errors/KeyPairNotFoundError.class');
 
 class KeyPairResource {
 

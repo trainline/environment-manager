@@ -3,10 +3,10 @@
 'use strict';
 
 let co = require('co');
-let configEnvironments = require('modules/data-access/configEnvironments');
-let loadBalancerUpstreams = require('modules/data-access/loadBalancerUpstreams');
-let Environment = require('models/Environment');
-let logger = require('modules/logger');
+let configEnvironments = require('../data-access/configEnvironments');
+let loadBalancerUpstreams = require('../data-access/loadBalancerUpstreams');
+let Environment = require('../../models/Environment');
+let logger = require('../logger');
 
 function getUpstream(upstreamName) {
   return loadBalancerUpstreams.get({ Key: upstreamName });

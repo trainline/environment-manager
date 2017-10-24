@@ -7,7 +7,7 @@ let sinon = require('sinon');
 let rewire = require('rewire');
 let assert = require('assert');
 
-let Instance = require('models/Instance');
+let Instance = require('../../models/Instance');
 
 describe('ScanServersStatus', function() {
 

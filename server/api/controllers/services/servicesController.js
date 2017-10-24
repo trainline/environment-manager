@@ -2,15 +2,15 @@
 
 'use strict';
 
-let serviceDiscovery = require('modules/service-discovery');
-let getSlices = require('queryHandlers/slices/GetSlicesByService');
-let ScanInstances = require('queryHandlers/ScanInstances');
-let toggleSlices = require('commands/slices/ToggleSlicesByService');
-let serviceHealth = require('modules/environment-state/getServiceHealth');
-let overallServiceHealth = require('modules/environment-state/getOverallServiceHealth');
-let metadata = require('commands/utils/metadata');
-let Environment = require('models/Environment');
-let sns = require('modules/sns/EnvironmentManagerEvents');
+let serviceDiscovery = require('../../../modules/service-discovery');
+let getSlices = require('../../../queryHandlers/slices/GetSlicesByService');
+let ScanInstances = require('../../../queryHandlers/ScanInstances');
+let toggleSlices = require('../../../commands/slices/ToggleSlicesByService');
+let serviceHealth = require('../../../modules/environment-state/getServiceHealth');
+let overallServiceHealth = require('../../../modules/environment-state/getOverallServiceHealth');
+let metadata = require('../../../commands/utils/metadata');
+let Environment = require('../../../models/Environment');
+let sns = require('../../../modules/sns/EnvironmentManagerEvents');
 
 function isEmptyResponse(data) {
   return Array.isArray(data) && data.length === 0;

@@ -3,8 +3,8 @@
 'use strict';
 
 let assert = require('assert');
-let ConfigurationError = require('modules/errors/ConfigurationError.class');
-let sender = require('modules/sender');
+let ConfigurationError = require('../../errors/ConfigurationError.class');
+let sender = require('../../sender');
 
 module.exports = {
   get(configuration, accountName) {

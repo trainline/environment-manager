@@ -3,9 +3,9 @@
 'use strict';
 
 let _ = require('lodash');
-let amazonClientFactory = require('modules/amazon-client/childAccountClient');
-let awsAccounts = require('modules/awsAccounts');
-let cacheManager = require('modules/cacheManager');
+let amazonClientFactory = require('../amazon-client/childAccountClient');
+let awsAccounts = require('../awsAccounts');
+let cacheManager = require('../cacheManager');
 let fp = require('lodash/fp');
 
 const USE_CACHE = true;

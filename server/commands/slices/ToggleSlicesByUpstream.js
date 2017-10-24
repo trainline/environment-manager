@@ -9,8 +9,8 @@ let {
   UpstreamProvider,
   UpstreamToggler
  } = require('../utils/toggleSlices');
-let sender = require('modules/sender');
-let Environment = require('models/Environment');
+let sender = require('../../modules/sender');
+let Environment = require('../../models/Environment');
 
 module.exports = function ToggleSlicesByUpstream(command) {
   assert.equal(typeof command.environmentName, 'string');

@@ -3,8 +3,8 @@
 'use strict';
 
 let co = require('co');
-let configurationCache = require('modules/configurationCache');
-let consulSecretCache = require('modules/consulSecretCache');
+let configurationCache = require('../configurationCache');
+let consulSecretCache = require('../consulSecretCache');
 let _ = require('lodash');
 
 function* getConsulClientOptions(parameters) {

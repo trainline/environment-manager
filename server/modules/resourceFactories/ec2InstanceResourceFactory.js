@@ -3,9 +3,9 @@
 'use strict';
 
 let _ = require('lodash');
-let amazonClientFactory = require('modules/amazon-client/childAccountClient');
-let Instance = require('models/Instance');
-let InstanceNotFoundError = require('modules/errors/InstanceNotFoundError.class');
+let amazonClientFactory = require('../amazon-client/childAccountClient');
+let Instance = require('../../models/Instance');
+let InstanceNotFoundError = require('../errors/InstanceNotFoundError.class');
 
 function InstanceResource(client) {
   function flatInstances(data) {

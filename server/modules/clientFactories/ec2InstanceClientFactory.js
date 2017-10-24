@@ -4,7 +4,7 @@
 
 module.exports = {
   create(parameters) {
-    let resourceProvider = require('modules/resourceProvider');
+    let resourceProvider = require('../resourceProvider');
     return resourceProvider.getInstanceByName('instances', parameters);
   }
 };

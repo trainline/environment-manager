@@ -3,11 +3,11 @@
 'use strict';
 
 let assert = require('assert');
-let resourceProvider = require('modules/resourceProvider');
+let resourceProvider = require('../../modules/resourceProvider');
 let co = require('co');
-let sender = require('modules/sender');
-let autoScalingGroupSizePredictor = require('modules/autoScalingGroupSizePredictor');
-let AutoScalingGroup = require('models/AutoScalingGroup');
+let sender = require('../../modules/sender');
+let autoScalingGroupSizePredictor = require('../../modules/autoScalingGroupSizePredictor');
+let AutoScalingGroup = require('../../models/AutoScalingGroup');
 
 module.exports = function ExitAutoScalingGroupInstancesFromStandby(command) {
   assert(command.accountName !== undefined && command.accountName !== null);

@@ -2,8 +2,8 @@
 
 'use strict';
 
-let { appendLogEntries } = require('modules/data-access/deployments');
-let logger = require('modules/logger');
+let { appendLogEntries } = require('./data-access/deployments');
+let logger = require('./logger');
 let timer = require('timers');
 
 module.exports = function DeploymentLogsStreamer() {

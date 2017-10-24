@@ -8,7 +8,7 @@ let assert = require('assert');
 describe('service-targets', function() {
 
   let sut;
-  beforeEach(() => sut = require('modules/service-targets'));
+  beforeEach(() => sut = require('../../../modules/service-targets'));
 
   it('exports the expected API', () => {
     assert.notEqual(sut.getTargetState, undefined, 'getTargetState is required');

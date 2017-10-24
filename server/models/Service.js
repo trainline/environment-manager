@@ -3,7 +3,7 @@
 'use strict';
 
 let _ = require('lodash');
-let servicesDb = require('modules/data-access/services');
+let servicesDb = require('../modules/data-access/services');
 
 class Service {
 

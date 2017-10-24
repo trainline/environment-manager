@@ -8,8 +8,8 @@ let UpstreamProvider = toggleSlices.UpstreamProvider;
 let ToggleUpstreamByServiceVerifier = toggleSlices.ToggleUpstreamByServiceVerifier;
 let UpstreamToggler = toggleSlices.UpstreamToggler;
 let orchestrate = toggleSlices.orchestrate;
-let sender = require('modules/sender');
-let Environment = require('models/Environment');
+let sender = require('../../modules/sender');
+let Environment = require('../../models/Environment');
 
 module.exports = function ToggleSlicesByService(command) {
   assert.equal(typeof command.environmentName, 'string');

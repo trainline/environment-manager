@@ -2,7 +2,7 @@
 
 'use strict';
 
-let userService = require('modules/user-service');
+let userService = require('../user-service');
 
 const PATTERN = /bearer\s+(.*)/i;
 

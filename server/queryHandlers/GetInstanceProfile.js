@@ -2,7 +2,7 @@
 
 'use strict';
 
-let resourceProvider = require('modules/resourceProvider');
+let resourceProvider = require('../modules/resourceProvider');
 
 module.exports = function GetInstanceProfile(query) {
   let parameters = { accountName: query.accountName };

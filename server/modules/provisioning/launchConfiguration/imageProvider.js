@@ -3,9 +3,9 @@
 'use strict';
 
 let assert = require('assert');
-let sender = require('modules/sender');
-let Image = require('modules/provisioning/Image.class');
-let ImageNotFoundError = require('modules/errors/ImageNotFoundError.class');
+let sender = require('../../sender');
+let Image = require('../Image.class');
+let ImageNotFoundError = require('../../errors/ImageNotFoundError.class');
 
 module.exports = {
 

@@ -5,7 +5,7 @@
 let https = require('https');
 
 module.exports = function HttpsServerFactory() {
-  let sslComponentsRepository = new (require('modules/sslComponentsRepository'))();
+  let sslComponentsRepository = new (require('../sslComponentsRepository'))();
 
   this.create = function (application, parameters) {
     return sslComponentsRepository.get().then(

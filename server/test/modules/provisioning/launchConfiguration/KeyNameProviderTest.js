@@ -6,7 +6,7 @@
 let should = require('should');
 let sinon = require('sinon');
 let proxyquire = require('proxyquire');
-let KeyPairNotFoundError = require('modules/errors/KeyPairNotFoundError.class');
+let KeyPairNotFoundError = require('../../../../modules/errors/KeyPairNotFoundError.class');
 
 describe('KeyNameProvider:', () => {
 

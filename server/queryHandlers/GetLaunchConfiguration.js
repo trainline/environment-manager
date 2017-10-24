@@ -3,10 +3,10 @@
 'use strict';
 
 let co = require('co');
-let AutoScalingGroup = require('models/AutoScalingGroup');
-let instanceDevicesProvider = require('modules/provisioning/launchConfiguration/instanceDevicesProvider');
-let Image = require('models/Image');
-let SecurityGroup = require('models/SecurityGroup');
+let AutoScalingGroup = require('../models/AutoScalingGroup');
+let instanceDevicesProvider = require('../modules/provisioning/launchConfiguration/instanceDevicesProvider');
+let Image = require('../models/Image');
+let SecurityGroup = require('../models/SecurityGroup');
 
 let _ = require('lodash');
 

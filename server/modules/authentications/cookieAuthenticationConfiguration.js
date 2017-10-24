@@ -3,7 +3,7 @@
 'use strict';
 
 let assert = require('assert');
-let config = require('config');
+let config = require('../../config');
 
 let cookieConfig;
 
