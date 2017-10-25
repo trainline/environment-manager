@@ -18,8 +18,10 @@ angular.module('EnvironmentManager.operations').component('opsDeploymentsList', 
 
     function refresh() {
       vm.dataLoading = true;
-
-      Deployment.getAll(vm.query).then(function (data) {
+      if (vm.currentRequest) vm.currentRequest.abort();
+      vm.currentRequest = Deployment.getAll(vm.query);
+      vm.currentRequest.then(function (data) {
+        vm.currentRequest = null;
         vm.deployments = data.map(Deployment.convertToListView);
         vm.uniqueServices = _.uniq(data.map(function (d) { return d.Value.ServiceName; }));
         vm.dataLoading = false;

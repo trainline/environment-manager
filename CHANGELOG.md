@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Fixed
+
+- Fixed a bug in the deployments screen where $http requests were not being cancelled properly if the request did not complete and the filter was changed. Incorrect results were being displayed.
+
 ## [6.9.0] 2017-09-26
 
 ### Fixed

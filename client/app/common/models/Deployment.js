@@ -44,12 +44,16 @@ angular.module('EnvironmentManager.common').factory('Deployment',
     });
 
     Deployment.getAll = function (params) {
-      return $http({
+      var cancellable = $q.defer();
+      var promise = $http({
         url: baseUrl,
-        params: params
+        params: params,
+        timeout: cancellable.promise
       }).then(function (response) {
         return response.data;
       });
+      promise.abort = function(){ cancellable.resolve(); }
+      return promise;
     };
 
     Deployment.getById = function (accountName, deploymentId) {
