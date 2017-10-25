@@ -95,6 +95,12 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - Environment Manager Sensu Alerts for Node
 - [Truncation of service version identifiers at 50 characters in the UI](https://gitlab.tools.trainline.eu/capitainetrain/mweb/issues/487). Service version identifiers now limited to 100 characters in UI and API. User notified if a longer version identifier is pasted into UI. [#347]
 
+## Unreleased
+
+### Fixed
+
+- Fixed a bug in the deployments screen where $http requests were not being cancelled properly if the request did not complete and the filter was changed. Incorrect results were being displayed.
+
 ## [6.9.0] 2017-09-26
 
 ### Fixed
