@@ -8,7 +8,7 @@ let schema = require('../../modules/schema/schema');
 
 module.exports = function GetTargetState(query) {
   return co(function* () {
-    yield schema('GetTargetStateQuery').then(x => x.conform(query));
+    yield schema('GetTargetStateQuery').then(x => x.assert(query));
 
     let key = query.key;
     let recurse = query.recurse;

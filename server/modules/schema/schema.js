@@ -1,69 +1,59 @@
 'use strict';
 
+let fs = require('fs');
+let path = require('path');
 let Ajv = require('ajv');
+let Promise = require('bluebird');
 
-function loadSchema(schemaId) {
-  return require(`./${schemaId}`);
+const readFile = Promise.promisify(fs.readFile);
+
+function loadSchema(schemaId, callback) {
+  return readFile(path.resolve(__dirname, `${schemaId}.json`), 'utf-8')
+    .then(text => JSON.parse(text))
+    .asCallback(callback);
 }
 
 const options = {
   allErrors: true,
   format: 'fast',
-  loadSchema: (uri, callback) => {
-    try {
-      let schema = loadSchema(uri);
-      if (schema) {
-        callback(null, schema);
-      } else {
-        callback(new Error(`Could not find schema ${uri}.`));
-      }
-    } catch (error) {
-      callback(error);
-    }
-  }
+  loadSchema
 };
 
 const ajv = new Ajv(options);
+const compileAsync = Promise.promisify(ajv.compileAsync.bind(ajv));
 
 function validator(schemaId) {
   return getSchema(schemaId).then((validate) => {
-    let conform = (value, callback) => {
+    let test = (value) => {
+      if (validate(value)) {
+        return [null, value];
+      } else {
+        let errors = validate.errors;
+        return [errors];
+      }
+    };
+
+    let assert = (value) => {
       if (validate(value)) {
         return true;
       } else {
         let errors = validate.errors;
-        if (callback) {
-          callback(errors);
-        } else {
-          throw new Error(JSON.stringify(errors, null, 4));
-        }
-        return false;
+        throw new Error(JSON.stringify(errors, null, 4));
       }
     };
 
     return {
-      conform
+      assert,
+      test
     };
   });
 }
 
 function getSchema(schemaId) {
   let validate = ajv.getSchema(schemaId);
-  if (validate) {
-    return Promise.resolve(validate);
-  } else {
-    return new Promise((resolve, reject) => {
-      let rawSchema = loadSchema(schemaId);
-      ajv.addSchema(rawSchema);
-      ajv.compileAsync(rawSchema, (error, schema) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(schema);
-        }
-      });
-    });
-  }
+  return validate
+    ? Promise.resolve(validate)
+    : loadSchema(schemaId).then(schema => compileAsync(schema));
 }
 
 module.exports = validator;

@@ -8,7 +8,7 @@ let schema = require('../../modules/schema/schema');
 
 module.exports = function DeleteTargetState(command) {
   return co(function* () {
-    yield schema('DeleteTargetStateCommand').then(x => x.conform(command));
+    yield schema('DeleteTargetStateCommand').then(x => x.assert(command));
 
     let key = command.key;
     return yield serviceTargets.removeTargetState(command.environment, { key });
