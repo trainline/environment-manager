@@ -5,18 +5,15 @@
 let _ = require('lodash');
 let moment = require('moment');
 let co = require('co');
-let sender = require('../modules/sender');
 let EnvironmentType = require('./EnvironmentType');
 let Environment = require('./Environment');
 let serviceTargets = require('../modules/service-targets');
-const asgResourceFactory = require('../modules/resourceFactories/asgResourceFactory');
-const launchConfigurationResourceFactory = require('../modules/resourceFactories/launchConfigurationResourceFactory');
 let logger = require('../modules/logger');
 let TaggableMixin = require('./TaggableMixin');
-let GetAutoScalingGroup = require('../queryHandlers/GetAutoScalingGroup');
-let ScanAutoScalingGroups = require('../queryHandlers/ScanAutoScalingGroups');
+let AsgResourceBase = require('../modules/resourceFactories/AsgResourceBase');
+let launchConfigurationResourceFactory = require('../modules/resourceFactories/launchConfigurationResourceFactory');
 
-class AutoScalingGroup {
+const AutoScalingGroup = TaggableMixin(class {
 
   constructor(data) {
     _.assign(this, data);
@@ -29,7 +26,7 @@ class AutoScalingGroup {
       if (name === undefined) {
         throw new Error(`Launch configuration doesn't exist for ${self.AutoScalingGroupName}`);
       }
-      let client = yield launchConfigurationResourceFactory.create(undefined, { accountName: self.$accountName });
+      let client = yield launchConfigurationResourceFactory.create(null, { accountName: self.$accountName });
       return client.get({ name });
     });
   }
@@ -47,8 +44,8 @@ class AutoScalingGroup {
     let self = this;
     return co(function* () {
       let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-      let asgResource = yield asgResourceFactory.create(undefined, { accountName });
-      let launchConfigResource = yield launchConfigurationResourceFactory.create(undefined, { accountName });
+      let asgResource = yield new AsgResourceBase(accountName);
+      let launchConfigResource = yield launchConfigurationResourceFactory.create(null, { accountName });
       logger.info(`Deleting AutoScalingGroup ${self.AutoScalingGroupName} and associated Launch configuration ${self.LaunchConfigurationName}`);
 
       yield asgResource.delete({ name: self.AutoScalingGroupName, force: true });
@@ -68,38 +65,31 @@ class AutoScalingGroup {
   }
 
   static getByName(accountName, autoScalingGroupName) {
-    return co(function* () {
-      let query = {
-        name: 'GetAutoScalingGroup',
-        accountName,
-        autoScalingGroupName
-      };
-
-      let data = yield sender.sendQuery(GetAutoScalingGroup, { query });
-      data.$accountName = accountName;
-      data.$autoScalingGroupName = autoScalingGroupName;
-      return data;
-    });
+    let asgResourceBase = new AsgResourceBase(accountName);
+    return asgResourceBase.get({ name: autoScalingGroupName })
+      .then((asg) => {
+        let data = new AutoScalingGroup(asg);
+        data.$accountName = accountName;
+        data.$autoScalingGroupName = autoScalingGroupName;
+        return data;
+      });
   }
 
   static getAllByEnvironment(environmentName) {
     return co(function* () {
       let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
       let startTime = moment.utc();
+      let asgResourceBase = new AsgResourceBase(accountName);
 
-      return sender.sendQuery(ScanAutoScalingGroups, {
-        query: {
-          name: 'ScanAutoScalingGroups',
-          accountName
-        }
-      }).then((result) => {
+      return asgResourceBase.all({ names: undefined }).then((asgs = []) => {
         let duration = moment.duration(moment.utc().diff(startTime)).asMilliseconds();
         logger.debug(`server-status-query: AllAsgsQuery took ${duration}ms`);
-        return _.filter(result, asg => asg.getTag('Environment', '') === environmentName);
+        return asgs
+          .map(asg => new AutoScalingGroup(asg))
+          .filter(asg => asg.getTag('Environment', '') === environmentName);
       });
     });
   }
+});
 
-}
-
-module.exports = TaggableMixin(AutoScalingGroup);
+module.exports = AutoScalingGroup;
