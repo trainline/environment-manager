@@ -3,7 +3,7 @@
 'use strict';
 
 let should = require('should');
-let weblink = require('modules/weblink');
+let weblink = require('../../modules/weblink');
 
 describe('weblink', function () {
   describe('link', function () {

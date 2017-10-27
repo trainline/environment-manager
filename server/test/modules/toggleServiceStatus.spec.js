@@ -9,7 +9,7 @@ describe('toggleServiceStatus', () => {
   let senderSpy;
 
   beforeEach(() => {
-    sut = rewire('modules/toggleServiceStatus');
+    sut = rewire('../../modules/toggleServiceStatus');
     senderSpy = sinon.spy();
     // eslint-disable-next-line no-underscore-dangle
     sut.__set__('sender', {

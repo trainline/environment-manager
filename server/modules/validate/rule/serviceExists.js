@@ -2,8 +2,8 @@
 
 'use strict';
 
-let log = require('modules/logger');
-let servicesDb = require('modules/data-access/services');
+let log = require('../../logger');
+let servicesDb = require('../../data-access/services');
 
 /* Returns an error in the format specified at http://jsonapi.org/format/#errors
  * if the service does not exist.

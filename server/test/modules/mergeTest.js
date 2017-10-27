@@ -2,7 +2,7 @@
 
 'use strict';
 
-let merge = require('modules/merge');
+let merge = require('../../modules/merge');
 let should = require('should');
 
 describe('merge', function () {

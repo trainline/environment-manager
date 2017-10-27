@@ -6,9 +6,9 @@
 let should = require('should');
 let sinon = require('sinon');
 let rewire = require('rewire');
-let deploymentMonitor = rewire('modules/monitoring/DeploymentMonitor');
-let NodeDeploymentStatus = require('Enums').NodeDeploymentStatus;
-let Enums = require('Enums');
+let deploymentMonitor = rewire('../../modules/monitoring/DeploymentMonitor');
+let NodeDeploymentStatus = require('../../Enums').NodeDeploymentStatus;
+let Enums = require('../../Enums');
 
 describe('DeploymentMonitor', () => {
 

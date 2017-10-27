@@ -3,10 +3,10 @@
 'use strict';
 
 let _ = require('lodash');
-let logicalTableName = require('api/api-utils/logicalTableName');
-let { getTableName } = require('modules/awsResourceNameProvider');
-const sns = require('modules/sns/EnvironmentManagerEvents');
-let dynamoImport = require('modules/data-access/dynamoImport');
+let logicalTableName = require('../../../api-utils/logicalTableName');
+let { getTableName } = require('../../../../modules/awsResourceNameProvider');
+const sns = require('../../../../modules/sns/EnvironmentManagerEvents');
+let dynamoImport = require('../../../../modules/data-access/dynamoImport');
 
 /**
  * PUT /config/import/{resource}

@@ -105,9 +105,9 @@ describe("caching", function () {
   }
 
   context('when Redis is unavailable', function () {
-    let cacheManager = proxyquire('modules/cacheManager', {
-      'config': useRedis,
-      'modules/data-access/cacheManagerEncryptedRedis': {
+    let cacheManager = proxyquire('../../modules/cacheManager', {
+      '../config': useRedis,
+      './data-access/cacheManagerEncryptedRedis': {
         create: () => ({
           del: (k, _, cb) => cb(null, undefined),
           get: (k, _, cb) => cb(null, undefined),
@@ -120,9 +120,9 @@ describe("caching", function () {
   });
 
   context('when Redis is available', function () {
-    let cacheManager = proxyquire('modules/cacheManager', {
-      'config': useRedis,
-      'modules/data-access/cacheManagerEncryptedRedis': (() => {
+    let cacheManager = proxyquire('../../modules/cacheManager', {
+      '../config': useRedis,
+      './data-access/cacheManagerEncryptedRedis': (() => {
         let db = new Map();
         return {
           create: () => ({

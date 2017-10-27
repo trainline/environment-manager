@@ -3,9 +3,9 @@
 'use strict';
 
 let co = require('co');
-let AwsError = require('modules/errors/AwsError.class');
-let RoleNotFoundError = require('modules/errors/RoleNotFoundError.class');
-let amazonClientFactory = require('modules/amazon-client/childAccountClient');
+let AwsError = require('../errors/AwsError.class');
+let RoleNotFoundError = require('../errors/RoleNotFoundError.class');
+let amazonClientFactory = require('../amazon-client/childAccountClient');
 
 module.exports = function IAMRoleClient(accountName) {
   this.get = function (parameters) {

@@ -7,7 +7,7 @@ let sinon = require('sinon');
 let rewire = require('rewire');
 let assert = require('assert');
 
-let Instance = require('models/Instance');
+let Instance = require('../../models/Instance');
 
 describe('ScanServersStatus', function() {
 
@@ -101,7 +101,7 @@ describe('ScanServersStatus', function() {
   };
 
   beforeEach(() => {
-    sut = rewire('queryHandlers/ScanServersStatus');
+    sut = rewire('../../queryHandlers/ScanServersStatus');
     sut.__set__({
       sender,
       Instance: InstanceMock,

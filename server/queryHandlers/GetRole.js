@@ -2,7 +2,7 @@
 
 'use strict';
 
-let iamRoleClientFactory = require('modules/clientFactories/iamRoleClientFactory');
+let iamRoleClientFactory = require('../modules/clientFactories/iamRoleClientFactory');
 
 module.exports = function GetRoleQueryHandler(query) {
   return iamRoleClientFactory

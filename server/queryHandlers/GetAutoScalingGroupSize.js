@@ -2,7 +2,7 @@
 
 'use strict';
 
-let getASG = require('modules/queryHandlersUtil/getASG');
+let getASG = require('../modules/queryHandlersUtil/getASG');
 let assert = require('assert');
 
 function convertToGroupSize(autoScalingGroup) {

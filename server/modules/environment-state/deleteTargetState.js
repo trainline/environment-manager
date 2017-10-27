@@ -4,7 +4,7 @@
 
 let co = require('co');
 let assert = require('assert');
-let serviceTargets = require('modules/service-targets');
+let serviceTargets = require('../service-targets');
 
 function scanAndDelete({ environmentName, keyPrefix, condition }) {
   return co(function* () {

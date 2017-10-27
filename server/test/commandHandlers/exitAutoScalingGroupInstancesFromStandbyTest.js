@@ -7,7 +7,7 @@ let sinon = require('sinon');
 let should = require('should');
 let rewire = require('rewire');
 let assert = require('assert');
-let InvalidOperationError = require('modules/errors/InvalidOperationError.class');
+let InvalidOperationError = require('../../modules/errors/InvalidOperationError.class');
 
 describe('exitAutoScalingGroupInstancesToStandby', function() {
 
@@ -50,7 +50,7 @@ describe('exitAutoScalingGroupInstancesToStandby', function() {
       sendCommand: sinon.stub().returns(Promise.resolve())
     };
 
-    sut = rewire('commands/asg/ExitAutoScalingGroupInstancesFromStandby.js');
+    sut = rewire('../../commands/asg/ExitAutoScalingGroupInstancesFromStandby.js');
     sut.__set__({
       sender: senderMock,
       resourceProvider: resourceProviderMock,

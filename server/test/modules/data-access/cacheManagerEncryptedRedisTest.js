@@ -5,7 +5,7 @@
 'use strict'
 
 require('should');
-let emCrypto = require('modules/emCrypto');
+let emCrypto = require('../../../modules/emCrypto');
 let fp = require('lodash/fp');
 let proxyquire = require('proxyquire');
 let timers = require('timers');
@@ -41,9 +41,9 @@ describe('encrypted Redis cache manager', function () {
                 };
             }
 
-            sut = proxyquire('modules/data-access/cacheManagerEncryptedRedis', {
+            sut = proxyquire('../../../modules/data-access/cacheManagerEncryptedRedis', {
                 'ioredis': fakeRedis,
-                'modules/logger': silent,
+                '../logger': silent,
             });
         });
 
@@ -96,9 +96,9 @@ describe('encrypted Redis cache manager', function () {
                 };
             }
 
-            sut = proxyquire('modules/data-access/cacheManagerEncryptedRedis', {
+            sut = proxyquire('../../../modules/data-access/cacheManagerEncryptedRedis', {
                 'ioredis': fakeRedis,
-                'modules/logger': silent,
+                '../logger': silent,
             });
         });
 
@@ -131,9 +131,9 @@ describe('encrypted Redis cache manager', function () {
                 };
             }
 
-            sut = proxyquire('modules/data-access/cacheManagerEncryptedRedis', {
+            sut = proxyquire('../../../modules/data-access/cacheManagerEncryptedRedis', {
                 'ioredis': fakeRedis,
-                'modules/logger': silent,
+                '../logger': silent,
             });
         });
 

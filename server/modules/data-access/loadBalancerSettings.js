@@ -5,7 +5,7 @@
 const LOGICAL_TABLE_NAME = 'InfraConfigLBSettings';
 const TTL = 600; // seconds
 
-let { getTableName: physicalTableName } = require('modules/awsResourceNameProvider');
-let cachedSingleAccountDynamoTable = require('modules/data-access/cachedSingleAccountDynamoTable');
+let { getTableName: physicalTableName } = require('../awsResourceNameProvider');
+let cachedSingleAccountDynamoTable = require('./cachedSingleAccountDynamoTable');
 
 module.exports = cachedSingleAccountDynamoTable(physicalTableName(LOGICAL_TABLE_NAME), { ttl: TTL });

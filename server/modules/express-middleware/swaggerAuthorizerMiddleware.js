@@ -3,7 +3,7 @@
 'use strict';
 
 let _ = require('lodash');
-let authorization = require('modules/authorization');
+let authorization = require('../authorization');
 
 function authorize(req, res, next) {
   if (req.swagger === undefined) {

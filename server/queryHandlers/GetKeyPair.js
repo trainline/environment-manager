@@ -3,7 +3,7 @@
 'use strict';
 
 let assert = require('assert');
-let keypairFactory = require('modules/factories/keypairFactory');
+let keypairFactory = require('../modules/factories/keypairFactory');
 
 module.exports = function GetKeyPairQueryHandler({ accountName, keyName }) {
   assert(accountName);

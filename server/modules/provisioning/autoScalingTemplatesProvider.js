@@ -4,10 +4,10 @@
 
 let assert = require('assert');
 let co = require('co');
-let topicNotificationMappingProvider = require('modules/provisioning/autoScaling/topicNotificationMappingProvider');
-let namingConventionProvider = require('modules/provisioning/namingConventionProvider');
-let subnetsProvider = require('modules/provisioning/autoScaling/subnetsProvider');
-let tagsProvider = require('modules/provisioning/autoScaling/tagsProvider');
+let topicNotificationMappingProvider = require('./autoScaling/topicNotificationMappingProvider');
+let namingConventionProvider = require('./namingConventionProvider');
+let subnetsProvider = require('./autoScaling/subnetsProvider');
+let tagsProvider = require('./autoScaling/tagsProvider');
 
 module.exports = {
   get(configuration, accountName) {

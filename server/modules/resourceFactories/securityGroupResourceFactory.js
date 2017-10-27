@@ -2,7 +2,7 @@
 
 'use strict';
 
-let amazonClientFactory = require('modules/amazon-client/childAccountClient');
+let amazonClientFactory = require('../amazon-client/childAccountClient');
 let SecurityGroupResource = require('./SecurityGroupResource');
 
 module.exports = {

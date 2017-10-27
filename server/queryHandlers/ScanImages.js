@@ -3,8 +3,8 @@
 'use strict';
 
 let co = require('co');
-let resourceProvider = require('modules/resourceProvider');
-let imageSummary = require('modules/machineImage/imageSummary');
+let resourceProvider = require('../modules/resourceProvider');
+let imageSummary = require('../modules/machineImage/imageSummary');
 let assert = require('assert');
 
 /**

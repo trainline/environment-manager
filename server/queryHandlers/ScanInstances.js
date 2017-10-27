@@ -2,7 +2,7 @@
 
 'use strict';
 
-let resourceProvider = require('modules/resourceProvider');
+let resourceProvider = require('../modules/resourceProvider');
 let co = require('co');
 
 module.exports = function ScanInstancesQueryHandler({ accountName, filter }) {

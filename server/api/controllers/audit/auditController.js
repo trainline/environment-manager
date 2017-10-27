@@ -2,14 +2,14 @@
 
 'use strict';
 
-let notImplemented = require('api/api-utils/notImplemented');
-let { getTableName } = require('modules/awsResourceNameProvider');
+let notImplemented = require('../../api-utils/notImplemented');
+let { getTableName } = require('../../../modules/awsResourceNameProvider');
 
 /* eslint-disable import/no-extraneous-dependencies */
-let auditLogReader = require('modules/auditLogReader');
-let base64 = require('modules/base64');
-let logger = require('modules/logger');
-let weblink = require('modules/weblink');
+let auditLogReader = require('../../../modules/auditLogReader');
+let base64 = require('../../../modules/base64');
+let logger = require('../../../modules/logger');
+let weblink = require('../../../modules/weblink');
 /* eslint-enable import/no-extraneous-dependencies */
 
 let fp = require('lodash/fp');

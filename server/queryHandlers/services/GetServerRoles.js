@@ -2,9 +2,9 @@
 
 'use strict';
 
-let serviceTargets = require('modules/service-targets');
+let serviceTargets = require('../../modules/service-targets');
 let _ = require('lodash');
-let { createServerRoleFilter } = require('modules/environment-state/serverRoleFilters');
+let { createServerRoleFilter } = require('../../modules/environment-state/serverRoleFilters');
 
 function toRoleGroups(results) {
   let hash = _.groupBy(results, getRole);

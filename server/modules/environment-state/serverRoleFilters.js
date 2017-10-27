@@ -1,7 +1,7 @@
 'use strict';
 
-let { ServiceAction: { INSTALL } } = require('Enums');
-let { format } = require('modules/serviceName');
+let { ServiceAction: { INSTALL } } = require('../../Enums');
+let { format } = require('../serviceName');
 let fp = require('lodash/fp');
 
 function createServerRoleFilter({ serviceName, slice, serverRole }) {

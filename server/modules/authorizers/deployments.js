@@ -3,7 +3,7 @@
 'use strict';
 
 let co = require('co');
-let deploymentsHelper = require('modules/queryHandlersUtil/deployments-helper');
+let deploymentsHelper = require('../queryHandlersUtil/deployments-helper');
 
 module.exports = {
   getRules(request) {

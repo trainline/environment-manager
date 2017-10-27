@@ -23,8 +23,8 @@ let {
   toPairs,
   uniq
 } = require('lodash/fp');
-let { valueOfTag } = require('modules/consulDataStructures');
-let serviceName = require('modules/serviceName');
+let { valueOfTag } = require('../consulDataStructures');
+let serviceName = require('../serviceName');
 
 let valueOfAwsTag = key => flow(get('Tags'), find(tag => tag.Key === key), get('Value'));
 

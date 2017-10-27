@@ -2,8 +2,8 @@
 
 'use strict';
 
-let environments = require('modules/data-access/configEnvironments');
-let environmentTypes = require('modules/data-access/configEnvironmentTypes');
+let environments = require('./configEnvironments');
+let environmentTypes = require('./configEnvironmentTypes');
 
 function getEnvironmentType(environmentName) {
   let rejectIfNotFound = msg => obj => (obj !== null ? Promise.resolve(obj) : Promise.reject(new Error(msg)));

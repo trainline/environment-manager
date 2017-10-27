@@ -6,7 +6,7 @@
 let should = require('should');
 let sinon = require('sinon');
 let rewire = require('rewire');
-let Target = rewire('commands/asg/SetAutoScalingGroupSchedule');
+let Target = rewire('../../commands/asg/SetAutoScalingGroupSchedule');
 
 describe('SetAutoScalingGroupScheduleCommandHandler:', () => {
 

@@ -3,7 +3,7 @@
 'use strict';
 
 let _ = require('lodash');
-let sender = require('modules/sender');
+let sender = require('../modules/sender');
 let co = require('co');
 
 class Image {

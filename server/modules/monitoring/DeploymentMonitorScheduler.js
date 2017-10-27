@@ -2,8 +2,8 @@
 
 'use strict';
 
-let logger = require('modules/logger');
-let deploymentMonitor = require('modules/monitoring/DeploymentMonitor');
+let logger = require('../logger');
+let deploymentMonitor = require('./DeploymentMonitor');
 const MAX_MONITOR_INTERVAL = 60;
 const MIN_MONITOR_INTERVAL = 45;
 

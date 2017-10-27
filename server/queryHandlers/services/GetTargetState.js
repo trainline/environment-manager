@@ -3,8 +3,8 @@
 'use strict';
 
 let co = require('co');
-let serviceTargets = require('modules/service-targets');
-let schema = require('modules/schema/schema');
+let serviceTargets = require('../../modules/service-targets');
+let schema = require('../../modules/schema/schema');
 
 module.exports = function GetTargetState(query) {
   return co(function* () {

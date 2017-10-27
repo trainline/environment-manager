@@ -2,11 +2,11 @@
 
 'use strict';
 
-let scheduling = require('modules/scheduling');
-let cronService = require('modules/cronService')();
+let scheduling = require('../modules/scheduling');
+let cronService = require('../modules/cronService')();
 
 function getAutoScalingGroup(query) {
-  let sender = require('modules/sender');
+  let sender = require('../modules/sender');
   let childQuery = {
     name: 'GetAutoScalingGroup',
     accountName: query.accountName,
@@ -16,7 +16,7 @@ function getAutoScalingGroup(query) {
 }
 
 function getAutoScalingGroupScheduledActions(query) {
-  let sender = require('modules/sender');
+  let sender = require('../modules/sender');
   let childQuery = {
     name: 'GetAutoScalingGroupScheduledActions',
     accountName: query.accountName,
@@ -32,7 +32,7 @@ function maybeGetEnvironmentDefaultSchedule(schedule, query) {
     });
   }
 
-  let sender = require('modules/sender');
+  let sender = require('../modules/sender');
 
   let childQuery = {
     name: 'GetEnvironmentScheduleStatus',

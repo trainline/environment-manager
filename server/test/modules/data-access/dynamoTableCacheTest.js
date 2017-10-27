@@ -5,15 +5,15 @@ let sinon = require('sinon');
 let proxyquire = require('proxyquire');
 
 function dynamoTableCache(dynamoTable, cache) {
-  return proxyquire('modules/data-access/dynamoTableCache', {
-    'modules/cacheManager': {
+  return proxyquire('../../../modules/data-access/dynamoTableCache', {
+    '../cacheManager': {
       create: () => cache
     },
-    'modules/data-access/dynamoTable': dynamoTable
+    './dynamoTable': dynamoTable
   })('some-table', 10);
 }
 
-describe('dynamoTableArn', function () {
+describe('dynamoTableCache', function () {
   let tableName = 'some-table';
 
   describe('create', function () {

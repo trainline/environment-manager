@@ -6,7 +6,7 @@
 let should = require('should');
 let sinon = require('sinon');
 
-let ConsulManager = require('modules/service-targets/consul/ConsulManager');
+let ConsulManager = require('../../../modules/service-targets/consul/ConsulManager');
 
 describe(`ConsulManager:`, () => {
   let consulClientMock;

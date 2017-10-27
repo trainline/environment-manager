@@ -5,13 +5,13 @@
 let assert = require('assert');
 let co = require('co');
 
-let namingConventionProvider = require('modules/provisioning/namingConventionProvider');
-let iamInstanceProfileNameProvider = require('modules/provisioning/launchConfiguration/iamInstanceProfileNameProvider');
-let instanceDevicesProvider = require('modules/provisioning/launchConfiguration/instanceDevicesProvider');
-let securityGroupsProvider = require('modules/provisioning/launchConfiguration/securityGroupsProvider');
-let userDataProvider = require('modules/provisioning/launchConfiguration/userDataProvider');
-let keyNameProvider = require('modules/provisioning/launchConfiguration/keyNameProvider');
-let imageProvider = require('modules/provisioning/launchConfiguration/imageProvider');
+let namingConventionProvider = require('./namingConventionProvider');
+let iamInstanceProfileNameProvider = require('./launchConfiguration/iamInstanceProfileNameProvider');
+let instanceDevicesProvider = require('./launchConfiguration/instanceDevicesProvider');
+let securityGroupsProvider = require('./launchConfiguration/securityGroupsProvider');
+let userDataProvider = require('./launchConfiguration/userDataProvider');
+let keyNameProvider = require('./launchConfiguration/keyNameProvider');
+let imageProvider = require('./launchConfiguration/imageProvider');
 
 module.exports = {
   get(configuration, accountName, logger) {

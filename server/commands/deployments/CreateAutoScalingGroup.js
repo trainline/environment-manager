@@ -4,8 +4,8 @@
 
 let assert = require('assert');
 let co = require('co');
-let DeploymentCommandHandlerLogger = require('commands/deployments/DeploymentCommandHandlerLogger');
-let autoScalingGroupClientFactory = require('modules/clientFactories/autoScalingGroupClientFactory');
+let DeploymentCommandHandlerLogger = require('./DeploymentCommandHandlerLogger');
+let autoScalingGroupClientFactory = require('../../modules/clientFactories/autoScalingGroupClientFactory');
 
 module.exports = function CreateAutoScalingGroupCommandHandler(command) {
   let logger = new DeploymentCommandHandlerLogger(command);

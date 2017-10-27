@@ -2,7 +2,7 @@
 
 'use strict';
 
-let resourceProvider = require('modules/resourceProvider');
+let resourceProvider = require('../modules/resourceProvider');
 
 module.exports = function ScanSecurityGroupsQueryHandler(query) {
   let parameters = { accountName: query.accountName };

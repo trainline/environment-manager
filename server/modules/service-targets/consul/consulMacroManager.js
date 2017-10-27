@@ -4,7 +4,7 @@
 
 let ConsulManager = require('./ConsulManager');
 let co = require('co');
-let consulClient = require('modules/consul-client');
+let consulClient = require('../../consul-client');
 
 function* setInstanceMaintenanceMode(accountName, host, environment, enable) {
   let options = { accountName, host, environment };

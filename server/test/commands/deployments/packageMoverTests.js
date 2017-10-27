@@ -17,8 +17,8 @@ function fakeLogger() {
 describe('packageMover', function () {
   describe('downloadPackage', function () {
     it('when S3 GetObject throws an exception it is returned as a rejected Promise', function () {
-      let packageMover = proxyquire('commands/deployments/packageMover', {
-        'modules/amazon-client/s3Url': {
+      let packageMover = proxyquire('../../../commands/deployments/packageMover', {
+        '../../modules/amazon-client/s3Url': {
           getObject: () => { throw new Error('BOOM!'); },
           parse: () => true
         }
@@ -30,8 +30,8 @@ describe('packageMover', function () {
     });
     it('when S3 GetObject stream emits an error it is logged', function () {
       let downloadStream = new stream.Readable();
-      let packageMover = proxyquire('commands/deployments/packageMover', {
-        'modules/amazon-client/s3Url': {
+      let packageMover = proxyquire('../../../commands/deployments/packageMover', {
+        '../../modules/amazon-client/s3Url': {
           getObject: () => downloadStream,
           parse: () => true
         }

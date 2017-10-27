@@ -2,10 +2,10 @@
 
 'use strict';
 
-let GetServerRoles = require('queryHandlers/services/GetServerRoles');
-let deleteTargetState = require('modules/environment-state/deleteTargetState');
-const { toggleServiceStatus } = require('modules/toggleServiceStatus');
-const sns = require('modules/sns/EnvironmentManagerEvents');
+let GetServerRoles = require('../../../queryHandlers/services/GetServerRoles');
+let deleteTargetState = require('../../../modules/environment-state/deleteTargetState');
+const { toggleServiceStatus } = require('../../../modules/toggleServiceStatus');
+const sns = require('../../../modules/sns/EnvironmentManagerEvents');
 
 /**
  * GET /target-state/{environment}

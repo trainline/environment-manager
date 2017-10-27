@@ -3,10 +3,10 @@
 'use strict';
 
 let _ = require('lodash');
-let amazonClientFactory = require('modules/amazon-client/childAccountClient');
+let amazonClientFactory = require('../amazon-client/childAccountClient');
 
-let AwsError = require('modules/errors/AwsError.class');
-let LaunchConfigurationAlreadyExistsError = require('modules/errors/LaunchConfigurationAlreadyExistsError.class');
+let AwsError = require('../errors/AwsError.class');
+let LaunchConfigurationAlreadyExistsError = require('../errors/LaunchConfigurationAlreadyExistsError.class');
 
 function standardifyError(error, launchConfigurationName) {
   if (!error) return null;

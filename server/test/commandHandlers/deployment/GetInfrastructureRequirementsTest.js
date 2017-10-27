@@ -3,12 +3,12 @@
 'use strict';
 
 let sinon = require('sinon');
-let sinonHelper = require('test/utils/sinonHelper');
+let sinonHelper = require('../../utils/sinonHelper');
 let proxyquire = require('proxyquire');
 let assert = require('assert');
 
-let AutoScalingGroupAlreadyExistsError = require('modules/errors/AutoScalingGroupAlreadyExistsError.class');
-let Deployment = require('models/Deployment');
+let AutoScalingGroupAlreadyExistsError = require('../../../modules/errors/AutoScalingGroupAlreadyExistsError.class');
+let Deployment = require('../../../models/Deployment');
 
 let ENVIRONMENT_NAME = 'pr1';
 let SERVICE_NAME = 'MyService';
@@ -59,11 +59,11 @@ describe('GetInfrastructureRequirements:', () => {
       }
     };
 
-    let mod = proxyquire('commands/deployments/GetInfrastructureRequirements', {
-      'modules/provisioning/autoScalingTemplatesProvider': mocks.autoScalingTemplatesProvider,
-      'modules/sender': mocks.sender,
-      'modules/provisioning/infrastructureConfigurationProvider': mocks.infrastructureConfigurationProvider,
-      'modules/provisioning/launchConfigurationTemplatesProvider': mocks.launchConfigurationTemplatesProvider
+    let mod = proxyquire('../../../commands/deployments/GetInfrastructureRequirements', {
+      '../../modules/provisioning/autoScalingTemplatesProvider': mocks.autoScalingTemplatesProvider,
+      '../../modules/sender': mocks.sender,
+      '../../modules/provisioning/infrastructureConfigurationProvider': mocks.infrastructureConfigurationProvider,
+      '../../modules/provisioning/launchConfigurationTemplatesProvider': mocks.launchConfigurationTemplatesProvider
     });
     return mod;
   }

@@ -2,8 +2,8 @@
 
 'use strict';
 
-let S3PathContract = require('modules/deployment/S3PathContract');
-let configCache = require('modules/configurationCache');
+let S3PathContract = require('./deployment/S3PathContract');
+let configCache = require('./configurationCache');
 
 module.exports = function PackagePathProvider() {
   this.getS3Path = function (deployment) {

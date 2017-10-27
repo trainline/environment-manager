@@ -6,14 +6,14 @@ const LOGICAL_TABLE_NAME = 'InfraConfigLBUpstream';
 
 let {
   getTableName: physicalTableName
-} = require('modules/awsResourceNameProvider');
-let pages = require('modules/amazon-client/pages');
-let { compile } = require('modules/awsDynamo/dynamodbExpression');
-let { updateAuditMetadata } = require('modules/data-access/dynamoAudit');
-let { createDynamoClient: documentClient } = require('modules/amazon-client/masterAccountClient');
-let dynamoTable = require('modules/data-access/dynamoTable');
-let singleAccountDynamoTable = require('modules/data-access/singleAccountDynamoTable');
-let { setVersionOnUpdate } = require('modules/data-access/dynamoVersion');
+} = require('../awsResourceNameProvider');
+let pages = require('../amazon-client/pages');
+let { compile } = require('../awsDynamo/dynamodbExpression');
+let { updateAuditMetadata } = require('./dynamoAudit');
+let { createDynamoClient: documentClient } = require('../amazon-client/masterAccountClient');
+let dynamoTable = require('./dynamoTable');
+let singleAccountDynamoTable = require('./singleAccountDynamoTable');
+let { setVersionOnUpdate } = require('./dynamoVersion');
 
 const TABLE_NAME = physicalTableName(LOGICAL_TABLE_NAME);
 

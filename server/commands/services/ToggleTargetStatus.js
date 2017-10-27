@@ -3,8 +3,8 @@
 'use strict';
 
 let co = require('co');
-let serviceTargets = require('modules/service-targets');
-let Enums = require('Enums');
+let serviceTargets = require('../../modules/service-targets');
+let Enums = require('../../Enums');
 
 const SERVICE_INSTALL = Enums.ServiceAction.INSTALL;
 const SERVICE_IGNORE = Enums.ServiceAction.IGNORE;

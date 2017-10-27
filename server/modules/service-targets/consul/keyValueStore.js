@@ -3,11 +3,11 @@
 'use strict';
 
 let assert = require('assert');
-let utils = require('modules/utilities');
-let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
-let HttpRequestError = require('modules/errors/HttpRequestError.class');
-let consulClient = require('modules/consul-client');
-let logger = require('modules/logger');
+let utils = require('../../utilities');
+let ResourceNotFoundError = require('../../errors/ResourceNotFoundError.class');
+let HttpRequestError = require('../../errors/HttpRequestError.class');
+let consulClient = require('../../consul-client');
+let logger = require('../../logger');
 let retry = require('retry');
 let _ = require('lodash');
 

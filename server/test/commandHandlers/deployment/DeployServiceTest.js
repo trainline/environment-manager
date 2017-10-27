@@ -51,7 +51,7 @@ describe('DeployService', function () {
   }
 
   beforeEach(() => {
-    sut = rewire('commands/deployments/DeployService');
+    sut = rewire('../../../commands/deployments/DeployService');
 
     environmentType = {
       AWSAccountName: ACCOUNT_NAME

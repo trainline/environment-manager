@@ -4,13 +4,13 @@
 
 const KEY_NAME = 'EnvironmentType';
 
-let configEnvironmentTypes = require('modules/data-access/configEnvironmentTypes');
-let getMetadataForDynamoAudit = require('api/api-utils/requestMetadata').getMetadataForDynamoAudit;
-let param = require('api/api-utils/requestParam');
-let { versionOf } = require('modules/data-access/dynamoVersion');
-const sns = require('modules/sns/EnvironmentManagerEvents');
-let { hasValue, when } = require('modules/functional');
-let { ifNotFound, notFoundMessage } = require('api/api-utils/ifNotFound');
+let configEnvironmentTypes = require('../../../../modules/data-access/configEnvironmentTypes');
+let getMetadataForDynamoAudit = require('../../../api-utils/requestMetadata').getMetadataForDynamoAudit;
+let param = require('../../../api-utils/requestParam');
+let { versionOf } = require('../../../../modules/data-access/dynamoVersion');
+const sns = require('../../../../modules/sns/EnvironmentManagerEvents');
+let { hasValue, when } = require('../../../../modules/functional');
+let { ifNotFound, notFoundMessage } = require('../../../api-utils/ifNotFound');
 
 function keyOf(value) {
   let t = {};

@@ -1,10 +1,10 @@
 'use strict';
 
-const masterAccountClient = require('modules/amazon-client/masterAccountClient');
-const dynamodbExpression = require('modules/awsDynamo/dynamodbExpression');
+const masterAccountClient = require('./amazon-client/masterAccountClient');
+const dynamodbExpression = require('./awsDynamo/dynamodbExpression');
 const LocalDate = require('js-joda').LocalDate;
 
-const awsResourceNameProvider = require('modules/awsResourceNameProvider');
+const awsResourceNameProvider = require('./awsResourceNameProvider');
 const qname = awsResourceNameProvider.getTableName;
 const InfraChangeAudit = qname('InfraChangeAudit');
 const InfraChangeAuditIndexName = 'Date-ISOTimestamp-index';

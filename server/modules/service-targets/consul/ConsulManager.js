@@ -3,7 +3,7 @@
 'use strict';
 
 let Promise = require('bluebird');
-let logger = require('modules/logger');
+let logger = require('../../logger');
 
 module.exports = class ConsulManager {
   constructor(client) {

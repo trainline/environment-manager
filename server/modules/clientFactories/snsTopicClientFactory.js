@@ -2,7 +2,7 @@
 
 'use strict';
 
-let SNSTopicClient = require('modules/clientFactories/SNSTopicClient');
+let SNSTopicClient = require('./SNSTopicClient');
 
 module.exports = {
   create(parameters) {

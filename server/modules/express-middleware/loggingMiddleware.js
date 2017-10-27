@@ -7,7 +7,7 @@
 'use strict';
 
 const fp = require('lodash/fp');
-const miniStack = require('modules/miniStack');
+const miniStack = require('../miniStack');
 
 let redactSecrets = fp.cloneDeepWith((value, key) => (/password/i.test(key) ? '********' : undefined));
 

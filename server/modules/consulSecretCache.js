@@ -2,9 +2,9 @@
 
 'use strict';
 
-let awsMasterClient = require('modules/amazon-client/masterAccountClient');
-let cacheManager = require('modules/cacheManager');
-let logger = require('modules/logger');
+let awsMasterClient = require('./amazon-client/masterAccountClient');
+let cacheManager = require('./cacheManager');
+let logger = require('./logger');
 
 const TTL = 10 * 60; // seconds
 

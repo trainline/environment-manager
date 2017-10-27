@@ -3,7 +3,7 @@
 'use strict';
 
 let moment = require('moment');
-let OpsEnvironment = require('models/OpsEnvironment');
+let OpsEnvironment = require('../models/OpsEnvironment');
 
 function handler(query) {
   return OpsEnvironment.getByName(query.environmentName).then((opsEnvironment) => {

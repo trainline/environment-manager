@@ -2,7 +2,7 @@
 
 'use strict';
 
-let EncryptedRedisStore = require('modules/data-access/encryptedRedisStore');
+let EncryptedRedisStore = require('./data-access/encryptedRedisStore');
 const USER_SESSION_STORE_INDEX = 1;
 
 let sessionStore;

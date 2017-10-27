@@ -5,7 +5,7 @@
 let co = require('co');
 
 let HealthCheckResults = require('../resultCodes');
-let UserSessionStore = require('modules/userSessionStore');
+let UserSessionStore = require('../../userSessionStore');
 
 function getResult(status) {
   if (status === 'wait' || status === 'ready') {

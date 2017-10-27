@@ -16,7 +16,7 @@ describe('GetServicePortConfig', function() {
     Service = {
       getByName: sinon.stub().returns(Promise.resolve(service))
     };
-    sut = rewire('queryHandlers/GetServicePortConfig');
+    sut = rewire('../../queryHandlers/GetServicePortConfig');
     sut.__set__({ Service }); //eslint-disable no-underscore-dangle
   }
 

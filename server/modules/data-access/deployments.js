@@ -2,14 +2,14 @@
 
 'use strict';
 
-let { getTableName: physicalTableName } = require('modules/awsResourceNameProvider');
+let { getTableName: physicalTableName } = require('../awsResourceNameProvider');
 let Promise = require('bluebird');
-let logger = require('modules/logger');
-let describeDynamoTable = require('modules/data-access/describeDynamoTable');
-let { hashKeyAttributeName } = require('modules/data-access/dynamoTableDescription');
+let logger = require('../logger');
+let describeDynamoTable = require('./describeDynamoTable');
+let { hashKeyAttributeName } = require('./dynamoTableDescription');
 let { DateTimeFormatterBuilder, LocalDate, ZoneId } = require('js-joda');
-let { makeWritable } = require('modules/data-access/dynamoItemFilter');
-let dynamoTable = require('modules/data-access/dynamoTable');
+let { makeWritable } = require('./dynamoItemFilter');
+let dynamoTable = require('./dynamoTable');
 let fp = require('lodash/fp');
 
 const DEFAULT_SCAN_EXPRESSIONS = {

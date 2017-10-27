@@ -18,12 +18,12 @@ function assertItCallsErrorCallbackWhenEnvironmentNotFound(req, handlerFunctionN
     let environment = {
       getAccountNameForEnvironment: () => Promise.reject(new Error('BOOM!'))
     };
-    let sut = proxyquire('api/controllers/asgs/asgController', {
-      'models/Environment': environment,
-      'modules/data-access/opsEnvironment': {
+    let sut = proxyquire('../../../../api/controllers/asgs/asgController', {
+      '../../../models/Environment': environment,
+      '../../../modules/data-access/opsEnvironment': {
         get: () => Promise.resolve()
       },
-      'modules/sns/EnvironmentManagerEvents': { publish: () => () => undefined }
+      '../../../modules/sns/EnvironmentManagerEvents': { publish: () => () => undefined }
     });
     it('it calls the Express error callback', function () {
       let res = null;
@@ -37,14 +37,14 @@ function assertItCallsErrorCallbackWhenEnvironmentNotFound(req, handlerFunctionN
 
 function assertMutationPreventedWhenEnvironmentLocked(req, handlerFunctionName) {
   context('when the environment search returns a locked environment', function () {
-    let sut = proxyquire('api/controllers/asgs/asgController', {
-      'models/Environment': {
+    let sut = proxyquire('../../../../api/controllers/asgs/asgController', {
+      '../../../models/Environment': {
         getAccountNameForEnvironment: () => Promise.resolve('my-account')
       },
-      'modules/data-access/opsEnvironment': {
+      '../../../modules/data-access/opsEnvironment': {
         get: () => Promise.resolve({ Value: { DeploymentsLocked: true } })
       },
-      'modules/sns/EnvironmentManagerEvents': { publish: () => () => undefined }
+      '../../../modules/sns/EnvironmentManagerEvents': { publish: () => () => undefined }
     });
     it('it returns an error response', function () {
       let res = {

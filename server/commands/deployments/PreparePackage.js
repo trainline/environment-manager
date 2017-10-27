@@ -3,9 +3,9 @@
 'use strict';
 
 let ajv = require('ajv');
-let amazonClientFactory = require('modules/amazon-client/childAccountClient');
-let DeploymentCommandHandlerLogger = require('commands/deployments/DeploymentCommandHandlerLogger');
-let packageMover = require('commands/deployments/packageMover');
+let amazonClientFactory = require('../../modules/amazon-client/childAccountClient');
+let DeploymentCommandHandlerLogger = require('./DeploymentCommandHandlerLogger');
+let packageMover = require('./packageMover');
 
 const options = {
   allErrors: true,

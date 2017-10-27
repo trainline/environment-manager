@@ -2,7 +2,7 @@
 
 'use strict';
 
-let resourceProvider = require('modules/resourceProvider');
+let resourceProvider = require('../resourceProvider');
 
 module.exports = {
   create(parameters) {

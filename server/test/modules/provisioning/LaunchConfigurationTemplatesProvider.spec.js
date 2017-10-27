@@ -66,14 +66,14 @@ describe("LaunchConfigurationTemplatesProvider:", () => {
     };
 
     var mapStubs = {};
-    mapStubs['modules/provisioning/namingConventionProvider'] = namingConventionProviderMock;
-    mapStubs['modules/provisioning/launchConfiguration/imageProvider'] = imageProviderMock;
-    mapStubs['modules/provisioning/launchConfiguration/keyNameProvider'] = keyNameProviderMock;
-    mapStubs['modules/provisioning/launchConfiguration/instanceDevicesProvider'] = instanceDevicesProviderMock;
-    mapStubs['modules/provisioning/launchConfiguration/userDataProvider'] = userDataProviderMock;
-    mapStubs['modules/provisioning/launchConfiguration/securityGroupsProvider'] = securityGroupsProviderMock;
-    mapStubs['modules/provisioning/launchConfiguration/iamInstanceProfileNameProvider'] = iamInstanceProfileNameProviderMock;
-    var launchConfigurationTemplatesProvider = proxyquire('modules/provisioning/launchConfigurationTemplatesProvider', mapStubs);
+    mapStubs['./namingConventionProvider'] = namingConventionProviderMock;
+    mapStubs['./launchConfiguration/imageProvider'] = imageProviderMock;
+    mapStubs['./launchConfiguration/keyNameProvider'] = keyNameProviderMock;
+    mapStubs['./launchConfiguration/instanceDevicesProvider'] = instanceDevicesProviderMock;
+    mapStubs['./launchConfiguration/userDataProvider'] = userDataProviderMock;
+    mapStubs['./launchConfiguration/securityGroupsProvider'] = securityGroupsProviderMock;
+    mapStubs['./launchConfiguration/iamInstanceProfileNameProvider'] = iamInstanceProfileNameProviderMock;
+    var launchConfigurationTemplatesProvider = proxyquire('../../../modules/provisioning/launchConfigurationTemplatesProvider', mapStubs);
 
 
     // Act

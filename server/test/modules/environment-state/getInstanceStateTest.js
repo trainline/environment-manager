@@ -26,7 +26,7 @@ describe('getInstanceState', function () {
       getServiceDeploymentCause: sinon.stub().returns(Promise.resolve('Test'))
     };
 
-    sut = rewire('modules/environment-state/getInstanceState');
+    sut = rewire('../../../modules/environment-state/getInstanceState');
     sut.__set__({ serviceDiscovery, serviceTargets }); // eslint-disable-line no-underscore-dangle
   }
 

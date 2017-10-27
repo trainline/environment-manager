@@ -6,12 +6,12 @@
 require('should');
 let sinon = require('sinon');
 let proxyquire = require('proxyquire');
-let DeploymentContract = require('modules/deployment/DeploymentContract');
+let DeploymentContract = require('../../../../modules/deployment/DeploymentContract');
 
 function validator(deployments, sender) {
-  return proxyquire('modules/deployment/validators/uniqueServiceVersionDeploymentValidator', {
-    'modules/data-access/deployments': deployments || {},
-    'modules/sender': sender || { sendQuery: () => Promise.resolve([]) }
+  return proxyquire('../../../../modules/deployment/validators/uniqueServiceVersionDeploymentValidator', {
+    '../../data-access/deployments': deployments || {},
+    '../../sender': sender || { sendQuery: () => Promise.resolve([]) }
   });
 }
 

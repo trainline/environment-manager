@@ -3,8 +3,8 @@
 'use strict';
 
 let guid = require('uuid/v1');
-let logger = require('modules/logger');
-let commandMetadata = require('commands/utils/metadata');
+let logger = require('./logger');
+let commandMetadata = require('../commands/utils/metadata');
 
 const COMMAND_TYPE = 'Command';
 const QUERY_TYPE = 'Query';
@@ -70,7 +70,7 @@ function promiseOrCallback(promise, commandOrQuery, type, callback) {
 }
 
 function sendCommandOrQuery(commandOrQuery) {
-  let commandAndQueryMap = require('../tempMapResolver');
+  let commandAndQueryMap = require('./tempMapResolver');
   let handle = commandAndQueryMap.all[commandOrQuery.name];
   return handle(commandOrQuery);
 }

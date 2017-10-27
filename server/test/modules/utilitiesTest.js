@@ -8,7 +8,7 @@ let assert = require('assert');
 describe('utilities', function() {
   let utils;
 
-  beforeEach(() => utils = require('modules/utilities'));
+  beforeEach(() => utils = require('../../modules/utilities'));
 
   describe('safeParseJSON', function() {
     const data = { thing:{ nested:{ list:[1,2,3,4,5]} }, something:'Test value' };

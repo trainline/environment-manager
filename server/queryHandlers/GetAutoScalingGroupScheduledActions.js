@@ -5,7 +5,7 @@
 let assert = require('assert');
 let co = require('co');
 
-let resourceProvider = require('modules/resourceProvider');
+let resourceProvider = require('../modules/resourceProvider');
 
 function* GetAutoScalingGroupScheduledActions(query) {
   assert(query.accountName);

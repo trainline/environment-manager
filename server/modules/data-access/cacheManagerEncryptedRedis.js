@@ -3,8 +3,8 @@
 'use strict';
 
 let fp = require('lodash/fp');
-let logger = require('modules/logger');
-let memoize = require('modules/memoize');
+let logger = require('../logger');
+let memoize = require('../memoize');
 let Redis = require('ioredis');
 let timers = require('timers');
 

@@ -3,7 +3,7 @@
 'use strict';
 
 let co = require('co');
-let resourceProvider = require('modules/resourceProvider');
+let resourceProvider = require('../../modules/resourceProvider');
 
 module.exports = {
   //

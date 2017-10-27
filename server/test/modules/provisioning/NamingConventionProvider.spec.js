@@ -4,7 +4,7 @@
 'use strict';
 
 let should = require('should');
-let namingConventionProvider = require('modules/provisioning/namingConventionProvider');
+let namingConventionProvider = require('../../../modules/provisioning/namingConventionProvider');
 
 describe('NamingConventionProvider:', () => {
 

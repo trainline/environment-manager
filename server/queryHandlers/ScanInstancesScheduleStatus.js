@@ -4,9 +4,9 @@
 
 let co = require('co');
 let _ = require('lodash');
-let sender = require('modules/sender');
-let scheduling = require('modules/scheduling');
-let opsEnvironment = require('modules/data-access/opsEnvironment');
+let sender = require('../modules/sender');
+let scheduling = require('../modules/scheduling');
+let opsEnvironment = require('../modules/data-access/opsEnvironment');
 
 module.exports = function ScanInstancesScheduleStatusQueryHandler(query) {
   return co(function* () { // eslint-disable-line func-names

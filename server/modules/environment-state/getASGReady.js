@@ -3,10 +3,10 @@
 'use strict';
 
 let _ = require('lodash');
-let Enums = require('Enums');
+let Enums = require('../../Enums');
 let co = require('co');
-let getASG = require('queryHandlers/GetAutoScalingGroup');
-let Environment = require('models/Environment');
+let getASG = require('../../queryHandlers/GetAutoScalingGroup');
+let Environment = require('../../models/Environment');
 
 function* getASGReady({ autoScalingGroupName, environmentName }) {
   return co(function* () {

@@ -4,7 +4,7 @@
 'use strict';
 
 let should = require('should');
-let sut = require('modules/machineImage/imageSummary');
+let sut = require('../../../modules/machineImage/imageSummary');
 
 describe('imageSummary', function () {
 

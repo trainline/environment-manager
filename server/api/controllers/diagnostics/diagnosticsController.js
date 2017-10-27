@@ -2,7 +2,7 @@
 
 'use strict';
 
-let config = require('config');
+let config = require('../../../config');
 
 function getHealthcheck(req, res, next) {
   res.json({ OK: true, Version: config.get('APP_VERSION') });

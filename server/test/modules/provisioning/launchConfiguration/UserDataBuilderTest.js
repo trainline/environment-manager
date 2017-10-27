@@ -16,7 +16,7 @@ describe('UserDataBuilder: ', () => {
     rendererMock = {
       render: sinon.stub().callsArgWith(2, 'content'),
     };
-    userDataBuilder = rewire('modules/provisioning/launchConfiguration/UserDataBuilder');
+    userDataBuilder = rewire('../../../../modules/provisioning/launchConfiguration/UserDataBuilder');
     userDataBuilder.__set__('renderer', rendererMock);
   });
 

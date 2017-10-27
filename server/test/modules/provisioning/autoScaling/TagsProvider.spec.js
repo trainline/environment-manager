@@ -32,8 +32,8 @@ describe('TagsProvider:', () => {
     };
 
     // Act
-    var target = proxyquire('modules/provisioning/autoScaling/tagsProvider', {
-      'modules/provisioning/namingConventionProvider': namingConventionProviderMock,
+    var target = proxyquire('../../../../modules/provisioning/autoScaling/tagsProvider', {
+      '../namingConventionProvider': namingConventionProviderMock,
     });
     var promise = target.get(configuration);
 
@@ -76,8 +76,8 @@ describe('TagsProvider:', () => {
     var sliceName = 'blue';
 
     // Act
-    var target = proxyquire('modules/provisioning/autoScaling/tagsProvider', {
-      'modules/provisioning/namingConventionProvider': namingConventionProviderMock,
+    var target = proxyquire('../../../../modules/provisioning/autoScaling/tagsProvider', {
+      '../namingConventionProvider': namingConventionProviderMock,
     });
     target.get(configuration, sliceName);
 
@@ -111,8 +111,8 @@ describe('TagsProvider:', () => {
     };
 
     // Act
-    var target = proxyquire('modules/provisioning/autoScaling/tagsProvider', {
-      'modules/provisioning/namingConventionProvider': namingConventionProviderMock,
+    var target = proxyquire('../../../../modules/provisioning/autoScaling/tagsProvider', {
+      '../namingConventionProvider': namingConventionProviderMock,
     });
     var promise = target.get(configuration);
 
@@ -143,8 +143,8 @@ describe('TagsProvider:', () => {
     };
 
     // Act
-    var target = proxyquire('modules/provisioning/autoScaling/tagsProvider', {
-      'modules/provisioning/namingConventionProvider': namingConventionProviderMock,
+    var target = proxyquire('../../../../modules/provisioning/autoScaling/tagsProvider', {
+      '../namingConventionProvider': namingConventionProviderMock,
     });
     var promise = target.get(configuration);
 

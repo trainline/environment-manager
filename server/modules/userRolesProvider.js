@@ -3,7 +3,7 @@
 'use strict';
 
 let _ = require('lodash');
-let permissionsDb = require('modules/data-access/permissions');
+let permissionsDb = require('./data-access/permissions');
 
 module.exports = function UserRolesProvider() {
   this.getPermissionsFor = (names) => {

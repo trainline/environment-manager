@@ -24,7 +24,7 @@ describe('environmentProtection', function() {
       getEnvironmentTypeByName: sinon.stub().returns(Promise.resolve(ENVIRONMENT_TYPE))
     };
 
-    sut = rewire('modules/authorizers/environmentProtection');
+    sut = rewire('../../../modules/authorizers/environmentProtection');
     sut.__set__({ configCache });
   });
 

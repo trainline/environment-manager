@@ -2,7 +2,7 @@
 
 'use strict';
 
-let InvalidOperationError = require('modules/errors/InvalidOperationError.class');
+let InvalidOperationError = require('./errors/InvalidOperationError.class');
 const STATES_AS_IN_SERVICE = ['InService', 'Pending', 'Pending:Wait', 'Pending:Proceed'];
 
 function getFirstUnknownInstanceId(autoScalingGroup, instanceIds) {

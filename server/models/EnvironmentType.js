@@ -3,7 +3,7 @@
 'use strict';
 
 let _ = require('lodash');
-let environmentDatabase = require('modules/environmentDatabase');
+let environmentDatabase = require('../modules/environmentDatabase');
 
 class EnvironmentType {
 

@@ -7,8 +7,8 @@ let should = require('should');
 let sinon = require('sinon');
 let rewire = require('rewire');
 
-let S3PathContract = require('modules/deployment/S3PathContract');
-let DeploymentContract = require('modules/deployment/DeploymentContract');
+let S3PathContract = require('../../modules/deployment/S3PathContract');
+let DeploymentContract = require('../../modules/deployment/DeploymentContract');
 
 describe('PackagePathProvider:', () => {
 
@@ -43,7 +43,7 @@ describe('PackagePathProvider:', () => {
       getEnvironmentTypeByName: sinon.stub().returns(Promise.resolve(expectedEnvironmentType)),
     };
 
-    const Target = rewire('modules/PackagePathProvider');
+    const Target = rewire('../../modules/PackagePathProvider');
     Target.__set__('configCache', configCache);
 
     // Act

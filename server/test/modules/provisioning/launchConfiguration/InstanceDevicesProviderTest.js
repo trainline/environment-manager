@@ -4,7 +4,7 @@
 'use strict';
 
 var should = require('should');
-var instanceDevicesProvider = require('modules/provisioning/launchConfiguration/instanceDevicesProvider');
+var instanceDevicesProvider = require('../../../../modules/provisioning/launchConfiguration/instanceDevicesProvider');
 
 describe('InstanceDevicesProvider:', () => {
 

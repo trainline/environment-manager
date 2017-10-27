@@ -2,7 +2,7 @@
 
 'use strict';
 
-let config = require('config');
+let config = require('../../../config');
 let _ = require('lodash');
 
 const APP_VERSION = config.get('APP_VERSION');

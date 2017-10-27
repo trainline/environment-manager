@@ -3,7 +3,7 @@
 'use strict';
 
 let _ = require('lodash');
-let Enums = require('Enums');
+let Enums = require('../../Enums');
 let DIFF_STATE = Enums.DIFF_STATE;
 let DEPLOYMENT_STATUS = Enums.DEPLOYMENT_STATUS;
 

@@ -3,22 +3,22 @@
 'use strict';
 
 let co = require('co');
-let Enums = require('Enums');
-let DeploymentContract = require('modules/deployment/DeploymentContract');
-let sender = require('modules/sender');
-let infrastructureConfigurationProvider = require('modules/provisioning/infrastructureConfigurationProvider');
-let logger = require('modules/logger');
-let namingConventionProvider = require('modules/provisioning/namingConventionProvider');
-let packagePathProvider = new (require('modules/PackagePathProvider'))();
-let deploymentLogger = require('modules/DeploymentLogger');
+let Enums = require('../../Enums');
+let DeploymentContract = require('../../modules/deployment/DeploymentContract');
+let sender = require('../../modules/sender');
+let infrastructureConfigurationProvider = require('../../modules/provisioning/infrastructureConfigurationProvider');
+let logger = require('../../modules/logger');
+let namingConventionProvider = require('../../modules/provisioning/namingConventionProvider');
+let packagePathProvider = new (require('../../modules/PackagePathProvider'))();
+let deploymentLogger = require('../../modules/DeploymentLogger');
 let _ = require('lodash');
 let SupportedSliceNames = _.values(Enums.SliceName);
 let SupportedDeploymentModes = _.values(Enums.DeploymentMode);
-let s3PackageLocator = require('modules/s3PackageLocator');
-let EnvironmentHelper = require('models/Environment');
-let OpsEnvironment = require('models/OpsEnvironment');
-let ResourceLockedError = require('modules/errors/ResourceLockedError');
-let GetServicePortConfig = require('queryHandlers/GetServicePortConfig');
+let s3PackageLocator = require('../../modules/s3PackageLocator');
+let EnvironmentHelper = require('../../models/Environment');
+let OpsEnvironment = require('../../models/OpsEnvironment');
+let ResourceLockedError = require('../../modules/errors/ResourceLockedError');
+let GetServicePortConfig = require('../../queryHandlers/GetServicePortConfig');
 
 module.exports = function DeployServiceCommandHandler(command) {
   return co(function* () {

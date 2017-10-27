@@ -2,7 +2,7 @@
 
 'use strict';
 
-let sender = require('modules/sender');
+let sender = require('../../../modules/sender');
 
 /**
  * GET /load-balancer/{name}

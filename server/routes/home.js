@@ -2,8 +2,8 @@
 
 'use strict';
 
-let config = require('config');
-let renderer = require('modules/renderer');
+let config = require('../config');
+let renderer = require('../modules/renderer');
 
 const PUBLIC_DIR = config.get('PUBLIC_DIR');
 

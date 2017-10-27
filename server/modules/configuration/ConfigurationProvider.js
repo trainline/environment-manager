@@ -2,10 +2,10 @@
 
 'use strict';
 
-let config = require('config/');
+let config = require('../../config');
 let LocalConfigurationProvider = require('./LocalConfigurationProvider');
 let S3ConfigurationProvider = require('./S3ConfigurationProvider');
-let logger = require('modules/logger');
+let logger = require('../logger');
 
 
 module.exports = function ConfigurationProvider() {

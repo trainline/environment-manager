@@ -1,6 +1,6 @@
 'use strict';
 
-let { hasValue, when } = require('modules/functional');
+let { hasValue, when } = require('../../modules/functional');
 
 let ifNotFound = when.bind(null, hasValue, data => res => res.json(data));
 

@@ -2,7 +2,7 @@
 
 'use strict';
 
-const IS_PROD = require('config').get('IS_PRODUCTION');
+const IS_PROD = require('../../config').get('IS_PRODUCTION');
 let _ = require('lodash');
 
 function defaultErrorHandler(err, req, res, next) {

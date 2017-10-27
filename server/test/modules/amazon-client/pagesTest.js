@@ -7,7 +7,7 @@
 'use strict';
 
 const should = require('should');
-const pages = require('modules/amazon-client/pages');
+const pages = require('../../../modules/amazon-client/pages');
 
 let flatten = pages.flatten;
 

@@ -2,10 +2,10 @@
 
 'use strict';
 
-let { getTableName: physicalTableName } = require('modules/awsResourceNameProvider');
-let dynamoTable = require('modules/data-access/dynamoTable');
-let singleAccountDynamoTable = require('modules/data-access/singleAccountDynamoTable');
-let logicalTableName = require('api/api-utils/logicalTableName');
+let { getTableName: physicalTableName } = require('../../../../modules/awsResourceNameProvider');
+let dynamoTable = require('../../../../modules/data-access/dynamoTable');
+let singleAccountDynamoTable = require('../../../../modules/data-access/singleAccountDynamoTable');
+let logicalTableName = require('../../../api-utils/logicalTableName');
 
 /**
  * GET /config/export/{resource}

@@ -3,7 +3,7 @@
 'use strict';
 
 let co = require('co');
-let configCache = require('modules/configurationCache');
+let configCache = require('../configurationCache');
 
 const SCHEDULE_ENVIRONMENT = 'SCHEDULE_ENVIRONMENT';
 

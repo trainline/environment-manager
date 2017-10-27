@@ -2,7 +2,7 @@
 
 'use strict';
 
-let config = require('config');
+let config = require('../../config');
 let consul = require('consul');
 let clientConfig;
 

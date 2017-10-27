@@ -3,8 +3,8 @@
 'use strict';
 
 let co = require('co');
-let environmentDatabase = require('modules/environmentDatabase');
-let cacheManager = require('modules/cacheManager');
+let environmentDatabase = require('./environmentDatabase');
+let cacheManager = require('./cacheManager');
 
 const TEN_MINUTES = 10 * 60;
 

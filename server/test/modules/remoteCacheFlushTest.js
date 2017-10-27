@@ -10,7 +10,7 @@ describe('remoteCacheFlush', () => {
   let MockRequest;
 
   beforeEach(() => {
-    sut = rewire('modules/remoteCacheFlush');
+    sut = rewire('../../modules/remoteCacheFlush');
     // eslint-disable-next-line no-underscore-dangle
     sut.__set__('consulClient', MockConsulClient());
     MockRequest = {

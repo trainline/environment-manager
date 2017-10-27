@@ -3,7 +3,7 @@
 'use strict';
 
 let should = require('should');
-let upstreamValidator = require('commands/validators/lbUpstreamValidator');
+let upstreamValidator = require('../../../commands/validators/lbUpstreamValidator');
 
 describe('Upstream validation', () => {
   describe('Testing for valid upstream host port numbers', () => {

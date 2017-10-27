@@ -2,11 +2,11 @@
 
 'use strict';
 
-let serviceDiscovery = require('modules/service-discovery');
-let serviceTargets = require('modules/service-targets');
+let serviceDiscovery = require('../service-discovery');
+let serviceTargets = require('../service-targets');
 let _ = require('lodash');
 let co = require('co');
-let Enums = require('Enums');
+let Enums = require('../../Enums');
 let DIFF_STATE = Enums.DIFF_STATE;
 let DEPLOYMENT_STATUS = Enums.DEPLOYMENT_STATUS;
 let serviceUtil = require('./serviceStateUtils');

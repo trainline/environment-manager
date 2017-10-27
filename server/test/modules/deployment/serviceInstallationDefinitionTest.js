@@ -4,9 +4,9 @@
 'use strict';
 
 let should = require('should');
-let DeploymentContract = require('modules/deployment/DeploymentContract');
-let S3PathContract = require('modules/deployment/S3PathContract');
-let serviceInstallationDefinition = require('modules/deployment/serviceInstallationDefinition');
+let DeploymentContract = require('../../../modules/deployment/DeploymentContract');
+let S3PathContract = require('../../../modules/deployment/S3PathContract');
+let serviceInstallationDefinition = require('../../../modules/deployment/serviceInstallationDefinition');
 
 describe('ServiceInstallationKeyValueProvider', () => {
   let serviceName = 'MyService';

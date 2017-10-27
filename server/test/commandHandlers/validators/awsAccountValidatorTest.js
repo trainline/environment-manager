@@ -24,7 +24,7 @@ describe('awsAcccountValidator', function() {
       assumeRole: sinon.stub().returns(Promise.resolve(true))
     };
 
-    sut = rewire('commands/validators/awsAccountValidator');
+    sut = rewire('../../../commands/validators/awsAccountValidator');
     sut.__set__({
       childAWSclient
     });

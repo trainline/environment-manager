@@ -1,11 +1,11 @@
 'use strict';
 
-let consulClient = require('modules/consul-client');
+let consulClient = require('./consul-client');
 let _ = require('lodash');
 let request = require('request').defaults({ strictSSL: false });
-let logger = require('modules/logger');
-let configEnvironments = require('modules/data-access/configEnvironments');
-let config = require('config');
+let logger = require('./logger');
+let configEnvironments = require('./data-access/configEnvironments');
+let config = require('../config');
 
 function flush(environment, hosts) {
   let consulClientInstance;

@@ -3,12 +3,12 @@
 'use strict';
 
 let _ = require('lodash');
-let Enums = require('Enums');
+let Enums = require('../../Enums');
 let HEALTH_STATUS = Enums.HEALTH_STATUS;
 let co = require('co');
-let GetServerRoles = require('queryHandlers/services/GetServerRoles');
+let GetServerRoles = require('../../queryHandlers/services/GetServerRoles');
 let getASGState = require('./getASGState');
-let AutoScalingGroup = require('models/AutoScalingGroup');
+let AutoScalingGroup = require('../../models/AutoScalingGroup');
 
 function* getOverallServiceHealth({ environmentName, serviceName }) {
   let serviceRoles = (yield GetServerRoles({ environmentName })).Value;

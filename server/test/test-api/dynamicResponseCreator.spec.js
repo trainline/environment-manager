@@ -4,7 +4,7 @@ const assert = require('assert');
 const sinon = require('sinon');
 const MockExpressRequest = require('mock-express-request');
 const MockExpressResponse = require('mock-express-response');
-const sut = require('api/controllers/package-upload-url/dynamicResponseCreator');
+const sut = require('../../api/controllers/package-upload-url/dynamicResponseCreator');
 
 function createResponseForAcceptHeader(accept) {
   let next = sinon.spy();

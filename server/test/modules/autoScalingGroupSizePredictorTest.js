@@ -4,7 +4,7 @@
 'use strict';
 
 let should = require('should');
-let autoScalingGroupSizePredictor = require('modules/autoScalingGroupSizePredictor');
+let autoScalingGroupSizePredictor = require('../../modules/autoScalingGroupSizePredictor');
 
 describe(`AutoScalingGroupSizePredictor:`, () => {
 

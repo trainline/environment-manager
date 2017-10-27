@@ -2,10 +2,10 @@
 
 'use strict';
 
-let getSlices = require('queryHandlers/slices/GetSlicesByUpstream');
-let toggleSlices = require('commands/slices/ToggleSlicesByUpstream');
-let metadata = require('commands/utils/metadata');
-const sns = require('modules/sns/EnvironmentManagerEvents');
+let getSlices = require('../../../queryHandlers/slices/GetSlicesByUpstream');
+let toggleSlices = require('../../../commands/slices/ToggleSlicesByUpstream');
+let metadata = require('../../../commands/utils/metadata');
+const sns = require('../../../modules/sns/EnvironmentManagerEvents');
 
 /**
  * GET /upstreams/{name}/slices

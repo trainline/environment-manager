@@ -5,13 +5,13 @@
 let _ = require('lodash');
 let assert = require('assert');
 let co = require('co');
-let ConfigurationError = require('modules/errors/ConfigurationError.class');
-let DynamoItemNotFoundError = require('modules/errors/DynamoItemNotFoundError.class');
-let imageProvider = require('modules/provisioning/launchConfiguration/imageProvider');
-let Environment = require('models/Environment');
-let EnvironmentType = require('models/EnvironmentType');
-let clusters = require('modules/data-access/clusters');
-let servicesDb = require('modules/data-access/services');
+let ConfigurationError = require('../errors/ConfigurationError.class');
+let DynamoItemNotFoundError = require('../errors/DynamoItemNotFoundError.class');
+let imageProvider = require('./launchConfiguration/imageProvider');
+let Environment = require('../../models/Environment');
+let EnvironmentType = require('../../models/EnvironmentType');
+let clusters = require('../data-access/clusters');
+let servicesDb = require('../data-access/services');
 
 module.exports = {
   get(environmentName, serviceName, serverRoleName) {

@@ -3,8 +3,8 @@
 'use strict';
 
 /* eslint-disable import/no-extraneous-dependencies */
-let environmentDatabase = require('modules/environmentDatabase');
-let log = require('modules/logger'); // eslint-disable import/no-extraneous-dependencies
+let environmentDatabase = require('../../environmentDatabase');
+let log = require('../../logger'); // eslint-disable import/no-extraneous-dependencies
 /* eslint-enable import/no-extraneous-dependencies */
 
 /* Returns an error in the format specified at http://jsonapi.org/format/#errors

@@ -2,7 +2,7 @@
 
 'use strict';
 
-let config = require('config');
+let config = require('../config');
 let resourcePrefix = config.get('EM_AWS_RESOURCE_PREFIX');
 
 module.exports = {

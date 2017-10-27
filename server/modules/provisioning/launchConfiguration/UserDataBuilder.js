@@ -5,7 +5,7 @@
 let assert = require('assert');
 const LINUX_USER_DATA_TEMPLATE = 'linux-user-data';
 const WINDOWS_USER_DATA_TEMPLATE = 'windows-user-data';
-let renderer = require('modules/renderer');
+let renderer = require('../../renderer');
 
 function isNonEmptyString(maybeStr) {
   return maybeStr !== undefined

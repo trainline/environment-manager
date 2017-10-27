@@ -8,7 +8,7 @@ let assert = require('assert');
 describe('service-discovery', function() {
 
   let sut;
-  beforeEach(() => sut = require('modules/service-discovery'));
+  beforeEach(() => sut = require('../../../modules/service-discovery'));
 
   it('exports the expected API', () => {
     assert.notEqual(sut.getAllServices, undefined, 'getAllServices is required');

@@ -3,11 +3,11 @@
 'use strict';
 
 let _ = require('lodash');
-let BadRequestError = require('modules/errors/BadRequestError.class');
+let BadRequestError = require('../errors/BadRequestError.class');
 
-let infrastructureConfigurationProvider = require('modules/provisioning/infrastructureConfigurationProvider');
-let logger = require('modules/logger');
-let Environment = require('models/Environment');
+let infrastructureConfigurationProvider = require('../provisioning/infrastructureConfigurationProvider');
+let logger = require('../logger');
+let Environment = require('../../models/Environment');
 let co = require('co');
 
 // Only deployments targeted to Secure subnet in Production require an additional permission

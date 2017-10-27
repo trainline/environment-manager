@@ -6,12 +6,12 @@ const _ = require('lodash');
 const yaml = require('js-yaml');
 const swaggerTools = require('swagger-tools');
 const fs = require('fs');
-const config = require('config');
+const config = require('../config');
 const path = require('path');
 const apiSpec = yaml.safeLoad(fs.readFileSync('api/swagger.yaml', 'utf8'));
-const swaggerAuthorizer = require('modules/express-middleware/swaggerAuthorizerMiddleware');
-const swaggerNewRelic = require('modules/express-middleware/swaggerNewRelicMiddleware');
-const defaultErrorHandler = require('api/error-handler/defaultErrorHandler');
+const swaggerAuthorizer = require('../modules/express-middleware/swaggerAuthorizerMiddleware');
+const swaggerNewRelic = require('../modules/express-middleware/swaggerNewRelicMiddleware');
+const defaultErrorHandler = require('./error-handler/defaultErrorHandler');
 
 const NODE_ENV = process.env.NODE_ENV;
 const API_BASE_PATH = apiSpec.basePath;

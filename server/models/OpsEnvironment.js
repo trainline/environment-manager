@@ -3,10 +3,10 @@
 'use strict';
 
 let _ = require('lodash');
-let scheduling = require('modules/scheduling');
-let Environment = require('models/Environment');
+let scheduling = require('../modules/scheduling');
+let Environment = require('./Environment');
 let co = require('co');
-let opsEnvironment = require('modules/data-access/opsEnvironment');
+let opsEnvironment = require('../modules/data-access/opsEnvironment');
 
 class OpsEnvironment {
 

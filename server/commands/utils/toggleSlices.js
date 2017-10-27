@@ -4,11 +4,11 @@
 
 let Promise = require('bluebird');
 
-let ResourceNotFoundError = require('modules/errors/ResourceNotFoundError.class');
-let InconsistentSlicesStatusError = require('modules/errors/InconsistentSlicesStatusError.class');
-let logger = require('modules/logger');
-let servicesDb = require('modules/data-access/services');
-let loadBalancerUpstreams = require('modules/data-access/loadBalancerUpstreams');
+let ResourceNotFoundError = require('../../modules/errors/ResourceNotFoundError.class');
+let InconsistentSlicesStatusError = require('../../modules/errors/InconsistentSlicesStatusError.class');
+let logger = require('../../modules/logger');
+let servicesDb = require('../../modules/data-access/services');
+let loadBalancerUpstreams = require('../../modules/data-access/loadBalancerUpstreams');
 
 function ToggleUpstreamByServiceVerifier(toggleCommand) {
   this.verifyUpstreams = (upstreams) => {

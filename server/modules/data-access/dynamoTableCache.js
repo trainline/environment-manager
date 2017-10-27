@@ -2,9 +2,9 @@
 
 'use strict';
 
-let dynamoTable = require('modules/data-access/dynamoTable');
-let cacheManager = require('modules/cacheManager');
-let logger = require('modules/logger');
+let dynamoTable = require('./dynamoTable');
+let cacheManager = require('../cacheManager');
+let logger = require('../logger');
 
 function logError(message, tableName) {
   return (error) => {

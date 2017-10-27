@@ -3,7 +3,7 @@
 'use strict';
 
 let co = require('co');
-let resourceProvider = require('modules/resourceProvider');
+let resourceProvider = require('../resourceProvider');
 
 function* handleQuery(query) {
   // Create an instance of the resource to work with based on the resource

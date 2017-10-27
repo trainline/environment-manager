@@ -7,8 +7,8 @@ let should = require('should');
 let sinon = require('sinon');
 let proxyquire = require('proxyquire');
 
-let DeploymentContract = require('modules/deployment/DeploymentContract');
-let AutoScalingNotificationType = require('Enums').AutoScalingNotificationType;
+let DeploymentContract = require('../../../../modules/deployment/DeploymentContract');
+let AutoScalingNotificationType = require('../../../../Enums').AutoScalingNotificationType;
 
 describe('TopicNotificationMappingProvider:', () => {
 
@@ -27,7 +27,7 @@ describe('TopicNotificationMappingProvider:', () => {
   before(() => {
 
     var target = proxyquire(
-      'modules/provisioning/autoScaling/topicNotificationMappingProvider', { 'modules/sender': senderMock }
+      '../../../../modules/provisioning/autoScaling/topicNotificationMappingProvider', { '../../sender': senderMock }
     );
     promise = target.get(accountName);
 

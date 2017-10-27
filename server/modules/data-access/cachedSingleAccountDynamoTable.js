@@ -2,8 +2,8 @@
 
 'use strict';
 
-let singleAccountDynamoTable = require('modules/data-access/singleAccountDynamoTable');
-let dynamoTableCache = require('modules/data-access/dynamoTableCache');
+let singleAccountDynamoTable = require('./singleAccountDynamoTable');
+let dynamoTableCache = require('./dynamoTableCache');
 
 function factory(physicalTableName, { ttl }) {
   let cachedTable = dynamoTableCache(physicalTableName, { ttl });

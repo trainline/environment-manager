@@ -4,9 +4,9 @@
 'use strict';
 
 let should = require('should');
-let BlueGreenDeploymentValidator = require('modules/deployment/validators/blueGreenDeploymentValidator');
-let DeploymentContract = require('modules/deployment/DeploymentContract');
-let DeploymentValidationError = require('modules/errors/DeploymentValidationError.class');
+let BlueGreenDeploymentValidator = require('../../../../modules/deployment/validators/blueGreenDeploymentValidator');
+let DeploymentContract = require('../../../../modules/deployment/DeploymentContract');
+let DeploymentValidationError = require('../../../../modules/errors/DeploymentValidationError.class');
 
 describe('BlueGreenDeploymentValidator:', () => {
 

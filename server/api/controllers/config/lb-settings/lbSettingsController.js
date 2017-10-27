@@ -4,16 +4,16 @@
 
 let Promise = require('bluebird');
 let { flatten, flow } = require('lodash/fp');
-let { convertToNewModel, convertToOldModel } = require('modules/data-access/lbSettingsAdapter');
-let loadBalancerSettings = require('modules/data-access/loadBalancerSettings');
-let { getMetadataForDynamoAudit } = require('api/api-utils/requestMetadata');
-let param = require('api/api-utils/requestParam');
-let { versionOf } = require('modules/data-access/dynamoVersion');
-let { removeAuditMetadata } = require('modules/data-access/dynamoAudit');
-let { hasValue, when } = require('modules/functional');
-let { ifNotFound, notFoundMessage } = require('api/api-utils/ifNotFound');
+let { convertToNewModel, convertToOldModel } = require('../../../../modules/data-access/lbSettingsAdapter');
+let loadBalancerSettings = require('../../../../modules/data-access/loadBalancerSettings');
+let { getMetadataForDynamoAudit } = require('../../../api-utils/requestMetadata');
+let param = require('../../../api-utils/requestParam');
+let { versionOf } = require('../../../../modules/data-access/dynamoVersion');
+let { removeAuditMetadata } = require('../../../../modules/data-access/dynamoAudit');
+let { hasValue, when } = require('../../../../modules/functional');
+let { ifNotFound, notFoundMessage } = require('../../../api-utils/ifNotFound');
 
-const sns = require('modules/sns/EnvironmentManagerEvents');
+const sns = require('../../../../modules/sns/EnvironmentManagerEvents');
 
 function convertToApiModel(persistedModel) {
   let apiModel = removeAuditMetadata(persistedModel);

@@ -1,10 +1,10 @@
 'use strict';
 
 let co = require('co');
-let permissionsDb = require('modules/data-access/permissions');
-let logger = require('modules/logger');
+let permissionsDb = require('./data-access/permissions');
+let logger = require('./logger');
 let guid = require('uuid/v1');
-let config = require('config');
+let config = require('../config');
 
 function checkAppPrerequisites() {
   return co(function* () {

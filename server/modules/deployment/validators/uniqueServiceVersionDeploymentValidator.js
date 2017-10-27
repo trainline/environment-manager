@@ -2,9 +2,9 @@
 
 'use strict';
 
-let deployments = require('modules/data-access/deployments');
+let deployments = require('../../data-access/deployments');
 let ms = require('ms');
-let DeploymentValidationError = require('modules/errors/DeploymentValidationError.class');
+let DeploymentValidationError = require('../../errors/DeploymentValidationError.class');
 
 const DEPLOYMENT_MAXIMUM_THRESHOLD = ms('65m');
 

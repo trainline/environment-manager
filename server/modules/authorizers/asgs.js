@@ -2,7 +2,7 @@
 
 'use strict';
 
-let configEnvironments = require('modules/data-access/configEnvironments');
+let configEnvironments = require('../data-access/configEnvironments');
 
 function getEnvironment(name, user) {
   return configEnvironments.get({ EnvironmentName: name });

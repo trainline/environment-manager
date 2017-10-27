@@ -5,8 +5,8 @@ let AWS = require('aws-sdk');
 let async = require('async');
 let guid = require('uuid/v1');
 let path = require('path');
-let user = require('modules/user');
-let server = require('index');
+let user = require('../../../modules/user');
+let server = require('../../../index');
 
 
 const RESOURCE_PREFIX = 'EnvironmentManagerTests-';

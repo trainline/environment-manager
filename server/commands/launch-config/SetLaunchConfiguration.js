@@ -4,15 +4,15 @@
 
 let launchConfigUpdater = require('./launchConfigUpdater');
 let co = require('co');
-let sender = require('modules/sender');
-let logger = require('modules/logger');
+let sender = require('../../modules/sender');
+let logger = require('../../modules/logger');
 let _ = require('lodash');
 
-let imageProvider = require('modules/provisioning/launchConfiguration/imageProvider');
-let instanceDevicesProvider = require('modules/provisioning/launchConfiguration/instanceDevicesProvider');
-let securityGroupsProvider = require('modules/provisioning/launchConfiguration/securityGroupsProvider');
+let imageProvider = require('../../modules/provisioning/launchConfiguration/imageProvider');
+let instanceDevicesProvider = require('../../modules/provisioning/launchConfiguration/instanceDevicesProvider');
+let securityGroupsProvider = require('../../modules/provisioning/launchConfiguration/securityGroupsProvider');
 
-let AutoScalingGroup = require('models/AutoScalingGroup');
+let AutoScalingGroup = require('../../models/AutoScalingGroup');
 
 module.exports = function SetLaunchConfiguration(command) {
   return co(function* () {

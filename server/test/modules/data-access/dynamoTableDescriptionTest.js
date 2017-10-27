@@ -1,7 +1,7 @@
 'use strict';
 
 require('should');
-let sut = require('modules/data-access/dynamoTableDescription');
+let sut = require('../../../modules/data-access/dynamoTableDescription');
 
 describe('dynamoTableDescription', function () {
   describe('extractKey', function () {

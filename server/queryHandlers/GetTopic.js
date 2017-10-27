@@ -2,7 +2,7 @@
 
 'use strict';
 
-let snsTopicClientFactory = require('modules/clientFactories/snsTopicClientFactory');
+let snsTopicClientFactory = require('../modules/clientFactories/snsTopicClientFactory');
 
 module.exports = function GetTopicQueryHandler(query) {
   return snsTopicClientFactory

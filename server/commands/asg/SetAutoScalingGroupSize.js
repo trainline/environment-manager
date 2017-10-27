@@ -4,8 +4,8 @@
 
 let co = require('co');
 let _ = require('lodash');
-let resourceProvider = require('modules/resourceProvider');
-let InvalidOperationError = require('modules/errors/InvalidOperationError.class');
+let resourceProvider = require('../../modules/resourceProvider');
+let InvalidOperationError = require('../../modules/errors/InvalidOperationError.class');
 
 function* handler(command) {
   // Validation

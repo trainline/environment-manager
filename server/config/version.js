@@ -5,7 +5,7 @@
 const VERSION_INFO = 'version.txt';
 
 let fs = require('fs');
-let packageInfo = require('package.json');
+let packageInfo = require('../package.json');
 
 function getVersion() {
   if (fs.existsSync(VERSION_INFO)) {

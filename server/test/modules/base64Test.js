@@ -3,7 +3,7 @@
 'use strict';
 
 let should = require('should');
-let base64 = require('modules/base64');
+let base64 = require('../../modules/base64');
 
 describe('base64', function () {
   describe('when I encode then decode an object', function () {

@@ -2,7 +2,7 @@
 
 'use strict';
 
-let Instance = require('models/Instance');
+let Instance = require('../../models/Instance');
 let co = require('co');
 
 exports.getRules = function getRules(request) {

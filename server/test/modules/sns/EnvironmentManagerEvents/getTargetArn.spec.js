@@ -8,7 +8,7 @@ describe('Create Event', () => {
 
   beforeEach(() => {
     // eslint-disable-next-line global-require
-    sut = require('modules/sns/EnvironmentManagerEvents/getTargetArn');
+    sut = require('../../../../modules/sns/EnvironmentManagerEvents/getTargetArn');
     ResponseMetadata = createResponseMetadata();
   });
 

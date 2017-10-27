@@ -14,7 +14,6 @@ module.exports = {
       "functions": "ignore",
     }],
     "global-require": 1,
-    "import/no-unresolved": 0,
     "import/no-dynamic-require": 1,
     "import/no-extraneous-dependencies": 0,
     "import/newline-after-import": 0,

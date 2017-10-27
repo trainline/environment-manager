@@ -2,9 +2,9 @@
 
 'use strict';
 
-let S3GetObjectRequest = require('modules/S3GetObjectRequest');
-let amazonClientFactory = require('modules/amazon-client/childAccountClient');
-let sender = require('modules/sender');
+let S3GetObjectRequest = require('../../modules/S3GetObjectRequest');
+let amazonClientFactory = require('../../modules/amazon-client/childAccountClient');
+let sender = require('../../modules/sender');
 
 function getNode({ deploymentId, instanceId, accountName, environment }) {
   let query = {

@@ -4,9 +4,9 @@
 
 let co = require('co');
 let ms = require('ms');
-let userService = require('modules/user-service');
-let utils = require('modules/utilities');
-let cookieConfiguration = require('modules/authentications/cookieAuthenticationConfiguration');
+let userService = require('../../../modules/user-service');
+let utils = require('../../../modules/utilities');
+let cookieConfiguration = require('../../../modules/authentications/cookieAuthenticationConfiguration');
 
 /**
  * POST /login

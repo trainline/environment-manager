@@ -4,7 +4,7 @@
 
 let guid = require('uuid/v1');
 let AWS = require('aws-sdk');
-let awsAccounts = require('modules/awsAccounts');
+let awsAccounts = require('../awsAccounts');
 
 module.exports = {
   createLowLevelDynamoClient: createClientWithRole(AWS.DynamoDB),

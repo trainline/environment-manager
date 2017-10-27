@@ -4,21 +4,21 @@
 
 let _ = require('lodash');
 let co = require('co');
-let ScanInstances = require('queryHandlers/ScanInstances');
-let ScanCrossAccountInstances = require('queryHandlers/ScanCrossAccountInstances');
-let EnterAutoScalingGroupInstancesToStandby = require('commands/asg/EnterAutoScalingGroupInstancesToStandby');
-let ExitAutoScalingGroupInstancesFromStandby = require('commands/asg/ExitAutoScalingGroupInstancesFromStandby');
-let asgips = require('modules/data-access/asgips');
-let Instance = require('models/Instance');
-let serviceTargets = require('modules/service-targets');
-let logger = require('modules/logger');
-let getInstanceState = require('modules/environment-state/getInstanceState');
-let Environment = require('models/Environment');
-let Enums = require('Enums');
-let ScanInstancesScheduleStatus = require('queryHandlers/ScanInstancesScheduleStatus');
+let ScanInstances = require('../../../queryHandlers/ScanInstances');
+let ScanCrossAccountInstances = require('../../../queryHandlers/ScanCrossAccountInstances');
+let EnterAutoScalingGroupInstancesToStandby = require('../../../commands/asg/EnterAutoScalingGroupInstancesToStandby');
+let ExitAutoScalingGroupInstancesFromStandby = require('../../../commands/asg/ExitAutoScalingGroupInstancesFromStandby');
+let asgips = require('../../../modules/data-access/asgips');
+let Instance = require('../../../models/Instance');
+let serviceTargets = require('../../../modules/service-targets');
+let logger = require('../../../modules/logger');
+let getInstanceState = require('../../../modules/environment-state/getInstanceState');
+let Environment = require('../../../models/Environment');
+let Enums = require('../../../Enums');
+let ScanInstancesScheduleStatus = require('../../../queryHandlers/ScanInstancesScheduleStatus');
 let fp = require('lodash/fp');
-let merge = require('modules/merge');
-const sns = require('modules/sns/EnvironmentManagerEvents');
+let merge = require('../../../modules/merge');
+const sns = require('../../../modules/sns/EnvironmentManagerEvents');
 
 /* The tags that should be added to each instance as properties.
  * If the instance already has a property with one of these names

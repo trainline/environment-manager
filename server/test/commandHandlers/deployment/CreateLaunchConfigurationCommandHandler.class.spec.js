@@ -6,7 +6,7 @@
 let sinon = require('sinon');
 let should = require('should');
 let rewire = require('rewire');
-let CreateLaunchConfigurationCommandHandler = rewire('commands/deployments/CreateLaunchConfiguration');
+let CreateLaunchConfigurationCommandHandler = rewire('../../../commands/deployments/CreateLaunchConfiguration');
 let _ = require('lodash');
 
 describe('CreateLaunchConfigurationCommandHandler:', () => {

@@ -1,7 +1,7 @@
 'use strict';
 
-let Enums = require('Enums');
-let fakeLogger = require('test/utils/fakeLogger');
+let Enums = require('../../Enums');
+let fakeLogger = require('../utils/fakeLogger');
 let fp = require('lodash/fp');
 let proxyquire = require('proxyquire').noCallThru();
 require('should');
@@ -42,15 +42,15 @@ describe('DeploymentLogger', function () {
       sender = {
         sendCommand: sinon.spy(() => Promise.resolve())
       };
-      sut = proxyquire('modules/DeploymentLogger', {
-        'modules/data-access/deployments': deployments,
-        'modules/systemUser': {},
-        'modules/DeploymentLogsStreamer': function () {
+      sut = proxyquire('../../modules/DeploymentLogger', {
+        './data-access/deployments': deployments,
+        './systemUser': {},
+        './DeploymentLogsStreamer': function () {
           this.flush = function () { return Promise.resolve(); };
           this.log = function () { return Promise.resolve(); };
         },
-        'modules/sender': sender,
-        'modules/logger': fakeLogger
+        './sender': sender,
+        './logger': fakeLogger
       });
     });
 

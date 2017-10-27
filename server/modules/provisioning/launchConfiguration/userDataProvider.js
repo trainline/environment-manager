@@ -3,8 +3,8 @@
 'use strict';
 
 let assert = require('assert');
-let namingConventionProvider = require('modules/provisioning/namingConventionProvider');
-let userDataBuilder = require('modules/provisioning/launchConfiguration/UserDataBuilder');
+let namingConventionProvider = require('../namingConventionProvider');
+let userDataBuilder = require('./UserDataBuilder');
 
 module.exports = {
   get(configuration, image, sliceName) {

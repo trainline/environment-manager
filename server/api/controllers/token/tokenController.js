@@ -2,9 +2,9 @@
 
 'use strict';
 
-let userService = require('modules/user-service');
-let tokenConfiguration = require('modules/authentications/tokenAuthenticationConfiguration');
-let cookieConfiguration = require('modules/authentications/cookieAuthenticationConfiguration');
+let userService = require('../../../modules/user-service');
+let tokenConfiguration = require('../../../modules/authentications/tokenAuthenticationConfiguration');
+let cookieConfiguration = require('../../../modules/authentications/cookieAuthenticationConfiguration');
 
 /**
  * POST /token

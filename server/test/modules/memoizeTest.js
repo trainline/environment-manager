@@ -2,7 +2,7 @@
 /* eslint-disable */
 'use strict';
 
-let memoize = require('modules/memoize');
+let memoize = require('../../modules/memoize');
 let should = require('should');
 let sinon = require('sinon');
 
