@@ -11,6 +11,7 @@ let moment = require('moment');
 let sender = require('../modules/sender');
 let logger = require('../modules/logger');
 let TaggableMixin = require('./TaggableMixin');
+let ScanInstances = require('../queryHandlers/ScanInstances');
 
 class Instance {
   constructor(data) {
@@ -51,7 +52,7 @@ class Instance {
       let filter = {};
       filter['tag:Environment'] = environmentName;
 
-      return sender.sendQuery({
+      return sender.sendQuery(ScanInstances, {
         query: {
           name: 'ScanInstances',
           accountName,

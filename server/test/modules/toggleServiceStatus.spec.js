@@ -2,7 +2,6 @@
 
 const rewire = require('rewire');
 const sinon = require('sinon');
-const assert = require('assert');
 
 describe('toggleServiceStatus', () => {
   let sut;
@@ -13,14 +12,14 @@ describe('toggleServiceStatus', () => {
     senderSpy = sinon.spy();
     // eslint-disable-next-line no-underscore-dangle
     sut.__set__('sender', {
-      sendCommand: (input) => {
-        return Promise.resolve(senderSpy(input));
+      sendCommand: (handler, input) => {
+        return Promise.resolve(senderSpy(handler, input));
       }
     });
   });
 
-  it('should send the correct message to sender', (done) => {
-    sut.toggleServiceStatus({
+  it('should send the correct message to sender', function () {
+    return sut.toggleServiceStatus({
       environment: 'environment',
       service: 'service',
       slice: 'slice',
@@ -29,7 +28,7 @@ describe('toggleServiceStatus', () => {
       user: {}
     })
       .then(() => {
-        assert(senderSpy.calledWith({
+        sinon.assert.calledWith(senderSpy, sinon.match.any, {
           user: {},
           command: {
             name: 'ToggleTargetStatus',
@@ -39,8 +38,7 @@ describe('toggleServiceStatus', () => {
             enable: true,
             serverRole: 'serverRole'
           }
-        }));
-        done();
+        });
       });
   });
 });

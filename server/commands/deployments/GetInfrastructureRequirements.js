@@ -12,6 +12,8 @@ let namingConvention = require('../../modules/provisioning/namingConventionProvi
 let sender = require('../../modules/sender');
 let getASG = require('../../queryHandlers/GetAutoScalingGroup');
 let _ = require('lodash');
+let ScanAutoScalingGroups = require('../../queryHandlers/ScanAutoScalingGroups');
+let ScanLaunchConfigurations = require('../../queryHandlers/ScanLaunchConfigurations');
 
 module.exports = function GetInfrastructureRequirements(command) {
   let logger = new DeploymentCommandHandlerLogger(command);
@@ -94,7 +96,7 @@ function getASGNamesToCreate(logger, autoScalingGroupNames, accountName) {
       autoScalingGroupNames
     };
 
-    let autoScalingGroups = yield sender.sendQuery({ query });
+    let autoScalingGroups = yield sender.sendQuery(ScanAutoScalingGroups, { query });
     let existingASGnames = autoScalingGroups.map(group =>
       group.AutoScalingGroupName
     );
@@ -146,7 +148,7 @@ function getLaunchConfigNamesToCreate(logger, launchConfigurationNames, accountN
       launchConfigurationNames
     };
 
-    let launchConfigurations = yield sender.sendQuery({ query });
+    let launchConfigurations = yield sender.sendQuery(ScanLaunchConfigurations, { query });
     let existingLaunchConfigurationNames = launchConfigurations.map(config =>
       config.LaunchConfigurationName
     );

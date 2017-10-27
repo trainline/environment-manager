@@ -101,7 +101,7 @@ describe('exitAutoScalingGroupInstancesToStandby', function() {
     it(`sets ASG maximum size to ${expectedASGsize}`, () => {
       return sut(command).then(result => {
         let sendCommandInvocation = senderMock.sendCommand.getCall(0);
-        sendCommandInvocation.args[0].should.match({
+        sendCommandInvocation.args[1].should.match({
           command: {
             name: resizeASGCommandName,
             accountName: accountName,
@@ -115,7 +115,7 @@ describe('exitAutoScalingGroupInstancesToStandby', function() {
     it(`sets ASG minum size to ${expectedASGsize}`, () => {
       return sut(command).then(result => {
         let sendCommandInvocation = senderMock.sendCommand.getCall(1);
-        sendCommandInvocation.args[0].should.match({
+        sendCommandInvocation.args[1].should.match({
           command: {
             name: resizeASGCommandName,
             accountName: accountName,

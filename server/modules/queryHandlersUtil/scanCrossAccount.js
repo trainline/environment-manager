@@ -2,20 +2,21 @@
 
 'use strict';
 
+let assert = require('assert');
 let co = require('co');
 let awsAccounts = require('../awsAccounts');
 let sender = require('../sender');
 
-function* handler(query, simpleScanQueryName) {
+function* scanCrossAccount(handler, query, simpleScanQueryName) {
+  assert(typeof handler === 'function');
   let results = [];
   let accounts = yield awsAccounts.all();
-
   for (let account of accounts) {
     let childQuery = Object.assign({}, query);
     childQuery.name = simpleScanQueryName;
     childQuery.accountName = account.AccountName;
 
-    let items = yield sender.sendQuery({ query: childQuery, parent: query });
+    let items = yield sender.sendQuery(handler, { query: childQuery, parent: query });
 
     items.forEach((item) => {
       item.AccountName = account.AccountName;
@@ -27,4 +28,4 @@ function* handler(query, simpleScanQueryName) {
   return results;
 }
 
-module.exports = co.wrap(handler);
+module.exports = co.wrap(scanCrossAccount);

@@ -11,6 +11,7 @@ let serviceInstallationProvider = require('../../modules/deployment/serviceInsta
 let serviceDefinitionProvider = require('../../modules/deployment/serviceDefinition');
 let serviceDeploymentProvider = require('../../modules/deployment/serviceDeploymentDefinition');
 let deploymentDefinitionProvider = require('../../modules/deployment/deploymentDefinition');
+let UpdateTargetState = require('../services/UpdateTargetState');
 
 module.exports = function PushDeploymentCommandHandler(command) {
   const logger = new DeploymentCommandHandlerLogger(command);
@@ -46,7 +47,7 @@ module.exports = function PushDeploymentCommandHandler(command) {
 };
 
 function updateTargetState(command, keyValue, options) {
-  return sender.sendCommand({
+  return sender.sendCommand(UpdateTargetState, {
     command: {
       name: 'UpdateTargetState',
       environment: command.deployment.environmentName,

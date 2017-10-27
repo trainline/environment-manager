@@ -12,6 +12,8 @@ let serviceTargets = require('../modules/service-targets');
 let resourceProvider = require('../modules/resourceProvider');
 let logger = require('../modules/logger');
 let TaggableMixin = require('./TaggableMixin');
+let GetAutoScalingGroup = require('../queryHandlers/GetAutoScalingGroup');
+let ScanAutoScalingGroups = require('../queryHandlers/ScanAutoScalingGroups');
 
 class AutoScalingGroup {
 
@@ -72,7 +74,7 @@ class AutoScalingGroup {
         autoScalingGroupName
       };
 
-      let data = yield sender.sendQuery({ query });
+      let data = yield sender.sendQuery(GetAutoScalingGroup, { query });
       data.$accountName = accountName;
       data.$autoScalingGroupName = autoScalingGroupName;
       return data;
@@ -84,7 +86,7 @@ class AutoScalingGroup {
       let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
       let startTime = moment.utc();
 
-      return sender.sendQuery({
+      return sender.sendQuery(ScanAutoScalingGroups, {
         query: {
           name: 'ScanAutoScalingGroups',
           accountName

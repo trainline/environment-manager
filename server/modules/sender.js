@@ -2,6 +2,7 @@
 
 'use strict';
 
+let assert = require('assert');
 let guid = require('uuid/v1');
 let logger = require('./logger');
 let commandMetadata = require('../commands/utils/metadata');
@@ -10,20 +11,24 @@ const COMMAND_TYPE = 'Command';
 const QUERY_TYPE = 'Query';
 
 module.exports = {
-  sendCommand(parameters, callback) {
+  sendCommand(handler, parameters, callback) {
+    assert(typeof handler === 'function');
+    assert(typeof parameters === 'object' && parameters !== null);
     let command = commandMetadata.createFromParameters(parameters);
     let message = getLogMessage(command);
     logger.info(message);
 
     let type = COMMAND_TYPE;
-    let promise = sendCommandOrQuery(command);
+    let promise = handler(command);
     return promiseOrCallback(promise, command, type, callback);
   },
 
-  sendQuery(parameters, callback) {
+  sendQuery(handler, parameters, callback) {
+    assert(typeof handler === 'function');
+    assert(typeof parameters === 'object' && parameters !== null);
     let query = prepareQuery(parameters);
     let type = QUERY_TYPE;
-    let promise = sendCommandOrQuery(query);
+    let promise = handler(query);
     return promiseOrCallback(promise, query, type, callback);
   }
 };
@@ -67,12 +72,6 @@ function promiseOrCallback(promise, commandOrQuery, type, callback) {
     result => callback(null, result),
     error => callback(error)
   );
-}
-
-function sendCommandOrQuery(commandOrQuery) {
-  let commandAndQueryMap = require('./tempMapResolver');
-  let handle = commandAndQueryMap[commandOrQuery.name];
-  return handle(commandOrQuery);
 }
 
 function getLogMessage(commandOrQuery) {

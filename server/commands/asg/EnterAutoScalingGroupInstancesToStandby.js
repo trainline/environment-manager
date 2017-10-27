@@ -8,6 +8,7 @@ let resourceProvider = require('../../modules/resourceProvider');
 let sender = require('../../modules/sender');
 let autoScalingGroupSizePredictor = require('../../modules/autoScalingGroupSizePredictor');
 let AutoScalingGroup = require('../../models/AutoScalingGroup');
+let SetAutoScalingGroupSize = require('./SetAutoScalingGroupSize');
 
 module.exports = function EnterAutoScalingGroupInstancesToStandbyCommandHandler(command) {
   assert(command, 'Expected "command" argument not to be null.');
@@ -57,5 +58,5 @@ function setAutoScalingGroupSize(size, parentCommand) {
     autoScalingGroupMaxSize: size.max
   };
 
-  return sender.sendCommand({ command, parent: parentCommand });
+  return sender.sendCommand(SetAutoScalingGroupSize, { command, parent: parentCommand });
 }

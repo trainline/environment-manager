@@ -6,6 +6,7 @@ let assert = require('assert');
 let sender = require('../../sender');
 let Image = require('../Image.class');
 let ImageNotFoundError = require('../../errors/ImageNotFoundError.class');
+let ScanCrossAccountImages = require('../../../queryHandlers/ScanCrossAccountImages');
 
 module.exports = {
 
@@ -37,7 +38,7 @@ function getImage(params) {
   let query = { name: 'ScanCrossAccountImages', filter };
 
   return sender
-    .sendQuery({ query })
+    .sendQuery(ScanCrossAccountImages, { query })
     .then(amiImages =>
       (amiImages.length ?
         Promise.resolve(new Image(amiImages[0])) :
@@ -52,7 +53,7 @@ function getLatestImageByType(imageType, includeUnstable) {
   };
 
   return sender
-    .sendQuery({ query })
+    .sendQuery(ScanCrossAccountImages, { query })
     .then((amiImages) => {
       let isLatest = includeUnstable ? image => image.IsLatest : image => image.IsLatestStable;
       let latestImage = amiImages.find(image => image.AmiType === imageType && isLatest(image));

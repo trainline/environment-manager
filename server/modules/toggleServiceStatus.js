@@ -3,11 +3,12 @@
 'use strict';
 
 let sender = require('./sender');
+let ToggleTargetStatus = require('../commands/services/ToggleTargetStatus');
 
 function toggleServiceStatus({ environment, service, slice, enable, serverRole, user }) {
   const name = 'ToggleTargetStatus';
   const command = { name, environment, service, slice, enable, serverRole };
-  return sender.sendCommand({ user, command });
+  return sender.sendCommand(ToggleTargetStatus, { user, command });
 }
 
 module.exports = {

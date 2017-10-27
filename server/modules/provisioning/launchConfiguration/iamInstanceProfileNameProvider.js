@@ -5,6 +5,7 @@
 let assert = require('assert');
 let ConfigurationError = require('../../errors/ConfigurationError.class');
 let sender = require('../../sender');
+let GetInstanceProfile = require('../../../queryHandlers/GetInstanceProfile');
 
 module.exports = {
   get(configuration, accountName) {
@@ -49,5 +50,5 @@ function getInstanceProfileByName(instanceProfileName, accountName) {
     instanceProfileName
   };
 
-  return sender.sendQuery({ query });
+  return sender.sendQuery(GetInstanceProfile, { query });
 }

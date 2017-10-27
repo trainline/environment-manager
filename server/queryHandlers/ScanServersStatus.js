@@ -9,6 +9,8 @@ let logger = require('../modules/logger');
 let sender = require('../modules/sender');
 let AutoScalingGroup = require('../models/AutoScalingGroup');
 let Instance = require('../models/Instance');
+let ScanCrossAccountImages = require('./ScanCrossAccountImages');
+let GetNode = require('./services/GetNode');
 
 module.exports = co.wrap(ScanServersStatusQueryHandler);
 
@@ -96,7 +98,7 @@ function getServicesInstalledOnInstances(environment, instances) {
 
 function getConsulServicesForNode(environment, nodeName) {
   if (!nodeName) return Promise.resolve({});
-  return sender.sendQuery({
+  return sender.sendQuery(GetNode, {
     query: {
       name: 'GetNode',
       environment,
@@ -203,7 +205,7 @@ function byStatus(status) {
 function getAllImages() {
   let startTime = moment.utc();
 
-  return sender.sendQuery({
+  return sender.sendQuery(ScanCrossAccountImages, {
     query: {
       name: 'ScanCrossAccountImages'
     }

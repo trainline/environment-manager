@@ -39,7 +39,7 @@ describe('IamInstanceProfileNameProvider:', () => {
         instanceProfileName.should.be.equal(expectedInstanceProfile.InstanceProfileName);
 
         senderMock.sendQuery.called.should.be.true();
-        senderMock.sendQuery.getCall(0).args[0].should.match({
+        senderMock.sendQuery.getCall(0).args[1].should.match({
           query: {
             name: 'GetInstanceProfile',
             accountName: accountName,
@@ -113,7 +113,7 @@ describe('IamInstanceProfileNameProvider:', () => {
         instanceProfileName.should.be.equal(expectedInstanceProfile.InstanceProfileName);
 
         senderMock.sendQuery.called.should.be.true();
-        senderMock.sendQuery.getCall(0).args[0].should.match({
+        senderMock.sendQuery.getCall(0).args[1].should.match({
           query: {
             name: 'GetInstanceProfile',
             accountName: accountName,

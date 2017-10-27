@@ -4,6 +4,7 @@
 
 let AutoScalingNotificationType = require('../../../Enums').AutoScalingNotificationType;
 let sender = require('../../sender');
+let GetTopic = require('../../../queryHandlers/GetTopic');
 
 const TopicsToNotify = [
   'InfraAsgLambdaScale'
@@ -42,5 +43,5 @@ function getTopicByName(topicName, accountName) {
     topicName
   };
 
-  return sender.sendQuery({ query });
+  return sender.sendQuery(GetTopic, { query });
 }

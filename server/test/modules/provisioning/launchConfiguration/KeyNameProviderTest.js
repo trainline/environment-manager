@@ -47,7 +47,7 @@ describe('KeyNameProvider:', () => {
         should(keyName).be.equal(expectedKeyPair.KeyName);
 
         senderMock.sendQuery.called.should.be.true();
-        senderMock.sendQuery.getCall(0).args[0].should.match({
+        senderMock.sendQuery.getCall(0).args[1].should.match({
           query: {
             name: 'GetKeyPair',
             accountName: accountName,
@@ -140,7 +140,7 @@ describe('KeyNameProvider:', () => {
         should(keyName).be.equal(expectedKeyPair.KeyName);
 
         senderMock.sendQuery.called.should.be.true();
-        senderMock.sendQuery.getCall(0).args[0].should.match({
+        senderMock.sendQuery.getCall(0).args[1].should.match({
           query: {
             name: 'GetKeyPair',
             accountName: accountName,

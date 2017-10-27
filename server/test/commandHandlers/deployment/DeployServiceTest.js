@@ -181,7 +181,7 @@ describe('DeployService', function () {
     });
 
     function createdExpectedCommandSpy(cmdName, done) {
-      return function (arg) {
+      return function (handler, arg) {
         if (arg.command.name === cmdName) {
           try {
             assert.deepEqual(arg.parent, expectedPayload);

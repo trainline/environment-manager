@@ -9,6 +9,7 @@ let deployments = require('../data-access/deployments');
 let fp = require('lodash/fp');
 let { Clock, Instant, LocalDate, ZoneId } = require('js-joda');
 let sender = require('../sender');
+let GetTargetState = require('../../queryHandlers/services/GetTargetState');
 
 function getTargetAccountName(deployment) {
   return configurationCache.getEnvironmentTypeByName(fp.get(['Value', 'EnvironmentType'])(deployment))
@@ -112,7 +113,7 @@ function getServiceDeploymentDefinition(environment, key, accountName) {
     recurse: true
   };
 
-  return sender.sendQuery({ query: consulQuery });
+  return sender.sendQuery(GetTargetState, { query: consulQuery });
 }
 
 function queryDeploymentNodeStates(environment, key, accountName) {
@@ -124,7 +125,7 @@ function queryDeploymentNodeStates(environment, key, accountName) {
     recurse: true
   };
 
-  return sender.sendQuery({ query: consulQuery });
+  return sender.sendQuery(GetTargetState, { query: consulQuery });
 }
 
 module.exports = {

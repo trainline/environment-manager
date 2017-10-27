@@ -13,6 +13,7 @@ let instanceDevicesProvider = require('../../modules/provisioning/launchConfigur
 let securityGroupsProvider = require('../../modules/provisioning/launchConfiguration/securityGroupsProvider');
 
 let AutoScalingGroup = require('../../models/AutoScalingGroup');
+let GetInstanceProfile = require('../../queryHandlers/GetInstanceProfile');
 
 module.exports = function SetLaunchConfiguration(command) {
   return co(function* () {
@@ -96,5 +97,5 @@ function getInstanceProfileByName(accountName, instanceProfileName) {
     instanceProfileName
   };
 
-  return sender.sendQuery({ query });
+  return sender.sendQuery(GetInstanceProfile, { query });
 }

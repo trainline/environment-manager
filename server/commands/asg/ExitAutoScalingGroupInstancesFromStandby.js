@@ -8,6 +8,7 @@ let co = require('co');
 let sender = require('../../modules/sender');
 let autoScalingGroupSizePredictor = require('../../modules/autoScalingGroupSizePredictor');
 let AutoScalingGroup = require('../../models/AutoScalingGroup');
+let SetAutoScalingGroupSize = require('./SetAutoScalingGroupSize');
 
 module.exports = function ExitAutoScalingGroupInstancesFromStandby(command) {
   assert(command.accountName !== undefined && command.accountName !== null);
@@ -36,7 +37,7 @@ module.exports = function ExitAutoScalingGroupInstancesFromStandby(command) {
       autoScalingGroupName: command.autoScalingGroupName,
       autoScalingGroupMaxSize: expectedSize
     };
-    yield sender.sendCommand({ command: childCommand, parent: command });
+    yield sender.sendCommand(SetAutoScalingGroupSize, { command: childCommand, parent: command });
 
     // Through the resource instance previously created the AutoScalingGroup instances
     // are exited from standby
@@ -55,7 +56,7 @@ module.exports = function ExitAutoScalingGroupInstancesFromStandby(command) {
       autoScalingGroupName: command.autoScalingGroupName,
       autoScalingGroupMinSize: expectedSize
     };
-    yield sender.sendCommand({ command: childCommand, parent: command });
+    yield sender.sendCommand(SetAutoScalingGroupSize, { command: childCommand, parent: command });
 
     return { InstancesExitedFromStandby: command.instanceIds };
   });
