@@ -15,7 +15,7 @@ Example:
         "ProxyPass": "https://anything-you-want"
     }
 
-[#]
+[#366]
 
 ## [6.11.1] - 2017-10-24
 
@@ -310,3 +310,4 @@ Example:
 [#356]: https://github.com/trainline/environment-manager/pull/356
 [#357]: https://github.com/trainline/environment-manager/pull/357
 [#363]: https://github.com/trainline/environment-manager/pull/363
+[#366]: https://github.com/trainline/environment-manager/pull/366
