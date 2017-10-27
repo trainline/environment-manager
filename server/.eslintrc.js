@@ -4,6 +4,9 @@ module.exports = {
     "sourceType": "script"
   },
   "extends": "airbnb-base",
+  "plugins": [
+    "dependencies"
+  ],
   "rules": {
     "arrow-body-style": [0, "never"],
     "comma-dangle": ["error", {
@@ -13,6 +16,7 @@ module.exports = {
       "exports": "ignore",
       "functions": "ignore",
     }],
+    "dependencies/no-cycles": 2,
     "global-require": 1,
     "import/no-dynamic-require": 1,
     "import/no-extraneous-dependencies": 0,
