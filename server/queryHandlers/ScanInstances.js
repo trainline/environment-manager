@@ -3,15 +3,8 @@
 'use strict';
 
 const ec2InstanceResourceFactory = require('../modules/resourceFactories/ec2InstanceResourceFactory');
-let co = require('co');
 
 module.exports = function ScanInstancesQueryHandler({ accountName, filter }) {
-  return co(function* () {
-    // Create an instance of the resource to work with based on the resource
-    // descriptor and AWS account name.
-    let resource = yield ec2InstanceResourceFactory.create(undefined, { accountName });
-
-    // Scan resource items
-    return resource.all({ filter });
-  });
+  return ec2InstanceResourceFactory.create(undefined, { accountName })
+    .then(x => x.all({ filter }));
 };

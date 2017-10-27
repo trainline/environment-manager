@@ -2,9 +2,9 @@
 
 'use strict';
 
-let scanCrossAccount = require('../modules/queryHandlersUtil/scanCrossAccount');
+let scanCrossAccount = require('../modules/queryHandlersUtil/scanCrossAccountFn');
 let ScanImages = require('./ScanImages');
 
 module.exports = function ScanCrossAccountImages(query) {
-  return scanCrossAccount(ScanImages, query, 'ScanImages');
+  return scanCrossAccount(({ AccountName }) => ScanImages(Object.assign({ accountName: AccountName }, query)));
 };
