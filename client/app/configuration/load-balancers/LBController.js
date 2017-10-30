@@ -221,16 +221,21 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
     function checkProxyPassAgainstSetKeys(location) {
       var matchingValueInSet = false;
       
+      function escapeRegExp(str) {
+        return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+      }
+      
       if (location.Set && location.ProxyPass) {
         matchingValueInSet = location.Set.some(function (set) {
           var setParts = set.split(' ');
           var key = setParts[0];
-          var check = new RegExp('^https?:\/\/(' + key + ')$');
+          var check = new RegExp('^https?:\/\/(' + escapeRegExp(key) + ')$');
           var result = location.ProxyPass.match(check);
 
           if (result) return true;
           else return false;
         });
+        console.log("Matching Value In Set", matchingValueInSet)
       }
 
       return matchingValueInSet;
