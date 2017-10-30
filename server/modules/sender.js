@@ -71,7 +71,7 @@ function promiseOrCallback(promise, commandOrQuery, type, callback) {
 
 function sendCommandOrQuery(commandOrQuery) {
   let commandAndQueryMap = require('./tempMapResolver');
-  let handle = commandAndQueryMap.all[commandOrQuery.name];
+  let handle = commandAndQueryMap[commandOrQuery.name];
   return handle(commandOrQuery);
 }
 
