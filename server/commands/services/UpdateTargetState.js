@@ -4,20 +4,15 @@
 
 let co = require('co');
 let serviceTargets = require('../../modules/service-targets');
-let DeploymentCommandHandlerLogger = require('../deployments/DeploymentCommandHandlerLogger');
 let schema = require('../../modules/schema/schema');
+let DeploymentLogsStreamer = require('../../modules/DeploymentLogsStreamer');
+let deploymentLogsStreamer = new DeploymentLogsStreamer();
 
 module.exports = function UpdateTargetState(command) {
-  let logger = new DeploymentCommandHandlerLogger(command);
-
   return co(function* () {
+    let { deploymentId, key, options, value } = command;
     yield schema('UpdateTargetStateCommand').then(x => x.conform(command));
-    logger.info(`Updating key ${command.key}`);
-
-    let key = command.key;
-    let value = command.value;
-    let options = command.options;
-
+    deploymentLogsStreamer.log(deploymentId, `Updating key ${command.key}`);
     return yield serviceTargets.setTargetState(command.environment, { key, value, options });
   });
 };
