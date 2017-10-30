@@ -4,7 +4,7 @@
 
 let co = require('co');
 let _ = require('lodash');
-let resourceProvider = require('../../modules/resourceProvider');
+const asgResourceFactory = require('../../modules/resourceFactories/asgResourceFactory');
 let InvalidOperationError = require('../../modules/errors/InvalidOperationError.class');
 
 function* handler(command) {
@@ -44,7 +44,7 @@ function* handler(command) {
   // Get a resource instance to work with AutoScalingGroup in the proper
   // AWS account.
   let parameters = { accountName: command.accountName };
-  let resource = yield resourceProvider.getInstanceByName('asgs', parameters);
+  let resource = yield asgResourceFactory(undefined, parameters);
 
   // Change the AutoScalingGroup size accordingly to the expected one.
   parameters = {

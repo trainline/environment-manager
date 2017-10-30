@@ -4,11 +4,11 @@
 
 let co = require('co');
 let _ = require('lodash');
-let resourceProvider = require('../../modules/resourceProvider');
 let InvalidOperationError = require('../../modules/errors/InvalidOperationError.class');
 let subnetsProvider = require('../../modules/provisioning/autoScaling/subnetsProvider');
 let Environment = require('../../models/Environment');
 let EnvironmentType = require('../../models/EnvironmentType');
+const asgResourceFactory = require('../../modules/resourceFactories/asgResourceFactory');
 
 function* handler(command) {
   // Validation
@@ -45,7 +45,7 @@ function* handler(command) {
   // Get a resource instance to work with AutoScalingGroup in the proper
   // AWS account.
   let accountName = yield Environment.getAccountNameForEnvironment(command.environmentName);
-  let resource = yield resourceProvider.getInstanceByName('asgs', {
+  let resource = yield asgResourceFactory.create(undefined, {
     accountName
   });
 

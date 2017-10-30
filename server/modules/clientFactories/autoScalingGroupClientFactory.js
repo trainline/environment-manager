@@ -2,10 +2,10 @@
 
 'use strict';
 
-let resourceProvider = require('../resourceProvider');
+const asgResourceFactory = require('../../modules/resourceFactories/asgResourceFactory');
 
 module.exports = {
   create(parameters) {
-    return resourceProvider.getInstanceByName('asgs', parameters);
+    return asgResourceFactory.create(undefined, parameters);
   }
 };

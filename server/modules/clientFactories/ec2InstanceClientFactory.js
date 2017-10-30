@@ -2,9 +2,10 @@
 
 'use strict';
 
+const ec2InstanceResourceFactory = require('../resourceFactories/ec2InstanceResourceFactory');
+
 module.exports = {
   create(parameters) {
-    let resourceProvider = require('../resourceProvider');
-    return resourceProvider.getInstanceByName('instances', parameters);
+    return ec2InstanceResourceFactory.create(undefined, parameters);
   }
 };

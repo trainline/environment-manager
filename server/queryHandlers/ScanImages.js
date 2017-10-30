@@ -3,7 +3,7 @@
 'use strict';
 
 let co = require('co');
-let resourceProvider = require('../modules/resourceProvider');
+const ec2ImageResourceFactory = require('../modules/resourceFactories/ec2ImageResourceFactory');
 let imageSummary = require('../modules/machineImage/imageSummary');
 let assert = require('assert');
 
@@ -14,7 +14,7 @@ let assert = require('assert');
 function* handler(query) {
   assert(query.accountName);
   let parameters = { accountName: query.accountName };
-  let resource = yield resourceProvider.getInstanceByName('images', parameters);
+  let resource = yield ec2ImageResourceFactory.create(undefined, parameters);
 
   let images = yield resource.all({ filter: query.filter });
   return imageSummary.rank(images.map(imageSummary.summaryOf).sort(imageSummary.compare));

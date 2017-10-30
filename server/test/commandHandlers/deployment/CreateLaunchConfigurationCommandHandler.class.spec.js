@@ -1,39 +1,35 @@
-/* TODO: enable linting and fix resulting errors */
-/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let sinon = require('sinon');
-let should = require('should');
-let rewire = require('rewire');
-let CreateLaunchConfigurationCommandHandler = rewire('../../../commands/deployments/CreateLaunchConfiguration');
+const proxyquire = require('proxyquire');
 let _ = require('lodash');
 
 describe('CreateLaunchConfigurationCommandHandler:', () => {
-
   const ACCOUNT_NAME = 'Prod';
 
 
-  var launchConfigurationTemplate = {
+  let launchConfigurationTemplate = {
     launchConfigurationName: 'launch-configuration',
     image: {
       name: 'windows-2012r2-ttl-app-0.0.1',
       type: 'windows-2012r2-ttl-app',
       version: '0.0.1',
-      platform: 'Windows',
+      platform: 'Windows'
     },
     instanceType: 't2.small',
     keyName: 'ProdInfra',
     iamInstanceProfile: 'roleTangoWeb',
-    securityGroups: [{ GroupId: 'sg-one'}, {GroupId: 'sg-two'}],
+    securityGroups: [{ GroupId: 'sg-one' }, { GroupId: 'sg-two' }],
     devices: [
       {
         DeviceName: '/dev/sda1',
         Ebs: {
           DeleteOnTermination: true,
           VolumeSize: 50,
-          VolumeType: 'gp2',
-        },
+          VolumeType: 'gp2'
+        }
       },
       {
         DeviceName: '/dev/sda2',
@@ -41,42 +37,39 @@ describe('CreateLaunchConfigurationCommandHandler:', () => {
           DeleteOnTermination: true,
           VolumeSize: 30,
           VolumeType: 'standard',
-          Encrypted: true,
-        },
-      },
+          Encrypted: true
+        }
+      }
     ],
-    userData: new Buffer('content').toString('base64'),
+    userData: new Buffer('content').toString('base64')
   };
 
   it('should be possible to request a LaunchConfiguration creation', () => {
-
     // Arrange
-    var launchConfigurationClientMock = {
-      post: sinon.stub().returns(Promise.resolve()),
+    let launchConfigurationClientMock = {
+      post: sinon.stub().returns(Promise.resolve())
     };
 
-    var resourceProvider = {
-      getInstanceByName: sinon.stub().returns(Promise.resolve(launchConfigurationClientMock)),
+    let launchConfigurationResourceFactory = {
+      create: sinon.stub().returns(Promise.resolve(launchConfigurationClientMock))
     };
 
-    var command = {
+    let command = {
       name: 'CreateLaunchConfiguration',
       accountName: ACCOUNT_NAME,
-      template: launchConfigurationTemplate,
+      template: launchConfigurationTemplate
     };
 
     // Act
-    CreateLaunchConfigurationCommandHandler.__set__('resourceProvider', resourceProvider);
-    var promise = CreateLaunchConfigurationCommandHandler(command);
+    let CreateLaunchConfigurationCommandHandler = proxyquire('../../../commands/deployments/CreateLaunchConfiguration', {
+      '../../modules/resourceFactories/launchConfigurationResourceFactory': launchConfigurationResourceFactory
+    });
+    let promise = CreateLaunchConfigurationCommandHandler(command);
 
     // Assert
-    return promise.then(result => {
-
-      resourceProvider.getInstanceByName.called.should.be.true();
-      resourceProvider.getInstanceByName.getCall(0).args.should.match(
-        ['launchconfig', { accountName: ACCOUNT_NAME }]
-      );
-
+    return promise.then((result) => {
+      sinon.assert.calledOnce(launchConfigurationResourceFactory.create);
+      sinon.assert.calledWithExactly(launchConfigurationResourceFactory.create, undefined, { accountName: ACCOUNT_NAME });
       launchConfigurationClientMock.post.called.should.be.true();
       launchConfigurationClientMock.post.getCall(0).args[0].should.match({
         LaunchConfigurationName: launchConfigurationTemplate.launchConfigurationName,
@@ -93,8 +86,8 @@ describe('CreateLaunchConfigurationCommandHandler:', () => {
             Ebs: {
               DeleteOnTermination: true,
               VolumeSize: 50,
-              VolumeType: 'gp2',
-            },
+              VolumeType: 'gp2'
+            }
           },
           {
             DeviceName: '/dev/sda2',
@@ -102,15 +95,12 @@ describe('CreateLaunchConfigurationCommandHandler:', () => {
               DeleteOnTermination: true,
               VolumeSize: 30,
               VolumeType: 'standard',
-              Encrypted: true,
-            },
-          },
-        ],
+              Encrypted: true
+            }
+          }
+        ]
       });
-
     });
-
   });
-
 });
 

@@ -3,7 +3,7 @@
 'use strict';
 
 let assert = require('assert');
-let resourceProvider = require('../../modules/resourceProvider');
+const asgResourceFactory = require('../../modules/resourceFactories/asgResourceFactory');
 let co = require('co');
 let sender = require('../../modules/sender');
 let autoScalingGroupSizePredictor = require('../../modules/autoScalingGroupSizePredictor');
@@ -26,7 +26,7 @@ module.exports = function ExitAutoScalingGroupInstancesFromStandby(command) {
 
     // Create a resource to work with AutoScalingGroups in the target AWS account.
     parameters = { accountName: command.accountName };
-    let asgResource = yield resourceProvider.getInstanceByName('asgs', parameters);
+    let asgResource = yield asgResourceFactory.create(undefined, parameters);
 
     // Before exiting instances from Standby the AutoScalingGroup maximum size has to be
     // increased because the action of "exiting instances from standby" will automatically

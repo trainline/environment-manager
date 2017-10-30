@@ -9,7 +9,8 @@ let sender = require('../modules/sender');
 let EnvironmentType = require('./EnvironmentType');
 let Environment = require('./Environment');
 let serviceTargets = require('../modules/service-targets');
-let resourceProvider = require('../modules/resourceProvider');
+const asgResourceFactory = require('../modules/resourceFactories/asgResourceFactory');
+const launchConfigurationResourceFactory = require('../modules/resourceFactories/launchConfigurationResourceFactory');
 let logger = require('../modules/logger');
 let TaggableMixin = require('./TaggableMixin');
 let GetAutoScalingGroup = require('../queryHandlers/GetAutoScalingGroup');
@@ -28,7 +29,7 @@ class AutoScalingGroup {
       if (name === undefined) {
         throw new Error(`Launch configuration doesn't exist for ${self.AutoScalingGroupName}`);
       }
-      let client = yield resourceProvider.getInstanceByName('launchconfig', { accountName: self.$accountName });
+      let client = yield launchConfigurationResourceFactory.create(undefined, { accountName: self.$accountName });
       return client.get({ name });
     });
   }
@@ -46,8 +47,8 @@ class AutoScalingGroup {
     let self = this;
     return co(function* () {
       let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-      let asgResource = yield resourceProvider.getInstanceByName('asgs', { accountName });
-      let launchConfigResource = yield resourceProvider.getInstanceByName('launchconfig', { accountName });
+      let asgResource = yield asgResourceFactory.create(undefined, { accountName });
+      let launchConfigResource = yield launchConfigurationResourceFactory.create(undefined, { accountName });
       logger.info(`Deleting AutoScalingGroup ${self.AutoScalingGroupName} and associated Launch configuration ${self.LaunchConfigurationName}`);
 
       yield asgResource.delete({ name: self.AutoScalingGroupName, force: true });

@@ -4,11 +4,11 @@
 
 let assert = require('assert');
 let co = require('co');
-let resourceProvider = require('../../modules/resourceProvider');
 let sender = require('../../modules/sender');
 let autoScalingGroupSizePredictor = require('../../modules/autoScalingGroupSizePredictor');
 let AutoScalingGroup = require('../../models/AutoScalingGroup');
 let SetAutoScalingGroupSize = require('./SetAutoScalingGroupSize');
+const asgResourceFactory = require('../../modules/resourceFactories/asgResourceFactory');
 
 module.exports = function EnterAutoScalingGroupInstancesToStandbyCommandHandler(command) {
   assert(command, 'Expected "command" argument not to be null.');
@@ -22,7 +22,7 @@ module.exports = function EnterAutoScalingGroupInstancesToStandbyCommandHandler(
 
     // Create a resource to work with AutoScalingGroups in the target AWS account.
     let parameters = { accountName: command.accountName };
-    let asgResource = yield resourceProvider.getInstanceByName('asgs', parameters);
+    let asgResource = yield asgResourceFactory.create(undefined, parameters);
 
     // Predict AutoScalingGroup size after entering instances to standby
     let expectedSize = yield autoScalingGroupSizePredictor.predictSizeAfterEnteringInstancesToStandby(

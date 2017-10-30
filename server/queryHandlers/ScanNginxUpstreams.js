@@ -3,11 +3,11 @@
 'use strict';
 
 let co = require('co');
-let resourceProvider = require('../modules/resourceProvider');
+const nginxUpstreamsResourceFactory = require('../modules/resourceFactories/nginxUpstreamsResourceFactory');
 
 function* handler(query) {
   // Create an instance of the Nginx resource
-  let resource = yield resourceProvider.getInstanceByName('nginx', {});
+  let resource = yield nginxUpstreamsResourceFactory.create(undefined, {});
 
   // Scan resource items
   const params = { instanceDomainName: query.instanceDomainName };
