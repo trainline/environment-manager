@@ -18,7 +18,7 @@ module.exports = {
     }],
     "dependencies/no-cycles": 2,
     "global-require": 1,
-    "import/no-dynamic-require": 1,
+    "import/no-dynamic-require": 2,
     "import/no-extraneous-dependencies": 0,
     "import/newline-after-import": 0,
     "max-len": [1, 120, 2, {ignoreComments: true}],
