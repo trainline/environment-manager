@@ -3,12 +3,11 @@
 'use strict';
 
 let _ = require('lodash');
+let sender = require('../sender');
 let GetSlicesByService = require('../../queryHandlers/slices/GetSlicesByService');
 
 function getSlicesByService(serviceName, environmentName, accountName, user) {
   return new Promise((resolve, reject) => {
-    let sender = require('../sender');
-
     let query = {
       name: 'GetSlicesByService',
       accountName,

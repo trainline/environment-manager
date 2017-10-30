@@ -3,10 +3,12 @@
 'use strict';
 
 let resultCodes = require('./resultCodes');
+const ping = require('./library/ping');
+const redis = require('./library/redis');
 
 let checks = [
-  require('./library/ping'),
-  require('./library/redis')
+  ping,
+  redis
   // ... add more health checks here
 ];
 

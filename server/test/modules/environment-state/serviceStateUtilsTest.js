@@ -3,11 +3,9 @@
 'use strict';
 
 const assert = require('assert');
+const sut = require('../../../modules/environment-state/serviceStateUtils');
 
 describe('serviceStateUtils', function () {
-  let sut;
-  beforeEach(() => { sut = require('../../../modules/environment-state/serviceStateUtils'); });
-
   describe('getServiceAndSlice', function () {
     [
       { Name: 'acmeservice', Slice: 'blue', expected: 'acmeservice-blue' },

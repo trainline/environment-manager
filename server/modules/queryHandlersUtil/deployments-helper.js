@@ -10,6 +10,7 @@ let fp = require('lodash/fp');
 let { Clock, Instant, LocalDate, ZoneId } = require('js-joda');
 let sender = require('../sender');
 let GetTargetState = require('../../queryHandlers/services/GetTargetState');
+const Deployment = require('../../models/Deployment');
 
 function getTargetAccountName(deployment) {
   return configurationCache.getEnvironmentTypeByName(fp.get(['Value', 'EnvironmentType'])(deployment))
@@ -17,7 +18,6 @@ function getTargetAccountName(deployment) {
 }
 
 function mapDeployment(deployment) {
-  const Deployment = require('../../models/Deployment');
   const environmentName = deployment.Value.EnvironmentName;
   const deploymentID = deployment.DeploymentID;
   const accountName = deployment.AccountName;

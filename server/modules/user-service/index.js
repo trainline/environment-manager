@@ -3,13 +3,14 @@
 'use strict';
 
 let config = require('../../config');
-
+const mock = require('./userService.mock');
+const Prod = require('./userService.prod');
 let implementation;
 
 if (config.get('IS_PRODUCTION')) {
-  implementation = new (require('./userService.prod'))();
+  implementation = new Prod();
 } else {
-  implementation = require('./userService.mock');
+  implementation = mock;
 }
 
 module.exports = implementation;

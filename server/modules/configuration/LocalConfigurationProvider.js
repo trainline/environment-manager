@@ -2,18 +2,23 @@
 
 'use strict';
 
+const console = require('console');
+const fs = require('fs');
+const path = require('path');
+const Promise = require('bluebird');
+
+const readFile = Promise.promisify(fs.readFile);
+const configFileNotFoundMessage = `Please create configuration.json to start the app in development mode.
+You can find sample configuration file in configuration.sample.json`;
+
 module.exports = function LocalConfigurationProvider() {
-  this.get = () => {
-    try {
-      let configuration = require('../../configuration.json'); // eslint-disable-line import/no-unresolved
-      return Promise.resolve(configuration);
-    } catch (error) {
-      if (error.code === 'MODULE_NOT_FOUND') {
-        console.log('Please create configuration.json to start the app in development mode. You can find sample configuration file in configuration.sample.json');
-        return Promise.reject();
-      } else {
-        throw error;
-      }
-    }
-  };
+  this.get = () =>
+    readFile(path.resolve(__dirname, '../../configuration.json'))
+      .then(text => JSON.parse(text))
+      .catch((error) => {
+        if (error.code === 'ENOENT') {
+          console.log(configFileNotFoundMessage);
+        }
+        return Promise.reject(error);
+      });
 };

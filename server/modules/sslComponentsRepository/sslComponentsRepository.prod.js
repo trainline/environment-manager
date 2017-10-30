@@ -5,10 +5,11 @@
 let async = require('async');
 let S3GetObjectRequest = require('../S3GetObjectRequest');
 let amazonClientFactory = require('../amazon-client/masterAccountClient');
+const SslComponentsRepositoryConfiguration = require('./sslComponentsRepository.prod.config.js');
 let sslComponentsCache = null;
 
 module.exports = function SSLComponentsRepository() {
-  let sslComponentsRepositoryConfiguration = new (require('./sslComponentsRepository.prod.config.js'))();
+  let sslComponentsRepositoryConfiguration = new SslComponentsRepositoryConfiguration();
 
   this.get = function () {
     return new Promise((resolve, reject) => {

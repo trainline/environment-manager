@@ -3,13 +3,15 @@
 'use strict';
 
 let config = require('../../config');
+const mock = require('./sslComponentsRepository.mock.js');
+const prod = require('./sslComponentsRepository.prod.js');
 
 let implementation;
 
 if (config.get('IS_PRODUCTION')) {
-  implementation = require('./sslComponentsRepository.prod.js');
+  implementation = prod;
 } else {
-  implementation = require('./sslComponentsRepository.mock.js');
+  implementation = mock;
 }
 
 module.exports = implementation;

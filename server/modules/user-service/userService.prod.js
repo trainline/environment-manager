@@ -8,15 +8,18 @@ let jsonwebtoken = require('jsonwebtoken');
 let guid = require('uuid/v1');
 let co = require('co');
 let User = require('../user');
-let userRolesProvider = new (require('../userRolesProvider'))();
+let UserRolesProvider = require('../userRolesProvider');
 let activeDirectoryAdapter = require('../active-directory-adapter');
 let logger = require('../logger');
 let md5 = require('md5');
 let UserSessionStore = require('../userSessionStore');
 let Promise = require('bluebird');
+let SslComponentsRepository = require('../sslComponentsRepository');
+
+let userRolesProvider = new UserRolesProvider();
 
 module.exports = function UserService() {
-  let sslComponentsRepository = new (require('../sslComponentsRepository'))();
+  let sslComponentsRepository = new SslComponentsRepository();
 
   this.authenticateUser = authenticateUser;
   this.getUserByToken = getUserByToken;

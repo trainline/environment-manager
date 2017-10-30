@@ -9,7 +9,7 @@ let sender = require('../../modules/sender');
 let infrastructureConfigurationProvider = require('../../modules/provisioning/infrastructureConfigurationProvider');
 let logger = require('../../modules/logger');
 let namingConventionProvider = require('../../modules/provisioning/namingConventionProvider');
-let packagePathProvider = new (require('../../modules/PackagePathProvider'))();
+const PackagePathProvider = require('../../modules/PackagePathProvider');
 let deploymentLogger = require('../../modules/DeploymentLogger');
 let _ = require('lodash');
 let SupportedSliceNames = _.values(Enums.SliceName);
@@ -23,6 +23,8 @@ let GetInfrastructureRequirements = require('../../commands/deployments/GetInfra
 let PushDeployment = require('../../commands/deployments/PushDeployment');
 let PreparePackage = require('../../commands/deployments/PreparePackage');
 let ProvideInfrastructure = require('../../commands/deployments/ProvideInfrastructure');
+
+let packagePathProvider = new PackagePathProvider();
 
 module.exports = function DeployServiceCommandHandler(command) {
   return co(function* () {
