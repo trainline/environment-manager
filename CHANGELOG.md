@@ -5,14 +5,16 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 [Unreleased]
 
-## Changed
+## [6.11.2] - 2017-10-30
+
+### Changed
 
 - ProxyPass rules in the Load Balancer settings of the UI now allow you to add a variable as the value. The upstream value doesn't have to exist in order to be considered valid as long as there is a matching key in the `Set` list. 
 
 Example:
     {
-        "Set": ["anything-you-want value"]
-        "ProxyPass": "https://anything-you-want"
+        "Set": ["$anything-you-want value"]
+        "ProxyPass": "https://$anything-you-want"
     }
 
 [#366]
@@ -245,9 +247,10 @@ Example:
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/6.11.1...master
+[Unreleased]: https://github.com/trainline/environment-manager/compare/6.11.2...master
 
-[6.11.0]: https://github.com/trainline/environment-manager/compare/6.11.0...6.11.1
+[6.11.2]: https://github.com/trainline/environment-manager/compare/6.11.1...6.11.2
+[6.11.1]: https://github.com/trainline/environment-manager/compare/6.11.0...6.11.1
 [6.11.0]: https://github.com/trainline/environment-manager/compare/6.10.0...6.11.0
 [6.10.0]: https://github.com/trainline/environment-manager/compare/6.9.15...6.10.0
 [6.9.15]: https://github.com/trainline/environment-manager/compare/v6.9.12...6.9.15
