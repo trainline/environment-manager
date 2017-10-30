@@ -193,19 +193,21 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
       if (value.Locations) {
         value.Locations.forEach(function (location, i) {
           if (location.ProxyPass) {
-            var matchResults = location.ProxyPass.match(/^https?:\/\/([^$]+)/);
-            if (!matchResults) {
-              errors.push('Locations[' + i + '] - ProxyPass address is not valid. Check it begins with "http://" or "https://".');
-            } else {
-              var proxyUpstreamName = matchResults[1];
-              // Validate Upstream exists
-              if (!_.includes(proxyUpstreamName, '.')) {
-                if ($scope.LBUpstreamData && $scope.LBUpstreamData.length > 0) {
-                  var matchFound = $scope.LBUpstreamData.some(function upstreamIsProxy(upstream) {
-                    return upstream.Value.UpstreamName === proxyUpstreamName;
-                  });
-                  if (!matchFound) {
-                    errors.push('Locations[' + i + '] - Upstream name in Proxy Pass not found. Please check spelling and capitalisation');
+            if (!checkProxyPassAgainstSetKeys(location)) {
+              var matchResults = location.ProxyPass.match(/^https?:\/\/([^$]+)/);
+              if (!matchResults) {
+                errors.push('Locations[' + i + '] - ProxyPass address is not valid. Check it begins with "http://" or "https://".');
+              } else {
+                var proxyUpstreamName = matchResults[1];
+                // Validate Upstream exists
+                if (!_.includes(proxyUpstreamName, '.')) {
+                  if ($scope.LBUpstreamData && $scope.LBUpstreamData.length > 0) {
+                    var matchFound = $scope.LBUpstreamData.some(function upstreamIsProxy(upstream) {
+                      return upstream.Value.UpstreamName === proxyUpstreamName;
+                    });
+                    if (!matchFound) {
+                      errors.push('Locations[' + i + '] - Upstream name in Proxy Pass not found. Please check spelling and capitalisation');
+                    }
                   }
                 }
               }
@@ -214,6 +216,29 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
         });
       }
       return errors;
+    }
+
+    function checkProxyPassAgainstSetKeys(location) {
+      var matchingValueInSet = false;
+      
+      function escapeRegExp(str) {
+        return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+      }
+      
+      if (location.Set && location.ProxyPass) {
+        matchingValueInSet = location.Set.some(function (set) {
+          var setParts = set.split(' ');
+          var key = setParts[0];
+          var check = new RegExp('^https?:\/\/(' + escapeRegExp(key) + ')$');
+          var result = location.ProxyPass.match(check);
+
+          if (result) return true;
+          else return false;
+        });
+        console.log("Matching Value In Set", matchingValueInSet)
+      }
+
+      return matchingValueInSet;
     }
 
     function BackToSummary(environment) {

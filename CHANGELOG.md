@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html). View [Unreleased] changes here.
 
+[Unreleased]
+
+## Changed
+
+- ProxyPass rules in the Load Balancer settings of the UI now allow you to add a variable as the value. The upstream value doesn't have to exist in order to be considered valid as long as there is a matching key in the `Set` list. 
+
+Example:
+    {
+        "Set": ["anything-you-want value"]
+        "ProxyPass": "https://anything-you-want"
+    }
+
+[#366]
+
 ## [6.11.1] - 2017-10-24
 
 ### Fixed
@@ -94,8 +108,6 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 - Environment Manager Sensu Alerts for Node
 - [Truncation of service version identifiers at 50 characters in the UI](https://gitlab.tools.trainline.eu/capitainetrain/mweb/issues/487). Service version identifiers now limited to 100 characters in UI and API. User notified if a longer version identifier is pasted into UI. [#347]
-
-## Unreleased
 
 ### Fixed
 
@@ -298,3 +310,4 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 [#356]: https://github.com/trainline/environment-manager/pull/356
 [#357]: https://github.com/trainline/environment-manager/pull/357
 [#363]: https://github.com/trainline/environment-manager/pull/363
+[#366]: https://github.com/trainline/environment-manager/pull/366
