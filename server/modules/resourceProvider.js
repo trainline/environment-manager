@@ -2,29 +2,38 @@
 
 'use strict';
 
-let requireDirectory = require('require-directory');
-let resourceDescriptorProvider = require('./resourceDescriptorProvider');
-let _ = require('lodash');
-
-let modulesTree = requireDirectory(module, { include: /ResourceFactory\.js/ });
-let resourceFactories = _.values(modulesTree.resourceFactories);
-
-function getInstanceByDescriptor(resourceDescriptor, parameters) {
-  let resourceFactory = _.find(resourceFactories, factory => factory.canCreate(resourceDescriptor));
-
-  if (resourceFactory !== undefined) {
-    return resourceFactory.create(resourceDescriptor, parameters);
-  }
-
-  return Promise.reject(new Error(
-    `No factory found for "${resourceDescriptor.type}" resource type`
-  ));
-}
+const asgResourceFactory = require('./resourceFactories/asgResourceFactory');
+const asgScheduledActionsResourceFactory = require('./resourceFactories/asgScheduledActionsResourceFactory');
+const ec2ImageResourceFactory = require('./resourceFactories/ec2ImageResourceFactory');
+const iamInstanceProfileResourceFactory = require('./resourceFactories/iamInstanceProfileResourceFactory');
+const ec2InstanceResourceFactory = require('./resourceFactories/ec2InstanceResourceFactory');
+const launchConfigurationResourceFactory = require('./resourceFactories/launchConfigurationResourceFactory');
+const nginxUpstreamsResourceFactory = require('./resourceFactories/nginxUpstreamsResourceFactory');
+const securityGroupResourceFactory = require('./resourceFactories/securityGroupResourceFactory');
 
 function getInstanceByName(resourceName, parameters) {
-  let resourceDescriptor = resourceDescriptorProvider.get(resourceName);
-  if (resourceDescriptor !== null && resourceDescriptor !== undefined) return getInstanceByDescriptor(resourceDescriptor, parameters);
-  else return Promise.reject(new Error(`No resource found with name "${resourceName}".`));
+  let name = resourceName.toLowerCase();
+  switch (name) {
+    case 'asgs':
+      return asgResourceFactory.create(undefined, parameters);
+    case 'asgs-scheduled-actions':
+      return asgScheduledActionsResourceFactory.create(undefined, parameters);
+    case 'images':
+      return ec2ImageResourceFactory.create(undefined, parameters);
+    case 'instanceprofiles':
+      return iamInstanceProfileResourceFactory.create(undefined, parameters);
+    case 'instances':
+      return ec2InstanceResourceFactory.create(undefined, parameters);
+    case 'launchconfig':
+      return launchConfigurationResourceFactory.create(undefined, parameters);
+    case 'nginx':
+      return nginxUpstreamsResourceFactory.create(undefined, undefined);
+    case 'sg':
+      return securityGroupResourceFactory.create(undefined, parameters);
+    default: {
+      return Promise.reject(new Error(`No resource found with name "${resourceName}".`));
+    }
+  }
 }
 
 module.exports = {
