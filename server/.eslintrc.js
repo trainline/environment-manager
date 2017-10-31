@@ -5,7 +5,7 @@ module.exports = {
   },
   "extends": "airbnb-base",
   "plugins": [
-    "dependencies"
+    "dependencies",
   ],
   "rules": {
     "arrow-body-style": [0, "never"],
@@ -18,8 +18,6 @@ module.exports = {
     }],
     "dependencies/no-cycles": 2,
     "global-require": 2,
-    "import/no-dynamic-require": 2,
-    "import/no-extraneous-dependencies": 0,
     "import/newline-after-import": 0,
     "max-len": [1, 120, 2, {ignoreComments: true}],
     "newline-per-chained-call": 0,
