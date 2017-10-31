@@ -192,17 +192,6 @@ paths:
           required: true
           schema:
             type: object
-            properties:
-              propogateToInstances:
-                type: string
-              schedule:
-                type: object
-                properties:
-                  DesiredCapacity:
-                    type: string
-                  Recurrence:
-                    type: string
-
       responses:
         200:
           description: Ok
