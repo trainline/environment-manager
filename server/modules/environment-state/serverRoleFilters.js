@@ -32,7 +32,7 @@ function describeServerRoleFilter({ environmentName, serviceName, slice, serverR
     .join(' ');
 }
 
-function fullyQualifiedServiceNamesFor({ environmentName, serviceName, slice, serverRole }) {
+function fullyQualifiedServiceNamesFor({ environmentName, serviceName, slice }) {
   let slices = slice ? [slice] : ['blue', 'green', 'none'];
   return fp.map(format.bind(null, environmentName, serviceName))(slices);
 }

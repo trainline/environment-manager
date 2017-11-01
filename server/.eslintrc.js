@@ -22,7 +22,6 @@ module.exports = {
     "max-len": [1, 120, 2, {ignoreComments: true}],
     "newline-per-chained-call": 0,
     "no-cond-assign": [2, 'except-parens'],
-    "no-unused-vars": [2, {'vars': 'all', 'args': 'none', 'varsIgnorePattern': '_'}],
     "no-else-return": 0,
     "no-use-before-define": 0,
     "no-useless-escape": 0,

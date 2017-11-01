@@ -2,7 +2,6 @@
 
 'use strict';
 
-let _ = require('lodash');
 let AsgResourceBase = require('./AsgResourceBase');
 let AutoScalingGroup = require('../../models/AutoScalingGroup');
 

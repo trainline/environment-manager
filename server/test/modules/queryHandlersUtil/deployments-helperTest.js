@@ -40,7 +40,7 @@ describe('deployments-helper', () => {
           get
         },
         '../configurationCache': {
-          getEnvironmentTypeByName: envType => Promise.resolve({ AWSAccountName: 'master-account' })
+          getEnvironmentTypeByName: () => Promise.resolve({ AWSAccountName: 'master-account' })
         }
       }));
 
@@ -63,7 +63,7 @@ describe('deployments-helper', () => {
           get
         },
         '../configurationCache': {
-          getEnvironmentTypeByName: envType => Promise.resolve({ AWSAccountName: 'master-account' })
+          getEnvironmentTypeByName: () => Promise.resolve({ AWSAccountName: 'master-account' })
         }
       }));
 
@@ -91,7 +91,7 @@ describe('deployments-helper', () => {
           get
         },
         '../configurationCache': {
-          getEnvironmentTypeByName: envType => Promise.resolve({ AWSAccountName: 'master-account' })
+          getEnvironmentTypeByName: () => Promise.resolve({ AWSAccountName: 'master-account' })
         }
       }));
 

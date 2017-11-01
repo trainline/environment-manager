@@ -5,7 +5,7 @@
 let _ = require('lodash');
 let configEnvironments = require('../data-access/configEnvironments');
 
-function getCurrentEnvironment(name, user) {
+function getCurrentEnvironment(name) {
   return configEnvironments.get({ EnvironmentName: name });
 }
 

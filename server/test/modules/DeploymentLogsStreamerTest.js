@@ -34,7 +34,7 @@ describe('DeploymentLogsStreamer', function () {
       let callbacks = [];
       return {
         elapse: () => Promise.all(callbacks.map(fn => Promise.resolve(fn()))),
-        setInterval: (fn, _) => callbacks.push(fn)
+        setInterval: fn => callbacks.push(fn)
       };
     })();
 

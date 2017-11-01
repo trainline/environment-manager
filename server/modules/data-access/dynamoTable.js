@@ -81,7 +81,7 @@ function replace(TableName, { record, expressions }) {
 }
 
 function update(TableName, { key, expressions }) {
-  return describeDynamoTable(TableName).then((tableDescription) => {
+  return Promise.resolve().then(() => {
     let params = Object.assign({ TableName, Key: key }, compileIfSet(expressions));
     return DocumentClient()
       .then(dynamo => dynamo.update(params).promise())
@@ -98,7 +98,7 @@ function update(TableName, { key, expressions }) {
 }
 
 function $delete(TableName, { key, expressions }) {
-  return describeDynamoTable(TableName).then((tableDescription) => {
+  return Promise.resolve().then(() => {
     let params = Object.assign({ TableName, Key: key }, compileIfSet(expressions));
     return DocumentClient()
       .then(dynamo => dynamo.delete(params).promise())

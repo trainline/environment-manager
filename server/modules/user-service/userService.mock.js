@@ -27,7 +27,7 @@ function getUserByToken(token) {
   return Promise.resolve(User.new(data.name, data.expiration, data.groups, data.permissions));
 }
 
-function signOut(encryptedToken) {
+function signOut() {
   return Promise.resolve();
 }
 

@@ -2,10 +2,9 @@
 
 'use strict';
 
-let _ = require('lodash');
 let configEnvironments = require('../data-access/configEnvironments');
 
-function getEnvironment(name, user) {
+function getEnvironment(name) {
   return configEnvironments.get({ EnvironmentName: name });
 }
 

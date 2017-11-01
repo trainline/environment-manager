@@ -62,7 +62,7 @@ function instancesOf(describeInstancesResult) {
 function instancesRequestFor(getAwsAccountForEnvironment, serviceHealthResults) {
   let environmentOf = valueOfTag('environment');
   let getEnvironments = flow(
-    flatMap(({ Service, Node: { Node } }) => environmentOf(Service)),
+    flatMap(({ Service }) => environmentOf(Service)),
     uniq);
 
   let getEnvAccountMapper = environments => Promise.map(environments, e => getAwsAccountForEnvironment(e).then(a => [e, a]))
@@ -128,13 +128,13 @@ function currentState(health, instances) {
   let summarizeServiceHealthByRole = (acc, node) => {
     let add = (left, right) => ({
       'failing-checks': [...(left['failing-checks'] || []), ...filter(check => check.Status !== 'passing')(right['failing-checks'])],
-      healthyCount: (left.healthyCount || 0) + right.healthyCount,
-      unhealthyCount: (left.unhealthyCount || 0) + right.unhealthyCount
+      'healthyCount': (left.healthyCount || 0) + right.healthyCount,
+      'unhealthyCount': (left.unhealthyCount || 0) + right.unhealthyCount
     });
     let myhealth = {
       'failing-checks': node.Checks,
-      healthyCount: node.Healthy ? 1 : 0,
-      unhealthyCount: node.Healthy ? 0 : 1
+      'healthyCount': node.Healthy ? 1 : 0,
+      'unhealthyCount': node.Healthy ? 0 : 1
     };
     if (node.Role) {
       if (!acc.roles) {
@@ -198,17 +198,17 @@ function compare(desired, current) {
       map(([, value]) => value),
       values => ({
         environment: flow(map(get('environment')), max)(values),
-        'orphanedInstances': flow(
+        orphanedInstances: flow(
           filter(({ instance }) => instance !== undefined),
           groupBy(({ instance }) => instance),
-          mapValues(reduce(aggregate({ 'failing-checks': cat, healthyCount: sum, unhealthyCount: sum }), {})),
+          mapValues(reduce(aggregate({ 'failing-checks': cat, 'healthyCount': sum, 'unhealthyCount': sum }), {})),
           toPairs,
           map(([k, v]) => assign(v)({ name: k }))
         )(values),
         roles: flow(
           filter(({ role }) => role !== undefined),
           groupBy(({ role }) => role),
-          mapValues(reduce(aggregate({ 'failing-checks': cat, healthyCount: sum, desiredCount: sum, unhealthyCount: sum }), {})),
+          mapValues(reduce(aggregate({ 'failing-checks': cat, 'healthyCount': sum, 'desiredCount': sum, 'unhealthyCount': sum }), {})),
           toPairs,
           map(([k, v]) => assign(v)({ name: k }))
         )(values),

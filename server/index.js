@@ -23,7 +23,7 @@ let cacheManager = require('./modules/cacheManager');
 const miniStack = require('./modules/miniStack');
 const mini = miniStack.build();
 
-process.on('unhandledRejection', (err, promise) => {
+process.on('unhandledRejection', (err) => {
   let entry;
   if (err instanceof Error) {
     entry = {

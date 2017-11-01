@@ -6,8 +6,6 @@ let co = require('co');
 let ms = require('ms');
 let _ = require('lodash');
 
-let DEPLOYMENT_MAXIMUM_THRESHOLD = ms('90m');
-let DEPLOYMENT_MINIMUM_THRESHOLD = ms('30s');
 let DEFAULT_SERVICE_INSTALLATION_TIMEOUT = '30m';
 
 let Enums = require('../../Enums');

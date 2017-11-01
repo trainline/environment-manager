@@ -108,7 +108,7 @@ function factory({ archivedDeploymentsTable, archivedDeploymentsIndex, runningDe
   }
 
   function update(expression) {
-    return describeDynamoTable(runningDeploymentsTable).then(description =>
+    return Promise.resolve().then(() =>
       fp.flow(
         ({ key, updateExpression }) => ({
           key,

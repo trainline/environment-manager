@@ -97,11 +97,11 @@ describe('getInstanceState', function () {
  * Utils for creating mock service states
  */
 const randInt = n => Math.round(Math.random() * n);
-const randSlice = _ => Math.round(Math.random()) ? 'blue' : 'green'; // eslint-disable-line no-confusing-arrow
-const randStr = n => [...Array(n)].map(_ => String.fromCharCode(Math.round(Math.random() * 25) + 97)).join('');
+const randSlice = () => Math.round(Math.random()) ? 'blue' : 'green'; // eslint-disable-line no-confusing-arrow
+const randStr = n => [...Array(n)].map(() => String.fromCharCode(Math.round(Math.random() * 25) + 97)).join('');
 
 function createServiceStates(targetState, currentState, n, state) {
-  return [...Array(n)].map(_ => createServiceStatePairs(targetState, currentState, state));
+  return [...Array(n)].map(() => createServiceStatePairs(targetState, currentState, state));
 }
 
 function createServiceStatePairs(targetState, currentState, state = 'Install') {

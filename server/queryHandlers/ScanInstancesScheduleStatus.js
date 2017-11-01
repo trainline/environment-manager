@@ -105,7 +105,7 @@ function getAllInstances(query) {
   });
 }
 
-function getAllEnvironments(query) {
+function getAllEnvironments() {
   return opsEnvironment.scan();
 }
 

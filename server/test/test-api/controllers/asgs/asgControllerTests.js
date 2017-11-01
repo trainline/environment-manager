@@ -50,7 +50,7 @@ function assertMutationPreventedWhenEnvironmentLocked(req, handlerFunctionName) 
       let res = {
         status: sinon.spy(() => ({}))
       };
-      let next = sinon.spy(error => Promise.resolve());
+      let next = sinon.spy(() => Promise.resolve());
       return sut[handlerFunctionName](req, res, next)
         .then(() => sinon.assert.calledWith(res.status, 400));
     });

@@ -2,7 +2,6 @@
 
 'use strict';
 
-let _ = require('lodash');
 let co = require('co');
 let configurationCache = require('../configurationCache');
 let deployments = require('../data-access/deployments');

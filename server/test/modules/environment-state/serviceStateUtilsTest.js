@@ -38,7 +38,7 @@ describe('serviceStateUtils', function () {
     [
       { tags: [], expected: {} },
       { tags: ['version:1.2.3'], expected: { version: '1.2.3' } },
-      { tags: ['a:1', 'b:2', 'c:a', '1:3', '_=-@:4'], expected: { a: '1', b: '2', c: 'a', '1': '3', '_=-@': '4' } },
+      { tags: ['a:1', 'b:2', 'c:a', '1:3', '_=-@:4'], expected: { 'a': '1', 'b': '2', 'c': 'a', '1': '3', '_=-@': '4' } },
       { tags: ['ARN:arn:aws:s3:::my_corporate_bucket/exampleobject.png'], expected: { ARN: 'arn:aws:s3:::my_corporate_bucket/exampleobject.png' } }
     ]
     .forEach((param) => {

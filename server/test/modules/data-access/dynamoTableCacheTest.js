@@ -23,19 +23,19 @@ describe('dynamoTableCache', function () {
       let dynamoTable = { create: succeed() };
       let cacheManager = { del: succeed() };
       return dynamoTableCache(dynamoTable, cacheManager).create(tableName, { ID: 1 })
-        .then(_ => sinon.assert.calledWith(dynamoTable.create, tableName, sinon.match({ ID: 1 })));
+        .then(() => sinon.assert.calledWith(dynamoTable.create, tableName, sinon.match({ ID: 1 })));
     });
     it('invalidates the cached table if the table operation succeeds', function () {
       let dynamoTable = { create: succeed() };
       let cache = { del: succeed() };
       return dynamoTableCache(dynamoTable, cache).create(tableName, { ID: 1 })
-        .then(_ => sinon.assert.calledWith(cache.del, tableName));
+        .then(() => sinon.assert.calledWith(cache.del, tableName));
     });
     it('does not invalidate the cached table if the table operation fails', function () {
       let dynamoTable = { create: fail() };
       let cache = { del: succeed() };
       return dynamoTableCache(dynamoTable, cache).create(tableName, { ID: 1 })
-        .catch(_ => sinon.assert.notCalled(cache.del));
+        .catch(() => sinon.assert.notCalled(cache.del));
     });
     it('returns a rejected promise if the table operation fails', function () {
       let dynamoTable = { create: fail() };
@@ -58,19 +58,19 @@ describe('dynamoTableCache', function () {
       let dynamoTable = { delete: succeed() };
       let cacheManager = { del: succeed() };
       return dynamoTableCache(dynamoTable, cacheManager).delete(tableName, { ID: 1 })
-        .then(_ => sinon.assert.calledWith(dynamoTable.delete, tableName, sinon.match({ ID: 1 })));
+        .then(() => sinon.assert.calledWith(dynamoTable.delete, tableName, sinon.match({ ID: 1 })));
     });
     it('invalidates the cached table if the table operation succeeds', function () {
       let dynamoTable = { delete: succeed() };
       let cache = { del: succeed() };
       return dynamoTableCache(dynamoTable, cache).delete(tableName, { ID: 1 })
-        .then(_ => sinon.assert.calledWith(cache.del, tableName));
+        .then(() => sinon.assert.calledWith(cache.del, tableName));
     });
     it('does not invalidate the cached table if the table operation fails', function () {
       let dynamoTable = { delete: fail() };
       let cache = { del: succeed() };
       return dynamoTableCache(dynamoTable, cache).delete(tableName, { ID: 1 })
-        .catch(_ => sinon.assert.notCalled(cache.del));
+        .catch(() => sinon.assert.notCalled(cache.del));
     });
     it('returns a rejected promise if the table operation fails', function () {
       let dynamoTable = { delete: fail() };
@@ -92,7 +92,7 @@ describe('dynamoTableCache', function () {
       let dynamoTable = { get: succeed() };
       let cacheManager = { };
       return dynamoTableCache(dynamoTable, cacheManager).get(tableName, { ID: 1 })
-        .then(_ => sinon.assert.calledWith(dynamoTable.get, tableName, sinon.match({ ID: 1 })));
+        .then(() => sinon.assert.calledWith(dynamoTable.get, tableName, sinon.match({ ID: 1 })));
     });
   });
 
@@ -103,19 +103,19 @@ describe('dynamoTableCache', function () {
       let dynamoTable = { replace: succeed() };
       let cacheManager = { del: succeed() };
       return dynamoTableCache(dynamoTable, cacheManager).replace(tableName, { ID: 1 })
-        .then(_ => sinon.assert.calledWith(dynamoTable.replace, tableName, sinon.match({ ID: 1 })));
+        .then(() => sinon.assert.calledWith(dynamoTable.replace, tableName, sinon.match({ ID: 1 })));
     });
     it('invalidates the cached table if the table operation succeeds', function () {
       let dynamoTable = { replace: succeed() };
       let cache = { del: succeed() };
       return dynamoTableCache(dynamoTable, cache).replace(tableName, { ID: 1 })
-        .then(_ => sinon.assert.calledWith(cache.del, tableName));
+        .then(() => sinon.assert.calledWith(cache.del, tableName));
     });
     it('does not invalidate the cached table if the table operation fails', function () {
       let dynamoTable = { replace: fail() };
       let cache = { del: succeed() };
       return dynamoTableCache(dynamoTable, cache).replace(tableName, { ID: 1 })
-        .catch(_ => sinon.assert.notCalled(cache.del));
+        .catch(() => sinon.assert.notCalled(cache.del));
     });
     it('returns a rejected promise if the table operation fails', function () {
       let dynamoTable = { replace: fail() };
@@ -138,13 +138,13 @@ describe('dynamoTableCache', function () {
       let dynamoTable = { scan: succeed() };
       let cache = { get: succeed() };
       return dynamoTableCache(dynamoTable, cache).scan(tableName)
-        .then(_ => sinon.assert.calledWith(cache.get, tableName));
+        .then(() => sinon.assert.calledWith(cache.get, tableName));
     });
     it('returns the items from the table if the cache operation fails', function () {
       let dynamoTable = { scan: succeed() };
       let cache = { get: fail() };
       return dynamoTableCache(dynamoTable, cache).scan(tableName)
-        .then(_ => sinon.assert.calledWith(dynamoTable.scan, tableName));
+        .then(() => sinon.assert.calledWith(dynamoTable.scan, tableName));
     });
   });
 });

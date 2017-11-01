@@ -7,7 +7,6 @@ let co = require('co');
 
 let Enums = require('../../Enums');
 let DIFF_STATE = Enums.DIFF_STATE;
-let DEPLOYMENT_STATUS = Enums.DEPLOYMENT_STATUS;
 let logger = require('../logger');
 let serviceTargets = require('../service-targets');
 
@@ -22,7 +21,7 @@ function getServiceChecksInfo(serviceObjects) {
   // Get all health checks for all instances of this service
   let serviceChecks = _.flatMap(serviceObjects, 'HealthChecks');
   let checksGrouped = _.groupBy(serviceChecks, 'Name');
-  return _.map(checksGrouped, (checks, checkName) =>
+  return _.map(checksGrouped, checks =>
     // If some instances checks failed for a given check, mark as failed
     // also, don't count in instance into working
      ({
@@ -55,7 +54,7 @@ function* getServicesState(environmentName, runtimeServerRoleName, instances) {
   // Find all objects representing particular service for all nodes
   let instanceServicesGrouped = _.groupBy(allServiceObjects, obj => getServiceAndSlice(obj));
 
-  let servicesList = _.map(instanceServicesGrouped, (serviceObjects, key) => {
+  let servicesList = _.map(instanceServicesGrouped, (serviceObjects) => {
     let service = _.find(targetServiceStates, targetService => getServiceAndSlice(targetService) === getServiceAndSlice(serviceObjects[0]));
 
     // That is a service that is not in a target state, but on at least one of instances

@@ -72,7 +72,7 @@ function setAutoScalingGroupSchedule(autoScalingGroupName, schedule, scalingSche
   });
 }
 
-function setAutoScalingGroupScheduleTag(client, autoScalingGroupName, schedule, accountName) {
+function setAutoScalingGroupScheduleTag(client, autoScalingGroupName, schedule) {
   let parameters = {
     name: autoScalingGroupName,
     tagKey: 'Schedule',
@@ -82,7 +82,7 @@ function setAutoScalingGroupScheduleTag(client, autoScalingGroupName, schedule, 
   return client.setTag(parameters);
 }
 
-function setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, newScheduledActions, accountName) {
+function setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, newScheduledActions) {
   return co(function* () {
     let existingScheduledActions = yield getScheduledActions(client, autoScalingGroupName);
     yield existingScheduledActions.map(action => deleteScheduledAction(client, action));

@@ -33,7 +33,7 @@ function factory(physicalTableName, dynamoTable) {
       expressions.ConditionExpression = ['and', ConditionExpression, expressions.ConditionExpression];
     }
     return dynamoTable.update(physicalTableName, keyExpresionPair)
-      .then(_ => dynamoTable.delete(physicalTableName, { key }));
+      .then(() => dynamoTable.delete(physicalTableName, { key }));
   }
 
   function get(key) {

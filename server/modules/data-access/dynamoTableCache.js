@@ -18,12 +18,12 @@ function dynamoTableCache(logicalTableName, { ttl }) {
 
   function create(tableName, createSpec) {
     return dynamoTable.create(tableName, createSpec)
-      .then(_ => cache.del(tableName).catch(logError('Could not invalidate cache', tableName)));
+      .then(() => cache.del(tableName).catch(logError('Could not invalidate cache', tableName)));
   }
 
   function $delete(tableName, deleteSpec) {
     return dynamoTable.delete(tableName, deleteSpec)
-      .then(_ => cache.del(tableName).catch(logError('Could not invalidate cache', tableName)));
+      .then(() => cache.del(tableName).catch(logError('Could not invalidate cache', tableName)));
   }
 
   function get(tableName, key) {
@@ -36,7 +36,7 @@ function dynamoTableCache(logicalTableName, { ttl }) {
 
   function replace(tableName, replaceSpec) {
     return dynamoTable.replace(tableName, replaceSpec)
-      .then(_ => cache.del(tableName).catch(logError('Could not invalidate cache', tableName)));
+      .then(() => cache.del(tableName).catch(logError('Could not invalidate cache', tableName)));
   }
 
   function scan(tableName, filter) {
@@ -44,7 +44,7 @@ function dynamoTableCache(logicalTableName, { ttl }) {
       return dynamoTable.scan(tableName, filter);
     } else {
       return cache.get(tableName).catch((error) => {
-        logError('Could not get from cache', tableName);
+        logError('Could not get from cache', tableName)(error);
         return dynamoTable.scan(tableName);
       });
     }
@@ -52,7 +52,7 @@ function dynamoTableCache(logicalTableName, { ttl }) {
 
   function update(tableName, updateSpec) {
     return dynamoTable.update(tableName, updateSpec)
-      .then(_ => cache.del(tableName).catch(logError('Could not invalidate cache', tableName)));
+      .then(() => cache.del(tableName).catch(logError('Could not invalidate cache', tableName)));
   }
 
   return {

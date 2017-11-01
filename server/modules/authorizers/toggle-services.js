@@ -2,7 +2,6 @@
 
 'use strict';
 
-let _ = require('lodash');
 let sender = require('../sender');
 let GetSlicesByService = require('../../queryHandlers/slices/GetSlicesByService');
 

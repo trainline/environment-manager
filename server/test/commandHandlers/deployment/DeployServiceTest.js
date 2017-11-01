@@ -93,7 +93,7 @@ describe('DeployService', function () {
       started: sinon.stub().returns(Promise.resolve({}))
     };
 
-    const GetServicePortConfig = x => ({ blue: 0, green: 0 });
+    const GetServicePortConfig = () => ({ blue: 0, green: 0 });
 
     sut.__set__({ // eslint-disable-line no-underscore-dangle
       s3PackageLocator,

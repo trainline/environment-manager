@@ -2,7 +2,6 @@
 
 'use strict';
 
-let _ = require('lodash');
 let amazonClientFactory = require('../amazon-client/childAccountClient');
 let Instance = require('../../models/Instance');
 let InstanceResourceBase = require('./InstanceResourceBase');

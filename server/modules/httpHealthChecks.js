@@ -23,7 +23,7 @@ function buildRouter() {
 }
 
 function toMiddleware(check) {
-  return (req, res, next) => {
+  return (req, res) => {
     co(function* () {
       let checkReport = yield runCheck(check);
       let statusCode = statusCodes[checkReport.result];

@@ -168,7 +168,7 @@ function putUpstreamConfigByName(req, res, next) {
 /**
  * DELETE /config/upstreams/{name}
  */
-function deleteUpstreamConfigByName(req, res, next) {
+function deleteUpstreamConfigByName(req, res) {
   let Key = param('name', req);
   let key = { Key };
   const expectedVersion = param('expected-version', req);

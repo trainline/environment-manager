@@ -95,7 +95,7 @@ describe('enterAutoScalingGroupInstancesToStandby', function () {
     });
 
     it('sets ASG minimum size to one', () => {
-      return sut(command).then((result) => {
+      return sut(command).then(() => {
         let sendCommandInvocation = senderMock.sendCommand.getCall(0);
         sendCommandInvocation.args[1].should.match({
           command: {
@@ -109,7 +109,7 @@ describe('enterAutoScalingGroupInstancesToStandby', function () {
     });
 
     it('sets ASG maximum size to one', () => {
-      return sut(command).then((result) => {
+      return sut(command).then(() => {
         let sendCommandInvocation = senderMock.sendCommand.getCall(1);
         sendCommandInvocation.args[1].should.match({
           command: {
@@ -123,7 +123,7 @@ describe('enterAutoScalingGroupInstancesToStandby', function () {
     });
 
     it('requests all desired instances to be entered to standby', () => {
-      return sut(command).then((result) => {
+      return sut(command).then(() => {
         asgResourceMock.enterInstancesToStandby.getCall(0).args[0].should.match({
           name: autoScalingGroupName,
           instanceIds

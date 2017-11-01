@@ -2,10 +2,6 @@
 
 'use strict';
 
-const TEN_MINUTES = 10 * 60;
-const CACHE_KEY = 'AWSAccounts';
-
-let _ = require('lodash');
 let ResourceNotFoundError = require('./errors/ResourceNotFoundError.class');
 let { scan } = require('./data-access/accounts');
 

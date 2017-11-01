@@ -67,7 +67,7 @@ describe('CreateLaunchConfigurationCommandHandler:', () => {
     let promise = CreateLaunchConfigurationCommandHandler(command);
 
     // Assert
-    return promise.then((result) => {
+    return promise.then(() => {
       sinon.assert.calledOnce(launchConfigurationResourceFactory.create);
       sinon.assert.calledWithExactly(launchConfigurationResourceFactory.create, undefined, { accountName: ACCOUNT_NAME });
       launchConfigurationClientMock.post.called.should.be.true();
