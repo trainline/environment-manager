@@ -8,14 +8,6 @@
 <div ng-show="vm.editMode && !vm.dataFound">No data found.</div>
 
 <form name="form" class="form-horizontal" ng-show="vm.dataFound || !vm.editMode">
-    <div class="form-group" ng-if="!vm.editMode" ng-class="{'has-error': form.ServiceName.$invalid && form.ServiceName.$dirty} ">
-        <label class="col-sm-12 control-label text-left nowrap em-form-label">Service Name: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
-        <div class="col-sm-8">
-            <input type="text" name="ServiceName" required="" class="form-control" autofocus maxlength="50" ng-model="vm.service.ServiceName"
-                unique-among="vm.serviceNames" pattern="[a-zA-Z]+[a-zA-Z0-9]*" ng-readonly="!!vm.editMode || !vm.canUser('edit')"
-            />
-        </div>
-    </div>
     <fieldset>
         <legend>Details</legend>
 
