@@ -50,6 +50,7 @@ function updateTargetState(command, keyValue, options) {
   return sender.sendCommand(UpdateTargetState, {
     command: {
       name: 'UpdateTargetState',
+      deploymentId: command.deployment.id,
       environment: command.deployment.environmentName,
       key: keyValue.key,
       value: keyValue.value,

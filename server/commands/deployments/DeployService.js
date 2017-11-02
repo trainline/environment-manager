@@ -39,11 +39,11 @@ module.exports = function DeployServiceCommandHandler(command) {
       };
     }
 
-    // Run asynchronously, we don't wait for deploy to finish intentionally
-    yield deploy(deployment, destination, sourcePackage, command);
-
     let accountName = deployment.accountName;
     yield deploymentLogger.started(deployment, accountName);
+    // Run asynchronously, we don't wait for deploy to finish intentionally
+    deploy(deployment, destination, sourcePackage, command);
+
     return deployment;
   });
 };

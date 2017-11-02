@@ -12,13 +12,16 @@
     "self": {
       "type": "object",
       "properties": {
+        "deploymentId": {
+          "type": "string"
+        },
         "key": { "$ref": "ConsulKey" },
         "name": {
           "type": "string",
           "pattern": "^UpdateTargetState$"
         }
       },
-      "required": ["key", "name", "value"]
+      "required": ["deploymentId", "key", "name", "value"]
     }
   }
 }
