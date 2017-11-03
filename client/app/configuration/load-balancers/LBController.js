@@ -158,7 +158,6 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
                 if (!_.includes(proxyUpstreamName, '.')) {
                   if ($scope.LBUpstreamData && $scope.LBUpstreamData.length > 0) {
                     var foundUpstream = null;
-                    $scope.LBUpstreamData.push({ Value: { EnvironmentName: 'c99', UpstreamName: 'something' } });
                     var matchFound = $scope.LBUpstreamData.some(function upstreamIsProxy(upstream) {
                       var found = upstream.Value.UpstreamName === proxyUpstreamName;
                       if (found)
