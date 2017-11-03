@@ -16,7 +16,7 @@ var asgClient = {
 describe('Describing [AsgResource]', () => {
 
   before(function () {
-    AsgResource = proxyquire('../../../modules/resourceFactories/AsgResource', {
+    AsgResource = proxyquire('../../../modules/resourceFactories/AsgResourceBase', {
       '../cacheManager': {
         create: (name, fn) => ({
           get: fn,

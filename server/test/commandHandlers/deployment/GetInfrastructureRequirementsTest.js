@@ -2,6 +2,7 @@
 
 'use strict';
 
+require('should');
 let sinon = require('sinon');
 let sinonHelper = require('../../utils/sinonHelper');
 let proxyquire = require('proxyquire');
@@ -93,7 +94,7 @@ describe('GetInfrastructureRequirements:', () => {
 
     it('should only query the target ASG', () =>
       promise.then(() => {
-        let scanASGsQuery = mocks.sender.sendQuery.getCalls()[0].args[0].query;
+        let scanASGsQuery = mocks.sender.sendQuery.getCalls()[0].args[1].query;
         assert.equal(scanASGsQuery.autoScalingGroupNames.length, 1);
         assert.equal(scanASGsQuery.autoScalingGroupNames[0], BLUE_ASG);
       })
@@ -136,7 +137,7 @@ describe('GetInfrastructureRequirements:', () => {
         };
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
+          .withArgs(sinon.match.any, sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
           .returns(Promise.resolve([expectedAutoScalingGroup]));
 
         mocks.sender.sendCommand
@@ -172,7 +173,7 @@ describe('GetInfrastructureRequirements:', () => {
 
       it('should check the AutoScalingGroup presence', () => {
         let calls = sinonHelper.getCalls(mocks.sender.sendQuery);
-        calls.map(call => call.args[0]).should.matchAny({
+        calls.map(call => call.args[1]).should.matchAny({
           query: {
             name: 'ScanAutoScalingGroups',
             accountName: ACCOUNT_NAME,
@@ -183,7 +184,7 @@ describe('GetInfrastructureRequirements:', () => {
 
       it('should not check the LaunchConfiguration presence', () => {
         let calls = sinonHelper.getCalls(mocks.sender.sendQuery);
-        calls.map(call => call.args[0]).should.not.matchAny({
+        calls.map(call => call.args[1]).should.not.matchAny({
           query: { name: 'ScanLaunchConfigurations' }
         });
       });
@@ -212,11 +213,11 @@ describe('GetInfrastructureRequirements:', () => {
           .returns(Promise.resolve([expectedLaunchConfigurationTemplate]));
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
+          .withArgs(sinon.match.any, sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
           .returns(Promise.resolve([]));
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
+          .withArgs(sinon.match.any, sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
           .returns(Promise.resolve([]));
 
         mocks.sender.sendCommand.returns(Promise.resolve());
@@ -234,7 +235,7 @@ describe('GetInfrastructureRequirements:', () => {
       it('should check the AutoScalingGroup presence', () =>
         promise.then(() => {
           let calls = sinonHelper.getCalls(mocks.sender.sendQuery);
-          calls.map(call => call.args[0]).should.matchAny({
+          calls.map(call => call.args[1]).should.matchAny({
             query: {
               name: 'ScanAutoScalingGroups',
               accountName: ACCOUNT_NAME,
@@ -247,7 +248,7 @@ describe('GetInfrastructureRequirements:', () => {
       it('should check the LaunchConfiguration presence', () =>
         promise.then(() => {
           let calls = sinonHelper.getCalls(mocks.sender.sendQuery);
-          calls.map(call => call.args[0]).should.matchAny({
+          calls.map(call => call.args[1]).should.matchAny({
             query: {
               name: 'ScanLaunchConfigurations',
               accountName: ACCOUNT_NAME,
@@ -303,11 +304,11 @@ describe('GetInfrastructureRequirements:', () => {
         };
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
+          .withArgs(sinon.match.any, sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
           .returns(Promise.resolve([]));
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
+          .withArgs(sinon.match.any, sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
           .returns(Promise.resolve([expectedLaunchConfiguration]));
 
         mocks.sender.sendCommand.returns(Promise.resolve());
@@ -326,7 +327,7 @@ describe('GetInfrastructureRequirements:', () => {
       it('should check the AutoScalingGroup presence', () =>
         promise.then(() => {
           let calls = sinonHelper.getCalls(mocks.sender.sendQuery);
-          calls.map(call => call.args[0]).should.matchAny({
+          calls.map(call => call.args[1]).should.matchAny({
             query: {
               name: 'ScanAutoScalingGroups',
               accountName: ACCOUNT_NAME,
@@ -339,7 +340,7 @@ describe('GetInfrastructureRequirements:', () => {
       it('should check the LaunchConfiguration presence', () =>
         promise.then(() => {
           let calls = sinonHelper.getCalls(mocks.sender.sendQuery);
-          calls.map(call => call.args[0]).should.matchAny({
+          calls.map(call => call.args[1]).should.matchAny({
             query: {
               name: 'ScanLaunchConfigurations',
               accountName: ACCOUNT_NAME,
@@ -380,15 +381,15 @@ describe('GetInfrastructureRequirements:', () => {
           .returns(Promise.resolve([expectedLaunchConfigurationTemplate]));
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
+          .withArgs(sinon.match.any, sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
           .returns(Promise.resolve([]));
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
+          .withArgs(sinon.match.any, sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
           .returns(Promise.resolve([]));
 
         mocks.sender.sendCommand.returns(Promise.resolve());
         mocks.sender.sendCommand
-          .withArgs(sinon.match({ command: { name: 'CreateAutoScalingGroup' } }))
+          .withArgs(sinon.match.any, sinon.match({ command: { name: 'CreateAutoScalingGroup' } }))
           .returns(Promise.reject(new AutoScalingGroupAlreadyExistsError()));
 
         promise = target(COMMAND);
@@ -446,7 +447,7 @@ describe('GetInfrastructureRequirements:', () => {
         };
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
+          .withArgs(sinon.match.any, sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
           .returns(Promise.resolve([
             expectedAutoScalingGroupBlue,
             expectedAutoScalingGroupGreen
@@ -459,7 +460,7 @@ describe('GetInfrastructureRequirements:', () => {
       it('should check the AutoScalingGroup presence', () =>
         promise.then(() => {
           let calls = sinonHelper.getCalls(mocks.sender.sendQuery);
-          calls.map(call => call.args[0]).should.matchAny({
+          calls.map(call => call.args[1]).should.matchAny({
             query: {
               name: 'ScanAutoScalingGroups',
               accountName: ACCOUNT_NAME,
@@ -475,7 +476,7 @@ describe('GetInfrastructureRequirements:', () => {
       it('should not check the LaunchConfiguration presence', () =>
         promise.then(() => {
           let calls = sinonHelper.getCalls(mocks.sender.sendQuery);
-          calls.map(call => call.args[0]).should.not.matchAny({
+          calls.map(call => call.args[1]).should.not.matchAny({
             query: { name: 'ScanLaunchConfigurations' }
           });
         })
@@ -533,11 +534,11 @@ describe('GetInfrastructureRequirements:', () => {
         };
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
+          .withArgs(sinon.match.any, sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
           .returns(Promise.resolve([expectedAutoScalingGroupBlue]));
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
+          .withArgs(sinon.match.any, sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
           .returns(Promise.resolve([expectedLaunchConfigurationBlue]));
 
         mocks.sender.sendCommand.returns(Promise.resolve());
@@ -547,7 +548,7 @@ describe('GetInfrastructureRequirements:', () => {
       it('should check the AutoScalingGroups presence', () =>
         promise.then(() => {
           let calls = sinonHelper.getCalls(mocks.sender.sendQuery);
-          calls.map(call => call.args[0]).should.matchAny({
+          calls.map(call => call.args[1]).should.matchAny({
             query: {
               name: 'ScanAutoScalingGroups',
               accountName: ACCOUNT_NAME,
@@ -563,7 +564,7 @@ describe('GetInfrastructureRequirements:', () => {
       it('should check green LaunchConfiguration presence only', () =>
         promise.then(() => {
           let calls = sinonHelper.getCalls(mocks.sender.sendQuery);
-          calls.map(call => call.args[0]).should.matchAny({
+          calls.map(call => call.args[1]).should.matchAny({
             query: {
               name: 'ScanLaunchConfigurations',
               accountName: ACCOUNT_NAME,
@@ -620,11 +621,11 @@ describe('GetInfrastructureRequirements:', () => {
           ]));
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
+          .withArgs(sinon.match.any, sinon.match({ query: { name: 'ScanAutoScalingGroups' } }))
           .returns(Promise.resolve([]));
 
         mocks.sender.sendQuery
-          .withArgs(sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
+          .withArgs(sinon.match.any, sinon.match({ query: { name: 'ScanLaunchConfigurations' } }))
           .returns(Promise.resolve([]));
 
         mocks.sender.sendCommand.returns(Promise.resolve());
@@ -634,7 +635,7 @@ describe('GetInfrastructureRequirements:', () => {
       it('should check the AutoScalingGroup presence', () =>
         promise.then(() => {
           let calls = sinonHelper.getCalls(mocks.sender.sendQuery);
-          calls.map(call => call.args[0]).should.matchAny({
+          calls.map(call => call.args[1]).should.matchAny({
             query: {
               name: 'ScanAutoScalingGroups',
               accountName: ACCOUNT_NAME,
@@ -650,7 +651,7 @@ describe('GetInfrastructureRequirements:', () => {
       it('should check the LaunchConfiguration presence', () =>
         promise.then(() => {
           let calls = sinonHelper.getCalls(mocks.sender.sendQuery);
-          calls.map(call => call.args[0]).should.matchAny({
+          calls.map(call => call.args[1]).should.matchAny({
             query: {
               name: 'ScanLaunchConfigurations',
               accountName: ACCOUNT_NAME,

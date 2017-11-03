@@ -7,7 +7,9 @@ let Promise = require('bluebird');
 let ActiveDirectory = require('activedirectory');
 let ActiveDirectoryError = require('../errors/ActiveDirectoryError.class');
 let InvalidCredentialsError = require('../errors/InvalidCredentialsError.class');
-let activeDirectoryAdapterConfiguration = new (require('./activeDirectoryAdapterConfiguration'))();
+let ActiveDirectoryAdapterConfiguration = require('./activeDirectoryAdapterConfiguration');
+
+let activeDirectoryAdapterConfiguration = new ActiveDirectoryAdapterConfiguration();
 
 module.exports = function ActiveDirectoryAdapter() {
   let configuration = activeDirectoryAdapterConfiguration.get();

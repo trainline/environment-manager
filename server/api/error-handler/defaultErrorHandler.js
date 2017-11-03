@@ -6,35 +6,38 @@ const IS_PROD = require('../../config').get('IS_PRODUCTION');
 let _ = require('lodash');
 
 function defaultErrorHandler(err, req, res, next) {
-  let friendlyError = {};
-
-  if (res.statusCode >= 400 && res.statusCode < 500) {
-    try {
+  try {
+    let friendlyError = {};
+    if (res.statusCode >= 400 && res.statusCode < 500) {
+      try {
+        friendlyError.error = err.message;
+        friendlyError.details = _.map(_.get(err, 'results.errors'), error => `${error.path}: ${error.message}`);
+      } catch (error) {
+        friendlyError = err;
+      }
+    } else {
+      if (res.statusCode === 200) {
+        res.status(getStatusByErrorType(err));
+      }
       friendlyError.error = err.message;
-      friendlyError.details = _.map(_.get(err, 'results.errors'), error => `${error.path}: ${error.message}`);
-    } catch (error) {
-      friendlyError = err;
     }
-  } else {
-    if (res.statusCode === 200) {
-      res.status(getStatusByErrorType(err));
+
+    friendlyError.originalException = err;
+
+    if (IS_PROD && res.statusCode === 500) {
+      friendlyError = {
+        error: 'An internal error has occurred.'
+      };
+    } else if (res.statusCode === 409) {
+      friendlyError = {
+        error: 'The item you are attempting to update has already been modified. Check your expected-version.'
+      };
     }
-    friendlyError.error = err.message;
+
+    res.json(friendlyError);
+  } catch (error) {
+    next(error);
   }
-
-  friendlyError.originalException = err;
-
-  if (IS_PROD && res.statusCode === 500) {
-    friendlyError = {
-      error: 'An internal error has occurred.'
-    };
-  } else if (res.statusCode === 409) {
-    friendlyError = {
-      error: 'The item you are attempting to update has already been modified. Check your expected-version.'
-    };
-  }
-
-  res.json(friendlyError);
 }
 
 function getStatusByErrorType(error) {

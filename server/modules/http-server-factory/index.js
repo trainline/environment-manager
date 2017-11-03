@@ -3,13 +3,14 @@
 'use strict';
 
 let config = require('../../config');
-
+const Ssl = require('./HttpsServerFactory');
+const NoSsl = require('./HttpServerFactory');
 let implementation;
 
 if (config.get('IS_PRODUCTION') && !config.get('USE_HTTP')) {
-  implementation = new (require('./HttpsServerFactory'))();
+  implementation = new Ssl();
 } else {
-  implementation = new (require('./HttpServerFactory'))();
+  implementation = new NoSsl();
 }
 
 module.exports = implementation;

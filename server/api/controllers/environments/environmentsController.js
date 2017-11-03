@@ -9,7 +9,6 @@ let Environment = require('../../../models/Environment');
 let OpsEnvironment = require('../../../models/OpsEnvironment');
 let Promise = require('bluebird');
 let environmentProtection = require('../../../modules/authorizers/environmentProtection');
-let _ = require('lodash');
 let opsEnvironment = require('../../../modules/data-access/opsEnvironment');
 let param = require('../../api-utils/requestParam');
 let getMetadataForDynamoAudit = require('../../api-utils/requestMetadata').getMetadataForDynamoAudit;

@@ -4,13 +4,13 @@
 
 let _ = require('lodash');
 let co = require('co');
-let ScanCrossAccountInstances = require('../queryHandlers/ScanCrossAccountInstances');
-let ec2InstanceClientFactory = require('../modules/clientFactories/ec2InstanceClientFactory');
+let amazonClientFactory = require('../modules/amazon-client/childAccountClient');
 let Environment = require('./Environment');
 let moment = require('moment');
-let sender = require('../modules/sender');
 let logger = require('../modules/logger');
 let TaggableMixin = require('./TaggableMixin');
+const InstanceResourceBase = require('../modules/resourceFactories/InstanceResourceBase');
+let scanCrossAccountFn = require('../modules/queryHandlersUtil/scanCrossAccountFn');
 
 class Instance {
   constructor(data) {
@@ -23,14 +23,16 @@ class Instance {
   }
 
   persistTag(tag) {
-    return ec2InstanceClientFactory.create({ accountName: this.AccountName }).then((client) => {
+    return amazonClientFactory.createEC2Client(this.AccountName)
+    .then(client => new InstanceResourceBase(client))
+    .then((instanceResource) => {
       let parameters = {
         instanceIds: [this.InstanceId],
         tagKey: tag.key,
         tagValue: tag.value
       };
 
-      return client.setTag(parameters);
+      return instanceResource.setTag(parameters);
     });
   }
 
@@ -39,29 +41,28 @@ class Instance {
   }
 
   static getById(instanceId) {
-    let filter = { 'instance-id': instanceId };
-    return ScanCrossAccountInstances({ filter }).then(list => new TaggableInstance(list[0]));
+    function findInstanceInAccount({ AccountNumber }) {
+      return amazonClientFactory.createEC2Client(AccountNumber)
+      .then(client => new InstanceResourceBase(client))
+      .then(instanceResource => instanceResource.all({ filter: { 'instance-id': instanceId } }))
+      .then(instances => instances.map(instance => new TaggableInstance(instance)));
+    }
+    return scanCrossAccountFn(findInstanceInAccount).then(([head]) => head);
   }
 
   static getAllByEnvironment(environmentName) {
     return co(function* () {
       let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
       let startTime = moment.utc();
-
-      let filter = {};
-      filter['tag:Environment'] = environmentName;
-
-      return sender.sendQuery({
-        query: {
-          name: 'ScanInstances',
-          accountName,
-          filter
-        }
-      }).then((result) => {
-        let duration = moment.duration(moment.utc().diff(startTime)).asMilliseconds();
-        logger.debug(`server-status-query: InstancesQuery took ${duration}ms`);
-        return result;
-      });
+      return amazonClientFactory.createEC2Client(accountName)
+        .then(client => new InstanceResourceBase(client))
+        .then(instanceResource => instanceResource.all({ filter: { 'tag:Environment': environmentName } }))
+        .then(instances => instances.map(instance => new TaggableInstance(instance)))
+        .then((result) => {
+          let duration = moment.duration(moment.utc().diff(startTime)).asMilliseconds();
+          logger.debug(`server-status-query: InstancesQuery took ${duration}ms`);
+          return result;
+        });
     });
   }
 }

@@ -33,7 +33,7 @@ function signOut(req, res, next) {
     res.status(400).end();
   } else {
     userService.signOut(token)
-      .then(_ => res.status(200).end()).catch(next);
+      .then(() => res.status(200).end()).catch(next);
   }
 }
 

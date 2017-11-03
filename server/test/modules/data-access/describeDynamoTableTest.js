@@ -24,16 +24,16 @@ describe('describeDynamoTable', function () {
 
   it('constructs a DynamoDB instance for the correct account', function () {
     return sut(tableName)
-      .then(_ => sinon.assert.calledWith(dynamoClientFactory.createLowLevelDynamoClient));
+      .then(() => sinon.assert.calledWith(dynamoClientFactory.createLowLevelDynamoClient));
   });
 
   it('calls describeTable with the expected table name', function () {
     return sut(tableName)
-      .then(_ => sinon.assert.calledWith(dynamo.describeTable, sinon.match({ TableName: tableName })));
+      .then(() => sinon.assert.calledWith(dynamo.describeTable, sinon.match({ TableName: tableName })));
   });
 
   it('calls describeTable once when called many times', function () {
     return Promise.all([sut(tableName), sut(tableName)])
-      .then(_ => sinon.assert.calledOnce(dynamo.describeTable));
+      .then(() => sinon.assert.calledOnce(dynamo.describeTable));
   });
 });

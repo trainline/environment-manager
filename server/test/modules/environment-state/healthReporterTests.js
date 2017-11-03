@@ -44,16 +44,16 @@ describe('healthReporter', function () {
           nodeHealth('node1', 'env1-svc1-blue')
         ];
         let instances = {
-          'node1': { role: 'role1', autoScalingGroup: 'asg1' }
+          node1: { role: 'role1', autoScalingGroup: 'asg1' }
         };
 
         return sut.currentState(health, instances).should.eql({
           'env1-svc1-blue':
           {
             roles: {
-              'role1': {
-                healthyCount: 1,
-                unhealthyCount: 0,
+              role1: {
+                'healthyCount': 1,
+                'unhealthyCount': 0,
                 'failing-checks': []
               }
             }
@@ -79,8 +79,8 @@ describe('healthReporter', function () {
         return sut.currentState(health, instances).should.eql({
           'env1-svc1-blue': {
             roles: {
-              'role1-blue': { 'failing-checks': [], healthyCount: 1, unhealthyCount: 0 },
-              'role1': { 'failing-checks': [{ Status: 'warning' }, { Status: 'warning' }], healthyCount: 0, unhealthyCount: 2 }
+              'role1-blue': { 'failing-checks': [], 'healthyCount': 1, 'unhealthyCount': 0 },
+              'role1': { 'failing-checks': [{ Status: 'warning' }, { Status: 'warning' }], 'healthyCount': 0, 'unhealthyCount': 2 }
             }
           }
         });
@@ -101,10 +101,10 @@ describe('healthReporter', function () {
         return sut.currentState(health, instances).should.eql({
           'env1-svc1-blue': {
             instances: {
-              'node-not-in-role': { 'failing-checks': [], healthyCount: 1, unhealthyCount: 0 }
+              'node-not-in-role': { 'failing-checks': [], 'healthyCount': 1, 'unhealthyCount': 0 }
             },
             roles: {
-              'role1': { 'failing-checks': [{ Status: 'warning' }], healthyCount: 0, unhealthyCount: 1 }
+              role1: { 'failing-checks': [{ Status: 'warning' }], 'healthyCount': 0, 'unhealthyCount': 1 }
             }
           }
         });
@@ -119,18 +119,18 @@ describe('healthReporter', function () {
         ];
 
         let instances = {
-          'node1': { role: 'role1', autoScalingGroup: 'asg1' }
+          node1: { role: 'role1', autoScalingGroup: 'asg1' }
         };
 
         return sut.currentState(health, instances).should.eql({
           'env1-svc1-blue': {
             roles: {
-              'role1': { 'failing-checks': [], healthyCount: 1, unhealthyCount: 0 }
+              role1: { 'failing-checks': [], 'healthyCount': 1, 'unhealthyCount': 0 }
             }
           },
           'env1-svc1-green': {
             roles: {
-              'role1': { 'failing-checks': [{ Status: 'warning' }], healthyCount: 0, unhealthyCount: 1 }
+              role1: { 'failing-checks': [{ Status: 'warning' }], 'healthyCount': 0, 'unhealthyCount': 1 }
             }
           }
         });
@@ -170,12 +170,12 @@ describe('healthReporter', function () {
         }
       ];
       return sut.desiredCountOf(autoScalingGroups).should.eql({
-        'env1': {
-          'role1': { desiredCount: 2 },
-          'role2': { desiredCount: 1 }
+        env1: {
+          role1: { desiredCount: 2 },
+          role2: { desiredCount: 1 }
         },
-        'env2': {
-          'role1': { desiredCount: 1 }
+        env2: {
+          role1: { desiredCount: 1 }
         }
       });
     });
@@ -239,10 +239,10 @@ describe('healthReporter', function () {
         ]
       };
       return sut.instancesOf(describeInstancesResult).should.eql({
-        'server1': { role: 'role1', autoScalingGroup: 'asg1' },
-        'server2': { role: 'role2', autoScalingGroup: 'asg2' },
-        'server3': { role: 'role1', autoScalingGroup: 'asg1' },
-        'server4': { role: 'role2', autoScalingGroup: 'asg2' }
+        server1: { role: 'role1', autoScalingGroup: 'asg1' },
+        server2: { role: 'role2', autoScalingGroup: 'asg2' },
+        server3: { role: 'role1', autoScalingGroup: 'asg1' },
+        server4: { role: 'role2', autoScalingGroup: 'asg2' }
       });
     });
   });
@@ -296,8 +296,8 @@ describe('healthReporter', function () {
           return environment => Promise.resolve(environments[environment]);
         })();
         sut.instancesRequestFor(accountOf, health).should.finally.eql({
-          'account1': ['node1'],
-          'account2': ['node1', 'node2']
+          account1: ['node1'],
+          account2: ['node1', 'node2']
         });
       });
     });
@@ -319,18 +319,18 @@ describe('healthReporter', function () {
         'env1-svc1-green': { environment: 'env1', roles: { 'role1': { desiredCount: 1 }, 'role1-green': { desiredCount: 0 } }, service: 'svc1', slice: 'green' }
       };
       let current = {
-        'env1-svc1-blue': { roles: { 'role1': { 'failing-checks': [], healthyCount: 1, unhealthyCount: 0 }, 'role1-blue': { healthyCount: 2, unhealthyCount: 0 } } },
-        'env1-svc1-green': { roles: { 'role1': { 'failing-checks': [], healthyCount: 1, unhealthyCount: 0 }, 'role1-green': { healthyCount: 0, unhealthyCount: 0 } } }
+        'env1-svc1-blue': { roles: { 'role1': { 'failing-checks': [], 'healthyCount': 1, 'unhealthyCount': 0 }, 'role1-blue': { healthyCount: 2, unhealthyCount: 0 } } },
+        'env1-svc1-green': { roles: { 'role1': { 'failing-checks': [], 'healthyCount': 1, 'unhealthyCount': 0 }, 'role1-green': { healthyCount: 0, unhealthyCount: 0 } } }
       };
       it('returns the health aggregated by server role', function () {
         return sut.compare(desired, current).should.eql([
           {
             name: 'env1-svc1-blue',
             environment: 'env1',
-            'orphanedInstances': [],
+            orphanedInstances: [],
             roles: [
-              { name: 'role1', 'failing-checks': [], desiredCount: 1, healthyCount: 1, unhealthyCount: 0 },
-              { name: 'role1-blue', 'failing-checks': [], desiredCount: 2, healthyCount: 2, unhealthyCount: 0 }
+              { 'name': 'role1', 'failing-checks': [], 'desiredCount': 1, 'healthyCount': 1, 'unhealthyCount': 0 },
+              { 'name': 'role1-blue', 'failing-checks': [], 'desiredCount': 2, 'healthyCount': 2, 'unhealthyCount': 0 }
             ],
             service: 'svc1',
             slice: 'blue'
@@ -338,10 +338,10 @@ describe('healthReporter', function () {
           {
             name: 'env1-svc1-green',
             environment: 'env1',
-            'orphanedInstances': [],
+            orphanedInstances: [],
             roles: [
-              { name: 'role1', 'failing-checks': [], desiredCount: 1, healthyCount: 1, unhealthyCount: 0 },
-              { name: 'role1-green', 'failing-checks': [], desiredCount: 0, healthyCount: 0, unhealthyCount: 0 }
+              { 'name': 'role1', 'failing-checks': [], 'desiredCount': 1, 'healthyCount': 1, 'unhealthyCount': 0 },
+              { 'name': 'role1-green', 'failing-checks': [], 'desiredCount': 0, 'healthyCount': 0, 'unhealthyCount': 0 }
             ],
             service: 'svc1',
             slice: 'green'
@@ -358,10 +358,10 @@ describe('healthReporter', function () {
         return sut.compare(desired, current).should.eql([
           {
             name: 'env1-svc1-blue',
-            'orphanedInstances': [],
+            orphanedInstances: [],
             roles: [
-              { name: 'role1', 'failing-checks': [], desiredCount: 0, healthyCount: 1, unhealthyCount: 0 },
-              { name: 'role1-blue', 'failing-checks': [], desiredCount: 0, healthyCount: 2, unhealthyCount: 0 }
+              { 'name': 'role1', 'failing-checks': [], 'desiredCount': 0, 'healthyCount': 1, 'unhealthyCount': 0 },
+              { 'name': 'role1-blue', 'failing-checks': [], 'desiredCount': 0, 'healthyCount': 2, 'unhealthyCount': 0 }
             ]
           }
         ]);
@@ -377,10 +377,10 @@ describe('healthReporter', function () {
           {
             name: 'env1-svc1-blue',
             environment: 'env1',
-            'orphanedInstances': [],
+            orphanedInstances: [],
             roles: [
-              { name: 'role1', 'failing-checks': [], desiredCount: 1, healthyCount: 0, unhealthyCount: 0 },
-              { name: 'role1-blue', 'failing-checks': [], desiredCount: 2, healthyCount: 0, unhealthyCount: 0 }
+              { 'name': 'role1', 'failing-checks': [], 'desiredCount': 1, 'healthyCount': 0, 'unhealthyCount': 0 },
+              { 'name': 'role1-blue', 'failing-checks': [], 'desiredCount': 2, 'healthyCount': 0, 'unhealthyCount': 0 }
             ],
             service: 'svc1',
             slice: 'blue'
@@ -390,7 +390,7 @@ describe('healthReporter', function () {
     });
     context('when there is current state and desired state with no matches', function () {
       let desired = {
-        'env1-svc1-blue': { environment: 'env1', roles: { 'role1': { desiredCount: 1 } }, service: 'svc1', slice: 'blue' }
+        'env1-svc1-blue': { environment: 'env1', roles: { role1: { desiredCount: 1 } }, service: 'svc1', slice: 'blue' }
       };
       let current = {
         'env1-svc1-blue': { roles: { 'role1-blue': { healthyCount: 2, unhealthyCount: 0 } } }
@@ -400,10 +400,10 @@ describe('healthReporter', function () {
           {
             name: 'env1-svc1-blue',
             environment: 'env1',
-            'orphanedInstances': [],
+            orphanedInstances: [],
             roles: [
-              { name: 'role1', 'failing-checks': [], desiredCount: 1, healthyCount: 0, unhealthyCount: 0 },
-              { name: 'role1-blue', 'failing-checks': [], desiredCount: 0, healthyCount: 2, unhealthyCount: 0 }
+              { 'name': 'role1', 'failing-checks': [], 'desiredCount': 1, 'healthyCount': 0, 'unhealthyCount': 0 },
+              { 'name': 'role1-blue', 'failing-checks': [], 'desiredCount': 0, 'healthyCount': 2, 'unhealthyCount': 0 }
             ],
             service: 'svc1',
             slice: 'blue'
@@ -413,7 +413,7 @@ describe('healthReporter', function () {
     });
     context('when the current state contains an instance without a role', function () {
       let desired = {
-        'env1-svc1-blue': { environment: 'env1', roles: { 'role1': { desiredCount: 1 } }, service: 'svc1', slice: 'blue' }
+        'env1-svc1-blue': { environment: 'env1', roles: { role1: { desiredCount: 1 } }, service: 'svc1', slice: 'blue' }
       };
       let current = {
         'env1-svc1-blue': { instances: { 'node-not-in-role': { healthyCount: 1, unhealthyCount: 0 } } }
@@ -423,11 +423,11 @@ describe('healthReporter', function () {
           {
             name: 'env1-svc1-blue',
             environment: 'env1',
-            'orphanedInstances': [
-              { name: 'node-not-in-role', 'failing-checks': [], healthyCount: 1, unhealthyCount: 0 }
+            orphanedInstances: [
+              { 'name': 'node-not-in-role', 'failing-checks': [], 'healthyCount': 1, 'unhealthyCount': 0 }
             ],
             roles: [
-              { name: 'role1', 'failing-checks': [], desiredCount: 1, healthyCount: 0, unhealthyCount: 0 }
+              { 'name': 'role1', 'failing-checks': [], 'desiredCount': 1, 'healthyCount': 0, 'unhealthyCount': 0 }
             ],
             service: 'svc1',
             slice: 'blue'

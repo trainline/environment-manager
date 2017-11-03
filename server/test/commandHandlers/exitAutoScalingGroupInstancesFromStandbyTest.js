@@ -1,16 +1,14 @@
-/* TODO: enable linting and fix resulting errors */
-/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let sinon = require('sinon');
-let should = require('should');
-let rewire = require('rewire');
+require('should');
+let proxyquire = require('proxyquire').noCallThru();
 let assert = require('assert');
 let InvalidOperationError = require('../../modules/errors/InvalidOperationError.class');
 
-describe('exitAutoScalingGroupInstancesToStandby', function() {
-
+describe('exitAutoScalingGroupInstancesToStandby', function () {
   const name = 'ExitAutoScalingGroupInstancesFromStandby';
   const autoScalingGroupName = 'sb1-in-Test';
   const accountName = 'Sandbox';
@@ -22,7 +20,6 @@ describe('exitAutoScalingGroupInstancesToStandby', function() {
   const resizeASGCommandName = 'SetAutoScalingGroupSize';
 
   let senderMock;
-  let resourceProviderMock;
   let autoScalingGroupSizePredictorMock;
   let asgResourceMock;
   let sut;
@@ -30,7 +27,7 @@ describe('exitAutoScalingGroupInstancesToStandby', function() {
 
   function setupMocks(expectedASGResponse, useMockSizePredictor) {
     autoScalingGroupSizePredictorMock = {
-      predictSizeAfterExitingInstancesFromStandby:sinon.stub().returns(Promise.resolve(expectedASGsize))
+      predictSizeAfterExitingInstancesFromStandby: sinon.stub().returns(Promise.resolve(expectedASGsize))
     };
 
 
@@ -38,45 +35,45 @@ describe('exitAutoScalingGroupInstancesToStandby', function() {
       exitInstancesFromStandby: sinon.stub().returns(Promise.resolve())
     };
 
-    resourceProviderMock = {
-      getInstanceByName: sinon.stub().withArgs('asgs').returns(Promise.resolve(asgResourceMock))
+    let asgResourceFactoryMock = {
+      create: sinon.stub().returns(Promise.resolve(asgResourceMock))
     };
 
     ASGMock = {
-      getByName: sinon.stub().returns(Promise.resolve(expectedASGResponse)),
+      getByName: sinon.stub().returns(Promise.resolve(expectedASGResponse))
     };
 
     senderMock = {
       sendCommand: sinon.stub().returns(Promise.resolve())
     };
 
-    sut = rewire('../../commands/asg/ExitAutoScalingGroupInstancesFromStandby.js');
-    sut.__set__({
-      sender: senderMock,
-      resourceProvider: resourceProviderMock,
-      AutoScalingGroup: ASGMock,
-    });
+    let fakes = Object.assign(
+      {
+        '../../modules/sender': senderMock,
+        '../../modules/resourceFactories/asgResourceFactory': asgResourceFactoryMock,
+        '../../models/AutoScalingGroup': ASGMock
+      },
+      useMockSizePredictor
+        ? { '../../modules/autoScalingGroupSizePredictor': autoScalingGroupSizePredictorMock }
+        : { }
+    );
 
-    if(useMockSizePredictor) {
-      sut.__set__({
-        autoScalingGroupSizePredictor: autoScalingGroupSizePredictorMock
-      });
-    }
+    sut = proxyquire('../../commands/asg/ExitAutoScalingGroupInstancesFromStandby', fakes);
   }
 
-  describe('Command requirements', function() {
+  describe('Command requirements', function () {
     beforeEach(setupMocks.bind(this, null, true));
 
     let requiredProps = ['accountName', 'autoScalingGroupName', 'instanceIds'];
 
-    requiredProps.forEach(prop => {
+    requiredProps.forEach((prop) => {
       it(`should fail if ${prop} is not set`, () => {
         let invalidCommand = Object.assign({}, command);
         delete invalidCommand[prop];
 
-        assert.throws(sut.bind(sut, invalidCommand))
+        assert.throws(sut.bind(sut, invalidCommand));
       });
-    })
+    });
   });
 
   describe('With both instances in service', () => {
@@ -84,7 +81,7 @@ describe('exitAutoScalingGroupInstancesToStandby', function() {
       AutoScalingGroupName: autoScalingGroupName,
       Tags: [
         {
-          Key: 'Environment',
+          Key: 'Environment'
         }
       ],
       Instances: []
@@ -93,45 +90,45 @@ describe('exitAutoScalingGroupInstancesToStandby', function() {
     beforeEach(setupMocks.bind(this, mockASGResponse, true));
 
     it('resolves a list of instances exited standby', () => {
-      return sut(command).then(result => {
-        assert.deepEqual(result, { InstancesExitedFromStandby:instanceIds })
+      return sut(command).then((result) => {
+        assert.deepEqual(result, { InstancesExitedFromStandby: instanceIds });
       });
     });
 
     it(`sets ASG maximum size to ${expectedASGsize}`, () => {
-      return sut(command).then(result => {
+      return sut(command).then(() => {
         let sendCommandInvocation = senderMock.sendCommand.getCall(0);
-        sendCommandInvocation.args[0].should.match({
+        sendCommandInvocation.args[1].should.match({
           command: {
             name: resizeASGCommandName,
-            accountName: accountName,
-            autoScalingGroupName: autoScalingGroupName,
+            accountName,
+            autoScalingGroupName,
             autoScalingGroupMaxSize: expectedASGsize
           }
-        })
+        });
       });
     });
 
     it(`sets ASG minum size to ${expectedASGsize}`, () => {
-      return sut(command).then(result => {
+      return sut(command).then(() => {
         let sendCommandInvocation = senderMock.sendCommand.getCall(1);
-        sendCommandInvocation.args[0].should.match({
+        sendCommandInvocation.args[1].should.match({
           command: {
             name: resizeASGCommandName,
-            accountName: accountName,
-            autoScalingGroupName: autoScalingGroupName,
+            accountName,
+            autoScalingGroupName,
             autoScalingGroupMinSize: expectedASGsize
           }
-        })
+        });
       });
     });
 
     it('requests all desired instances to be entered to standby', () => {
-      return sut(command).then(result => {
+      return sut(command).then(() => {
         asgResourceMock.exitInstancesFromStandby.getCall(0).args[0].should.match({
           name: autoScalingGroupName,
-          instanceIds: instanceIds
-        })
+          instanceIds
+        });
       });
     });
   });
@@ -141,15 +138,15 @@ describe('exitAutoScalingGroupInstancesToStandby', function() {
     const mockASGResponse = {
       AutoScalingGroupName: autoScalingGroupName,
       Instances: [
-        { InstanceId: instanceID1, LifecycleState:inServiceStatus },
-        { InstanceId: instanceID2, LifecycleState:inServiceStatus },
+        { InstanceId: instanceID1, LifecycleState: inServiceStatus },
+        { InstanceId: instanceID2, LifecycleState: inServiceStatus }
       ]
     };
 
     beforeEach(setupMocks.bind(this, mockASGResponse, false));
 
     it('should be rejected', () => {
-      return sut(command).catch(result => {
+      return sut(command).catch((result) => {
         assert(result instanceof InvalidOperationError);
         result.message.should.containEql(`"${instanceID1}" cannot be exited from standby as its LifecycleState is ${inServiceStatus}`);
       });
@@ -161,14 +158,14 @@ describe('exitAutoScalingGroupInstancesToStandby', function() {
     const mockASGResponse = {
       AutoScalingGroupName: autoScalingGroupName,
       Instances: [
-        { InstanceId:unknownService, LifecycleState:'InService' },
+        { InstanceId: unknownService, LifecycleState: 'InService' }
       ]
     };
 
     beforeEach(setupMocks.bind(this, mockASGResponse, false));
 
     it('should be rejected', () => {
-      return sut(command).catch(result => {
+      return sut(command).catch((result) => {
         assert(result instanceof InvalidOperationError);
         result.message.should.containEql(`"${instanceID1}" is not part of "${autoScalingGroupName}"`);
       });

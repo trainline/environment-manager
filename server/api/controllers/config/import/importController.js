@@ -2,7 +2,6 @@
 
 'use strict';
 
-let _ = require('lodash');
 let logicalTableName = require('../../../api-utils/logicalTableName');
 let { getTableName } = require('../../../../modules/awsResourceNameProvider');
 const sns = require('../../../../modules/sns/EnvironmentManagerEvents');

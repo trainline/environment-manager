@@ -41,7 +41,7 @@ describe('deployments', function () {
       ];
       scenarios.forEach((table) => {
         it(`returns the deployment if it is found in ${table}`, function () {
-          let sut = withDynamoGet((tableName, key) => (tableName === `${table}`
+          let sut = withDynamoGet(tableName => (tableName === `${table}`
             ? Promise.resolve({})
             : Promise.resolve(null)));
           return sut.get({ DeploymentID: '' }).should.finally.eql({});
@@ -55,7 +55,7 @@ describe('deployments', function () {
       ];
       scenarios.forEach((table) => {
         it(`returns a rejected promise for ${table}`, function () {
-          let sut = withDynamoGet((tableName, key) => (tableName === `${table}`
+          let sut = withDynamoGet(tableName => (tableName === `${table}`
             ? Promise.reject(new Error('BOOM!'))
             : Promise.resolve(null)));
           return sut.get({ DeploymentID: '' }).should.be.rejected();

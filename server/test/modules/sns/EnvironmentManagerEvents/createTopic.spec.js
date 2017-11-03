@@ -56,7 +56,7 @@ describe('Create Event', () => {
 
   it('should create a topic with aws passing the name given in the context', (done) => {
     sut('EnvironmentManagerConfigurationChange')
-      .then((result) => {
+      .then(() => {
         assert.ok(createTopicSpy.calledWith({ Name: 'EnvironmentManagerConfigurationChange' }));
         done();
       });

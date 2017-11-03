@@ -38,7 +38,7 @@ function respondWithPreSignedUrl(request) {
     ContentType: 'application/zip'
   });
   return masterAccountClient.createS3Client().then(s3 =>
-    new Promise((resolve, reject) => {
+    new Promise((resolve) => {
       s3.getSignedUrl('putObject', params, (err, url) => {
         if (err) {
           log.error(`Creation of pre-signed package upload URL failed: ${err.message}\n${err.stack}`);

@@ -15,7 +15,7 @@ router.post('/:environment', (req, res) => {
   const hosts = req.body.hosts;
   const environment = req.params.environment;
 
-  cookieAuthentication.middleware(req, res, _ => 0)
+  cookieAuthentication.middleware(req, res, () => 0)
     .then(() => {
       logger.info(`Request to reset cache in ${environment} by user ${req.user.getName()}`);
       return remoteCacheFlush.flush(environment, hosts)

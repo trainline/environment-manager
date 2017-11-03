@@ -4,6 +4,7 @@
 
 let _ = require('lodash');
 let authorization = require('../authorization');
+let authorizers = require('../authorizers');
 
 function authorize(req, res, next) {
   if (req.swagger === undefined) {
@@ -19,7 +20,7 @@ function authorize(req, res, next) {
   let authorizerName = req.swagger.operation['x-authorizer'] || 'simple';
 
   if (authorizerName !== 'allow-anonymous') {
-    let authorizer = require(`modules/authorizers/${authorizerName}`);
+    let authorizer = authorizers[authorizerName];
     authorization(authorizer, req, res, next);
   } else {
     next();

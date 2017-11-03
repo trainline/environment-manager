@@ -3,6 +3,7 @@
 'use strict';
 
 let sender = require('../../../modules/sender');
+let ScanNginxUpstreams = require('../../../queryHandlers/ScanNginxUpstreams');
 
 /**
  * GET /load-balancer/{name}
@@ -15,7 +16,7 @@ function getLoadBalancer(req, res, next) {
     instanceDomainName: fqdn
   };
 
-  return sender.sendQuery({ query }).then(data => res.json(data)).catch(next);
+  return sender.sendQuery(ScanNginxUpstreams, { query }).then(data => res.json(data)).catch(next);
 }
 
 module.exports = {

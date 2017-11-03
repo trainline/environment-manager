@@ -3,8 +3,8 @@
 let assert = require('assert');
 let co = require('co');
 let DeploymentCommandHandlerLogger = require('./DeploymentCommandHandlerLogger');
-let resourceProvider = require('../../modules/resourceProvider');
 let _ = require('lodash');
+const launchConfigurationResourceFactory = require('../../modules/resourceFactories/launchConfigurationResourceFactory');
 
 module.exports = function CreateLaunchConfigurationCommandHandler(command) {
   let logger = new DeploymentCommandHandlerLogger(command);
@@ -20,7 +20,7 @@ module.exports = function CreateLaunchConfigurationCommandHandler(command) {
 
     logger.info(`Creating [${launchConfigurationName}] LaunchConfiguration...`);
 
-    let launchConfigurationClient = yield resourceProvider.getInstanceByName('launchconfig', { accountName });
+    let launchConfigurationClient = yield launchConfigurationResourceFactory.create(undefined, { accountName });
 
     let request = getCreateLaunchConfigurationRequest(template);
     yield launchConfigurationClient.post(request);

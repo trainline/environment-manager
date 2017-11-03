@@ -5,6 +5,7 @@
 let S3GetObjectRequest = require('../../modules/S3GetObjectRequest');
 let amazonClientFactory = require('../../modules/amazon-client/childAccountClient');
 let sender = require('../../modules/sender');
+let GetTargetState = require('../services/GetTargetState');
 
 function getNode({ deploymentId, instanceId, accountName, environment }) {
   let query = {
@@ -15,7 +16,7 @@ function getNode({ deploymentId, instanceId, accountName, environment }) {
     recurse: false
   };
 
-  return sender.sendQuery({ query }).then((node) => {
+  return sender.sendQuery(GetTargetState, { query }).then((node) => {
     let s3Details = parseBucketAndPathFromS3Url(node.value.Log);
     return fetchS3Object(accountName, s3Details);
   }, (error) => {

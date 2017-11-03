@@ -3,27 +3,31 @@
 'use strict';
 
 let sender = require('../../../modules/sender');
+let ScanImages = require('../../../queryHandlers/ScanImages');
+let ScanCrossAccountImages = require('../../../queryHandlers/ScanCrossAccountImages');
 let _ = require('lodash');
 
 function getImages(req, res, next) {
   const accountName = req.swagger.params.account.value;
   const stable = req.swagger.params.stable.value;
-  let query;
 
+  let resultsP;
   if (accountName === undefined) {
-    query = {
+    let query = {
       name: 'ScanCrossAccountImages',
       filter: {}
     };
+    resultsP = sender.sendQuery(ScanCrossAccountImages, { query });
   } else {
-    query = {
+    let query = {
       name: 'ScanImages',
       accountName,
       filter: {}
     };
+    resultsP = sender.sendQuery(ScanImages, { query });
   }
 
-  sender.sendQuery({ query }).then((data) => {
+  return resultsP.then((data) => {
     if (stable !== undefined) {
       res.json(_.filter(data, { IsStable: stable }));
     } else {

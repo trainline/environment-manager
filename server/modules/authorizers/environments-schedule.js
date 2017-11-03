@@ -8,7 +8,7 @@ let environmentProtection = require('./environmentProtection');
 
 const ACTION = environmentProtection.SCHEDULE_ENVIRONMENT;
 
-function getCurrentEnvironment(name, user) {
+function getCurrentEnvironment(name) {
   return configEnvironments.get({ EnvironmentName: name });
 }
 

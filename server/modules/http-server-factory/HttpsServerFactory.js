@@ -3,9 +3,10 @@
 'use strict';
 
 let https = require('https');
+const SslComponentsRepository = require('../sslComponentsRepository');
 
 module.exports = function HttpsServerFactory() {
-  let sslComponentsRepository = new (require('../sslComponentsRepository'))();
+  let sslComponentsRepository = new SslComponentsRepository();
 
   this.create = function (application, parameters) {
     return sslComponentsRepository.get().then(

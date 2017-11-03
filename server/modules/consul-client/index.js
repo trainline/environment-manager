@@ -4,13 +4,10 @@
 
 let config = require('../../config');
 let consul = require('consul');
-let clientConfig;
+let mock = require('./clientConfig.mock.js');
+let prod = require('./clientConfig.prod.js');
 
-if (config.get('IS_PRODUCTION')) {
-  clientConfig = require('./clientConfig.prod.js');
-} else {
-  clientConfig = require('./clientConfig.mock.js');
-}
+let clientConfig = config.get('IS_PRODUCTION') ? prod : mock;
 
 function createConfig(options) {
   return clientConfig(options);

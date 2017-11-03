@@ -4,6 +4,9 @@ module.exports = {
     "sourceType": "script"
   },
   "extends": "airbnb-base",
+  "plugins": [
+    "dependencies",
+  ],
   "rules": {
     "arrow-body-style": [0, "never"],
     "comma-dangle": ["error", {
@@ -13,14 +16,12 @@ module.exports = {
       "exports": "ignore",
       "functions": "ignore",
     }],
-    "global-require": 1,
-    "import/no-dynamic-require": 1,
-    "import/no-extraneous-dependencies": 0,
+    "dependencies/no-cycles": 2,
+    "global-require": 2,
     "import/newline-after-import": 0,
     "max-len": [1, 120, 2, {ignoreComments: true}],
     "newline-per-chained-call": 0,
     "no-cond-assign": [2, 'except-parens'],
-    "no-unused-vars": [2, {'vars': 'all', 'args': 'none', 'varsIgnorePattern': '_'}],
     "no-else-return": 0,
     "no-use-before-define": 0,
     "no-useless-escape": 0,

@@ -3,10 +3,7 @@
 'use strict';
 
 let deployments = require('../../data-access/deployments');
-let ms = require('ms');
 let DeploymentValidationError = require('../../errors/DeploymentValidationError.class');
-
-const DEPLOYMENT_MAXIMUM_THRESHOLD = ms('65m');
 
 function validateServiceNotCurrentlyBeingDeployed(deployment) {
   let expectedStatus = 'In Progress';

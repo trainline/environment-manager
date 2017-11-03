@@ -2,29 +2,15 @@
 
 'use strict';
 
-let co = require('co');
-let awsAccounts = require('../awsAccounts');
 let sender = require('../sender');
+let scanCrossAccountFn = require('./scanCrossAccountFn');
 
-function* handler(query, simpleScanQueryName) {
-  let results = [];
-  let accounts = yield awsAccounts.all();
-
-  for (let account of accounts) {
-    let childQuery = Object.assign({}, query);
-    childQuery.name = simpleScanQueryName;
-    childQuery.accountName = account.AccountName;
-
-    let items = yield sender.sendQuery({ query: childQuery, parent: query });
-
-    items.forEach((item) => {
-      item.AccountName = account.AccountName;
-    });
-
-    results = results.concat(items);
+function scanCrossAccount(query, simpleScanQueryName) {
+  function queryAccount(account) {
+    let childQuery = Object.assign({ name: simpleScanQueryName, accountName: account.AccountName }, query);
+    return sender.sendQuery({ query: childQuery, parent: query });
   }
-
-  return results;
+  return scanCrossAccountFn(queryAccount);
 }
 
-module.exports = co.wrap(handler);
+module.exports = scanCrossAccount;

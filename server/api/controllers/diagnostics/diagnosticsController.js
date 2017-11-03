@@ -4,7 +4,7 @@
 
 let config = require('../../../config');
 
-function getHealthcheck(req, res, next) {
+function getHealthcheck(req, res) {
   res.json({ OK: true, Version: config.get('APP_VERSION') });
 }
 

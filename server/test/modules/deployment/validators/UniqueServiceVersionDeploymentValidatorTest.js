@@ -67,7 +67,7 @@ describe('UniqueServiceVersionDeploymentValidator: ', function () {
 
   describe('validating any deployment', function () {
     it('scans running deployments', () => {
-      let deployments = { scanRunning: sinon.spy(x => Promise.resolve([])) };
+      let deployments = { scanRunning: sinon.spy(() => Promise.resolve([])) };
       let sut = validator(deployments);
       return sut.validate(deployment, configuration).then(() => {
         deployments.scanRunning.called.should.be.true();
@@ -75,7 +75,7 @@ describe('UniqueServiceVersionDeploymentValidator: ', function () {
     });
 
     it('scans the expected running deployments', () => {
-      let deployments = { scanRunning: sinon.spy(x => Promise.resolve([])) };
+      let deployments = { scanRunning: sinon.spy(() => Promise.resolve([])) };
       let sut = validator(deployments);
       return sut.validate(deployment, configuration).then(() => {
         deployments.scanRunning.getCall(0).args[0].should.match({

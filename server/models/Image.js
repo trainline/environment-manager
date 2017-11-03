@@ -5,6 +5,7 @@
 let _ = require('lodash');
 let sender = require('../modules/sender');
 let co = require('co');
+let ScanCrossAccountImages = require('../queryHandlers/ScanCrossAccountImages');
 
 class Image {
 
@@ -14,7 +15,7 @@ class Image {
 
   static getById(id) {
     return co(function* () {
-      let images = yield sender.sendQuery({
+      let images = yield sender.sendQuery(ScanCrossAccountImages, {
         query: {
           name: 'ScanCrossAccountImages'
         }

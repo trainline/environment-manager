@@ -28,7 +28,7 @@ describe('dynamoTable', function () {
   describe('create', function () {
     it('calls put with the expected arguments', function () {
       let dynamo = {
-        put: sinon.spy(_ => ({
+        put: sinon.spy(() => ({
           promise: () => Promise.resolve()
         }))
       };
@@ -47,7 +47,7 @@ describe('dynamoTable', function () {
         Item: item.record,
         ConditionExpression: ['=', ['at', 'ID'], ['val', 'a']]
       };
-      return sut.create(tableName, item).then(_ => sinon.assert.calledWith(dynamo.put, sinon.match(expectedArgs)));
+      return sut.create(tableName, item).then(() => sinon.assert.calledWith(dynamo.put, sinon.match(expectedArgs)));
     });
 
     it('returns the expected error when the item already exists', function () {
@@ -57,7 +57,7 @@ describe('dynamoTable', function () {
         return t;
       })();
       let dynamo = {
-        put: sinon.spy(_ => ({
+        put: sinon.spy(() => ({
           promise: () => Promise.reject(error)
         }))
       };
@@ -69,7 +69,7 @@ describe('dynamoTable', function () {
   describe('delete', function () {
     it('calls delete with the expected arguments', function () {
       let dynamo = {
-        delete: sinon.spy(_ => ({
+        delete: sinon.spy(() => ({
           promise: () => Promise.resolve()
         }))
       };
@@ -85,7 +85,7 @@ describe('dynamoTable', function () {
         Key: arg.key,
         ConditionExpression: ['=', ['at', 'ID'], ['val', 'a']]
       };
-      return sut.delete(tableName, arg).then(_ => sinon.assert.calledWith(dynamo.delete, sinon.match(expectedArgs)));
+      return sut.delete(tableName, arg).then(() => sinon.assert.calledWith(dynamo.delete, sinon.match(expectedArgs)));
     });
 
     it('returns the expected error when the item has been modified', function () {
@@ -95,7 +95,7 @@ describe('dynamoTable', function () {
         return t;
       })();
       let dynamo = {
-        delete: sinon.spy(_ => ({
+        delete: sinon.spy(() => ({
           promise: () => Promise.reject(error)
         }))
       };
@@ -107,7 +107,7 @@ describe('dynamoTable', function () {
   describe('get', function () {
     it('calls get with the expected arguments', function () {
       let dynamo = {
-        get: sinon.spy(_ => ({
+        get: sinon.spy(() => ({
           promise: () => Promise.resolve({})
         }))
       };
@@ -117,7 +117,7 @@ describe('dynamoTable', function () {
         TableName: 'some-table',
         Key: key
       };
-      return sut.get(tableName, key).then(_ => sinon.assert.calledWith(dynamo.get, sinon.match(expectedArgs)));
+      return sut.get(tableName, key).then(() => sinon.assert.calledWith(dynamo.get, sinon.match(expectedArgs)));
     });
 
     it('returns the item if it exists', function () {
@@ -126,7 +126,7 @@ describe('dynamoTable', function () {
         value: 'a'
       };
       let dynamo = {
-        get: sinon.spy(_ => ({
+        get: sinon.spy(() => ({
           promise: () => Promise.resolve({ Item: expectedItem })
         }))
       };
@@ -136,7 +136,7 @@ describe('dynamoTable', function () {
 
     it('returns null when the item does not exist', function () {
       let dynamo = {
-        get: sinon.spy(_ => ({
+        get: sinon.spy(() => ({
           promise: () => Promise.resolve({})
         }))
       };
@@ -148,7 +148,7 @@ describe('dynamoTable', function () {
   describe('replace', function () {
     it('calls put with the expected arguments', function () {
       let dynamo = {
-        put: sinon.spy(_ => ({
+        put: sinon.spy(() => ({
           promise: () => Promise.resolve()
         }))
       };
@@ -167,7 +167,7 @@ describe('dynamoTable', function () {
         Item: item.record,
         ConditionExpression: ['=', ['at', 'ID'], ['val', 'a']]
       };
-      return sut.replace(tableName, item).then(_ => sinon.assert.calledWith(dynamo.put, sinon.match(expectedArgs)));
+      return sut.replace(tableName, item).then(() => sinon.assert.calledWith(dynamo.put, sinon.match(expectedArgs)));
     });
 
     it('returns the expected error when the item has been modified', function () {
@@ -177,7 +177,7 @@ describe('dynamoTable', function () {
         return t;
       })();
       let dynamo = {
-        put: sinon.spy(_ => ({
+        put: sinon.spy(() => ({
           promise: () => Promise.reject(error)
         }))
       };
@@ -189,7 +189,7 @@ describe('dynamoTable', function () {
   describe('scan', function () {
     it('calls scan with the expected arguments', function () {
       let dynamo = {
-        scan: sinon.spy(_ => ({
+        scan: sinon.spy(() => ({
           eachPage: (cb) => { cb(null, { Items: [] }); cb(null, null); }
         }))
       };
@@ -197,7 +197,7 @@ describe('dynamoTable', function () {
       let expectedArgs = {
         TableName: 'some-table'
       };
-      return sut.scan(tableName).then(_ => sinon.assert.calledWith(dynamo.scan, sinon.match(expectedArgs)));
+      return sut.scan(tableName).then(() => sinon.assert.calledWith(dynamo.scan, sinon.match(expectedArgs)));
     });
 
     it('returns the items', function () {
@@ -206,7 +206,7 @@ describe('dynamoTable', function () {
         { ID: 'B', value: 'b' }
       ];
       let dynamo = {
-        scan: sinon.spy(_ => ({
+        scan: sinon.spy(() => ({
           eachPage: (cb) => {
             cb(null, { Items: [expectedItems[0]] });
             cb(null, { Items: [expectedItems[1]] });

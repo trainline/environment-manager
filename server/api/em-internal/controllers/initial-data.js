@@ -2,6 +2,7 @@
 
 'use strict';
 
+const os = require('os');
 let config = require('../../../config');
 let _ = require('lodash');
 
@@ -12,7 +13,7 @@ const FEATURE_DISABLE_SERVICE = true;
 
 function getIP() {
   try {
-    return _.chain(require('os').networkInterfaces())
+    return _.chain(os.networkInterfaces())
       .values()
       .flatten()
       .find({ family: 'IPv4', internal: false })

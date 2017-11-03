@@ -9,7 +9,7 @@ let sender = require('../../modules/sender');
 let infrastructureConfigurationProvider = require('../../modules/provisioning/infrastructureConfigurationProvider');
 let logger = require('../../modules/logger');
 let namingConventionProvider = require('../../modules/provisioning/namingConventionProvider');
-let packagePathProvider = new (require('../../modules/PackagePathProvider'))();
+const PackagePathProvider = require('../../modules/PackagePathProvider');
 let deploymentLogger = require('../../modules/DeploymentLogger');
 let _ = require('lodash');
 let SupportedSliceNames = _.values(Enums.SliceName);
@@ -19,6 +19,12 @@ let EnvironmentHelper = require('../../models/Environment');
 let OpsEnvironment = require('../../models/OpsEnvironment');
 let ResourceLockedError = require('../../modules/errors/ResourceLockedError');
 let GetServicePortConfig = require('../../queryHandlers/GetServicePortConfig');
+let GetInfrastructureRequirements = require('../../commands/deployments/GetInfrastructureRequirements');
+let PushDeployment = require('../../commands/deployments/PushDeployment');
+let PreparePackage = require('../../commands/deployments/PreparePackage');
+let ProvideInfrastructure = require('../../commands/deployments/ProvideInfrastructure');
+
+let packagePathProvider = new PackagePathProvider();
 
 module.exports = function DeployServiceCommandHandler(command) {
   return co(function* () {
@@ -33,11 +39,11 @@ module.exports = function DeployServiceCommandHandler(command) {
       };
     }
 
-    // Run asynchronously, we don't wait for deploy to finish intentionally
-    yield deploy(deployment, destination, sourcePackage, command);
-
     let accountName = deployment.accountName;
     yield deploymentLogger.started(deployment, accountName);
+    // Run asynchronously, we don't wait for deploy to finish intentionally
+    deploy(deployment, destination, sourcePackage, command);
+
     return deployment;
   });
 };
@@ -152,7 +158,7 @@ function getInfrastructureRequirements(accountName, deployment, parentCommand) {
     deployment
   };
 
-  return sender.sendCommand({ command, parent: parentCommand });
+  return sender.sendCommand(GetInfrastructureRequirements, { command, parent: parentCommand });
 }
 
 function provideInfrastructure(accountName, requiredInfra, parentCommand) {
@@ -163,7 +169,7 @@ function provideInfrastructure(accountName, requiredInfra, parentCommand) {
     launchConfigsToCreate: requiredInfra.launchConfigsToCreate
   };
 
-  return sender.sendCommand({ command, parent: parentCommand });
+  return sender.sendCommand(ProvideInfrastructure, { command, parent: parentCommand });
 }
 
 function preparePackage(accountName, destination, source, parentCommand) {
@@ -174,7 +180,7 @@ function preparePackage(accountName, destination, source, parentCommand) {
     source
   };
 
-  return sender.sendCommand({ command, parent: parentCommand });
+  return sender.sendCommand(PreparePackage, { command, parent: parentCommand });
 }
 
 function pushDeployment(accountName, requiredInfra, deployment, s3Path, parentCommand) {
@@ -186,7 +192,7 @@ function pushDeployment(accountName, requiredInfra, deployment, s3Path, parentCo
     expectedNodeDeployments: requiredInfra.expectedInstances
   };
 
-  return sender.sendCommand({ command, parent: parentCommand });
+  return sender.sendCommand(PushDeployment, { command, parent: parentCommand });
 }
 
 function getSourcePackageByCommand(command) {

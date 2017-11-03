@@ -5,6 +5,7 @@
 let _ = require('lodash');
 let sender = require('../modules/sender');
 let TaggableMixin = require('./TaggableMixin');
+let ScanSecurityGroups = require('../queryHandlers/ScanSecurityGroups');
 
 class SecurityGroup {
   constructor(data) {
@@ -23,7 +24,7 @@ class SecurityGroup {
       groupIds
     };
 
-    return sender.sendQuery({ query }).then(list => list.map(item => new TaggableSecurityGroup(item)));
+    return sender.sendQuery(ScanSecurityGroups, { query }).then(list => list.map(item => new TaggableSecurityGroup(item)));
   }
 
   static getAllByNames(accountName, vpcId, groupNames) {
@@ -34,7 +35,7 @@ class SecurityGroup {
       groupNames
     };
 
-    return sender.sendQuery({ query }).then(list => list.map(item => new TaggableSecurityGroup(item)));
+    return sender.sendQuery(ScanSecurityGroups, { query }).then(list => list.map(item => new TaggableSecurityGroup(item)));
   }
 }
 

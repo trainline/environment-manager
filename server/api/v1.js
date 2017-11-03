@@ -2,7 +2,6 @@
 
 'use strict';
 
-const _ = require('lodash');
 const yaml = require('js-yaml');
 const swaggerTools = require('swagger-tools');
 const fs = require('fs');

@@ -48,7 +48,7 @@ describe("ImageProvider", () => {
         image.encrypted.should.be.true();
 
         senderMock.sendQuery.called.should.be.true();
-        senderMock.sendQuery.getCall(0).args[0].should.match({
+        senderMock.sendQuery.getCall(0).args[1].should.match({
           query: {
             name: "ScanCrossAccountImages",
             filter: {
@@ -126,7 +126,7 @@ describe("ImageProvider", () => {
         image.version.should.be.equal("0.1.4");
 
         senderMock.sendQuery.called.should.be.true();
-        senderMock.sendQuery.getCall(0).args[0].should.match({
+        senderMock.sendQuery.getCall(0).args[1].should.match({
           query: {
             name: "ScanCrossAccountImages"
           }

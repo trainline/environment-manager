@@ -9,6 +9,7 @@ let DeploymentLogsStreamer = require('./DeploymentLogsStreamer');
 let deploymentLogsStreamer = new DeploymentLogsStreamer();
 let Enums = require('../Enums');
 let logger = require('./logger');
+let UpdateTargetState = require('../commands/services/UpdateTargetState');
 
 module.exports = {
   started(deployment, accountName) {
@@ -92,5 +93,5 @@ function updateDeploymentTargetState(deploymentStatus, newStatus) {
     value: newStatus.name
   };
 
-  return sender.sendCommand({ command, user: systemUser });
+  return sender.sendCommand(UpdateTargetState, { command, user: systemUser });
 }

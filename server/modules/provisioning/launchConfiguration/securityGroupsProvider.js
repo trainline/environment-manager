@@ -40,7 +40,7 @@ module.exports = {
 
 };
 
-function getAndVerifyAllExpectedSecurityGroups(securityGroups, vpcId, securityGroupNamesAndReasonsMapping, logger) {
+function getAndVerifyAllExpectedSecurityGroups(securityGroups, vpcId, securityGroupNamesAndReasonsMapping) {
   for (let securityGroupName in securityGroupNamesAndReasonsMapping) {
     if ({}.hasOwnProperty.call(securityGroupNamesAndReasonsMapping, securityGroupName)) {
       let found = _.find(securityGroups, sg => sg.getName() === securityGroupName);

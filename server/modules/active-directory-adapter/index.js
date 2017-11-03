@@ -3,10 +3,9 @@
 'use strict';
 
 let config = require('../../config');
-const modulePath = config.get('IS_PRODUCTION') ?
-  './activeDirectoryAdapter.prod.js' :
-  './activeDirectoryAdapter.mock.js';
+const mock = require('./activeDirectoryAdapter.mock.js');
+const prod = require('./activeDirectoryAdapter.prod.js');
 
-let Implementation = require(modulePath);
+let Implementation = config.get('IS_PRODUCTION') ? prod : mock;
 
 module.exports = new Implementation();

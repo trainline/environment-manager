@@ -85,7 +85,7 @@ function inLoadBalancerGroup(loadBalancerGroup) {
     });
 }
 
-function scan(environment) {
+function scan() {
   return documentClient()
     .then((dynamo) => {
       let params = {

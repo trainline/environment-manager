@@ -2,9 +2,6 @@
 
 'use strict';
 
-const KEY_NAME = 'EnvironmentName';
-
-let _ = require('lodash');
 let Promise = require('bluebird');
 
 let getMetadataForDynamoAudit = require('../../../api-utils/requestMetadata').getMetadataForDynamoAudit;

@@ -4,7 +4,7 @@
 
 let assert = require('assert');
 let sender = require('../../sender');
-
+let GetKeyPair = require('../../../queryHandlers/GetKeyPair');
 let ConfigurationError = require('../../errors/ConfigurationError.class');
 
 module.exports = {
@@ -47,5 +47,5 @@ function getKeyPairByName(keyName, accountName) {
     keyName
   };
 
-  return sender.sendQuery({ query });
+  return sender.sendQuery(GetKeyPair, { query });
 }

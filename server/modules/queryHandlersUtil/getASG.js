@@ -3,13 +3,13 @@
 'use strict';
 
 let co = require('co');
-let resourceProvider = require('../resourceProvider');
+const asgResourceFactory = require('../../modules/resourceFactories/asgResourceFactory');
 
 function* handleQuery(query) {
   // Create an instance of the resource to work with based on the resource
   // descriptor and AWS account name.
   let parameters = { accountName: query.accountName };
-  let resource = yield resourceProvider.getInstanceByName('asgs', parameters);
+  let resource = yield asgResourceFactory.create(undefined, parameters);
 
   // Get AutoScalingGroup by name
   return resource.get({ name: query.autoScalingGroupName, clearCache: query.clearCache });

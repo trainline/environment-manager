@@ -5,6 +5,7 @@
 let url = require('url');
 let sender = require('../modules/sender');
 let logger = require('../modules/logger');
+let GetNodeDeploymentLog = require('../queryHandlers/deployments/GetNodeDeploymentLog');
 
 module.exports = (request, response) => {
   let params = url.parse(request.url, true).query;
@@ -17,7 +18,7 @@ module.exports = (request, response) => {
     instanceId: params.node
   };
 
-  sender.sendQuery({ query, user: request.user }).then((data) => {
+  sender.sendQuery(GetNodeDeploymentLog, { query, user: request.user }).then((data) => {
     response.send(data.replace(/\n/g,  '<br />'));
   }).catch((err) => {
     response.status(500).send('An error occurred. The log file might not be available. Please see logs for more details.');

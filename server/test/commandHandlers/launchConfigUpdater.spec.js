@@ -1,153 +1,117 @@
-/* TODO: enable linting and fix resulting errors */
-/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-let should = require('should');
-let sinon  = require('sinon');
-let rewire = require('rewire');
-let target = rewire('../../commands/launch-config/launchConfigUpdater');
+const proxyquire = require('proxyquire').noCallThru();
+require('should');
+let sinon = require('sinon');
 
-describe('launchConfigUpdater: ', () => {
-
-  let AccountName = 'Sandbox';
-  let AutoScalingGroupName = 'pr1-ta-Web';
-  let UpdateAction = (launchConfiguration) => launchConfiguration.updated = true;
-
+function createFixture() {
   let launchConfigurationClientMock = {
     post: sinon.stub().returns(Promise.resolve()),
-    delete: sinon.stub().returns(Promise.resolve()),
+    delete: sinon.stub().returns(Promise.resolve())
   };
-
-  let index;
-
-  let resourceProvider = { getInstanceByName: () => null };
-
-  sinon.stub(resourceProvider, 'getInstanceByName', () => {
-    if (index++ === 0) {
-      return Promise.resolve(launchConfigurationClientMock);
-    } else {
-      return Promise.resolve(autoScalingGroupClientMock)
-    }
-  });
 
   let autoScalingGroupClientMock = {
-    put: sinon.stub().returns(Promise.resolve()),
+    put: sinon.stub().returns(Promise.resolve())
   };
 
+  let asgResourceFactory = {
+    create: sinon.stub().returns(Promise.resolve(autoScalingGroupClientMock))
+  };
+
+  let launchConfigurationResourceFactory = {
+    create: sinon.stub().returns(Promise.resolve(launchConfigurationClientMock))
+  };
+
+  let sut = proxyquire('../../commands/launch-config/launchConfigUpdater', {
+    '../../modules/resourceFactories/asgResourceFactory': asgResourceFactory,
+    '../../modules/resourceFactories/launchConfigurationResourceFactory': launchConfigurationResourceFactory
+  });
+
+  return {
+    asgResourceFactory,
+    autoScalingGroupClientMock,
+    launchConfigurationClientMock,
+    launchConfigurationResourceFactory,
+    sut
+  };
+}
+
+describe('launchConfigUpdater: ', () => {
+  let AccountName = 'Sandbox';
+  let AutoScalingGroupName = 'pr1-ta-Web';
+  function UpdateAction(launchConfiguration) { launchConfiguration.updated = true; }
+
   let expectedLaunchConfiguration = {
-    LaunchConfigurationName: 'LaunchConfig_pr1-ta-Web',
+    LaunchConfigurationName: 'LaunchConfig_pr1-ta-Web'
   };
 
   let autoScalingGroup = {
     getLaunchConfiguration: sinon.stub().returns(Promise.resolve(expectedLaunchConfiguration)),
-    $autoScalingGroupName: AutoScalingGroupName,
+    $autoScalingGroupName: AutoScalingGroupName
   };
 
-
-  let promise = null;
-
-  before('Setting the launch configuration', () => {
-    index = 0;
-
-    target.__set__('resourceProvider', resourceProvider);
-
-    promise = target.set(AccountName, autoScalingGroup, UpdateAction);
-
+  it('should create LaunchConfiguration and AutoScalingGroup clients by account', () => {
+    let { asgResourceFactory, launchConfigurationResourceFactory, sut } = createFixture();
+    return sut.set(AccountName, autoScalingGroup, UpdateAction).then(() => {
+      sinon.assert.calledWithExactly(asgResourceFactory.create, undefined, { accountName: AccountName });
+      sinon.assert.calledWithExactly(launchConfigurationResourceFactory.create, undefined, { accountName: AccountName });
+    });
   });
 
-  it('should create LaunchConfiguration and AutoScalingGroup clients by account', () =>
+  it('AutoScalingGroup LaunchConfiguration should be copied with a different name', () => {
+    let { launchConfigurationClientMock, sut } = createFixture();
+    return sut.set(AccountName, autoScalingGroup, UpdateAction).then(() => {
+      sinon.assert.calledWith(launchConfigurationClientMock.post, sinon.match({
+        LaunchConfigurationName: 'LaunchConfig_pr1-ta-Web_Backup' }));
+    });
+  });
 
-    promise.then(() => {
+  it('AutoScalingGroup should be attached to the copied LaunchConfiguration', () => {
+    let { autoScalingGroupClientMock, sut } = createFixture();
+    return sut.set(AccountName, autoScalingGroup, UpdateAction).then(() => {
+      sinon.assert.calledWith(autoScalingGroupClientMock.put, sinon.match({
+        launchConfigurationName: 'LaunchConfig_pr1-ta-Web_Backup' }));
+    });
+  });
 
-      resourceProvider.getInstanceByName.called.should.be.true();
-      resourceProvider.getInstanceByName.getCall(0).args.should.match([ 'launchconfig', { accountName: AccountName }]);
+  it('Original LaunchConfiguration should be deleted', () => {
+    let { launchConfigurationClientMock, sut } = createFixture();
+    return sut.set(AccountName, autoScalingGroup, UpdateAction).then(() => {
+      sinon.assert.calledWith(launchConfigurationClientMock.delete, sinon.match({
+        name: 'LaunchConfig_pr1-ta-Web'
+      }));
+    });
+  });
 
-      resourceProvider.getInstanceByName.called.should.be.true();
-      resourceProvider.getInstanceByName.getCall(0).args.should.match([ 'launchconfig', { accountName: AccountName }]);
-
-    })
-
-  );
-
-  it('AutoScalingGroup LaunchConfiguration should be copied with a different name', () =>
-
-    promise.then(() => {
-
-      launchConfigurationClientMock.post.called.should.be.true();
-      launchConfigurationClientMock.post.getCall(0).args[0].should.match({
-        LaunchConfigurationName: 'LaunchConfig_pr1-ta-Web_Backup',
-      });
-
-    })
-
-  );
-
-  it('AutoScalingGroup should be attached to the copied LaunchConfiguration', () =>
-
-    promise.then(() => {
-
-      autoScalingGroupClientMock.put.called.should.be.true();
-      autoScalingGroupClientMock.put.getCall(0).args[0].should.match({
-        name: AutoScalingGroupName,
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web_Backup',
-      });
-
-    })
-
-  );
-
-  it('Original LaunchConfiguration should be deleted', () =>
-
-    promise.then(() => {
-
-      launchConfigurationClientMock.delete.called.should.be.true();
-      launchConfigurationClientMock.delete.getCall(0).args[0].should.match({
-        name: 'LaunchConfig_pr1-ta-Web',
-      });
-
-    })
-
-  );
-
-  it('Original LaunchConfiguration should be created with the updated instance type', () =>
-
-    promise.then(() => {
-
-      launchConfigurationClientMock.post.getCall(1).args[0].should.match({
+  it('Original LaunchConfiguration should be created with the updated instance type', () => {
+    let { launchConfigurationClientMock, sut } = createFixture();
+    return sut.set(AccountName, autoScalingGroup, UpdateAction).then(() => {
+      sinon.assert.calledWith(launchConfigurationClientMock.post, sinon.match({
         LaunchConfigurationName: 'LaunchConfig_pr1-ta-Web',
-        updated: true,
-      });
+        updated: true
+      }));
+    });
+  });
 
-    })
-
-  );
-
-  it('Original LaunchConfiguration should attached to the AutoScalingGroup', () =>
-
-    promise.then(() => {
-
-      autoScalingGroupClientMock.put.called.should.be.true();
-      autoScalingGroupClientMock.put.getCall(1).args[0].should.match({
+  it('Original LaunchConfiguration should be attached to the AutoScalingGroup', () => {
+    let { autoScalingGroupClientMock, sut } = createFixture();
+    return sut.set(AccountName, autoScalingGroup, UpdateAction).then(() => {
+      sinon.assert.calledWith(autoScalingGroupClientMock.put, sinon.match({
         name: AutoScalingGroupName,
-        launchConfigurationName: 'LaunchConfig_pr1-ta-Web',
-      });
+        launchConfigurationName: 'LaunchConfig_pr1-ta-Web'
+      }));
+    });
+  });
 
-    })
-
-  );
-
-  it('Backup LaunchConfiguration should be deleted', () =>
-
-    promise.then(() => {
-
-      launchConfigurationClientMock.delete.getCall(1).args[0].should.match({
-        name: 'LaunchConfig_pr1-ta-Web_Backup',
-      });
-
-    })
-
-  );
-
+  it('Backup LaunchConfiguration should be deleted', () => {
+    let { launchConfigurationClientMock, sut } = createFixture();
+    return sut.set(AccountName, autoScalingGroup, UpdateAction).then(() => {
+      sinon.assert.calledWith(launchConfigurationClientMock.delete, sinon.match({
+        name: 'LaunchConfig_pr1-ta-Web_Backup'
+      }));
+    });
+  });
 });
 

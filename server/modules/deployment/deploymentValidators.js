@@ -2,9 +2,12 @@
 
 'use strict';
 
+const blueGreenDeploymentValidator = require('./validators/blueGreenDeploymentValidator');
+const uniqueServiceVersionDeploymentValidator = require('./validators/uniqueServiceVersionDeploymentValidator');
+
 let validators = [
-  require('./validators/blueGreenDeploymentValidator'),
-  require('./validators/uniqueServiceVersionDeploymentValidator')
+  blueGreenDeploymentValidator,
+  uniqueServiceVersionDeploymentValidator
 ];
 
 module.exports = validators;

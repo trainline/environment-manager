@@ -64,7 +64,7 @@ describe('ScanServersStatus', function() {
   };
 
   let sender = {
-    sendQuery: function(value) {
+    sendQuery: function(handler, value) {
       let query = value.query;
       switch(query.name) {
         case 'ScanCrossAccountImages':

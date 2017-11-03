@@ -42,7 +42,7 @@ class OpsEnvironment {
     return Object.keys(this).length === 0;
   }
 
-  static getAll(filter = {}) {
+  static getAll() {
     return opsEnvironment.scan()
       .then(list => list.map(env => new OpsEnvironment(env)));
   }

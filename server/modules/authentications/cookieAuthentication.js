@@ -17,6 +17,6 @@ module.exports = {
         req.user = user;
         req.authenticatedBy = 'cookie';
         next();
-      }, error => next());
+      }, () => next());
   }
 };

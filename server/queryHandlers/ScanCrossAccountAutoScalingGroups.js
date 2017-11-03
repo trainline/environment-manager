@@ -3,7 +3,8 @@
 'use strict';
 
 let scanCrossAccount = require('../modules/queryHandlersUtil/scanCrossAccount');
+let ScanAutoScalingGroups = require('./ScanAutoScalingGroups');
 
 module.exports = function ScanCrossAccountAutoScalingGroups(query) {
-  return scanCrossAccount(query, 'ScanAutoScalingGroups');
+  return scanCrossAccount(ScanAutoScalingGroups, query, 'ScanAutoScalingGroups');
 };

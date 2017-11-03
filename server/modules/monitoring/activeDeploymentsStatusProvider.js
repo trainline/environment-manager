@@ -6,8 +6,6 @@ let co = require('co');
 let ms = require('ms');
 let _ = require('lodash');
 
-let DEPLOYMENT_MAXIMUM_THRESHOLD = ms('90m');
-let DEPLOYMENT_MINIMUM_THRESHOLD = ms('30s');
 let DEFAULT_SERVICE_INSTALLATION_TIMEOUT = '30m';
 
 let Enums = require('../../Enums');
@@ -18,6 +16,8 @@ let infrastructureConfigurationProvider = require('../provisioning/infrastructur
 let namingConventionProvider = require('../provisioning/namingConventionProvider');
 let logger = require('../logger');
 let Environment = require('../../models/Environment');
+let GetAutoScalingGroup = require('../../queryHandlers/GetAutoScalingGroup');
+let GetTargetState = require('../../queryHandlers/services/GetTargetState');
 
 module.exports = {
 
@@ -156,7 +156,7 @@ function getExpectedNodesIdByDeployment(deployment) {
     };
 
     try {
-      let autoScalingGroup = yield sender.sendQuery({ query });
+      let autoScalingGroup = yield sender.sendQuery(GetAutoScalingGroup, { query });
       let nodeIds = autoScalingGroup.Instances
         .filter(instance => instance.LifecycleState === 'InService')
         .map(instance => instance.InstanceId);
@@ -177,5 +177,5 @@ function getTargetState(key, environmentName, recurse) {
     recurse
   };
 
-  return sender.sendQuery({ query });
+  return sender.sendQuery(GetTargetState, { query });
 }

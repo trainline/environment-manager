@@ -12,6 +12,7 @@ let deploymentLogger = require('../../../modules/DeploymentLogger');
 const sns = require('../../../modules/sns/EnvironmentManagerEvents');
 let { ifNotFound, notFoundMessage } = require('../../api-utils/ifNotFound');
 const { toggleServiceStatus } = require('../../../modules/toggleServiceStatus');
+let DeployService = require('../../../commands/deployments/DeployService');
 
 /**
  * GET /deployments
@@ -96,7 +97,7 @@ function postDeployment(req, res, next) {
     res.append('Warning', `299 - Package Location property is deprecated for deployments."${now}"`);
   }
 
-  sender.sendCommand({ command, user: req.user }).then((deployment) => {
+  sender.sendCommand(DeployService, { command, user: req.user }).then((deployment) => {
     if (deployment.isDryRun) {
       res.status(200);
       res.json(deployment);

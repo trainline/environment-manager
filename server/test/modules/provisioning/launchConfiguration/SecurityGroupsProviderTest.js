@@ -76,7 +76,7 @@ describe('SecurityGroupsProvider:', () => {
           return promise.then(securityGroupIds => {
 
             senderMock.sendQuery.called.should.be.true();
-            senderMock.sendQuery.getCall(0).args[0].should.match({
+            senderMock.sendQuery.getCall(0).args[1].should.match({
               query: {
                 name: 'ScanSecurityGroups',
                 accountName: accountName,
@@ -97,7 +97,7 @@ describe('SecurityGroupsProvider:', () => {
 
             securityGroupIds.should.matchAny((it) => it.GroupId.should.equal(expectedOSSecurityGroup.GroupId));
 
-            senderMock.sendQuery.getCall(0).args[0].query.groupNames.should.matchAny(
+            senderMock.sendQuery.getCall(0).args[1].query.groupNames.should.matchAny(
               'sgOSWindows'
             );
 
@@ -114,7 +114,7 @@ describe('SecurityGroupsProvider:', () => {
 
             securityGroupIds.should.matchAny((it) => it.GroupId.should.equal(expectedOSSecurityGroup.GroupId));
 
-            senderMock.sendQuery.getCall(0).args[0].query.groupNames.should.matchAny(
+            senderMock.sendQuery.getCall(0).args[1].query.groupNames.should.matchAny(
               `sgRole${configuration.cluster.Name}${configuration.serverRole.ServerRoleName}`
             );
 
@@ -184,7 +184,7 @@ describe('SecurityGroupsProvider:', () => {
 
             securityGroupIds.should.matchAny((it) => it.GroupId.should.equal(expectedOSSecurityGroup.GroupId));
 
-            senderMock.sendQuery.getCall(0).args[0].query.groupNames.should.matchAny(
+            senderMock.sendQuery.getCall(0).args[1].query.groupNames.should.matchAny(
               'sgOSLinux'
             );
 
@@ -305,7 +305,7 @@ describe('SecurityGroupsProvider:', () => {
 
             securityGroupIds.should.matchAny((it) => it.GroupId.should.equal(expectedOSSecurityGroup.GroupId));            
 
-            senderMock.sendQuery.getCall(0).args[0].query.groupNames.should.matchAny(
+            senderMock.sendQuery.getCall(0).args[1].query.groupNames.should.matchAny(
               'sgOSWindowsSecure'
             );
 
@@ -323,7 +323,7 @@ describe('SecurityGroupsProvider:', () => {
 
             securityGroupIds.should.matchAny((it) => it.GroupId.should.equal(expectedSecurityZoneSecurityGroup.GroupId));
 
-            senderMock.sendQuery.getCall(0).args[0].query.groupNames.should.matchAny(
+            senderMock.sendQuery.getCall(0).args[1].query.groupNames.should.matchAny(
               'sgZoneSecure'
             );
 
@@ -399,7 +399,7 @@ describe('SecurityGroupsProvider:', () => {
 
             securityGroupIds.should.matchAny((it) => it.GroupId.should.equal(expectedOSSecurityGroup.GroupId));
 
-            senderMock.sendQuery.getCall(0).args[0].query.groupNames.should.matchAny(
+            senderMock.sendQuery.getCall(0).args[1].query.groupNames.should.matchAny(
               'sgOSLinuxSecure'
             );
 
@@ -488,11 +488,11 @@ describe('SecurityGroupsProvider:', () => {
           securityGroupIds.should.matchAny((it) => it.GroupId.should.equal(expectedCustomTwoSecurityGroup.GroupId));
 
 
-          senderMock.sendQuery.getCall(0).args[0].query.groupNames.should.matchAny(
+          senderMock.sendQuery.getCall(0).args[1].query.groupNames.should.matchAny(
             'sgCustomOne'
           );
 
-          senderMock.sendQuery.getCall(0).args[0].query.groupNames.should.matchAny(
+          senderMock.sendQuery.getCall(0).args[1].query.groupNames.should.matchAny(
             'sgCustomTwo'
           );
 
@@ -507,7 +507,7 @@ describe('SecurityGroupsProvider:', () => {
 
           securityGroupIds.should.have.length(3);
 
-          senderMock.sendQuery.getCall(0).args[0].query.groupNames.should.not.matchAny(
+          senderMock.sendQuery.getCall(0).args[1].query.groupNames.should.not.matchAny(
             'sgRoleTangoWeb'
           );
 

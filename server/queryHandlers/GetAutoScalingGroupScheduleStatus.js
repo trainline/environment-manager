@@ -4,25 +4,27 @@
 
 let scheduling = require('../modules/scheduling');
 let cronService = require('../modules/cronService')();
+let sender = require('../modules/sender');
+let GetAutoScalingGroup = require('./GetAutoScalingGroup');
+let GetAutoScalingGroupScheduledActions = require('./GetAutoScalingGroupScheduledActions');
+let GetEnvironmentScheduleStatus = require('./GetEnvironmentScheduleStatus');
 
 function getAutoScalingGroup(query) {
-  let sender = require('../modules/sender');
   let childQuery = {
     name: 'GetAutoScalingGroup',
     accountName: query.accountName,
     autoScalingGroupName: query.autoScalingGroupName
   };
-  return sender.sendQuery({ query: childQuery });
+  return sender.sendQuery(GetAutoScalingGroup, { query: childQuery });
 }
 
 function getAutoScalingGroupScheduledActions(query) {
-  let sender = require('../modules/sender');
   let childQuery = {
     name: 'GetAutoScalingGroupScheduledActions',
     accountName: query.accountName,
     autoScalingGroupName: query.autoScalingGroupName
   };
-  return sender.sendQuery({ query: childQuery });
+  return sender.sendQuery(GetAutoScalingGroupScheduledActions, { query: childQuery });
 }
 
 function maybeGetEnvironmentDefaultSchedule(schedule, query) {
@@ -31,16 +33,12 @@ function maybeGetEnvironmentDefaultSchedule(schedule, query) {
       status: scheduling.expectedStateFromSchedule(schedule, query.date).toUpperCase()
     });
   }
-
-  let sender = require('../modules/sender');
-
   let childQuery = {
     name: 'GetEnvironmentScheduleStatus',
     environmentName: getEnvironment(query.autoScalingGroupName),
     date: query.date
   };
-
-  return sender.sendQuery({ query: childQuery });
+  return sender.sendQuery(GetEnvironmentScheduleStatus, { query: childQuery });
 }
 
 function getEnvironment(asgName) {

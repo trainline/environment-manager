@@ -89,5 +89,5 @@ function NginxUpstreamsResource() {
 
 module.exports = {
   canCreate: resourceDescriptor => resourceDescriptor.type.toLowerCase() === 'nginx/upstreams',
-  create: (resourceDescriptor, parameters) => Promise.resolve(new NginxUpstreamsResource())
+  create: () => Promise.resolve(new NginxUpstreamsResource())
 };

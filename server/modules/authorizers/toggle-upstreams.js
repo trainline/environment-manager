@@ -2,10 +2,11 @@
 
 'use strict';
 
+let sender = require('../sender');
+let GetSlicesByUpstream = require('../../queryHandlers/slices/GetSlicesByUpstream');
+
 function getSlicesByUpstream(upstreamName, environmentName, accountName, user) {
   return new Promise((resolve, reject) => {
-    let sender = require('../sender');
-
     let query = {
       name: 'GetSlicesByUpstream',
       accountName,
@@ -13,7 +14,7 @@ function getSlicesByUpstream(upstreamName, environmentName, accountName, user) {
       environmentName
     };
 
-    sender.sendQuery({ query, user }, (err, result) => {
+    sender.sendQuery(GetSlicesByUpstream, { query, user }, (err, result) => {
       if (err) reject(err);
       else resolve(result);
     });

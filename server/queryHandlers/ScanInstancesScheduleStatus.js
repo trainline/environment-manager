@@ -7,6 +7,8 @@ let _ = require('lodash');
 let sender = require('../modules/sender');
 let scheduling = require('../modules/scheduling');
 let opsEnvironment = require('../modules/data-access/opsEnvironment');
+let ScanInstances = require('./ScanInstances');
+let ScanAutoScalingGroups = require('./ScanAutoScalingGroups');
 
 module.exports = function ScanInstancesScheduleStatusQueryHandler(query) {
   return co(function* () { // eslint-disable-line func-names
@@ -92,7 +94,7 @@ function getInstanceTagValue(instance, tagName) {
 }
 
 function getAllInstances(query) {
-  return sender.sendQuery({
+  return sender.sendQuery(ScanInstances, {
     query: {
       name: 'ScanInstances',
       accountName: query.accountName,
@@ -103,12 +105,12 @@ function getAllInstances(query) {
   });
 }
 
-function getAllEnvironments(query) {
+function getAllEnvironments() {
   return opsEnvironment.scan();
 }
 
 function getAllASGs(query) {
-  return sender.sendQuery({
+  return sender.sendQuery(ScanAutoScalingGroups, {
     query: {
       name: 'ScanAutoScalingGroups',
       accountName: query.accountName,

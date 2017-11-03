@@ -14,7 +14,7 @@ function hostFilter(active) {
   } else if (active === false) {
     return host => host.State === 'down';
   } else {
-    return host => true;
+    return () => true;
   }
 }
 

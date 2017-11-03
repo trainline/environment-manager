@@ -3,7 +3,6 @@
 'use strict';
 
 let Promise = require('bluebird');
-let _ = require('lodash');
 let co = require('co');
 let getAllASGs = require('../../../queryHandlers/ScanCrossAccountAutoScalingGroups');
 let getAccountASGs = require('../../../queryHandlers/ScanAutoScalingGroups');

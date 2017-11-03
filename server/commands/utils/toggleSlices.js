@@ -10,7 +10,7 @@ let logger = require('../../modules/logger');
 let servicesDb = require('../../modules/data-access/services');
 let loadBalancerUpstreams = require('../../modules/data-access/loadBalancerUpstreams');
 
-function ToggleUpstreamByServiceVerifier(toggleCommand) {
+function ToggleUpstreamByServiceVerifier() {
   this.verifyUpstreams = (upstreams) => {
     return getServicePortMappings(upstreams[0].Service)
       .then(portMapping => Promise.map(upstreams, upstream => detectUpstreamInconsistency(upstream, portMapping)));

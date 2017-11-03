@@ -112,8 +112,8 @@ function sendRequestToAddresses(token, addresses) {
       }
     };
 
-    results.push(new Promise((resolve, reject) => {
-      request.post(options, (error, response, body) => {
+    results.push(new Promise((resolve) => {
+      request.post(options, (error, response) => {
         if (response && response.statusCode === 401) {
           let message = `401 received: ${JSON.stringify(stripToken(options))}`;
           let result = ({ status: 'info', message });

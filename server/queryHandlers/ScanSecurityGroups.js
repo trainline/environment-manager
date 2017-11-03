@@ -2,12 +2,12 @@
 
 'use strict';
 
-let resourceProvider = require('../modules/resourceProvider');
+const securityGroupResourceFactory = require('../modules/resourceFactories/securityGroupResourceFactory');
 
 module.exports = function ScanSecurityGroupsQueryHandler(query) {
   let parameters = { accountName: query.accountName };
 
-  return resourceProvider.getInstanceByName('sg', parameters).then((resource) => {
+  return securityGroupResourceFactory.create(undefined, parameters).then((resource) => {
     let request = {
       vpcId: query.vpcId,
       groupIds: query.groupIds,
