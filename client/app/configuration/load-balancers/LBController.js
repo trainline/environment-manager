@@ -14,6 +14,7 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
     $scope.PageMode = 'Edit'; // Edit, New, Copy
     $scope.DataFound = false;
 
+    $scope.Environments = {};
     $scope.EnvironmentsList = [];
     $scope.ServicesList = [];
     $scope.SettingTypeList = ['Front End', 'Back End'];
@@ -78,11 +79,10 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
 
       $q.all([
         cachedResources.config.environments.all().then(function (environments) {
+          environments.forEach(function (e) {
+            $scope.Environments[e.EnvironmentName] = { EnvironmentType: e.Value.EnvironmentType };
+          });
           $scope.EnvironmentsList = _.map(environments, 'EnvironmentName').sort();
-        }),
-
-        cachedResources.config.services.all().then(function (services) {
-          $scope.ServicesList = _.map(services, 'ServiceName');
         })
       ]).then(function () {
         $scope.PageMode = mode ? mode : 'Edit';
@@ -202,11 +202,21 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
                 // Validate Upstream exists
                 if (!_.includes(proxyUpstreamName, '.')) {
                   if ($scope.LBUpstreamData && $scope.LBUpstreamData.length > 0) {
+                    var foundUpstream = null;
+                    $scope.LBUpstreamData.push({ Value: { EnvironmentName: 'c99', UpstreamName: 'something' } });
                     var matchFound = $scope.LBUpstreamData.some(function upstreamIsProxy(upstream) {
-                      return upstream.Value.UpstreamName === proxyUpstreamName;
+                      var found = upstream.Value.UpstreamName === proxyUpstreamName;
+                      if (found)
+                        foundUpstream = upstream;
+                      return found;
                     });
                     if (!matchFound) {
                       errors.push('Locations[' + i + '] - Upstream name in Proxy Pass not found. Please check spelling and capitalisation');
+                    } else {
+                      var loadBalancerEnvironmentType = $scope.Environments[value.EnvironmentName].EnvironmentType;
+                      var upstreamEnvironmentType = $scope.Environments[foundUpstream.Value.EnvironmentName].EnvironmentType;
+                      if (loadBalancerEnvironmentType !== upstreamEnvironmentType)
+                        errors.push('Locations[' + i + '] - Upstream Environment Type (' + upstreamEnvironmentType + ') in Proxy Pass does not match this Load Balancer Environment Type (' + loadBalancerEnvironmentType + ')');
                     }
                   }
                 }
@@ -220,11 +230,11 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
 
     function checkProxyPassAgainstSetKeys(location) {
       var matchingValueInSet = false;
-      
+
       function escapeRegExp(str) {
         return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
       }
-      
+
       if (location.Set && location.ProxyPass) {
         matchingValueInSet = location.Set.some(function (set) {
           var setParts = set.split(' ');
