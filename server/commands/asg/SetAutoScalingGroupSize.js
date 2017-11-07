@@ -44,7 +44,7 @@ function* handler(command) {
   // Get a resource instance to work with AutoScalingGroup in the proper
   // AWS account.
   let parameters = { accountName: command.accountName };
-  let resource = yield asgResourceFactory(undefined, parameters);
+  let resource = yield asgResourceFactory.create(undefined, parameters);
 
   // Change the AutoScalingGroup size accordingly to the expected one.
   parameters = {

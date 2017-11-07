@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 [Unreleased]
 
+## Fixed
+
+- the "set auto scaling group size" feature
+
 ## [6.11.5] - 2017-02-03
 
 ## Fixed
