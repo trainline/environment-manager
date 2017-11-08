@@ -9,6 +9,11 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 - If an upstream exists, that is not enough for it to be valid. The upstream needs to exist against an environment type that matches the environment type of the load balancer setting. [#370]
 
+## Fixed
+
+- the "set auto scaling group size" feature
+
+
 ## [6.11.5] - 2017-02-03
 
 ## Fixed
