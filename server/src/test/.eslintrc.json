@@ -1,0 +1,16 @@
+{
+  "env": {
+    "mocha": true
+  },
+  "rules": {
+    "func-names": 0,
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true
+      }
+    ],
+    "no-warning-comments": 1,
+    "prefer-arrow-callback": 0
+  }
+}
