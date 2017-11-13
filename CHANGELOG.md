@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html). View [Unreleased] changes here.
 
+[Unreleased]
+
+## Changed
+
+- If an upstream exists, that is not enough for it to be valid. The upstream needs to exist against an environment type that matches the environment type of the load balancer setting. [#370]
+
 ## [6.12.0] - 2017-11-09
 
 ### Added
@@ -347,3 +353,4 @@ Example:
 [#357]: https://github.com/trainline/environment-manager/pull/357
 [#363]: https://github.com/trainline/environment-manager/pull/363
 [#366]: https://github.com/trainline/environment-manager/pull/366
+[#370]: https://github.com/trainline/environment-manager/pull/370

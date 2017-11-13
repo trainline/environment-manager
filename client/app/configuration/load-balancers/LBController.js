@@ -6,66 +6,22 @@
 
 // Manage specific LoadBalancer Setting
 angular.module('EnvironmentManager.configuration').controller('LBController',
-  function ($scope, $routeParams, $location, $q, $http, resources, cachedResources, modal, accountMappingService, schemaValidatorService) {
+  function ($scope, $routeParams, $location, $q, $http, resources, cachedResources, modal, accountMappingService, schemaValidatorService, loadBalancerService) {
     $scope.LBSetting = {};
     $scope.LBUpstreamData = [];
     $scope.Version = 0;
 
-    $scope.PageMode = 'Edit'; // Edit, New, Copy
+    $scope.PageMode = 'Edit';
     $scope.DataFound = false;
 
+    $scope.Environments = {};
     $scope.EnvironmentsList = [];
-    $scope.ServicesList = [];
     $scope.SettingTypeList = ['Front End', 'Back End'];
     $scope.CopyFromName = '';
 
-    var ReturnPath = '/config/loadbalancers'; // Plus Environment name to get back to the previous selection
+    var ReturnPath = '/config/loadbalancers';
 
-    var configStructure = {
-      SchemaVersion: 1,
-      EnvironmentName: '',
-      VHostName: '',
-      Listen: [
-        { Port: '' }
-      ],
-      ServerName: [''],
-      FrontEnd: false,
-      Locations: [{
-        Path: '',
-        Priority: 1,
-        IfCondition: '',
-        IfConditionPriority: 1,
-        Tokenise: false,
-        ProxySetHeaders: [''],
-        ProxyPass: '',
-        Healthcheck: {
-          Interval: 0,
-          Fails: 0,
-          Passes: 0,
-          URI: ''
-        },
-        ProxyHttpVersion: '',
-        AddHeaders: [''],
-        ReturnCode: 0,
-        ReturnURI: '',
-        MoreHeaders: ['header:value'],
-        RewriteCondition: '',
-        RewriteURI: '',
-        RewriteState: '',
-        Rewrites: {
-          Condition: '',
-          URI: '',
-          State: ''
-        },
-        RawNginxConfig: '',
-        Set: '',
-        TryFiles: '',
-        CustomErrorCodes: ["all"],
-        CacheTime: ''
-      }]
-    };
-
-    var DefaultValue = JSON.stringify(configStructure, null, 4);
+    var DefaultValue = loadBalancerService.getJsonStructure();
 
     function init() {
       var mode = $routeParams.mode;
@@ -73,16 +29,15 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
       var range = $routeParams.range;
 
       resources.config.lbUpstream.all({ account: 'all' }).then(function (upstreams) {
-        $scope.LBUpstreamData = upstreams; // Used to validate upstreams exist
+        $scope.LBUpstreamData = upstreams;
       });
 
       $q.all([
         cachedResources.config.environments.all().then(function (environments) {
+          environments.forEach(function (e) {
+            $scope.Environments[e.EnvironmentName] = { EnvironmentType: e.Value.EnvironmentType };
+          });
           $scope.EnvironmentsList = _.map(environments, 'EnvironmentName').sort();
-        }),
-
-        cachedResources.config.services.all().then(function (services) {
-          $scope.ServicesList = _.map(services, 'ServiceName');
         })
       ]).then(function () {
         $scope.PageMode = mode ? mode : 'Edit';
@@ -111,7 +66,7 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
               }
             });
           });
-        } else { // Mode == New
+        } else {
           $scope.LBSetting.EnvironmentName = environment;
           $scope.LBSetting.Value = DefaultValue;
           $scope.userHasPermission = user.hasPermission({ access: 'POST', resource: '/*/config/lbsettings/**' });
@@ -202,11 +157,20 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
                 // Validate Upstream exists
                 if (!_.includes(proxyUpstreamName, '.')) {
                   if ($scope.LBUpstreamData && $scope.LBUpstreamData.length > 0) {
+                    var foundUpstream = null;
                     var matchFound = $scope.LBUpstreamData.some(function upstreamIsProxy(upstream) {
-                      return upstream.Value.UpstreamName === proxyUpstreamName;
+                      var found = upstream.Value.UpstreamName === proxyUpstreamName;
+                      if (found)
+                        foundUpstream = upstream;
+                      return found;
                     });
                     if (!matchFound) {
                       errors.push('Locations[' + i + '] - Upstream name in Proxy Pass not found. Please check spelling and capitalisation');
+                    } else {
+                      var loadBalancerEnvironmentType = $scope.Environments[value.EnvironmentName].EnvironmentType;
+                      var upstreamEnvironmentType = $scope.Environments[foundUpstream.Value.EnvironmentName].EnvironmentType;
+                      if (loadBalancerEnvironmentType !== upstreamEnvironmentType)
+                        errors.push('Locations[' + i + '] - Upstream Environment Type (' + upstreamEnvironmentType + ') in Proxy Pass does not match this Load Balancer Environment Type (' + loadBalancerEnvironmentType + ')');
                     }
                   }
                 }
@@ -220,11 +184,11 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
 
     function checkProxyPassAgainstSetKeys(location) {
       var matchingValueInSet = false;
-      
+
       function escapeRegExp(str) {
         return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
       }
-      
+
       if (location.Set && location.ProxyPass) {
         matchingValueInSet = location.Set.some(function (set) {
           var setParts = set.split(' ');

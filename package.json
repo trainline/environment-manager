@@ -19,6 +19,7 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "eslint-plugin-dependencies": "^2.4.0",
     "gulp": "^3.9.1",
     "gulp-run": "^1.7.1",
     "gulp-vinyl-zip": "^2.0.0",
