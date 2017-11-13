@@ -9,26 +9,31 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 - If an upstream exists, that is not enough for it to be valid. The upstream needs to exist against an environment type that matches the environment type of the load balancer setting. [#370]
 
-## Fixed
+## [6.12.0] - 2017-11-09
 
-- the "set auto scaling group size" feature
+### Added
 
+- C5 instance type options for EC2 instances [#372]
 
-## [6.11.5] - 2017-02-03
+### Fixed
 
-## Fixed
+- The "set auto scaling group size" feature
+
+## [6.11.5] - 2017-11-03
+
+### Fixed
 
 - Create new Service screen was showing broken service name field [#368]
 
 ## [6.11.4] - 2017-10-31
 
-## Fixed
+### Fixed
 
 - Regression causing the scheduled scaling API to fail
 
 ## [6.11.3] - 2017-10-30
 
-## Fixed
+### Fixed
 
 - Bug causing some API calls to throw
 
@@ -274,8 +279,9 @@ Example:
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/6.11.5...master
+[Unreleased]: https://github.com/trainline/environment-manager/compare/6.12.0...master
 
+[6.12.0]: https://github.com/trainline/environment-manager/compare/6.11.5...6.12.0
 [6.11.5]: https://github.com/trainline/environment-manager/compare/6.11.4...6.11.5
 [6.11.4]: https://github.com/trainline/environment-manager/compare/6.11.3...6.11.4
 [6.11.3]: https://github.com/trainline/environment-manager/compare/6.11.2...6.11.3
@@ -301,6 +307,8 @@ Example:
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
+[#372]: https://github.com/trainline/environment-manager/pull/372
+[#368]: https://github.com/trainline/environment-manager/pull/368
 [#368]: https://github.com/trainline/environment-manager/pull/368
 [#362]: https://github.com/trainline/environment-manager/pull/362
 [#358]: https://github.com/trainline/environment-manager/pull/358
