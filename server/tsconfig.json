@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "lib": [
+      "dom",
+      "es2015"
+    ],
+    "module":"commonjs",
+    "moduleResolution": "node",
+    "outDir": "./lib",
+    "strict": true,
+    "target": "es6",
+    "types": [
+      "core-js",
+      "node"
+    ]
+  },
+  "include": [
+    "./src/**/*"
+  ]
+}
