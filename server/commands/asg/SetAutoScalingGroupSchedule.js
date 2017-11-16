@@ -83,6 +83,7 @@ function setAutoScalingGroupScheduleTag(client, autoScalingGroupName, schedule) 
 }
 
 function setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, newScheduledActions) {
+  let defaultIfNil = (def, obj) => (obj !== null && obj !== undefined ? obj : def);
   return co(function* () {
     let existingScheduledActions = yield getScheduledActions(client, autoScalingGroupName);
     yield existingScheduledActions.map(action => deleteScheduledAction(client, action));
@@ -90,11 +91,12 @@ function setAutoScalingGroupScalingSchedule(client, autoScalingGroupName, newSch
     if (!(newScheduledActions instanceof Array)) return Promise.resolve();
 
     return yield newScheduledActions.map((action, index) => {
+      let desiredCapacityIfNil = defaultIfNil.bind(null, action.DesiredCapacity);
       let namedAction = {
         AutoScalingGroupName: autoScalingGroupName,
         ScheduledActionName: `EM-Scheduled-Action-${index + 1}`,
-        MinSize: action.MinSize,
-        MaxSize: action.MaxSize,
+        MinSize: desiredCapacityIfNil(action.MinSize),
+        MaxSize: desiredCapacityIfNil(action.MaxSize),
         DesiredCapacity: action.DesiredCapacity,
         Recurrence: action.Recurrence
       };
