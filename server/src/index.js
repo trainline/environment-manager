@@ -11,8 +11,6 @@ global.Promise = require('bluebird');
 let AWS = require('aws-sdk');
 let co = require('co');
 const fp = require('lodash/fp');
-
-require('app-module-path').addPath(__dirname); // must be executed before requiring modules outside node_modules.
 let config = require('./config');
 let logger = require('./modules/logger');
 
