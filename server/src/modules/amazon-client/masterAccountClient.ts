@@ -2,7 +2,7 @@
 
 'use strict';
 
-let AWS = require('aws-sdk');
+import * as AWS from 'aws-sdk';
 
 module.exports = {
   createLowLevelDynamoClient: () => Promise.resolve(new AWS.DynamoDB()),

@@ -2,21 +2,22 @@
 
 'use strict';
 
-let assert = require('assert');
-let ResourceNotFoundError = require('./errors/ResourceNotFoundError.class');
-let { scan } = require('./data-access/accounts');
+import Account from '../models/Account';
+import * as assert from 'assert';
+import * as ResourceNotFoundError from './errors/ResourceNotFoundError.class';
+import { scan } from './data-access/accounts';
 
-function getByName(accountName) {
-  let matches = val => `${accountName}`.toLowerCase() === `${val}`.toLowerCase();
+function getByName(accountName: string) {
+  let matches = (val: string) => `${accountName}`.toLowerCase() === `${val}`.toLowerCase();
 
   return Promise.resolve()
     .then(() => { assert(typeof accountName === 'number' || typeof accountName === 'string', `${accountName}`); })
     .then(getAllAccounts)
     .then((accounts) => {
-      let matchingAccounts = [].concat(
-        accounts.filter(account => matches(account.AccountNumber)),
-        accounts.filter(account => matches(account.AccountName))
-      );
+      let matchingAccounts = [
+        ...accounts.filter(account => matches(account.AccountNumber)),
+        ...accounts.filter(account => matches(account.AccountName))
+      ];
 
       if (matchingAccounts.length > 0) {
         return matchingAccounts[0];
@@ -30,12 +31,12 @@ function getAMIsharingAccounts() {
   return getAllAccounts().then(accounts => accounts.filter(a => a.IncludeAMIs).map(a => a.AccountNumber));
 }
 
-function getAllAccounts() {
+function getAllAccounts(): Promise<Account[]> {
   return scan();
 }
 
-module.exports = {
-  all: getAllAccounts,
+export {
+  getAllAccounts as all,
   getByName,
   getAMIsharingAccounts
 };
