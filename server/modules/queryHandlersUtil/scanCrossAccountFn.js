@@ -10,7 +10,7 @@ function scanCrossAccountFn(fn) {
     return Promise.resolve({ AccountName, AccountNumber })
       .then(fn)
       .then((result = []) => result.map(item => (item !== null && typeof item === 'object'
-        ? Object.assign({ AccountName }, item)
+        ? Object.assign(item, { AccountName })
         : item)));
   }
   return awsAccounts.all()
