@@ -24,7 +24,7 @@ let decodeKey = fp.flow(fp.split('/'), fp.map(decodeURIComponent), fp.join('/'))
  */
 function parse(url) {
   function parseBucketInPath() {
-    let regex = /^(https?:\/\/s3[^\/\.]+\.amazonaws\.com)\/([^\/]+)\/([^\?]+)(?:\?versionId=([^&]+))?$/;
+    let regex = /^(https?:\/\/s3\.?[^\/\.]+\.amazonaws\.com)\/([^\/]+)\/([^\?]+)(?:\?versionId=([^&]+))?$/;
     let t = regex.exec(url);
     if (t === null) {
       return undefined;
@@ -38,7 +38,7 @@ function parse(url) {
   }
 
   function parseBucketInHostname() {
-    let regex = /^(https?:\/\/)([^\.]+)\.(s3[^\/\.]+\.amazonaws\.com)\/([^\?]+)(?:\?versionId=([^&]+))?$/;
+    let regex = /^(https?:\/\/)([^\.]+)\.(s3\.?[^\/\.]+\.amazonaws\.com)\/([^\?]+)(?:\?versionId=([^&]+))?$/;
     let t = regex.exec(url);
     if (t === null) {
       return undefined;

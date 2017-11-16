@@ -12,12 +12,12 @@ const sut = require('../../../modules/amazon-client/s3Url');
 describe('s3Url', function () {
     describe('when I parse', function () {
         let bucket = 'BUCKET';
-        let endpoint = 'https://s3-eu-west-1.amazonaws.com';
+        let endpoint = 'https://s3.eu-west-1.amazonaws.com';
         let key = 'key.txt';
         let versionId = '/0arxd';
         let objectUrls = [
-            'https://s3-eu-west-1.amazonaws.com/BUCKET/key.txt',
-            'https://BUCKET.s3-eu-west-1.amazonaws.com/key.txt',
+            'https://s3.eu-west-1.amazonaws.com/BUCKET/key.txt',
+            'https://BUCKET.s3.eu-west-1.amazonaws.com/key.txt',
         ];
         let objectVersionUrls = objectUrls.map(url => `${url}?versionId=${versionId}`);
 
@@ -64,13 +64,13 @@ describe('s3Url', function () {
         });
 
         context('A URL containing escaped special characters', function () {
-            let url = 'https://s3-eu-west-1.amazonaws.com/BUCKET/%26%24%40%3D%3B%3A%2B%20%2C%3F/key.txt'
+            let url = 'https://s3.eu-west-1.amazonaws.com/BUCKET/%26%24%40%3D%3B%3A%2B%20%2C%3F/key.txt'
             let result;
             before(function () {
                 result = sut.parse(url);
             });
             it(`the endpoint is ${endpoint}`, function () {
-                result.should.have.property('endpoint').eql('https://s3-eu-west-1.amazonaws.com');
+                result.should.have.property('endpoint').eql('https://s3.eu-west-1.amazonaws.com');
             });
             it(`the bucket is ${bucket}`, function () {
                 result.should.have.property('Bucket').eql('BUCKET');
@@ -82,15 +82,15 @@ describe('s3Url', function () {
 
         context('an invalid object url the result is undefined', function () {
             let inputs = [
-                'https://s3-eu-west-1.amazonaws.com',
-                'https://s3-eu-west-1.amazonaws.com/',
-                'https://s3-eu-west-1.amazonaws.com/bucket',
-                'https://s3-eu-west-1.amazonaws.com/bucket/',
-                'https://s3-eu-west-1.amazonaws.com/bucket?versionId=a',
-                'https://s3-eu-west-1.amazonaws.com/bucket/key?versionId=',
-                'https://xs3-eu-west-1.amazonaws.com/bucket/key',
-                'https://a.b.s3-eu-west-1.amazonaws.com/bucket/key',
-                'https://bucket.s3-eu-west-1.amazonaws.com/',
+                'https://s3.eu-west-1.amazonaws.com',
+                'https://s3.eu-west-1.amazonaws.com/',
+                'https://s3.eu-west-1.amazonaws.com/bucket',
+                'https://s3.eu-west-1.amazonaws.com/bucket/',
+                'https://s3.eu-west-1.amazonaws.com/bucket?versionId=a',
+                'https://s3.eu-west-1.amazonaws.com/bucket/key?versionId=',
+                'https://xs3.eu-west-1.amazonaws.com/bucket/key',
+                'https://a.b.s3.eu-west-1.amazonaws.com/bucket/key',
+                'https://bucket.s3.eu-west-1.amazonaws.com/',
             ];
             inputs.forEach(function (input) {
                 it(input, function () {
@@ -105,15 +105,15 @@ describe('s3Url', function () {
         let testCases = [
             {
                 arg: { Bucket: 'BUCKET', Key: 'path/file.txt' },
-                result: 'https://s3-eu-west-1.amazonaws.com/BUCKET/path/file.txt'
+                result: 'https://s3.eu-west-1.amazonaws.com/BUCKET/path/file.txt'
             },
             {
                 arg: { Bucket: 'BUCKET', Key: 'path/file.txt', VersionId: 'my-version' },
-                result: 'https://s3-eu-west-1.amazonaws.com/BUCKET/path/file.txt?versionId=my-version'
+                result: 'https://s3.eu-west-1.amazonaws.com/BUCKET/path/file.txt?versionId=my-version'
             },
             {
                 arg: { Bucket: 'BUCKET', Key: '&$@=;:+ ,?/key.txt' },
-                result: 'https://s3-eu-west-1.amazonaws.com/BUCKET/%26%24%40%3D%3B%3A%2B%20%2C%3F/key.txt'
+                result: 'https://s3.eu-west-1.amazonaws.com/BUCKET/%26%24%40%3D%3B%3A%2B%20%2C%3F/key.txt'
             },
         ]
 

@@ -41,7 +41,7 @@
     "ajv": "~4.10.0",
     "app-module-path": "~2.1.0",
     "async": "~2.1.4",
-    "aws-sdk": "~2.7.10",
+    "aws-sdk": "~2.151.0",
     "bluebird": "~3.4.6",
     "body-parser": "~1.15.2",
     "cache-manager": "~2.4.0",
