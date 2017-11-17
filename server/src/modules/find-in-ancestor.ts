@@ -1,12 +1,12 @@
-const fs = require('fs');
-const path = require('path');
+import { existsSync } from "fs";
+import { basename, dirname, resolve } from "path";
 
 module.exports = function findInAncestor(file: string) {
-  let absPath = path.resolve(file);
-  let filename = path.basename(absPath);
+  const absPath = resolve(file);
+  const filename = basename(absPath);
   function loop(child: string): string | undefined {
-    let parent = path.resolve(path.dirname(child), '..', filename);
-    if (fs.existsSync(child)) {
+    const parent = resolve(dirname(child), "..", filename);
+    if (existsSync(child)) {
       return child;
     } else if (child === parent) {
       return undefined;

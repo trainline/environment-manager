@@ -1,15 +1,13 @@
-/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+"use strict";
 
-'use strict';
-
-import * as AWS from 'aws-sdk';
+import * as AWS from "aws-sdk";
 
 module.exports = {
-  createLowLevelDynamoClient: () => Promise.resolve(new AWS.DynamoDB()),
-  createDynamoClient: () => Promise.resolve(new AWS.DynamoDB.DocumentClient()),
   createASGClient: () => Promise.resolve(new AWS.AutoScaling()),
+  createDynamoClient: () => Promise.resolve(new AWS.DynamoDB.DocumentClient()),
   createEC2Client: () => Promise.resolve(new AWS.EC2()),
   createIAMClient: () => Promise.resolve(new AWS.IAM()),
+  createLowLevelDynamoClient: () => Promise.resolve(new AWS.DynamoDB()),
   createS3Client: () => Promise.resolve(new AWS.S3()),
-  createSNSClient: () => Promise.resolve(new AWS.SNS())
+  createSNSClient: () => Promise.resolve(new AWS.SNS()),
 };

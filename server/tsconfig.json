@@ -1,12 +1,18 @@
 {
   "compilerOptions": {
     "allowJs": true,
+    "forceConsistentCasingInFileNames": true,
     "lib": [
       "dom",
       "es2015"
     ],
     "module":"commonjs",
     "moduleResolution": "node",
+    "newLine": "lf",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "outDir": "./lib",
     "strict": true,
     "target": "es6",

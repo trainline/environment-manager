@@ -1,11 +1,8 @@
-/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+"use strict";
 
-'use strict';
-
-import * as assert from 'assert';
-import * as guid from 'uuid/v1';
-import * as AWS from 'aws-sdk';
-import * as awsAccounts from '../awsAccounts';
+import * as AWS from "aws-sdk";
+import * as guid from "uuid/v1";
+import * as awsAccounts from "../awsAccounts";
 
 const createLowLevelDynamoClient = createClientWithRole(AWS.DynamoDB);
 const createDynamoClient = createClientWithRole(AWS.DynamoDB.DocumentClient);
@@ -16,6 +13,7 @@ const createS3Client = createClientWithRole(AWS.S3);
 const createSNSClient = createClientWithRole(AWS.SNS);
 
 export {
+  assumeRole,
   createLowLevelDynamoClient,
   createDynamoClient,
   createASGClient,
@@ -23,35 +21,34 @@ export {
   createIAMClient,
   createS3Client,
   createSNSClient,
-  assumeRole
 };
 
 function createClientWithRole<T>(ClientType: new (opts: {}) => T): (accountName: string) => Promise<T> {
-  return accountName =>
+  return (accountName) =>
     awsAccounts.getByName(accountName)
       .then(({ RoleArn }) => (getCredentials(RoleArn)))
-      .then(credentials => ({ credentials }))
-      .then(options => new ClientType(options));
+      .then((credentials) => ({ credentials }))
+      .then((options) => new ClientType(options));
 }
 
 function getCredentials(roleARN: string) {
   return assumeRole(roleARN).then(({ Credentials }) => {
-    if(Credentials === undefined) {
+    if (Credentials === undefined) {
       throw new Error("Credentials was undefined");
-    };
+    }
     return new AWS.Credentials(
       Credentials.AccessKeyId,
       Credentials.SecretAccessKey,
-      Credentials.SessionToken
-    )
+      Credentials.SessionToken,
+    );
   });
 }
 
 function assumeRole(roleARN: string) {
-  let stsClient = new AWS.STS();
-  let stsParameters = {
+  const stsClient = new AWS.STS();
+  const stsParameters = {
     RoleArn: roleARN,
-    RoleSessionName: guid()
+    RoleSessionName: guid(),
   };
 
   return stsClient.assumeRole(stsParameters).promise();

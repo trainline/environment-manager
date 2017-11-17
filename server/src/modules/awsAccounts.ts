@@ -1,22 +1,20 @@
-/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+"use strict";
 
-'use strict';
-
-import Account from '../models/Account';
-import * as assert from 'assert';
-import * as ResourceNotFoundError from './errors/ResourceNotFoundError.class';
-import { scan } from './data-access/accounts';
+import * as assert from "assert";
+import IAccount from "../models/Account";
+import { scan } from "./data-access/accounts";
+import * as ResourceNotFoundError from "./errors/ResourceNotFoundError.class";
 
 function getByName(accountName: string) {
-  let matches = (val: string) => `${accountName}`.toLowerCase() === `${val}`.toLowerCase();
+  const matches = (val: string) => `${accountName}`.toLowerCase() === `${val}`.toLowerCase();
 
   return Promise.resolve()
-    .then(() => { assert(typeof accountName === 'number' || typeof accountName === 'string', `${accountName}`); })
+    .then(() => { assert(typeof accountName === "number" || typeof accountName === "string", `${accountName}`); })
     .then(getAllAccounts)
     .then((accounts) => {
-      let matchingAccounts = [
-        ...accounts.filter(account => matches(account.AccountNumber)),
-        ...accounts.filter(account => matches(account.AccountName))
+      const matchingAccounts = [
+        ...accounts.filter((account) => matches(account.AccountNumber)),
+        ...accounts.filter((account) => matches(account.AccountName)),
       ];
 
       if (matchingAccounts.length > 0) {
@@ -28,15 +26,15 @@ function getByName(accountName: string) {
 }
 
 function getAMIsharingAccounts() {
-  return getAllAccounts().then(accounts => accounts.filter(a => a.IncludeAMIs).map(a => a.AccountNumber));
+  return getAllAccounts().then((accounts) => accounts.filter((a) => a.IncludeAMIs).map((a) => a.AccountNumber));
 }
 
-function getAllAccounts(): Promise<Account[]> {
+function getAllAccounts(): Promise<IAccount[]> {
   return scan();
 }
 
 export {
   getAllAccounts as all,
   getByName,
-  getAMIsharingAccounts
+  getAMIsharingAccounts,
 };
