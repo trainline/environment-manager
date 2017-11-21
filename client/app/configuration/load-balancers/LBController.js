@@ -169,7 +169,7 @@ angular.module('EnvironmentManager.configuration').controller('LBController',
                     } else {
                       var loadBalancerEnvironmentType = $scope.Environments[value.EnvironmentName].EnvironmentType;
                       var upstreamEnvironmentType = $scope.Environments[foundUpstream.Value.EnvironmentName].EnvironmentType;
-                      if (loadBalancerEnvironmentType !== upstreamEnvironmentType)
+                      if (loadBalancerEnvironmentType !== upstreamEnvironmentType && upstreamEnvironmentType.toLowerCase() !== 'common')
                         errors.push('Locations[' + i + '] - Upstream Environment Type (' + upstreamEnvironmentType + ') in Proxy Pass does not match this Load Balancer Environment Type (' + loadBalancerEnvironmentType + ')');
                     }
                   }
