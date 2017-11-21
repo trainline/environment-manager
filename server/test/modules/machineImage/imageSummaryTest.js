@@ -1,13 +1,11 @@
-/* TODO: enable linting and fix resulting errors */
-/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-let should = require('should');
+require('should');
 let sut = require('../../../modules/machineImage/imageSummary');
 
 describe('imageSummary', function () {
-
   describe('isStable', function () {
     context('when the image has a stable tag', function () {
       it('return true', function () {
@@ -24,11 +22,11 @@ describe('imageSummary', function () {
     context('when the image is not stable', function () {
       let testCases = [
         { Tags: [{ Key: 'sTaBlE', Value: '' }] },
-        { Description: 'not quite StAbLe' },
+        { Description: 'not quite StAbLe' }
       ];
 
       for (let testCase of testCases) {
-        it('returns false when description is ' + testCase.Description, function () {
+        it(`returns false when description is ${testCase.Description}`, function () {
           sut.isStable(testCase).should.be.false();
         });
       }
@@ -78,7 +76,6 @@ describe('imageSummary', function () {
   });
 
   describe('compare', function () {
-
     let testCases = [
       { x: null, y: null, result: 0 },
       { x: { AmiType: null, AmiVersion: null }, y: { AmiType: null, AmiVersion: null }, result: 0 },
@@ -92,7 +89,7 @@ describe('imageSummary', function () {
       { x: { AmiType: 'A', AmiVersion: null }, y: { AmiType: 'B', AmiVersion: null }, result: -1 },
 
       { x: { AmiType: 'A', AmiVersion: '0.0.0' }, y: { AmiType: 'B', AmiVersion: '0.0.1' }, result: -1 },
-      { x: { AmiType: 'A', AmiVersion: '0.0.1' }, y: { AmiType: 'B', AmiVersion: '0.0.0' }, result: -1 },
+      { x: { AmiType: 'A', AmiVersion: '0.0.1' }, y: { AmiType: 'B', AmiVersion: '0.0.0' }, result: -1 }
     ];
 
     for (let testCase of testCases) {
@@ -105,35 +102,34 @@ describe('imageSummary', function () {
   });
 
   describe('rank', function () {
-
     let testCases = [
       [
-        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: false, IsLatest: true, IsLatestStable: false, Rank: 1 },
+        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: false, IsLatest: true, IsLatestStable: false, Rank: 1 }
       ],
       [
-        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, IsLatest: true, IsLatestStable: true, Rank: 1 },
+        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, IsLatest: true, IsLatestStable: true, Rank: 1 }
       ],
       [
         { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, IsLatest: false, IsLatestStable: true, Rank: 2 },
-        { AmiType: 'A', AmiVersion: '0.0.2', IsStable: false, IsLatest: true, IsLatestStable: false, Rank: 1 },
+        { AmiType: 'A', AmiVersion: '0.0.2', IsStable: false, IsLatest: true, IsLatestStable: false, Rank: 1 }
       ],
       [
         { AmiType: 'A', AmiVersion: '0.0.1', IsStable: false, IsLatest: false, IsLatestStable: false, Rank: 3 },
         { AmiType: 'A', AmiVersion: '0.0.2', IsStable: true, IsLatest: false, IsLatestStable: true, Rank: 2 },
-        { AmiType: 'A', AmiVersion: '0.0.3', IsStable: false, IsLatest: true, IsLatestStable: false, Rank: 1 },
+        { AmiType: 'A', AmiVersion: '0.0.3', IsStable: false, IsLatest: true, IsLatestStable: false, Rank: 1 }
       ],
       [
         { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, IsLatest: false, IsLatestStable: true, Rank: 2 },
         { AmiType: 'A', AmiVersion: '0.0.2', IsStable: false, IsLatest: true, IsLatestStable: false, Rank: 1 },
         { AmiType: 'B', AmiVersion: '0.0.1', IsStable: false, IsLatest: false, IsLatestStable: false, Rank: 3 },
         { AmiType: 'B', AmiVersion: '0.0.2', IsStable: true, IsLatest: false, IsLatestStable: true, Rank: 2 },
-        { AmiType: 'B', AmiVersion: '0.0.3', IsStable: false, IsLatest: true, IsLatestStable: false, Rank: 1 },
-      ],
+        { AmiType: 'B', AmiVersion: '0.0.3', IsStable: false, IsLatest: true, IsLatestStable: false, Rank: 1 }
+      ]
     ];
 
     for (let testCase of testCases) {
       testCase.sort(sut.compare);
-      let input = testCase.map(x => {
+      let input = testCase.map((x) => {
         let y = Object.assign({}, x);
         delete y.IsLatest;
         delete y.IsLatestStable;
@@ -150,28 +146,28 @@ describe('imageSummary', function () {
 
     let daysBehindLatestTestCases = [
       [
-        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: false, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 0 },
+        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: false, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 0 }
+      ],
+      [
+        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 0 }
       ],
       [
         { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 0 },
+        { AmiType: 'A', AmiVersion: '0.0.2', IsStable: false, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 0 }
       ],
       [
-        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 0 },
-        { AmiType: 'A', AmiVersion: '0.0.2', IsStable: false, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 0 },
+        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 1 },
+        { AmiType: 'A', AmiVersion: '0.0.2', IsStable: true, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 0 }
       ],
       [
         { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 1 },
         { AmiType: 'A', AmiVersion: '0.0.2', IsStable: true, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 0 },
-      ],
-      [
-        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 1 },
-        { AmiType: 'A', AmiVersion: '0.0.2', IsStable: true, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 0 },
-        { AmiType: 'A', AmiVersion: '0.0.3', IsStable: false, CreationDate: '2000-01-03T00:00:00.000Z', DaysBehindLatest: 0 },
+        { AmiType: 'A', AmiVersion: '0.0.3', IsStable: false, CreationDate: '2000-01-03T00:00:00.000Z', DaysBehindLatest: 0 }
       ],
       [
         { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 2 },
         { AmiType: 'A', AmiVersion: '0.0.2', IsStable: false, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 1 },
-        { AmiType: 'A', AmiVersion: '0.0.3', IsStable: true, CreationDate: '2000-01-03T00:00:00.000Z', DaysBehindLatest: 0 },
+        { AmiType: 'A', AmiVersion: '0.0.3', IsStable: true, CreationDate: '2000-01-03T00:00:00.000Z', DaysBehindLatest: 0 }
       ],
       [
         { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 1 },
@@ -179,13 +175,13 @@ describe('imageSummary', function () {
         { AmiType: 'A', AmiVersion: '0.0.3', IsStable: false, CreationDate: '2000-01-03T00:00:00.000Z', DaysBehindLatest: 0 },
         { AmiType: 'B', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 2 },
         { AmiType: 'B', AmiVersion: '0.0.2', IsStable: true, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 1 },
-        { AmiType: 'B', AmiVersion: '0.0.3', IsStable: true, CreationDate: '2000-01-03T00:00:00.000Z', DaysBehindLatest: 0 },
-      ],
+        { AmiType: 'B', AmiVersion: '0.0.3', IsStable: true, CreationDate: '2000-01-03T00:00:00.000Z', DaysBehindLatest: 0 }
+      ]
     ];
 
     for (let testCase of daysBehindLatestTestCases) {
       testCase.sort(sut.compare);
-      let input = testCase.map(x => {
+      let input = testCase.map((x) => {
         let y = Object.assign({}, x);
         delete y.DaysBehindLatest;
         return y;
