@@ -2,8 +2,20 @@
 
 'use strict';
 
+let proxyquire = require('proxyquire');
 require('should');
-let sut = require('../../../modules/machineImage/imageSummary');
+let { Clock, Instant } = require('js-joda');
+
+
+let sut = proxyquire('../../../modules/machineImage/imageSummary', {
+  'js-joda': {
+    Clock: {
+      systemUTC() {
+        return Clock.fixed(Instant.parse('2000-01-10T00:00:00.000Z'));
+      }
+    }
+  }
+});
 
 describe('imageSummary', function () {
   describe('isStable', function () {
@@ -156,25 +168,25 @@ describe('imageSummary', function () {
         { AmiType: 'A', AmiVersion: '0.0.2', IsStable: false, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 0 }
       ],
       [
-        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 1 },
+        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 8 },
         { AmiType: 'A', AmiVersion: '0.0.2', IsStable: true, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 0 }
       ],
       [
-        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 1 },
+        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 8 },
         { AmiType: 'A', AmiVersion: '0.0.2', IsStable: true, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 0 },
         { AmiType: 'A', AmiVersion: '0.0.3', IsStable: false, CreationDate: '2000-01-03T00:00:00.000Z', DaysBehindLatest: 0 }
       ],
       [
-        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 2 },
-        { AmiType: 'A', AmiVersion: '0.0.2', IsStable: false, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 1 },
+        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 7 },
+        { AmiType: 'A', AmiVersion: '0.0.2', IsStable: false, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 7 },
         { AmiType: 'A', AmiVersion: '0.0.3', IsStable: true, CreationDate: '2000-01-03T00:00:00.000Z', DaysBehindLatest: 0 }
       ],
       [
-        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 1 },
+        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 8 },
         { AmiType: 'A', AmiVersion: '0.0.2', IsStable: true, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 0 },
         { AmiType: 'A', AmiVersion: '0.0.3', IsStable: false, CreationDate: '2000-01-03T00:00:00.000Z', DaysBehindLatest: 0 },
-        { AmiType: 'B', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 2 },
-        { AmiType: 'B', AmiVersion: '0.0.2', IsStable: true, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 1 },
+        { AmiType: 'B', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 8 },
+        { AmiType: 'B', AmiVersion: '0.0.2', IsStable: true, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 7 },
         { AmiType: 'B', AmiVersion: '0.0.3', IsStable: true, CreationDate: '2000-01-03T00:00:00.000Z', DaysBehindLatest: 0 }
       ]
     ];
@@ -187,7 +199,7 @@ describe('imageSummary', function () {
         return y;
       });
 
-      context(`${JSON.stringify(input)}`, function () {
+      context.only(`${JSON.stringify(input)}`, function () {
         it(`should return ${JSON.stringify(testCase)}`, function () {
           sut.rank(input).should.match(testCase);
         });

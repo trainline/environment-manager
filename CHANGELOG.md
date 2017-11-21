@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 [Unreleased]
 
+### Fixed
+
+- Days out of date for an AMI is now the number of days between the release of the following stable AMI and today.
+
 ## [6.12.1] - 2017-11-16
 
 ### Fixed

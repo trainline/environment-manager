@@ -4,8 +4,11 @@
 
 let _ = require('lodash/fp');
 let ChronoUnit = require('js-joda').ChronoUnit;
+let { Clock } = require('js-joda');
 let Instant = require('js-joda').Instant;
 let semver = require('semver');
+
+let clock = Clock.systemUTC();
 
 module.exports = {
   isCompatibleImage,
@@ -23,10 +26,10 @@ function isCompatibleImage(amiName) {
   return /^[a-zA-Z0-9.-]+-[0-9]+\.[0-9]+\.[0-9]+$/.test(amiName);
 }
 
-function daysBetween(selected, stable) {
+function daysBetween(selected, now) {
   let created = image => Instant.parse(image.CreationDate);
   try {
-    return created(selected).until(created(stable), ChronoUnit.DAYS);
+    return created(selected).until(now, ChronoUnit.DAYS);
   } catch (error) {
     return 0;
   }
@@ -110,7 +113,7 @@ function rank(summaries) {
     summary.Rank = i;
     summary.IsLatest = isLatest;
     summary.IsLatestStable = isLatestStable;
-    summary.DaysBehindLatest = (summary.AmiType === latestStable.AmiType) ? daysBetween(summary, latestStable) : 0;
+    summary.DaysBehindLatest = (summary.AmiType === latestStable.AmiType) ? daysBetween(prevStable, clock.instant()) : 0;
     prev = summary;
     if (summary.IsStable) {
       prevStable = summary;
