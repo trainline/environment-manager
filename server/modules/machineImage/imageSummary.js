@@ -18,7 +18,8 @@ module.exports = {
   getRootDevice,
   summaryOf,
   compare,
-  rank
+  rank,
+  getStableDate
 };
 
 function isCompatibleImage(amiName) {
@@ -27,9 +28,8 @@ function isCompatibleImage(amiName) {
 }
 
 function daysBetween(selected, now) {
-  let created = image => Instant.parse(image.CreationDate);
   try {
-    return created(selected).until(now, ChronoUnit.DAYS);
+    return getStableDate(selected).until(now, ChronoUnit.DAYS);
   } catch (error) {
     return 0;
   }
@@ -137,4 +137,30 @@ function isStable(ec2Image) {
   let hasStableTag = ec2Image.Tags && ec2Image.Tags.some(t => t.Key.toLowerCase() === 'stable' && t.Value !== '');
   let hasStableInDescription = ec2Image.Description && ec2Image.Description.toLowerCase() === 'stable';
   return !!((hasStableTag || hasStableInDescription));
+}
+
+function getStableTagValue(ec2image) {
+  if (!ec2image.Tags) {
+    return null;
+  }
+
+  let stableTag = ec2image.Tags.find(t => t.Key.toLowerCase() === 'stable');
+  if (!stableTag) {
+    return null;
+  }
+
+  try {
+    return Instant.parse(stableTag.Value);
+  } catch (e) {
+    return null;
+  }
+}
+
+function getStableDate(ec2image) {
+  let stableTagValue = getStableTagValue(ec2image);
+  if (!stableTagValue) {
+    return Instant.parse(ec2image.CreationDate);
+  }
+
+  return stableTagValue;
 }

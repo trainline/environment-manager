@@ -172,6 +172,10 @@ describe('imageSummary', function () {
         { AmiType: 'A', AmiVersion: '0.0.2', IsStable: true, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 0 }
       ],
       [
+        { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, Tags: [{ Key: 'stable', Value: '2000-01-01T00:00:00.000Z' }], CreationDate: '1999-12-20T00:00:00.000Z', DaysBehindLatest: 8 },
+        { AmiType: 'A', AmiVersion: '0.0.2', IsStable: true, Tags: [{ Key: 'stable', Value: '2000-01-02T00:00:00.000Z' }], CreationDate: '1999-12-25T00:00:00.000Z', DaysBehindLatest: 0 }
+      ],
+      [
         { AmiType: 'A', AmiVersion: '0.0.1', IsStable: true, CreationDate: '2000-01-01T00:00:00.000Z', DaysBehindLatest: 8 },
         { AmiType: 'A', AmiVersion: '0.0.2', IsStable: true, CreationDate: '2000-01-02T00:00:00.000Z', DaysBehindLatest: 0 },
         { AmiType: 'A', AmiVersion: '0.0.3', IsStable: false, CreationDate: '2000-01-03T00:00:00.000Z', DaysBehindLatest: 0 }
@@ -199,7 +203,7 @@ describe('imageSummary', function () {
         return y;
       });
 
-      context.only(`${JSON.stringify(input)}`, function () {
+      context(`${JSON.stringify(input)}`, function () {
         it(`should return ${JSON.stringify(testCase)}`, function () {
           sut.rank(input).should.match(testCase);
         });
@@ -214,6 +218,36 @@ describe('imageSummary', function () {
           Name: 'windows-2012r2-ttl-app-7.0.17',
           Tags: [{ Key: 'Name', Value: '' }]
         }).should.have.property('Name').eql('windows-2012r2-ttl-app-7.0.17');
+      });
+    });
+  });
+
+  describe('date when image becomes stable', function () {
+    context('When there is no stable tag', function () {
+      it('Returns the image creation date', function () {
+        let testcase = {
+          CreationDate: '2000-01-01T00:00:00.000Z'
+        };
+        sut.getStableDate(testcase).should.match(Instant.parse(testcase.CreationDate));
+      });
+    });
+    context('When stable tag is not a valid date', function () {
+      it('Returns the image creation date', function () {
+        let testcase = {
+          CreationDate: '2000-01-01T00:00:00.000Z',
+          Tags: [{ Key: 'sTaBlE', Value: 1 }]
+        };
+        sut.getStableDate(testcase).should.match(Instant.parse(testcase.CreationDate));
+      });
+    });
+    context('When the stable tag is a valid date', function () {
+      it('Returns the stable tag value', function () {
+        const stableDate = '2000-01-11T00:00:00.1234567Z';
+        let testcase = {
+          CreationDate: '2000-01-01T00:00:00.000Z',
+          Tags: [{ Key: 'sTaBlE', Value: stableDate }]
+        };
+        sut.getStableDate(testcase).should.match(Instant.parse(stableDate));
       });
     });
   });
