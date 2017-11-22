@@ -6,7 +6,9 @@ let { createLowLevelDynamoClient: DynamoDB } = require('../amazon-client/masterA
 let memoize = require('../memoize');
 
 function describeTableArn(TableName) {
-  return DynamoDB().then(dynamo => dynamo.describeTable({ TableName }).promise());
+  return DynamoDB()
+  .then(dynamo => dynamo.describeTable({ TableName }).promise())
+  .then(({ Table }) => ({ Table }));
 }
 
 /**

@@ -12,7 +12,7 @@ describe('describeDynamoTable', function () {
   };
   let dynamo = {
     describeTable: sinon.spy(() => ({
-      promise: () => Promise.resolve()
+      promise: () => Promise.resolve({ Table: {} })
     }))
   };
 
