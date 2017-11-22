@@ -3,11 +3,16 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html). View [Unreleased] changes here.
 
-[Unreleased]
+## [6.12.2] - 2017-11-22
 
 ### Fixed
 
-- Days out of date for an AMI is now the number of days between the release of the following stable AMI and today.
+- Days out of date for an AMI is now the number of days between the release of the following stable AMI and today. [#376]
+- An upstream in the _common_ environment type is valid in the settings for any load balancer. [#375]
+
+### Changed
+
+- Min and max auto scaling group size are no longer required by the */asgs/{name}/scaling-schedule*. They now default to the desired size. [#373]
 
 ## [6.12.1] - 2017-11-16
 
@@ -289,8 +294,8 @@ Example:
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/6.12.1...master
-
+[Unreleased]: https://github.com/trainline/environment-manager/compare/6.12.2...master
+[6.12.2]: https://github.com/trainline/environment-manager/compare/6.12.1...6.12.2
 [6.12.1]: https://github.com/trainline/environment-manager/compare/6.12.0...6.12.1
 [6.12.0]: https://github.com/trainline/environment-manager/compare/6.11.5...6.12.0
 [6.11.5]: https://github.com/trainline/environment-manager/compare/6.11.4...6.11.5
@@ -318,7 +323,11 @@ Example:
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
+[#376]: https://github.com/trainline/environment-manager/pull/376
+[#375]: https://github.com/trainline/environment-manager/pull/375
+[#373]: https://github.com/trainline/environment-manager/pull/373
 [#372]: https://github.com/trainline/environment-manager/pull/372
+[#370]: https://github.com/trainline/environment-manager/pull/370
 [#368]: https://github.com/trainline/environment-manager/pull/368
 [#368]: https://github.com/trainline/environment-manager/pull/368
 [#362]: https://github.com/trainline/environment-manager/pull/362
