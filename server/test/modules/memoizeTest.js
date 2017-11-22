@@ -39,6 +39,13 @@ describe('memoize', function () {
       g(1, 'one').should.be.eql(f(1, 'one'));
     });
   });
+  context('when I memoize a function that returns an object with no prototype', function () {
+    it('the first call to the memoized function returns the same result as the un-memoized function', function () {
+      let f = (x) => { let t = Object.create(null); t.x = x; return t; };
+      let g = memoize(f);
+      should.deepEqual(g(0), f(0));
+    });
+  });
   context('when I call the memoized function twice with the same arguments', function () {
     it('the un-memoized function is called once', function () {
       let f = sinon.spy(() => undefined);
@@ -59,9 +66,8 @@ describe('memoize', function () {
       let first = g(1, 'one');
       try {
         delete first.x;
-      } finally {
-        g(1, 'one').should.be.eql(f(1, 'one'));
-      }
+      } catch (error) {} // eslint-disable-line no-empty
+      g(1, 'one').should.be.eql(f(1, 'one'));
     });
   });
   context('when I call the memoized function twice with different arguments', function () {
