@@ -2,7 +2,7 @@
 
 'use strict';
 
-let deepFreeze = require('deep-freeze');
+let deepFreeze = require('deep-freeze-strict');
 
 function isPromise(obj) {
   return obj && obj.then && typeof obj.then === 'function';
