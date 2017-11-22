@@ -4,8 +4,11 @@
 
 let _ = require('lodash/fp');
 let ChronoUnit = require('js-joda').ChronoUnit;
+let { Clock } = require('js-joda');
 let Instant = require('js-joda').Instant;
 let semver = require('semver');
+
+let clock = Clock.systemUTC();
 
 module.exports = {
   isCompatibleImage,
@@ -15,7 +18,8 @@ module.exports = {
   getRootDevice,
   summaryOf,
   compare,
-  rank
+  rank,
+  getStableDate
 };
 
 function isCompatibleImage(amiName) {
@@ -23,10 +27,9 @@ function isCompatibleImage(amiName) {
   return /^[a-zA-Z0-9.-]+-[0-9]+\.[0-9]+\.[0-9]+$/.test(amiName);
 }
 
-function daysBetween(selected, stable) {
-  let created = image => Instant.parse(image.CreationDate);
+function daysBetween(selected, now) {
   try {
-    return created(selected).until(created(stable), ChronoUnit.DAYS);
+    return getStableDate(selected).until(now, ChronoUnit.DAYS);
   } catch (error) {
     return 0;
   }
@@ -110,7 +113,7 @@ function rank(summaries) {
     summary.Rank = i;
     summary.IsLatest = isLatest;
     summary.IsLatestStable = isLatestStable;
-    summary.DaysBehindLatest = (summary.AmiType === latestStable.AmiType) ? daysBetween(summary, latestStable) : 0;
+    summary.DaysBehindLatest = (summary.AmiType === latestStable.AmiType) ? daysBetween(prevStable, clock.instant()) : 0;
     prev = summary;
     if (summary.IsStable) {
       prevStable = summary;
@@ -134,4 +137,30 @@ function isStable(ec2Image) {
   let hasStableTag = ec2Image.Tags && ec2Image.Tags.some(t => t.Key.toLowerCase() === 'stable' && t.Value !== '');
   let hasStableInDescription = ec2Image.Description && ec2Image.Description.toLowerCase() === 'stable';
   return !!((hasStableTag || hasStableInDescription));
+}
+
+function getStableTagValue(ec2image) {
+  if (!ec2image.Tags) {
+    return null;
+  }
+
+  let stableTag = ec2image.Tags.find(t => t.Key.toLowerCase() === 'stable');
+  if (!stableTag) {
+    return null;
+  }
+
+  try {
+    return Instant.parse(stableTag.Value);
+  } catch (e) {
+    return null;
+  }
+}
+
+function getStableDate(ec2image) {
+  let stableTagValue = getStableTagValue(ec2image);
+  if (!stableTagValue) {
+    return Instant.parse(ec2image.CreationDate);
+  }
+
+  return stableTagValue;
 }
