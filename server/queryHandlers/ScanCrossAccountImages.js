@@ -9,11 +9,11 @@ let ec2ImageResourceFactory = require('../modules/resourceFactories/ec2ImageReso
 
 module.exports = function ScanCrossAccountImages(query) {
   return awsAccounts.all()
-    .then(results => [].concat(...results))
     .then(accounts => applyFuncToAccounts(({ AccountName }) => getFromSingleAccount(Object.assign({ accountName: AccountName }, query)), accounts))
+    .then(results => [].concat(...results))
     .then(images =>
       imageSummary
-      .rank(images.map(i => Object.assign({ AccountName: i.AccountName }, imageSummary.summaryOf(i)))
+      .rank(images.map(image => Object.assign({ AccountName: image.AccountName }, imageSummary.summaryOf(image)))
       .sort(imageSummary.compare))
     );
 };
