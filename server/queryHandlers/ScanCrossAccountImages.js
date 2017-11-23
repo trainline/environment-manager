@@ -10,7 +10,6 @@ let ec2ImageResourceFactory = require('../modules/resourceFactories/ec2ImageReso
 module.exports = function ScanCrossAccountImages(query) {
   return awsAccounts.all()
     .then(accounts => applyFuncToAccounts(({ AccountName }) => getFromSingleAccount(Object.assign({ accountName: AccountName }, query)), accounts))
-    .then(results => [].concat(...results))
     .then(images =>
       imageSummary
       .rank(images.map(image => Object.assign({ AccountName: image.AccountName }, imageSummary.summaryOf(image)))

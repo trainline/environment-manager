@@ -7,8 +7,7 @@ let applyFuncToAccounts = require('./applyFuncToAccounts');
 
 function scanCrossAccountFn(fn) {
   return awsAccounts.all()
-    .then(accounts => applyFuncToAccounts(fn, accounts))
-    .then(results => [].concat(...results));
+    .then(accounts => applyFuncToAccounts(fn, accounts));
 }
 
 module.exports = scanCrossAccountFn;
