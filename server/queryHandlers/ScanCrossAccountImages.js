@@ -2,18 +2,20 @@
 
 'use strict';
 
-let scanCrossAccount = require('../modules/queryHandlersUtil/scanCrossAccountFn');
-const ec2ImageResourceFactory = require('../modules/resourceFactories/ec2ImageResourceFactory');
+let awsAccounts = require('../modules/awsAccounts');
+let applyFuncToAccounts = require('../modules/queryHandlersUtil/applyFuncToAccounts');
 let imageSummary = require('../modules/machineImage/imageSummary');
+let ec2ImageResourceFactory = require('../modules/resourceFactories/ec2ImageResourceFactory');
 
 module.exports = function ScanCrossAccountImages(query) {
-  let accountsImages = scanCrossAccount(({ AccountName }) => getFromSingleAccount(Object.assign({ accountName: AccountName }, query)));
-  return accountsImages.then((images) => {
-    let res = imageSummary.rank(images.map(i =>
-      Object.assign({ AccountName: i.AccountName }, imageSummary.summaryOf(i))
-    ).sort(imageSummary.compare));
-    return res;
-  });
+  return awsAccounts.all()
+    .then(results => [].concat(...results))
+    .then(accounts => applyFuncToAccounts(({ AccountName }) => getFromSingleAccount(Object.assign({ accountName: AccountName }, query)), accounts))
+    .then(images =>
+      imageSummary
+      .rank(images.map(i => Object.assign({ AccountName: i.AccountName }, imageSummary.summaryOf(i)))
+      .sort(imageSummary.compare))
+    );
 };
 
 function getFromSingleAccount(query) {

@@ -10,6 +10,7 @@ const MIN_MONITOR_INTERVAL = 45;
 let monitorInterval = 0;
 
 function scheduleDeploymentMonitor(isPeakTime) {
+  return;
   let interval = getDeploymentMonitorInterval(isPeakTime);
 
   logger.debug(`DeploymentMonitor: Next execution will start in ${interval} seconds`);
