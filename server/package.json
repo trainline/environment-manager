@@ -20,12 +20,8 @@
     "start": "node lib/server.js",
     "dev": "webpack --watch --progress --colors --config webpack.config.dev.js",
     "lint": "eslint src --ext .js --quiet && tslint --project tsconfig.json src/**/*.ts",
-    "test": "npm run lint -s && npm run unit-test -s",
-    "test-find-duplicates": "mocha --recursive ./test --EM_PROFILE test/test-profile.json --reporter mocha-duplicate-reporter",
-    "test-watch": "mocha --watch --recursive ./test --EM_PROFILE test/test-profile.json",
-    "test-ci": "npm test -- --reporter mocha-teamcity-reporter --timeout 4000",
-    "unit-test": "mocha --require ts-node/register --recursive src/test --EM_PROFILE src/test/test-profile.json",
-    "mocha": "mocha"
+    "test": "mocha-webpack --webpack-config webpack.config.test.js --recursive \"src/test/**/*.js\"",
+    "test:watch": "mocha-webpack --watch --webpack-config webpack.config.test.js --recursive \"src/test/**/*.js\""
   },
   "author": {
     "name": "Platform Development",
@@ -79,9 +75,11 @@
     "eslint-import-resolver-typescript": "^1.0.2",
     "eslint-plugin-dependencies": "^2.4.0",
     "eslint-plugin-import": "^2.2.0",
+    "inject-loader": "^3.0.1",
     "mocha": "^3.2.0",
     "mocha-duplicate-reporter": "^0.2.1",
     "mocha-teamcity-reporter": "^1.1.1",
+    "mocha-webpack": "^1.0.1",
     "mock-express-request": "^0.2.0",
     "mock-express-response": "^0.2.0",
     "proxyquire": "^1.7.10",
