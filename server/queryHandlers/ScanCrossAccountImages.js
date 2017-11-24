@@ -2,9 +2,23 @@
 
 'use strict';
 
-let scanCrossAccount = require('../modules/queryHandlersUtil/scanCrossAccountFn');
-let ScanImages = require('./ScanImages');
+let awsAccounts = require('../modules/awsAccounts');
+let applyFuncToAccounts = require('../modules/queryHandlersUtil/applyFuncToAccounts');
+let imageSummary = require('../modules/machineImage/imageSummary');
+let ec2ImageResourceFactory = require('../modules/resourceFactories/ec2ImageResourceFactory');
 
 module.exports = function ScanCrossAccountImages(query) {
-  return scanCrossAccount(({ AccountName }) => ScanImages(Object.assign({ accountName: AccountName }, query)));
+  return awsAccounts.all()
+    .then(accounts => applyFuncToAccounts(({ AccountName }) => getFromSingleAccount(Object.assign({ accountName: AccountName }, query)), accounts))
+    .then(images =>
+      imageSummary
+      .rank(images.map(image => Object.assign({ AccountName: image.AccountName }, imageSummary.summaryOf(image)))
+      .sort(imageSummary.compare))
+    );
 };
+
+function getFromSingleAccount(query) {
+  let parameters = { accountName: query.accountName };
+  return ec2ImageResourceFactory.create(undefined, parameters)
+    .then(resource => resource.all({ filter: query.filter }));
+}

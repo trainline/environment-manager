@@ -2,20 +2,12 @@
 
 'use strict';
 
-let Promise = require('bluebird');
 let awsAccounts = require('../awsAccounts');
+let applyFuncToAccounts = require('./applyFuncToAccounts');
 
 function scanCrossAccountFn(fn) {
-  function applyFnAndAssignAccountName({ AccountName, AccountNumber }) {
-    return Promise.resolve({ AccountName, AccountNumber })
-      .then(fn)
-      .then((result = []) => result.map(item => (item !== null && typeof item === 'object'
-        ? Object.assign(item, { AccountName })
-        : item)));
-  }
   return awsAccounts.all()
-    .then(accounts => Promise.map(accounts, applyFnAndAssignAccountName))
-    .then(results => [].concat(...results));
+    .then(accounts => applyFuncToAccounts(fn, accounts));
 }
 
 module.exports = scanCrossAccountFn;
