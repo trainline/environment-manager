@@ -3,9 +3,7 @@
 'use strict';
 
 let _ = require('lodash/fp');
-let ChronoUnit = require('js-joda').ChronoUnit;
-let { Clock } = require('js-joda');
-let Instant = require('js-joda').Instant;
+let { ChronoUnit, Clock, Instant } = require('js-joda');
 let semver = require('semver');
 
 let clock = Clock.systemUTC();
@@ -152,7 +150,10 @@ function getStableTagValue(ec2image) {
   try {
     return Instant.parse(stableTag.Value);
   } catch (e) {
-    return null;
+    if (e.name === 'DateTimeParseException') {
+      return null;
+    }
+    throw e;
   }
 }
 

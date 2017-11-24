@@ -3,7 +3,7 @@
 'use strict';
 
 require('should');
-let proxyquire = require('proxyquire').noCallThru();
+const inject = require('inject-loader!../../../modules/queryHandlersUtil/deployments-helper');
 let sinon = require('sinon');
 let Deployment = require('../../../models/Deployment');
 
@@ -23,7 +23,7 @@ describe('deployments-helper', () => {
   describe('queryDeployment', () => {
     it('returns null if the deployment is not found', () => {
       let get = sinon.spy(() => Promise.resolve(null));
-      let sut = proxyquire('../../../modules/queryHandlersUtil/deployments-helper', Object.assign(commonStubs(), {
+      let sut = inject(Object.assign(commonStubs(), {
         '../data-access/deployments': { get }
       }));
       return sut.get({ key: '' }).should.finally.be.null();
@@ -35,7 +35,7 @@ describe('deployments-helper', () => {
         AccountName: 'master-account'
       });
       let get = () => Promise.resolve({ Value: { Status: 'success' } });
-      let sut = proxyquire('../../../modules/queryHandlersUtil/deployments-helper', Object.assign(commonStubs(), {
+      let sut = inject(Object.assign(commonStubs(), {
         '../data-access/deployments': {
           get
         },
@@ -58,7 +58,7 @@ describe('deployments-helper', () => {
         ExpectedNodes: expectedNodes
       });
       let get = () => Promise.resolve({ Value: { Status: 'success' } });
-      let sut = proxyquire('../../../modules/queryHandlersUtil/deployments-helper', Object.assign(stubs, {
+      let sut = inject(Object.assign(stubs, {
         '../data-access/deployments': {
           get
         },
@@ -86,7 +86,7 @@ describe('deployments-helper', () => {
         ExpectedNodes: expectedNodes
       });
       let get = () => Promise.resolve({ Value: { Status: 'success' } });
-      let sut = proxyquire('../../../modules/queryHandlersUtil/deployments-helper', Object.assign(stubs, {
+      let sut = inject(Object.assign(stubs, {
         '../data-access/deployments': {
           get
         },

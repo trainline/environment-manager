@@ -2,18 +2,20 @@
 
 'use strict';
 
-let proxyquire = require('proxyquire');
+const inject = require('inject-loader!../../../modules/machineImage/imageSummary');
 require('should');
-let { Clock, Instant } = require('js-joda');
+const { ChronoUnit, Clock, Instant } = require('js-joda');
 
 
-let sut = proxyquire('../../../modules/machineImage/imageSummary', {
+let sut = inject({
   'js-joda': {
+    ChronoUnit,
     Clock: {
       systemUTC() {
         return Clock.fixed(Instant.parse('2000-01-10T00:00:00.000Z'));
       }
-    }
+    },
+    Instant
   }
 });
 

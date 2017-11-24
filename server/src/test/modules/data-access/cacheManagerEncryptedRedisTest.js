@@ -7,7 +7,7 @@
 require('should');
 let emCrypto = require('../../../modules/emCrypto');
 let fp = require('lodash/fp');
-let proxyquire = require('proxyquire');
+const inject = require('inject-loader!../../../modules/data-access/cacheManagerEncryptedRedis');
 let timers = require('timers');
 
 let silent = {
@@ -41,7 +41,7 @@ describe('encrypted Redis cache manager', function () {
                 };
             }
 
-            sut = proxyquire('../../../modules/data-access/cacheManagerEncryptedRedis', {
+            sut = inject({
                 'ioredis': fakeRedis,
                 '../logger': silent,
             });
@@ -96,7 +96,7 @@ describe('encrypted Redis cache manager', function () {
                 };
             }
 
-            sut = proxyquire('../../../modules/data-access/cacheManagerEncryptedRedis', {
+            sut = inject({
                 'ioredis': fakeRedis,
                 '../logger': silent,
             });
@@ -131,7 +131,7 @@ describe('encrypted Redis cache manager', function () {
                 };
             }
 
-            sut = proxyquire('../../../modules/data-access/cacheManagerEncryptedRedis', {
+            sut = inject({
                 'ioredis': fakeRedis,
                 '../logger': silent,
             });

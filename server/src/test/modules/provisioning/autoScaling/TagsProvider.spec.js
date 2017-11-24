@@ -5,7 +5,7 @@
 
 let should = require('should');
 let sinon = require('sinon');
-let proxyquire = require('proxyquire');
+const inject = require('inject-loader!../../../../modules/provisioning/autoScaling/tagsProvider');
 
 describe('TagsProvider:', () => {
 
@@ -32,7 +32,7 @@ describe('TagsProvider:', () => {
     };
 
     // Act
-    var target = proxyquire('../../../../modules/provisioning/autoScaling/tagsProvider', {
+    var target = inject({
       '../namingConventionProvider': namingConventionProviderMock,
     });
     var promise = target.get(configuration);
@@ -76,7 +76,7 @@ describe('TagsProvider:', () => {
     var sliceName = 'blue';
 
     // Act
-    var target = proxyquire('../../../../modules/provisioning/autoScaling/tagsProvider', {
+    var target = inject({
       '../namingConventionProvider': namingConventionProviderMock,
     });
     target.get(configuration, sliceName);
@@ -111,7 +111,7 @@ describe('TagsProvider:', () => {
     };
 
     // Act
-    var target = proxyquire('../../../../modules/provisioning/autoScaling/tagsProvider', {
+    var target = inject({
       '../namingConventionProvider': namingConventionProviderMock,
     });
     var promise = target.get(configuration);
@@ -143,7 +143,7 @@ describe('TagsProvider:', () => {
     };
 
     // Act
-    var target = proxyquire('../../../../modules/provisioning/autoScaling/tagsProvider', {
+    var target = inject({
       '../namingConventionProvider': namingConventionProviderMock,
     });
     var promise = target.get(configuration);

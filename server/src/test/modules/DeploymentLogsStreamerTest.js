@@ -2,7 +2,7 @@
 
 'use strict';
 
-let proxyquire = require('proxyquire').noCallThru();
+const inject = require('inject-loader!../../modules/DeploymentLogsStreamer');
 require('should');
 
 describe('DeploymentLogsStreamer', function () {
@@ -38,7 +38,7 @@ describe('DeploymentLogsStreamer', function () {
       };
     })();
 
-    let DeploymentLogsStreamer = proxyquire('../../modules/DeploymentLogsStreamer', {
+    let DeploymentLogsStreamer = inject({
       './data-access/deployments': fakeDeployment,
       './logger': fakeLogger,
       'timers': fakeTimer

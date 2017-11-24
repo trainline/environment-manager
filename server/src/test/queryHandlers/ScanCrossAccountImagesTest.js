@@ -2,27 +2,26 @@
 
 'use strict';
 
-const proxyquire = require('proxyquire').noCallThru();
 require('should');
+const inject = require('inject-loader!../../queryHandlers/ScanCrossAccountImages');
 
 function createFixture() {
-  return proxyquire('../../queryHandlers/ScanCrossAccountImages',
-    {
-      '../modules/awsAccounts': {
-        all: () => Promise.resolve([
-            { AccountName: 'one', AccountNumber: '1' },
-            { AccountName: 'two', AccountNumber: '2' }
+  return inject({
+    '../modules/awsAccounts': {
+      all: () => Promise.resolve([
+        { AccountName: 'one', AccountNumber: '1' },
+        { AccountName: 'two', AccountNumber: '2' }
+      ])
+    },
+    '../modules/resourceFactories/ec2ImageResourceFactory': {
+      create: () => Promise.resolve({
+        all: () => ([
+          { AccountName: 'acc1', ImageType: 'machine', Name: 'windows-2012r2-ttl-app-6.0.0' },
+          { AccountName: 'acc1', ImageType: 'machine', Name: 'oel-7-ttl-nodejs-0.1.5' }
         ])
-      },
-      '../modules/resourceFactories/ec2ImageResourceFactory': {
-        create: () => Promise.resolve({
-          all: () => ([
-            { AccountName: 'acc1', ImageType: 'machine', Name: 'windows-2012r2-ttl-app-6.0.0' },
-            { AccountName: 'acc1', ImageType: 'machine', Name: 'oel-7-ttl-nodejs-0.1.5' }
-          ])
-        })
-      }
+      })
     }
+  }
   );
 }
 

@@ -3,7 +3,7 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
-let proxyquire = require('proxyquire');
+const inject = require('inject-loader!../../../modules/resourceFactories/AsgResourceBase');
 let should = require('should');
 let sinon = require('sinon');
 let AsgResource = null;
@@ -16,7 +16,7 @@ var asgClient = {
 describe('Describing [AsgResource]', () => {
 
   before(function () {
-    AsgResource = proxyquire('../../../modules/resourceFactories/AsgResourceBase', {
+    AsgResource = inject({
       '../cacheManager': {
         create: (name, fn) => ({
           get: fn,

@@ -5,13 +5,12 @@
 
 require('should');
 let sinon = require('sinon');
-let proxyquire = require('proxyquire');
+const inject = require('inject-loader!../../../../modules/deployment/validators/uniqueServiceVersionDeploymentValidator');
 let DeploymentContract = require('../../../../modules/deployment/DeploymentContract');
 
-function validator(deployments, sender) {
-  return proxyquire('../../../../modules/deployment/validators/uniqueServiceVersionDeploymentValidator', {
-    '../../data-access/deployments': deployments || {},
-    '../../sender': sender || { sendQuery: () => Promise.resolve([]) }
+function validator(deployments) {
+  return inject({
+    '../../data-access/deployments': deployments || {}
   });
 }
 

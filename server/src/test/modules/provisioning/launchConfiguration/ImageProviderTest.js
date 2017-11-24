@@ -5,8 +5,8 @@
 
 let should = require("should");
 let sinon = require("sinon");
-let proxyquire = require('proxyquire');
 let imageSummary = require('../../../../modules/machineImage/imageSummary');
+const inject = require('inject-loader!../../../../modules/provisioning/launchConfiguration/imageProvider');
 
 describe("ImageProvider", () => {
   describe('with an AMI image name', () => {
@@ -33,7 +33,7 @@ describe("ImageProvider", () => {
         sendQuery: sinon.stub().returns(Promise.resolve([expectedImage].map(imageSummary.summaryOf).sort(imageSummary.compare)))
       };
       let imageNameOrType = "oel-7-ttl-nodejs-0.1.4";
-      let target = proxyquire('../../../../modules/provisioning/launchConfiguration/imageProvider', {
+      let target = inject({
         '../../sender': senderMock
       });
       let promise = target.get(imageNameOrType);
@@ -66,7 +66,7 @@ describe("ImageProvider", () => {
         };
 
         let imageNameOrType = "oel-7-ttl-nodejs-0.1.4";
-        let target = proxyquire('../../../../modules/provisioning/launchConfiguration/imageProvider', {
+        let target = inject({
           '../../sender': senderMock
         });
         let promise = target.get(imageNameOrType);
@@ -112,7 +112,7 @@ describe("ImageProvider", () => {
       };
 
       let imageNameOrType = "oel-7-ttl-nodejs";
-      let target = proxyquire('../../../../modules/provisioning/launchConfiguration/imageProvider', {
+      let target = inject({
         '../../sender': senderMock
       });
 
@@ -180,7 +180,7 @@ describe("ImageProvider", () => {
         };
 
         let imageNameOrType = "oel-7-ttl-nodejs";
-        let target = proxyquire('../../../../modules/provisioning/launchConfiguration/imageProvider', {
+        let target = inject({
           '../../sender': senderMock
         });
 

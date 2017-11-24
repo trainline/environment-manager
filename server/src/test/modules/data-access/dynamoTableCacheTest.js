@@ -2,10 +2,10 @@
 
 require('should');
 let sinon = require('sinon');
-let proxyquire = require('proxyquire');
+const inject = require('inject-loader!../../../modules/data-access/dynamoTableCache');
 
 function dynamoTableCache(dynamoTable, cache) {
-  return proxyquire('../../../modules/data-access/dynamoTableCache', {
+  return inject({
     '../cacheManager': {
       create: () => cache
     },

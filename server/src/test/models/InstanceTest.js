@@ -1,9 +1,9 @@
 'use strict';
 
-const proxyquire = require('proxyquire').noCallThru();
 require('should');
 const fakeLogger = require('../utils/fakeLogger');
 const TaggableMixin = require('../../models/TaggableMixin');
+const InstanceInjector = require('inject-loader!../../models/Instance');
 
 function createFixture({
   childAccountClientFake = { createEC2Client: () => Promise.resolve() },
@@ -13,7 +13,7 @@ function createFixture({
   scanCrossAccountFnFake = fun => fun({ AccountNumber: 'myaccount' }),
   TaggableMixinFake = TaggableMixin
 }) {
-  const Instance = proxyquire('../../models/Instance', {
+  const Instance = InstanceInjector({
     '../modules/amazon-client/childAccountClient': childAccountClientFake,
     '../modules/logger': loggerFake,
     '../modules/resourceFactories/InstanceResourceBase': InstanceResourceBaseFake,

@@ -1,10 +1,8 @@
 'use strict';
 
-let proxyquire = require('proxyquire').noCallThru();
+let inject = require('inject-loader!../../../commands/asg/SetAutoScalingGroupSchedule');
 require('should');
 let sinon = require('sinon');
-
-const MUT = '../../../commands/asg/SetAutoScalingGroupSchedule';
 
 function createFixture({
   autoScalingGroupResourceFactory = { create() { return Promise.resolve({ setTag() { }, createScheduledAction() { } }); } }
@@ -14,7 +12,7 @@ function createFixture({
     '../../modules/resourceFactories/ec2InstanceResourceFactory': {},
     '../../models/AutoScalingGroup': {}
   };
-  return proxyquire(MUT, fakes);
+  return inject(fakes);
 }
 
 describe('SetAutoScalingGroupSchedule', function () {

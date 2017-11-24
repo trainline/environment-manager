@@ -5,7 +5,7 @@
 
 let should = require('should');
 let sinon = require('sinon');
-let proxyquire = require('proxyquire');
+const inject = require('inject-loader!../../../../modules/provisioning/launchConfiguration/keyNameProvider');
 let KeyPairNotFoundError = require('../../../../modules/errors/KeyPairNotFoundError.class');
 
 describe('KeyNameProvider:', () => {
@@ -36,7 +36,7 @@ describe('KeyNameProvider:', () => {
       var accountName = 'Sandbox';
 
       // Act
-      var target = proxyquire('../../../../modules/provisioning/launchConfiguration/keyNameProvider', {
+      var target = inject({
         '../../sender': senderMock
       });
       var promise = target.get(configuration, accountName);
@@ -85,7 +85,7 @@ describe('KeyNameProvider:', () => {
         var accountName = 'Sandbox';
 
         // Act
-        var target = proxyquire('../../../../modules/provisioning/launchConfiguration/keyNameProvider', {
+        var target = inject({
           '../../sender': senderMock
         });
         var promise = target.get(configuration, accountName);
@@ -129,7 +129,7 @@ describe('KeyNameProvider:', () => {
       var accountName = 'Sandbox';
 
       // Act
-      var target = proxyquire('../../../../modules/provisioning/launchConfiguration/keyNameProvider', {
+      var target = inject({
         '../../sender': senderMock
       });
       var promise = target.get(configuration, accountName);
@@ -177,7 +177,7 @@ describe('KeyNameProvider:', () => {
     var accountName = 'Sandbox';
 
     // Act
-    var target = proxyquire('../../../../modules/provisioning/launchConfiguration/keyNameProvider', {
+    var target = inject({
       '../../sender': senderMock
     });
     var promise = target.get(configuration, accountName);

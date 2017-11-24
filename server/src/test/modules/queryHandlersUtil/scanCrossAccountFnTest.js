@@ -1,10 +1,10 @@
 'use strict';
 
-const proxyquire = require('proxyquire').noCallThru();
+const inject = require('inject-loader!../../../modules/queryHandlersUtil/scanCrossAccountFn');
 require('should');
 
 function createFixture() {
-  return proxyquire('../../../modules/queryHandlersUtil/scanCrossAccountFn', {
+  return inject({
     '../awsAccounts': {
       all: () => Promise.resolve([
         { AccountName: 'one', AccountNumber: '1' },

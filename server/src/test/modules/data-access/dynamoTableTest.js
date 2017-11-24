@@ -2,12 +2,12 @@
 
 require('should');
 let sinon = require('sinon');
-let proxyquire = require('proxyquire');
+const inject = require('inject-loader!../../../modules/data-access/dynamoTable');
 
 let tableName = 'some-table';
 
 function dynamoTable(dynamo, dynamoExpressionCompiler) {
-  return proxyquire('../../../modules/data-access/dynamoTable', {
+  return inject({
     './describeDynamoTable': () => Promise.resolve({
       Table: {
         KeySchema: [

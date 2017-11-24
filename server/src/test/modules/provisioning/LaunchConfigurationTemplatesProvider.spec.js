@@ -5,7 +5,7 @@
 
 let should = require("should");
 let sinon = require("sinon");
-let proxyquire = require('proxyquire');
+const inject = require('inject-loader!../../../modules/provisioning/launchConfigurationTemplatesProvider');
 
 describe("LaunchConfigurationTemplatesProvider:", () => {
 
@@ -73,7 +73,7 @@ describe("LaunchConfigurationTemplatesProvider:", () => {
     mapStubs['./launchConfiguration/userDataProvider'] = userDataProviderMock;
     mapStubs['./launchConfiguration/securityGroupsProvider'] = securityGroupsProviderMock;
     mapStubs['./launchConfiguration/iamInstanceProfileNameProvider'] = iamInstanceProfileNameProviderMock;
-    var launchConfigurationTemplatesProvider = proxyquire('../../../modules/provisioning/launchConfigurationTemplatesProvider', mapStubs);
+    var launchConfigurationTemplatesProvider = inject(mapStubs);
 
 
     // Act

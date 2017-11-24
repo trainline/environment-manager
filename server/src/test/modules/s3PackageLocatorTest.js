@@ -6,13 +6,13 @@
 
 'use strict';
 
-const proxyquire = require('proxyquire').noCallThru();
+const inject = require('inject-loader!../../modules/s3PackageLocator');
 const should = require('should');
 
 describe('S3 Package Locator', function () {
     let sut;
     before(function () {
-        sut = proxyquire('../../modules/s3PackageLocator', {
+        sut = inject({
             '../config': {
                 get: x => x,
             }

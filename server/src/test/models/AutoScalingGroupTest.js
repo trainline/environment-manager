@@ -1,6 +1,6 @@
 'use strict';
 
-const proxyquire = require('proxyquire').noCallThru();
+const inject = require('inject-loader!../../models/AutoScalingGroup');
 require('should');
 const fakeLogger = require('../utils/fakeLogger');
 const TaggableMixin = require('../../models/TaggableMixin');
@@ -14,7 +14,7 @@ function createFixture({
   serviceTargetsFake = {},
   TaggableMixinFake = TaggableMixin
 }) {
-  const AutoScalingGroup = proxyquire('../../models/AutoScalingGroup', {
+  const AutoScalingGroup = inject({
     '../modules/logger': loggerFake,
     '../modules/resourceFactories/AsgResourceBase': AsgResourceBaseFake,
     '../modules/resourceFactories/launchConfigurationResourceFactory': launchConfigurationResourceFactoryFake,

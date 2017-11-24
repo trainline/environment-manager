@@ -5,7 +5,7 @@
 
 let should = require('should');
 let sinon = require('sinon');
-let proxyquire = require('proxyquire');
+const inject = require('inject-loader!../../../../modules/provisioning/launchConfiguration/iamInstanceProfileNameProvider');
 let InstanceProfileNotFoundError = require('../../../../modules/errors/InstanceProfileNotFoundError.class');
 
 const accountName = 'Sandbox';
@@ -31,7 +31,7 @@ describe('IamInstanceProfileNameProvider:', () => {
       };
 
       // Act
-      let target = proxyquire('../../../../modules/provisioning/launchConfiguration/iamInstanceProfileNameProvider', { '../../sender': senderMock });
+      let target = inject({ '../../sender': senderMock });
       let promise = target.get(configuration, accountName);
 
       // Assert
@@ -69,7 +69,7 @@ describe('IamInstanceProfileNameProvider:', () => {
         };
 
         // Act
-        let target = proxyquire('../../../../modules/provisioning/launchConfiguration/iamInstanceProfileNameProvider', { '../../sender': senderMock });
+        let target = inject({ '../../sender': senderMock });
         let promise = target.get(configuration, accountName);
 
         // Assert
@@ -104,7 +104,7 @@ describe('IamInstanceProfileNameProvider:', () => {
       };
 
       // Act
-      let target = proxyquire('../../../../modules/provisioning/launchConfiguration/iamInstanceProfileNameProvider', { '../../sender': senderMock });
+      let target = inject({ '../../sender': senderMock });
       let promise = target.get(configuration, accountName);
 
       // Assert
@@ -144,7 +144,7 @@ describe('IamInstanceProfileNameProvider:', () => {
         };
 
         // Act
-        let target = proxyquire('../../../../modules/provisioning/launchConfiguration/iamInstanceProfileNameProvider', { '../../sender': senderMock });
+        let target = inject({ '../../sender': senderMock });
         let promise = target.get(configuration, accountName);
 
         // Assert

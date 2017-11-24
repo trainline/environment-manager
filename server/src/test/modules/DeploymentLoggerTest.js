@@ -3,7 +3,7 @@
 let Enums = require('../../Enums');
 let fakeLogger = require('../utils/fakeLogger');
 let fp = require('lodash/fp');
-let proxyquire = require('proxyquire').noCallThru();
+const inject = require('inject-loader!../../modules/DeploymentLogger');
 require('should');
 let sinon = require('sinon');
 
@@ -42,7 +42,7 @@ describe('DeploymentLogger', function () {
       sender = {
         sendCommand: sinon.spy(() => Promise.resolve())
       };
-      sut = proxyquire('../../modules/DeploymentLogger', {
+      sut = inject({
         './data-access/deployments': deployments,
         './systemUser': {},
         './DeploymentLogsStreamer': function () {

@@ -5,7 +5,7 @@
 require('should');
 let sinon = require('sinon');
 let sinonHelper = require('../../utils/sinonHelper');
-let proxyquire = require('proxyquire');
+const inject = require('inject-loader!../../../commands/deployments/GetInfrastructureRequirements');
 let assert = require('assert');
 
 let AutoScalingGroupAlreadyExistsError = require('../../../modules/errors/AutoScalingGroupAlreadyExistsError.class');
@@ -60,7 +60,7 @@ describe('GetInfrastructureRequirements:', () => {
       }
     };
 
-    let mod = proxyquire('../../../commands/deployments/GetInfrastructureRequirements', {
+    let mod = inject({
       '../../modules/provisioning/autoScalingTemplatesProvider': mocks.autoScalingTemplatesProvider,
       '../../modules/sender': mocks.sender,
       '../../modules/provisioning/infrastructureConfigurationProvider': mocks.infrastructureConfigurationProvider,

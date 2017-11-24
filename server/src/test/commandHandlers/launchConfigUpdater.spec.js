@@ -2,7 +2,7 @@
 
 'use strict';
 
-const proxyquire = require('proxyquire').noCallThru();
+const inject = require('inject-loader!../../commands/launch-config/launchConfigUpdater');
 require('should');
 let sinon = require('sinon');
 
@@ -24,7 +24,7 @@ function createFixture() {
     create: sinon.stub().returns(Promise.resolve(launchConfigurationClientMock))
   };
 
-  let sut = proxyquire('../../commands/launch-config/launchConfigUpdater', {
+  let sut = inject({
     '../../modules/resourceFactories/asgResourceFactory': asgResourceFactory,
     '../../modules/resourceFactories/launchConfigurationResourceFactory': launchConfigurationResourceFactory
   });

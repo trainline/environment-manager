@@ -3,7 +3,7 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 'use strict';
 
-let proxyquire = require('proxyquire').noCallThru();
+const inject = require('inject-loader!../../modules/cacheManager');
 require("should");
 let sinon = require("sinon");
 
@@ -105,7 +105,7 @@ describe("caching", function () {
   }
 
   context('when Redis is unavailable', function () {
-    let cacheManager = proxyquire('../../modules/cacheManager', {
+    let cacheManager = inject({
       '../config': useRedis,
       './data-access/cacheManagerEncryptedRedis': {
         create: () => ({
@@ -120,7 +120,8 @@ describe("caching", function () {
   });
 
   context('when Redis is available', function () {
-    let cacheManager = proxyquire('../../modules/cacheManager', {
+const inject = require('inject-loader!../../modules/cacheManager');
+    let cacheManager = inject({
       '../config': useRedis,
       './data-access/cacheManagerEncryptedRedis': (() => {
         let db = new Map();

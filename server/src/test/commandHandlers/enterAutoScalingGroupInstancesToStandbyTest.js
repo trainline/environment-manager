@@ -4,7 +4,7 @@
 
 let sinon = require('sinon');
 require('should');
-let proxyquire = require('proxyquire').noCallThru();
+const inject = require('inject-loader!../../commands/asg/EnterAutoScalingGroupInstancesToStandby');
 let assert = require('assert');
 let InvalidOperationError = require('../../modules/errors/InvalidOperationError.class');
 
@@ -57,7 +57,7 @@ describe('enterAutoScalingGroupInstancesToStandby', function () {
         : { }
     );
 
-    sut = proxyquire('../../commands/asg/EnterAutoScalingGroupInstancesToStandby', fakes);
+    sut = inject(fakes);
   }
 
   describe('Command requirements', function () {

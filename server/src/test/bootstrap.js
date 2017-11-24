@@ -2,7 +2,9 @@
 
 'use strict';
 
+let process = require('process');
 let config = require('../config');
 let localConfig = require('../../configuration.sample');
 
+process.env.EM_PROFILE = 'src/test/test-profile.json';
 config.setUserValue('local', localConfig);

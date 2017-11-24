@@ -1,6 +1,6 @@
 'use strict';
 
-let proxyquire = require('proxyquire').noCallThru();
+const inject = require('inject-loader!../../../commands/deployments/packageMover');
 require('should');
 let sinon = require('sinon');
 let stream = require('stream');
@@ -17,7 +17,7 @@ function fakeLogger() {
 describe('packageMover', function () {
   describe('downloadPackage', function () {
     it('when S3 GetObject throws an exception it is returned as a rejected Promise', function () {
-      let packageMover = proxyquire('../../../commands/deployments/packageMover', {
+      let packageMover = inject({
         '../../modules/amazon-client/s3Url': {
           getObject: () => { throw new Error('BOOM!'); },
           parse: () => true
@@ -30,7 +30,7 @@ describe('packageMover', function () {
     });
     it('when S3 GetObject stream emits an error it is logged', function () {
       let downloadStream = new stream.Readable();
-      let packageMover = proxyquire('../../../commands/deployments/packageMover', {
+      let packageMover = inject({
         '../../modules/amazon-client/s3Url': {
           getObject: () => downloadStream,
           parse: () => true

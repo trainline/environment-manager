@@ -3,7 +3,7 @@
 'use strict';
 
 let sinon = require('sinon');
-const proxyquire = require('proxyquire');
+const inject = require('inject-loader!../../../commands/deployments/CreateLaunchConfiguration');
 let _ = require('lodash');
 
 describe('CreateLaunchConfigurationCommandHandler:', () => {
@@ -61,7 +61,7 @@ describe('CreateLaunchConfigurationCommandHandler:', () => {
     };
 
     // Act
-    let CreateLaunchConfigurationCommandHandler = proxyquire('../../../commands/deployments/CreateLaunchConfiguration', {
+    let CreateLaunchConfigurationCommandHandler = inject({
       '../../modules/resourceFactories/launchConfigurationResourceFactory': launchConfigurationResourceFactory
     });
     let promise = CreateLaunchConfigurationCommandHandler(command);

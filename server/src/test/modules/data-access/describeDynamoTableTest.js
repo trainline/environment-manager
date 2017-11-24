@@ -2,7 +2,7 @@
 
 require('should');
 let sinon = require('sinon');
-let proxyquire = require('proxyquire');
+const inject = require('inject-loader!../../../modules/data-access/describeDynamoTable');
 
 describe('describeDynamoTable', function () {
   let tableName = 'some-table';
@@ -17,7 +17,7 @@ describe('describeDynamoTable', function () {
   };
 
   before(function () {
-    sut = proxyquire('../../../modules/data-access/describeDynamoTable', {
+    sut = inject({
       '../amazon-client/masterAccountClient': dynamoClientFactory
     });
   });

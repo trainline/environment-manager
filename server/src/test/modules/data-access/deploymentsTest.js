@@ -5,7 +5,7 @@
 require('should');
 let fakeLogger = require('../../utils/fakeLogger');
 let { Instant } = require('js-joda');
-let proxyquire = require('proxyquire');
+let inject = require('inject-loader!../../../modules/data-access/deployments');
 let sinon = require('sinon');
 
 let defaults = {
@@ -20,7 +20,7 @@ let defaults = {
 
 describe('deployments', function () {
   describe('get', function () {
-    let withDynamoGet = get => proxyquire('../../../modules/data-access/deployments',
+    let withDynamoGet = get => inject(
       Object.assign({}, defaults, {
         './dynamoTable': { get }
       }));
@@ -64,7 +64,7 @@ describe('deployments', function () {
     });
   });
   describe('queryByDateRange', function () {
-    let withScanAndQuery = ({ query, scan }) => proxyquire('../../../modules/data-access/deployments',
+    let withScanAndQuery = ({ query, scan }) => inject(
       Object.assign({}, defaults, {
         './dynamoTable': {
           query: query || (() => Promise.resolve([])),

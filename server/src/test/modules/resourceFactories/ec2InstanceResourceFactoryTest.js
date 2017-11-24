@@ -2,7 +2,7 @@
 
 'use strict';
 
-let proxyquire = require('proxyquire');
+const inject = require('inject-loader!../../../modules/resourceFactories/ec2InstanceResourceFactory');
 require('should');
 let sinon = require('sinon');
 let Instance = require('../../../models/Instance');
@@ -11,7 +11,7 @@ function createFixture({
   childAccountClientFake = { createEC2Client() { return Promise.resolve(); } },
   InstanceResourceBaseFake = {}
 }) {
-  return proxyquire('../../../modules/resourceFactories/ec2InstanceResourceFactory', {
+  return inject({
     '../amazon-client/childAccountClient': childAccountClientFake,
     './InstanceResourceBase': InstanceResourceBaseFake
   });

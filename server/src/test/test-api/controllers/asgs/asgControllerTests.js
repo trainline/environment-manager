@@ -1,7 +1,7 @@
 'use strict';
 
 let { mapValues } = require('lodash/fp');
-let proxyquire = require('proxyquire').noCallThru();
+const inject = require('inject-loader!../../../../api/controllers/asgs/asgController');
 require('should');
 let sinon = require('sinon');
 
@@ -18,7 +18,7 @@ function assertItCallsErrorCallbackWhenEnvironmentNotFound(req, handlerFunctionN
     let environment = {
       getAccountNameForEnvironment: () => Promise.reject(new Error('BOOM!'))
     };
-    let sut = proxyquire('../../../../api/controllers/asgs/asgController', {
+    let sut = inject({
       '../../../models/Environment': environment,
       '../../../modules/data-access/opsEnvironment': {
         get: () => Promise.resolve()
@@ -37,7 +37,7 @@ function assertItCallsErrorCallbackWhenEnvironmentNotFound(req, handlerFunctionN
 
 function assertMutationPreventedWhenEnvironmentLocked(req, handlerFunctionName) {
   context('when the environment search returns a locked environment', function () {
-    let sut = proxyquire('../../../../api/controllers/asgs/asgController', {
+    let sut = inject({
       '../../../models/Environment': {
         getAccountNameForEnvironment: () => Promise.resolve('my-account')
       },

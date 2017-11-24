@@ -2,18 +2,17 @@
 
 'use strict';
 
-const proxyquire = require('proxyquire').noCallThru();
+const inject = require('inject-loader!../../../modules/express-middleware/swaggerAuthorizerMiddleware');
 require('should');
 const sinon = require('sinon');
 const apiSpec = require('../../../api/swagger-doc');
 
-const MUT = '../../../modules/express-middleware/swaggerAuthorizerMiddleware';
 
 function createSut(authorizationFake) {
   let fakes = {
     '../authorization': authorizationFake
   };
-  return proxyquire(MUT, fakes)();
+  return inject(fakes)();
 }
 
 function loadSwaggerDocumentSync() {
