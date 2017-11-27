@@ -24,7 +24,20 @@ function flush(environment, hosts) {
     .then(getNodesForServices)
     .then(createAddresses(hosts))
     .then((addresses) => { return sendRequestToAddresses(token, addresses); })
-    .then(results => results)
+    .then((results) => {
+      console.log('**************************************About to sent the request to consul client')
+      return new Promise((resolve, reject) => {
+        console.log('inside the promise')
+        consulClientInstance.kv.set('environments/c50/cacheTimeStamp', 'WORKING FROM EM', (err, result) => {
+          console.log('err', err)
+          if (err) reject(err);
+          else {
+            console.log('result', result)
+            resolve(results.unshift('DONE'));
+          }
+        });
+      });
+    })
     .catch((e) => {
       logger.error('Cache Reset Error: ', e);
       return { error: e.message };
