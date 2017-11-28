@@ -206,40 +206,25 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
       return instance;
     }
 
-    function setViewForDeploymentMap(deploymentMap)
-    {
-      deploymentMap.Value.DeploymentTarget = deploymentMap.Value.DeploymentTarget.map(deploymentMapConverter.toDeploymentTarget);
-      vm.deploymentMap = deploymentMap;
-      vm.deploymentTargets = deploymentMap.Value.DeploymentTarget;
-
-      // Clean away legacy service property.
-      vm.deploymentTargets.forEach(function (dm) {
-        dm.Services.forEach(function (s) {
-          delete s.DeploymentMethod;
-        });
-      });
-
-      vm.dataFound = true;
-      vm.search();
-    };
-
     function readDeploymentMap(mapName) {
       vm.dataLoading = true;
       DeploymentMap.getAll().then(function (deploymentMaps) {
-        vm.allDeploymentMaps = deploymentMaps.map(function (deploymentMap) {
-          deploymentMap.UsedBy = [];
-          return deploymentMap;
+        vm.allDeploymentMaps = deploymentMaps;
+      });
+      return DeploymentMap.getByName(mapName).then(function (deploymentMap) {
+        deploymentMap.Value.DeploymentTarget = deploymentMap.Value.DeploymentTarget.map(deploymentMapConverter.toDeploymentTarget);
+        vm.deploymentMap = deploymentMap;
+        vm.deploymentTargets = deploymentMap.Value.DeploymentTarget;
+
+        // Clean away legacy service property.
+        vm.deploymentTargets.forEach(function (dm) {
+          dm.Services.forEach(function (s) {
+            delete s.DeploymentMethod;
+          });
         });
 
-        var deploymentMap = vm.allDeploymentMaps.find(function(d) { return d.DeploymentMapName == mapName});
-
-        if(!deploymentMap){
-          vm.dataFound = false;
-          return;
-        }
-
-        setViewForDeploymentMap(deploymentMap);
-        
+        vm.dataFound = true;
+        vm.search();
       }, function () {
         vm.dataFound = false;
       }).finally(function () {
@@ -249,4 +234,3 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
 
     init();
   });
-
