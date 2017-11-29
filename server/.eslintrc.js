@@ -13,7 +13,8 @@ module.exports = {
     },
     "import/resolver": {
       "eslint-import-resolver-typescript": true,
-      "node": true
+      "node": true,
+      "webpack": true
     }
   },
   "rules": {

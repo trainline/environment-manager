@@ -73,6 +73,7 @@
     "eslint": "^3.11.1",
     "eslint-config-airbnb-base": "^10.0.1",
     "eslint-import-resolver-typescript": "^1.0.2",
+    "eslint-import-resolver-webpack": "^0.8.3",
     "eslint-plugin-dependencies": "^2.4.0",
     "eslint-plugin-import": "^2.2.0",
     "inject-loader": "^3.0.1",
