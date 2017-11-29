@@ -4,11 +4,12 @@ let fs = require('fs');
 let path = require('path');
 let Ajv = require('ajv');
 let Promise = require('bluebird');
+const findInAncestor = require('../find-in-ancestor');
 
 const readFile = Promise.promisify(fs.readFile);
 
 function loadSchema(schemaId, callback) {
-  return readFile(path.resolve(__dirname, `${schemaId}.json`), 'utf-8')
+  return readFile(findInAncestor(path.join('schemas', `${schemaId}.json`), __dirname), 'utf-8')
     .then(text => JSON.parse(text))
     .asCallback(callback);
 }
