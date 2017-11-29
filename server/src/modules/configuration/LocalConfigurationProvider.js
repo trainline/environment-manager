@@ -4,7 +4,6 @@
 
 const console = require('console');
 const fs = require('fs');
-const path = require('path');
 const Promise = require('bluebird');
 const findInAncestor = require('../find-in-ancestor');
 
@@ -14,7 +13,7 @@ You can find sample configuration file in configuration.sample.json`;
 
 module.exports = function LocalConfigurationProvider() {
   this.get = () =>
-    readFile(findInAncestor(path.resolve(__dirname, 'configuration.json')))
+    readFile(findInAncestor('configuration.json', __dirname))
       .then(text => JSON.parse(text))
       .catch((error) => {
         if (error.code === 'ENOENT') {

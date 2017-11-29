@@ -85,7 +85,7 @@ function create({ contextLines, filePathTransform }) {
 }
 
 create.build = () => {
-  let basePath = path.dirname(findInAncestor(path.resolve(__dirname, 'package.json')));
+  let basePath = path.dirname(findInAncestor('package.json', __dirname));
   let filePathTransform = fullPath => path.relative(basePath, fullPath);
   return create({ contextLines: 0, filePathTransform });
 };
