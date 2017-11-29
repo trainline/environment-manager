@@ -47,7 +47,6 @@ function copyServerFiles() {
     '!lib/test/**/*',
     '!node_modules/**/*',
     '!src/**/*',
-    '!test/**/*',
     '!.*',
     '!configuration.sample.json'
   ], { cwd: './server', nodir: true })

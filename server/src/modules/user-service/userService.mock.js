@@ -3,7 +3,7 @@
 'use strict';
 
 let ms = require('ms');
-let User = require('../user');
+let User = require('../../../shared/user');
 let utils = require('../utilities');
 let ActiveDirectoryError = require('../errors/ActiveDirectoryError.class');
 

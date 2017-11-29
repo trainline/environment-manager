@@ -2,7 +2,7 @@
 
 'use strict';
 
-let User = require('./user');
+let User = require('../../shared/user');
 let systemUser = User.new('System', null, [], [{ Access: 'ADMIN', Resource: '**' }]);
 
 module.exports = systemUser;

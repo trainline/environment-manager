@@ -2,6 +2,7 @@
 
 'use strict';
 
+let path = require('path');
 let express = require('express');
 let bodyParser = require('body-parser');
 let cookieParser = require('cookie-parser');
@@ -72,6 +73,7 @@ function createExpressApp() {
 
     const PUBLIC_DIR = config.get('PUBLIC_DIR');
     logger.info(`Serving static files from "${PUBLIC_DIR}"`);
+    logger.info(`Serving js files from "${__dirname}"`);
 
     let staticPaths = ['*.js', '*.css', '*.html', '*.ico', '*.gif',
       '*.woff2', '*.ttf', '*.woff', '*.svg', '*.eot', '*.jpg', '*.png', '*.map'];
@@ -79,7 +81,7 @@ function createExpressApp() {
     app.get(staticPaths, authentication.allowUnknown, express.static(PUBLIC_DIR));
     app.get('/', express.static(PUBLIC_DIR));
 
-    app.get('*.js', authentication.allowUnknown, express.static(__dirname));
+    app.get('*.js', authentication.allowUnknown, express.static(path.resolve(__dirname, '../shared'))); /* HACK ALERT */
 
     app.use('/schema', authentication.allowUnknown, express.static(`${PUBLIC_DIR}/schema`));
 
