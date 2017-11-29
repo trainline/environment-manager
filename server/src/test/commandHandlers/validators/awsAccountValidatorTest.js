@@ -1,16 +1,14 @@
-/* TODO: enable linting and fix resulting errors */
-/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assert = require('assert');
-let rewire = require('rewire');
 let sinon = require('sinon');
+let inject = require('inject-loader!../../../commands/validators/awsAccountValidator');
 
-describe('awsAcccountValidator', function() {
+describe('awsAcccountValidator', function () {
   let sut;
   let data;
-  let masterAccount = undefined;
   let childAWSclient;
 
   beforeEach(() => {
@@ -24,18 +22,17 @@ describe('awsAcccountValidator', function() {
       assumeRole: sinon.stub().returns(Promise.resolve(true))
     };
 
-    sut = rewire('../../../commands/validators/awsAccountValidator');
-    sut.__set__({
-      childAWSclient
+    sut = inject({
+      '../../modules/amazon-client/childAccountClient': childAWSclient
     });
   });
 
   describe('validate', () => {
-    ['AccountName', 'AccountNumber'].forEach(prop => {
+    ['AccountName', 'AccountNumber'].forEach((prop) => {
       it(`requires the ${prop} property`, () => {
         data[prop] = null;
         delete data[prop];
-        return sut.validate(data).catch(error => {
+        return sut.validate(data).catch((error) => {
           assert.equal(error.message, `Missing required attribute: ${prop}`);
         });
       });
@@ -43,14 +40,14 @@ describe('awsAcccountValidator', function() {
 
     it('does not allow additional attributes', () => {
       data.info = 'A string value';
-      return sut.validate(data).catch(error => {
-        assert.equal(error.message, `'info' is not a valid attribute.`);
+      return sut.validate(data).catch((error) => {
+        assert.equal(error.message, '\'info\' is not a valid attribute.');
       });
     });
 
     describe('child accounts', () => {
       it('require a Role ARN value to be set', () => {
-        return sut.validate(data).catch(error => {
+        return sut.validate(data).catch((error) => {
           assert.equal(error.message, 'Missing required attribute: RoleArn');
         });
       });
@@ -65,7 +62,7 @@ describe('awsAcccountValidator', function() {
       3542333178675
     ];
 
-    invalidAccountNumbers.forEach(v => {
+    invalidAccountNumbers.forEach((v) => {
       it(`does not accept ${v} as a valid account number`, () => {
         assert.throws(sut.validateAccountNumber.bind(sut, v));
       });
@@ -79,9 +76,9 @@ describe('awsAcccountValidator', function() {
     });
 
     it('should be marked as invalid', () => {
-      return sut.validate(data).catch(error => {
+      return sut.validate(data).catch((error) => {
         assert.equal(error.message, `Cannot assume role for ARN: ${data.RoleArn}`);
       });
-    })
+    });
   });
 });

@@ -1,189 +1,179 @@
-/* TODO: enable linting and fix resulting errors */
-/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-let should = require('should');
-let sinon = require('sinon');
-let rewire = require('rewire');
+require('should');
+let getASGState = require('../../../modules/environment-state/getASGState');
 
 let _ = require('lodash');
 
-let Enums = require('../../../Enums');
-let DIFF_STATE = Enums.DIFF_STATE;
-let HEALTH_STATUS = Enums.HEALTH_STATUS;
-
 describe('getASGState', () => {
-  let getASGState = rewire('../../../modules/environment-state/getASGState');
-
   describe('getServicesSummary', () => {
     let getServicesSummary;
     let testData;
     let origTestData = [{
-        "Name": "TestService0",
-        "Version": "asdasfas",
-        "Slice": "none",
-        "DiffWithTargetState": "Ignored",
-        "DeploymentId": "7b131880-b57c-11e6-840b-df8445a74c58",
-        "InstancesCount": {
-            "Healthy": 0,
-            "Total": 3
-        },
-        "InstancesHealthCount": "0/3",
-        "OverallHealth": {
-            "Status": "Error"
-        },
-        "Action": "Ignore"
+      Name: 'TestService0',
+      Version: 'asdasfas',
+      Slice: 'none',
+      DiffWithTargetState: 'Ignored',
+      DeploymentId: '7b131880-b57c-11e6-840b-df8445a74c58',
+      InstancesCount: {
+        Healthy: 0,
+        Total: 3
+      },
+      InstancesHealthCount: '0/3',
+      OverallHealth: {
+        Status: 'Error'
+      },
+      Action: 'Ignore'
     }, {
-        "Name": "TestService0",
-        "Version": "ver2-green",
-        "Slice": "green",
-        "DiffWithTargetState": null,
-        "DeploymentId": "82911b10-acb3-11e6-851a-39db0d121c3d",
-        "InstancesCount": {
-            "Healthy": 0,
-            "Total": 3
-        },
-        "InstancesHealthCount": "0/3",
-        "OverallHealth": {
-            "Status": "Error"
-        },
+      Name: 'TestService0',
+      Version: 'ver2-green',
+      Slice: 'green',
+      DiffWithTargetState: null,
+      DeploymentId: '82911b10-acb3-11e6-851a-39db0d121c3d',
+      InstancesCount: {
+        Healthy: 0,
+        Total: 3
+      },
+      InstancesHealthCount: '0/3',
+      OverallHealth: {
+        Status: 'Error'
+      }
     }, {
-        "Name": "TestService13",
-        "Version": "ver-1",
-        "Slice": "none",
-        "DiffWithTargetState": null,
-        "DeploymentId": "9fcc48b0-b0c5-11e6-93e2-611849e58087",
-        "InstancesCount": {
-            "Healthy": 0,
-            "Total": 3
-        },
-        "InstancesHealthCount": "0/3",
-        "OverallHealth": {
-            "Status": "Error"
-        },
+      Name: 'TestService13',
+      Version: 'ver-1',
+      Slice: 'none',
+      DiffWithTargetState: null,
+      DeploymentId: '9fcc48b0-b0c5-11e6-93e2-611849e58087',
+      InstancesCount: {
+        Healthy: 0,
+        Total: 3
+      },
+      InstancesHealthCount: '0/3',
+      OverallHealth: {
+        Status: 'Error'
+      }
     }, {
-        "Name": "TestService3",
-        "Version": "vtest-new2",
-        "Slice": "none",
-        "DiffWithTargetState": null,
-        "DeploymentId": "64ccec60-5986-11e6-a33e-ab3fc7e4873e",
-        "InstancesCount": {
-            "Healthy": 3,
-            "Total": 3
-        },
-        "InstancesHealthCount": "3/3",
-        "OverallHealth": {
-            "Status": "Healthy"
-        },
+      Name: 'TestService3',
+      Version: 'vtest-new2',
+      Slice: 'none',
+      DiffWithTargetState: null,
+      DeploymentId: '64ccec60-5986-11e6-a33e-ab3fc7e4873e',
+      InstancesCount: {
+        Healthy: 3,
+        Total: 3
+      },
+      InstancesHealthCount: '3/3',
+      OverallHealth: {
+        Status: 'Healthy'
+      }
     }, {
-        "Name": "TestService4",
-        "Version": "0.0.123",
-        "Slice": "none",
-        "DiffWithTargetState": null,
-        "DeploymentId": "7c18a2a0-7386-11e6-9303-63977ad16e16",
-        "InstancesCount": {
-            "Healthy": 3,
-            "Total": 3
-        },
-        "InstancesHealthCount": "3/3",
-        "OverallHealth": {
-            "Status": "Healthy"
-        },
+      Name: 'TestService4',
+      Version: '0.0.123',
+      Slice: 'none',
+      DiffWithTargetState: null,
+      DeploymentId: '7c18a2a0-7386-11e6-9303-63977ad16e16',
+      InstancesCount: {
+        Healthy: 3,
+        Total: 3
+      },
+      InstancesHealthCount: '3/3',
+      OverallHealth: {
+        Status: 'Healthy'
+      }
     }, {
-        "Name": "BasketService",
-        "Version": "0.4.0.7-alpha1",
-        "Slice": "blue",
-        "DiffWithTargetState": "Missing",
-        "DeploymentId": "833f75e0-ab26-11e6-bd12-153c9238eba7",
-        "InstancesCount": {
-            "Healthy": 0,
-            "Total": 3
-        },
-        "InstancesHealthCount": "0/3",
-        "OverallHealth": {
-            "Status": "Healthy"
-        },
+      Name: 'BasketService',
+      Version: '0.4.0.7-alpha1',
+      Slice: 'blue',
+      DiffWithTargetState: 'Missing',
+      DeploymentId: '833f75e0-ab26-11e6-bd12-153c9238eba7',
+      InstancesCount: {
+        Healthy: 0,
+        Total: 3
+      },
+      InstancesHealthCount: '0/3',
+      OverallHealth: {
+        Status: 'Healthy'
+      }
     }, {
-        "Name": "TestService0",
-        "Version": "ver-1-blue",
-        "Slice": "blue",
-        "DiffWithTargetState": "Missing",
-        "DeploymentId": "156d4310-ac1d-11e6-851a-39db0d121c3d",
-        "InstancesCount": {
-            "Healthy": 0,
-            "Total": 3
-        },
-        "InstancesHealthCount": "0/3",
-        "OverallHealth": {
-            "Status": "Healthy"
-        },
+      Name: 'TestService0',
+      Version: 'ver-1-blue',
+      Slice: 'blue',
+      DiffWithTargetState: 'Missing',
+      DeploymentId: '156d4310-ac1d-11e6-851a-39db0d121c3d',
+      InstancesCount: {
+        Healthy: 0,
+        Total: 3
+      },
+      InstancesHealthCount: '0/3',
+      OverallHealth: {
+        Status: 'Healthy'
+      }
     }, {
-        "Name": "TestService2",
-        "Version": "test-new2",
-        "Slice": "none",
-        "DiffWithTargetState": "Missing",
-        "DeploymentId": "41b53860-5975-11e6-af7f-f3054c5aebe7",
-        "InstancesCount": {
-            "Healthy": 0,
-            "Total": 3
-        },
-        "InstancesHealthCount": "0/3",
-        "OverallHealth": {
-            "Status": "Healthy"
-        },
+      Name: 'TestService2',
+      Version: 'test-new2',
+      Slice: 'none',
+      DiffWithTargetState: 'Missing',
+      DeploymentId: '41b53860-5975-11e6-af7f-f3054c5aebe7',
+      InstancesCount: {
+        Healthy: 0,
+        Total: 3
+      },
+      InstancesHealthCount: '0/3',
+      OverallHealth: {
+        Status: 'Healthy'
+      }
     }];
 
     beforeEach(() => {
-      getServicesSummary = getASGState.__get__('getServicesSummary');
+      getServicesSummary = getASGState.getServicesSummary;
       testData = _.clone(origTestData);
     });
 
     it('gives right summary for not present and unhealthy', () => {
-
       let result = getServicesSummary(testData);
 
       let expected = { AllExpectedServicesPresent: false,
         AllExpectedServicesHealthy: false,
         ServicesCount: { Expected: 7, Unexpected: 0, Missing: 3, Ignored: 1 },
-        ExpectedServices: 
-         [ { Name: 'TestService0', Slice: 'green', Version: 'ver2-green' },
-         { Name: 'TestService13', Slice: 'none', Version: 'ver-1' }, 
-         { Name: 'TestService3', Slice: 'none', Version: 'vtest-new2' }, 
-         { Name: 'TestService4', Slice: 'none', Version: '0.0.123' }, 
-         { Name: 'BasketService', Slice: 'blue', Version: '0.4.0.7-alpha1'}, 
+        ExpectedServices:
+        [{ Name: 'TestService0', Slice: 'green', Version: 'ver2-green' },
+         { Name: 'TestService13', Slice: 'none', Version: 'ver-1' },
+         { Name: 'TestService3', Slice: 'none', Version: 'vtest-new2' },
+         { Name: 'TestService4', Slice: 'none', Version: '0.0.123' },
+         { Name: 'BasketService', Slice: 'blue', Version: '0.4.0.7-alpha1' },
          { Name: 'TestService0', Slice: 'blue', Version: 'ver-1-blue' }, { Name: 'TestService2', Slice: 'none', Version: 'test-new2' }],
-        MissingServices: 
-       [ { Name: 'BasketService',
-           Slice: 'blue',
-           Version: '0.4.0.7-alpha1' },
+        MissingServices:
+        [{ Name: 'BasketService',
+          Slice: 'blue',
+          Version: '0.4.0.7-alpha1' },
          { Name: 'TestService0', Slice: 'blue', Version: 'ver-1-blue' },
-         { Name: 'TestService2', Slice: 'none', Version: 'test-new2' } ] };
+         { Name: 'TestService2', Slice: 'none', Version: 'test-new2' }] };
 
       result.should.be.eql(expected);
     });
 
     it('gives right summary for ASG with all present services, some unhealthy', () => {
-
       _(testData).filter({ DiffWithTargetState: 'Missing' }).each((s) => {
         s.DiffWithTargetState = null;
-       });
+      });
 
       let result = getServicesSummary(testData);
       let expected = { AllExpectedServicesPresent: true,
-            AllExpectedServicesHealthy: false,
-            ServicesCount: { Expected: 7, Unexpected: 0, Missing: 0, Ignored: 1 },
-            ExpectedServices: 
-            [ { Name: 'TestService0', Slice: 'green', Version: 'ver2-green' },
+        AllExpectedServicesHealthy: false,
+        ServicesCount: { Expected: 7, Unexpected: 0, Missing: 0, Ignored: 1 },
+        ExpectedServices:
+        [{ Name: 'TestService0', Slice: 'green', Version: 'ver2-green' },
              { Name: 'TestService13', Slice: 'none', Version: 'ver-1' },
              { Name: 'TestService3', Slice: 'none', Version: 'vtest-new2' },
              { Name: 'TestService4', Slice: 'none', Version: '0.0.123' },
-             { Name: 'BasketService',
-               Slice: 'blue',
-               Version: '0.4.0.7-alpha1' },
+          { Name: 'BasketService',
+            Slice: 'blue',
+            Version: '0.4.0.7-alpha1' },
              { Name: 'TestService0', Slice: 'blue', Version: 'ver-1-blue' },
-             { Name: 'TestService2', Slice: 'none', Version: 'test-new2' } ],
-                MissingServices: [] };
+             { Name: 'TestService2', Slice: 'none', Version: 'test-new2' }],
+        MissingServices: [] };
 
       result.should.be.eql(expected);
     });

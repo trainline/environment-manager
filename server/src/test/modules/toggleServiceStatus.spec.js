@@ -1,19 +1,20 @@
 'use strict';
 
-const rewire = require('rewire');
 const sinon = require('sinon');
+const inject = require('inject-loader!../../modules/toggleServiceStatus');
 
 describe('toggleServiceStatus', () => {
   let sut;
   let senderSpy;
 
   beforeEach(() => {
-    sut = rewire('../../modules/toggleServiceStatus');
     senderSpy = sinon.spy();
     // eslint-disable-next-line no-underscore-dangle
-    sut.__set__('sender', {
-      sendCommand: (handler, input) => {
-        return Promise.resolve(senderSpy(handler, input));
+    sut = inject({
+      './sender': {
+        sendCommand: (handler, input) => {
+          return Promise.resolve(senderSpy(handler, input));
+        }
       }
     });
   });

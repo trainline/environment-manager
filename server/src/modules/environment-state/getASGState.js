@@ -44,7 +44,7 @@ function getServicesSummary(services) {
   };
 }
 
-module.exports = function getASGState(environmentName, asgName) {
+function getASGState(environmentName, asgName) {
   return co(function* () {
     const accountName = yield (yield Environment.getByName(environmentName)).getAccountName();
     let asg = yield AutoScalingGroup.getByName(accountName, asgName);
@@ -81,4 +81,8 @@ module.exports = function getASGState(environmentName, asgName) {
 
     return response;
   });
-};
+}
+
+getASGState.getServicesSummary = getServicesSummary;
+
+module.exports = getASGState;

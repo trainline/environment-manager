@@ -1,13 +1,10 @@
-/* TODO: enable linting and fix resulting errors */
-/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-let should = require('should');
+require('should');
 let sinon = require('sinon');
-let rewire = require('rewire');
-
-let _ = require('lodash');
+let inject = require('inject-loader!../../../modules/environment-state/deleteTargetState');
 
 /**
  * We test the extent of keys found for deletion by inspecting getTargetState() calls.
@@ -27,16 +24,14 @@ describe('deleteTargetState', () => {
       removeTargetState: sinon.stub().returns(Promise.resolve([]))
     };
 
-    deleteTargetState = rewire('../../../modules/environment-state/deleteTargetState');
-    deleteTargetState.__set__('serviceTargets', serviceTargetsMock);
+    deleteTargetState = inject({ '../service-targets': serviceTargetsMock });
   });
 
   describe('byEnvironment', () => {
-
     it('deletes target environment state', () => {
       let environmentName = 'test-env';
-      
-      return deleteTargetState.byEnvironment({ environmentName }).then((result) => {
+
+      return deleteTargetState.byEnvironment({ environmentName }).then(() => {
         sinon.assert.calledWith(serviceTargetsMock.getTargetState, environmentName, {
           key: 'environments/test-env/services/', recurse: true
         });
@@ -48,12 +43,11 @@ describe('deleteTargetState', () => {
   });
 
   describe('byService', () => {
-
     it('deletes target service state', () => {
       let environmentName = 'test-env';
-      let serviceName = 'test-service'
-      
-      return deleteTargetState.byService({ environmentName, serviceName }).then((result) => {
+      let serviceName = 'test-service';
+
+      return deleteTargetState.byService({ environmentName, serviceName }).then(() => {
         sinon.assert.calledWithExactly(serviceTargetsMock.getTargetState, environmentName, {
           key: 'environments/test-env/services/test-service/', recurse: true
         });
@@ -61,20 +55,18 @@ describe('deleteTargetState', () => {
         sinon.assert.calledWithExactly(serviceTargetsMock.getTargetState, environmentName, {
           key: 'environments/test-env/roles/', recurse: true
         });
-
       });
     });
   });
 
 
   describe('byServiceVersion', () => {
-
     it('deletes target service state', () => {
       let environmentName = 'test-env';
-      let serviceName = 'test-service'
-      let serviceVersion = '012'
-      
-      return deleteTargetState.byServiceVersion({ environmentName, serviceName, serviceVersion }).then((result) => {
+      let serviceName = 'test-service';
+      let serviceVersion = '012';
+
+      return deleteTargetState.byServiceVersion({ environmentName, serviceName, serviceVersion }).then(() => {
         sinon.assert.calledWithExactly(serviceTargetsMock.getTargetState, environmentName, {
           key: 'environments/test-env/services/test-service/012/', recurse: true
         });
@@ -85,6 +77,5 @@ describe('deleteTargetState', () => {
       });
     });
   });
-
 });
 

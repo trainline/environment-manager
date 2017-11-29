@@ -3,9 +3,9 @@
 'use strict';
 
 const assert = require('assert');
-const rewire = require('rewire');
 const sinon = require('sinon');
 const _ = require('lodash');
+const inject = require('inject-loader!../../../commands/deployments/DeployService');
 
 describe('DeployService', function () {
   let sut;
@@ -18,7 +18,7 @@ describe('DeployService', function () {
   let infrastructureConfigurationProvider;
   let namingConventionProvider;
   let DeploymentContract;
-  let packagePathProvider;
+  let PackagePathProvider;
   let sender;
   let deploymentLogger;
 
@@ -51,8 +51,6 @@ describe('DeployService', function () {
   }
 
   beforeEach(() => {
-    sut = rewire('../../../commands/deployments/DeployService');
-
     environmentType = {
       AWSAccountName: ACCOUNT_NAME
     };
@@ -81,8 +79,12 @@ describe('DeployService', function () {
       this.validate = () => deployment;
       _.assign(this, deployment);
     };
-    packagePathProvider = {
-      getS3Path: sinon.stub().returns(Promise.resolve(''))
+    PackagePathProvider = function () {
+      return {
+        getS3Path() {
+          return Promise.resolve('');
+        }
+      };
     };
     sender = {
       sendCommand: sinon.stub().returns(Promise.resolve({}))
@@ -95,17 +97,17 @@ describe('DeployService', function () {
 
     const GetServicePortConfig = () => ({ blue: 0, green: 0 });
 
-    sut.__set__({ // eslint-disable-line no-underscore-dangle
-      s3PackageLocator,
-      EnvironmentHelper,
-      OpsEnvironment,
-      infrastructureConfigurationProvider,
-      namingConventionProvider,
-      DeploymentContract,
-      packagePathProvider,
-      sender,
-      deploymentLogger,
-      GetServicePortConfig
+    sut = inject({
+      '../../modules/s3PackageLocator': s3PackageLocator,
+      '../../models/Environment': EnvironmentHelper,
+      '../../models/OpsEnvironment': OpsEnvironment,
+      '../../modules/provisioning/infrastructureConfigurationProvider': infrastructureConfigurationProvider,
+      '../../modules/provisioning/namingConventionProvider': namingConventionProvider,
+      '../../modules/deployment/DeploymentContract': DeploymentContract,
+      '../../modules/PackagePathProvider': PackagePathProvider,
+      '../../modules/sender': sender,
+      '../../modules/DeploymentLogger': deploymentLogger,
+      '../../queryHandlers/GetServicePortConfig': GetServicePortConfig
     });
   });
 

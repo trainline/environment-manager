@@ -1,23 +1,19 @@
-/* TODO: enable linting and fix resulting errors */
-/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-let should = require('should');
-let sinon = require('sinon');
-let rewire = require('rewire');
-let deploymentMonitor = rewire('../../modules/monitoring/DeploymentMonitor');
+require('should');
+let inject = require('inject-loader!../../modules/monitoring/DeploymentMonitor');
 let NodeDeploymentStatus = require('../../Enums').NodeDeploymentStatus;
 let Enums = require('../../Enums');
 
 describe('DeploymentMonitor', () => {
-
+  let deploymentMonitor = inject();
   describe('detectNodesDeploymentsStatus()', () => {
-
-    let fn = deploymentMonitor.__get__('detectNodesDeploymentStatus');
+    let fn = deploymentMonitor.detectNodesDeploymentStatus;
 
     it('for successful nodes', () => {
-      var result = fn([
+      let result = fn([
         {
           Status: NodeDeploymentStatus.Success
         },
@@ -31,8 +27,7 @@ describe('DeploymentMonitor', () => {
 
 
     it('for nodes in progress', () => {
-
-      var result = fn([
+      let result = fn([
         {
           Status: NodeDeploymentStatus.InProgress
         },
@@ -45,7 +40,7 @@ describe('DeploymentMonitor', () => {
 
 
     it('for failed nodes', () => {
-      var result = fn([
+      let result = fn([
         {
           Status: NodeDeploymentStatus.Failed
         },
@@ -67,10 +62,7 @@ describe('DeploymentMonitor', () => {
 
       result.name.should.equal(Enums.DEPLOYMENT_STATUS.Failed);
       result.reason.should.be.equal('Deployment failed: deployed 0/2 nodes');
-
     });
-
   });
-
 });
 

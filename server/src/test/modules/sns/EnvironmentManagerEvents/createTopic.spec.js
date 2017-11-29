@@ -1,8 +1,8 @@
 'use strict';
 
 const assert = require('assert');
-const rewire = require('rewire');
 const sinon = require('sinon');
+const inject = require('inject-loader!../../../../modules/sns/EnvironmentManagerEvents/createTopic');
 
 describe('Create Event', () => {
   let createTopicSpy;
@@ -10,11 +10,11 @@ describe('Create Event', () => {
 
   beforeEach(() => {
     createTopicSpy = sinon.spy((name, cb) => { cb(); });
-    sut = rewire('../../../../modules/sns/EnvironmentManagerEvents/createTopic');
-    /* eslint-disable no-underscore-dangle */
-    sut.__set__('aws', {
-      SNS: function SNS() {
-        this.createTopic = createTopicSpy;
+    sut = inject({
+      'aws-sdk': {
+        SNS: function SNS() {
+          this.createTopic = createTopicSpy;
+        }
       }
     });
   });

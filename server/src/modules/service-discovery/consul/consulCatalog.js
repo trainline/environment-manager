@@ -109,6 +109,7 @@ function createConsulClient(environment) {
 }
 
 module.exports = {
+  createConsulClient,
   getAllServices,
   getService,
   getServiceHealth,

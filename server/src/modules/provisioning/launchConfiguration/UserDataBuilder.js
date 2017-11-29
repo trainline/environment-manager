@@ -4,8 +4,8 @@
 
 let assert = require('assert');
 let base64 = require('../../base64');
-let createLinuxUserData = require('./userData/linux-user-data');
-let createWindowsUserData = require('./userData/windows-user-data');
+let { createUserData: createLinuxUserData } = require('./userData/linux-user-data');
+let { createUserData: createWindowsUserData } = require('./userData/windows-user-data');
 
 function isNonEmptyString(maybeStr) {
   return maybeStr !== undefined

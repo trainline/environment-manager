@@ -1,8 +1,8 @@
 'use strict';
 
 const assert = require('assert');
-const rewire = require('rewire');
 const sinon = require('sinon');
+const inject = require('inject-loader!../../../../modules/sns/EnvironmentManagerEvents/publishEvent');
 
 describe('Publish Event', () => {
   let sut;
@@ -10,12 +10,12 @@ describe('Publish Event', () => {
   let publishSpy;
 
   beforeEach(() => {
-    sut = rewire('../../../../modules/sns/EnvironmentManagerEvents/publishEvent');
     publishSpy = sinon.spy((name, cb) => { return cb(null, 'result value'); });
-    // eslint-disable-next-line no-underscore-dangle
-    sut.__set__('aws', {
-      SNS: function SNS() {
-        this.publish = publishSpy;
+    sut = inject({
+      'aws-sdk': {
+        SNS: function SNS() {
+          this.publish = publishSpy;
+        }
       }
     });
     event = createValidEvent();

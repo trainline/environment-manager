@@ -1,38 +1,34 @@
 'use strict';
 
-// eslint-disable-next-line no-unused-vars
-const rewire = require('rewire');
-// const assert = require('assert');
 const sinon = require('sinon');
+const inject = require('inject-loader!../../modules/remoteCacheFlush');
 
 describe('remoteCacheFlush', () => {
-  let sut;
+  let sut; // eslint-disable-line no-unused-vars
   let MockRequest;
 
   beforeEach(() => {
-    sut = rewire('../../modules/remoteCacheFlush');
-    // eslint-disable-next-line no-underscore-dangle
-    sut.__set__('consulClient', MockConsulClient());
     MockRequest = {
       post: sinon.spy()
     };
-    // eslint-disable-next-line no-underscore-dangle
-    sut.__set__('request', MockRequest);
-    // eslint-disable-next-line no-underscore-dangle
-    sut.__set__('configEnvironments', {
-      get: sinon.stub().returns(Promise.resolve(
-        { Value: { EnvironmentType: 'Cluster' } }
-      ))
-    });
-    // eslint-disable-next-line no-underscore-dangle
-    sut.__set__('config', {
-      getUserValue: sinon.stub().returns({
-        CacheReset: {
-          Cluster: {
-            plain: 'aaa'
+    MockRequest.defaults = () => MockRequest;
+    sut = inject({
+      './consul-client': MockConsulClient(),
+      'request': MockRequest,
+      './data-access/configEnvironments': {
+        get: sinon.stub().returns(Promise.resolve(
+          { Value: { EnvironmentType: 'Cluster' } }
+        ))
+      },
+      '../config': {
+        getUserValue: sinon.stub().returns({
+          CacheReset: {
+            Cluster: {
+              plain: 'aaa'
+            }
           }
-        }
-      })
+        })
+      }
     });
   });
 

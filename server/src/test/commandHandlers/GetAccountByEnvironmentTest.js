@@ -1,40 +1,39 @@
-/* TODO: enable linting and fix resulting errors */
-/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-let rewire = require('rewire');
 let assert = require('assert');
 let sinon = require('sinon');
+let inject = require('inject-loader!../../commands/aws/GetAccountByEnvironment');
 
 const CANNED_ENVIRONMENT = {
-  OwningCluster: "Code to Joy",
-  Description: "A Mock Environment",
-  EnvironmentType: "MockEnvironmentType",
+  OwningCluster: 'Code to Joy',
+  Description: 'A Mock Environment',
+  EnvironmentType: 'MockEnvironmentType',
   SchemaVersion: 1,
-  DeploymentMap: "MockDepMap"
+  DeploymentMap: 'MockDepMap'
 };
 
 const CANNED_ENV_TYPE = {
-  DeploymentBucket: "tl-deployment-mock",
-  Consul:{
+  DeploymentBucket: 'tl-deployment-mock',
+  Consul: {
     SecurityTokenPath: {
-      Key: "path/to/configuration.json",
-      Bucket: "tl-bucket-mock"
+      Key: 'path/to/configuration.json',
+      Bucket: 'tl-bucket-mock'
     },
     Port: 8500,
     Servers: [],
-    DataCenter: "mock-dc"
+    DataCenter: 'mock-dc'
   },
   LoadBalancers: [],
   Subnets: {},
   SchemaVersion: 2,
   AWSAccountNumber: 9012342345664,
-  VpcId: "vpc-dfgh4f5g",
-  AWSAccountName: "MockAccount"
+  VpcId: 'vpc-dfgh4f5g',
+  AWSAccountName: 'MockAccount'
 };
 
-describe('GetAccountByEnvironment', function() {
+describe('GetAccountByEnvironment', function () {
   const command = {
     name: 'GetAccountByEnvironment',
     environment: 'mck22'
@@ -49,11 +48,10 @@ describe('GetAccountByEnvironment', function() {
     configCache.getEnvironmentByName = resolveStub(CANNED_ENVIRONMENT);
     configCache.getEnvironmentTypeByName = resolveStub(CANNED_ENV_TYPE);
 
-    sut = rewire('../../commands/aws/GetAccountByEnvironment');
-    sut.__set__({ configCache });
+    sut = inject({ '../../modules/configurationCache': configCache });
   });
 
-  describe('with a known environment, type and account', function() {
+  describe('with a known environment, type and account', function () {
     it('tries to find an environment with the supplied name', () => {
       return sut(command).then(() => {
         assert(configCache.getEnvironmentByName.calledOnce);
@@ -75,7 +73,7 @@ describe('GetAccountByEnvironment', function() {
     });
   });
 
-  describe('with an unknown environment', function() {
+  describe('with an unknown environment', function () {
     it('rejects with an error describing an unknown environment', () => {
       configCache.getEnvironmentByName = resolveStub(null);
 
@@ -94,7 +92,7 @@ describe('GetAccountByEnvironment', function() {
     });
   });
 
-  describe('with an unknown environment type', function() {
+  describe('with an unknown environment type', function () {
     it('rejects with an error describing an unknown environment', () => {
       configCache.getEnvironmentTypeByName = resolveStub(null);
 

@@ -1,14 +1,12 @@
-/* TODO: enable linting and fix resulting errors */
-/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let assert = require('assert');
-let rewire = require('rewire');
 let sinon = require('sinon');
+let inject = require('inject-loader!../../../modules/authorizers/environmentProtection');
 
-describe('environmentProtection', function() {
-
+describe('environmentProtection', function () {
   const ENVIRONMENT_NAME = 'TestEnvironment';
   const ENVIRONMENT_TYPE = {};
   const ENVIRONMENT = {
@@ -24,11 +22,10 @@ describe('environmentProtection', function() {
       getEnvironmentTypeByName: sinon.stub().returns(Promise.resolve(ENVIRONMENT_TYPE))
     };
 
-    sut = rewire('../../../modules/authorizers/environmentProtection');
-    sut.__set__({ configCache });
+    sut = inject({ '../configurationCache': configCache });
   });
 
-  describe('an environment type without a ProtectedActions property', function() {
+  describe('an environment type without a ProtectedActions property', function () {
     beforeEach(() => {
       ENVIRONMENT_TYPE.ProtectedActions = null;
       delete ENVIRONMENT_TYPE.ProtectedActions;
@@ -40,14 +37,14 @@ describe('environmentProtection', function() {
       ''
     ];
 
-    ACTIONS.forEach(action => {
+    ACTIONS.forEach((action) => {
       it(`should not mark "${action}" as protected`, () => {
-        return sut.isActionProtected(ENVIRONMENT_NAME, action).then(isProtected => assert.equal(isProtected, false))
+        return sut.isActionProtected(ENVIRONMENT_NAME, action).then(isProtected => assert.equal(isProtected, false));
       });
     });
   });
 
-  describe('an environment type with the "SCHEDULE_ENVIRONMENT" action protected', function() {
+  describe('an environment type with the "SCHEDULE_ENVIRONMENT" action protected', function () {
     const PROTECTED_ACTION = 'SCHEDULE_ENVIRONMENT';
     const OTHER_ACTIONS = [
       'SCHEDULE_TEST_ENVIRONMENT',
@@ -59,12 +56,12 @@ describe('environmentProtection', function() {
     });
 
     it('should mark SCHEDULE_ENVIRONMENT as procted', () => {
-      return sut.isActionProtected(ENVIRONMENT_NAME, PROTECTED_ACTION).then(isProtected => assert.equal(isProtected, true))
+      return sut.isActionProtected(ENVIRONMENT_NAME, PROTECTED_ACTION).then(isProtected => assert.equal(isProtected, true));
     });
 
-    OTHER_ACTIONS.forEach(action => {
+    OTHER_ACTIONS.forEach((action) => {
       it(`should not mark "${action}" as protected`, () => {
-        return sut.isActionProtected(ENVIRONMENT_NAME, action).then(isProtected => assert.equal(isProtected, false))
+        return sut.isActionProtected(ENVIRONMENT_NAME, action).then(isProtected => assert.equal(isProtected, false));
       });
     });
   });

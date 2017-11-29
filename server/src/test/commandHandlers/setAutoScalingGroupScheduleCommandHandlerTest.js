@@ -1,91 +1,79 @@
-/* TODO: enable linting and fix resulting errors */
-/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let should = require('should');
 let sinon = require('sinon');
-let rewire = require('rewire');
-let Target = rewire('../../commands/asg/SetAutoScalingGroupSchedule');
+let inject = require('inject-loader!../../commands/asg/SetAutoScalingGroupSchedule');
 
 describe('SetAutoScalingGroupScheduleCommandHandler:', () => {
+  let autoScalingGroupClientMock;
+  let autoScalingGroupClientFactoryMock;
+  let ec2InstanceClientMock;
+  let ec2InstanceClientFactoryMock;
 
-  var autoScalingGroupClientMock;
-  var autoScalingGroupClientFactoryMock;
-  var ec2InstanceClientMock;
-  var ec2InstanceClientFactoryMock;
-
-  var configureMocks = function () {
-
+  let configureMocks = function () {
     autoScalingGroupClientMock = {
       setTag: sinon.stub().returns({
         promise: () => Promise.resolve()
       }),
-      describeScheduledActions: request => Promise.resolve([])
+      describeScheduledActions: () => Promise.resolve([])
     };
 
     autoScalingGroupClientFactoryMock = {
-      create: sinon.stub().returns(Promise.resolve(autoScalingGroupClientMock)),
+      create: sinon.stub().returns(Promise.resolve(autoScalingGroupClientMock))
     };
 
     ec2InstanceClientMock = {
-      setTag: sinon.stub().returns(Promise.resolve()),
+      setTag: sinon.stub().returns(Promise.resolve())
     };
 
     ec2InstanceClientFactoryMock = {
-      create: sinon.stub().returns(Promise.resolve(ec2InstanceClientMock)),
+      create: sinon.stub().returns(Promise.resolve(ec2InstanceClientMock))
     };
-
   };
 
   describe('When an AutoScalingGroup named "sb1-in-Test" exists in "Sandbox" account', () => {
-
-    var expectedAutoScalingGroup = {
+    let expectedAutoScalingGroup = {
       AutoScalingGroupName: 'sb1-in-Test',
       Instances: [
         { InstanceId: 'instance-one' },
-        { InstanceId: 'instance-two' },
-      ],
+        { InstanceId: 'instance-two' }
+      ]
     };
 
-    var AutoScalingGroupMock = {
-      getByName: sinon.stub().returns(Promise.resolve(expectedAutoScalingGroup)),
+    let AutoScalingGroupMock = {
+      getByName: sinon.stub().returns(Promise.resolve(expectedAutoScalingGroup))
     };
 
     describe('and I send a command to set its schedule tag to "247" without affecting its instances too', () => {
-
-      var promise = null;
+      let promise = null;
 
       before('sending the command', () => {
-
         configureMocks();
 
-        var command = {
+        let command = {
           name: 'setAutoScalingGroupScheduleTag',
           autoScalingGroupName: 'sb1-in-Test',
           accountName: 'Sandbox',
           schedule: '247',
-          propagateToInstances: false,
+          propagateToInstances: false
         };
-        Target.__set__({
-          ec2InstanceClientFactory: ec2InstanceClientFactoryMock,
-          AutoScalingGroup: AutoScalingGroupMock,
-          autoScalingGroupClientFactory: autoScalingGroupClientFactoryMock,
+        let sut = inject({
+          '../../modules/resourceFactories/ec2InstanceResourceFactory': ec2InstanceClientFactoryMock,
+          '../../models/AutoScalingGroup': AutoScalingGroupMock,
+          '../../modules/resourceFactories/asgResourceFactory': autoScalingGroupClientFactoryMock
         });
-        
-
-        promise = Target(command);
-
+        promise = sut(command);
       });
 
       it('should create an AutoScalingGroup client for the specified account', () =>
 
         promise.then(() => {
-
           autoScalingGroupClientFactoryMock.create.called.should.be.true();
           autoScalingGroupClientFactoryMock.create.getCall(0).args.should.match([
             undefined,
-            { accountName: 'Sandbox' },
+            { accountName: 'Sandbox' }
           ]);
         })
 
@@ -100,7 +88,7 @@ describe('SetAutoScalingGroupScheduleCommandHandler:', () => {
       it('should return a list of AutoScalingGroup changed that contains the target one', () =>
 
         promise.then(result => result.should.match({
-          ChangedAutoScalingGroups: ['sb1-in-Test'],
+          ChangedAutoScalingGroups: ['sb1-in-Test']
         }))
 
       );
@@ -108,7 +96,7 @@ describe('SetAutoScalingGroupScheduleCommandHandler:', () => {
       it('should return a list of ChangedInstances changed that has to be undefined', () =>
 
         promise.then(result => result.should.match({
-          ChangedInstances: undefined,
+          ChangedInstances: undefined
         }))
 
       );
@@ -116,14 +104,12 @@ describe('SetAutoScalingGroupScheduleCommandHandler:', () => {
       it('should set schedule tag for the target AutoScalingGroup', () =>
 
         promise.then(() => {
-
           autoScalingGroupClientMock.setTag.called.should.be.true();
           autoScalingGroupClientMock.setTag.getCall(0).args[0].should.match({
             name: 'sb1-in-Test',
             tagKey: 'Schedule',
-            tagValue: '247',
+            tagValue: '247'
           });
-
         })
 
       );
@@ -133,39 +119,33 @@ describe('SetAutoScalingGroupScheduleCommandHandler:', () => {
         promise.then(() => ec2InstanceClientMock.setTag.called.should.be.false())
 
       );
-
     });
 
     describe('and I send a command to set schedule tag to "247" to it and its instances too', () => {
-
-      var promise = null;
+      let promise = null;
 
       before('sending the command', () => {
-
         configureMocks();
 
-        var command = {
+        let command = {
           name: 'setAutoScalingGroupScheduleTag',
           autoScalingGroupName: 'sb1-in-Test',
           accountName: 'Sandbox',
           schedule: '247',
-          propagateToInstances: true,
+          propagateToInstances: true
         };
-        Target.__set__({
-          ec2InstanceClientFactory: ec2InstanceClientFactoryMock,
-          AutoScalingGroup: AutoScalingGroupMock,
-          autoScalingGroupClientFactory: autoScalingGroupClientFactoryMock,
+        let sut = inject({
+          '../../modules/resourceFactories/ec2InstanceResourceFactory': ec2InstanceClientFactoryMock,
+          '../../models/AutoScalingGroup': AutoScalingGroupMock,
+          '../../modules/resourceFactories/asgResourceFactory': autoScalingGroupClientFactoryMock
         });
-        
-
-        promise = Target(command);
-
+        promise = sut(command);
       });
 
       it('should return a list of AutoScalingGroup changed that contains the target one', () =>
 
         promise.then(result => result.should.match({
-          ChangedAutoScalingGroups: ['sb1-in-Test'],
+          ChangedAutoScalingGroups: ['sb1-in-Test']
         }))
 
       );
@@ -173,7 +153,7 @@ describe('SetAutoScalingGroupScheduleCommandHandler:', () => {
       it('should return a list of ChangedInstances changed that contains AutoScalingGroup instances', () =>
 
         promise.then(result => result.should.match({
-          ChangedInstances: ['instance-one', 'instance-two'],
+          ChangedInstances: ['instance-one', 'instance-two']
         }))
 
       );
@@ -181,14 +161,12 @@ describe('SetAutoScalingGroupScheduleCommandHandler:', () => {
       it('should set schedule tag for the target AutoScalingGroup', () =>
 
         promise.then(() => {
-
           autoScalingGroupClientMock.setTag.called.should.be.true();
           autoScalingGroupClientMock.setTag.getCall(0).args[0].should.match({
             name: 'sb1-in-Test',
             tagKey: 'Schedule',
-            tagValue: '247',
+            tagValue: '247'
           });
-
         })
 
       );
@@ -200,106 +178,85 @@ describe('SetAutoScalingGroupScheduleCommandHandler:', () => {
           ec2InstanceClientMock.setTag.getCall(0).args[0].should.match({
             instanceIds: ['instance-one', 'instance-two'],
             tagKey: 'Schedule',
-            tagValue: '247',
+            tagValue: '247'
           });
         })
 
       );
-
     });
 
     describe('and I send a command to reset the schedule tag to empty', () => {
-
-      var promise = null;
+      let promise = null;
 
       before('sending the command', () => {
-
         configureMocks();
 
-        var command = {
+        let command = {
           name: 'setAutoScalingGroupScheduleTag',
           autoScalingGroupName: 'sb1-in-Test',
           accountName: 'Sandbox',
           schedule: '',
-          propagateToInstances: true,
+          propagateToInstances: true
         };
-        Target.__set__({
-          ec2InstanceClientFactory: ec2InstanceClientFactoryMock,
-          AutoScalingGroup: AutoScalingGroupMock,
-          autoScalingGroupClientFactory: autoScalingGroupClientFactoryMock,
+        let sut = inject({
+          '../../modules/resourceFactories/ec2InstanceResourceFactory': ec2InstanceClientFactoryMock,
+          '../../models/AutoScalingGroup': AutoScalingGroupMock,
+          '../../modules/resourceFactories/asgResourceFactory': autoScalingGroupClientFactoryMock
         });
-        
-
-        promise = Target(command);
-
+        promise = sut(command);
       });
 
       it('should set the AutoScalingGroup schedule tag to empty', () => {
-        
         return promise.then(() => {
           autoScalingGroupClientMock.setTag.called.should.be.true();
           autoScalingGroupClientMock.setTag.getCall(0).args[0].should.match({
             tagKey: 'Schedule',
-            tagValue: '',
+            tagValue: ''
           });
         });
-
       });
 
       it('should set the AutoScalingGroup Instances schedule tags to empty', () =>
 
         promise.then(() => {
-
           ec2InstanceClientMock.setTag.called.should.be.true();
           ec2InstanceClientMock.setTag.getCall(0).args[0].should.match({
             tagKey: 'Schedule',
-            tagValue: '',
+            tagValue: ''
           });
-
         })
 
       );
-
     });
 
     describe('and I send an invalid command with an invalid schedule', () => {
-
-      var promise = null;
+      let promise = null;
 
       before('sending the command', () => {
         configureMocks();
 
-        var command = {
+        let command = {
           name: 'setAutoScalingGroupScheduleTag',
           autoScalingGroupName: 'sb1-in-Test',
           accountName: 'Sandbox',
           schedule: 'Wrong value',
-          propagateToInstances: true,
+          propagateToInstances: true
         };
-        Target.__set__({
-          ec2InstanceClientFactory: ec2InstanceClientFactoryMock,
-          AutoScalingGroup: AutoScalingGroupMock,
-          autoScalingGroupClientFactory: autoScalingGroupClientFactoryMock,
+        let sut = inject({
+          '../../modules/resourceFactories/ec2InstanceResourceFactory': ec2InstanceClientFactoryMock,
+          '../../models/AutoScalingGroup': AutoScalingGroupMock,
+          '../../modules/resourceFactories/asgResourceFactory': autoScalingGroupClientFactoryMock
         });
-        
-
-        promise = Target(command);
+        promise = sut(command);
       });
 
       it('should refuse the command', () => {
-
-        promise.catch(error => {
-
+        promise.catch((error) => {
           should(error).not.be.undefined();
           error.message.should.be.containEql('Provided schedule is invalid');
-
         });
-
       });
-
     });
-
   });
-
 });
 

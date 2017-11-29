@@ -2,9 +2,8 @@
 
 'use strict';
 
-const rewire = require('rewire');
 const assert = require('assert');
-const sinon = require('sinon');
+const inject = require('inject-loader!../../../modules/environment-state/getInstanceState');
 
 describe('getInstanceState', function () {
   let sut;
@@ -15,19 +14,19 @@ describe('getInstanceState', function () {
 
   function setup() {
     serviceDiscovery = {
-      getNodeHealth: sinon.stub().returns(Promise.resolve({})),
-      getNode: sinon.stub().returns(Promise.resolve({
-        Services: currentStates
-      }))
+      getNodeHealth: () => Promise.resolve({}),
+      getNode: () => Promise.resolve({ Services: currentStates })
     };
     serviceTargets = {
-      getAllServiceTargets: sinon.stub().returns(Promise.resolve(targetStates)),
-      getInstanceServiceDeploymentInfo: sinon.stub().returns(Promise.resolve({ Status: 'Success' })),
-      getServiceDeploymentCause: sinon.stub().returns(Promise.resolve('Test'))
+      getAllServiceTargets: () => Promise.resolve(targetStates),
+      getInstanceServiceDeploymentInfo: () => Promise.resolve({ Status: 'Success' }),
+      getServiceDeploymentCause: () => Promise.resolve('Test')
     };
 
-    sut = rewire('../../../modules/environment-state/getInstanceState');
-    sut.__set__({ serviceDiscovery, serviceTargets }); // eslint-disable-line no-underscore-dangle
+    sut = inject({
+      '../service-discovery': serviceDiscovery,
+      '../service-targets': serviceTargets
+    });
   }
 
   let SERVICE_STATES = [

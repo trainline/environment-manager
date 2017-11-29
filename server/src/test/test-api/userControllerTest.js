@@ -1,17 +1,17 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
-/* eslint-disable */
+
 'use strict';
 
 let sinon = require('sinon');
-let rewire = require('rewire');
 let assert = require('assert');
+let inject = require('inject-loader!../../api/controllers/user/userController');
 
-describe('userController', function() {
+describe('userController', function () {
   let sut;
-  
+
   beforeEach(() => {
     let userService = {
-      authenticateUser: (creds, duration) => {
+      authenticateUser: (creds) => {
         if (creds.username === 'correct' && creds.password === 'correct') {
           return Promise.resolve(true);
         } else {
@@ -26,12 +26,10 @@ describe('userController', function() {
       getCookieDuration: sinon.stub().returns(10)
     };
 
-    sut = rewire('../../api/controllers/user/userController');
-    sut.__set__({
-      userService,
-      cookieConfiguration
+    sut = inject({
+      '../../../modules/user-service': userService,
+      '../../../modules/authentications/cookieAuthenticationConfiguration': cookieConfiguration
     });
-
   });
 
   let res;
@@ -42,10 +40,9 @@ describe('userController', function() {
       send: sinon.stub(),
       json: sinon.stub()
     };
-  }); 
+  });
 
   describe('.login()', () => {
-
     function createRequest(body) {
       return {
         swagger: {
@@ -64,10 +61,10 @@ describe('userController', function() {
         password: 'correct'
       }, 20);
 
-      return sut.login(req, res).then((result) => {
+      return sut.login(req, res).then(() => {
         res.cookie.calledWith().should.be.true();
       });
-    })
+    });
 
     it('user should not get authenticated with right credentials', (done) => {
       let req = createRequest({
@@ -79,11 +76,10 @@ describe('userController', function() {
         .then(() => {
           done('login should fail');
         }, (reason) => {
-          assert.equal(reason, 'wrong password')
+          assert.equal(reason, 'wrong password');
           done();
         });
-    })
-
+    });
   });
 
   describe('.logout()', () => {
@@ -93,9 +89,9 @@ describe('userController', function() {
       sut.logout(req, res)
         .then(() => {
           res.clearCookie.calledWith('my-cookie-name').should.be.true();
-          res.json.calledWith({ ok: true}).should.be.true();
+          res.json.calledWith({ ok: true }).should.be.true();
           done();
         });
-    })
+    });
   });
 });

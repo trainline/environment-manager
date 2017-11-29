@@ -1,23 +1,22 @@
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
-/* eslint-disable no-underscore-dangle*/
 
 'use strict';
 
 let sinon = require('sinon');
 let assert = require('assert');
-let rewire = require('rewire');
 
-let instances = rewire('../../../modules/authorizers/instances');
+let inject = require('inject-loader!../../../modules/authorizers/instances');
 
 describe('instances authorisor', () => {
   let stubRequest;
   let expectedMethod;
   let expectedCluster;
 
+  let instances;
   beforeEach(() => {
     expectedCluster = 'clusterville';
-    instances.__set__({
-      Instance: {
+    instances = inject({
+      '../../models/Instance': {
         getById: sinon.stub().returns(Promise.resolve({
           getTag: sinon.stub().returns(expectedCluster)
         }))

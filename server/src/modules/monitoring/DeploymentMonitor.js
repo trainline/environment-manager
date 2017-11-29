@@ -15,6 +15,7 @@ let NodeDeploymentStatus = require('../../Enums').NodeDeploymentStatus;
 let deploymentLogger = require('../DeploymentLogger');
 
 module.exports = {
+  detectNodesDeploymentStatus,
   monitorActiveDeployments() {
     try {
       let stats = fs.lstatSync('DONT_RUN_DEPLOYMENT_MONITOR');

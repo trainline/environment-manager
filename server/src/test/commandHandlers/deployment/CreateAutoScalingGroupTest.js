@@ -1,14 +1,12 @@
-/* TODO: enable linting and fix resulting errors */
-/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let sinon = require('sinon');
-let should = require('should');
-let rewire = require('rewire');
+require('should');
+const inject = require('inject-loader!../../../commands/deployments/CreateAutoScalingGroup.js');
 
-describe('CreateAutoScalingGroup', function() {
-
+describe('CreateAutoScalingGroup', function () {
   const name = 'CreateAutoScalingGroup';
   const accountName = 'Prod';
   const autoScalingGroupName = 'auto-scaling-group';
@@ -44,8 +42,9 @@ describe('CreateAutoScalingGroup', function() {
     autoScalingGroupClientFactory = { create: sinon.stub().returns(Promise.resolve(autoScalingClientMock)) };
     command = { name, accountName, template };
 
-    sut = rewire('../../../commands/deployments/CreateAutoScalingGroup.js');
-    sut.__set__({ autoScalingGroupClientFactory });
+    sut = inject({
+      '../../modules/resourceFactories/asgResourceFactory': autoScalingGroupClientFactory
+    });
   });
 
   it('creates an ASG client for the correct account', () => {
@@ -58,7 +57,7 @@ describe('CreateAutoScalingGroup', function() {
   });
 
   it('should post template values to the ASG client', () => {
-    return sut(command).then(result => {
+    return sut(command).then(() => {
       autoScalingClientMock.post.called.should.be.true();
       autoScalingClientMock.post.getCall(0).args[0].should.match({
         AutoScalingGroupName: template.autoScalingGroupName,
@@ -68,9 +67,9 @@ describe('CreateAutoScalingGroup', function() {
         VPCZoneIdentifier: `${template.subnets[0]},${template.subnets[1]}`,
         DesiredCapacity: template.size.desired,
         Tags: [
-          { Key: 'EnvironmentName', Value:EnvironmentName },
-          { Key: 'Schedule', Value: '' },
-        ],
+          { Key: 'EnvironmentName', Value: EnvironmentName },
+          { Key: 'Schedule', Value: '' }
+        ]
       });
     });
   });

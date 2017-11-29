@@ -1,35 +1,32 @@
-/* TODO: enable linting and fix resulting errors */
-/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
 let sinon = require('sinon');
-let rewire = require('rewire');
 let assert = require('assert');
-
 let Instance = require('../../models/Instance');
+let inject = require('inject-loader!../../queryHandlers/ScanServersStatus');
 
-describe('ScanServersStatus', function() {
-
+describe('ScanServersStatus', function () {
   const MOCK_ENVIRONMENT = 'test-env';
   const RUNNING_INSTANCE = 'running-instance';
   const TERMINATED_INSTANCE = 'terminated-instance';
   const RUNNING_INSTANCE_SERVICE = 'running-instance-service';
   const TERMINATED_INSTANCE_SERVICE = 'terminated-instance-service';
 
-  let mockInstance_1 = new Instance({
+  let mockInstance1 = new Instance({
     InstanceId: 22,
     ImageId: 44,
-    Tags: [{Key:'Name', Value:RUNNING_INSTANCE}],
+    Tags: [{ Key: 'Name', Value: RUNNING_INSTANCE }],
     State: {
       Name: 'running'
     }
   });
 
-  let mockInstance_2 = new Instance({
+  let mockInstance2 = new Instance({
     InstanceId: 55,
     ImageId: 44,
-    Tags: [{Key:'Name', Value:TERMINATED_INSTANCE}],
+    Tags: [{ Key: 'Name', Value: TERMINATED_INSTANCE }],
     State: {
       Name: 'running'
     }
@@ -47,47 +44,44 @@ describe('ScanServersStatus', function() {
     getTag: sinon.stub().returns(MOCK_ENVIRONMENT),
     getServerRoleName: sinon.stub(),
     getRuntimeServerRoleName: sinon.stub(),
-    Instances:[mockInstance_1, mockInstance_2]
+    Instances: [mockInstance1, mockInstance2]
   };
 
   let mockServices = {
     [RUNNING_INSTANCE]: {
       Services: {
-        service1: {Service: RUNNING_INSTANCE_SERVICE, Tags:[]}
+        service1: { Service: RUNNING_INSTANCE_SERVICE, Tags: [] }
       }
     },
     [TERMINATED_INSTANCE]: {
       Services: {
-        service2: {Service: TERMINATED_INSTANCE_SERVICE, Tags:[]}
+        service2: { Service: TERMINATED_INSTANCE_SERVICE, Tags: [] }
       }
     }
   };
 
   let sender = {
-    sendQuery: function(handler, value) {
+    sendQuery(handler, value) {
       let query = value.query;
-      switch(query.name) {
+      switch (query.name) {
         case 'ScanCrossAccountImages':
           return Promise.resolve([mockImage]);
-          break;
         case 'GetNode':
           return Promise.resolve(mockServices[query.nodeName]);
-          break;
         default:
           throw Error('Unknown Query');
-          break;
       }
     }
   };
 
   let InstanceMock = {
-    getAllByEnvironment: function () {
-      return Promise.resolve([mockInstance_1, mockInstance_2]);
+    getAllByEnvironment() {
+      return Promise.resolve([mockInstance1, mockInstance2]);
     }
-  }
+  };
 
   let AutoScalingGroupMock = {
-    getAllByEnvironment: function () {
+    getAllByEnvironment() {
       return [mockAsg];
     }
   };
@@ -97,33 +91,31 @@ describe('ScanServersStatus', function() {
     environmentName: MOCK_ENVIRONMENT,
     filter: {
       cluster: undefined
-    },
+    }
   };
 
   beforeEach(() => {
-    sut = rewire('../../queryHandlers/ScanServersStatus');
-    sut.__set__({
-      sender,
-      Instance: InstanceMock,
-      AutoScalingGroup: AutoScalingGroupMock
+    sut = inject({
+      '../modules/sender': sender,
+      '../models/Instance': InstanceMock,
+      '../models/AutoScalingGroup': AutoScalingGroupMock
     });
-
   });
 
   describe('When all ASGs are running', () => {
     it('all services should be returned', () => {
-      return sut(query).then(result => {
+      return sut(query).then((result) => {
         let services = result.Value[0].Services;
-        assert.equal(services.length, 2)
+        assert.equal(services.length, 2);
       });
-    })
+    });
   });
 
   describe('ASGs that are terminated', () => {
-    beforeEach(() => mockInstance_2.State.Name = 'terminated');
+    beforeEach(() => { mockInstance2.State.Name = 'terminated'; });
 
     it('should have their services ignored', () => {
-      return sut(query).then(result => {
+      return sut(query).then((result) => {
         let services = result.Value[0].Services;
         assert.equal(services.length, 1);
         assert.equal(services[0].Name, RUNNING_INSTANCE_SERVICE);
@@ -137,7 +129,7 @@ describe('ScanServersStatus', function() {
     });
 
     it('should not be marked as latest stable', () => {
-      return sut(query).then(result => {
+      return sut(query).then((result) => {
         let ami = result.Value[0].Ami;
         assert.equal(ami.IsLatestStable, false);
       });
@@ -150,7 +142,7 @@ describe('ScanServersStatus', function() {
     });
 
     it('should not be marked as latest stable', () => {
-      return sut(query).then(result => {
+      return sut(query).then((result) => {
         let ami = result.Value[0].Ami;
         assert.equal(ami.IsLatestStable, false);
       });
@@ -163,7 +155,7 @@ describe('ScanServersStatus', function() {
     });
 
     it('should be marked as latest stable', () => {
-      return sut(query).then(result => {
+      return sut(query).then((result) => {
         let ami = result.Value[0].Ami;
         assert.equal(ami.IsLatestStable, true);
       });

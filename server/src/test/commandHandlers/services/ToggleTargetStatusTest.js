@@ -1,21 +1,18 @@
-/* TODO: enable linting and fix resulting errors */
-/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 'use strict';
 
 let assert = require('assert');
-let rewire = require('rewire');
 let sinon = require('sinon');
+let inject = require('inject-loader!../../../commands/services/ToggleTargetStatus');
 
-describe('ToggleTargetStatus', function() {
-
+describe('ToggleTargetStatus', function () {
   const command = {
     environment: 'mock-environment',
     service: 'ReallyAwesomeService',
     serverRole: 'DoAllTheThings'
   };
-  
+
   const currentKeyValueState = {
     value: {}
   };
@@ -29,30 +26,29 @@ describe('ToggleTargetStatus', function() {
       setTargetState: sinon.stub().returns(Promise.resolve({}))
     };
 
-    sut = rewire('../../../commands/services/ToggleTargetStatus');
-    sut.__set__({ serviceTargets });
+    sut = inject({ '../../modules/service-targets': serviceTargets });
   });
 
   function testEnablingAndDisabling() {
     describe('requests to disable the service', () => {
-      beforeEach(() => command.enable = false);
+      beforeEach(() => { command.enable = false; });
       it('should return a disabled service',
         () => sut(command).then(result => assert.equal(result.Action, 'Ignore')));
     });
 
     describe('requests to enable the service', () => {
-      beforeEach(() => command.enable = true);
+      beforeEach(() => { command.enable = true; });
       it('should return an enabled service',
         () => sut(command).then(result => assert.equal(result.Action, 'Install')));
     });
   }
 
   it('uses the expected key format', () => {
-   return sut(command).then(result => {
+    return sut(command).then(() => {
       let getStateCfg = serviceTargets.getTargetState.firstCall.args[1];
       assert.equal(getStateCfg.key,
         `environments/${command.environment}/roles/${command.serverRole}/services/${command.service}/${command.slice}`);
-    })
+    });
   });
 
   describe('on services with no Status defined', () => {
@@ -71,14 +67,14 @@ describe('ToggleTargetStatus', function() {
 
   describe('when a target state update errors', () => {
     currentKeyValueState.value.Action = 'Install';
-    beforeEach(() => serviceTargets.setTargetState = sinon.stub().throws());
+    beforeEach(() => { serviceTargets.setTargetState = sinon.stub().throws(); });
 
     it('should provide a contextual error message', () => {
-      return sut(command).catch(error => {
+      return sut(command).catch((error) => {
         return assert.equal(error.message,
-          `There was a problem updating the future installation status for ${command.service}. Its status is still currently set to ${currentKeyValueState.value.Action}`)
-      })
-    })
+          `There was a problem updating the future installation status for ${command.service}. Its status is still currently set to ${currentKeyValueState.value.Action}`);
+      });
+    });
   });
 });
 
