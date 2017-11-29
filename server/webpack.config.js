@@ -1,9 +1,10 @@
 'use strict';
 
+const path = require('path');
 const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
 
-module.exports = {
+const server = {
   devtool: 'source-map',
   target: 'node',
   node: {
@@ -11,10 +12,11 @@ module.exports = {
   },
   context: __dirname,
   entry: {
-    main: './src/index.js'
+    server: './src/index.js'
   },
   output: {
-    filename: './lib/bundle.js'
+    path: path.resolve(__dirname, 'lib'),
+    filename: '[name].js'
   },
   resolve: {
     extensions: ['.js', '.json', '.ts']
@@ -29,3 +31,5 @@ module.exports = {
     new webpack.BannerPlugin({ banner: 'require("source-map-support").install();', raw: true, entryOnly: false })
   ]
 };
+
+module.exports = server;
