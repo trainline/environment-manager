@@ -6,18 +6,6 @@
 
 <form id="SearchFilter" class="form-inline">
     <div class="form-group">
-        <label class="control-label text-left">Deployment Map:</label>
-    </div>
-    <div class="form-group">
-        <select class="form-control" ng-model="vm.deploymentMapToRedictTo"  ng-change="vm.redirectToDeploymentMap()">
-            <option 
-                ng-repeat="c in vm.allDeploymentMaps | orderBy : 'DeploymentMapName'" 
-                ng-selected="{{c.DeploymentMapName == vm.deploymentMapToRedictTo}}"
-                value="{{c.DeploymentMapName}}">
-            {{c.DeploymentMapName}}</option>
-        </select>
-    </div>
-    <div class="form-group">
         <label class="control-label text-left">Owning Team:</label>
     </div>
     <div class="form-group">
