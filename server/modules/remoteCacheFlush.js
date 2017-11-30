@@ -24,7 +24,13 @@ function flush(environment, hosts) {
     .then(getNodesForServices)
     .then(createAddresses(hosts))
     .then((addresses) => { return sendRequestToAddresses(token, addresses); })
-    .then(results => results)
+    .then((results) => {
+      return consulClientInstance.kv.set(`environments/${environment}/cacheTimestamp`, Date.now().toString())
+        .then(() => {
+          results.unshift({ status: 'success', message: 'Consul Cache Updated' });
+          return results;
+        });
+    })
     .catch((e) => {
       logger.error('Cache Reset Error: ', e);
       return { error: e.message };
