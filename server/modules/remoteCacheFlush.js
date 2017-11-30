@@ -25,7 +25,7 @@ function flush(environment, hosts) {
     .then(createAddresses(hosts))
     .then((addresses) => { return sendRequestToAddresses(token, addresses); })
     .then((results) => {
-      consulClientInstance.kv.set(`environments/${environment}/cacheTimestamp`, Date.now().toString())
+      return consulClientInstance.kv.set(`environments/${environment}/cacheTimestamp`, Date.now().toString())
         .then(() => {
           results.unshift({ status: 'success', message: 'Consul Cache Updated' });
           return results;
