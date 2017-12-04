@@ -15,6 +15,7 @@ let SetAutoScalingGroupSize = require('../../../commands/asg/SetAutoScalingGroup
 let SetAutoScalingGroupSchedule = require('../../../commands/asg/SetAutoScalingGroupSchedule');
 let UpdateAutoScalingGroup = require('../../../commands/asg/UpdateAutoScalingGroup');
 let GetAutoScalingGroupScheduledActions = require('../../../queryHandlers/GetAutoScalingGroupScheduledActions');
+let GetAutoScalingGroupLifeCycleHooks = require('../../../queryHandlers/GetAutoScalingGroupLifeCycleHooks');
 let getASGReady = require('../../../modules/environment-state/getASGReady');
 let Environment = require('../../../models/Environment');
 let sns = require('../../../modules/sns/EnvironmentManagerEvents');
@@ -95,7 +96,10 @@ function getAsgByName(req, res, next) {
 
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    return getASG({ accountName, autoScalingGroupName }).then(data => res.json(data));
+    let lifecycleHooks = yield GetAutoScalingGroupLifeCycleHooks({ accountName, autoScalingGroupName });
+    return getASG({ accountName, autoScalingGroupName }).then((data) => {
+      res.json(Object.assign({}, data, { LifecycleHooks: lifecycleHooks }));
+    });
   }).catch(next);
 }
 
