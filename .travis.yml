@@ -22,7 +22,7 @@ before_script:
   - yarn global add gulp
 
 script:
-  - (cd server && exec yarn run lint && exec yarn run test && exec yarn run build)
+  - (cd server && exec yarn test)
   - (cd client && exec yarn test)
 
 after_success:
