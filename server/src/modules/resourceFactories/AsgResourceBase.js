@@ -150,6 +150,10 @@ function AsgResourceBase(accountId) {
     throw standardifyError(error, request.AutoScalingGroupName);
   }));
 
+  this.describeLifeCycleHooks = request => asgClient().then(client => client.describeLifecycleHooks(request).promise().then(result => result.ScheduledUpdateGroupActions).catch((error) => {
+    throw standardifyError(error, request.AutoScalingGroupName);
+  }));
+
   this.deleteScheduledAction = request => asgClient().then(client => client.deleteScheduledAction(request).promise().catch((error) => {
     throw standardifyError(error, request.AutoScalingGroupName);
   }));
