@@ -8,9 +8,14 @@ angular.module('EnvironmentManager.common')
   .directive('cronEditor', function () {
     return {
       restrict: 'E',
-      scope: { cron: '=' },
+      scope: { cron: '=', maxSize: '=' },
       templateUrl: '/app/common/directives/cronEditor.html',
       controller: function ($scope, $rootScope, $attrs) {
+        var init = function () {
+          for (var i = 0; i <= $scope.maxSize; i += 1)
+            $scope.options.actions.push({ value: i + ':', label: i });
+        };
+
         var parseDays = function (daysStr) {
           if (!daysStr) {
             return [1, 2, 3, 4, 5];
@@ -115,6 +120,7 @@ angular.module('EnvironmentManager.common')
         });
 
         loadCron();
+        init();
       }
     };
   });

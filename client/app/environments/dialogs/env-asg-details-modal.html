@@ -82,7 +82,7 @@
             <div class="form-group" ng-class="{'has-error': formScaling.DefaultSchedule.$invalid}">
               <label class="col-md-1 control-label text-left nowrap">Schedule:</label>
               <div class="col-md-8">
-                <schedule-editor show-on="true" show-off="true" show-default="true" show-specific="true" schedule="vm.asgUpdate.NewSchedule"></schedule-editor>
+                <schedule-editor max-size="vm.asgUpdate.MaxSize" show-on="true" show-off="true" show-default="true" show-specific="true" schedule="vm.asgUpdate.NewSchedule"></schedule-editor>
               </div>
               <span class="help-block" ng-if="formScaling.DefaultSchedule.$dirty && formScaling.DefaultSchedule.$invalid">Schedule should be set to 'ON' or specific Start and End cron formats (see Tagging standards).</span>
             </div>

@@ -11,7 +11,8 @@ angular.module('EnvironmentManager.common')
       showOn: '=',
       showOff: '=',
       showDefault: '=',
-      showSpecific: '='
+      showSpecific: '=',
+      maxSize: '='
     },
     templateUrl: '/app/common/directives/scheduleEditor.html',
     controllerAs: 'vm',

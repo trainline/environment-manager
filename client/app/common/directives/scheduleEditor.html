@@ -22,7 +22,7 @@
 	  </select>
   </div>
   <div ng-show="vm.schedule" class="schedule-line" ng-repeat="cron in vm.crons">
-    <cron-editor cron="cron"></cron-editor>
+    <cron-editor cron="cron" max-size="vm.maxSize"></cron-editor>
     <button class="btn btn-danger" ng-click="vm.remove(cron)">X</button>
   </div>
   
