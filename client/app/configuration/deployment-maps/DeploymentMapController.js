@@ -15,6 +15,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
     vm.deploymentTargets = []; // Active set of Deployment Targets
 
     vm.owningClustersList = [];
+    vm.allDeploymentMaps = [];
     vm.selectedOwningCluster = SHOW_ALL_OPTION;
     vm.serverRole = '';
     vm.serviceName = '';
@@ -23,6 +24,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
     vm.dataLoading = true;
 
     var deploymentMapName = $routeParams.deploymentmap;
+    vm.deploymentMapToRedictTo = deploymentMapName;
 
     var querySync = new QuerySync(vm, {
       cluster: {
@@ -167,6 +169,11 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
       $scope.ViewAuditHistory('Deployment Map', vm.deploymentMap.DeploymentMapName);
     };
 
+    vm.redirectToDeploymentMap = function () {
+      var url = "/config/deploymentmaps/" + vm.deploymentMapToRedictTo;
+      $location.path(url);
+    };
+
     function showTargetDialog(target, mode) {
       var instance = $uibModal.open({
         templateUrl: '/app/configuration/deployment-maps/deployment-maps-target-modal.html',
@@ -201,6 +208,9 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
 
     function readDeploymentMap(mapName) {
       vm.dataLoading = true;
+      DeploymentMap.getAll().then(function (deploymentMaps) {
+        vm.allDeploymentMaps = deploymentMaps;
+      });
       return DeploymentMap.getByName(mapName).then(function (deploymentMap) {
         deploymentMap.Value.DeploymentTarget = deploymentMap.Value.DeploymentTarget.map(deploymentMapConverter.toDeploymentTarget);
         vm.deploymentMap = deploymentMap;
@@ -224,4 +234,3 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
 
     init();
   });
-
