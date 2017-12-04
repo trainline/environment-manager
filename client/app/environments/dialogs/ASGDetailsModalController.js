@@ -276,6 +276,9 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
             desired: vm.asgUpdate.DesiredCapacity,
             max: vm.asgUpdate.MaxSize
           },
+          scaling: {
+            terminationDelay: vm.asgUpdate.TerminationDelay
+          },
           network: {
             availabilityZoneName: vm.asgUpdate.AvailabilityZone
           }

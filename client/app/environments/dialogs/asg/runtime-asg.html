@@ -47,6 +47,23 @@
   </div>
 </div>
 <div class="form-group">
+    <label class="col-md-2 control-label text-left nowrap">Scaling Options:</label>
+    <div class="col-md-8">
+      <label class="control-label text-left nonbold inline">
+        <input
+          type="checkbox"
+          name="delayedTermination"
+          ng-checked="vm.asgUpdate.TerminationDelay"
+          ng-click="vm.asgUpdate.TerminationDelay = vm.asgUpdate.TerminationDelay > 0 ? 0 : 3"
+        > Delay instance termination (services are deregistered instantly)
+      </label>
+      <br />
+      <label class="control-label text-left nonbold inline" ng-if="vm.asgUpdate.TerminationDelay">
+        Delay for <input class="form-control inline" style="width: 60px" name="terminationDelay" type="number" min="1" ng-model="vm.asgUpdate.TerminationDelay" ng-readonly="!vm.canUser('edit')" /> minute(s)
+      </label>
+    </div>
+  </div>
+<div class="form-group">
   <label class="col-md-2 control-label text-left nowrap">Availability Zone(s):</label>
   <div class="col-md-6">
     <div style="margin-top: 6px;">
