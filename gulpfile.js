@@ -44,8 +44,9 @@ function copyServerFiles() {
   return gulp.src([
     '**/*',
     '!acceptance-tests/**/*',
+    '!lib/test/**/*',
     '!node_modules/**/*',
-    '!test/**/*',
+    '!src/**/*',
     '!.*',
     '!configuration.sample.json'
   ], { cwd: './server', nodir: true })

@@ -32,8 +32,9 @@ server/sftp-config.json
 server/configuration.json
 server/configuration.js
 
-.vscode
-.flowconfig
+# Compiled files
+server/lib/
+
 dist/
 build/
 /lambda/**/*.zip
@@ -53,3 +54,5 @@ environment-manager-*.zip
 **/terraform.tfstate
 **/terraform.tfstate.backup
 **/*.tfvars
+
+.vscode/launch.json
