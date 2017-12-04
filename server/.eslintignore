@@ -1,5 +1,5 @@
 /acceptance-tests/**/*.*
-/build/**/*.*
 /deployment/**/*.*
+/lib/**/*.*
 /node_modules/**/*.*
 /scripts/**/*.*

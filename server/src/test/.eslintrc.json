@@ -1,0 +1,17 @@
+{
+  "env": {
+    "mocha": true
+  },
+  "rules": {
+    "func-names": 0,
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true
+      }
+    ],
+    "import/no-webpack-loader-syntax": 1,
+    "no-warning-comments": 1,
+    "prefer-arrow-callback": 0
+  }
+}
