@@ -32,9 +32,8 @@ server/sftp-config.json
 server/configuration.json
 server/configuration.js
 
-# Compiled files
-server/lib/
-
+.vscode
+.flowconfig
 dist/
 build/
 /lambda/**/*.zip
