@@ -13,22 +13,30 @@
   <div ng-show="vm.showSpecific">
     <label class="control-label text-left nonbold">
       <input type="radio" ng-click="vm.useSpecificClicked()" ng-checked="vm.schedule.indexOf(':') >= 0"> Use specific times...
-    </label><br /><br />
+    </label>
+    <br />
+    <br />
   </div>
   <div ng-show="vm.schedule.indexOf(':') >= 0 || !vm.showSpecific" class="schedule-timezone form-inline">
     <label class="control-label text-left nonbold">Time Zone: </label>
     <select class="form-control" ng-model="vm.timezone" ng-change="vm.updateTimeZone()">
       <option ng-repeat="timezone in vm.timezones" value="{{timezone}}">{{timezone}}</option>
-	  </select>
+    </select>
   </div>
-  <div ng-show="vm.schedule" class="schedule-line" ng-repeat="cron in vm.crons">
-    <cron-editor cron="cron" max-size="vm.maxSize"></cron-editor>
-    <button class="btn btn-danger" ng-click="vm.remove(cron)">X</button>
+
+  <div ng-show="vm.schedule">
+    <div class="schedule-line" ng-repeat="cron in vm.crons">
+      <cron-editor min="vm.minSize" max-size="vm.maxSize" cron="cron"></cron-editor>
+      <button class="btn btn-danger" style="margin-left: 20px" ng-click="vm.remove(cron)">X</button>
+    </div>
+    <button class="btn btn-default" ng-click="vm.add()">Add time</button>
   </div>
-  
-  <button ng-show="vm.schedule.indexOf(':') >= 0 || !vm.showSpecific" class="btn btn-default" ng-click="vm.add()">Add time</button>
+
+
 
   <div ng-show="vm.chartConfig && vm.chartConfig.series[0].data.length">
-    <br /><br /><highchart id="scheduleChart" config="vm.chartConfig"></highchart>
+    <br />
+    <br />
+    <highchart id="scheduleChart" config="vm.chartConfig"></highchart>
   </div>
 </div>
