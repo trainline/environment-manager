@@ -72,7 +72,7 @@ function actionForInstance(instance, dateTime) {
     return skip(skipReasons.explicitNoSchedule, source);
   }
 
-  let localTime = convertToLocalTime(dateTime, parseResult.timezone);
+  let localTime = convertToTimezone(dateTime, parseResult.timezone);
   let expectedState = expectedStateFromParsedSchedule(schedule, localTime);
 
   if (expectedState.noSchedule) {
@@ -100,7 +100,7 @@ function expectedStateFromSchedule(schedule, dateTime) {
     return 'NO SCHEDULE';
   }
 
-  let localTime = convertToLocalTime(dateTime, parsedSchedule.timezone);
+  let localTime = convertToTimezone(dateTime, parsedSchedule.timezone);
   let expectedState = expectedStateFromParsedSchedule(parsedSchedule.schedule, localTime);
 
   if (expectedState.noSchedule) {
@@ -232,8 +232,8 @@ function expectedStateFromParsedSchedule(schedules, dateTime) {
   return latest.state;
 }
 
-function convertToLocalTime(dateTime, timezone) {
-  return moment.tz(dateTime, 'utc').tz(timezone || 'utc').format('YYYY-MM-DDTHH:mm:ss');
+function convertToTimezone(dateTime, timezone) {
+  return moment.tz(dateTime, 'utc').tz(timezone || 'utc').format('YYYY-MM-DDTHH:mm:ss') + 'Z';
 }
 
 function getTagValue(instance, tagName) {
