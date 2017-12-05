@@ -233,7 +233,8 @@ function expectedStateFromParsedSchedule(schedules, dateTime) {
 }
 
 function convertToTimezone(dateTime, timezone) {
-  return moment.tz(dateTime, 'utc').tz(timezone || 'utc').format('YYYY-MM-DDTHH:mm:ss') + 'Z';
+  let matchingZoneTime = moment.tz(dateTime, 'utc').tz(timezone || 'utc').format('YYYY-MM-DDTHH:mm:ss');
+  return `${matchingZoneTime}Z`;
 }
 
 function getTagValue(instance, tagName) {
