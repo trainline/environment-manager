@@ -59,7 +59,7 @@
       </label>
       <br />
       <label class="control-label text-left nonbold inline" ng-if="vm.asgUpdate.TerminationDelay">
-        Delay for <input class="form-control inline" style="width: 60px" name="terminationDelay" type="number" min="1" ng-model="vm.asgUpdate.TerminationDelay" ng-readonly="!vm.canUser('edit')" /> minute(s)
+        Delay for <input class="form-control inline" style="width: 60px" name="terminationDelay" type="number" min="1" ng-model="vm.asgUpdate.TerminationDelay" ng-readonly="!vm.canUser('edit')" /> minute{{vm.asgUpdate.TerminationDelay > 1 ? 's' : ''}}
       </label>
     </div>
   </div>

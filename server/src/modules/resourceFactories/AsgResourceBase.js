@@ -3,6 +3,7 @@
 'use strict';
 
 let _ = require('lodash');
+let co = require('co');
 let amazonClientFactory = require('../amazon-client/childAccountClient');
 let AwsError = require('../errors/AwsError.class');
 let AutoScalingGroupNotFoundError = require('../errors/AutoScalingGroupNotFoundError.class');
@@ -89,7 +90,7 @@ function AsgResourceBase(accountId) {
     return asgClient().then(client => client.deleteAutoScalingGroup({ AutoScalingGroupName: name, ForceDelete: force }).promise());
   };
 
-  this.put = function (parameters) {
+  function updateASG(client, parameters) {
     let request = {
       AutoScalingGroupName: parameters.name
     };
@@ -114,9 +115,37 @@ function AsgResourceBase(accountId) {
       request.VPCZoneIdentifier = parameters.subnets.join(',');
     }
 
-    asgCache.del(accountId);
+    return client.updateAutoScalingGroup(request).promise();
+  }
 
-    return asgClient().then(client => client.updateAutoScalingGroup(request).promise()).catch((error) => {
+  function updateLCHs(client, parameters) {
+    let request = {
+      AutoScalingGroupName: parameters.name,
+      LifecycleHookName: '10min-draining'
+    };
+
+    if (_.isNil(parameters.scaling)) return Promise.resolve();
+
+    if (!parameters.scaling.terminationDelay) {
+      return client.deleteLifecycleHook(request).promise().catch(() => {});
+    }
+
+    Object.assign(request, {
+      HeartbeatTimeout: parameters.scaling.terminationDelay * 60,
+      LifecycleTransition: 'autoscaling:EC2_INSTANCE_TERMINATING',
+      DefaultResult: 'CONTINUE'
+    });
+
+    return client.putLifecycleHook(request).promise();
+  }
+
+  this.put = (parameters) => {
+    asgCache.del(accountId);
+    return co(function*() {
+      let client = yield asgClient();
+      yield updateASG(client, parameters);
+      yield updateLCHs(client, parameters);
+    }).catch((error) => {
       throw standardifyError(error, parameters.name);
     });
   };

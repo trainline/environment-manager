@@ -73,12 +73,15 @@ function* handler(command) {
     });
   }
 
+  let scaling = command.parameters.scaling;
+
   let parameters = {
     name: command.autoScalingGroupName,
     minSize: size.min,
     desiredSize: size.desired,
     maxSize: size.max,
-    subnets
+    subnets,
+    scaling
   };
 
   return resource.put(parameters);

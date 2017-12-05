@@ -10,7 +10,7 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
 
       var terminationDelay = 0;
       var emLifecycleHook = _.find(asg.LifecycleHooks, function(lch) {
-        return lch.LifecycleHookName === 'em-terminate';
+        return lch.LifecycleHookName === '10min-draining';
       });
 
       if (emLifecycleHook) {

@@ -284,6 +284,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
             availabilityZoneName: vm.asgUpdate.AvailabilityZone
           }
         };
+
         vm.asg.updateAutoScalingGroup(updated)
           .then(function () {
             modal.information({
