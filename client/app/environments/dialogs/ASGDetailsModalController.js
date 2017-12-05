@@ -63,6 +63,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       vm.asgUpdate.NewSchedule = vm.asg.Schedule;
       vm.asgUpdate.ScalingSchedule = vm.asg.ScalingSchedule;
       vm.asgUpdate.AvailabilityZone = deriveAvailabilityZoneFriendlyName(vm.asg.AvailabilityZones);
+      vm.asgUpdate.TerminationDelay = vm.asg.TerminationDelay
       vm.selectedScheduleMode = vm.asg.ScalingSchedule && vm.asg.ScalingSchedule.length ? 'scaling' : 'schedule';
     }
 
