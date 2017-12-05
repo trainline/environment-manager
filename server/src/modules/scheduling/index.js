@@ -48,13 +48,166 @@ const currentStates = {
   transitioning: 'transitioning'
 };
 
+function actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime) {
+
+  autoScalingGroup.Environment = getTagValue(autoScalingGroup, 'Environment');
+
+  mergeAsgInstances(autoScalingGroup, instances);
+
+  if (!autoScalingGroup.Environment) {
+    return skipAll(autoScalingGroup, skipReasons.noEnvironment);
+  }
+
+  let foundSchedule = getScheduleForInstance(autoScalingGroup);
+
+  let source = foundSchedule.source;
+  let parseResult = foundSchedule.parseResult;
+
+  if (!parseResult.success) {
+    return skipAll(autoScalingGroup, `${skipReasons.invalidSchedule} - Error: '${parseResult.error}'`, source);
+  }
+
+  let schedule = parseResult.schedule;
+
+  if (schedule.skip) {
+
+    // TODO: Check for any instances that might have schedules, this should fallback on to actionForInstance
+
+    return skipAll(autoScalingGroup, skipReasons.explicitNoSchedule);
+  }
+
+  let localTime = convertToLocalTime(dateTime, parseResult.timezone);
+  let expectedState = expectedStateFromParsedSchedule(schedule, localTime);
+
+  if (expectedState.noSchedule) {
+    return skipAll(autoScalingGroup, skipReasons.stateIsCorrect);
+  }
+
+  var expectedNumberOfServers = 0;
+
+  if (expectedState === states.on) {
+    expectedNumberOfServers = autoScalingGroup.MaxSize;
+  } else if (expectedState === states.off) {
+    expectedNumberOfServers = autoScalingGroup.MinSize;
+  } else {
+    expectedNumberOfServers = Number(expectedState);
+  }
+
+  var actions = [];
+  
+  if (expectedNumberOfServers < calculateNumberOfServersRunning(autoScalingGroup)) {
+    var numberOfServersToSwitchOff = calculateNumberOfServersRunning(autoScalingGroup) - expectedNumberOfServers
+    actions = [...switchOffAsg(numberOfServersToSwitchOff, autoScalingGroup)];
+  } else if (expectedNumberOfServers > calculateNumberOfServersInService(autoScalingGroup)) {
+    var numberOfServersToSwitchOn = expectedNumberOfServers - calculateNumberOfServersInService(autoScalingGroup);
+    actions = [...switchOnAsg(numberOfServersToSwitchOn, autoScalingGroup)];
+  }
+
+  return actions;
+}
+
+function calculateNumberOfServersRunning(autoScalingGroup) {
+  var distributionSet = getAsgDistributionSet(autoScalingGroup);
+  var numberOfServersRunning = findInstancesWhere(distributionSet, autoScalingGroup.Instances.length, (instance) => currentStateOfInstance(instance._instance) == currentStates.on);
+  return numberOfServersRunning.length;
+}
+
+function calculateNumberOfServersInService(autoScalingGroup) {
+  var distributionSet = getAsgDistributionSet(autoScalingGroup);
+  var numberOfServersInService = findInstancesWhere(distributionSet, autoScalingGroup.Instances.length, (instance) => instance.LifecycleState == lifeCycleStates.inService);
+  return numberOfServersInService.length;
+}
+
+function getAsgDistributionSet(autoScalingGroup) {
+  var results = {};
+  autoScalingGroup.AvailabilityZones.sort()
+  for (var availabilityZone of autoScalingGroup.AvailabilityZones) {
+    results[availabilityZone] = [];
+  }
+  for (var instance of autoScalingGroup.Instances) {
+    results[instance.AvailabilityZone].push(instance);
+    results[instance.AvailabilityZone].sort((a, b) => {
+      if (a.InstanceId > b.InstanceId) return 1;
+      if (a.InstanceId < b.InstanceId) return -1;
+      if (a.InstanceId === b.InstanceId) return 0;
+    });
+  }
+  return results;
+}
+
+function findInstancesWhere(distributionSet, numberOfServers, instancePredicate) {
+  var instancesFound = [];
+  for (var availabilityZone of Object.keys(distributionSet)) {
+    for (var instance of distributionSet[availabilityZone]) {
+      if (instancePredicate(instance) && instancesFound.length !== numberOfServers)
+        instancesFound.push(instance);
+    }
+  }
+  return instancesFound;
+}
+
+function switchOffAsg(numberOfServersToSwitchOff, autoScalingGroup) {
+
+  var distributionSet = getAsgDistributionSet(autoScalingGroup);
+
+  var actions = [];
+
+  var outOfServiceButRunningInstances = findInstancesWhere(distributionSet, numberOfServersToSwitchOff, (instance) => 
+    instance.LifecycleState == lifeCycleStates.outOfService && currentStateOfInstance(instance._instance) == currentStates.on);
+  
+  var inServiceInstances = findInstancesWhere(distributionSet, numberOfServersToSwitchOff - outOfServiceButRunningInstances.length, (instance) => 
+    instance.LifecycleState == lifeCycleStates.inService);
+  
+  for (var instance of [...outOfServiceButRunningInstances, ...inServiceInstances]) {
+    var action = switchOff(instance._instance);
+    action.instance = getInstanceInfo(instance._instance);
+    actions.push(action);
+  }
+
+  return actions;
+}
+
+function switchOnAsg(numberOfServersToSwitchOn, autoScalingGroup) {
+  var distributionSet = getAsgDistributionSet(autoScalingGroup);
+
+  var actions = [];
+
+  var inServiceInstances = findInstancesWhere(distributionSet, numberOfServersToSwitchOn, (instance) => 
+    instance.LifecycleState == lifeCycleStates.outOfService && currentStateOfInstance(instance._instance) == currentStates.on);
+  
+  var outOfServiceAndSwitchedOffInstances = findInstancesWhere(distributionSet, numberOfServersToSwitchOn - inServiceInstances.length, (instance) => 
+    instance.LifecycleState == lifeCycleStates.outOfService && currentStateOfInstance(instance._instance) == currentStates.off);
+
+  for (var instance of [...inServiceInstances, ...outOfServiceAndSwitchedOffInstances]) {
+    var action = switchOn(instance._instance);
+    action.instance = getInstanceInfo(instance._instance);
+    actions.push(action);
+  }
+
+  return actions;
+
+}
+
+function mergeAsgInstances(autoScalingGroup, instances) {
+  for (var instanceIndex in autoScalingGroup.Instances) {
+    var currentInstance = autoScalingGroup.Instances[instanceIndex];
+    var emInstance = instances.filter(x => x.InstanceId === currentInstance.InstanceId)[0];
+    currentInstance._instance = emInstance;
+  }
+}
+
 function actionForInstance(instance, dateTime) {
+
   if (!instance.Environment) {
-    return skip(skipReasons.noEnvironment);
+    var action = skip(skipReasons.noEnvironment);
+    action.instance = getInstanceInfo(instance);
+    return action;
   }
 
   if (isInMaintenanceMode(instance)) {
-    return skip(skipReasons.maintenanceMode);
+    var action = skip(skipReasons.maintenanceMode);
+    action.instance = getInstanceInfo(instance);
+    return action;
   }
 
   let foundSchedule = getScheduleForInstance(instance);
@@ -63,27 +216,37 @@ function actionForInstance(instance, dateTime) {
   let parseResult = foundSchedule.parseResult;
 
   if (!parseResult.success) {
-    return skip(`${skipReasons.invalidSchedule} - Error: '${parseResult.error}'`, source);
+    var action = skip(`${skipReasons.invalidSchedule} - Error: '${parseResult.error}'`, source);
+    action.instance = getInstanceInfo(instance);
+    return action;
   }
 
   let schedule = parseResult.schedule;
 
   if (schedule.skip) {
-    return skip(skipReasons.explicitNoSchedule, source);
+    var action = skip(skipReasons.explicitNoSchedule, source);
+    action.instance = getInstanceInfo(instance);
+    return action;
   }
 
   let localTime = convertToLocalTime(dateTime, parseResult.timezone);
   let expectedState = expectedStateFromParsedSchedule(schedule, localTime);
 
   if (expectedState.noSchedule) {
-    return skip(skipReasons.stateIsCorrect);
+    var action = skip(skipReasons.stateIsCorrect);
+    action.instance = getInstanceInfo(instance);
+    return action;
   }
 
   if (expectedState === states.on) {
-    return switchOn(instance, source);
+    var action = switchOn(instance, source);
+    action.instance = getInstanceInfo(instance);
+    return action;
   }
 
-  return switchOff(instance, source);
+  var action = switchOff(instance, source);
+  action.instance = getInstanceInfo(instance);
+  return action;
 }
 
 function expectedStateFromSchedule(schedule, dateTime) {
@@ -255,8 +418,32 @@ function skip(reason, source) {
   return { action: actions.skip, reason, source };
 }
 
+function skipAll(autoScalingGroup, reason, source) {
+  var actions = [];
+  for (var instanceIndex in autoScalingGroup.Instances) {
+    var currentInstance = autoScalingGroup.Instances[instanceIndex];
+    var action = skip(reason, source);
+    action.instance = getInstanceInfo(currentInstance);
+    actions.push(action);
+  }
+  return actions;
+}
+
 function takeAction(action, source) {
   return { action, source };
+}
+
+function getInstanceInfo(instance) {
+  let instanceVM = {
+    id: instance.InstanceId,
+    name: getTagValue(instance, 'name'),
+    role: getTagValue(instance, 'role'),
+    environment: getTagValue(instance, 'environment')
+  };
+  if (instance.AutoScalingGroup) {
+    instanceVM.asg = instance.AutoScalingGroup.AutoScalingGroupName;
+  }
+  return instanceVM;
 }
 
 module.exports = {
@@ -265,5 +452,6 @@ module.exports = {
   skipReasons,
   states,
   actionForInstance,
+  actionsForAutoScalingGroup,
   expectedStateFromSchedule
 };
