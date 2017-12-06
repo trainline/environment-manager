@@ -18,6 +18,7 @@ angular.module('EnvironmentManager.common')
     controllerAs: 'vm',
     controller: function ($scope) {
       var vm = this;
+      var savedScalingSchedule = vm.schedule;
 
       vm.timezones = moment.tz.names();
 
@@ -58,6 +59,7 @@ angular.module('EnvironmentManager.common')
       };
 
       vm.useSpecificClicked = function () {
+        vm.schedule = savedScalingSchedule;
         if (!vm.schedule || vm.schedule.indexOf(':') === -1) {
           vm.schedule = vm.maxSize + ': 0 8 * * 1,2,3,4,5; 0: 0 19 * * 1,2,3,4,5 | ' + moment.tz.guess();
         }
