@@ -120,6 +120,7 @@ describe('DeploymentLogger', function () {
         });
     });
     it('it should set all the attributes in DynamoDB when complete', function () {
+      this.timeout(5000);
       let newStatus = {
         name: Enums.DEPLOYMENT_STATUS.Failed,
         reason: 'BOOM!'
