@@ -23,8 +23,8 @@ before_script:
   - yarn global add webpack
 
 script:
-  - (cd server && exec yarn run lint && exec yarn run test && exec yarn run build)
-  - (cd client && exec yarn test)
+  - (cd server && yarn run lint && yarn run test && yarn run build)
+  - (cd client && yarn test)
 
 after_success:
   - yarn run gulp
