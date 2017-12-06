@@ -3,11 +3,15 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html). View [Unreleased] changes here.
 
-## [6.14.0] - 2017-12-06
+## [6.14.1] - 2017-12-06
 
 ### Added
 
 - Allow ASG owners to change the amount of time an instance is kept alive after termination has begun.
+
+### Fixed
+
+- Build issues
 
 ## [6.13.0] - 2017-11-30
 
@@ -312,8 +316,8 @@ Example:
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/6.14.0...master
-[6.14.0]: https://github.com/trainline/environment-manager/compare/6.13.0...6.14.0
+[Unreleased]: https://github.com/trainline/environment-manager/compare/6.14.1...master
+[6.14.1]: https://github.com/trainline/environment-manager/compare/6.13.0...6.14.1
 [6.13.0]: https://github.com/trainline/environment-manager/compare/6.12.5...6.13.0
 [6.12.5]: https://github.com/trainline/environment-manager/compare/6.12.4...6.12.5
 [6.12.4]: https://github.com/trainline/environment-manager/compare/6.12.1...6.12.4
