@@ -40,6 +40,9 @@ module.exports = {
             desired: configuration.serverRole.AutoScalingSettings.DesiredCapacity,
             max: configuration.serverRole.AutoScalingSettings.MaxCapacity
           },
+          scaling: {
+            terminationDelay: configuration.serverRole.TerminationDelay
+          },
           subnets,
           tags,
           topicNotificationMapping

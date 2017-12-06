@@ -31,10 +31,27 @@ module.exports = function CreateAutoScalingGroupCommandHandler(command) {
     logger.info(`AutoScalingGroup [${autoScalingGroupName}] has been created`);
 
     logger.info(`Configuring [${autoScalingGroupName}] AutoScalingGroup...`);
+    yield attachLifecycleHook(logger, autoScalingGroupClient, template);
     yield attachNotificationsByTemplate(logger, autoScalingGroupClient, template);
     logger.info(`AutoScalingGroup [${autoScalingGroupName}] has been configured`);
   });
 };
+
+function attachLifecycleHook(logger, asgClient, template) {
+  if (!template.scaling || !template.scaling.terminationDelay) {
+    return Promise.resolve();
+  }
+
+  let request = {
+    AutoScalingGroupName: template.autoScalingGroupName,
+    LifecycleHookName: '10min-draining',
+    HeartbeatTimeout: template.scaling.terminationDelay * 60,
+    LifecycleTransition: 'autoscaling:EC2_INSTANCE_TERMINATING',
+    DefaultResult: 'CONTINUE'
+  };
+
+  return asgClient.attachLifecycleHook(request);
+}
 
 function attachNotificationsByTemplate(logger, autoScalingGroupClient, template) {
   return co(function* () {

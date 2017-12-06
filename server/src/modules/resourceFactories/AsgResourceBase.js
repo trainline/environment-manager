@@ -171,6 +171,10 @@ function AsgResourceBase(accountId) {
     throw standardifyError(error, request.AutoScalingGroupName);
   }));
 
+  this.attachLifecycleHook = request => asgClient().then(client => client.putLifecycleHook(request).promise().catch((error) => {
+    throw standardifyError(error, request.AutoScalingGroupName);
+  }));
+
   this.attachNotifications = request => asgClient().then(client => client.putNotificationConfiguration(request).promise().catch((error) => {
     throw standardifyError(error, request.AutoScalingGroupName);
   }));
