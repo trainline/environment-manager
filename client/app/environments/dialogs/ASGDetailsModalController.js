@@ -63,6 +63,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       vm.asgUpdate.NewSchedule = vm.asg.Schedule;
       vm.asgUpdate.ScalingSchedule = vm.asg.ScalingSchedule;
       vm.asgUpdate.AvailabilityZone = deriveAvailabilityZoneFriendlyName(vm.asg.AvailabilityZones);
+      vm.asgUpdate.TerminationDelay = vm.asg.TerminationDelay
       vm.selectedScheduleMode = vm.asg.ScalingSchedule && vm.asg.ScalingSchedule.length ? 'scaling' : 'schedule';
     }
 
@@ -276,10 +277,14 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
             desired: vm.asgUpdate.DesiredCapacity,
             max: vm.asgUpdate.MaxSize
           },
+          scaling: {
+            terminationDelay: vm.asgUpdate.TerminationDelay
+          },
           network: {
             availabilityZoneName: vm.asgUpdate.AvailabilityZone
           }
         };
+
         vm.asg.updateAutoScalingGroup(updated)
           .then(function () {
             modal.information({

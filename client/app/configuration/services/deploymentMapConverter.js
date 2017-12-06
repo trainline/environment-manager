@@ -30,6 +30,7 @@ angular.module('EnvironmentManager.configuration').factory('deploymentMapConvert
             DesiredCapacity: data.AutoScalingSettings.DesiredCapacity || 0,
             MinCapacity: data.AutoScalingSettings.MinCapacity || 0,
             MaxCapacity: data.AutoScalingSettings.MaxCapacity || 0,
+            TerminationDelay: data.TerminationDelay || 0,
             SubnetTypeName: data.SubnetTypeName || 'PrivateApp',
             AvailabilityZone: data.AvailabilityZoneName || '',
             LaunchConfig: {
@@ -74,6 +75,7 @@ angular.module('EnvironmentManager.configuration').factory('deploymentMapConvert
             MinCapacity: target.ASG.MinCapacity || 0,
             MaxCapacity: target.ASG.MaxCapacity || 0
           },
+          TerminationDelay: target.ASG.TerminationDelay || 0,
           SubnetTypeName: target.ASG.SubnetTypeName,
           AvailabilityZoneName: (target.ASG.AvailabilityZone && target.ASG.AvailabilityZone != '') ? target.ASG.AvailabilityZone : undefined,
           AMI: target.ASG.LaunchConfig.AMI,

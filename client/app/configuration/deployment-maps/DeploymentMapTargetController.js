@@ -72,6 +72,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
               MinCapacity: 0,
               DesiredCapacity: 1,
               MaxCapacity: 1,
+              DelayedTermination: 3,
               SubnetTypeName: 'PrivateApp',
               AvailabilityZoneSelection: 'all',
               AvailabilityZone: '',

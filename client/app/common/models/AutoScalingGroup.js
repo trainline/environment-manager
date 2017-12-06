@@ -7,6 +7,16 @@
 angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
   function ($q, $http, awsService, resources, roles, serviceDiscovery, taggable, accountMappingService) {
     function getSummaryFromAsg(asg) {
+
+      var terminationDelay = 0;
+      var emLifecycleHook = _.find(asg.LifecycleHooks, function(lch) {
+        return lch.LifecycleHookName === '10min-draining';
+      });
+
+      if (emLifecycleHook) {
+        terminationDelay = emLifecycleHook.HeartbeatTimeout / 60
+      }
+
       var asgSummary = {
         AccountName: asg.AccountName,
         AsgName: asg.AutoScalingGroupName,
@@ -18,6 +28,7 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
         LaunchConfigurationName: (asg.LaunchConfigurationName) ? asg.LaunchConfigurationName.replace('LaunchConfig_', '') : null,
         IsBeingDeleted: asg.Status === 'Delete in progress',
         Instances: asg.Instances,
+        TerminationDelay: terminationDelay,
         Tags: asg.Tags
       };
       asg.Tags.forEach(function (tag) {

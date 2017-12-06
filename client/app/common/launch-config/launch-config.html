@@ -1,6 +1,22 @@
 <div id="InfrastructureSettingsTab">
   <div ng-if="vm.context === 'serverRole'" ng-include="'/app/common/launch-config/asg-size.html'"></div>
-
+  <div class="form-group" ng-if="vm.context === 'serverRole'">
+    <label class="col-md-2 control-label text-left nowrap">Scaling Options:</label>
+    <div class="col-md-8">
+      <label class="control-label text-left nonbold inline">
+        <input
+          type="checkbox"
+          name="delayedTermination"
+          ng-checked="vm.target.ASG.TerminationDelay"
+          ng-click="vm.target.ASG.TerminationDelay = vm.target.ASG.TerminationDelay > 0 ? 0 : 3"
+        > Delay instance termination (services are deregistered instantly)
+      </label>
+      <br />
+      <label class="control-label text-left nonbold inline" ng-if="vm.target.ASG.TerminationDelay">
+        Delay for <input class="form-control inline" style="width: 60px" name="terminationDelay" type="number" min="1" ng-model="vm.target.ASG.TerminationDelay" ng-readonly="!vm.canUser('edit')" /> minute(s)
+      </label>
+    </div>
+  </div>
   <div class="form-group" ng-class="{'has-error': form.InstanceType.$invalid}">
     <label class="col-md-2 control-label text-left nowrap">Instance Type: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
     <div class="col-md-4">
