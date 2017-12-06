@@ -13,9 +13,8 @@ let ScanAutoScalingGroups = require('./ScanAutoScalingGroups');
 module.exports = function ScanInstancesScheduleStatusQueryHandler(query) {
   return co(function* () { // eslint-disable-line func-names
     let instances = yield getInstances(query);
-
     let dateTime = query.dateTime ? query.dateTime : new Date();
-    return scheduledActionsForInstances(instances, dateTime);
+    return [...scheduledActionsForInstances(instances, dateTime), ...scheduledActionsForASGs(instances, dateTime)];
   });
 };
 
@@ -24,41 +23,58 @@ function getInstances(query) {
     let allInstances = data[0];
     let environments = buildEnvironmentIndex(data[1]);
     let asgs = buildASGIndex(data[2]);
-
     let instances = [];
-
     allInstances.forEach((instance) => {
       let environmentName = getInstanceTagValue(instance, 'environment');
-
       if (environmentName) {
         instance.Environment = findInIndex(environments, environmentName.toLowerCase());
       }
-
       let asgName = getInstanceTagValue(instance, 'aws:autoscaling:groupName');
       instance.AutoScalingGroup = findInIndex(asgs, asgName);
-
       instances.push(instance);
     });
-
     return instances;
   });
 }
 
-function scheduledActionsForInstances(instances, dateTime) {
-  return instances.map((instance) => {
-    let action = scheduling.actionForInstance(instance, dateTime);
-    let instanceVM = {
-      id: instance.InstanceId,
-      name: getInstanceTagValue(instance, 'name'),
-      role: getInstanceTagValue(instance, 'role'),
-      environment: getInstanceTagValue(instance, 'environment')
-    };
-
-    if (instance.AutoScalingGroup) {
-      instanceVM.asg = instance.AutoScalingGroup.AutoScalingGroupName;
+function getAutoScalingGroups(instances){
+  var autoScalingGroups = {};
+  for (var instance in instances) {
+    var currentInstance = instances[instance];
+    if (typeof currentInstance.AutoScalingGroup !== 'undefined') {
+      autoScalingGroups[currentInstance.AutoScalingGroup.AutoScalingGroupName] = currentInstance.AutoScalingGroup;
     }
+  }
+  return autoScalingGroups;
+}
 
-    return { action, instance: instanceVM };
+function getStandAloneInstances(instances){
+  var standAloneInstances = [];
+  for (var instance in instances) {
+    var currentInstance = instances[instance];
+    if (typeof currentInstance.AutoScalingGroup === 'undefined') {
+      standAloneInstances.push(currentInstance);
+    }
+  }
+  return standAloneInstances;
+}
+
+function scheduledActionsForASGs(instances, dateTime){
+  let actions = [];
+  let autoScalingGroups = getAutoScalingGroups(instances);
+  for(var autoScalingGroupName in autoScalingGroups) {
+    let autoScalingGroup = autoScalingGroups[autoScalingGroupName];
+    let scalingActions = scheduling.actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime);
+    if (scalingActions && scalingActions.length && scalingActions.length > 0)
+      actions = [...actions, ...scalingActions];
+  }
+  return actions;
+}
+
+function scheduledActionsForInstances(instances, dateTime) {
+  return getStandAloneInstances(instances).map((instance) => {
+    let action = scheduling.actionForInstance(instance, dateTime);
+    return action;
   });
 }
 
