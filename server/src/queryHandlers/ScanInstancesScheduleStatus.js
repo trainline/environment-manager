@@ -37,10 +37,9 @@ function getInstances(query) {
   });
 }
 
-function getAutoScalingGroups(instances){
-  var autoScalingGroups = {};
-  for (var instance in instances) {
-    var currentInstance = instances[instance];
+function getAutoScalingGroups(instances) {
+  let autoScalingGroups = {};
+  for (let currentInstance of instances) {
     if (typeof currentInstance.AutoScalingGroup !== 'undefined') {
       autoScalingGroups[currentInstance.AutoScalingGroup.AutoScalingGroupName] = currentInstance.AutoScalingGroup;
     }
@@ -48,10 +47,9 @@ function getAutoScalingGroups(instances){
   return autoScalingGroups;
 }
 
-function getStandAloneInstances(instances){
-  var standAloneInstances = [];
-  for (var instance in instances) {
-    var currentInstance = instances[instance];
+function getStandAloneInstances(instances) {
+  let standAloneInstances = [];
+  for (let currentInstance of instances) {
     if (typeof currentInstance.AutoScalingGroup === 'undefined') {
       standAloneInstances.push(currentInstance);
     }
@@ -59,14 +57,14 @@ function getStandAloneInstances(instances){
   return standAloneInstances;
 }
 
-function scheduledActionsForASGs(instances, dateTime){
+function scheduledActionsForASGs(instances, dateTime) {
   let actions = [];
   let autoScalingGroups = getAutoScalingGroups(instances);
-  for(var autoScalingGroupName in autoScalingGroups) {
-    let autoScalingGroup = autoScalingGroups[autoScalingGroupName];
+  for (let autoScalingGroup of autoScalingGroups) {
     let scalingActions = scheduling.actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime);
-    if (scalingActions && scalingActions.length && scalingActions.length > 0)
+    if (scalingActions && scalingActions.length && scalingActions.length > 0) {
       actions = [...actions, ...scalingActions];
+    }
   }
   return actions;
 }

@@ -2,6 +2,8 @@
 
 'use strict';
 
+/* eslint-disable */
+
 const _ = require('lodash');
 const parseSchedule = require('./parseSchedule');
 const later = require('later');
@@ -49,13 +51,13 @@ const currentStates = {
 };
 
 function actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime) {
-
-  if (autoScalingGroup.Instances.some(i => currentStateOfInstance(i._instance) == currentStates.transitioning))
-    return [];
-
   autoScalingGroup.Environment = getTagValue(autoScalingGroup, 'Environment');
 
   mergeAsgInstances(autoScalingGroup, instances);
+
+  if (autoScalingGroup.Instances.some(i => currentStateOfInstance(i._instance) === currentStates.transitioning)) {
+    return [];
+  }
 
   if (!autoScalingGroup.Environment) {
     return skipAll(autoScalingGroup, skipReasons.noEnvironment);
@@ -73,9 +75,6 @@ function actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime) {
   let schedule = parseResult.schedule;
 
   if (schedule.skip) {
-
-    // TODO: Check for any instances that might have schedules, this should fallback on to actionForInstance
-
     return skipAll(autoScalingGroup, skipReasons.explicitNoSchedule);
   }
 
@@ -150,7 +149,6 @@ function findInstancesWhere(distributionSet, numberOfServers, instancePredicate)
 }
 
 function switchOffAsg(numberOfServersToSwitchOff, autoScalingGroup) {
-
   var distributionSet = getAsgDistributionSet(autoScalingGroup);
 
   var actions = [];
