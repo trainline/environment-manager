@@ -141,7 +141,7 @@ function AsgResourceBase(accountId) {
 
   this.put = (parameters) => {
     asgCache.del(accountId);
-    return co(function*() {
+    return co(function* () {
       let client = yield asgClient();
       yield updateASG(client, parameters);
       yield updateLCHs(client, parameters);
