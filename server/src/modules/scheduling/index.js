@@ -50,6 +50,9 @@ const currentStates = {
 
 function actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime) {
 
+  if (autoScalingGroup.Instances.some(i => currentStateOfInstance(i._instance) == currentStates.transitioning))
+    return [];
+
   autoScalingGroup.Environment = getTagValue(autoScalingGroup, 'Environment');
 
   mergeAsgInstances(autoScalingGroup, instances);
@@ -94,7 +97,7 @@ function actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime) {
   }
 
   var actions = [];
-  
+
   if (expectedNumberOfServers < calculateNumberOfServersRunning(autoScalingGroup)) {
     var numberOfServersToSwitchOff = calculateNumberOfServersRunning(autoScalingGroup) - expectedNumberOfServers
     actions = [...switchOffAsg(numberOfServersToSwitchOff, autoScalingGroup)];
@@ -152,12 +155,12 @@ function switchOffAsg(numberOfServersToSwitchOff, autoScalingGroup) {
 
   var actions = [];
 
-  var outOfServiceButRunningInstances = findInstancesWhere(distributionSet, numberOfServersToSwitchOff, (instance) => 
+  var outOfServiceButRunningInstances = findInstancesWhere(distributionSet, numberOfServersToSwitchOff, (instance) =>
     instance.LifecycleState == lifeCycleStates.outOfService && currentStateOfInstance(instance._instance) == currentStates.on);
-  
-  var inServiceInstances = findInstancesWhere(distributionSet, numberOfServersToSwitchOff - outOfServiceButRunningInstances.length, (instance) => 
+
+  var inServiceInstances = findInstancesWhere(distributionSet, numberOfServersToSwitchOff - outOfServiceButRunningInstances.length, (instance) =>
     instance.LifecycleState == lifeCycleStates.inService);
-  
+
   for (var instance of [...outOfServiceButRunningInstances, ...inServiceInstances]) {
     var action = switchOff(instance._instance);
     action.instance = getInstanceInfo(instance._instance);
@@ -172,10 +175,10 @@ function switchOnAsg(numberOfServersToSwitchOn, autoScalingGroup) {
 
   var actions = [];
 
-  var inServiceInstances = findInstancesWhere(distributionSet, numberOfServersToSwitchOn, (instance) => 
+  var inServiceInstances = findInstancesWhere(distributionSet, numberOfServersToSwitchOn, (instance) =>
     instance.LifecycleState == lifeCycleStates.outOfService && currentStateOfInstance(instance._instance) == currentStates.on);
-  
-  var outOfServiceAndSwitchedOffInstances = findInstancesWhere(distributionSet, numberOfServersToSwitchOn - inServiceInstances.length, (instance) => 
+
+  var outOfServiceAndSwitchedOffInstances = findInstancesWhere(distributionSet, numberOfServersToSwitchOn - inServiceInstances.length, (instance) =>
     instance.LifecycleState == lifeCycleStates.outOfService && currentStateOfInstance(instance._instance) == currentStates.off);
 
   for (var instance of [...inServiceInstances, ...outOfServiceAndSwitchedOffInstances]) {
