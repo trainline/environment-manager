@@ -23,16 +23,19 @@
       <option ng-repeat="timezone in vm.timezones" value="{{timezone}}">{{timezone}}</option>
     </select>
   </div>
+  <div ng-if="vm.shouldDisplayChartInfo">
+    <label class="control-label" style="width:510px">Time</label>
+    <label class="control-label">No. Servers</label>
+    <br />
+  </div>
 
-  <div ng-show="vm.schedule">
+  <div ng-show="vm.shouldDisplayChartInfo">
     <div class="schedule-line" ng-repeat="cron in vm.crons">
       <cron-editor min="vm.minSize" max-size="vm.maxSize" cron="cron"></cron-editor>
       <button class="btn btn-danger" style="margin-left: 20px" ng-click="vm.remove(cron)">X</button>
     </div>
     <button class="btn btn-default" ng-click="vm.add()">Add time</button>
   </div>
-
-
 
   <div ng-show="vm.chartConfig && vm.chartConfig.series[0].data.length">
     <br />

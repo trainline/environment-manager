@@ -20,6 +20,11 @@ angular.module('EnvironmentManager.common')
       var vm = this;
       var savedScalingSchedule = vm.schedule;
 
+      function init() {
+        checkDisplayOfChartInfo();
+        loadSchedule();
+      }
+
       vm.timezones = moment.tz.names();
 
       if (!vm.schedule || vm.schedule.toUpperCase() === 'NOSCHEDULE') {
@@ -139,15 +144,19 @@ angular.module('EnvironmentManager.common')
         updateChart();
       }
 
+      function checkDisplayOfChartInfo() {
+        if (vm.schedule && vm.schedule !== 'ON' && vm.schedule !== 'OFF') vm.shouldDisplayChartInfo = true;
+        else vm.shouldDisplayChartInfo = false;
+      }
+
       $scope.$on('cron-updated', function () {
         vm.updateSchedule();
       });
 
       $scope.$watch('vm.schedule', function () {
+        checkDisplayOfChartInfo();
         loadSchedule();
       });
-
-      loadSchedule();
 
       function formatDate(date) {
         return moment(date).format('ddd HH:mm:ss');
@@ -202,5 +211,7 @@ angular.module('EnvironmentManager.common')
         }
 
       };
+
+      init();
     }
   });
