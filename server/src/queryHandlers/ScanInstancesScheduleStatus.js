@@ -2,6 +2,8 @@
 
 'use strict';
 
+/* eslint-disable */
+
 let co = require('co');
 let _ = require('lodash');
 let sender = require('../modules/sender');
@@ -37,9 +39,10 @@ function getInstances(query) {
   });
 }
 
-function getAutoScalingGroups(instances) {
-  let autoScalingGroups = {};
-  for (let currentInstance of instances) {
+function getAutoScalingGroups(instances){
+  var autoScalingGroups = {};
+  for (var instance in instances) {
+    var currentInstance = instances[instance];
     if (typeof currentInstance.AutoScalingGroup !== 'undefined') {
       autoScalingGroups[currentInstance.AutoScalingGroup.AutoScalingGroupName] = currentInstance.AutoScalingGroup;
     }
@@ -47,9 +50,10 @@ function getAutoScalingGroups(instances) {
   return autoScalingGroups;
 }
 
-function getStandAloneInstances(instances) {
-  let standAloneInstances = [];
-  for (let currentInstance of instances) {
+function getStandAloneInstances(instances){
+  var standAloneInstances = [];
+  for (var instance in instances) {
+    var currentInstance = instances[instance];
     if (typeof currentInstance.AutoScalingGroup === 'undefined') {
       standAloneInstances.push(currentInstance);
     }
@@ -57,14 +61,14 @@ function getStandAloneInstances(instances) {
   return standAloneInstances;
 }
 
-function scheduledActionsForASGs(instances, dateTime) {
+function scheduledActionsForASGs(instances, dateTime){
   let actions = [];
   let autoScalingGroups = getAutoScalingGroups(instances);
-  for (let autoScalingGroup of autoScalingGroups) {
+  for(var autoScalingGroupName in autoScalingGroups) {
+    let autoScalingGroup = autoScalingGroups[autoScalingGroupName];
     let scalingActions = scheduling.actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime);
-    if (scalingActions && scalingActions.length && scalingActions.length > 0) {
+    if (scalingActions && scalingActions.length && scalingActions.length > 0)
       actions = [...actions, ...scalingActions];
-    }
   }
   return actions;
 }
