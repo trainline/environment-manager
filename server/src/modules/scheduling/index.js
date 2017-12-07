@@ -52,6 +52,9 @@ const currentStates = {
 
 function actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime) {
 
+  if (autoScalingGroup.AutoScalingGroupName != 'c50-in-RansomTestAppLinux-blue')
+    return [];
+
   autoScalingGroup.Environment = getTagValue(autoScalingGroup, 'Environment');
 
   mergeAsgInstances(autoScalingGroup, instances);
@@ -81,7 +84,7 @@ function actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime) {
     return skipAll(autoScalingGroup, skipReasons.explicitNoSchedule);
   }
 
-  let localTime = convertToLocalTime(dateTime, parseResult.timezone);
+  let localTime = convertToTimezone(dateTime, parseResult.timezone);
   let expectedState = expectedStateFromParsedSchedule(schedule, localTime);
 
   if (expectedState.noSchedule) {
