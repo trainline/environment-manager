@@ -51,7 +51,7 @@ function parseCronSchedule(serialisedCronSchedule) {
     let parts = item.split(':');
     let state = (cronActions[parts[0].trim()] || parts[0].trim());
 
-    if (state === undefined) {
+    if (state === undefined || state === '' || parts[1] === undefined || parts[1].trim() === '') {
       throw new Error('Invalid cron action');
     }
 
