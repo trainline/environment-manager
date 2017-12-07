@@ -31,14 +31,6 @@ describe('scheduling (expected states)', () => {
       expect(determinedState).to.equal('INVALID SCHEDULE');
     });
 
-    it('should throw an error if cron is invalid', () => {
-      let schedule = 'blah: 0 0 1 1 * 2016';
-      let dateTime = '2015-12-31T23:59:59';
-
-      let determinedState = scheduling.expectedStateFromSchedule(schedule, dateTime);
-      expect(determinedState).to.equal('INVALID SCHEDULE');
-    });
-
     it('should signal no schedule if no previous action found', () => {
       let schedule = 'stop: 0 0 1 1 * 2016; start: 0 1 1 1 * 2016';
       let dateTime = '2015-12-31T23:59:59';
