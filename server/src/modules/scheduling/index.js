@@ -414,6 +414,7 @@ function getTagValue(instance, tagName) {
 }
 
 function currentStateOfInstance(instance) {
+  if (!instance || !instance.State) return currentStates.transitioning;
   if (instance.State.Name === 'running') return currentStates.on;
   if (instance.State.Name === 'stopped') return currentStates.off;
 
