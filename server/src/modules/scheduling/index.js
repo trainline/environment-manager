@@ -52,9 +52,6 @@ const currentStates = {
 
 function actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime) {
 
-  if (autoScalingGroup.AutoScalingGroupName != 'c50-in-RansomTestAppLinux-blue')
-    return [];
-
   autoScalingGroup.Environment = getTagValue(autoScalingGroup, 'Environment');
 
   mergeAsgInstances(autoScalingGroup, instances);
