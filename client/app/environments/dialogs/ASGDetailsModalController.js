@@ -394,6 +394,10 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     }
 
     vm.canSubmit = function () {
+      if(vm.asgUpdate.NewSchedule.length > 256) {
+        return false;
+      }
+
       if (vm.selectedScheduleMode !== 'scaling') {
         return vm.asgUpdate.NewSchedule !== 'NOSCHEDULE';
       }
