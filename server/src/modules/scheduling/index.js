@@ -164,12 +164,15 @@ function switchOffAsg(numberOfServersToSwitchOff, autoScalingGroup) {
     instance.LifecycleState == lifeCycleStates.inService);
 
   for (var instance of [...outOfServiceButRunningInstances, ...inServiceInstances]) {
-    var action = switchOff(instance._instance);
-    action.instance = getInstanceInfo(instance._instance);
+    var action = getActionResult(switchOff(instance._instance),  getInstanceInfo(instance._instance));
     actions.push(action);
   }
 
   return actions;
+}
+
+function getActionResult(action, instanceInfo) {
+  return { action: action, instance: instanceInfo };
 }
 
 function switchOnAsg(numberOfServersToSwitchOn, autoScalingGroup) {
@@ -184,8 +187,7 @@ function switchOnAsg(numberOfServersToSwitchOn, autoScalingGroup) {
     instance.LifecycleState == lifeCycleStates.outOfService && currentStateOfInstance(instance._instance) == currentStates.off);
 
   for (var instance of [...inServiceInstances, ...outOfServiceAndSwitchedOffInstances]) {
-    var action = switchOn(instance._instance);
-    action.instance = getInstanceInfo(instance._instance);
+    var action = getActionResult(switchOn(instance._instance),  getInstanceInfo(instance._instance));
     actions.push(action);
   }
 
@@ -204,15 +206,11 @@ function mergeAsgInstances(autoScalingGroup, instances) {
 function actionForInstance(instance, dateTime) {
 
   if (!instance.Environment) {
-    var action = skip(skipReasons.noEnvironment);
-    action.instance = getInstanceInfo(instance);
-    return action;
+    return getActionResult(skip(skipReasons.noEnvironment), getInstanceInfo(instance));
   }
 
   if (isInMaintenanceMode(instance)) {
-    var action = skip(skipReasons.maintenanceMode);
-    action.instance = getInstanceInfo(instance);
-    return action;
+    return getActionResult(skip(skipReasons.maintenanceMode), getInstanceInfo(instance));
   }
 
   let foundSchedule = getScheduleForInstance(instance);
@@ -221,37 +219,27 @@ function actionForInstance(instance, dateTime) {
   let parseResult = foundSchedule.parseResult;
 
   if (!parseResult.success) {
-    var action = skip(`${skipReasons.invalidSchedule} - Error: '${parseResult.error}'`, source);
-    action.instance = getInstanceInfo(instance);
-    return action;
+    return getActionResult(skip(`${skipReasons.invalidSchedule} - Error: '${parseResult.error}'`, source),  getInstanceInfo(instance));
   }
 
   let schedule = parseResult.schedule;
 
   if (schedule.skip) {
-    var action = skip(skipReasons.explicitNoSchedule, source);
-    action.instance = getInstanceInfo(instance);
-    return action;
+    return getActionResult(skip(skipReasons.explicitNoSchedule, source),  getInstanceInfo(instance));
   }
 
   let localTime = convertToTimezone(dateTime, parseResult.timezone);
   let expectedState = expectedStateFromParsedSchedule(schedule, localTime);
 
   if (expectedState.noSchedule) {
-    var action = skip(skipReasons.stateIsCorrect);
-    action.instance = getInstanceInfo(instance);
-    return action;
+    return getActionResult(skip(skipReasons.stateIsCorrect), getInstanceInfo(instance));
   }
 
   if (expectedState === states.on) {
-    var action = switchOn(instance, source);
-    action.instance = getInstanceInfo(instance);
-    return action;
+    return getActionResult(switchOn(instance, source), getInstanceInfo(instance));
   }
 
-  var action = switchOff(instance, source);
-  action.instance = getInstanceInfo(instance);
-  return action;
+  return getActionResult(switchOff(instance, source), getInstanceInfo(instance));
 }
 
 function expectedStateFromSchedule(schedule, dateTime) {
@@ -429,9 +417,9 @@ function skipAll(autoScalingGroup, reason, source) {
   var actions = [];
   for (var instanceIndex in autoScalingGroup.Instances) {
     var currentInstance = autoScalingGroup.Instances[instanceIndex];
-    var action = skip(reason, source);
-    action.instance = getInstanceInfo(currentInstance);
-    actions.push(action);
+
+    var result = { action: skip(reason, source), instance: getInstanceInfo(currentInstance) };
+    actions.push(result);
   }
   return actions;
 }
