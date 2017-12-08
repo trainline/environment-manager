@@ -11,12 +11,19 @@ angular.module('EnvironmentManager.common')
       showOn: '=',
       showOff: '=',
       showDefault: '=',
-      showSpecific: '='
+      showSpecific: '=',
+      maxSize: '='
     },
     templateUrl: '/app/common/directives/scheduleEditor.html',
     controllerAs: 'vm',
     controller: function ($scope) {
       var vm = this;
+      var savedScalingSchedule = vm.schedule;
+
+      function init() {
+        checkDisplayOfChartInfo();
+        loadSchedule();
+      }
 
       vm.timezones = moment.tz.names();
 
@@ -44,7 +51,9 @@ angular.module('EnvironmentManager.common')
       };
 
       vm.add = function () {
-        vm.crons.push({ cron: 'Start: 0 0 * * 1,2,3,4,5' });
+        vm.crons.push({
+          cron: '0: 0 8 * * 1,2,3,4,5'
+        });
         vm.updateSchedule();
       };
 
@@ -55,8 +64,9 @@ angular.module('EnvironmentManager.common')
       };
 
       vm.useSpecificClicked = function () {
+        vm.schedule = savedScalingSchedule;
         if (!vm.schedule || vm.schedule.indexOf(':') === -1) {
-          vm.schedule = 'Start: 0 8 * * 1,2,3,4,5; Stop: 0 19 * * 1,2,3,4,5 | ' + moment.tz.guess();
+          vm.schedule = vm.maxSize + ': 0 8 * * 1,2,3,4,5; 0: 0 19 * * 1,2,3,4,5 | ' + moment.tz.guess();
         }
       };
 
@@ -65,8 +75,8 @@ angular.module('EnvironmentManager.common')
         var serialisedCrons = parts[0].split(';');
         var schedules = serialisedCrons.map(function (item) {
           var subParts = item.split(':');
-
-          var action = subParts[0].trim().toLowerCase() === 'start' ? 1 : 0;
+          var serversOnCount = subParts[0].trim().toLowerCase();
+          var action = serversOnCount * 1;
           var cron = subParts[1];
 
           var occurrences = getWeeklyOccurrences(cron);
@@ -134,21 +144,19 @@ angular.module('EnvironmentManager.common')
         updateChart();
       }
 
+      function checkDisplayOfChartInfo() {
+        if (vm.schedule && vm.schedule !== 'ON' && vm.schedule !== 'OFF') vm.shouldDisplayChartInfo = true;
+        else vm.shouldDisplayChartInfo = false;
+      }
+
       $scope.$on('cron-updated', function () {
         vm.updateSchedule();
       });
 
       $scope.$watch('vm.schedule', function () {
+        checkDisplayOfChartInfo();
         loadSchedule();
       });
-
-      loadSchedule();
-
-      function formatValue(val) {
-        if (val === 1) return 'On';
-        if (val === 0) return 'Off';
-        return null;
-      }
 
       function formatDate(date) {
         return moment(date).format('ddd HH:mm:ss');
@@ -163,7 +171,7 @@ angular.module('EnvironmentManager.common')
 
         tooltip: {
           formatter: function () {
-            return '<b>Time: </b> ' + formatDate(this.x) + '<br /><b>State:</b> ' + formatValue(this.y);
+            return '<b>Time: </b> ' + formatDate(this.x) + '<br /><b>State:</b> ' + this.y;
           }
         },
 
@@ -180,11 +188,8 @@ angular.module('EnvironmentManager.common')
 
         yAxis: {
           min: 0,
-          max: 1,
+          max: vm.maxSize,
           title: null,
-          labels: {
-            formatter: function () { return formatValue(this.value); }
-          },
           gridLineWidth: 0
         },
 
@@ -206,5 +211,7 @@ angular.module('EnvironmentManager.common')
         }
 
       };
+
+      init();
     }
   });
