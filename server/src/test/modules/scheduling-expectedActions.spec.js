@@ -57,7 +57,7 @@ describe('scheduling (expected actions)', () => {
     expect(action.reason).to.equal(scheduling.skipReasons.maintenanceMode);
   });
 
-  let invalidCrons = ['rubbish', 'rubbish:* * * * *', ':', 'start:;', 'start:*;gah:'];
+  let invalidCrons = ['rubbish', ':', 'start:;', 'start:*;gah:'];
 
   invalidCrons.forEach((cron) => {
     it(`should skip instances which have invalid schedule tags - ${cron}`, function () {
