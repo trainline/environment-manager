@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html). View [Unreleased] changes here.
 
+## [#Unreleased]
+
+### Fixed
+
+- When instances are in standby and do not receive the latest version, the API endpoint <api>/services/<serviceName> was returning old version numbers of the instances not yet updated. This is now what people want to see. When those instances come up, they will be updated to the latest version. The end point will now find the latest version of that service deployed in that environment to show the latest version in the results. 
+
 ## [6.14.2] - 2017-12-07
 
 ### Added
