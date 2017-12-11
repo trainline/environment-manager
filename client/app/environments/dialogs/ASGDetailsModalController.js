@@ -65,6 +65,8 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       vm.asgUpdate.AvailabilityZone = deriveAvailabilityZoneFriendlyName(vm.asg.AvailabilityZones);
       vm.asgUpdate.TerminationDelay = vm.asg.TerminationDelay
       vm.selectedScheduleMode = vm.asg.ScalingSchedule && vm.asg.ScalingSchedule.length ? 'scaling' : 'schedule';
+      vm.usingSchedules = vm.asg.Schedule.lastIndexOf(':') != -1;
+      vm.notUsingSchedules = !vm.usingSchedules;
     }
 
     vm.isAZChecked = function (az) {
@@ -268,6 +270,16 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       });
     };
 
+    vm.setNotUsingSchedules = function () {
+      vm.usingSchedules = false;
+      vm.notUsingSchedules = true;
+    };
+
+    vm.setUsingSchedules = function () {
+      vm.usingSchedules = true;
+      vm.notUsingSchedules = false;
+    };
+
     vm.updateAutoScalingGroup = function () {
       confirmAZChange().then(function () {
         loading.lockPage(true);
@@ -363,21 +375,22 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         newSchedule = vm.asgUpdate.NewSchedule;
       }
 
-      return AutoScalingGroup.updateSchedule(vm.environmentName, vm.asg.AsgName, newSchedule).then(function () {
-        modal.information({
-          title: 'ASG Schedule Updated',
-          message: 'ASG schedule updated successfully.'
+      return AutoScalingGroup.updateSchedule(vm.environmentName, vm.asg.AsgName, newSchedule)
+        .then(function () {
+          modal.information({
+            title: 'ASG Schedule Updated',
+            message: 'ASG schedule updated successfully.'
+          });
+        }).catch(function (err) {
+          if (err.status === 404) {
+            modal.error('Error', 'An error has occurred: ' + err.data.error);
+          } else {
+            throw err;
+          }
+        }).finally(function () {
+          resetForm();
+          vm.refresh();
         });
-      }).catch(function (err) {
-        if (err.status === 404) {
-          modal.error('Error', 'An error has occurred: ' + err.data.error);
-        } else {
-          throw err;
-        }
-      }).finally(function () {
-        resetForm();
-        vm.refresh();
-      });
     };
 
 
@@ -394,7 +407,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     }
 
     vm.canSubmit = function () {
-      if(vm.asgUpdate.NewSchedule.length > 256) {
+      if (vm.asgUpdate.NewSchedule.length > 256) {
         return false;
       }
 

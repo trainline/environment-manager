@@ -17,6 +17,8 @@ angular.module('EnvironmentManager.common')
         };
 
         function setupOptions() {
+          if (!$scope.maxSize) $scope.maxSize = 100;
+          
           $scope.options.actions.push({ value: 0, label: 'None' });
           for (var i = 1; i < $scope.maxSize; i += 1)
             $scope.options.actions.push({ value: i, label: i });
