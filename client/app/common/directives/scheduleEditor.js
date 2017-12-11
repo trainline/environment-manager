@@ -26,6 +26,7 @@ angular.module('EnvironmentManager.common')
       }
 
       vm.timezones = moment.tz.names();
+      vm.scheduleMaxLength = 256;
 
       if (!vm.schedule || vm.schedule.toUpperCase() === 'NOSCHEDULE') {
         vm.schedule = '';
