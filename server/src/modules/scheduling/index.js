@@ -106,6 +106,8 @@ function actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime) {
   } else if (expectedNumberOfServers > calculateNumberOfServersInService(autoScalingGroup)) {
     var numberOfServersToSwitchOn = expectedNumberOfServers - calculateNumberOfServersInService(autoScalingGroup);
     actions = [...switchOnAsg(numberOfServersToSwitchOn, autoScalingGroup)];
+  } else {
+    actions = skipAll(autoScalingGroup, skipReasons.stateIsCorrect);
   }
 
   return actions;
@@ -418,7 +420,7 @@ function skipAll(autoScalingGroup, reason, source) {
   for (var instanceIndex in autoScalingGroup.Instances) {
     var currentInstance = autoScalingGroup.Instances[instanceIndex];
 
-    var result = { action: skip(reason, source), instance: getInstanceInfo(currentInstance) };
+    var result = { action: skip(reason, source), instance: getInstanceInfo(currentInstance._instance || currentInstance) };
     actions.push(result);
   }
   return actions;
