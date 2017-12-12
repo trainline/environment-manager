@@ -114,38 +114,65 @@ function actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime) {
 }
 
 function calculateNumberOfServersRunning(autoScalingGroup) {
-  var distributionSet = getAsgDistributionSet(autoScalingGroup);
+  var distributionSet = getAsgDistributionSetForAddingMore(autoScalingGroup).results;
   var numberOfServersRunning = findInstancesWhere(distributionSet, autoScalingGroup.Instances.length, (instance) => currentStateOfInstance(instance._instance) == currentStates.on);
   return numberOfServersRunning.length;
 }
 
 function calculateNumberOfServersInService(autoScalingGroup) {
-  var distributionSet = getAsgDistributionSet(autoScalingGroup);
+  var distributionSet = getAsgDistributionSetForTakingAway(autoScalingGroup).results;
   var numberOfServersInService = findInstancesWhere(distributionSet, autoScalingGroup.Instances.length, (instance) => instance.LifecycleState == lifeCycleStates.inService);
   return numberOfServersInService.length;
 }
 
-function getAsgDistributionSet(autoScalingGroup) {
+function getAsgDistributionSetForTakingAway(autoScalingGroup) {
   var results = {};
+  
   autoScalingGroup.AvailabilityZones.sort()
+  
   for (var availabilityZone of autoScalingGroup.AvailabilityZones) {
     results[availabilityZone] = [];
   }
+  
   for (var instance of autoScalingGroup.Instances) {
     results[instance.AvailabilityZone].push(instance);
-    results[instance.AvailabilityZone].sort((a, b) => {
-      if (a.InstanceId > b.InstanceId) return 1;
-      if (a.InstanceId < b.InstanceId) return -1;
-      if (a.InstanceId === b.InstanceId) return 0;
-    });
   }
-  return results;
+
+  autoScalingGroup.AvailabilityZones.sort((a,b) => {
+    if (results[a].length > results[b].length) return -1;
+    if (results[a].length < results[b].length) return 1;
+    if (results[a].length == results[b].length) return 0;
+  })
+  
+  return { results, keys: autoScalingGroup.AvailabilityZones };
+}
+
+function getAsgDistributionSetForAddingMore(autoScalingGroup) {
+  var results = {};
+  
+  autoScalingGroup.AvailabilityZones.sort()
+  
+  for (var availabilityZone of autoScalingGroup.AvailabilityZones) {
+    results[availabilityZone] = [];
+  }
+  
+  for (var instance of autoScalingGroup.Instances) {
+    results[instance.AvailabilityZone].push(instance);
+  }
+
+  autoScalingGroup.AvailabilityZones.sort((a,b) => {
+    if (results[a].length < results[b].length) return -1;
+    if (results[a].length > results[b].length) return 1;
+    if (results[a].length == results[b].length) return 0;
+  })
+  
+  return { results, keys: autoScalingGroup.AvailabilityZones };
 }
 
 function findInstancesWhere(distributionSet, numberOfServers, instancePredicate) {
   var instancesFound = [];
-  for (var availabilityZone of Object.keys(distributionSet)) {
-    for (var instance of distributionSet[availabilityZone]) {
+  for (var availabilityZone in distributionSet.keys) {
+    for (var instance of distributionSet.results[distributionSet.keys[availabilityZone]]) {
       if (instancePredicate(instance) && instancesFound.length !== numberOfServers)
         instancesFound.push(instance);
     }
@@ -154,8 +181,7 @@ function findInstancesWhere(distributionSet, numberOfServers, instancePredicate)
 }
 
 function switchOffAsg(numberOfServersToSwitchOff, autoScalingGroup) {
-
-  var distributionSet = getAsgDistributionSet(autoScalingGroup);
+  var distributionSet = getAsgDistributionSetForTakingAway(autoScalingGroup);
 
   var actions = [];
 
@@ -178,7 +204,7 @@ function getActionResult(action, instanceInfo) {
 }
 
 function switchOnAsg(numberOfServersToSwitchOn, autoScalingGroup) {
-  var distributionSet = getAsgDistributionSet(autoScalingGroup);
+  var distributionSet = getAsgDistributionSetForAddingMore(autoScalingGroup);
 
   var actions = [];
 
