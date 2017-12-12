@@ -63,7 +63,7 @@ function actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime) {
     return skipAll(autoScalingGroup, skipReasons.noEnvironment);
   }
 
-  let foundSchedule = getScheduleForInstance(autoScalingGroup);
+  let foundSchedule = getScheduleFromTag(autoScalingGroup);
 
   let source = foundSchedule.source;
   let parseResult = foundSchedule.parseResult;
@@ -215,7 +215,7 @@ function actionForInstance(instance, dateTime) {
     return getActionResult(skip(skipReasons.maintenanceMode), getInstanceInfo(instance));
   }
 
-  let foundSchedule = getScheduleForInstance(instance);
+  let foundSchedule = getScheduleFromTag(instance);
 
   let source = foundSchedule.source;
   let parseResult = foundSchedule.parseResult;
@@ -339,7 +339,7 @@ function getAsgInstanceLifeCycleState(instance) {
   return lifeCycleStates.transitioning;
 }
 
-function getScheduleForInstance(instance) {
+function getScheduleFromTag(instance) {
   let instanceSchedule = getTagValue(instance, 'schedule');
   if (instanceSchedule) return { parseResult: parseSchedule(instanceSchedule), source: sources.instance };
 
