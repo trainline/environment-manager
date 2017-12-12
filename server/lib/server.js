@@ -533,10 +533,10 @@ module.exports = {
 
 
 
-const createTopic = __webpack_require__(250);
-const getTargetArn = __webpack_require__(251);
-const createEvent = __webpack_require__(252);
-const publishEvent = __webpack_require__(253);
+const createTopic = __webpack_require__(253);
+const getTargetArn = __webpack_require__(254);
+const createEvent = __webpack_require__(255);
+const publishEvent = __webpack_require__(256);
 
 /**
  * @param {any} event
@@ -940,14 +940,14 @@ module.exports = cachedSingleAccountDynamoTable(physicalTableName(LOGICAL_TABLE_
 
 
 let _ = __webpack_require__(1);
-let moment = __webpack_require__(75);
+let moment = __webpack_require__(76);
 let co = __webpack_require__(0);
 let EnvironmentType = __webpack_require__(43);
 let Environment = __webpack_require__(9);
 let serviceTargets = __webpack_require__(26);
 let logger = __webpack_require__(2);
-let TaggableMixin = __webpack_require__(77);
-let AsgResourceBase = __webpack_require__(105);
+let TaggableMixin = __webpack_require__(78);
+let AsgResourceBase = __webpack_require__(106);
 let launchConfigurationResourceFactory = __webpack_require__(58);
 
 const AutoScalingGroup = TaggableMixin(class {
@@ -1252,8 +1252,8 @@ module.exports = require("js-joda");
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const assert = __webpack_require__(3);
-const accounts_1 = __webpack_require__(99);
-const ResourceNotFoundError = __webpack_require__(36);
+const accounts_1 = __webpack_require__(100);
+const ResourceNotFoundError = __webpack_require__(37);
 function getByName(accountName) {
     const matches = (val) => `${accountName}`.toLowerCase() === `${val}`.toLowerCase();
     return Promise.resolve()
@@ -1346,6 +1346,29 @@ module.exports = {
 
 "use strict";
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
+
+
+let util = __webpack_require__(8);
+let BaseError = __webpack_require__(7);
+
+module.exports = function AwsError(message, innerError) {
+  this.name = this.constructor.name;
+  this.message = message;
+  this.innerError = innerError;
+
+  Error.captureStackTrace(this, this.constructor);
+};
+
+util.inherits(module.exports, BaseError);
+
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 /**
  * An in-memory cache that decouples the getting of an item from
  * the handling of a cache miss.
@@ -1356,7 +1379,7 @@ module.exports = {
 let cacheManager = __webpack_require__(158);
 let cacheManagerEncryptedRedis = __webpack_require__(159);
 let config = __webpack_require__(5);
-let emCrypto = __webpack_require__(91);
+let emCrypto = __webpack_require__(92);
 let fp = __webpack_require__(4);
 let logger = __webpack_require__(2);
 let masterAccountClient = __webpack_require__(16);
@@ -1526,7 +1549,7 @@ module.exports = myCacheManager;
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1540,7 +1563,7 @@ let logger = __webpack_require__(2);
 let describeDynamoTable = __webpack_require__(68);
 let { hashKeyAttributeName } = __webpack_require__(47);
 let { DateTimeFormatterBuilder, LocalDate, ZoneId } = __webpack_require__(30);
-let { makeWritable } = __webpack_require__(88);
+let { makeWritable } = __webpack_require__(89);
 let dynamoTable = __webpack_require__(48);
 let fp = __webpack_require__(4);
 
@@ -1685,7 +1708,7 @@ module.exports = factory({
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1708,29 +1731,6 @@ util.inherits(module.exports, BaseError);
 
 
 /***/ }),
-/* 36 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
-
-
-
-let util = __webpack_require__(8);
-let BaseError = __webpack_require__(7);
-
-module.exports = function ResourceNotFoundError(message, innerError) {
-  this.name = this.constructor.name;
-  this.message = message;
-  this.innerError = innerError;
-
-  Error.captureStackTrace(this, this.constructor);
-};
-
-util.inherits(module.exports, BaseError);
-
-
-/***/ }),
 /* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1742,7 +1742,7 @@ util.inherits(module.exports, BaseError);
 let util = __webpack_require__(8);
 let BaseError = __webpack_require__(7);
 
-module.exports = function AwsError(message, innerError) {
+module.exports = function ResourceNotFoundError(message, innerError) {
   this.name = this.constructor.name;
   this.message = message;
   this.innerError = innerError;
@@ -2400,12 +2400,12 @@ module.exports = { safeParseJSON, offsetMilliseconds };
 let _ = __webpack_require__(1);
 let assert = __webpack_require__(3);
 let co = __webpack_require__(0);
-let ConfigurationError = __webpack_require__(35);
+let ConfigurationError = __webpack_require__(36);
 let DynamoItemNotFoundError = __webpack_require__(187);
 let imageProvider = __webpack_require__(74);
 let Environment = __webpack_require__(9);
 let EnvironmentType = __webpack_require__(43);
-let clusters = __webpack_require__(104);
+let clusters = __webpack_require__(105);
 let servicesDb = __webpack_require__(28);
 
 module.exports = {
@@ -2479,9 +2479,9 @@ function getClusterByName(clusterName) {
 
 
 let awsAccounts = __webpack_require__(31);
-let applyFuncToAccounts = __webpack_require__(100);
-let imageSummary = __webpack_require__(101);
-let ec2ImageResourceFactory = __webpack_require__(102);
+let applyFuncToAccounts = __webpack_require__(101);
+let imageSummary = __webpack_require__(102);
+let ec2ImageResourceFactory = __webpack_require__(103);
 
 module.exports = function ScanCrossAccountImages(query) {
   return awsAccounts.all()
@@ -2511,7 +2511,7 @@ function getFromSingleAccount(query) {
 
 let configEnvironments = __webpack_require__(18);
 let configEnvironmentTypes = __webpack_require__(55);
-let ConfigurationError = __webpack_require__(35);
+let ConfigurationError = __webpack_require__(36);
 
 function getEnvironmentByName(environmentName) {
   return configEnvironments.get({ EnvironmentName: environmentName })
@@ -2590,7 +2590,7 @@ module.exports = function GetAutoScalingGroup(query) {
 
 let co = __webpack_require__(0);
 let environmentDatabase = __webpack_require__(54);
-let cacheManager = __webpack_require__(33);
+let cacheManager = __webpack_require__(34);
 
 const TEN_MINUTES = 10 * 60;
 
@@ -2632,7 +2632,7 @@ module.exports = {
 let _ = __webpack_require__(1);
 let amazonClientFactory = __webpack_require__(14);
 
-let AwsError = __webpack_require__(37);
+let AwsError = __webpack_require__(33);
 let LaunchConfigurationAlreadyExistsError = __webpack_require__(202);
 
 function standardifyError(error, launchConfigurationName) {
@@ -2734,7 +2734,7 @@ module.exports = {
 
 let systemUser = __webpack_require__(203);
 let sender = __webpack_require__(6);
-let deployments = __webpack_require__(34);
+let deployments = __webpack_require__(35);
 let DeploymentLogsStreamer = __webpack_require__(111);
 let deploymentLogsStreamer = new DeploymentLogsStreamer();
 let Enums = __webpack_require__(11);
@@ -2840,11 +2840,11 @@ let _ = __webpack_require__(1);
 let co = __webpack_require__(0);
 let amazonClientFactory = __webpack_require__(14);
 let Environment = __webpack_require__(9);
-let moment = __webpack_require__(75);
+let moment = __webpack_require__(76);
 let logger = __webpack_require__(2);
-let TaggableMixin = __webpack_require__(77);
+let TaggableMixin = __webpack_require__(78);
 const InstanceResourceBase = __webpack_require__(115);
-let scanCrossAccountFn = __webpack_require__(79);
+let scanCrossAccountFn = __webpack_require__(80);
 
 class Instance {
   constructor(data) {
@@ -2968,7 +2968,7 @@ module.exports = require("url");
 
 
 
-let consulReporter = __webpack_require__(327);
+let consulReporter = __webpack_require__(330);
 
 /**
  * Service Discovery abstraction to allow easy switching
@@ -2986,7 +2986,7 @@ module.exports = consulReporter;
 
 
 
-const ec2InstanceResourceFactory = __webpack_require__(82);
+const ec2InstanceResourceFactory = __webpack_require__(83);
 
 module.exports = function ScanInstancesQueryHandler({ accountName, filter }) {
   return ec2InstanceResourceFactory.create(undefined, { accountName })
@@ -3024,7 +3024,7 @@ module.exports = cachedSingleAccountDynamoTable(physicalTableName(LOGICAL_TABLE_
 let { attachAuditMetadata, updateAuditMetadata } = __webpack_require__(17);
 let describeDynamoTable = __webpack_require__(68);
 let { hashKeyAttributeName } = __webpack_require__(47);
-let { makeWritable } = __webpack_require__(88);
+let { makeWritable } = __webpack_require__(89);
 let dynamoVersion = __webpack_require__(15);
 let { softDelete } = __webpack_require__(156);
 let fp = __webpack_require__(4);
@@ -3127,7 +3127,7 @@ module.exports = factory;
 
 
 let { createLowLevelDynamoClient: DynamoDB } = __webpack_require__(16);
-let memoize = __webpack_require__(87);
+let memoize = __webpack_require__(88);
 
 function describeTableArn(TableName) {
   return DynamoDB()
@@ -3555,12 +3555,35 @@ function getLatestImageByType(imageType, includeUnstable) {
 
 /***/ }),
 /* 75 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
+
+
+let util = __webpack_require__(8);
+let BaseError = __webpack_require__(7);
+
+module.exports = function AutoScalingGroupNotFoundError(message, innerError) {
+  this.name = this.constructor.name;
+  this.message = message;
+  this.innerError = innerError;
+
+  Error.captureStackTrace(this, this.constructor);
+};
+
+util.inherits(module.exports, BaseError);
+
+
+/***/ }),
+/* 76 */
 /***/ (function(module, exports) {
 
 module.exports = require("moment");
 
 /***/ }),
-/* 76 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3583,7 +3606,7 @@ util.inherits(module.exports, BaseError);
 
 
 /***/ }),
-/* 77 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3624,7 +3647,7 @@ module.exports = TaggableMixin;
 
 
 /***/ }),
-/* 78 */
+/* 79 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3649,7 +3672,7 @@ module.exports = function GetTargetState(query) {
 
 
 /***/ }),
-/* 79 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3658,7 +3681,7 @@ module.exports = function GetTargetState(query) {
 
 
 let awsAccounts = __webpack_require__(31);
-let applyFuncToAccounts = __webpack_require__(100);
+let applyFuncToAccounts = __webpack_require__(101);
 
 function scanCrossAccountFn(fn) {
   return awsAccounts.all()
@@ -3669,7 +3692,7 @@ module.exports = scanCrossAccountFn;
 
 
 /***/ }),
-/* 80 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3736,7 +3759,7 @@ function getDeviceByVolume(dataVolume, name, encrypted) {
 
 
 /***/ }),
-/* 81 */
+/* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3803,7 +3826,7 @@ module.exports = co.wrap(handler);
 
 
 /***/ }),
-/* 82 */
+/* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3833,7 +3856,7 @@ module.exports = {
 
 
 /***/ }),
-/* 83 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3858,7 +3881,7 @@ module.exports = class DeploymentValidationError extends BaseError {
 
 
 /***/ }),
-/* 84 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3900,7 +3923,7 @@ module.exports = GetServerRoles;
 
 
 /***/ }),
-/* 85 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3915,13 +3938,13 @@ module.exports = {
 
 
 /***/ }),
-/* 86 */
+/* 87 */
 /***/ (function(module, exports) {
 
 module.exports = require("newrelic");
 
 /***/ }),
-/* 87 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3966,7 +3989,7 @@ module.exports = memoize;
 
 
 /***/ }),
-/* 88 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4020,19 +4043,19 @@ module.exports = {
 
 
 /***/ }),
-/* 89 */
+/* 90 */
 /***/ (function(module, exports) {
 
 module.exports = require("ioredis");
 
 /***/ }),
-/* 90 */
+/* 91 */
 /***/ (function(module, exports) {
 
 module.exports = require("timers");
 
 /***/ }),
-/* 91 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4121,7 +4144,7 @@ module.exports = {
 
 
 /***/ }),
-/* 92 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4221,7 +4244,7 @@ module.exports = create;
 
 
 /***/ }),
-/* 93 */
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4244,7 +4267,7 @@ util.inherits(module.exports, BaseError);
 
 
 /***/ }),
-/* 94 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4268,7 +4291,7 @@ module.exports = {
 
 
 /***/ }),
-/* 95 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4292,7 +4315,7 @@ module.exports = implementation;
 
 
 /***/ }),
-/* 96 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4335,7 +4358,7 @@ module.exports = S3GetObjectRequest;
 
 
 /***/ }),
-/* 97 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4364,7 +4387,7 @@ module.exports = {
 
 
 /***/ }),
-/* 98 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4380,14 +4403,14 @@ let DEFAULT_SERVICE_INSTALLATION_TIMEOUT = '30m';
 
 let Enums = __webpack_require__(11);
 let BaseError = __webpack_require__(7);
-let deployments = __webpack_require__(34);
+let deployments = __webpack_require__(35);
 let sender = __webpack_require__(6);
 let infrastructureConfigurationProvider = __webpack_require__(52);
 let namingConventionProvider = __webpack_require__(32);
 let logger = __webpack_require__(2);
 let Environment = __webpack_require__(9);
 let GetAutoScalingGroup = __webpack_require__(56);
-let GetTargetState = __webpack_require__(78);
+let GetTargetState = __webpack_require__(79);
 
 module.exports = {
 
@@ -4552,7 +4575,7 @@ function getTargetState(key, environmentName, recurse) {
 
 
 /***/ }),
-/* 99 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4570,7 +4593,7 @@ module.exports = cachedSingleAccountDynamoTable(physicalTableName(LOGICAL_TABLE_
 
 
 /***/ }),
-/* 100 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4596,7 +4619,7 @@ module.exports = applyFuncToAccounts;
 
 
 /***/ }),
-/* 101 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4770,7 +4793,7 @@ function getStableDate(ec2image) {
 
 
 /***/ }),
-/* 102 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4781,7 +4804,7 @@ function getStableDate(ec2image) {
 let _ = __webpack_require__(1);
 let amazonClientFactory = __webpack_require__(14);
 let awsAccounts = __webpack_require__(31);
-let cacheManager = __webpack_require__(33);
+let cacheManager = __webpack_require__(34);
 let fp = __webpack_require__(4);
 
 const USE_CACHE = true;
@@ -4848,7 +4871,7 @@ module.exports = {
 
 
 /***/ }),
-/* 103 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4866,7 +4889,7 @@ module.exports = cachedSingleAccountDynamoTable(physicalTableName(LOGICAL_TABLE_
 
 
 /***/ }),
-/* 104 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4884,7 +4907,7 @@ module.exports = cachedSingleAccountDynamoTable(physicalTableName(LOGICAL_TABLE_
 
 
 /***/ }),
-/* 105 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4893,11 +4916,12 @@ module.exports = cachedSingleAccountDynamoTable(physicalTableName(LOGICAL_TABLE_
 
 
 let _ = __webpack_require__(1);
+let co = __webpack_require__(0);
 let amazonClientFactory = __webpack_require__(14);
-let AwsError = __webpack_require__(37);
-let AutoScalingGroupNotFoundError = __webpack_require__(106);
+let AwsError = __webpack_require__(33);
+let AutoScalingGroupNotFoundError = __webpack_require__(75);
 let AutoScalingGroupAlreadyExistsError = __webpack_require__(194);
-let cacheManager = __webpack_require__(33);
+let cacheManager = __webpack_require__(34);
 let fp = __webpack_require__(4);
 let logger = __webpack_require__(2);
 let pages = __webpack_require__(49);
@@ -4979,7 +5003,7 @@ function AsgResourceBase(accountId) {
     return asgClient().then(client => client.deleteAutoScalingGroup({ AutoScalingGroupName: name, ForceDelete: force }).promise());
   };
 
-  this.put = function (parameters) {
+  function updateASG(client, parameters) {
     let request = {
       AutoScalingGroupName: parameters.name
     };
@@ -5004,9 +5028,37 @@ function AsgResourceBase(accountId) {
       request.VPCZoneIdentifier = parameters.subnets.join(',');
     }
 
-    asgCache.del(accountId);
+    return client.updateAutoScalingGroup(request).promise();
+  }
 
-    return asgClient().then(client => client.updateAutoScalingGroup(request).promise()).catch((error) => {
+  function updateLCHs(client, parameters) {
+    let request = {
+      AutoScalingGroupName: parameters.name,
+      LifecycleHookName: '10min-draining'
+    };
+
+    if (_.isNil(parameters.scaling)) return Promise.resolve();
+
+    if (!parameters.scaling.terminationDelay) {
+      return client.deleteLifecycleHook(request).promise().catch(() => {});
+    }
+
+    Object.assign(request, {
+      HeartbeatTimeout: parameters.scaling.terminationDelay * 60,
+      LifecycleTransition: 'autoscaling:EC2_INSTANCE_TERMINATING',
+      DefaultResult: 'CONTINUE'
+    });
+
+    return client.putLifecycleHook(request).promise();
+  }
+
+  this.put = (parameters) => {
+    asgCache.del(accountId);
+    return co(function* () {
+      let client = yield asgClient();
+      yield updateASG(client, parameters);
+      yield updateLCHs(client, parameters);
+    }).catch((error) => {
       throw standardifyError(error, parameters.name);
     });
   };
@@ -5032,11 +5084,19 @@ function AsgResourceBase(accountId) {
     throw standardifyError(error, request.AutoScalingGroupName);
   }));
 
+  this.attachLifecycleHook = request => asgClient().then(client => client.putLifecycleHook(request).promise().catch((error) => {
+    throw standardifyError(error, request.AutoScalingGroupName);
+  }));
+
   this.attachNotifications = request => asgClient().then(client => client.putNotificationConfiguration(request).promise().catch((error) => {
     throw standardifyError(error, request.AutoScalingGroupName);
   }));
 
   this.describeScheduledActions = request => asgClient().then(client => client.describeScheduledActions(request).promise().then(result => result.ScheduledUpdateGroupActions).catch((error) => {
+    throw standardifyError(error, request.AutoScalingGroupName);
+  }));
+
+  this.describeLifeCycleHooks = request => asgClient().then(client => client.describeLifecycleHooks(request).promise().then(result => result.ScheduledUpdateGroupActions).catch((error) => {
     throw standardifyError(error, request.AutoScalingGroupName);
   }));
 
@@ -5050,29 +5110,6 @@ function AsgResourceBase(accountId) {
 }
 
 module.exports = AsgResourceBase;
-
-
-/***/ }),
-/* 106 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
-
-
-
-let util = __webpack_require__(8);
-let BaseError = __webpack_require__(7);
-
-module.exports = function AutoScalingGroupNotFoundError(message, innerError) {
-  this.name = this.constructor.name;
-  this.message = message;
-  this.innerError = innerError;
-
-  Error.captureStackTrace(this, this.constructor);
-};
-
-util.inherits(module.exports, BaseError);
 
 
 /***/ }),
@@ -5198,9 +5235,9 @@ module.exports = require("ajv");
 
 
 
-let { appendLogEntries } = __webpack_require__(34);
+let { appendLogEntries } = __webpack_require__(35);
 let logger = __webpack_require__(2);
-let timer = __webpack_require__(90);
+let timer = __webpack_require__(91);
 
 module.exports = function DeploymentLogsStreamer() {
   let pendingLogEntries = (() => {
@@ -5289,11 +5326,11 @@ module.exports = function UpdateTargetState(command) {
 
 let co = __webpack_require__(0);
 let configurationCache = __webpack_require__(57);
-let deployments = __webpack_require__(34);
+let deployments = __webpack_require__(35);
 let fp = __webpack_require__(4);
 let { Clock, Instant, LocalDate, ZoneId } = __webpack_require__(30);
 let sender = __webpack_require__(6);
-let GetTargetState = __webpack_require__(78);
+let GetTargetState = __webpack_require__(79);
 const Deployment = __webpack_require__(216);
 
 function getTargetAccountName(deployment) {
@@ -5617,7 +5654,7 @@ module.exports = {
 
 let _ = __webpack_require__(1);
 let sender = __webpack_require__(6);
-let TaggableMixin = __webpack_require__(77);
+let TaggableMixin = __webpack_require__(78);
 let ScanSecurityGroups = __webpack_require__(237);
 
 class SecurityGroup {
@@ -5810,7 +5847,7 @@ module.exports = function GetInstanceProfile(query) {
 
 let assert = __webpack_require__(3);
 let co = __webpack_require__(0);
-let ConfigurationError = __webpack_require__(35);
+let ConfigurationError = __webpack_require__(36);
 let _ = __webpack_require__(1);
 
 const SECURE_SECURITY_ZONE = 'Secure';
@@ -5905,7 +5942,7 @@ function getSubnetsByAvailabilityZone(subnetTypeName, configuration) {
 "use strict";
 
 
-const buffer = __webpack_require__(257);
+const buffer = __webpack_require__(260);
 const base64 = 'base64';
 const utf8 = 'utf8';
 
@@ -5972,10 +6009,10 @@ module.exports = logicalTableName;
 
 
 
-let S3GetObjectRequest = __webpack_require__(96);
+let S3GetObjectRequest = __webpack_require__(97);
 let amazonClientFactory = __webpack_require__(14);
 let sender = __webpack_require__(6);
-let GetTargetState = __webpack_require__(78);
+let GetTargetState = __webpack_require__(79);
 
 function getNode({ deploymentId, instanceId, accountName, environment }) {
   let query = {
@@ -6031,7 +6068,7 @@ module.exports = getNode;
 
 
 let sender = __webpack_require__(6);
-let ToggleTargetStatus = __webpack_require__(280);
+let ToggleTargetStatus = __webpack_require__(283);
 
 function toggleServiceStatus({ environment, service, slice, enable, serverRole, user }) {
   const name = 'ToggleTargetStatus';
@@ -6291,10 +6328,12 @@ module.exports = OpsEnvironment;
 
 
 
+/* eslint-disable */
+
 const _ = __webpack_require__(1);
-const parseSchedule = __webpack_require__(288);
+const parseSchedule = __webpack_require__(291);
 const later = __webpack_require__(132);
-const moment = __webpack_require__(289);
+const moment = __webpack_require__(292);
 
 const actions = {
   switchOn: 'switchOn',
@@ -6337,42 +6376,198 @@ const currentStates = {
   transitioning: 'transitioning'
 };
 
-function actionForInstance(instance, dateTime) {
-  if (!instance.Environment) {
-    return skip(skipReasons.noEnvironment);
+function actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime) {
+
+  autoScalingGroup.Environment = getTagValue(autoScalingGroup, 'Environment');
+
+  mergeAsgInstances(autoScalingGroup, instances);
+
+  if (autoScalingGroup.Instances.some(i => currentStateOfInstance(i._instance) == currentStates.transitioning))
+    return [];
+
+  if (!autoScalingGroup.Environment) {
+    return skipAll(autoScalingGroup, skipReasons.noEnvironment);
   }
 
-  if (isInMaintenanceMode(instance)) {
-    return skip(skipReasons.maintenanceMode);
-  }
-
-  let foundSchedule = getScheduleForInstance(instance);
+  let foundSchedule = getScheduleFromTag(autoScalingGroup);
 
   let source = foundSchedule.source;
   let parseResult = foundSchedule.parseResult;
 
   if (!parseResult.success) {
-    return skip(`${skipReasons.invalidSchedule} - Error: '${parseResult.error}'`, source);
+    return skipAll(autoScalingGroup, `${skipReasons.invalidSchedule} - Error: '${parseResult.error}'`, source);
   }
 
   let schedule = parseResult.schedule;
 
   if (schedule.skip) {
-    return skip(skipReasons.explicitNoSchedule, source);
+
+    // TODO: Check for any instances that might have schedules, this should fallback on to actionForInstance
+
+    return skipAll(autoScalingGroup, skipReasons.explicitNoSchedule);
   }
 
-  let localTime = convertToLocalTime(dateTime, parseResult.timezone);
+  let localTime = convertToTimezone(dateTime, parseResult.timezone);
   let expectedState = expectedStateFromParsedSchedule(schedule, localTime);
 
   if (expectedState.noSchedule) {
-    return skip(skipReasons.stateIsCorrect);
+    return skipAll(autoScalingGroup, skipReasons.stateIsCorrect);
+  }
+
+  var expectedNumberOfServers = 0;
+
+  if (expectedState === states.on) {
+    expectedNumberOfServers = autoScalingGroup.MaxSize;
+  } else if (expectedState === states.off) {
+    expectedNumberOfServers = autoScalingGroup.MinSize;
+  } else {
+    expectedNumberOfServers = Number(expectedState);
+  }
+
+  var actions = [];
+
+  if (expectedNumberOfServers < calculateNumberOfServersRunning(autoScalingGroup)) {
+    var numberOfServersToSwitchOff = calculateNumberOfServersRunning(autoScalingGroup) - expectedNumberOfServers
+    actions = [...switchOffAsg(numberOfServersToSwitchOff, autoScalingGroup)];
+  } else if (expectedNumberOfServers > calculateNumberOfServersInService(autoScalingGroup)) {
+    var numberOfServersToSwitchOn = expectedNumberOfServers - calculateNumberOfServersInService(autoScalingGroup);
+    actions = [...switchOnAsg(numberOfServersToSwitchOn, autoScalingGroup)];
+  } else {
+    actions = skipAll(autoScalingGroup, skipReasons.stateIsCorrect);
+  }
+
+  return actions;
+}
+
+function calculateNumberOfServersRunning(autoScalingGroup) {
+  var distributionSet = getAsgDistributionSet(autoScalingGroup);
+  var numberOfServersRunning = findInstancesWhere(distributionSet, autoScalingGroup.Instances.length, (instance) => currentStateOfInstance(instance._instance) == currentStates.on);
+  return numberOfServersRunning.length;
+}
+
+function calculateNumberOfServersInService(autoScalingGroup) {
+  var distributionSet = getAsgDistributionSet(autoScalingGroup);
+  var numberOfServersInService = findInstancesWhere(distributionSet, autoScalingGroup.Instances.length, (instance) => instance.LifecycleState == lifeCycleStates.inService);
+  return numberOfServersInService.length;
+}
+
+function getAsgDistributionSet(autoScalingGroup) {
+  var results = {};
+  autoScalingGroup.AvailabilityZones.sort()
+  for (var availabilityZone of autoScalingGroup.AvailabilityZones) {
+    results[availabilityZone] = [];
+  }
+  for (var instance of autoScalingGroup.Instances) {
+    results[instance.AvailabilityZone].push(instance);
+    results[instance.AvailabilityZone].sort((a, b) => {
+      if (a.InstanceId > b.InstanceId) return 1;
+      if (a.InstanceId < b.InstanceId) return -1;
+      if (a.InstanceId === b.InstanceId) return 0;
+    });
+  }
+  return results;
+}
+
+function findInstancesWhere(distributionSet, numberOfServers, instancePredicate) {
+  var instancesFound = [];
+  for (var availabilityZone of Object.keys(distributionSet)) {
+    for (var instance of distributionSet[availabilityZone]) {
+      if (instancePredicate(instance) && instancesFound.length !== numberOfServers)
+        instancesFound.push(instance);
+    }
+  }
+  return instancesFound;
+}
+
+function switchOffAsg(numberOfServersToSwitchOff, autoScalingGroup) {
+
+  var distributionSet = getAsgDistributionSet(autoScalingGroup);
+
+  var actions = [];
+
+  var outOfServiceButRunningInstances = findInstancesWhere(distributionSet, numberOfServersToSwitchOff, (instance) =>
+    instance.LifecycleState == lifeCycleStates.outOfService && currentStateOfInstance(instance._instance) == currentStates.on);
+
+  var inServiceInstances = findInstancesWhere(distributionSet, numberOfServersToSwitchOff - outOfServiceButRunningInstances.length, (instance) =>
+    instance.LifecycleState == lifeCycleStates.inService);
+
+  for (var instance of [...outOfServiceButRunningInstances, ...inServiceInstances]) {
+    var action = getActionResult(switchOff(instance._instance),  getInstanceInfo(instance._instance));
+    actions.push(action);
+  }
+
+  return actions;
+}
+
+function getActionResult(action, instanceInfo) {
+  return { action: action, instance: instanceInfo };
+}
+
+function switchOnAsg(numberOfServersToSwitchOn, autoScalingGroup) {
+  var distributionSet = getAsgDistributionSet(autoScalingGroup);
+
+  var actions = [];
+
+  var inServiceInstances = findInstancesWhere(distributionSet, numberOfServersToSwitchOn, (instance) =>
+    instance.LifecycleState == lifeCycleStates.outOfService && currentStateOfInstance(instance._instance) == currentStates.on);
+
+  var outOfServiceAndSwitchedOffInstances = findInstancesWhere(distributionSet, numberOfServersToSwitchOn - inServiceInstances.length, (instance) =>
+    instance.LifecycleState == lifeCycleStates.outOfService && currentStateOfInstance(instance._instance) == currentStates.off);
+
+  for (var instance of [...inServiceInstances, ...outOfServiceAndSwitchedOffInstances]) {
+    var action = getActionResult(switchOn(instance._instance),  getInstanceInfo(instance._instance));
+    actions.push(action);
+  }
+
+  return actions;
+
+}
+
+function mergeAsgInstances(autoScalingGroup, instances) {
+  for (var instanceIndex in autoScalingGroup.Instances) {
+    var currentInstance = autoScalingGroup.Instances[instanceIndex];
+    var emInstance = instances.filter(x => x.InstanceId === currentInstance.InstanceId)[0];
+    currentInstance._instance = emInstance;
+  }
+}
+
+function actionForInstance(instance, dateTime) {
+
+  if (!instance.Environment) {
+    return getActionResult(skip(skipReasons.noEnvironment), getInstanceInfo(instance));
+  }
+
+  if (isInMaintenanceMode(instance)) {
+    return getActionResult(skip(skipReasons.maintenanceMode), getInstanceInfo(instance));
+  }
+
+  let foundSchedule = getScheduleFromTag(instance);
+
+  let source = foundSchedule.source;
+  let parseResult = foundSchedule.parseResult;
+
+  if (!parseResult.success) {
+    return getActionResult(skip(`${skipReasons.invalidSchedule} - Error: '${parseResult.error}'`, source),  getInstanceInfo(instance));
+  }
+
+  let schedule = parseResult.schedule;
+
+  if (schedule.skip) {
+    return getActionResult(skip(skipReasons.explicitNoSchedule, source),  getInstanceInfo(instance));
+  }
+
+  let localTime = convertToTimezone(dateTime, parseResult.timezone);
+  let expectedState = expectedStateFromParsedSchedule(schedule, localTime);
+
+  if (expectedState.noSchedule) {
+    return getActionResult(skip(skipReasons.stateIsCorrect), getInstanceInfo(instance));
   }
 
   if (expectedState === states.on) {
-    return switchOn(instance, source);
+    return getActionResult(switchOn(instance, source), getInstanceInfo(instance));
   }
 
-  return switchOff(instance, source);
+  return getActionResult(switchOff(instance, source), getInstanceInfo(instance));
 }
 
 function expectedStateFromSchedule(schedule, dateTime) {
@@ -6389,7 +6584,7 @@ function expectedStateFromSchedule(schedule, dateTime) {
     return 'NO SCHEDULE';
   }
 
-  let localTime = convertToLocalTime(dateTime, parsedSchedule.timezone);
+  let localTime = convertToTimezone(dateTime, parsedSchedule.timezone);
   let expectedState = expectedStateFromParsedSchedule(parsedSchedule.schedule, localTime);
 
   if (expectedState.noSchedule) {
@@ -6470,7 +6665,7 @@ function getAsgInstanceLifeCycleState(instance) {
   return lifeCycleStates.transitioning;
 }
 
-function getScheduleForInstance(instance) {
+function getScheduleFromTag(instance) {
   let instanceSchedule = getTagValue(instance, 'schedule');
   if (instanceSchedule) return { parseResult: parseSchedule(instanceSchedule), source: sources.instance };
 
@@ -6521,8 +6716,9 @@ function expectedStateFromParsedSchedule(schedules, dateTime) {
   return latest.state;
 }
 
-function convertToLocalTime(dateTime, timezone) {
-  return moment.tz(dateTime, 'utc').tz(timezone || 'utc').format('YYYY-MM-DDTHH:mm:ss');
+function convertToTimezone(dateTime, timezone) {
+  let matchingZoneTime = moment.tz(dateTime, 'utc').tz(timezone || 'utc').format('YYYY-MM-DDTHH:mm:ss');
+  return `${matchingZoneTime}Z`;
 }
 
 function getTagValue(instance, tagName) {
@@ -6534,6 +6730,7 @@ function getTagValue(instance, tagName) {
 }
 
 function currentStateOfInstance(instance) {
+  if (!instance || !instance.State) return currentStates.transitioning;
   if (instance.State.Name === 'running') return currentStates.on;
   if (instance.State.Name === 'stopped') return currentStates.off;
 
@@ -6544,8 +6741,32 @@ function skip(reason, source) {
   return { action: actions.skip, reason, source };
 }
 
+function skipAll(autoScalingGroup, reason, source) {
+  var actions = [];
+  for (var instanceIndex in autoScalingGroup.Instances) {
+    var currentInstance = autoScalingGroup.Instances[instanceIndex];
+
+    var result = { action: skip(reason, source), instance: getInstanceInfo(currentInstance._instance || currentInstance) };
+    actions.push(result);
+  }
+  return actions;
+}
+
 function takeAction(action, source) {
   return { action, source };
+}
+
+function getInstanceInfo(instance) {
+  let instanceVM = {
+    id: instance.InstanceId,
+    name: getTagValue(instance, 'name'),
+    role: getTagValue(instance, 'role'),
+    environment: getTagValue(instance, 'environment')
+  };
+  if (instance.AutoScalingGroup) {
+    instanceVM.asg = instance.AutoScalingGroup.AutoScalingGroupName;
+  }
+  return instanceVM;
 }
 
 module.exports = {
@@ -6554,6 +6775,7 @@ module.exports = {
   skipReasons,
   states,
   actionForInstance,
+  actionsForAutoScalingGroup,
   expectedStateFromSchedule
 };
 
@@ -6590,8 +6812,8 @@ let fp = __webpack_require__(4);
 let co = __webpack_require__(0);
 
 let getInstanceState = __webpack_require__(136);
-let getServicesState = __webpack_require__(330);
-let getAWSInstances = __webpack_require__(331);
+let getServicesState = __webpack_require__(333);
+let getAWSInstances = __webpack_require__(334);
 
 let AutoScalingGroup = __webpack_require__(19);
 let logger = __webpack_require__(2);
@@ -6687,7 +6909,7 @@ let co = __webpack_require__(0);
 let Enums = __webpack_require__(11);
 let DIFF_STATE = Enums.DIFF_STATE;
 let DEPLOYMENT_STATUS = Enums.DEPLOYMENT_STATUS;
-let serviceUtil = __webpack_require__(329);
+let serviceUtil = __webpack_require__(332);
 
 /**
  * Returns a detailed view of the current state of a given instance and its services
@@ -6937,7 +7159,7 @@ module.exports = function create(status, value) {
 let Promise = __webpack_require__(10);
 let co = __webpack_require__(0);
 let _ = __webpack_require__(1);
-let ResourceNotFoundError = __webpack_require__(36);
+let ResourceNotFoundError = __webpack_require__(37);
 let servicesDb = __webpack_require__(28);
 
 function hostFilter(active) {
@@ -7031,8 +7253,8 @@ module.exports = {
 
 let Promise = __webpack_require__(10);
 
-let ResourceNotFoundError = __webpack_require__(36);
-let InconsistentSlicesStatusError = __webpack_require__(352);
+let ResourceNotFoundError = __webpack_require__(37);
+let InconsistentSlicesStatusError = __webpack_require__(355);
 let logger = __webpack_require__(2);
 let servicesDb = __webpack_require__(28);
 let loadBalancerUpstreams = __webpack_require__(38);
@@ -7269,7 +7491,7 @@ module.exports = {
 
 if (process.env.NEW_RELIC_APP_NAME !== undefined) {
   // eslint-disable-next-line global-require
-  __webpack_require__(86); // This line must be executed before any other call to require()
+  __webpack_require__(87); // This line must be executed before any other call to require()
 }
 
 global.Promise = __webpack_require__(10);
@@ -7282,8 +7504,8 @@ let logger = __webpack_require__(2);
 // TODO conver to singleton
 let ConfigurationProvider = __webpack_require__(150);
 let checkAppPrerequisites = __webpack_require__(154);
-let cacheManager = __webpack_require__(33);
-const miniStack = __webpack_require__(92);
+let cacheManager = __webpack_require__(34);
+const miniStack = __webpack_require__(93);
 const mini = miniStack.build();
 
 process.on('unhandledRejection', (err) => {
@@ -7639,7 +7861,7 @@ module.exports = {
 
 
 let dynamoTable = __webpack_require__(48);
-let cacheManager = __webpack_require__(33);
+let cacheManager = __webpack_require__(34);
 let logger = __webpack_require__(2);
 
 function logError(message, tableName) {
@@ -7722,9 +7944,9 @@ module.exports = require("cache-manager");
 
 let fp = __webpack_require__(4);
 let logger = __webpack_require__(2);
-let memoize = __webpack_require__(87);
-let Redis = __webpack_require__(89);
-let timers = __webpack_require__(90);
+let memoize = __webpack_require__(88);
+let Redis = __webpack_require__(90);
+let timers = __webpack_require__(91);
 
 const NOT_FOUND = undefined;
 
@@ -7930,15 +8152,15 @@ let expressRequestId = __webpack_require__(165);
 let ServerFactoryConfiguration = __webpack_require__(166);
 let serverFactoryConfiguration = new ServerFactoryConfiguration();
 let tokenAuthentication = __webpack_require__(167);
-let cookieAuthentication = __webpack_require__(97);
+let cookieAuthentication = __webpack_require__(98);
 let authentication = __webpack_require__(184);
 let deploymentMonitorScheduler = __webpack_require__(185);
 let apiV1 = __webpack_require__(204);
-let initialData = __webpack_require__(365);
-let httpServerFactory = __webpack_require__(367);
-let loggingMiddleware = __webpack_require__(370);
-let deprecateMiddleware = __webpack_require__(371);
-let cacheRouter = __webpack_require__(372);
+let initialData = __webpack_require__(368);
+let httpServerFactory = __webpack_require__(370);
+let loggingMiddleware = __webpack_require__(373);
+let deprecateMiddleware = __webpack_require__(374);
+let cacheRouter = __webpack_require__(375);
 
 const APP_VERSION = __webpack_require__(5).get('APP_VERSION');
 
@@ -7946,10 +8168,10 @@ let serverInstance;
 
 function createExpressApp() {
   /* eslint-disable global-require */
-  let httpHealthChecks = __webpack_require__(374);
+  let httpHealthChecks = __webpack_require__(377);
   let routes = {
-    home: __webpack_require__(378),
-    deploymentNodeLogs: __webpack_require__(382)
+    home: __webpack_require__(381),
+    deploymentNodeLogs: __webpack_require__(385)
   };
   /* eslint-enable */
 
@@ -8155,7 +8377,7 @@ module.exports = {
 let ms = __webpack_require__(42);
 let User = __webpack_require__(71);
 let utils = __webpack_require__(51);
-let ActiveDirectoryError = __webpack_require__(93);
+let ActiveDirectoryError = __webpack_require__(94);
 
 function authenticateUser(credentials, duration) {
   if (!credentials.username) {
@@ -8214,9 +8436,9 @@ let UserRolesProvider = __webpack_require__(171);
 let activeDirectoryAdapter = __webpack_require__(172);
 let logger = __webpack_require__(2);
 let md5 = __webpack_require__(178);
-let UserSessionStore = __webpack_require__(94);
+let UserSessionStore = __webpack_require__(95);
 let Promise = __webpack_require__(10);
-let SslComponentsRepository = __webpack_require__(95);
+let SslComponentsRepository = __webpack_require__(96);
 
 let userRolesProvider = new UserRolesProvider();
 
@@ -8512,7 +8734,7 @@ module.exports = function ActiveDirectoryAdapter() {
 let co = __webpack_require__(0);
 let Promise = __webpack_require__(10);
 let ActiveDirectory = __webpack_require__(175);
-let ActiveDirectoryError = __webpack_require__(93);
+let ActiveDirectoryError = __webpack_require__(94);
 let InvalidCredentialsError = __webpack_require__(176);
 let ActiveDirectoryAdapterConfiguration = __webpack_require__(177);
 
@@ -8626,10 +8848,10 @@ module.exports = require("md5");
 
 
 let logger = __webpack_require__(2);
-let Redis = __webpack_require__(89);
+let Redis = __webpack_require__(90);
 let config = __webpack_require__(5);
 let co = __webpack_require__(0);
-let emCrypto = __webpack_require__(91);
+let emCrypto = __webpack_require__(92);
 let masterAccountClient = __webpack_require__(16);
 
 const EM_REDIS_ADDRESS = config.get('EM_REDIS_ADDRESS');
@@ -8792,7 +9014,7 @@ h3JMtjFTLz9HH+PFWwIDAQAB
 
 
 let async = __webpack_require__(182);
-let S3GetObjectRequest = __webpack_require__(96);
+let S3GetObjectRequest = __webpack_require__(97);
 let amazonClientFactory = __webpack_require__(16);
 const SslComponentsRepositoryConfiguration = __webpack_require__(183);
 let sslComponentsCache = null;
@@ -9013,7 +9235,7 @@ let fs = __webpack_require__(27);
 let co = __webpack_require__(0);
 let ms = __webpack_require__(42);
 let logger = __webpack_require__(2);
-let activeDeploymentsStatusProvider = __webpack_require__(98);
+let activeDeploymentsStatusProvider = __webpack_require__(99);
 
 let DEFAULT_INFRASTRUCTURE_PROVISIONING_TIMEOUT = '60m';
 let Enums = __webpack_require__(11);
@@ -9256,8 +9478,8 @@ module.exports = require("semver");
 
 
 let _ = __webpack_require__(1);
-let ResourceNotFoundError = __webpack_require__(36);
-let deploymentMaps = __webpack_require__(103);
+let ResourceNotFoundError = __webpack_require__(37);
+let deploymentMaps = __webpack_require__(104);
 
 class DeploymentMap {
 
@@ -9328,7 +9550,7 @@ module.exports = co.wrap(handleQuery);
 
 
 
-let AsgResourceBase = __webpack_require__(105);
+let AsgResourceBase = __webpack_require__(106);
 let AutoScalingGroup = __webpack_require__(19);
 
 function AsgResource(accountId) {
@@ -9502,7 +9724,7 @@ module.exports = co.wrap(getConsulClientOptions);
 
 
 let awsMasterClient = __webpack_require__(16);
-let cacheManager = __webpack_require__(33);
+let cacheManager = __webpack_require__(34);
 let logger = __webpack_require__(2);
 
 const TTL = 10 * 60; // seconds
@@ -9545,8 +9767,8 @@ module.exports = {
 
 let assert = __webpack_require__(3);
 let utils = __webpack_require__(51);
-let ResourceNotFoundError = __webpack_require__(36);
-let HttpRequestError = __webpack_require__(76);
+let ResourceNotFoundError = __webpack_require__(37);
+let HttpRequestError = __webpack_require__(77);
 let consulClient = __webpack_require__(44);
 let logger = __webpack_require__(2);
 let retry = __webpack_require__(108);
@@ -10416,7 +10638,7 @@ module.exports = {
 
 
 let _ = __webpack_require__(1);
-let deployments = __webpack_require__(34);
+let deployments = __webpack_require__(35);
 
 class Deployment {
 
@@ -10874,7 +11096,7 @@ const API_BASE_PATH = apiSpec.basePath;
 const isNewRelicInUse = __webpack_require__(229);
 
 function newRelicSwaggerMiddleware(req, res, next) {
-  let newrelic = __webpack_require__(86); // eslint-disable-line global-require
+  let newrelic = __webpack_require__(87); // eslint-disable-line global-require
   newrelic.setTransactionName(path.join(API_BASE_PATH, req.path));
   next();
 }
@@ -10989,33 +11211,33 @@ module.exports = defaultErrorHandler;
 
 
 const asgController = __webpack_require__(232);
-const auditController = __webpack_require__(254);
-const accountsController = __webpack_require__(259);
-const clusterController = __webpack_require__(261);
-const deploymentMapController = __webpack_require__(262);
-const environmentTypeController = __webpack_require__(263);
-const environmentsConfigController = __webpack_require__(264);
-const exportController = __webpack_require__(265);
-const importController = __webpack_require__(266);
-const lbSettingsController = __webpack_require__(268);
-const notificationSettingsController = __webpack_require__(270);
-const permissionsController = __webpack_require__(272);
-const serverRoleController = __webpack_require__(273);
-const servicesConfigController = __webpack_require__(274);
-const upstreamsConfigController = __webpack_require__(275);
-const deploymentsController = __webpack_require__(279);
-const diagnosticsController = __webpack_require__(324);
-const environmentsController = __webpack_require__(325);
-const imagesController = __webpack_require__(334);
-const instancesController = __webpack_require__(336);
-const loadBalancerController = __webpack_require__(342);
+const auditController = __webpack_require__(257);
+const accountsController = __webpack_require__(262);
+const clusterController = __webpack_require__(264);
+const deploymentMapController = __webpack_require__(265);
+const environmentTypeController = __webpack_require__(266);
+const environmentsConfigController = __webpack_require__(267);
+const exportController = __webpack_require__(268);
+const importController = __webpack_require__(269);
+const lbSettingsController = __webpack_require__(271);
+const notificationSettingsController = __webpack_require__(273);
+const permissionsController = __webpack_require__(275);
+const serverRoleController = __webpack_require__(276);
+const servicesConfigController = __webpack_require__(277);
+const upstreamsConfigController = __webpack_require__(278);
+const deploymentsController = __webpack_require__(282);
+const diagnosticsController = __webpack_require__(327);
+const environmentsController = __webpack_require__(328);
+const imagesController = __webpack_require__(337);
+const instancesController = __webpack_require__(339);
+const loadBalancerController = __webpack_require__(345);
 const dynamicResponseCreator = __webpack_require__(139);
-const packageUploadUrlController = __webpack_require__(345);
-const servicesController = __webpack_require__(349);
-const targetStateController = __webpack_require__(357);
-const tokenController = __webpack_require__(359);
-const upstreamsController = __webpack_require__(361);
-const userController = __webpack_require__(364);
+const packageUploadUrlController = __webpack_require__(348);
+const servicesController = __webpack_require__(352);
+const targetStateController = __webpack_require__(360);
+const tokenController = __webpack_require__(362);
+const upstreamsController = __webpack_require__(364);
+const userController = __webpack_require__(367);
 
 function getFunctions(obj) {
   return Object.keys(obj)
@@ -11083,11 +11305,12 @@ let AutoScalingGroup = __webpack_require__(19);
 let asgips = __webpack_require__(118);
 let GetLaunchConfiguration = __webpack_require__(235);
 let SetLaunchConfiguration = __webpack_require__(240);
-let SetAutoScalingGroupSize = __webpack_require__(81);
+let SetAutoScalingGroupSize = __webpack_require__(82);
 let SetAutoScalingGroupSchedule = __webpack_require__(244);
 let UpdateAutoScalingGroup = __webpack_require__(245);
 let GetAutoScalingGroupScheduledActions = __webpack_require__(246);
-let getASGReady = __webpack_require__(249);
+let GetAutoScalingGroupLifeCycleHooks = __webpack_require__(249);
+let getASGReady = __webpack_require__(252);
 let Environment = __webpack_require__(9);
 let sns = __webpack_require__(12);
 let opsEnvironment = __webpack_require__(45);
@@ -11167,7 +11390,10 @@ function getAsgByName(req, res, next) {
 
   return co(function* () {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-    return getASG({ accountName, autoScalingGroupName }).then(data => res.json(data));
+    let lifecycleHooks = yield GetAutoScalingGroupLifeCycleHooks({ accountName, autoScalingGroupName });
+    return getASG({ accountName, autoScalingGroupName }).then((data) => {
+      res.json(Object.assign({}, data, { LifecycleHooks: lifecycleHooks }));
+    });
   }).catch(next);
 }
 
@@ -11448,7 +11674,7 @@ module.exports = function ScanCrossAccountAutoScalingGroups(query) {
 
 
 let sender = __webpack_require__(6);
-let scanCrossAccountFn = __webpack_require__(79);
+let scanCrossAccountFn = __webpack_require__(80);
 
 function scanCrossAccount(query, simpleScanQueryName) {
   function queryAccount(account) {
@@ -11472,7 +11698,7 @@ module.exports = scanCrossAccount;
 
 let co = __webpack_require__(0);
 let AutoScalingGroup = __webpack_require__(19);
-let instanceDevicesProvider = __webpack_require__(80);
+let instanceDevicesProvider = __webpack_require__(81);
 let Image = __webpack_require__(236);
 let SecurityGroup = __webpack_require__(119);
 
@@ -11655,7 +11881,7 @@ let logger = __webpack_require__(2);
 let _ = __webpack_require__(1);
 
 let imageProvider = __webpack_require__(74);
-let instanceDevicesProvider = __webpack_require__(80);
+let instanceDevicesProvider = __webpack_require__(81);
 let securityGroupsProvider = __webpack_require__(120);
 
 let AutoScalingGroup = __webpack_require__(19);
@@ -11850,7 +12076,7 @@ function attachLaunchConfigurationToAutoScalingGroup(autoScalingGroupClient, aut
 
 let amazonClientFactory = __webpack_require__(14);
 
-let AwsError = __webpack_require__(37);
+let AwsError = __webpack_require__(33);
 let InstanceProfileNotFoundError = __webpack_require__(243);
 let assert = __webpack_require__(3);
 
@@ -11929,7 +12155,7 @@ let autoScalingGroupClientFactory = __webpack_require__(25);
 // TODO: Check redundant escapes in regex (eslint no-useless-escape)
 let SCHEDULE_PATTERN = /^(NOSCHEDULE\s+)?((247|OFF|on|on6)|(((Start|Stop): [\d\,\-\*\\]+ [\d\,\-\*\\]+ [\d\,\-\*\\\w]+ [\d\,\-\*\\\w]+ [\d\,\-\*\\\w]+\s?[\d\,\-\*]*)(\s*\;?\s+|$))+)?(\s*NOSCHEDULE)?(\s*|.*)?$/i;
 let InvalidOperationError = __webpack_require__(62);
-let ec2InstanceClientFactory = __webpack_require__(82);
+let ec2InstanceClientFactory = __webpack_require__(83);
 let AutoScalingGroup = __webpack_require__(19);
 
 module.exports = function SetAutoScalingGroupScheduleCommandHandler(command) {
@@ -12134,12 +12360,15 @@ function* handler(command) {
     });
   }
 
+  let scaling = command.parameters.scaling;
+
   let parameters = {
     name: command.autoScalingGroupName,
     minSize: size.min,
     desiredSize: size.desired,
     maxSize: size.max,
-    subnets
+    subnets,
+    scaling
   };
 
   return resource.put(parameters);
@@ -12236,8 +12465,8 @@ module.exports = {
 
 
 
-let AwsError = __webpack_require__(37);
-let AutoScalingGroupNotFoundError = __webpack_require__(106);
+let AwsError = __webpack_require__(33);
+let AutoScalingGroupNotFoundError = __webpack_require__(75);
 
 function AsgScheduledActionsResource(client) {
   function describeScheduledActions(name) {
@@ -12277,6 +12506,93 @@ module.exports = AsgScheduledActionsResource;
 
 
 
+let assert = __webpack_require__(3);
+let co = __webpack_require__(0);
+const asgLifeCycleHooksResourceFactory = __webpack_require__(250);
+
+function* GetAutoScalingGroupLifeCycleHooks(query) {
+  assert(query.accountName);
+  assert(query.autoScalingGroupName);
+
+  // Create an instance of the resource to work with based on the resource
+  // descriptor and AWS account name.
+  let parameters = { accountName: query.accountName };
+  let resource = yield asgLifeCycleHooksResourceFactory.create(undefined, parameters);
+
+  // Get AutoScalingGroup's Scheduled Actions by name
+  return resource.get({ name: query.autoScalingGroupName });
+}
+
+module.exports = co.wrap(GetAutoScalingGroupLifeCycleHooks);
+
+
+/***/ }),
+/* 250 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
+
+
+let amazonClientFactory = __webpack_require__(14);
+let AsgLifeCycleHooksResource = __webpack_require__(251);
+let logger = __webpack_require__(2);
+
+module.exports = {
+
+  canCreate: resourceDescriptor => resourceDescriptor.type.toLowerCase() === 'asgs-scheduled-actions',
+
+  create: (resourceDescriptor, parameters) => {
+    logger.debug(`Getting ASG client for account "${parameters.accountName}"...`);
+    return amazonClientFactory.createASGClient(parameters.accountName)
+      .then(client => new AsgLifeCycleHooksResource(client));
+  }
+
+};
+
+
+/***/ }),
+/* 251 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
+
+
+let AwsError = __webpack_require__(33);
+let AutoScalingGroupNotFoundError = __webpack_require__(75);
+
+function AsgLifeCycleHooksResource(client) {
+  function describeLifeCycleHooks(name) {
+    return client.describeLifecycleHooks({ AutoScalingGroupName: name }).promise();
+  }
+
+  this.get = function (parameters) {
+    return describeLifeCycleHooks(parameters.name).then((result) => {
+      if (result.LifecycleHooks) {
+        return result.LifecycleHooks;
+      }
+      throw new AutoScalingGroupNotFoundError(`AutoScalingGroup "${parameters.name}" not found.`);
+    }).catch((error) => {
+      throw new AwsError(error.message);
+    });
+  };
+}
+
+module.exports = AsgLifeCycleHooksResource;
+
+
+/***/ }),
+/* 252 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
+
+
 let _ = __webpack_require__(1);
 let Enums = __webpack_require__(11);
 let co = __webpack_require__(0);
@@ -12304,7 +12620,7 @@ module.exports = co.wrap(getASGReady);
 
 
 /***/ }),
-/* 250 */
+/* 253 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12350,7 +12666,7 @@ module.exports = (name) => {
 
 
 /***/ }),
-/* 251 */
+/* 254 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12368,7 +12684,7 @@ module.exports = (ResponseMetadata) => {
 
 
 /***/ }),
-/* 252 */
+/* 255 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12441,7 +12757,7 @@ function turnProvidedValueIntoSnsAttribute(value) {
 
 
 /***/ }),
-/* 253 */
+/* 256 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12480,7 +12796,7 @@ module.exports = (event) => {
 
 
 /***/ }),
-/* 254 */
+/* 257 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12488,14 +12804,14 @@ module.exports = (event) => {
 
 
 
-let notImplemented = __webpack_require__(255);
+let notImplemented = __webpack_require__(258);
 let { getTableName } = __webpack_require__(13);
 
 /* eslint-disable import/no-extraneous-dependencies */
-let auditLogReader = __webpack_require__(256);
+let auditLogReader = __webpack_require__(259);
 let base64 = __webpack_require__(123);
 let logger = __webpack_require__(2);
-let weblink = __webpack_require__(258);
+let weblink = __webpack_require__(261);
 /* eslint-enable import/no-extraneous-dependencies */
 
 let fp = __webpack_require__(4);
@@ -12606,7 +12922,7 @@ module.exports = {
 
 
 /***/ }),
-/* 255 */
+/* 258 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12623,7 +12939,7 @@ module.exports = notImplemented;
 
 
 /***/ }),
-/* 256 */
+/* 259 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12755,13 +13071,13 @@ module.exports = {
 
 
 /***/ }),
-/* 257 */
+/* 260 */
 /***/ (function(module, exports) {
 
 module.exports = require("buffer");
 
 /***/ }),
-/* 258 */
+/* 261 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12779,7 +13095,7 @@ module.exports = { link };
 
 
 /***/ }),
-/* 259 */
+/* 262 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12787,10 +13103,10 @@ module.exports = { link };
 
 
 
-let accounts = __webpack_require__(99);
+let accounts = __webpack_require__(100);
 let { getMetadataForDynamoAudit } = __webpack_require__(20);
 let param = __webpack_require__(21);
-let { validate } = __webpack_require__(260);
+let { validate } = __webpack_require__(263);
 let { versionOf } = __webpack_require__(15);
 let { removeAuditMetadata } = __webpack_require__(17);
 let sns = __webpack_require__(12);
@@ -12902,7 +13218,7 @@ module.exports = {
 
 
 /***/ }),
-/* 260 */
+/* 263 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12954,7 +13270,7 @@ module.exports = { validate, validateAccountNumber };
 
 
 /***/ }),
-/* 261 */
+/* 264 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12964,7 +13280,7 @@ module.exports = { validate, validateAccountNumber };
 
 const KEY_NAME = 'ClusterName';
 
-let clusters = __webpack_require__(104);
+let clusters = __webpack_require__(105);
 let getMetadataForDynamoAudit = __webpack_require__(20).getMetadataForDynamoAudit;
 let param = __webpack_require__(21);
 let versionOf = __webpack_require__(15).versionOf;
@@ -13100,7 +13416,7 @@ module.exports = {
 
 
 /***/ }),
-/* 262 */
+/* 265 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13108,7 +13424,7 @@ module.exports = {
 
 
 
-let deploymentMaps = __webpack_require__(103);
+let deploymentMaps = __webpack_require__(104);
 let getMetadataForDynamoAudit = __webpack_require__(20).getMetadataForDynamoAudit;
 let param = __webpack_require__(21);
 let versionOf = __webpack_require__(15).versionOf;
@@ -13243,7 +13559,7 @@ module.exports = {
 
 
 /***/ }),
-/* 263 */
+/* 266 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13387,7 +13703,7 @@ module.exports = {
 
 
 /***/ }),
-/* 264 */
+/* 267 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13590,7 +13906,7 @@ module.exports = {
 
 
 /***/ }),
-/* 265 */
+/* 268 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13621,7 +13937,7 @@ module.exports = {
 
 
 /***/ }),
-/* 266 */
+/* 269 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13632,7 +13948,7 @@ module.exports = {
 let logicalTableName = __webpack_require__(125);
 let { getTableName } = __webpack_require__(13);
 const sns = __webpack_require__(12);
-let dynamoImport = __webpack_require__(267);
+let dynamoImport = __webpack_require__(270);
 
 /**
  * PUT /config/import/{resource}
@@ -13672,7 +13988,7 @@ module.exports = {
 
 
 /***/ }),
-/* 267 */
+/* 270 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13738,7 +14054,7 @@ module.exports = importItems;
 
 
 /***/ }),
-/* 268 */
+/* 271 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13748,7 +14064,7 @@ module.exports = importItems;
 
 let Promise = __webpack_require__(10);
 let { flatten, flow } = __webpack_require__(4);
-let { convertToNewModel, convertToOldModel } = __webpack_require__(269);
+let { convertToNewModel, convertToOldModel } = __webpack_require__(272);
 let loadBalancerSettings = __webpack_require__(124);
 let { getMetadataForDynamoAudit } = __webpack_require__(20);
 let param = __webpack_require__(21);
@@ -13956,7 +14272,7 @@ module.exports = {
 
 
 /***/ }),
-/* 269 */
+/* 272 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13996,7 +14312,7 @@ module.exports = {
 
 
 /***/ }),
-/* 270 */
+/* 273 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14004,7 +14320,7 @@ module.exports = {
 
 
 
-let notificationSettings = __webpack_require__(271);
+let notificationSettings = __webpack_require__(274);
 let getMetadataForDynamoAudit = __webpack_require__(20).getMetadataForDynamoAudit;
 let param = __webpack_require__(21);
 let versionOf = __webpack_require__(15).versionOf;
@@ -14137,7 +14453,7 @@ module.exports = {
 
 
 /***/ }),
-/* 271 */
+/* 274 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14155,7 +14471,7 @@ module.exports = cachedSingleAccountDynamoTable(physicalTableName(LOGICAL_TABLE_
 
 
 /***/ }),
-/* 272 */
+/* 275 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14301,7 +14617,7 @@ module.exports = {
 
 
 /***/ }),
-/* 273 */
+/* 276 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14334,7 +14650,7 @@ module.exports = {
 
 
 /***/ }),
-/* 274 */
+/* 277 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14529,7 +14845,7 @@ module.exports = {
 
 
 /***/ }),
-/* 275 */
+/* 278 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14542,14 +14858,14 @@ let logger = __webpack_require__(2);
 let { assign, flatten, flow, map, omit } = __webpack_require__(4);
 let { versionOf } = __webpack_require__(15);
 let { removeAuditMetadata } = __webpack_require__(17);
-let { convertToNewModel, convertToOldModel } = __webpack_require__(276);
+let { convertToNewModel, convertToOldModel } = __webpack_require__(279);
 let loadBalancerUpstreams = __webpack_require__(38);
 let services = __webpack_require__(28);
 let { getMetadataForDynamoAudit } = __webpack_require__(20);
 let param = __webpack_require__(21);
-let { validate } = __webpack_require__(277);
+let { validate } = __webpack_require__(280);
 let { getByName: getAccount } = __webpack_require__(31);
-let InvalidItemSchemaError = __webpack_require__(278);
+let InvalidItemSchemaError = __webpack_require__(281);
 const sns = __webpack_require__(12);
 
 function rejectIfValidationFailed(validationResult) {
@@ -14723,7 +15039,7 @@ module.exports = {
 
 
 /***/ }),
-/* 276 */
+/* 279 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14804,7 +15120,7 @@ module.exports = {
 
 
 /***/ }),
-/* 277 */
+/* 280 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14886,7 +15202,7 @@ exports.validate = (upstream, service) => {
 
 
 /***/ }),
-/* 278 */
+/* 281 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14909,7 +15225,7 @@ util.inherits(module.exports, BaseError);
 
 
 /***/ }),
-/* 279 */
+/* 282 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14922,12 +15238,12 @@ let GetNodeDeploymentLog = __webpack_require__(126);
 let co = __webpack_require__(0);
 let sender = __webpack_require__(6);
 let Enums = __webpack_require__(11);
-let activeDeploymentsStatusProvider = __webpack_require__(98);
+let activeDeploymentsStatusProvider = __webpack_require__(99);
 let deploymentLogger = __webpack_require__(59);
 const sns = __webpack_require__(12);
 let { ifNotFound, notFoundMessage } = __webpack_require__(24);
 const { toggleServiceStatus } = __webpack_require__(127);
-let DeployService = __webpack_require__(281);
+let DeployService = __webpack_require__(284);
 
 /**
  * GET /deployments
@@ -15131,7 +15447,7 @@ module.exports = {
 
 
 /***/ }),
-/* 280 */
+/* 283 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15172,7 +15488,7 @@ module.exports = co.wrap(ToggleTargetStatus);
 
 
 /***/ }),
-/* 281 */
+/* 284 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15182,12 +15498,12 @@ module.exports = co.wrap(ToggleTargetStatus);
 
 let co = __webpack_require__(0);
 let Enums = __webpack_require__(11);
-let DeploymentContract = __webpack_require__(282);
+let DeploymentContract = __webpack_require__(285);
 let sender = __webpack_require__(6);
 let infrastructureConfigurationProvider = __webpack_require__(52);
 let logger = __webpack_require__(2);
 let namingConventionProvider = __webpack_require__(32);
-const PackagePathProvider = __webpack_require__(286);
+const PackagePathProvider = __webpack_require__(289);
 let deploymentLogger = __webpack_require__(59);
 let _ = __webpack_require__(1);
 let SupportedSliceNames = _.values(Enums.SliceName);
@@ -15195,12 +15511,12 @@ let SupportedDeploymentModes = _.values(Enums.DeploymentMode);
 let s3PackageLocator = __webpack_require__(128);
 let EnvironmentHelper = __webpack_require__(9);
 let OpsEnvironment = __webpack_require__(130);
-let ResourceLockedError = __webpack_require__(290);
-let GetServicePortConfig = __webpack_require__(291);
-let GetInfrastructureRequirements = __webpack_require__(292);
-let PushDeployment = __webpack_require__(311);
-let PreparePackage = __webpack_require__(317);
-let ProvideInfrastructure = __webpack_require__(321);
+let ResourceLockedError = __webpack_require__(293);
+let GetServicePortConfig = __webpack_require__(294);
+let GetInfrastructureRequirements = __webpack_require__(295);
+let PushDeployment = __webpack_require__(314);
+let PreparePackage = __webpack_require__(320);
+let ProvideInfrastructure = __webpack_require__(324);
 
 let packagePathProvider = new PackagePathProvider();
 
@@ -15381,7 +15697,7 @@ function getSourcePackageByCommand(command) {
 
 
 /***/ }),
-/* 282 */
+/* 285 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15389,7 +15705,7 @@ function getSourcePackageByCommand(command) {
 
 
 
-let deploymentValidators = __webpack_require__(283);
+let deploymentValidators = __webpack_require__(286);
 let _ = __webpack_require__(1);
 
 class DeploymentContract {
@@ -15410,7 +15726,7 @@ module.exports = DeploymentContract;
 
 
 /***/ }),
-/* 283 */
+/* 286 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15418,8 +15734,8 @@ module.exports = DeploymentContract;
 
 
 
-const blueGreenDeploymentValidator = __webpack_require__(284);
-const uniqueServiceVersionDeploymentValidator = __webpack_require__(285);
+const blueGreenDeploymentValidator = __webpack_require__(287);
+const uniqueServiceVersionDeploymentValidator = __webpack_require__(288);
 
 let validators = [
   blueGreenDeploymentValidator,
@@ -15430,7 +15746,7 @@ module.exports = validators;
 
 
 /***/ }),
-/* 284 */
+/* 287 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15440,7 +15756,7 @@ module.exports = validators;
 
 let _ = __webpack_require__(1);
 let Enums = __webpack_require__(11);
-let DeploymentValidationError = __webpack_require__(83);
+let DeploymentValidationError = __webpack_require__(84);
 const SupportedSliceNames = _.values(Enums.SliceName);
 
 module.exports = {
@@ -15459,7 +15775,7 @@ module.exports = {
 
 
 /***/ }),
-/* 285 */
+/* 288 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15467,8 +15783,8 @@ module.exports = {
 
 
 
-let deployments = __webpack_require__(34);
-let DeploymentValidationError = __webpack_require__(83);
+let deployments = __webpack_require__(35);
+let DeploymentValidationError = __webpack_require__(84);
 
 function validateServiceNotCurrentlyBeingDeployed(deployment) {
   let expectedStatus = 'In Progress';
@@ -15503,7 +15819,7 @@ module.exports = {
 
 
 /***/ }),
-/* 286 */
+/* 289 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15511,7 +15827,7 @@ module.exports = {
 
 
 
-let S3PathContract = __webpack_require__(287);
+let S3PathContract = __webpack_require__(290);
 let configCache = __webpack_require__(57);
 
 module.exports = function PackagePathProvider() {
@@ -15532,7 +15848,7 @@ module.exports = function PackagePathProvider() {
 
 
 /***/ }),
-/* 287 */
+/* 290 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15548,7 +15864,7 @@ module.exports = function S3PathContract(options) {
 
 
 /***/ }),
-/* 288 */
+/* 291 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15603,9 +15919,9 @@ function parseCronSchedule(serialisedCronSchedule) {
 
   let schedule = serializedSchedule.split(';').map((item) => {
     let parts = item.split(':');
-    let state = cronActions[parts[0].trim()];
+    let state = (cronActions[parts[0].trim()] || parts[0].trim());
 
-    if (state === undefined) {
+    if (state === undefined || state === '' || parts[1] === undefined || parts[1].trim() === '') {
       throw new Error('Invalid cron action');
     }
 
@@ -15637,13 +15953,13 @@ module.exports = tryParseSchedule;
 
 
 /***/ }),
-/* 289 */
+/* 292 */
 /***/ (function(module, exports) {
 
 module.exports = require("moment-timezone");
 
 /***/ }),
-/* 290 */
+/* 293 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15666,7 +15982,7 @@ util.inherits(module.exports, BaseError);
 
 
 /***/ }),
-/* 291 */
+/* 294 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15702,7 +16018,7 @@ module.exports = getServicePortConfig;
 
 
 /***/ }),
-/* 292 */
+/* 295 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15712,16 +16028,16 @@ module.exports = getServicePortConfig;
 
 let co = __webpack_require__(0);
 let DeploymentCommandHandlerLogger = __webpack_require__(39);
-let DeploymentValidationError = __webpack_require__(83);
-let launchConfigurationTemplatesProvider = __webpack_require__(293);
+let DeploymentValidationError = __webpack_require__(84);
+let launchConfigurationTemplatesProvider = __webpack_require__(296);
 let configProvider = __webpack_require__(52);
-let asgTemplatesProvider = __webpack_require__(303);
+let asgTemplatesProvider = __webpack_require__(306);
 let namingConvention = __webpack_require__(32);
 let sender = __webpack_require__(6);
 let getASG = __webpack_require__(56);
 let _ = __webpack_require__(1);
 let ScanAutoScalingGroups = __webpack_require__(61);
-let ScanLaunchConfigurations = __webpack_require__(310);
+let ScanLaunchConfigurations = __webpack_require__(313);
 
 module.exports = function GetInfrastructureRequirements(command) {
   let logger = new DeploymentCommandHandlerLogger(command);
@@ -15879,7 +16195,7 @@ function getLaunchConfigNamesToCreate(logger, launchConfigurationNames, accountN
 
 
 /***/ }),
-/* 293 */
+/* 296 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15891,11 +16207,11 @@ let assert = __webpack_require__(3);
 let co = __webpack_require__(0);
 
 let namingConventionProvider = __webpack_require__(32);
-let iamInstanceProfileNameProvider = __webpack_require__(294);
-let instanceDevicesProvider = __webpack_require__(80);
+let iamInstanceProfileNameProvider = __webpack_require__(297);
+let instanceDevicesProvider = __webpack_require__(81);
 let securityGroupsProvider = __webpack_require__(120);
-let userDataProvider = __webpack_require__(295);
-let keyNameProvider = __webpack_require__(299);
+let userDataProvider = __webpack_require__(298);
+let keyNameProvider = __webpack_require__(302);
 let imageProvider = __webpack_require__(74);
 
 module.exports = {
@@ -15948,7 +16264,7 @@ function isDetailedMonitoringEnabled(configuration) {
 
 
 /***/ }),
-/* 294 */
+/* 297 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -15957,7 +16273,7 @@ function isDetailedMonitoringEnabled(configuration) {
 
 
 let assert = __webpack_require__(3);
-let ConfigurationError = __webpack_require__(35);
+let ConfigurationError = __webpack_require__(36);
 let sender = __webpack_require__(6);
 let GetInstanceProfile = __webpack_require__(121);
 
@@ -16009,7 +16325,7 @@ function getInstanceProfileByName(instanceProfileName, accountName) {
 
 
 /***/ }),
-/* 295 */
+/* 298 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16019,7 +16335,7 @@ function getInstanceProfileByName(instanceProfileName, accountName) {
 
 let assert = __webpack_require__(3);
 let namingConventionProvider = __webpack_require__(32);
-let userDataBuilder = __webpack_require__(296);
+let userDataBuilder = __webpack_require__(299);
 
 module.exports = {
   get(configuration, image, sliceName) {
@@ -16068,7 +16384,7 @@ function getWindowsUserData(configuration, sliceName) {
 
 
 /***/ }),
-/* 296 */
+/* 299 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16078,8 +16394,8 @@ function getWindowsUserData(configuration, sliceName) {
 
 let assert = __webpack_require__(3);
 let base64 = __webpack_require__(123);
-let { createUserData: createLinuxUserData } = __webpack_require__(297);
-let { createUserData: createWindowsUserData } = __webpack_require__(298);
+let { createUserData: createLinuxUserData } = __webpack_require__(300);
+let { createUserData: createWindowsUserData } = __webpack_require__(301);
 
 function isNonEmptyString(maybeStr) {
   return maybeStr !== undefined
@@ -16108,7 +16424,7 @@ module.exports = {
 
 
 /***/ }),
-/* 297 */
+/* 300 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16122,7 +16438,7 @@ exports.createUserData = createUserData;
 
 
 /***/ }),
-/* 298 */
+/* 301 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16153,7 +16469,7 @@ exports.createUserData = createUserData;
 
 
 /***/ }),
-/* 299 */
+/* 302 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16163,8 +16479,8 @@ exports.createUserData = createUserData;
 
 let assert = __webpack_require__(3);
 let sender = __webpack_require__(6);
-let GetKeyPair = __webpack_require__(300);
-let ConfigurationError = __webpack_require__(35);
+let GetKeyPair = __webpack_require__(303);
+let ConfigurationError = __webpack_require__(36);
 
 module.exports = {
   get(configuration, accountName) {
@@ -16211,7 +16527,7 @@ function getKeyPairByName(keyName, accountName) {
 
 
 /***/ }),
-/* 300 */
+/* 303 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16220,7 +16536,7 @@ function getKeyPairByName(keyName, accountName) {
 
 
 let assert = __webpack_require__(3);
-let keypairFactory = __webpack_require__(301);
+let keypairFactory = __webpack_require__(304);
 
 module.exports = function GetKeyPairQueryHandler({ accountName, keyName }) {
   assert(accountName);
@@ -16233,7 +16549,7 @@ module.exports = function GetKeyPairQueryHandler({ accountName, keyName }) {
 
 
 /***/ }),
-/* 301 */
+/* 304 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16243,8 +16559,8 @@ module.exports = function GetKeyPairQueryHandler({ accountName, keyName }) {
 
 const amazonClientFactory = __webpack_require__(14);
 
-const AwsError = __webpack_require__(37);
-const KeyPairNotFoundError = __webpack_require__(302);
+const AwsError = __webpack_require__(33);
+const KeyPairNotFoundError = __webpack_require__(305);
 
 class KeyPairResource {
 
@@ -16276,7 +16592,7 @@ module.exports = {
 
 
 /***/ }),
-/* 302 */
+/* 305 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16299,7 +16615,7 @@ util.inherits(module.exports, BaseError);
 
 
 /***/ }),
-/* 303 */
+/* 306 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16309,10 +16625,10 @@ util.inherits(module.exports, BaseError);
 
 let assert = __webpack_require__(3);
 let co = __webpack_require__(0);
-let topicNotificationMappingProvider = __webpack_require__(304);
+let topicNotificationMappingProvider = __webpack_require__(307);
 let namingConventionProvider = __webpack_require__(32);
 let subnetsProvider = __webpack_require__(122);
-let tagsProvider = __webpack_require__(309);
+let tagsProvider = __webpack_require__(312);
 
 module.exports = {
   get(configuration, accountName) {
@@ -16345,6 +16661,9 @@ module.exports = {
             desired: configuration.serverRole.AutoScalingSettings.DesiredCapacity,
             max: configuration.serverRole.AutoScalingSettings.MaxCapacity
           },
+          scaling: {
+            terminationDelay: configuration.serverRole.TerminationDelay
+          },
           subnets,
           tags,
           topicNotificationMapping
@@ -16358,7 +16677,7 @@ module.exports = {
 
 
 /***/ }),
-/* 304 */
+/* 307 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16368,7 +16687,7 @@ module.exports = {
 
 let AutoScalingNotificationType = __webpack_require__(11).AutoScalingNotificationType;
 let sender = __webpack_require__(6);
-let GetTopic = __webpack_require__(305);
+let GetTopic = __webpack_require__(308);
 
 const TopicsToNotify = [
   'InfraAsgLambdaScale'
@@ -16412,7 +16731,7 @@ function getTopicByName(topicName, accountName) {
 
 
 /***/ }),
-/* 305 */
+/* 308 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16420,7 +16739,7 @@ function getTopicByName(topicName, accountName) {
 
 
 
-let snsTopicClientFactory = __webpack_require__(306);
+let snsTopicClientFactory = __webpack_require__(309);
 
 module.exports = function GetTopicQueryHandler(query) {
   return snsTopicClientFactory
@@ -16430,7 +16749,7 @@ module.exports = function GetTopicQueryHandler(query) {
 
 
 /***/ }),
-/* 306 */
+/* 309 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16438,7 +16757,7 @@ module.exports = function GetTopicQueryHandler(query) {
 
 
 
-let SNSTopicClient = __webpack_require__(307);
+let SNSTopicClient = __webpack_require__(310);
 
 module.exports = {
   create(parameters) {
@@ -16451,7 +16770,7 @@ module.exports = {
 
 
 /***/ }),
-/* 307 */
+/* 310 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16461,8 +16780,8 @@ module.exports = {
 
 let co = __webpack_require__(0);
 let _ = __webpack_require__(1);
-let AwsError = __webpack_require__(37);
-let TopicNotFoundError = __webpack_require__(308);
+let AwsError = __webpack_require__(33);
+let TopicNotFoundError = __webpack_require__(311);
 let config = __webpack_require__(5);
 let awsAccounts = __webpack_require__(31);
 let amazonClientFactory = __webpack_require__(14);
@@ -16494,7 +16813,7 @@ module.exports = function SNSTopicClient(accountName) {
 
 
 /***/ }),
-/* 308 */
+/* 311 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16517,7 +16836,7 @@ util.inherits(module.exports, BaseError);
 
 
 /***/ }),
-/* 309 */
+/* 312 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16527,7 +16846,7 @@ util.inherits(module.exports, BaseError);
 
 let assert = __webpack_require__(3);
 let namingConventionProvider = __webpack_require__(32);
-let ConfigurationError = __webpack_require__(35);
+let ConfigurationError = __webpack_require__(36);
 
 module.exports = {
   get(configuration, sliceName) {
@@ -16557,7 +16876,7 @@ module.exports = {
 
 
 /***/ }),
-/* 310 */
+/* 313 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16582,7 +16901,7 @@ module.exports = co.wrap(handler);
 
 
 /***/ }),
-/* 311 */
+/* 314 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16594,11 +16913,11 @@ let co = __webpack_require__(0);
 let DeploymentCommandHandlerLogger = __webpack_require__(39);
 let sender = __webpack_require__(6);
 let consulClient = __webpack_require__(44);
-let serverRoleProvider = __webpack_require__(312);
-let serviceInstallationProvider = __webpack_require__(313);
-let serviceDefinitionProvider = __webpack_require__(314);
-let serviceDeploymentProvider = __webpack_require__(315);
-let deploymentDefinitionProvider = __webpack_require__(316);
+let serverRoleProvider = __webpack_require__(315);
+let serviceInstallationProvider = __webpack_require__(316);
+let serviceDefinitionProvider = __webpack_require__(317);
+let serviceDeploymentProvider = __webpack_require__(318);
+let deploymentDefinitionProvider = __webpack_require__(319);
 let UpdateTargetState = __webpack_require__(112);
 
 module.exports = function PushDeploymentCommandHandler(command) {
@@ -16650,7 +16969,7 @@ function updateTargetState(command, keyValue, options) {
 
 
 /***/ }),
-/* 312 */
+/* 315 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16693,7 +17012,7 @@ module.exports = {
 
 
 /***/ }),
-/* 313 */
+/* 316 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16724,7 +17043,7 @@ module.exports = {
 
 
 /***/ }),
-/* 314 */
+/* 317 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16777,7 +17096,7 @@ module.exports = {
 
 
 /***/ }),
-/* 315 */
+/* 318 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16812,7 +17131,7 @@ module.exports = {
 
 
 /***/ }),
-/* 316 */
+/* 319 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16836,7 +17155,7 @@ module.exports = {
 
 
 /***/ }),
-/* 317 */
+/* 320 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16847,14 +17166,14 @@ module.exports = {
 let ajv = __webpack_require__(110);
 let amazonClientFactory = __webpack_require__(14);
 let DeploymentCommandHandlerLogger = __webpack_require__(39);
-let packageMover = __webpack_require__(318);
+let packageMover = __webpack_require__(321);
 
 const options = {
   allErrors: true,
   format: 'fast'
 };
 
-let validate = ajv(options).compile(__webpack_require__(320));
+let validate = ajv(options).compile(__webpack_require__(323));
 
 module.exports = function PreparePackageCommandHandler(command) {
   let logger = new DeploymentCommandHandlerLogger(command);
@@ -16881,7 +17200,7 @@ let preparePackage = function (mover, command) {
 
 
 /***/ }),
-/* 318 */
+/* 321 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16890,7 +17209,7 @@ let preparePackage = function (mover, command) {
 
 
 let logger = __webpack_require__(2);
-let simpleHttp = __webpack_require__(319);
+let simpleHttp = __webpack_require__(322);
 let s3Url = __webpack_require__(129);
 
 function PackageMover(deploymentLogger) {
@@ -16953,7 +17272,7 @@ module.exports = deploymentLogger => new PackageMover(deploymentLogger);
 
 
 /***/ }),
-/* 319 */
+/* 322 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -16989,7 +17308,7 @@ module.exports = { getResponseStream };
 
 
 /***/ }),
-/* 320 */
+/* 323 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17063,7 +17382,7 @@ module.exports = {
 
 
 /***/ }),
-/* 321 */
+/* 324 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17075,8 +17394,8 @@ let co = __webpack_require__(0);
 let DeploymentCommandHandlerLogger = __webpack_require__(39);
 let sender = __webpack_require__(6);
 let _ = __webpack_require__(1);
-let CreateLaunchConfiguration = __webpack_require__(322);
-let CreateAutoScalingGroup = __webpack_require__(323);
+let CreateLaunchConfiguration = __webpack_require__(325);
+let CreateAutoScalingGroup = __webpack_require__(326);
 
 module.exports = function ProvideInfrastructure(command) {
   let logger = new DeploymentCommandHandlerLogger(command);
@@ -17138,7 +17457,7 @@ function provideAutoScalingGroup(autoScalingTemplate, accountName, parentCommand
 
 
 /***/ }),
-/* 322 */
+/* 325 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17192,7 +17511,7 @@ function getCreateLaunchConfigurationRequest(template) {
 
 
 /***/ }),
-/* 323 */
+/* 326 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17229,10 +17548,27 @@ module.exports = function CreateAutoScalingGroupCommandHandler(command) {
     logger.info(`AutoScalingGroup [${autoScalingGroupName}] has been created`);
 
     logger.info(`Configuring [${autoScalingGroupName}] AutoScalingGroup...`);
+    yield attachLifecycleHook(logger, autoScalingGroupClient, template);
     yield attachNotificationsByTemplate(logger, autoScalingGroupClient, template);
     logger.info(`AutoScalingGroup [${autoScalingGroupName}] has been configured`);
   });
 };
+
+function attachLifecycleHook(logger, asgClient, template) {
+  if (!template.scaling || !template.scaling.terminationDelay) {
+    return Promise.resolve();
+  }
+
+  let request = {
+    AutoScalingGroupName: template.autoScalingGroupName,
+    LifecycleHookName: '10min-draining',
+    HeartbeatTimeout: template.scaling.terminationDelay * 60,
+    LifecycleTransition: 'autoscaling:EC2_INSTANCE_TERMINATING',
+    DefaultResult: 'CONTINUE'
+  };
+
+  return asgClient.attachLifecycleHook(request);
+}
 
 function attachNotificationsByTemplate(logger, autoScalingGroupClient, template) {
   return co(function* () {
@@ -17310,7 +17646,7 @@ function getAttachNotificationsRequests(template) {
 
 
 /***/ }),
-/* 324 */
+/* 327 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17330,7 +17666,7 @@ module.exports = {
 
 
 /***/ }),
-/* 325 */
+/* 328 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17338,8 +17674,8 @@ module.exports = {
 
 
 
-let GetASGState = __webpack_require__(326);
-let ScanServersStatus = __webpack_require__(332);
+let GetASGState = __webpack_require__(329);
+let ScanServersStatus = __webpack_require__(335);
 let co = __webpack_require__(0);
 let Environment = __webpack_require__(9);
 let OpsEnvironment = __webpack_require__(130);
@@ -17605,7 +17941,7 @@ module.exports = {
 
 
 /***/ }),
-/* 326 */
+/* 329 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17621,7 +17957,7 @@ module.exports = function GetServerState(query) {
 
 
 /***/ }),
-/* 327 */
+/* 330 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17636,7 +17972,7 @@ let {
   getAllNodes,
   getNode,
   getNodeHealth
-} = __webpack_require__(328);
+} = __webpack_require__(331);
 
 module.exports = {
   getAllServices,
@@ -17649,7 +17985,7 @@ module.exports = {
 
 
 /***/ }),
-/* 328 */
+/* 331 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17658,7 +17994,7 @@ module.exports = {
 
 
 let retry = __webpack_require__(108);
-let HttpRequestError = __webpack_require__(76);
+let HttpRequestError = __webpack_require__(77);
 let consulClient = __webpack_require__(44);
 let logger = __webpack_require__(2);
 let _ = __webpack_require__(1);
@@ -17775,7 +18111,7 @@ module.exports = {
 
 
 /***/ }),
-/* 329 */
+/* 332 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17919,7 +18255,7 @@ module.exports = {
 
 
 /***/ }),
-/* 330 */
+/* 333 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18083,7 +18419,7 @@ module.exports = co.wrap(getServicesState);
 
 
 /***/ }),
-/* 331 */
+/* 334 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18093,7 +18429,7 @@ module.exports = co.wrap(getServicesState);
 
 let _ = __webpack_require__(1);
 let co = __webpack_require__(0);
-const ec2InstanceResourceFactory = __webpack_require__(82);
+const ec2InstanceResourceFactory = __webpack_require__(83);
 
 function* getAWSInstances(accountName, instancesIds) {
   let resource = yield ec2InstanceResourceFactory.create(undefined, { accountName });
@@ -18124,7 +18460,7 @@ module.exports = co.wrap(getAWSInstances);
 
 
 /***/ }),
-/* 332 */
+/* 335 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18134,13 +18470,13 @@ module.exports = co.wrap(getAWSInstances);
 
 let _ = __webpack_require__(1);
 let co = __webpack_require__(0);
-let moment = __webpack_require__(75);
+let moment = __webpack_require__(76);
 let logger = __webpack_require__(2);
 let sender = __webpack_require__(6);
 let AutoScalingGroup = __webpack_require__(19);
 let Instance = __webpack_require__(60);
 let ScanCrossAccountImages = __webpack_require__(53);
-let GetNode = __webpack_require__(333);
+let GetNode = __webpack_require__(336);
 
 module.exports = co.wrap(ScanServersStatusQueryHandler);
 
@@ -18349,7 +18685,7 @@ function getAllImages() {
 
 
 /***/ }),
-/* 333 */
+/* 336 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18365,7 +18701,7 @@ module.exports = function GetNode(query) {
 
 
 /***/ }),
-/* 334 */
+/* 337 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18374,7 +18710,7 @@ module.exports = function GetNode(query) {
 
 
 let sender = __webpack_require__(6);
-let ScanImages = __webpack_require__(335);
+let ScanImages = __webpack_require__(338);
 let ScanCrossAccountImages = __webpack_require__(53);
 let _ = __webpack_require__(1);
 
@@ -18413,7 +18749,7 @@ module.exports = {
 
 
 /***/ }),
-/* 335 */
+/* 338 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18422,8 +18758,8 @@ module.exports = {
 
 
 let co = __webpack_require__(0);
-const ec2ImageResourceFactory = __webpack_require__(102);
-let imageSummary = __webpack_require__(101);
+const ec2ImageResourceFactory = __webpack_require__(103);
+let imageSummary = __webpack_require__(102);
 let assert = __webpack_require__(3);
 
 /**
@@ -18444,7 +18780,7 @@ module.exports = co.wrap(handler);
 
 
 /***/ }),
-/* 336 */
+/* 339 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18455,9 +18791,9 @@ module.exports = co.wrap(handler);
 let _ = __webpack_require__(1);
 let co = __webpack_require__(0);
 let ScanInstances = __webpack_require__(65);
-let ScanCrossAccountInstances = __webpack_require__(337);
-let EnterAutoScalingGroupInstancesToStandby = __webpack_require__(338);
-let ExitAutoScalingGroupInstancesFromStandby = __webpack_require__(339);
+let ScanCrossAccountInstances = __webpack_require__(340);
+let EnterAutoScalingGroupInstancesToStandby = __webpack_require__(341);
+let ExitAutoScalingGroupInstancesFromStandby = __webpack_require__(342);
 let asgips = __webpack_require__(118);
 let Instance = __webpack_require__(60);
 let serviceTargets = __webpack_require__(26);
@@ -18465,9 +18801,9 @@ let logger = __webpack_require__(2);
 let getInstanceState = __webpack_require__(136);
 let Environment = __webpack_require__(9);
 let Enums = __webpack_require__(11);
-let ScanInstancesScheduleStatus = __webpack_require__(340);
+let ScanInstancesScheduleStatus = __webpack_require__(343);
 let fp = __webpack_require__(4);
-let merge = __webpack_require__(341);
+let merge = __webpack_require__(344);
 const sns = __webpack_require__(12);
 
 /* The tags that should be added to each instance as properties.
@@ -18707,7 +19043,7 @@ module.exports = {
 
 
 /***/ }),
-/* 337 */
+/* 340 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18715,7 +19051,7 @@ module.exports = {
 
 
 
-let scanCrossAccount = __webpack_require__(79);
+let scanCrossAccount = __webpack_require__(80);
 let ScanInstances = __webpack_require__(65);
 
 module.exports = function ScanCrossAccountInstances(query) {
@@ -18724,7 +19060,7 @@ module.exports = function ScanCrossAccountInstances(query) {
 
 
 /***/ }),
-/* 338 */
+/* 341 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18737,7 +19073,7 @@ let co = __webpack_require__(0);
 let sender = __webpack_require__(6);
 let autoScalingGroupSizePredictor = __webpack_require__(137);
 let AutoScalingGroup = __webpack_require__(19);
-let SetAutoScalingGroupSize = __webpack_require__(81);
+let SetAutoScalingGroupSize = __webpack_require__(82);
 const asgResourceFactory = __webpack_require__(25);
 
 module.exports = function EnterAutoScalingGroupInstancesToStandbyCommandHandler(command) {
@@ -18793,7 +19129,7 @@ function setAutoScalingGroupSize(size, parentCommand) {
 
 
 /***/ }),
-/* 339 */
+/* 342 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18807,7 +19143,7 @@ let co = __webpack_require__(0);
 let sender = __webpack_require__(6);
 let autoScalingGroupSizePredictor = __webpack_require__(137);
 let AutoScalingGroup = __webpack_require__(19);
-let SetAutoScalingGroupSize = __webpack_require__(81);
+let SetAutoScalingGroupSize = __webpack_require__(82);
 
 module.exports = function ExitAutoScalingGroupInstancesFromStandby(command) {
   assert(command.accountName !== undefined && command.accountName !== null);
@@ -18863,13 +19199,15 @@ module.exports = function ExitAutoScalingGroupInstancesFromStandby(command) {
 
 
 /***/ }),
-/* 340 */
+/* 343 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
 
 
+
+/* eslint-disable */
 
 let co = __webpack_require__(0);
 let _ = __webpack_require__(1);
@@ -18882,9 +19220,8 @@ let ScanAutoScalingGroups = __webpack_require__(61);
 module.exports = function ScanInstancesScheduleStatusQueryHandler(query) {
   return co(function* () { // eslint-disable-line func-names
     let instances = yield getInstances(query);
-
     let dateTime = query.dateTime ? query.dateTime : new Date();
-    return scheduledActionsForInstances(instances, dateTime);
+    return [...scheduledActionsForInstances(instances, dateTime), ...scheduledActionsForASGs(instances, dateTime)];
   });
 };
 
@@ -18893,41 +19230,58 @@ function getInstances(query) {
     let allInstances = data[0];
     let environments = buildEnvironmentIndex(data[1]);
     let asgs = buildASGIndex(data[2]);
-
     let instances = [];
-
     allInstances.forEach((instance) => {
       let environmentName = getInstanceTagValue(instance, 'environment');
-
       if (environmentName) {
         instance.Environment = findInIndex(environments, environmentName.toLowerCase());
       }
-
       let asgName = getInstanceTagValue(instance, 'aws:autoscaling:groupName');
       instance.AutoScalingGroup = findInIndex(asgs, asgName);
-
       instances.push(instance);
     });
-
     return instances;
   });
 }
 
-function scheduledActionsForInstances(instances, dateTime) {
-  return instances.map((instance) => {
-    let action = scheduling.actionForInstance(instance, dateTime);
-    let instanceVM = {
-      id: instance.InstanceId,
-      name: getInstanceTagValue(instance, 'name'),
-      role: getInstanceTagValue(instance, 'role'),
-      environment: getInstanceTagValue(instance, 'environment')
-    };
-
-    if (instance.AutoScalingGroup) {
-      instanceVM.asg = instance.AutoScalingGroup.AutoScalingGroupName;
+function getAutoScalingGroups(instances){
+  var autoScalingGroups = {};
+  for (var instance in instances) {
+    var currentInstance = instances[instance];
+    if (typeof currentInstance.AutoScalingGroup !== 'undefined') {
+      autoScalingGroups[currentInstance.AutoScalingGroup.AutoScalingGroupName] = currentInstance.AutoScalingGroup;
     }
+  }
+  return autoScalingGroups;
+}
 
-    return { action, instance: instanceVM };
+function getStandAloneInstances(instances){
+  var standAloneInstances = [];
+  for (var instance in instances) {
+    var currentInstance = instances[instance];
+    if (typeof currentInstance.AutoScalingGroup === 'undefined') {
+      standAloneInstances.push(currentInstance);
+    }
+  }
+  return standAloneInstances;
+}
+
+function scheduledActionsForASGs(instances, dateTime){
+  let actions = [];
+  let autoScalingGroups = getAutoScalingGroups(instances);
+  for(var autoScalingGroupName in autoScalingGroups) {
+    let autoScalingGroup = autoScalingGroups[autoScalingGroupName];
+    let scalingActions = scheduling.actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime);
+    if (scalingActions && scalingActions.length && scalingActions.length > 0)
+      actions = [...actions, ...scalingActions];
+  }
+  return actions;
+}
+
+function scheduledActionsForInstances(instances, dateTime) {
+  return getStandAloneInstances(instances).map((instance) => {
+    let action = scheduling.actionForInstance(instance, dateTime);
+    return action;
   });
 }
 
@@ -18992,7 +19346,7 @@ function getAllASGs(query) {
 
 
 /***/ }),
-/* 341 */
+/* 344 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19033,7 +19387,7 @@ module.exports = merge;
 
 
 /***/ }),
-/* 342 */
+/* 345 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19042,7 +19396,7 @@ module.exports = merge;
 
 
 let sender = __webpack_require__(6);
-let ScanNginxUpstreams = __webpack_require__(343);
+let ScanNginxUpstreams = __webpack_require__(346);
 
 /**
  * GET /load-balancer/{name}
@@ -19064,7 +19418,7 @@ module.exports = {
 
 
 /***/ }),
-/* 343 */
+/* 346 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19073,7 +19427,7 @@ module.exports = {
 
 
 let co = __webpack_require__(0);
-const nginxUpstreamsResourceFactory = __webpack_require__(344);
+const nginxUpstreamsResourceFactory = __webpack_require__(347);
 
 function* handler(query) {
   // Create an instance of the Nginx resource
@@ -19089,7 +19443,7 @@ module.exports = co.wrap(handler);
 
 
 /***/ }),
-/* 344 */
+/* 347 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19102,8 +19456,8 @@ let request = __webpack_require__(138);
 let utils = __webpack_require__(51);
 let logger = __webpack_require__(2);
 
-let HttpRequestError = __webpack_require__(76);
-let ResourceNotFoundError = __webpack_require__(36);
+let HttpRequestError = __webpack_require__(77);
+let ResourceNotFoundError = __webpack_require__(37);
 
 function NginxUpstreamsResource() {
   function httpErrorToError(error) {
@@ -19189,7 +19543,7 @@ module.exports = {
 
 
 /***/ }),
-/* 345 */
+/* 348 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19202,12 +19556,12 @@ module.exports = {
  */
 
 /* eslint-disable import/no-extraneous-dependencies */
-let environmentExistsRule = __webpack_require__(346);
+let environmentExistsRule = __webpack_require__(349);
 let log = __webpack_require__(2); // eslint-disable import/no-extraneous-dependencies
-let makeValidationFunction = __webpack_require__(347);
+let makeValidationFunction = __webpack_require__(350);
 let masterAccountClient = __webpack_require__(16); // eslint-disable-line import/no-extraneous-dependencies
 let s3PackageLocator = __webpack_require__(128);
-let serviceExistsRule = __webpack_require__(348);
+let serviceExistsRule = __webpack_require__(351);
 let dynamicResponseCreator = __webpack_require__(139);
 /* eslint-enable import/no-extraneous-dependencies */
 
@@ -19297,7 +19651,7 @@ module.exports = {
 
 
 /***/ }),
-/* 346 */
+/* 349 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19329,7 +19683,7 @@ module.exports = environmentExists;
 
 
 /***/ }),
-/* 347 */
+/* 350 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19371,7 +19725,7 @@ module.exports = createValidationFunction;
 
 
 /***/ }),
-/* 348 */
+/* 351 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19402,7 +19756,7 @@ module.exports = serviceExists;
 
 
 /***/ }),
-/* 349 */
+/* 352 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19411,11 +19765,11 @@ module.exports = serviceExists;
 
 
 let serviceDiscovery = __webpack_require__(64);
-let getSlices = __webpack_require__(350);
+let getSlices = __webpack_require__(353);
 let ScanInstances = __webpack_require__(65);
-let toggleSlices = __webpack_require__(351);
-let serviceHealth = __webpack_require__(353);
-let overallServiceHealth = __webpack_require__(356);
+let toggleSlices = __webpack_require__(354);
+let serviceHealth = __webpack_require__(356);
+let overallServiceHealth = __webpack_require__(359);
 let metadata = __webpack_require__(73);
 let Environment = __webpack_require__(9);
 let sns = __webpack_require__(12);
@@ -19567,7 +19921,7 @@ module.exports = {
 
 
 /***/ }),
-/* 350 */
+/* 353 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19589,7 +19943,7 @@ module.exports = function GetSlicesByService(query) {
 
 
 /***/ }),
-/* 351 */
+/* 354 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19624,7 +19978,7 @@ module.exports = function ToggleSlicesByService(command) {
 
 
 /***/ }),
-/* 352 */
+/* 355 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19647,7 +20001,7 @@ util.inherits(module.exports, BaseError);
 
 
 /***/ }),
-/* 353 */
+/* 356 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19668,7 +20022,7 @@ let {
   reduce,
   toPairs
 } = __webpack_require__(4);
-let GetServerRoles = __webpack_require__(84);
+let GetServerRoles = __webpack_require__(85);
 let AutoScalingGroup = __webpack_require__(19);
 let serviceDiscovery = __webpack_require__(64);
 let { createEC2Client } = __webpack_require__(14);
@@ -19681,7 +20035,7 @@ let {
   desiredTopologyOf,
   instancesOf,
   instancesRequestFor,
-  summariseComparison } = __webpack_require__(354);
+  summariseComparison } = __webpack_require__(357);
 let { getAccountNameForEnvironment } = __webpack_require__(9);
 
 function getAutoScalingGroups(environmentQualifiedRoleNames) {
@@ -19759,7 +20113,7 @@ module.exports = getServiceHealth;
 
 
 /***/ }),
-/* 354 */
+/* 357 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -19788,7 +20142,7 @@ let {
   toPairs,
   uniq
 } = __webpack_require__(4);
-let { valueOfTag } = __webpack_require__(355);
+let { valueOfTag } = __webpack_require__(358);
 let serviceName = __webpack_require__(143);
 
 let valueOfAwsTag = key => flow(get('Tags'), find(tag => tag.Key === key), get('Value'));
@@ -20028,7 +20382,7 @@ module.exports = {
 
 
 /***/ }),
-/* 355 */
+/* 358 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20058,7 +20412,7 @@ module.exports = {
 
 
 /***/ }),
-/* 356 */
+/* 359 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20070,7 +20424,7 @@ let _ = __webpack_require__(1);
 let Enums = __webpack_require__(11);
 let HEALTH_STATUS = Enums.HEALTH_STATUS;
 let co = __webpack_require__(0);
-let GetServerRoles = __webpack_require__(84);
+let GetServerRoles = __webpack_require__(85);
 let getASGState = __webpack_require__(135);
 let AutoScalingGroup = __webpack_require__(19);
 
@@ -20143,7 +20497,7 @@ module.exports = co.wrap(getOverallServiceHealth);
 
 
 /***/ }),
-/* 357 */
+/* 360 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20151,8 +20505,8 @@ module.exports = co.wrap(getOverallServiceHealth);
 
 
 
-let GetServerRoles = __webpack_require__(84);
-let deleteTargetState = __webpack_require__(358);
+let GetServerRoles = __webpack_require__(85);
+let deleteTargetState = __webpack_require__(361);
 const { toggleServiceStatus } = __webpack_require__(127);
 const sns = __webpack_require__(12);
 
@@ -20270,7 +20624,7 @@ module.exports = {
 
 
 /***/ }),
-/* 358 */
+/* 361 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20366,7 +20720,7 @@ module.exports = {
 
 
 /***/ }),
-/* 359 */
+/* 362 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20375,7 +20729,7 @@ module.exports = {
 
 
 let userService = __webpack_require__(50);
-let tokenConfiguration = __webpack_require__(360);
+let tokenConfiguration = __webpack_require__(363);
 let cookieConfiguration = __webpack_require__(72);
 
 /**
@@ -20429,7 +20783,7 @@ module.exports = {
 
 
 /***/ }),
-/* 360 */
+/* 363 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20460,7 +20814,7 @@ module.exports = {
 
 
 /***/ }),
-/* 361 */
+/* 364 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20468,8 +20822,8 @@ module.exports = {
 
 
 
-let getSlices = __webpack_require__(362);
-let toggleSlices = __webpack_require__(363);
+let getSlices = __webpack_require__(365);
+let toggleSlices = __webpack_require__(366);
 let metadata = __webpack_require__(73);
 const sns = __webpack_require__(12);
 
@@ -20538,7 +20892,7 @@ module.exports = {
 
 
 /***/ }),
-/* 362 */
+/* 365 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20560,7 +20914,7 @@ module.exports = function GetSlicesByUpstream(query) {
 
 
 /***/ }),
-/* 363 */
+/* 366 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20596,7 +20950,7 @@ module.exports = function ToggleSlicesByUpstream(command) {
 
 
 /***/ }),
-/* 364 */
+/* 367 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20654,7 +21008,7 @@ module.exports = {
 
 
 /***/ }),
-/* 365 */
+/* 368 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20662,7 +21016,7 @@ module.exports = {
 
 
 
-const os = __webpack_require__(366);
+const os = __webpack_require__(369);
 let config = __webpack_require__(5);
 let _ = __webpack_require__(1);
 
@@ -20710,13 +21064,13 @@ module.exports = function getInitialData(request, response) {
 
 
 /***/ }),
-/* 366 */
+/* 369 */
 /***/ (function(module, exports) {
 
 module.exports = require("os");
 
 /***/ }),
-/* 367 */
+/* 370 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20725,8 +21079,8 @@ module.exports = require("os");
 
 
 let config = __webpack_require__(5);
-const Ssl = __webpack_require__(368);
-const NoSsl = __webpack_require__(369);
+const Ssl = __webpack_require__(371);
+const NoSsl = __webpack_require__(372);
 let implementation;
 
 if (config.get('IS_PRODUCTION') && !config.get('USE_HTTP')) {
@@ -20739,7 +21093,7 @@ module.exports = implementation;
 
 
 /***/ }),
-/* 368 */
+/* 371 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20748,7 +21102,7 @@ module.exports = implementation;
 
 
 let https = __webpack_require__(134);
-const SslComponentsRepository = __webpack_require__(95);
+const SslComponentsRepository = __webpack_require__(96);
 
 module.exports = function HttpsServerFactory() {
   let sslComponentsRepository = new SslComponentsRepository();
@@ -20779,7 +21133,7 @@ module.exports = function HttpsServerFactory() {
 
 
 /***/ }),
-/* 369 */
+/* 372 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20803,7 +21157,7 @@ module.exports = HttpServerFactory;
 
 
 /***/ }),
-/* 370 */
+/* 373 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20816,7 +21170,7 @@ module.exports = HttpServerFactory;
 
 
 const fp = __webpack_require__(4);
-const miniStack = __webpack_require__(92);
+const miniStack = __webpack_require__(93);
 
 let redactSecrets = fp.cloneDeepWith((value, key) => (/password/i.test(key) ? '********' : undefined));
 
@@ -20923,7 +21277,7 @@ module.exports = {
 
 
 /***/ }),
-/* 371 */
+/* 374 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20956,7 +21310,7 @@ module.exports = create;
 
 
 /***/ }),
-/* 372 */
+/* 375 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20967,8 +21321,8 @@ module.exports = create;
 let express = __webpack_require__(70);
 let router = express.Router();
 let assert = __webpack_require__(3);
-let remoteCacheFlush = __webpack_require__(373);
-let cookieAuthentication = __webpack_require__(97);
+let remoteCacheFlush = __webpack_require__(376);
+let cookieAuthentication = __webpack_require__(98);
 let logger = __webpack_require__(2);
 
 router.post('/:environment', (req, res) => {
@@ -20992,7 +21346,7 @@ module.exports = {
 
 
 /***/ }),
-/* 373 */
+/* 376 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21167,7 +21521,7 @@ module.exports = {
 
 
 /***/ }),
-/* 374 */
+/* 377 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21179,7 +21533,7 @@ let express = __webpack_require__(70);
 let co = __webpack_require__(0);
 let _ = __webpack_require__(1);
 
-let healthChecks = __webpack_require__(375);
+let healthChecks = __webpack_require__(378);
 
 let statusCodes = _.fromPairs([
   [healthChecks.resultCodes.SUCCESS, 200],
@@ -21230,7 +21584,7 @@ module.exports = {
 
 
 /***/ }),
-/* 375 */
+/* 378 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21238,9 +21592,9 @@ module.exports = {
 
 
 
-let resultCodes = __webpack_require__(85);
-const ping = __webpack_require__(376);
-const redis = __webpack_require__(377);
+let resultCodes = __webpack_require__(86);
+const ping = __webpack_require__(379);
+const redis = __webpack_require__(380);
 
 let checks = [
   ping,
@@ -21255,7 +21609,7 @@ module.exports = {
 
 
 /***/ }),
-/* 376 */
+/* 379 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21263,7 +21617,7 @@ module.exports = {
 
 
 
-let HealthCheckResults = __webpack_require__(85);
+let HealthCheckResults = __webpack_require__(86);
 
 module.exports = {
   url: '/ping',
@@ -21276,7 +21630,7 @@ module.exports = {
 
 
 /***/ }),
-/* 377 */
+/* 380 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21286,8 +21640,8 @@ module.exports = {
 
 let co = __webpack_require__(0);
 
-let HealthCheckResults = __webpack_require__(85);
-let UserSessionStore = __webpack_require__(94);
+let HealthCheckResults = __webpack_require__(86);
+let UserSessionStore = __webpack_require__(95);
 
 function getResult(status) {
   if (status === 'wait' || status === 'ready') {
@@ -21312,7 +21666,7 @@ module.exports = {
 
 
 /***/ }),
-/* 378 */
+/* 381 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21321,7 +21675,7 @@ module.exports = {
 
 
 let config = __webpack_require__(5);
-let renderer = __webpack_require__(379);
+let renderer = __webpack_require__(382);
 
 const PUBLIC_DIR = config.get('PUBLIC_DIR');
 
@@ -21333,7 +21687,7 @@ module.exports = function (request, response) {
 
 
 /***/ }),
-/* 379 */
+/* 382 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -21346,8 +21700,8 @@ module.exports = function (request, response) {
 
 
 let fileSystem = __webpack_require__(27);
-let compiler = __webpack_require__(380);
-let resolver = __webpack_require__(381);
+let compiler = __webpack_require__(383);
+let resolver = __webpack_require__(384);
 
 let templateCatalog = [];
 
@@ -21396,19 +21750,19 @@ module.exports = {
 
 
 /***/ }),
-/* 380 */
+/* 383 */
 /***/ (function(module, exports) {
 
 module.exports = require("es6-template-strings/compile");
 
 /***/ }),
-/* 381 */
+/* 384 */
 /***/ (function(module, exports) {
 
 module.exports = require("es6-template-strings/resolve-to-string");
 
 /***/ }),
-/* 382 */
+/* 385 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";

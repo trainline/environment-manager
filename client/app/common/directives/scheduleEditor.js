@@ -18,15 +18,14 @@ angular.module('EnvironmentManager.common')
     controllerAs: 'vm',
     controller: function ($scope) {
       var vm = this;
-      var savedScalingSchedule = vm.schedule;
 
       function init() {
-        checkDisplayOfChartInfo();
+        checkDisplayOfChartInfo(vm.schedule);
         loadSchedule();
       }
 
       vm.timezones = moment.tz.names();
-      vm.scheduleMaxLength = 256;
+      vm.scheduleMaxLength = 255;
 
       if (!vm.schedule || vm.schedule.toUpperCase() === 'NOSCHEDULE') {
         vm.schedule = '';
@@ -62,13 +61,6 @@ angular.module('EnvironmentManager.common')
         var itemIndex = vm.crons.indexOf(item);
         vm.crons.splice(itemIndex, 1);
         vm.updateSchedule();
-      };
-
-      vm.useSpecificClicked = function () {
-        vm.schedule = savedScalingSchedule;
-        if (!vm.schedule || vm.schedule.indexOf(':') === -1) {
-          vm.schedule = vm.maxSize + ': 0 8 * * 1,2,3,4,5; 0: 0 19 * * 1,2,3,4,5 | ' + moment.tz.guess();
-        }
       };
 
       function parseScheduleTag(scheduleTag) {
@@ -145,8 +137,9 @@ angular.module('EnvironmentManager.common')
         updateChart();
       }
 
-      function checkDisplayOfChartInfo() {
-        if (vm.schedule && vm.schedule !== 'ON' && vm.schedule !== 'OFF') vm.shouldDisplayChartInfo = true;
+      function checkDisplayOfChartInfo(schedule) {
+        console.log(schedule)
+        if (schedule !== 'ON' && schedule !== 'OFF') vm.shouldDisplayChartInfo = true;
         else vm.shouldDisplayChartInfo = false;
       }
 
@@ -154,9 +147,12 @@ angular.module('EnvironmentManager.common')
         vm.updateSchedule();
       });
 
-      $scope.$watch('vm.schedule', function () {
-        checkDisplayOfChartInfo();
-        loadSchedule();
+      $scope.$watch('vm.schedule', function (newValue, other) {
+        console.log('vm.schedule(old):', other)
+        console.log('vm.schedule(new):', newValue)
+        console.log('vm.schedule(current):', vm.schedule)
+        // checkDisplayOfChartInfo(newValue);
+        // loadSchedule();
       });
 
       function formatDate(date) {
