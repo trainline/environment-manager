@@ -114,13 +114,13 @@ function actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime) {
 }
 
 function calculateNumberOfServersRunning(autoScalingGroup) {
-  var distributionSet = getAsgDistributionSetForAddingMore(autoScalingGroup).results;
+  var distributionSet = getAsgDistributionSetForAddingMore(autoScalingGroup);
   var numberOfServersRunning = findInstancesWhere(distributionSet, autoScalingGroup.Instances.length, (instance) => currentStateOfInstance(instance._instance) == currentStates.on);
   return numberOfServersRunning.length;
 }
 
 function calculateNumberOfServersInService(autoScalingGroup) {
-  var distributionSet = getAsgDistributionSetForTakingAway(autoScalingGroup).results;
+  var distributionSet = getAsgDistributionSetForTakingAway(autoScalingGroup);
   var numberOfServersInService = findInstancesWhere(distributionSet, autoScalingGroup.Instances.length, (instance) => instance.LifecycleState == lifeCycleStates.inService);
   return numberOfServersInService.length;
 }
