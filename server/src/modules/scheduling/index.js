@@ -57,8 +57,8 @@ function actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime) {
   mergeAsgInstances(autoScalingGroup, instances);
 
   if (autoScalingGroup.Instances.some(i => currentStateOfInstance(i._instance) == currentStates.transitioning))
-    return [];
-
+    return skipAll(autoScalingGroup, skipReasons.transitioning);
+  
   if (!autoScalingGroup.Environment) {
     return skipAll(autoScalingGroup, skipReasons.noEnvironment);
   }
