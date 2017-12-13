@@ -65,24 +65,16 @@ function actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime) {
 
   let foundSchedule = getScheduleFromTag(autoScalingGroup);
 
-  let source = foundSchedule.source;
-  let parseResult = foundSchedule.parseResult;
-
-  if (!parseResult.success) {
-    return skipAll(autoScalingGroup, `${skipReasons.invalidSchedule} - Error: '${parseResult.error}'`, source);
+  if (!foundSchedule.parseResult.success) {
+    return skipAll(autoScalingGroup, `${skipReasons.invalidSchedule} - Error: '${foundSchedule.parseResult.error}'`, source);
   }
 
-  let schedule = parseResult.schedule;
-
-  if (schedule.skip) {
-
-    // TODO: Check for any instances that might have schedules, this should fallback on to actionForInstance
-
+  if (foundSchedule.parseResult.schedule.skip) {
     return skipAll(autoScalingGroup, skipReasons.explicitNoSchedule);
   }
 
-  let localTime = convertToTimezone(dateTime, parseResult.timezone);
-  let expectedState = expectedStateFromParsedSchedule(schedule, localTime);
+  let localTime = convertToTimezone(dateTime, foundSchedule.parseResult.timezone);
+  let expectedState = expectedStateFromParsedSchedule(foundSchedule.parseResult.schedule, localTime);
 
   if (expectedState.noSchedule) {
     return skipAll(autoScalingGroup, skipReasons.stateIsCorrect);
@@ -114,65 +106,32 @@ function actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime) {
 }
 
 function calculateNumberOfServersRunning(autoScalingGroup) {
-  var distributionSet = getAsgDistributionSetForAddingMore(autoScalingGroup);
+  var distributionSet = getAsgInstancesByAvailabilityZone(autoScalingGroup);
   var numberOfServersRunning = findInstancesWhere(distributionSet, autoScalingGroup.Instances.length, (instance) => currentStateOfInstance(instance._instance) == currentStates.on);
   return numberOfServersRunning.length;
 }
 
 function calculateNumberOfServersInService(autoScalingGroup) {
-  var distributionSet = getAsgDistributionSetForTakingAway(autoScalingGroup);
+  var distributionSet = getAsgInstancesByAvailabilityZone(autoScalingGroup);
   var numberOfServersInService = findInstancesWhere(distributionSet, autoScalingGroup.Instances.length, (instance) => instance.LifecycleState == lifeCycleStates.inService);
   return numberOfServersInService.length;
 }
 
-function getAsgDistributionSetForTakingAway(autoScalingGroup) {
+function getAsgInstancesByAvailabilityZone(autoScalingGroup) {
   var results = {};
-  
-  autoScalingGroup.AvailabilityZones.sort()
-  
   for (var availabilityZone of autoScalingGroup.AvailabilityZones) {
     results[availabilityZone] = [];
   }
-  
   for (var instance of autoScalingGroup.Instances) {
     results[instance.AvailabilityZone].push(instance);
   }
-
-  autoScalingGroup.AvailabilityZones.sort((a,b) => {
-    if (results[a].length > results[b].length) return -1;
-    if (results[a].length < results[b].length) return 1;
-    if (results[a].length == results[b].length) return 0;
-  })
-  
-  return { results, keys: autoScalingGroup.AvailabilityZones };
-}
-
-function getAsgDistributionSetForAddingMore(autoScalingGroup) {
-  var results = {};
-  
-  autoScalingGroup.AvailabilityZones.sort()
-  
-  for (var availabilityZone of autoScalingGroup.AvailabilityZones) {
-    results[availabilityZone] = [];
-  }
-  
-  for (var instance of autoScalingGroup.Instances) {
-    results[instance.AvailabilityZone].push(instance);
-  }
-
-  autoScalingGroup.AvailabilityZones.sort((a,b) => {
-    if (results[a].length < results[b].length) return -1;
-    if (results[a].length > results[b].length) return 1;
-    if (results[a].length == results[b].length) return 0;
-  })
-  
-  return { results, keys: autoScalingGroup.AvailabilityZones };
+  return results;
 }
 
 function findInstancesWhere(distributionSet, numberOfServers, instancePredicate) {
   var instancesFound = [];
-  for (var availabilityZone in distributionSet.keys) {
-    for (var instance of distributionSet.results[distributionSet.keys[availabilityZone]]) {
+  for (let availabilityZone of Object.keys(distributionSet)) {
+    for (var instance of distributionSet[availabilityZone]) {
       if (instancePredicate(instance) && instancesFound.length !== numberOfServers)
         instancesFound.push(instance);
     }
@@ -181,7 +140,7 @@ function findInstancesWhere(distributionSet, numberOfServers, instancePredicate)
 }
 
 function switchOffAsg(numberOfServersToSwitchOff, autoScalingGroup) {
-  var distributionSet = getAsgDistributionSetForTakingAway(autoScalingGroup);
+  var distributionSet = getAsgInstancesByAvailabilityZone(autoScalingGroup);
 
   var actions = [];
 
@@ -204,9 +163,9 @@ function getActionResult(action, instanceInfo) {
 }
 
 function switchOnAsg(numberOfServersToSwitchOn, autoScalingGroup) {
-  var distributionSet = getAsgDistributionSetForAddingMore(autoScalingGroup);
-
   var actions = [];
+  
+  var distributionSet = getAsgInstancesByAvailabilityZone(autoScalingGroup);
 
   var inServiceInstances = findInstancesWhere(distributionSet, numberOfServersToSwitchOn, (instance) =>
     instance.LifecycleState == lifeCycleStates.outOfService && currentStateOfInstance(instance._instance) == currentStates.on);
