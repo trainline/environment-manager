@@ -51,6 +51,9 @@ const currentStates = {
 };
 
 function actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime) {
+
+  if (autoScalingGroup.AutoScalingGroupName !== 'c50-in-RansomTestAppLinux-blue') return [];
+
   autoScalingGroup.Environment = getTagValue(autoScalingGroup, 'Environment');
 
   mergeAsgInstances(autoScalingGroup, instances);
@@ -89,11 +92,14 @@ function actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime) {
     expectedNumberOfServers = Number(expectedState);
   }
 
-  if (expectedNumberOfServers < calculateNumberOfServersRunning(autoScalingGroup)) {
-    var numberOfServersToSwitchOff = calculateNumberOfServersRunning(autoScalingGroup) - expectedNumberOfServers
+  let actualNumberOfServersRunning = calculateNumberOfServersRunning(autoScalingGroup);
+  let actualNumberOfServersInService = calculateNumberOfServersInService(autoScalingGroup);
+
+  if (expectedNumberOfServers < actualNumberOfServersRunning) {
+    var numberOfServersToSwitchOff = actualNumberOfServersRunning - expectedNumberOfServers
     return [...switchOffAsg(numberOfServersToSwitchOff, autoScalingGroup)];
-  } else if (expectedNumberOfServers > calculateNumberOfServersInService(autoScalingGroup)) {
-    var numberOfServersToSwitchOn = expectedNumberOfServers - calculateNumberOfServersInService(autoScalingGroup);
+  } else if (expectedNumberOfServers > actualNumberOfServersInService) {
+    var numberOfServersToSwitchOn = expectedNumberOfServers - actualNumberOfServersInService;
     return [...switchOnAsg(numberOfServersToSwitchOn, autoScalingGroup)];
   } else {
     return skipAll(autoScalingGroup, skipReasons.stateIsCorrect);
@@ -135,6 +141,7 @@ function buildDistributionSet(instances) {
 }
 
 function findInstancesToSwitchOff(totalNumberOfInstances, autoScalingGroup, foundInstances, instancePredicate) {
+  if (totalNumberOfInstances === 0) return foundInstances;
   var distributionSet = buildDistributionSet(autoScalingGroup.Instances);
   var remainingInstances = findInstancesWhere(distributionSet, autoScalingGroup.Instances.length, (x) => !foundInstances.some(y => y.InstanceId === x.InstanceId) && instancePredicate(x));
   if (remainingInstances.length === 0)
@@ -160,6 +167,7 @@ function findInstancesToSwitchOff(totalNumberOfInstances, autoScalingGroup, foun
 }
 
 function findInstancesToSwitchOn(totalNumberOfInstances, autoScalingGroup, foundInstances, instancePredicate) {
+  if (totalNumberOfInstances === 0) return foundInstances;
   var distributionSet = buildDistributionSet(autoScalingGroup.Instances);
   var remainingInstances = findInstancesWhere(distributionSet, autoScalingGroup.Instances.length, (x) => !foundInstances.some(y => y.InstanceId === x.InstanceId) && instancePredicate(x));
   if (remainingInstances.length === 0)
