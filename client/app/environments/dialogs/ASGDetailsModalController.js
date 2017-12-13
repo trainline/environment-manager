@@ -298,11 +298,15 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         };
 
         vm.asg.updateAutoScalingGroup(updated)
+          .then(updateSchedule())
           .then(function () {
             modal.information({
               title: 'ASG Updated',
               message: 'ASG update successful. You can monitor instance changes by using the Refresh Icon in the top right of the window.<br/><br/><b>Note:</b> During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection draining before termination.'
             });
+          })
+          .catch(function (err) {
+            modal.error('Error', 'An error has occurred: ' + err.data.error);
           })
           .finally(function () {
             loading.lockPage(false);
@@ -361,8 +365,32 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     }
 
     vm.changeAsgSchedule = function () {
+      loading.lockPage(true);
+      return updateSchedule()
+        .then(function () {
+          modal.information({
+            title: 'ASG Schedule Updated',
+            message: 'ASG schedule updated successfully.'
+          });
+        })
+        .catch(function (err) {
+          if (err.status === 404) {
+            modal.error('Error', 'An error has occurred: ' + err.data.error);
+          } else {
+            throw err;
+          }
+        })
+        .finally(function () {
+          resetForm();
+          loading.lockPage(false);
+          vm.refresh();
+        });
+    };
+
+    function updateSchedule() {
       var newSchedule;
       if (vm.selectedScheduleMode === 'scaling') {
+        console.log('pepero02');
         newSchedule = vm.asgUpdate.ScalingSchedule.map(function (schedule) {
           return {
             MinSize: vm.asg.MinSize,
@@ -372,26 +400,12 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
           };
         });
       } else {
+        console.log('pepero01');
         newSchedule = vm.asgUpdate.NewSchedule;
       }
 
-      return AutoScalingGroup.updateSchedule(vm.environmentName, vm.asg.AsgName, newSchedule)
-        .then(function () {
-          modal.information({
-            title: 'ASG Schedule Updated',
-            message: 'ASG schedule updated successfully.'
-          });
-        }).catch(function (err) {
-          if (err.status === 404) {
-            modal.error('Error', 'An error has occurred: ' + err.data.error);
-          } else {
-            throw err;
-          }
-        }).finally(function () {
-          resetForm();
-          vm.refresh();
-        });
-    };
+      return AutoScalingGroup.updateSchedule(vm.environmentName, vm.asg.AsgName, newSchedule);
+    }
 
 
     function findDeploymentMapTargetForAsg(asg) {

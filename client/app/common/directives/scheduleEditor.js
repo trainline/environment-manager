@@ -138,7 +138,6 @@ angular.module('EnvironmentManager.common')
       }
 
       function checkDisplayOfChartInfo(schedule) {
-        console.log(schedule)
         if (schedule !== 'ON' && schedule !== 'OFF') vm.shouldDisplayChartInfo = true;
         else vm.shouldDisplayChartInfo = false;
       }
@@ -147,12 +146,9 @@ angular.module('EnvironmentManager.common')
         vm.updateSchedule();
       });
 
-      $scope.$watch('vm.schedule', function (newValue, other) {
-        console.log('vm.schedule(old):', other)
-        console.log('vm.schedule(new):', newValue)
-        console.log('vm.schedule(current):', vm.schedule)
-        // checkDisplayOfChartInfo(newValue);
-        // loadSchedule();
+      $scope.$watch('vm.schedule', function (newValue) {
+        checkDisplayOfChartInfo(newValue);
+        loadSchedule();
       });
 
       function formatDate(date) {
