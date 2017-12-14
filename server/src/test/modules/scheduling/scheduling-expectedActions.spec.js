@@ -3,7 +3,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const scheduling = require('../../modules/scheduling');
+const scheduling = require('../../../modules/scheduling');
 
 describe('scheduling (expected actions)', () => {
   let instance;
