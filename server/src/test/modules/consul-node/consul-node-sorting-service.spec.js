@@ -5,7 +5,7 @@ const data = require('./data');
 const { ConsulNodeSortingService } = require('../../../modules/consul-node/consul-node-sorting-service');
 const { ConsulNode } = require('../../../modules/consul-node/consul-node');
 
-describe.only('Consul Node Sorting Service', () => {
+describe('Consul Node Sorting Service', () => {
   it('should return an ordered (desc) list of consul nodes based on version tag', () => {
     let checks = [
       data.getNodesOrderedByVersion,
