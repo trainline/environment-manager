@@ -8,6 +8,8 @@ let consulClient = require('../../consul-client');
 let logger = require('../../logger');
 let _ = require('lodash');
 let assert = require('assert');
+const { ConsulNode } = require('../../consul-node/consul-node');
+const { ConsulNodeSortingService } = require('../../consul-node/consul-node-sorting-service');
 
 function getAllServices(environment) {
   let getServiceList = clientInstance => clientInstance.catalog.service.list();
@@ -27,7 +29,12 @@ function getService(environment, serviceQuery) {
   return executeConsul(environment, clientInstance => clientInstance.catalog.service.nodes(nodeKey))
     .then((service) => {
       if (!service.length) return service;
-      let firstService = service[0];
+
+      let consulNodeList = service.map(x => new ConsulNode(x));
+      let orderedConsulNodes = ConsulNodeSortingService.getOrderedNodesDesc(consulNodeList);
+      let jsonResult = ConsulNodeSortingService.convertToJson(orderedConsulNodes);
+
+      let firstService = jsonResult[0];
       firstService.ServiceTags = unravelTags(firstService.ServiceTags);
       return firstService;
     });
