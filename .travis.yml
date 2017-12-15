@@ -20,11 +20,10 @@ install:
 
 before_script:
   - yarn global add gulp
-  - yarn global add webpack
 
 script:
-  - (cd server && yarn run lint && yarn run test && yarn run build)
-  - (cd client && yarn test)
+  - (cd server && exec yarn test)
+  - (cd client && exec yarn test)
 
 after_success:
   - yarn run gulp
