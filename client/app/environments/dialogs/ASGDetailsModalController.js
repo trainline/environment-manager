@@ -278,6 +278,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     vm.setUsingSchedules = function () {
       vm.usingSchedules = true;
       vm.notUsingSchedules = false;
+      if(vm.asg.Schedule) vm.asgUpdate.NewSchedule = vm.asg.Schedule;
     };
 
     vm.updateAutoScalingGroup = function () {

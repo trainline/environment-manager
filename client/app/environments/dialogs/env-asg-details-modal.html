@@ -21,12 +21,12 @@
       </uib-tab>
       <uib-tab heading="ASG Settings" index="'runtime-asg'">
         <form name="settingsForm" class="form-horizontal">
-
-          <div class="form-group">
-            <label class="col-md-2 control-label text-left nowrap">Use Schedule?</label>
+          <section class="form-group">
+            <label class="col-md-2 control-label text-left nowrap">Instances power settings:</label>
             <div class="col-md-8">
               <label class="control-label text-left inline-radio nonbold">
-                <input name="scheduledOrNot" type="radio" ng-model="vm.asgUpdate.NewSchedule" value="" ng-click="vm.setNotUsingSchedules()" /> Environment Default
+                <input name="scheduledOrNot" type="radio" ng-model="vm.asgUpdate.NewSchedule" value="" ng-click="vm.setNotUsingSchedules()"
+                /> Environment Default
               </label>
               <label class="control-label text-left inline-radio nonbold">
                 <input name="scheduledOrNot" type="radio" ng-model="vm.asgUpdate.NewSchedule" value="ON" ng-click="vm.setNotUsingSchedules()"> Always On
@@ -38,9 +38,8 @@
                 <input name="scheduledOrNot" type="radio" ng-click="vm.setUsingSchedules()" ng-checked="vm.usingSchedules"> Use specific times...
               </label>
             </div>
-          </div>
-
-          <div ng-if="vm.usingSchedules">
+          </section>
+          <section ng-if="vm.usingSchedules">
             <div class="form-group" ng-class="{'has-error': formScaling.DefaultSchedule.$invalid}">
               <label class="col-md-2 control-label text-left nowrap">Schedule:</label>
               <div class="col-md-8">
@@ -48,10 +47,8 @@
               </div>
               <span class="help-block" ng-if="formScaling.DefaultSchedule.$dirty && formScaling.DefaultSchedule.$invalid">Schedule should be set to 'ON' or specific Start and End cron formats (see Tagging standards).</span>
             </div>
-          </div>
-
-
-          <div ng-if="vm.notUsingSchedules">
+          </section>
+          <section ng-if="vm.notUsingSchedules">
             <div class="form-group" ng-class="{'has-error': settingsForm.MinInstances.$invalid || settingsForm.NumberOfInstances.$invalid || settingsForm.MaxInstances.$invalid }">
               <label class="col-md-2 control-label text-left nowrap">Size:</label>
               <div class="col-md-8">
@@ -101,9 +98,8 @@
                 </p>
               </div>
             </div>
-          </div>
-
-          <section>
+          </section>
+          <section ng-if="vm.notUsingSchedules">
             <div class="form-group">
               <label class="col-md-2 control-label text-left nowrap">Scaling Options:</label>
               <div class="col-md-8">
@@ -120,15 +116,34 @@
             </div>
             <div class="form-group">
               <label class="col-md-2 control-label text-left nowrap">Availability Zone(s):</label>
-              <div class="col-md-6">
-                <div style="margin-top: 6px;">
+              <div class="col-md-6" style="margin-top: 6px;">
+                <div>
                   <div style="float: left; margin-right: 10px;" ng-disabled="!vm.canUser('edit')" ng-repeat="az in vm.deploymentAzsList">
                     <input type="checkbox" name="{{az}}-checkbox" value="{{az}}" ng-checked="vm.isAZChecked(az)" ng-click="vm.toggleAZSelection(az)"> {{az}}
                   </div>
                   <span class="error" ng-if="!vm.asgUpdate.AvailabilityZone.length">At least one zone must be selected.</span>
                 </div>
+                <div style="clear:both"></div>
+                <p style="margin-top: 15px;">
+                  <strong>Please Note:</strong> AWS will always keep instances balanced across availability zones.
+                  <br />
+                </p>
+                <p>
+                  Make sure that the minimum number of required up-to-date instances are present in each AZ before using scale-in to remove
+                  out-of-date instances.
+                </p>
+                <p>
+                  Instances with
+                  <strong>Instance Protection</strong> are never terminated!
+                </p>
+                <aside>
+                  <strong>Termination Protection</strong> within AWS console will not prevent the instance from being terminated
+                  when scaling-in.
+                </aside>
               </div>
             </div>
+          </section>
+          <section>
             <div class="form-group">
               <label class="col-md-2 control-label text-left nowrap">Current Distribution:</label>
               <div class="col-md-10">
@@ -151,34 +166,18 @@
                     </div>
                   </div>
                 </div>
-                <p style="margin-top: 15px">
-                  <strong>Please Note:</strong> AWS will always keep instances balanced across availability zones.
-                  <br />
-                </p>
-                <p>
-                  Make sure that the minimum number of required up-to-date instances are present in each AZ before using scale-in to remove
-                  out-of-date instances.
-                </p>
-                <p>
-                  Instances with
-                  <strong>Instance Protection</strong> are never terminated!
-                </p>
-                <aside>
-                  <strong>Termination Protection</strong> within AWS console will not prevent the instance from being terminated
-                  when scaling-in.
-                </aside>
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="col-md-8 col-md-offset-2">
-                <button class="btn btn-default" ng-class="{'btn-highlight': settingsForm.$dirty && vm.formIsValid(settingsForm)}" type="button"
-                  ng-click="vm.updateAutoScalingGroup()" ng-if="vm.canUser('edit') && vm.notUsingSchedules" ng-disabled="!vm.formIsValid(settingsForm) || !vm.updateASGFormIsValid()">Update Auto Scaling Group</button>
-                <button class="btn btn-default" type="button" ng-disabled="!vm.canSubmit()" ng-if="vm.usingSchedules" ng-click="vm.changeAsgSchedule()">Update ASG Schedule</button>
               </div>
             </div>
           </section>
-
-
+          <section>
+            <div class="form-group">
+              <div class="col-md-8 col-md-offset-2">
+                <button class="btn btn-default btn-primary" ng-class="{'btn-highlight': settingsForm.$dirty && vm.formIsValid(settingsForm)}" type="button"
+                  ng-click="vm.updateAutoScalingGroup()" ng-if="vm.canUser('edit') && vm.notUsingSchedules" ng-disabled="!vm.formIsValid(settingsForm) || !vm.updateASGFormIsValid()">Update Auto Scaling Group</button>
+                <button class="btn btn-default btn-primary" type="button" ng-disabled="!vm.canSubmit()" ng-if="vm.usingSchedules" ng-click="vm.changeAsgSchedule()">Update ASG Schedule</button>
+              </div>
+            </div>
+          </section>
         </form>
       </uib-tab>
       <uib-tab heading="Launch Configuration" index="'launchConfig'">
@@ -188,7 +187,7 @@
             <div class="form-group">
               <label class="col-md-1 control-label text-left" style="width: 180px"></label>
               <div class="col-md-8">
-                <button class="btn btn-default" ng-class="{'btn-highlight': form.$dirty && vm.formIsValid(form)}" type="button" ng-click="vm.updateLaunchConfig()"
+                <button class="btn btn-default btn-primary" ng-class="{'btn-highlight': form.$dirty && vm.formIsValid(form)}" type="button" ng-click="vm.updateLaunchConfig()"
                   ng-if="vm.canUser('edit')" ng-disabled="!vm.formIsValid(form)">Update Launch Configuration</button>
               </div>'
             </div>
