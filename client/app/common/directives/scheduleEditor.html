@@ -23,13 +23,14 @@
       <option ng-repeat="timezone in vm.timezones" value="{{timezone}}">{{timezone}}</option>
     </select>
   </div>
-  <div>
+
+  <div ng-if="vm.crons.length > 0">
     <label class="control-label" style="width:460px">No. Servers</label>
     <br />
   </div>
   <div class="schedule-line" ng-repeat="cron in vm.crons">
     <cron-editor min="vm.minSize" max-size="vm.maxSize" cron="cron"></cron-editor>
-    <button class="btn btn-danger" style="margin-left: 20px" ng-click="vm.remove(cron)">X</button>
+    <button class="btn btn-danger" style="margin-left: 20px" ng-click="vm.remove(cron)" title="Remove schedule"><span class="glyphicon glyphicon-remove-sign"></span> Schedule</button>
   </div>
   <div class="panel panel-danger" ng-show="vm.schedule.length > vm.scheduleMaxLength" style="width:634px">
     <div class="panel-heading">Too many schedules</div>
@@ -37,7 +38,7 @@
       <strong>{{vm.scheduleMaxLength}}</strong> characters, currently is
       <strong>{{vm.schedule.length}}</strong>, remove one and try again.</div>
   </div>
-  <button class="btn btn-default" ng-click="vm.add()" ng-show="vm.schedule.length <= vm.scheduleMaxLength">Add time</button>
+  <button class="btn btn-default btn-success" ng-click="vm.add()" ng-show="vm.schedule.length <= vm.scheduleMaxLength" title="Add stand by schedule entry"><span class="glyphicon glyphicon-plus-sign"></span> Schedule</button>
 
   <div ng-show="vm.chartConfig && vm.chartConfig.series[0].data.length">
     <br />
