@@ -391,7 +391,6 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     function updateSchedule() {
       var newSchedule;
       if (vm.selectedScheduleMode === 'scaling') {
-        console.log('pepero02');
         newSchedule = vm.asgUpdate.ScalingSchedule.map(function (schedule) {
           return {
             MinSize: vm.asg.MinSize,
@@ -401,7 +400,6 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
           };
         });
       } else {
-        console.log('pepero01');
         newSchedule = vm.asgUpdate.NewSchedule;
       }
 

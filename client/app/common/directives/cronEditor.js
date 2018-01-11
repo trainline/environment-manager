@@ -18,11 +18,13 @@ angular.module('EnvironmentManager.common')
 
         function setupOptions() {
           if (!$scope.maxSize) $scope.maxSize = 100;
-          
+
           $scope.options.actions.push({ value: 0, label: 'None' });
           for (var i = 1; i < $scope.maxSize; i += 1)
             $scope.options.actions.push({ value: i, label: i });
           $scope.options.actions.push({ value: $scope.maxSize, label: 'All (' + $scope.maxSize + ')' });
+
+          console.log($scope.cron)
         }
 
         var parseDays = function (daysStr) {
@@ -49,8 +51,13 @@ angular.module('EnvironmentManager.common')
 
         var parseCron = function (cron) {
           var parts = cron.trim().split(' ');
+          var action = parts[0].replace(/:/, '').toLowerCase();
+          if (action == 'start')
+            action = $scope.maxSize.toString();
+          if (action == 'stop')
+            action = '0';
           return {
-            action: parts[0].replace(/:/, '').toLowerCase(),
+            action: action,
             minute: parseInt(replaceIfNull(parts[1], '0')).toString(),
             hour: parseInt(replaceIfNull(parts[2], '0')).toString(),
             days: parseDays(parts[5])
