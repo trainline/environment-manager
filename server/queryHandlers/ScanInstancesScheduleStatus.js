@@ -16,8 +16,21 @@ module.exports = function ScanInstancesScheduleStatusQueryHandler(query) {
   return co(function* () { // eslint-disable-line func-names
     let instances = yield getInstances(query);
     let dateTime = query.dateTime ? query.dateTime : new Date();
-    return [...scheduledActionsForInstances(instances, dateTime), ...scheduledActionsForASGs(instances, dateTime)];
+    let instanceActions = scheduledActionsForInstances(instances, dateTime);
+    let asgActions = scheduledActionsForASGs(instances, dateTime);
+
+    let results = [...instanceActions, ...asgActions]
+      .filter(removeProductionInstances);
+
+    return results;
   });
+
+  function removeProductionInstances(i) {
+    if (i && i.instance && i.instance.environment && i.instance.environment.toLowerCase() != 'pr1')
+      return true;
+    else
+      return false;
+  }
 };
 
 function getInstances(query) {
@@ -39,7 +52,7 @@ function getInstances(query) {
   });
 }
 
-function getAutoScalingGroups(instances){
+function getAutoScalingGroups(instances) {
   var autoScalingGroups = {};
   for (var instance in instances) {
     var currentInstance = instances[instance];
@@ -50,7 +63,7 @@ function getAutoScalingGroups(instances){
   return autoScalingGroups;
 }
 
-function getStandAloneInstances(instances){
+function getStandAloneInstances(instances) {
   var standAloneInstances = [];
   for (var instance in instances) {
     var currentInstance = instances[instance];
@@ -61,10 +74,10 @@ function getStandAloneInstances(instances){
   return standAloneInstances;
 }
 
-function scheduledActionsForASGs(instances, dateTime){
+function scheduledActionsForASGs(instances, dateTime) {
   let actions = [];
   let autoScalingGroups = getAutoScalingGroups(instances);
-  for(var autoScalingGroupName in autoScalingGroups) {
+  for (var autoScalingGroupName in autoScalingGroups) {
     let autoScalingGroup = autoScalingGroups[autoScalingGroupName];
     let scalingActions = scheduling.actionsForAutoScalingGroup(autoScalingGroup, instances, dateTime);
     if (scalingActions && scalingActions.length && scalingActions.length > 0)
