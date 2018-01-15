@@ -25,6 +25,7 @@ module.exports = function ScanInstancesScheduleStatusQueryHandler(query) {
     return results;
   });
 
+  //TODO: Remove from super secret endpoint when ready for production release
   function removeProductionInstances(i) {
     if (i && i.instance && i.instance.environment && i.instance.environment.toLowerCase() != 'pr1')
       return true;

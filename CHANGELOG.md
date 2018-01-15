@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html). View [Unreleased] changes here.
 
+## [6.16.0] 2018-01-15
+
+### Added
+
+- Scheduled Scaling functionality now uses 'cold standby' instances. [#394]
+
+#### Previous scheduling functionality
+
+Environment Manager allowed a schedule to be created with specific times. At those times, you could state whether you
+wanted all machines in that ASG to be 'on' or 'off'. When a machine was set to 'off', it would be terminated. The next 
+time Environment Manager was asked to turn everything 'on', it would create new machines that it would bring into
+service.
+
+#### *What* is a cold standby?
+
+The default for scheduling within Environment Manager moving forward will be to use cold standby instances. What this 
+means is that when Environment Manager is told that it should have fewer instances 'on' that it currently has, it will 
+take the instance out of service and shortly afterwards, turn that instance off. When Environment Manager is told that 
+it should have more instances 'on' than it currently has, it will turn on the instances that have been turned off and 
+shortly afterwards bring them into service.
+
+#### *Why* cold standby?
+
+Knowing that an instance is being turned on and brought into service that has been proven to work will increase 
+confidence in the state of the machines being used as part of a scheduled scale up. These machines will also have been 
+provisioned by Puppet already, so the load times of these instances will be dramatically reduced.
+
+#### *How* do I use cold standby?
+
+Make sure that the desired and maximum count of your ASG are 
+
+- the same
+- the highest number of instances you want to use with your scaling options.
+
+When you have this, any scheduling setup in the 'use specific times' option, the scheduler will move your 'on' and 'off'
+count using those instances.
+
 ## [6.15.2] 2017-12-14
 
 ### Fixed
@@ -322,7 +359,8 @@ Example:
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/6.15.2...master
+[Unreleased]: https://github.com/trainline/environment-manager/compare/6.16.0...master
+[6.16.0]: https://github.com/trainline/environment-manager/compare/6.15.2...6.16.0
 [6.15.2]: https://github.com/trainline/environment-manager/compare/6.14.2...6.15.2
 [6.14.2]: https://github.com/trainline/environment-manager/compare/6.13.0...6.14.2
 [6.13.0]: https://github.com/trainline/environment-manager/compare/6.12.5...6.13.0
@@ -409,3 +447,4 @@ Example:
 [#370]: https://github.com/trainline/environment-manager/pull/370
 [#385]: https://github.com/trainline/environment-manager/pull/385
 [#391]: https://github.com/trainline/environment-manager/pull/391
+[#394]: https://github.com/trainline/environment-manager/pull/394
