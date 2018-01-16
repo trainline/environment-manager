@@ -25,17 +25,17 @@
             <label class="col-md-2 control-label text-left nowrap">Instances power settings:</label>
             <div class="col-md-8">
               <label class="control-label text-left inline-radio nonbold">
-                <input name="scheduledOrNot" type="radio" ng-model="vm.asgUpdate.NewSchedule" value="" ng-click="vm.setNotUsingSchedules()"
+                <input name="scheduledOrNot" type="radio" ng-model="vm.asgUpdate.NewSchedule" value="" ng-click="vm.noSchedules()"
                 /> Environment Default
               </label>
               <label class="control-label text-left inline-radio nonbold">
-                <input name="scheduledOrNot" type="radio" ng-model="vm.asgUpdate.NewSchedule" value="ON" ng-click="vm.setNotUsingSchedules()"> Always On
+                <input name="scheduledOrNot" type="radio" ng-model="vm.asgUpdate.NewSchedule" value="ON" ng-click="vm.noSchedules()"> Always On
               </label>
               <label class="control-label text-left inline-radio nonbold">
-                <input name="scheduledOrNot" type="radio" ng-model="vm.asgUpdate.NewSchedule" value="OFF" ng-click="vm.setNotUsingSchedules()"> Off
+                <input name="scheduledOrNot" type="radio" ng-model="vm.asgUpdate.NewSchedule" value="OFF" ng-click="vm.noSchedules()"> Off
               </label>
               <label class="control-label text-left inline-radio nonbold">
-                <input name="scheduledOrNot" type="radio" ng-click="" ng-checked="vm.usingOldSchedules"> Use AWS Scaling Actions
+                <input name="scheduledOrNot" type="radio" ng-click="vm.setUsingOldSchedules()" ng-checked="vm.usingOldSchedules"> Use AWS Scaling Actions
               </label>
               <label class="control-label text-left inline-radio nonbold">
                 <input name="scheduledOrNot" type="radio" ng-click="vm.setUsingSchedules()" ng-checked="vm.usingSchedules"> Use Cold Standby Schedule

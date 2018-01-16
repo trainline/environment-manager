@@ -272,15 +272,32 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       });
     };
 
+    vm.noSchedules = function () {
+      vm.setNotUsingSchedules();
+      vm.setNotUsingOldSchedules();
+    }
+
     vm.setNotUsingSchedules = function () {
       vm.usingSchedules = false;
       vm.notUsingSchedules = true;
     };
 
+    vm.setNotUsingOldSchedules = function () {
+      vm.usingOldSchedules = false;
+      vm.notUsingOldSchedules = true;
+    };
+
     vm.setUsingSchedules = function () {
+      vm.setNotUsingOldSchedules();
       vm.usingSchedules = true;
       vm.notUsingSchedules = false;
       if(vm.asg.Schedule) vm.asgUpdate.NewSchedule = vm.asg.Schedule;
+    };
+
+    vm.setUsingOldSchedules = function () {
+      vm.setNotUsingSchedules();
+      vm.usingOldSchedules = true;
+      vm.notUsingOldSchedules = false;
     };
 
     vm.updateAutoScalingGroup = function () {
@@ -392,7 +409,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
     function updateSchedule() {
       var newSchedule;
-      if (vm.selectedScheduleMode === 'scaling') {
+      if (vm.useOldSchedules) {
         newSchedule = vm.asgUpdate.ScalingSchedule.map(function (schedule) {
           return {
             MinSize: vm.asg.MinSize,
