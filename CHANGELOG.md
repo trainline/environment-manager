@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html). View [Unreleased] changes here.
 
+## [6.15.3] 2017-12-16
+
+### Fixed
+
+- Fix error preventing ASGs from being deleted. [#395]
+
 ## [6.15.2] 2017-12-14
 
 ### Fixed
@@ -322,7 +328,8 @@ Example:
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/6.15.2...master
+[Unreleased]: https://github.com/trainline/environment-manager/compare/6.15.3...master
+[6.15.3]: https://github.com/trainline/environment-manager/compare/6.15.2...6.15.3
 [6.15.2]: https://github.com/trainline/environment-manager/compare/6.14.2...6.15.2
 [6.14.2]: https://github.com/trainline/environment-manager/compare/6.13.0...6.14.2
 [6.13.0]: https://github.com/trainline/environment-manager/compare/6.12.5...6.13.0
@@ -355,6 +362,7 @@ Example:
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
+[#395]: https://github.com/trainline/environment-manager/pull/395
 [#376]: https://github.com/trainline/environment-manager/pull/389
 [#376]: https://github.com/trainline/environment-manager/pull/376
 [#375]: https://github.com/trainline/environment-manager/pull/375
