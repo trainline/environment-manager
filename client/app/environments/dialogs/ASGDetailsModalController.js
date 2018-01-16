@@ -67,6 +67,8 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       vm.selectedScheduleMode = vm.asg.ScalingSchedule && vm.asg.ScalingSchedule.length ? 'scaling' : 'schedule';
       vm.usingSchedules = vm.asg.Schedule.lastIndexOf(':') != -1;
       vm.notUsingSchedules = !vm.usingSchedules;
+      vm.usingOldSchedules = vm.selectedScheduleMode === 'scaling' ? true : false;
+      vm.notUsingOldSchedules = !vm.usingOldSchedules;
     }
 
     vm.isAZChecked = function (az) {

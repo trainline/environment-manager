@@ -1,10 +1,10 @@
-<div class="modal-header">
-  <h3>ASG: {{vm.asg.AsgName}}
-    <span ng-if="vm.asg.Role">({{vm.asg.Role}})</span>
-  </h3>
-  <div id="RefreshData">
-    <span class="glyphicon glyphicon-refresh" ng-click="vm.refresh()" title="Refresh data"></span>
-  </div>
+<!-- <div class="modal-header"> -->
+<h3>ASG: {{vm.asg.AsgName}}
+  <span ng-if="vm.asg.Role">({{vm.asg.Role}})</span>
+</h3>
+<div id="RefreshData">
+  <span class="glyphicon glyphicon-refresh" ng-click="vm.refresh()" title="Refresh data"></span>
+</div>
 </div>
 
 <div class="modal-body">
@@ -35,7 +35,10 @@
                 <input name="scheduledOrNot" type="radio" ng-model="vm.asgUpdate.NewSchedule" value="OFF" ng-click="vm.setNotUsingSchedules()"> Off
               </label>
               <label class="control-label text-left inline-radio nonbold">
-                <input name="scheduledOrNot" type="radio" ng-click="vm.setUsingSchedules()" ng-checked="vm.usingSchedules"> Use specific times...
+                <input name="scheduledOrNot" type="radio" ng-click="" ng-checked="vm.usingOldSchedules"> Use AWS Scaling Actions
+              </label>
+              <label class="control-label text-left inline-radio nonbold">
+                <input name="scheduledOrNot" type="radio" ng-click="vm.setUsingSchedules()" ng-checked="vm.usingSchedules"> Use Cold Standby Schedule
               </label>
             </div>
           </section>
@@ -48,7 +51,15 @@
               <span class="help-block" ng-if="formScaling.DefaultSchedule.$dirty && formScaling.DefaultSchedule.$invalid">Schedule should be set to 'ON' or specific Start and End cron formats (see Tagging standards).</span>
             </div>
           </section>
-          <section ng-if="vm.notUsingSchedules">
+          <section ng-if="vm.usingOldSchedules">
+            <div class="form-group" ng-class="{'has-error': formScaling.DefaultSchedule.$invalid}">
+              <label class="col-md-2 control-label text-left nowrap">Schedule:</label>
+              <div class="col-md-8">
+                <scaling-schedule-editor schedule="vm.asgUpdate.ScalingSchedule" min-size="vm.asg.MinSize" max-size="vm.asg.MaxSize"></scaling-schedule-editor>
+              </div>
+            </div>
+          </section>
+          <section ng-if="vm.notUsingSchedules && vm.notUsingOldSchedules">
             <div class="form-group" ng-class="{'has-error': settingsForm.MinInstances.$invalid || settingsForm.NumberOfInstances.$invalid || settingsForm.MaxInstances.$invalid }">
               <label class="col-md-2 control-label text-left nowrap">Size:</label>
               <div class="col-md-8">
@@ -99,7 +110,7 @@
               </div>
             </div>
           </section>
-          <section ng-if="vm.notUsingSchedules">
+          <section ng-if="vm.notUsingSchedules && vm.notUsingOldSchedules">
             <div class="form-group">
               <label class="col-md-2 control-label text-left nowrap">Scaling Options:</label>
               <div class="col-md-8">
@@ -172,9 +183,9 @@
           <section>
             <div class="form-group">
               <div class="col-md-8 col-md-offset-2">
-                <button class="btn btn-default btn-primary" ng-class="{'btn-highlight': settingsForm.$dirty && vm.formIsValid(settingsForm)}" type="button"
-                  ng-click="vm.updateAutoScalingGroup()" ng-if="vm.canUser('edit') && vm.notUsingSchedules" ng-disabled="!vm.formIsValid(settingsForm) || !vm.updateASGFormIsValid()">Update Auto Scaling Group</button>
-                <button class="btn btn-default btn-primary" type="button" ng-disabled="!vm.canSubmit()" ng-if="vm.usingSchedules" ng-click="vm.changeAsgSchedule()">Update ASG Schedule</button>
+                <button class="btn btn-default btn-primary" ng-class="{'btn-highlight': settingsForm.$dirty && vm.formIsValid(settingsForm)}"
+                  type="button" ng-click="vm.updateAutoScalingGroup()" ng-if="vm.canUser('edit') && vm.notUsingSchedules && vm.notUsingOldSchedules" ng-disabled="!vm.formIsValid(settingsForm) || !vm.updateASGFormIsValid()">Update Auto Scaling Group</button>
+                <button class="btn btn-default btn-primary" type="button" ng-disabled="!vm.canSubmit()" ng-if="vm.usingSchedules || vm.usingOldSchedules" ng-click="vm.changeAsgSchedule()">Update ASG Schedule</button>
               </div>
             </div>
           </section>
@@ -187,8 +198,8 @@
             <div class="form-group">
               <label class="col-md-1 control-label text-left" style="width: 180px"></label>
               <div class="col-md-8">
-                <button class="btn btn-default btn-primary" ng-class="{'btn-highlight': form.$dirty && vm.formIsValid(form)}" type="button" ng-click="vm.updateLaunchConfig()"
-                  ng-if="vm.canUser('edit')" ng-disabled="!vm.formIsValid(form)">Update Launch Configuration</button>
+                <button class="btn btn-default btn-primary" ng-class="{'btn-highlight': form.$dirty && vm.formIsValid(form)}" type="button"
+                  ng-click="vm.updateLaunchConfig()" ng-if="vm.canUser('edit')" ng-disabled="!vm.formIsValid(form)">Update Launch Configuration</button>
               </div>'
             </div>
           </div>

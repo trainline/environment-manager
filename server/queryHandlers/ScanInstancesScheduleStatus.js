@@ -18,20 +18,10 @@ module.exports = function ScanInstancesScheduleStatusQueryHandler(query) {
     let dateTime = query.dateTime ? query.dateTime : new Date();
     let instanceActions = scheduledActionsForInstances(instances, dateTime);
     let asgActions = scheduledActionsForASGs(instances, dateTime);
-
-    let results = [...instanceActions, ...asgActions]
-      .filter(removeProductionInstances);
+    let results = [...instanceActions, ...asgActions];
 
     return results;
   });
-
-  //TODO: Remove from super secret endpoint when ready for production release
-  function removeProductionInstances(i) {
-    if (i && i.instance && i.instance.environment && i.instance.environment.toLowerCase() != 'pr1')
-      return true;
-    else
-      return false;
-  }
 };
 
 function getInstances(query) {
