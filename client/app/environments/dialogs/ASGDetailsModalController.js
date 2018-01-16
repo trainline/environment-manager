@@ -194,9 +194,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         }).then(function () {
           // On initialization scope properties are initialized with ASG details
           // to allow the user to change them through the UI.
-          if (onInitialization) {
-            initializeScope();
-          }
+          initializeScope();
         });
       }, function (error) {
         vm.closeModal();
@@ -409,7 +407,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
     function updateSchedule() {
       var newSchedule;
-      if (vm.useOldSchedules) {
+      if (vm.usingOldSchedules) {
         newSchedule = vm.asgUpdate.ScalingSchedule.map(function (schedule) {
           return {
             MinSize: vm.asg.MinSize,
