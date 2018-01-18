@@ -44,7 +44,7 @@ const AutoScalingGroup = TaggableMixin(class {
     let self = this;
     return co(function* () {
       let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-      let asgResource = yield new AsgResourceBase(accountName);
+      let asgResource = new AsgResourceBase(accountName);
       let launchConfigResource = yield launchConfigurationResourceFactory.create(null, { accountName });
       logger.info(`Deleting AutoScalingGroup ${self.AutoScalingGroupName} and associated Launch configuration ${self.LaunchConfigurationName}`);
 
