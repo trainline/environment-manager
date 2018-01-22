@@ -465,7 +465,8 @@ function getInstanceInfo(instance) {
     id: instance.InstanceId,
     name: getTagValue(instance, 'name'),
     role: getTagValue(instance, 'role'),
-    environment: getTagValue(instance, 'environment')
+    environment: getTagValue(instance, 'environment'),
+    environmentType: getInstanceTagValue(instance, 'environmenttype')
   };
   if (instance.AutoScalingGroup) {
     instanceVM.asg = instance.AutoScalingGroup.AutoScalingGroupName;
