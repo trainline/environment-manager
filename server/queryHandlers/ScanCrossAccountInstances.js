@@ -6,5 +6,9 @@ let scanCrossAccount = require('../modules/queryHandlersUtil/scanCrossAccountFn'
 let ScanInstances = require('./ScanInstances');
 
 module.exports = function ScanCrossAccountInstances(query) {
-  return scanCrossAccount(({ AccountNumber }) => { ScanInstances(Object.assign({}, query, { accountName: AccountNumber })); });
+  return scanCrossAccount(handleInstance);
+
+  function handleInstance({ AccountNumber }) {
+    return ScanInstances(Object.assign({}, query, { accountName: AccountNumber }));
+  }
 };

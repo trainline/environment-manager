@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html). View [Unreleased] changes here.
 
+## [6.15.4] 2018-01-24
+
+### Fixed
+
+- Fix Operations > New Instaces, where results were not being returned to the caller. [#399]
+
 ## [6.15.3] 2017-12-16
 
 ### Fixed
@@ -328,7 +334,8 @@ Example:
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/6.15.3...master
+[Unreleased]: https://github.com/trainline/environment-manager/compare/6.15.4...master
+[6.15.4]: https://github.com/trainline/environment-manager/compare/6.15.3...6.15.4
 [6.15.3]: https://github.com/trainline/environment-manager/compare/6.15.2...6.15.3
 [6.15.2]: https://github.com/trainline/environment-manager/compare/6.14.2...6.15.2
 [6.14.2]: https://github.com/trainline/environment-manager/compare/6.13.0...6.14.2
@@ -417,3 +424,4 @@ Example:
 [#370]: https://github.com/trainline/environment-manager/pull/370
 [#385]: https://github.com/trainline/environment-manager/pull/385
 [#391]: https://github.com/trainline/environment-manager/pull/391
+[#399]: https://github.com/trainline/environment-manager/pull/399

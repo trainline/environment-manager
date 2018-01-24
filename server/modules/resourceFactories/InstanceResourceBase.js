@@ -22,7 +22,11 @@ function InstanceResource(client) {
     let instances = [];
 
     function query() {
-      return client.describeInstances(request).promise().then((data) => {
+      return client.describeInstances(request)
+        .promise()
+        .then(handleData);
+
+      function handleData(data) {
         instances = instances.concat(flatInstances(data));
 
         if (!data.NextToken) {
@@ -32,7 +36,7 @@ function InstanceResource(client) {
         // Scan from next index
         request.NextToken = data.NextToken;
         return query(client);
-      });
+      }
     }
 
     return query(client);

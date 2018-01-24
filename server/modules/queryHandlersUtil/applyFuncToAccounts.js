@@ -8,12 +8,20 @@ function applyFuncToAccounts(fn, accounts) {
   function applyFnAndAssignAccountName({ AccountName, AccountNumber }) {
     return Promise.resolve({ AccountName, AccountNumber })
       .then(fn)
-      .then((result = []) => result.map(item => (item !== null && typeof item === 'object'
+      .then(handleResult);
+
+    function handleResult(result = []) {
+      return result.map(item => (item !== null && typeof item === 'object'
         ? Object.assign(item, { AccountName })
-        : item)));
+        : item));
+    }
   }
   return Promise.map(accounts, applyFnAndAssignAccountName)
-    .then(results => [].concat(...results));
+    .then(handleResults);
+
+  function handleResults(results) {
+    return [].concat(...results);
+  }
 }
 
 module.exports = applyFuncToAccounts;
