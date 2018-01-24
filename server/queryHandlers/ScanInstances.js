@@ -6,5 +6,9 @@ const ec2InstanceResourceFactory = require('../modules/resourceFactories/ec2Inst
 
 module.exports = function ScanInstancesQueryHandler({ accountName, filter }) {
   return ec2InstanceResourceFactory.create(undefined, { accountName })
-    .then(x => x.all({ filter }));
+    .then(handleResourceFactory);
+
+  function handleResourceFactory(x) {
+    return x.all({ filter });
+  }
 };
