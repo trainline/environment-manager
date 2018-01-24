@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Fixed
 
-- Fix Operations > New Instaces, where results were not being returned to the caller. [#]
+- Fix Operations > New Instaces, where results were not being returned to the caller. [#399]
 
 ## [6.15.3] 2017-12-16
 
@@ -424,3 +424,4 @@ Example:
 [#370]: https://github.com/trainline/environment-manager/pull/370
 [#385]: https://github.com/trainline/environment-manager/pull/385
 [#391]: https://github.com/trainline/environment-manager/pull/391
+[#399]: https://github.com/trainline/environment-manager/pull/399
