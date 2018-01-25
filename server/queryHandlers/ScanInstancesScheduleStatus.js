@@ -51,7 +51,8 @@ function scheduledActionsForInstances(instances, dateTime) {
       id: instance.InstanceId,
       name: getInstanceTagValue(instance, 'name'),
       role: getInstanceTagValue(instance, 'role'),
-      environment: getInstanceTagValue(instance, 'environment')
+      environment: getInstanceTagValue(instance, 'environment'),
+      environmentType: getInstanceTagValue(instance, 'environmenttype')
     };
 
     if (instance.AutoScalingGroup) {
