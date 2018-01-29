@@ -1,5 +1,7 @@
 <div class="modal-header">
-  <h3>ASG: {{vm.asg.AsgName}} <span ng-if="vm.asg.Role">({{vm.asg.Role}})</span></h3>
+  <h3>ASG: {{vm.asg.AsgName}}
+    <span ng-if="vm.asg.Role">({{vm.asg.Role}})</span>
+  </h3>
   <div id="RefreshData">
     <span class="glyphicon glyphicon-refresh" ng-click="vm.refresh()" title="Refresh data"></span>
   </div>
@@ -19,30 +21,194 @@
       </uib-tab>
       <uib-tab heading="ASG Settings" index="'runtime-asg'">
         <form name="settingsForm" class="form-horizontal">
-          <div style="width: 900px">
-            <div ng-include="'/app/environments/dialogs/asg/runtime-asg.html'"></div>
-            <div class="form-group">
-              <div class="col-md-8 col-md-offset-2">
-                <button class="btn btn-default" ng-class="{'btn-highlight': settingsForm.$dirty && vm.formIsValid(settingsForm)}" type="button" ng-click="vm.updateAutoScalingGroup()" ng-if="vm.canUser('edit')" ng-disabled="!vm.formIsValid(settingsForm) || !vm.updateASGFormIsValid()">Update Auto Scaling Group</button>
+          <section class="form-group">
+            <label class="col-md-2 control-label text-left nowrap">Instances power settings:</label>
+            <div class="col-md-8">
+              <label class="control-label text-left inline-radio nonbold">
+                <input name="scheduledOrNot" type="radio" ng-model="vm.asgUpdate.NewSchedule" value="" ng-click="vm.noSchedules()" /> Environment Default
+              </label>
+              <label class="control-label text-left inline-radio nonbold">
+                <input name="scheduledOrNot" type="radio" ng-model="vm.asgUpdate.NewSchedule" value="ON" ng-click="vm.noSchedules()"> Always On
+              </label>
+              <label class="control-label text-left inline-radio nonbold">
+                <input name="scheduledOrNot" type="radio" ng-model="vm.asgUpdate.NewSchedule" value="OFF" ng-click="vm.noSchedules()"> Off
+              </label>
+              <label class="control-label text-left inline-radio nonbold">
+                <input name="scheduledOrNot" type="radio" ng-click="vm.setUsingOldSchedules()" ng-checked="vm.usingOldSchedules"> Use AWS Scaling Actions
+              </label>
+              <label class="control-label text-left inline-radio nonbold">
+                <input name="scheduledOrNot" type="radio" ng-click="vm.setUsingSchedules()" ng-checked="vm.usingSchedules"> Use Cold Standby Schedule
+              </label>
+            </div>
+          </section>
+          <section ng-if="vm.usingSchedules">
+            <div class="form-group" ng-class="{'has-error': formScaling.DefaultSchedule.$invalid}">
+              <label class="col-md-2 control-label text-left nowrap">Schedule:</label>
+              <div class="col-md-8">
+                <schedule-editor max-size="vm.asgUpdate.MaxSize" schedule="vm.asgUpdate.NewSchedule" />
+              </div>
+              <span class="help-block" ng-if="formScaling.DefaultSchedule.$dirty && formScaling.DefaultSchedule.$invalid">Schedule should be set to 'ON' or specific Start and End cron formats (see Tagging standards).</span>
+            </div>
+          </section>
+          <section ng-if="vm.usingOldSchedules">
+            <div class="form-group" ng-class="{'has-error': formScaling.DefaultSchedule.$invalid}">
+              <label class="col-md-2 control-label text-left nowrap">Schedule:</label>
+              <div class="col-md-8">
+                <scaling-schedule-editor schedule="vm.asgUpdate.ScalingSchedule" min-size="vm.asg.MinSize" max-size="vm.asg.MaxSize"></scaling-schedule-editor>
               </div>
             </div>
-          </div>
+          </section>
+          <section ng-if="vm.notUsingSchedules && vm.notUsingOldSchedules">
+            <div class="form-group" ng-class="{'has-error': settingsForm.MinInstances.$invalid || settingsForm.NumberOfInstances.$invalid || settingsForm.MaxInstances.$invalid }">
+              <label class="col-md-2 control-label text-left nowrap">Size:</label>
+              <div class="col-md-8">
+                <label class="control-label text-left nonbold inline">Min:</label>
+                <input class="form-control inline" type="number" name="MinInstances" min="0" max="100" step="1" required="" ng-model="vm.asgUpdate.MinSize"
+                  ng-readonly="!canUser('edit')" />
+                <label class="control-label text-left nonbold inline">Desired:</label>
+                <input class="form-control inline" name="NumberOfInstances" type="number" min="0" max="100" step="1" required="" ng-model="vm.asgUpdate.DesiredCapacity"
+                  ng-readonly="!canUser('edit')" />
+                <label class="control-label text-left nonbold inline">Max:</label>
+                <input class="form-control inline" name="MaxInstances" type="number" min="0" max="100" step="1" required="" ng-model="vm.asgUpdate.MaxSize"
+                  ng-readonly="!canUser('edit')" />
+              </div>
+            </div>
+            <div class="form-group has-error" ng-if="vm.asgUpdate.MinSize > 0">
+              <div class="col-md-8 col-md-offset-2">
+                <div class="help-block">
+                  Note: The recommended Min Size is 0.
+                  <br /> The Scheduler will not switch off instances when an ASG reaches its minimum size.
+                </div>
+              </div>
+            </div>
+            <div class="form-group has-error" ng-if="settingsForm.MinInstances.$invalid || 
+              settingsForm.NumberOfInstances.$invalid || 
+              settingsForm.MaxInstances.$invalid ||
+              vm.asgUpdate.DesiredCapacity < vm.asgUpdate.MinSize ||
+              vm.asgUpdate.DesiredCapacity > vm.asgUpdate.MaxSize ||
+              vm.greaterThanLowestDesiredSizeScheduled(vm.asgUpdate.MinSize) ||
+              vm.lessThanHighestDesiredSizeScheduled(vm.asgUpdate.MaxSize)">
+              <div class="col-md-offset-2 col-md-10">
+                <span class="help-block" ng-if="settingsForm.MinInstances.$dirty && settingsForm.MinInstances.$error.required">Min instances is mandatory.</span>
+                <span class="help-block" ng-if="settingsForm.MinInstances.$dirty && (settingsForm.MinInstances.$error.number || settingsForm.MinInstances.$error.min || settingsForm.MinInstances.$error.max)">Min must be a number from 0 to 100 inclusive</span>
+                <span class="help-block" ng-if="settingsForm.NumberOfInstances.$dirty && settingsForm.NumberOfInstances.$error.required">Desired instances is mandatory.</span>
+                <span class="help-block" ng-if="settingsForm.NumberOfInstances.$dirty && (settingsForm.NumberOfInstances.$error.number || settingsForm.NumberOfInstances.$error.min || settingsForm.NumberOfInstances.$error.max)">Desired must be a number from 0 to 100 inclusive</span>
+                <span class="help-block" ng-if="settingsForm.MaxInstances.$dirty && settingsForm.MaxInstances.$error.required">Max instances is mandatory.</span>
+                <span class="help-block" ng-if="settingsForm.MaxInstances.$dirty && (settingsForm.MaxInstances.$error.number || settingsForm.MaxInstances.$error.min || settingsForm.MaxInstances.$error.max)">Max must be a number from 0 to 100 inclusive</span>
+                <span class="help-block" ng-if="vm.asgUpdate.DesiredCapacity < vm.asgUpdate.MinSize">Desired capacity must be greater than or equal to Min instances.</span>
+                <span class="help-block" ng-if="vm.asgUpdate.DesiredCapacity > vm.asgUpdate.MaxSize">Desired capacity must be less than or equal to Max instances.</span>
+                <span class="help-block" ng-if="settingsForm.MinInstances.$dirty && vm.greaterThanLowestDesiredSizeScheduled(vm.asgUpdate.MinSize)">Min instances must be equal to or lower than the lowest scheduled size.</span>
+                <span class="help-block" ng-if="settingsForm.MaxInstances.$dirty && vm.lessThanHighestDesiredSizeScheduled(vm.asgUpdate.MaxSize)">Max instances must be equal to or greater than the highest scheduled size.</span>
+              </div>
+            </div>
+            <div class="form-group" ng-if="vm.asgUpdate.DesiredCapacity < vm.asg.DesiredCapacity && vm.canResize()">
+              <div class="col-md-offset-2 col-md-8">
+                <p>Note: During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection
+                  draining before termination.
+                </p>
+              </div>
+            </div>
+          </section>
+          <section ng-if="vm.notUsingSchedules && vm.notUsingOldSchedules">
+            <div class="form-group">
+              <label class="col-md-2 control-label text-left nowrap">Scaling Options:</label>
+              <div class="col-md-8">
+                <label class="control-label text-left nonbold inline">
+                  <input type="checkbox" name="delayedTermination" ng-checked="vm.asgUpdate.TerminationDelay" ng-click="vm.asgUpdate.TerminationDelay = vm.asgUpdate.TerminationDelay > 0 ? 0 : 3"> Delay instance termination (services are deregistered instantly)
+                </label>
+                <br />
+                <label class="control-label text-left nonbold inline" ng-if="vm.asgUpdate.TerminationDelay">
+                  Delay for
+                  <input class="form-control inline" style="width: 60px" name="terminationDelay" type="number" min="1" ng-model="vm.asgUpdate.TerminationDelay"
+                    ng-readonly="!vm.canUser('edit')" /> minute{{vm.asgUpdate.TerminationDelay > 1 ? 's' : ''}}
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-2 control-label text-left nowrap">Availability Zone(s):</label>
+              <div class="col-md-6" style="margin-top: 6px;">
+                <div>
+                  <div style="float: left; margin-right: 10px;" ng-disabled="!vm.canUser('edit')" ng-repeat="az in vm.deploymentAzsList">
+                    <input type="checkbox" name="{{az}}-checkbox" value="{{az}}" ng-checked="vm.isAZChecked(az)" ng-click="vm.toggleAZSelection(az)"> {{az}}
+                  </div>
+                  <span class="error" ng-if="!vm.asgUpdate.AvailabilityZone.length">At least one zone must be selected.</span>
+                </div>
+                <div style="clear:both"></div>
+                <p style="margin-top: 15px;">
+                  <strong>Please Note:</strong> AWS will always keep instances balanced across availability zones.
+                  <br />
+                </p>
+                <p>
+                  Make sure that the minimum number of required up-to-date instances are present in each AZ before using scale-in to remove
+                  out-of-date instances.
+                </p>
+                <p>
+                  Instances with
+                  <strong>Instance Protection</strong> are never terminated!
+                </p>
+                <aside>
+                  <strong>Termination Protection</strong> within AWS console will not prevent the instance from being terminated
+                  when scaling-in.
+                </aside>
+              </div>
+            </div>
+          </section>
+          <section>
+            <div class="form-group">
+              <label class="col-md-2 control-label text-left nowrap">Current Distribution:</label>
+              <div class="col-md-10">
+                <div class="region-visualisation">
+                  <div class="az" ng-repeat="az in vm.currentDistribution.azs">
+                    <div class="az-container" ng-class="{ active: az.active }">
+                      <div class="az-name">{{az.name}}</div>
+                      <div class="az-content">
+                        <div ng-if="!az.active" class="az-not-in-use">
+                          This AZ is not currently in use
+                        </div>
+                        <div ng-if="az.active" class="node" ng-repeat="node in az.nodes" ng-class="{ old: node.isOld, protected: node.isProtected }">
+                          {{ node.id }}
+                          <span ng-if="node.isOld" class="glyphicon glyphicon-warning-sign" title="This instance does not use the latest launch config">
+                          </span>
+                          <span ng-if="node.isProtected" class="glyphicon glyphicon-lock" title="This instance is protected from scale-in">
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <section>
+            <div class="form-group">
+              <div class="col-md-8 col-md-offset-2">
+                <button class="btn btn-default btn-primary" ng-class="{'btn-highlight': settingsForm.$dirty && vm.formIsValid(settingsForm)}"
+                  type="button" ng-click="vm.updateAutoScalingGroup()" ng-if="vm.canUser('edit') && vm.notUsingSchedules && vm.notUsingOldSchedules"
+                  ng-disabled="!vm.formIsValid(settingsForm) || !vm.updateASGFormIsValid()">Update Auto Scaling Group</button>
+                <button class="btn btn-default btn-primary" type="button" ng-disabled="!vm.canSubmit()" ng-if="vm.usingSchedules || vm.usingOldSchedules"
+                  ng-click="vm.changeAsgSchedule()">Update ASG Schedule</button>
+              </div>
+            </div>
+          </section>
         </form>
       </uib-tab>
-      <uib-tab heading="Launch Configuration" index="'launchConfig'" >
+      <uib-tab heading="Launch Configuration" index="'launchConfig'">
         <form name="form" class="form-horizontal">
           <div ng-init="vm.setLaunchConfigForm(form)">
             <div ng-include="'/app/common/launch-config/launch-config.html'" style="width: 900px"></div>
             <div class="form-group">
               <label class="col-md-1 control-label text-left" style="width: 180px"></label>
               <div class="col-md-8">
-                <button class="btn btn-default" ng-class="{'btn-highlight': form.$dirty && vm.formIsValid(form)}" type="button" ng-click="vm.updateLaunchConfig()" ng-if="vm.canUser('edit')" ng-disabled="!vm.formIsValid(form)">Update Launch Configuration</button>
+                <button class="btn btn-default btn-primary" ng-class="{'btn-highlight': form.$dirty && vm.formIsValid(form)}" type="button"
+                  ng-click="vm.updateLaunchConfig()" ng-if="vm.canUser('edit')" ng-disabled="!vm.formIsValid(form)">Update Launch Configuration</button>
               </div>'
             </div>
           </div>
           <div class="form-group">
             <div ng-if="!vm.deploymentMapTarget">
-                <p style="margin-left: 15px">No corresponding configuration found for this ASG in deployment map "{{ vm.deploymentMap.DeploymentMapName }}".<br/>Expecting to find Server Role "{{ vm.asg.getDeploymentMapTargetName() }}" owned by {{vm.asg.OwningCluster}}.</p>
+              <p style="margin-left: 15px">No corresponding configuration found for this ASG in deployment map "{{ vm.deploymentMap.DeploymentMapName
+                }}".
+                <br/>Expecting to find Server Role "{{ vm.asg.getDeploymentMapTargetName() }}" owned by {{vm.asg.OwningCluster}}.</p>
             </div>
 
             <div ng-if="vm.deploymentMapTarget" class="col-md-8" style="position: relative; left: 180px">
@@ -52,7 +218,8 @@
         </form>
       </uib-tab>
       <uib-tab heading="Services" index="'services'">
-        <asg-services asg="vm.asg" asg-state="vm.asgState" refresh="vm.refresh()" environment="vm.environmentName" role="vm.asg.Role" close-modal="vm.closeModal()" ng-if="vm.asgState"></asg-services>
+        <asg-services asg="vm.asg" asg-state="vm.asgState" refresh="vm.refresh()" environment="vm.environmentName" role="vm.asg.Role"
+          close-modal="vm.closeModal()" ng-if="vm.asgState"></asg-services>
       </uib-tab>
       <uib-tab heading="Upstreams Status" index="'lb-status'">
         <div ng-if="vm.loadingUpstreamStatus">
@@ -60,47 +227,12 @@
         </div>
         <lb-status-view ng-if="!vm.loadingUpstreamStatus" data="vm.upstreamStatusData"></lb-status-view>
       </uib-tab>
-      <uib-tab heading="Schedule &amp; Scaling" index="'schedule'">
-        <form name="formScaling" class="form-horizontal">
-          <div class="form-group">
-            <label class="col-md-1 control-label text-left nowrap">Schedule Mode:</label>
-            <div class="col-md-2">
-              <label ng-repeat="mode in vm.scheduleModes" class="control-label text-left inline-radio nonbold">
-                <input type="radio" ng-model="vm.selectedScheduleMode" value="{{mode.type}}" /> {{mode.label}}
-              </label>
-            </div>
-          </div>
-          <div ng-if="vm.selectedScheduleMode == 'scaling'">
-            <div class="form-group">
-              <label class="col-md-1 control-label text-left nowrap">Schedule:</label>
-              <div class="col-md-8">
-                <scaling-schedule-editor schedule="vm.asgUpdate.ScalingSchedule" min-size="vm.asg.MinSize" max-size="vm.asg.MaxSize"></scaling-schedule-editor>
-              </div>
-            </div>
-          </div>
-          <div ng-if="vm.selectedScheduleMode == 'schedule'">
-            <div class="form-group" ng-class="{'has-error': formScaling.DefaultSchedule.$invalid}">
-              <label class="col-md-1 control-label text-left nowrap">Schedule:</label>
-              <div class="col-md-8">
-                <schedule-editor show-on="true" show-off="true" show-default="true" show-specific="true" schedule="vm.asgUpdate.NewSchedule"></schedule-editor>
-              </div>
-              <span class="help-block" ng-if="formScaling.DefaultSchedule.$dirty && formScaling.DefaultSchedule.$invalid">Schedule should be set to 'ON' or specific Start and End cron formats (see Tagging standards).</span>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="col-md-1 control-label text-left">&nbsp;</label>
-            <div class="col-md-2">
-              <button class="btn btn-default" type="button" ng-disabled="!vm.canSubmit()" ng-click="vm.changeAsgSchedule()">Update ASG Schedule</button>
-            </div>
-          </div>
-        </form>
-      </uib-tab>
     </uib-tabset>
-  </form>
+    </form>
 
-  <p>&nbsp;</p>
+    <p>&nbsp;</p>
+  </div>
 </div>
-
 <div class="modal-footer">
   <button class="btn btn-default" type="button" ng-click="vm.closeModal()">Close</button>
 </div>

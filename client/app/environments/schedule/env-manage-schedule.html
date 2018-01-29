@@ -1,15 +1,17 @@
 <div class="row page-title">
-  <div class="col-md-12"><h2>Schedule for {{vm.Environment.EnvironmentName}}</h2></div>
-  <div id="RefreshData">
-    <span class="glyphicon glyphicon-refresh" ng-click="vm.Refresh()" title="Refresh data"></span>
-  </div>
+    <div class="col-md-12">
+        <h2>Schedule for {{vm.Environment.EnvironmentName}}</h2>
+    </div>
+    <div id="RefreshData">
+        <span class="glyphicon glyphicon-refresh" ng-click="vm.Refresh()" title="Refresh data"></span>
+    </div>
 </div>
 
 <spinner ng-show="vm.DataLoading"></spinner>
 
 <div class="row" ng-show="!vm.DataLoading">
     <div class="col-md-12" ng-show="!vm.DataFound">
-      <p>Environment not found.</p>
+        <p>Environment not found.</p>
     </div>
     <div class="col-md-12" ng-show="vm.DataFound">
         <div ng-if="vm.schedulingProtected">
@@ -18,7 +20,7 @@
         </div>
         <form name="form" id="EnvironmentSchedule" class="form-horizontal" ng-if="!vm.schedulingProtected">
             <div class="form-group">
-                <label class="col-md-1 control-label text-left">Current Status:</label>
+                <label class="col-md-2 control-label text-left">Current Status:</label>
                 <div class="col-md-8">
                     <label class="control-label text-left">
                         <span ng-class="{'warning': vm.Operations.getScheduleAction()==='OFF', 'ok': vm.Operations.getScheduleAction()!=='OFF'}">
@@ -30,21 +32,23 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-md-1 control-label text-left">Environment should be:</label>
+                <label class="col-md-2 control-label text-left">Environment should be:</label>
                 <div class="col-md-8">
                     <label class="control-label text-left nonbold">
                         <input type="radio" ng-model="vm.NewSchedule.Type" value="On" ng-click="vm.NonSpecificClicked()"> Always On
-                    </label><br />
+                    </label>
+                    <br />
                     <label class="control-label text-left nonbold">
                         <input type="radio" ng-model="vm.NewSchedule.Type" value="Off" ng-click="vm.NonSpecificClicked()"> Off
-                    </label><br />
+                    </label>
+                    <br />
                     <label class="control-label text-left nonbold">
                         <input type="radio" ng-model="vm.NewSchedule.Type" value="Automatic" ng-click="vm.UseSpecificClicked()"> Use specific times
                     </label>
                 </div>
             </div>
             <div class="form-group" ng-class="{'has-error': form.DefaultSchedule.$invalid}">
-                <div class="col-md-offset-1 col-md-10">
+                <div class="col-md-offset-2 col-md-10">
                     <schedule-viewer schedule="vm.NewSchedule.DefaultSchedule" ng-show="!vm.ShouldShowEditor() && vm.NewSchedule.Type == 'Automatic' && vm.NewSchedule.DefaultSchedule"></schedule-viewer>
                     <button class="btn btn-default" ng-click="vm.EditClicked()" ng-show="!vm.ShouldShowEditor() && vm.NewSchedule.Type == 'Automatic'">Edit</button>
                     <schedule-editor schedule="vm.NewSchedule.DefaultSchedule" ng-show="vm.ShouldShowEditor()"></schedule-editor>
@@ -53,12 +57,13 @@
                 <span class="help-block" ng-if="form.DefaultSchedule.$dirty && form.DefaultSchedule.$invalid">Schedule should be set to 'ON' or specific Start and End cron formats (see Tagging standards).</span>
             </div>
             <div class="form-group">
-                <div class="col-md-offset-1 col-md-6">
-                        <p>Note: This setting applies to all ASGs in this environment unless they have a specific schedule tag set. Specific schedules on particular ASGs or Instances will always take priority and override this setting.</p>
+                <div class="col-md-offset-2 col-md-6">
+                    <p>Note: This setting applies to all ASGs in this environment unless they have a specific schedule tag set.
+                        Specific schedules on particular ASGs or Instances will always take priority and override this setting.</p>
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-md-1 control-label">&nbsp;</label>
+                <label class="col-md-2 control-label">&nbsp;</label>
                 <div class="col-md-2">
                     <button type="button" class="btn btn-default" ng-click="vm.ApplySchedule()">Apply Change</button>
                 </div>
