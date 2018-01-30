@@ -8,9 +8,25 @@ angular.module('EnvironmentManager.common')
   .directive('cronEditor', function () {
     return {
       restrict: 'E',
-      scope: { cron: '=' },
+      scope: { cron: '=', maxSize: '=' },
       templateUrl: '/app/common/directives/cronEditor.html',
       controller: function ($scope, $rootScope, $attrs) {
+        var init = function () {
+          setupOptions();
+          loadCron();
+        };
+
+        function setupOptions() {
+          if (!$scope.maxSize) $scope.maxSize = 100;
+
+          $scope.options.actions.push({ value: 0, label: 'None' });
+          for (var i = 1; i < $scope.maxSize; i += 1)
+            $scope.options.actions.push({ value: i, label: i });
+          $scope.options.actions.push({ value: $scope.maxSize, label: 'All (' + $scope.maxSize + ')' });
+
+          console.log($scope.cron)
+        }
+
         var parseDays = function (daysStr) {
           if (!daysStr) {
             return [1, 2, 3, 4, 5];
@@ -35,9 +51,13 @@ angular.module('EnvironmentManager.common')
 
         var parseCron = function (cron) {
           var parts = cron.trim().split(' ');
-
+          var action = parts[0].replace(/:/, '').toLowerCase();
+          if (action == 'start')
+            action = $scope.maxSize.toString();
+          if (action == 'stop')
+            action = '0';
           return {
-            action: replaceIfNull(parts[0], 'start:').toLowerCase(),
+            action: action,
             minute: parseInt(replaceIfNull(parts[1], '0')).toString(),
             hour: parseInt(replaceIfNull(parts[2], '0')).toString(),
             days: parseDays(parts[5])
@@ -69,10 +89,7 @@ angular.module('EnvironmentManager.common')
         };
 
         $scope.options = {
-          actions: [
-            { value: 'start:', label: 'Start' },
-            { value: 'stop:', label: 'Stop' }
-          ],
+          actions: [],
           days: [
             { value: 1, label: 'Mon' },
             { value: 2, label: 'Tue' },
@@ -95,14 +112,9 @@ angular.module('EnvironmentManager.common')
           $scope.updateCron();
         };
 
-        $scope.selectAction = function (val) {
-          $scope.selections.action = val;
-          $scope.updateCron();
-        };
-
         $scope.updateCron = function () {
           var days = getCronForDays($scope.selections.days);
-          $scope.cron.cron = _.join([$scope.selections.action, $scope.selections.minute, $scope.selections.hour, '*', '*', days], ' ').trim();
+          $scope.cron.cron = _.join([$scope.selections.action + ':', $scope.selections.minute, $scope.selections.hour, '*', '*', days], ' ').trim();
           $scope.$emit('cron-updated');
         };
 
@@ -114,7 +126,7 @@ angular.module('EnvironmentManager.common')
           loadCron();
         });
 
-        loadCron();
+        init();
       }
     };
   });
