@@ -23,8 +23,6 @@ angular.module('EnvironmentManager.common')
           for (var i = 1; i < $scope.maxSize; i += 1)
             $scope.options.actions.push({ value: i, label: i });
           $scope.options.actions.push({ value: $scope.maxSize, label: 'All (' + $scope.maxSize + ')' });
-
-          console.log($scope.cron)
         }
 
         var parseDays = function (daysStr) {
