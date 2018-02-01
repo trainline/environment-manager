@@ -51,7 +51,7 @@
                 <div class="col-md-offset-2 col-md-10">
                     <schedule-viewer schedule="vm.NewSchedule.DefaultSchedule" ng-show="!vm.ShouldShowEditor() && vm.NewSchedule.Type == 'Automatic' && vm.NewSchedule.DefaultSchedule"></schedule-viewer>
                     <button class="btn btn-default" ng-click="vm.EditClicked()" ng-show="!vm.ShouldShowEditor() && vm.NewSchedule.Type == 'Automatic'">Edit</button>
-                    <schedule-editor schedule="vm.NewSchedule.DefaultSchedule" ng-show="vm.ShouldShowEditor()"></schedule-editor>
+                    <schedule-editor schedule="vm.NewSchedule.DefaultSchedule" ng-show="vm.ShouldShowEditor()" max-size="vm.maxSize"></schedule-editor>
                     <button class="btn btn-default" ng-click="vm.DoneClicked()" ng-show="vm.ShouldShowEditor()">Done</button>
                 </div>
                 <span class="help-block" ng-if="form.DefaultSchedule.$dirty && form.DefaultSchedule.$invalid">Schedule should be set to 'ON' or specific Start and End cron formats (see Tagging standards).</span>

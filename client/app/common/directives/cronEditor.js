@@ -12,19 +12,26 @@ angular.module('EnvironmentManager.common')
       templateUrl: '/app/common/directives/cronEditor.html',
       controller: function ($scope, $rootScope, $attrs) {
         var init = function () {
+          console.log('scope max size', $scope.maxSize)
           setupOptions();
           loadCron();
+          console.log($scope.selections.actions)
         };
 
         function setupOptions() {
-          if (!$scope.maxSize) $scope.maxSize = 100;
+          !$scope.maxSize ? setupAsgOptions() : setupEnvironmentOptions();
+        }
 
+        function setupAsgOptions() {
+          $scope.options.actions.push({ value: 'start', label: 'Start' });
+          $scope.options.actions.push({ value: 'stop', label: 'Stop' });
+        }
+
+        function setupEnvironmentOptions() {
           $scope.options.actions.push({ value: 0, label: 'None' });
           for (var i = 1; i < $scope.maxSize; i += 1)
             $scope.options.actions.push({ value: i, label: i });
           $scope.options.actions.push({ value: $scope.maxSize, label: 'All (' + $scope.maxSize + ')' });
-
-          console.log($scope.cron)
         }
 
         var parseDays = function (daysStr) {
@@ -52,9 +59,9 @@ angular.module('EnvironmentManager.common')
         var parseCron = function (cron) {
           var parts = cron.trim().split(' ');
           var action = parts[0].replace(/:/, '').toLowerCase();
-          if (action == 'start')
+          if (action == 'start' && $scope.maxSize)
             action = $scope.maxSize.toString();
-          if (action == 'stop')
+          if (action == 'stop' && $scope.maxSize)
             action = '0';
           return {
             action: action,
@@ -119,7 +126,10 @@ angular.module('EnvironmentManager.common')
         };
 
         var loadCron = function () {
+          console.log('load cron')
           $scope.selections = parseCron($scope.cron.cron);
+          console.log($scope.maxSize)
+          console.log($scope.selections)
         };
 
         $scope.$watch('cron', function () {

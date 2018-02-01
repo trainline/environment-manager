@@ -16,6 +16,7 @@ angular.module('EnvironmentManager.environments').controller('ManageEnvironmentS
     vm.DataFound = false;
     vm.DataLoading = true;
     vm.schedulingProtected = false;
+    vm.maxSize = 0;
 
     vm.NewSchedule = {
       Type: '',
