@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Added
 
-- Scheduled Scaling functionality now uses 'cold standby' instances. [#394]
+- Scheduled Scaling functionality now uses 'cold standby' instances. [#401]
 
 #### Previous scheduling functionality
 
@@ -374,7 +374,8 @@ Example:
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/6.17.0...master
+[Unreleased]: https://github.com/trainline/environment-manager/compare/6.18.0...master
+[6.18.0]: https://github.com/trainline/environment-manager/compare/6.17.0...6.18.0
 [6.17.0]: https://github.com/trainline/environment-manager/compare/6.15.4...6.17.0
 [6.15.4]: https://github.com/trainline/environment-manager/compare/6.15.3...6.15.4
 [6.15.3]: https://github.com/trainline/environment-manager/compare/6.15.2...6.15.3
@@ -410,6 +411,7 @@ Example:
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
+[#401]: https://github.com/trainline/environment-manager/pull/401
 [#395]: https://github.com/trainline/environment-manager/pull/395
 [#376]: https://github.com/trainline/environment-manager/pull/389
 [#376]: https://github.com/trainline/environment-manager/pull/376
