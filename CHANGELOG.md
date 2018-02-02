@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html). View [Unreleased] changes here.
 
+## [6.18.1]  - 2018-02-02
+
+### Fixed
+
+- UI bug preventing starting schedules on the environment schedule screen [#405]
+- Environment schedule cache causing inconsistent responses from api [#405]
+
 ## [6.18.0] - 2018-01-30
 
 ### Added
@@ -374,7 +381,8 @@ Example:
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/6.18.0...master
+[Unreleased]: https://github.com/trainline/environment-manager/compare/6.18.1...master
+[6.18.1]: https://github.com/trainline/environment-manager/compare/6.18.0...6.18.1
 [6.18.0]: https://github.com/trainline/environment-manager/compare/6.17.0...6.18.0
 [6.17.0]: https://github.com/trainline/environment-manager/compare/6.15.4...6.17.0
 [6.15.4]: https://github.com/trainline/environment-manager/compare/6.15.3...6.15.4
@@ -411,6 +419,7 @@ Example:
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
+[#405]: https://github.com/trainline/environment-manager/pull/405
 [#401]: https://github.com/trainline/environment-manager/pull/401
 [#395]: https://github.com/trainline/environment-manager/pull/395
 [#376]: https://github.com/trainline/environment-manager/pull/389
