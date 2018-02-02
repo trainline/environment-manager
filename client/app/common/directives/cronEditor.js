@@ -12,10 +12,8 @@ angular.module('EnvironmentManager.common')
       templateUrl: '/app/common/directives/cronEditor.html',
       controller: function ($scope, $rootScope, $attrs) {
         var init = function () {
-          console.log('scope max size', $scope.maxSize)
           setupOptions();
           loadCron();
-          console.log($scope.selections.actions)
         };
 
         function setupOptions() {
