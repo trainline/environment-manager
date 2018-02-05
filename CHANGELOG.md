@@ -3,42 +3,6 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html). View [Unreleased] changes here.
 
-## [6.18.0] - 2018-01-30
-
-### Added
-
-- Scheduled Scaling functionality now uses 'cold standby' instances. [#401]
-
-#### Previous scheduling functionality
-
-Environment Manager would use AWS Scaling Actions (only) to achieve scaling. During scaling down operations, machines would be terminated. When machines were brought back into service, they would be created from scratch.
-
-#### *What* is a cold standby?
-
-In Environment Manager moving forward, you will be able to use cold standby instances. What this 
-means is that when Environment Manager is told that it should have fewer instances 'on' that it currently has, it will 
-take the instance out of service and shortly afterwards, turn that instance off. When Environment Manager is told that 
-it should have more instances 'on' than it currently has, it will turn on the instances that have been turned off and 
-shortly afterwards bring them into service.
-
-#### *Why* cold standby?
-
-Knowing that an instance is being turned on and brought into service that has been proven to work will increase 
-confidence in the state of the machines being used as part of a scheduled scale up. These machines will also have been 
-provisioned by Puppet already, so the load times of these instances will be dramatically reduced.
-
-#### *How* do I use cold standby?
-
-Make sure that the desired and maximum count of your ASG are 
-
-- the same
-- the highest number of instances you want to use with your scaling options.
-
-The reason for this is to make sure you have a number of machines within the ASG capable of handling your scaling operations.
-
-When you have this, any scheduling setup in the 'Use Cold Standby Instances' option, the scheduler will move your 'on' and 'off'
-count using those available instances.
-
 ## [6.17.0] 2018-01-25
 
 - Added environment type to scheduled actions endpoint
@@ -374,8 +338,7 @@ Example:
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a master account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/6.18.0...master
-[6.18.0]: https://github.com/trainline/environment-manager/compare/6.17.0...6.18.0
+[Unreleased]: https://github.com/trainline/environment-manager/compare/6.17.0...master
 [6.17.0]: https://github.com/trainline/environment-manager/compare/6.15.4...6.17.0
 [6.15.4]: https://github.com/trainline/environment-manager/compare/6.15.3...6.15.4
 [6.15.3]: https://github.com/trainline/environment-manager/compare/6.15.2...6.15.3
@@ -411,7 +374,6 @@ Example:
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
-[#401]: https://github.com/trainline/environment-manager/pull/401
 [#395]: https://github.com/trainline/environment-manager/pull/395
 [#376]: https://github.com/trainline/environment-manager/pull/389
 [#376]: https://github.com/trainline/environment-manager/pull/376
@@ -468,5 +430,3 @@ Example:
 [#385]: https://github.com/trainline/environment-manager/pull/385
 [#391]: https://github.com/trainline/environment-manager/pull/391
 [#399]: https://github.com/trainline/environment-manager/pull/399
-[#394]: https://github.com/trainline/environment-manager/pull/394
-[#395]: https://github.com/trainline/environment-manager/pull/395
