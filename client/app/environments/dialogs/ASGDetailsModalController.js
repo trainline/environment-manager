@@ -65,10 +65,6 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       vm.asgUpdate.AvailabilityZone = deriveAvailabilityZoneFriendlyName(vm.asg.AvailabilityZones);
       vm.asgUpdate.TerminationDelay = vm.asg.TerminationDelay
       vm.selectedScheduleMode = vm.asg.ScalingSchedule && vm.asg.ScalingSchedule.length ? 'scaling' : 'schedule';
-      vm.usingSchedules = vm.asg.Schedule.lastIndexOf(':') != -1;
-      vm.notUsingSchedules = !vm.usingSchedules;
-      vm.usingOldSchedules = vm.selectedScheduleMode === 'scaling' ? true : false;
-      vm.notUsingOldSchedules = !vm.usingOldSchedules;
     }
 
     vm.isAZChecked = function (az) {
@@ -194,7 +190,9 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         }).then(function () {
           // On initialization scope properties are initialized with ASG details
           // to allow the user to change them through the UI.
-          initializeScope();
+          if (onInitialization) {
+            initializeScope();
+          }
         });
       }, function (error) {
         vm.closeModal();
@@ -270,34 +268,6 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       });
     };
 
-    vm.noSchedules = function () {
-      vm.setNotUsingSchedules();
-      vm.setNotUsingOldSchedules();
-    }
-
-    vm.setNotUsingSchedules = function () {
-      vm.usingSchedules = false;
-      vm.notUsingSchedules = true;
-    };
-
-    vm.setNotUsingOldSchedules = function () {
-      vm.usingOldSchedules = false;
-      vm.notUsingOldSchedules = true;
-    };
-
-    vm.setUsingSchedules = function () {
-      vm.setNotUsingOldSchedules();
-      vm.usingSchedules = true;
-      vm.notUsingSchedules = false;
-      if(vm.asg.Schedule) vm.asgUpdate.NewSchedule = vm.asg.Schedule;
-    };
-
-    vm.setUsingOldSchedules = function () {
-      vm.setNotUsingSchedules();
-      vm.usingOldSchedules = true;
-      vm.notUsingOldSchedules = false;
-    };
-
     vm.updateAutoScalingGroup = function () {
       confirmAZChange().then(function () {
         loading.lockPage(true);
@@ -316,15 +286,11 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         };
 
         vm.asg.updateAutoScalingGroup(updated)
-          .then(updateSchedule())
           .then(function () {
             modal.information({
               title: 'ASG Updated',
               message: 'ASG update successful. You can monitor instance changes by using the Refresh Icon in the top right of the window.<br/><br/><b>Note:</b> During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection draining before termination.'
             });
-          })
-          .catch(function (err) {
-            modal.error('Error', 'An error has occurred: ' + err.data.error);
           })
           .finally(function () {
             loading.lockPage(false);
@@ -383,31 +349,8 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     }
 
     vm.changeAsgSchedule = function () {
-      loading.lockPage(true);
-      return updateSchedule()
-        .then(function () {
-          modal.information({
-            title: 'ASG Schedule Updated',
-            message: 'ASG schedule updated successfully.'
-          });
-        })
-        .catch(function (err) {
-          if (err.status === 404) {
-            modal.error('Error', 'An error has occurred: ' + err.data.error);
-          } else {
-            throw err;
-          }
-        })
-        .finally(function () {
-          resetForm();
-          loading.lockPage(false);
-          vm.refresh();
-        });
-    };
-
-    function updateSchedule() {
       var newSchedule;
-      if (vm.usingOldSchedules) {
+      if (vm.selectedScheduleMode === 'scaling') {
         newSchedule = vm.asgUpdate.ScalingSchedule.map(function (schedule) {
           return {
             MinSize: vm.asg.MinSize,
@@ -420,8 +363,22 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         newSchedule = vm.asgUpdate.NewSchedule;
       }
 
-      return AutoScalingGroup.updateSchedule(vm.environmentName, vm.asg.AsgName, newSchedule);
-    }
+      return AutoScalingGroup.updateSchedule(vm.environmentName, vm.asg.AsgName, newSchedule).then(function () {
+        modal.information({
+          title: 'ASG Schedule Updated',
+          message: 'ASG schedule updated successfully.'
+        });
+      }).catch(function (err) {
+        if (err.status === 404) {
+          modal.error('Error', 'An error has occurred: ' + err.data.error);
+        } else {
+          throw err;
+        }
+      }).finally(function () {
+        resetForm();
+        vm.refresh();
+      });
+    };
 
 
     function findDeploymentMapTargetForAsg(asg) {
@@ -437,10 +394,6 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     }
 
     vm.canSubmit = function () {
-      if (vm.asgUpdate.NewSchedule.length > 256) {
-        return false;
-      }
-
       if (vm.selectedScheduleMode !== 'scaling') {
         return vm.asgUpdate.NewSchedule !== 'NOSCHEDULE';
       }

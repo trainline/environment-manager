@@ -98,11 +98,6 @@ function getAsgByName(req, res, next) {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     let lifecycleHooks = yield GetAutoScalingGroupLifeCycleHooks({ accountName, autoScalingGroupName });
     return getASG({ accountName, autoScalingGroupName }).then((data) => {
-      data.Instances.forEach((i) => {
-        /* eslint no-underscore-dangle: ["error", { "allow": ["_instance"] }] */
-        delete i._instance;
-      });
-
       res.json(Object.assign({}, data, { LifecycleHooks: lifecycleHooks }));
     });
   }).catch(next);
