@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.common').controller('MainController',
-  function ($rootScope, $scope, $route, $routeParams, $http, $location, $window, modal, Environment, environmentDeploy, releasenotesservice) {
+  function ($rootScope, $scope, $route, $routeParams, $http, $location, $window, $uibModal, modal, Environment, environmentDeploy, releasenotesservice) {
     var vm = this;
 
     vm.appVersion = $window.version;
@@ -39,6 +39,18 @@ angular.module('EnvironmentManager.common').controller('MainController',
         return 'Unknown section';
       }
     };
+
+    vm.showUserSettings = function () {
+      $uibModal.open({
+        bindToController: true,
+        controller: 'UserSettingsController as vm',
+        templateUrl: '/app/settings/user-settings-modal.html'
+      });
+    }
+
+    vm.something = function () {
+      alert('hello')
+    }
 
     vm.logout = function () {
       $http.post('/api/v1/logout', {}).then(function () {

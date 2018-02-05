@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('EnvironmentsSummaryController',
-  function ($scope, $routeParams, $location, $uibModal, $http, $q, modal, resources, cachedResources, Environment) {
+  function ($scope, $routeParams, $location, $uibModal, $http, $q, modal, resources, cachedResources, Environment, localstorageservice) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -17,6 +17,9 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
     vm.selectedEnvironmentType = SHOW_ALL_OPTION;
     vm.selectedOwningCluster = SHOW_ALL_OPTION;
     vm.environmentFilter;
+
+    vm.hasUserSettings = localstorageservice.exists('em-settings-environments');
+    vm.userSettings = localstorageservice.get('em-settings-environments');
 
     vm.dataLoading = false;
 
@@ -39,6 +42,10 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
         vm.refresh();
       });
     }
+
+    vm.showAllEnvironments = function () {
+      vm.filteredData = vm.data;
+    };
 
     vm.refresh = function () {
       vm.dataLoading = true;
@@ -83,6 +90,13 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
             return result;
           });
 
+        if (vm.hasUserSettings)
+          vm.filteredData = vm.data.filter(function (e) {
+            return vm.userSettings.split(',').includes(e.EnvironmentName);
+          });
+        else
+          vm.filteredData = vm.data;
+
         vm.dataLoading = false;
       });
     };
@@ -91,9 +105,9 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
       modal.confirmation({
         title: 'Delete Environment',
         message:
-        'Are you sure you want to delete the environment <strong>' + environment.EnvironmentName + '</strong>?<br /><br />' +
-        'This will permanently delete the environment as well as any associated load balancer settings and upstreams.' +
-        'It will not delete any associated AWS resources',
+          'Are you sure you want to delete the environment <strong>' + environment.EnvironmentName + '</strong>?<br /><br />' +
+          'This will permanently delete the environment as well as any associated load balancer settings and upstreams.' +
+          'It will not delete any associated AWS resources',
         action: 'Delete',
         severity: 'Danger'
       }).then(function () {

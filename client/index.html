@@ -68,6 +68,7 @@
   <script src="app/operations/operations.module.js"></script>
   <script src="app/operations/upstream/directives/lbServersStatesCell.js"></script>
   <script src="app/environments/environments.module.js"></script>
+  <script src="app/settings/settings.module.js"></script>
   <script src="app/environments/dialogs/asg/asgSingleService.js"></script>
   <script src="app/environments/dialogs/asg/asgSingleInstance.js"></script>
   <script src="app/environments/dialogs/asg/asgServices.js"></script>
@@ -186,6 +187,7 @@
   <script src="app/compare/CompareController.js"></script>
   <script src="app/common/utilities.js"></script>
   <script src="app/common/loginForm.js"></script>
+  <script src="app/settings/UserSettingsController.js"></script>
   <script src="app/common/MainController.js"></script>
   <script src="app/app.module.js"></script>
   <!-- endinject -->
@@ -211,6 +213,7 @@
           </ul>
         </nav>
         <div id="userinfo">
+          <span class="glyphicon glyphicon-cog" ng-click="main.showUserSettings()"></span>
           <span><span class="glyphicon glyphicon-user"></span> <strong>{{ main.loggedInUser }}</strong></span>
           <span id="logout"><a ng-click="main.logout()">Logout</a></span>
         </div>

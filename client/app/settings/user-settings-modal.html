@@ -1,0 +1,20 @@
+<div class="modal-header">
+    <h2 class="text-{{vm.severity}}">{{vm.title}}</h2>
+</div>
+
+<div class="modal-body">
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label for="environments" class="col-sm-2 control-label">Environments</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="environments" ng-model="vm.settings.environments" placeholder="c01,c02,st1">
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-default" ng-click="vm.save()">Save</button>
+    <button class="btn btn-default" ng-click="vm.closeAndSave()">Save &amp; Close</button>
+    <button class="btn btn-warning" ng-click="vm.close()">Close</button>
+</div>
