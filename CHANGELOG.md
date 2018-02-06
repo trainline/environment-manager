@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Fixed
 
-- Removed environment schedule cache to prevent scheduling race conditions.
+- Removed environment schedule cache to prevent scheduling race conditions. [#408]
 
 ### Changed
 
@@ -386,6 +386,7 @@ Example:
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
+[#408]: https://github.com/trainline/environment-manager/pull/408
 [#403]: https://github.com/trainline/environment-manager/pull/403
 [#395]: https://github.com/trainline/environment-manager/pull/395
 [#376]: https://github.com/trainline/environment-manager/pull/389
