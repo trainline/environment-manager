@@ -20,6 +20,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
 
     vm.hasUserSettings = localstorageservice.exists('em-settings-environments');
     vm.userSettings = localstorageservice.get('em-settings-environments');
+    vm.toggleAllEnvironmentsLabel = vm.hasUserSettings ? "Show All Environments" : "Filter From User Settings";
 
     vm.dataLoading = false;
 
@@ -43,9 +44,15 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
       });
     }
 
-    vm.showAllEnvironments = function () {
-      vm.filteredData = vm.data;
-    };
+    vm.toggleAllEnvironments = function () {
+      if (vm.toggleAllEnvironmentsLabel === "Show All Environments") {
+        vm.toggleAllEnvironmentsLabel = "Filter From User Settings";
+        vm.displayData = vm.data;
+      } else {
+        vm.toggleAllEnvironmentsLabel = "Show All Environments";
+        vm.displayData = vm.filteredData;
+      }
+    }
 
     vm.refresh = function () {
       vm.dataLoading = true;
@@ -90,12 +97,14 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
             return result;
           });
 
-        if (vm.hasUserSettings)
+        if (vm.hasUserSettings) {
           vm.filteredData = vm.data.filter(function (e) {
             return vm.userSettings.split(',').includes(e.EnvironmentName);
           });
+          vm.displayData = vm.filteredData;
+        }
         else
-          vm.filteredData = vm.data;
+          vm.displayData = vm.data;
 
         vm.dataLoading = false;
       });

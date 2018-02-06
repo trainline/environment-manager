@@ -14,6 +14,7 @@
         vm.loadSettings = loadSettings;
         vm.save = save;
         vm.closeAndSave = closeAndSave;
+        vm.close = close;
 
         vm.settings = {};
 

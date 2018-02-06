@@ -14,7 +14,7 @@
     <input type="text" autofocus class="form-control" ng-model="vm.environmentFilter" placeholder="enter filter values...">
   </div>
   <div class="form-group">
-    <button class="btn btn-default right" ng-click="vm.showAllEnvironments()">Show All Environments</button>
+    <button class="btn btn-default right" ng-click="vm.toggleAllEnvironments()">{{vm.toggleAllEnvironmentsLabel}}</button>
   </div>
   <div class="form-group">
     <label class="control-label text-left">Environment Type:</label>
@@ -61,7 +61,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="env in vm.filteredData | orderBy : 'EnvironmentName' | filter : vm.environmentFilter">
+        <tr ng-repeat="env in vm.displayData | orderBy : 'EnvironmentName' | filter : vm.environmentFilter">
           <td>
             <span class="glyphicon glyphicon-lock" data-ng-if="env.Operation.DeploymentsLocked"></span>
             <span class="glyphicon glyphicon-wrench" data-ng-if="env.Operation.InMaintenance"></span>
