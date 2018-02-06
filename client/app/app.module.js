@@ -14,6 +14,7 @@ var app = angular.module('EnvironmentManager', [
   'EnvironmentManager.operations',
   'EnvironmentManager.configuration',
   'EnvironmentManager.compare',
+  'EnvironmentManager.settings',
   'angular-loading-bar',
   'smart-table',
   'highcharts-ng'
