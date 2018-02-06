@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html). View [Unreleased] changes here.
 
+[Unreleased]
+
+### Added
+
+- A new "user settings" modal has been added to the UI. At the moment, it is only used to filter by default, your environment list on the main screen. Now you can add a comma separated list of the environments you want to see. A toggle has also been added to give you the full list if you want that back, or you can remove/not use the environments filter list. 
+
 ## [6.17.0] 2018-01-25
 
 - Added environment type to scheduled actions endpoint
