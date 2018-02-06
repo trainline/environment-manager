@@ -3,12 +3,12 @@
 'use strict';
 
 const LOGICAL_TABLE_NAME = 'InfraOpsEnvironment';
-const TTL = 1200; // seconds
 
 let physicalTableName = require('../awsResourceNameProvider').getTableName;
-let cachedSingleAccountDynamoTable = require('./cachedSingleAccountDynamoTable');
+let singleAccountDynamoTable = require('./singleAccountDynamoTable');
+let dynamoTable = require('./dynamoTable');
 
-let table = cachedSingleAccountDynamoTable(physicalTableName(LOGICAL_TABLE_NAME), { ttl: TTL });
+let table = singleAccountDynamoTable(physicalTableName(LOGICAL_TABLE_NAME), dynamoTable);
 
 function setSchedule({ key, metadata, schedule }, expectedVersion) {
   let scheduleAttributes = Object.keys(schedule).map(prop => ['set', ['at', 'Value', prop], ['val', schedule[prop]]]);
