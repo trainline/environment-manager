@@ -27,7 +27,7 @@
     }
 
     function exists(key) {
-      if (get(key) === null) return false;
+      if (get(key) === null || get(key) === "") return false;
       return true;
     }
   }

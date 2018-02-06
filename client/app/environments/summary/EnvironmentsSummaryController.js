@@ -19,6 +19,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
     vm.environmentFilter;
 
     vm.hasUserSettings = localstorageservice.exists('em-settings-environments');
+    console.log(vm.hasUserSettings)
     vm.userSettings = localstorageservice.get('em-settings-environments');
     vm.toggleAllEnvironmentsLabel = vm.hasUserSettings ? "Show All Environments" : "Filter From User Settings";
 
