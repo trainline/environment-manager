@@ -57,6 +57,7 @@ app.config(function ($httpProvider, $locationProvider, $qProvider) {
             $rootScope.$broadcast('error', response);
           }
         }
+   
         return $q.reject(response);
       }
     };

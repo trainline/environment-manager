@@ -8,6 +8,13 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 ### Added
 
 - A new "user settings" modal has been added to the UI. At the moment, it is only used to filter by default, your environment list on the main screen. Now you can add a comma separated list of the environments you want to see. A toggle has also been added to give you the full list if you want that back, or you can remove/not use the environments filter list. 
+[#Unreleased]
+
+### Changed
+
+- When a user performs an HTTP request that results in an error which contains no details, the resulting dialog shows "ERROR" and nothing to help the user identify the cause of the issue.
+
+Now, any response that doesn't contain any details, the error modal will be given some useful http request information to display that resulted in the error screen. [#403]
 
 ## [6.17.0] 2018-01-25
 
@@ -342,7 +349,7 @@ Example:
 
 ### Fixed
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
-- A number of bugs related to the removal of a master account as a special case of an account. [#305]
+- A number of bugs related to the removal of a account as a special case of an account. [#305]
 
 [Unreleased]: https://github.com/trainline/environment-manager/compare/6.17.0...master
 [6.17.0]: https://github.com/trainline/environment-manager/compare/6.15.4...6.17.0
@@ -380,6 +387,7 @@ Example:
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
+[#403]: https://github.com/trainline/environment-manager/pull/403
 [#395]: https://github.com/trainline/environment-manager/pull/395
 [#376]: https://github.com/trainline/environment-manager/pull/389
 [#376]: https://github.com/trainline/environment-manager/pull/376
