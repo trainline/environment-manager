@@ -48,10 +48,6 @@ angular.module('EnvironmentManager.common').controller('MainController',
       });
     }
 
-    vm.something = function () {
-      alert('hello')
-    }
-
     vm.logout = function () {
       $http.post('/api/v1/logout', {}).then(function () {
         $window.location.reload();
