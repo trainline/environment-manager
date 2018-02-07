@@ -15,8 +15,7 @@
     "unit-test": "gulp test",
     "test-ci": "gulp test -c",
     "lint": "eslint app/ gulp/ --ext .js --max-warnings 92",
-    "lint-fix": "eslint app/ gulp/ --ext .js --fix",
-    "jackal-tests": "jackal send http://localhost:25863 ./contracts"
+    "lint-fix": "eslint app/ gulp/ --ext .js --fix"
   },
   "devDependencies": {
     "angular-templatecache": "0.0.1",
