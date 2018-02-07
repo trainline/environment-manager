@@ -1,0 +1,112 @@
+{
+    "EM-client": {
+        "EM-server": {
+            "Get environments": {
+                "Environments can be listed": {
+                    "before": [
+                        {
+                            "name": "Get a token",
+                            "request": {
+                                "baseUrl": "http://localhost:8080",
+                                "path": "/api/v1/token",
+                                "method": "POST",
+                                "timeout": 1000,
+                                "headers": {
+                                    "Content-Type": "application/json"
+                                },
+                                "body": {
+                                    "username": "pepero",
+                                    "password": "peperopwd",
+                                    "scope": "api"
+                                }
+                            },
+                            "response": {
+                                "statusCode": 200
+                            },
+                            "variables": {
+                                "token": "$.body"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "baseUrl": "http://localhost:8080",
+                        "path": "/api/v1/environments",
+                        "method": "GET",
+                        "timeout": 1000,
+                        "headers": {
+                            "accept": "application/json",
+                            "Authorization": "Bearer <%= token%>"
+                        }
+                    },
+                    "response": {
+                        "statusCode": 200,
+                        "body": [
+                            {
+                                "EnvironmentName": "Joi.string().required()",
+                                "Value": {
+                                    "ManualScheduleUp": "Joi.boolean().required()",
+                                    "ScheduleAutomatically": "Joi.boolean().required()",
+                                    "DeploymentsLocked": "Joi.boolean().optional()",
+                                    "InMaintenance": "Joi.boolean().optional()",
+                                    "AccountName": "Joi.string().required()",
+                                    "ScheduleStatus": "Joi.string()"
+                                }
+                            }
+                        ]
+                    }
+                }
+            },
+            "Get accounts": {
+                "I can get accounts": {
+                    "before": [
+                        {
+                            "name": "Get a token",
+                            "request": {
+                                "baseUrl": "http://localhost:8080",
+                                "path": "/api/v1/token",
+                                "method": "POST",
+                                "timeout": 1000,
+                                "headers": {
+                                    "Content-Type": "application/json"
+                                },
+                                "body": {
+                                    "username": "pepero",
+                                    "password": "peperopwd",
+                                    "scope": "api"
+                                }
+                            },
+                            "response": {
+                                "statusCode": 200
+                            },
+                            "variables": {
+                                "token": "$.body"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "baseUrl": "http://localhost:8080",
+                        "path": "/api/v1/config/accounts",
+                        "method": "GET",
+                        "timeout": 1000,
+                        "headers": {
+                            "accept": "application/json",
+                            "Authorization": "Bearer <%= token%>"
+                        }
+                    },
+                    "response": {
+                        "statusCode": 200,
+                        "body": [
+                            {
+                                "AccountNumber": "Joi.number().integer().required()",
+                                "RoleArn": "Joi.string().required()",
+                                "IncludeAMIs": "Joi.boolean().required()",
+                                "AccountName": "Joi.string().required()",
+                                "Version": "Joi.number().integer().required().min(3)"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
