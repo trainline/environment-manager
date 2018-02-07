@@ -7,7 +7,8 @@
   },
   "scripts": {
     "build": "gulp build --gulpfile server/gulpfile.js -p -o ../build && gulp build --gulpfile client/gulpfile.js -p -o ../build/dist",
-    "version": "node version.js"
+    "version": "node version.js",
+    "jackal-tests": "jackal send http://localhost:25863 ./contracts"
   },
   "repository": {
     "type": "git",
