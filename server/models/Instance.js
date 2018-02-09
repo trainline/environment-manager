@@ -4,10 +4,9 @@
 
 let _ = require('lodash');
 let co = require('co');
+let ec2Client = require('../modules/ec2-monitor/ec2-monitor-client');
 let amazonClientFactory = require('../modules/amazon-client/childAccountClient');
 let Environment = require('./Environment');
-let moment = require('moment');
-let logger = require('../modules/logger');
 let TaggableMixin = require('./TaggableMixin');
 const InstanceResourceBase = require('../modules/resourceFactories/InstanceResourceBase');
 let scanCrossAccountFn = require('../modules/queryHandlersUtil/scanCrossAccountFn');
@@ -41,11 +40,13 @@ class Instance {
   }
 
   static getById(instanceId) {
-    function findInstanceInAccount({ AccountNumber }) {
-      return amazonClientFactory.createEC2Client(AccountNumber)
-      .then(client => new InstanceResourceBase(client))
-      .then(instanceResource => instanceResource.all({ filter: { 'instance-id': instanceId } }))
-      .then(instances => instances.map(instance => new TaggableInstance(instance)));
+    function findInstanceInAccount() {
+      return new Promise((resolve, reject) => {
+        ec2Client.getHostByInstanceId((err, res) => {
+          if (err) reject(err);
+          resolve(res.map(i => new TaggableInstance(i)));
+        }, instanceId);
+      });
     }
     return scanCrossAccountFn(findInstanceInAccount).then(([head]) => head);
   }
@@ -53,16 +54,12 @@ class Instance {
   static getAllByEnvironment(environmentName) {
     return co(function* () {
       let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-      let startTime = moment.utc();
-      return amazonClientFactory.createEC2Client(accountName)
-        .then(client => new InstanceResourceBase(client))
-        .then(instanceResource => instanceResource.all({ filter: { 'tag:Environment': environmentName } }))
-        .then(instances => instances.map(instance => new TaggableInstance(instance)))
-        .then((result) => {
-          let duration = moment.duration(moment.utc().diff(startTime)).asMilliseconds();
-          logger.debug(`server-status-query: InstancesQuery took ${duration}ms`);
-          return result;
-        });
+      return new Promise((resolve, reject) => {
+        ec2Client.getHosts((err, res) => {
+          if (err) reject(err);
+          resolve(res.map(i => new TaggableInstance(i)));
+        }, accountName, environmentName);
+      });
     });
   }
 }

@@ -6,6 +6,7 @@ let sender = require('../../../modules/sender');
 let ScanImages = require('../../../queryHandlers/ScanImages');
 let ScanCrossAccountImages = require('../../../queryHandlers/ScanCrossAccountImages');
 let _ = require('lodash');
+let ec2Client = require('../../../modules/ec2-monitor/ec2-monitor-client');
 
 function getImages(req, res, next) {
   const accountName = req.swagger.params.account.value;
@@ -36,6 +37,13 @@ function getImages(req, res, next) {
   }).catch(next);
 }
 
+function getImagesEc2Monitor(req, res) {
+  ec2Client.getImages((e, r) => {
+    res.json(r);
+  });
+}
+
 module.exports = {
-  getImages
+  getImages,
+  getImagesEc2Monitor
 };

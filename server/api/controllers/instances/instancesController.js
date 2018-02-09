@@ -4,6 +4,7 @@
 
 let _ = require('lodash');
 let co = require('co');
+let ec2Client = require('../../../modules/ec2-monitor/ec2-monitor-client');
 let ScanInstances = require('../../../queryHandlers/ScanInstances');
 let ScanCrossAccountInstances = require('../../../queryHandlers/ScanCrossAccountInstances');
 let EnterAutoScalingGroupInstancesToStandby = require('../../../commands/asg/EnterAutoScalingGroupInstancesToStandby');
@@ -137,6 +138,15 @@ function getInstances(req, res, next) {
 }
 
 /**
+ * GET /instances-ec2
+ */
+function getInstancesEc2Monitor(req, res) {
+  const accountName = req.swagger.params.account.value;
+  const environmentName = req.swagger.params.environment.value;
+  ec2Client.getHosts((e, r) => res.json(r), accountName, environmentName);
+}
+
+/**
  * GET /instances/{id}
  */
 function getInstanceById(req, res, next) {
@@ -249,6 +259,7 @@ function getScheduleActions(req, res, next) {
 
 module.exports = {
   getInstances,
+  getInstancesEc2Monitor,
   getInstanceById,
   putInstanceMaintenance,
   connectToInstance,

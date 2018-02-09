@@ -123,7 +123,7 @@ angular.module('EnvironmentManager.environments')
         include_deployments_status: true,
         since: oneHourAgo
       };
-      return $http.get('/api/v1/instances', { params: params });
+      return $http.get('/api/v1/instances-ec2', { params: params });
     }
 
     function addDeploymentStatus(statuses) {
@@ -147,7 +147,7 @@ angular.module('EnvironmentManager.environments')
 
     function removeUnwantedStatuses(statuses) {
       return statuses.data.filter(function (status) {
-        var s = status.DeploymentStatus.toLowerCase();
+        var s = (status.DeploymentStatus||'').toLowerCase();
         if (s !== 'failed' && s !== 'success') {
           return true;
         } else {

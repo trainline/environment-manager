@@ -19,5 +19,6 @@
       "UPSTREAMS": "http://link-to-upstreams-explanation-page",
       "LINUX_PUPPET_REPO": "http://link-to-linux-puppet-doc"
     }
-  }
+  },
+  "emEc2Url":"http://c50-emec2monitor.service.ttlnonprod.local"
 }
