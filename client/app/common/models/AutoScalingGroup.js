@@ -86,8 +86,8 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
     });
 
     function getAsgDetails(asgName, environmentName) {
-      return $http.get('/api/v1/asgs/' + asgName, { params: { environment: environmentName } }).then(function (response) {
-        return getSummaryFromAsg(response.data);
+      return $http.get('/api/v1/asgs-ec2/' + asgName, { params: { environment: environmentName } }).then(function (response) {
+        return getSummaryFromAsg(response.data[0]);
       });
     }
 

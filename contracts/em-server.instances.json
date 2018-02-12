@@ -1,0 +1,71 @@
+{
+    "EM-client": {
+        "EM-server": {
+            "Get instances": {
+              "Instances can be listed": {
+                  "before": [
+                      {
+                          "name": "Get a token",
+                          "request": {
+                              "baseUrl": "http://localhost:8080",
+                              "path": "/api/v1/token",
+                              "method": "POST",
+                              "timeout": 1000,
+                              "headers": {
+                                  "Content-Type": "application/json"
+                              },
+                              "body": {
+                                  "username": "pepero",
+                                  "password": "peperopwd",
+                                  "scope": "api"
+                              }
+                          },
+                          "response": {
+                              "statusCode": 200
+                          },
+                          "variables": {
+                              "token": "$.body"
+                          }
+                      }
+                  ],
+                  "request": {
+                      "baseUrl": "http://localhost:8080",
+                      "path": "/api/v1/instances",
+                      "method": "GET",
+                      "timeout": 15000,
+                      "headers": {
+                          "accept": "application/json",
+                          "Authorization": "Bearer <%= token%>"
+                      }
+                  },
+                  "response": {
+                      "statusCode": 200,
+                      "body": [
+                          {
+                              "InstanceId": "Joi.string().required()",
+                              "ImageId": "Joi.string().required()",
+                              "State": {
+                                "Code": "Joi.number().required()",
+                                "Name": "Joi.string().required()"
+                              },
+                              "KeyName": "Joi.string()",
+                              "InstanceType": "Joi.string()",
+                              "LaunchTime": "Joi.date()",
+                              "Placement": {
+                                "AvailabilityZone": "Joi.string()"
+                              },
+                              "SubnetId": "Joi.string().optional()",
+                              "VpcId": "Joi.string().optional()",
+                              "PrivateIpAddress": "Joi.string().optional()",
+                              "Architecture": "Joi.string().required()",
+                              "RootDeviceType": "Joi.string().required()",
+                              "RootDeviceName": "Joi.string().required()",
+                              ""
+                          }
+                      ]
+                  }
+              }
+          }
+        }
+    }
+}

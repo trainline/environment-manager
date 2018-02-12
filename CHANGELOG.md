@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+[#unreleased]
+
+### Changed
+
+- Calls made from the server screen and asg modal are now running through the ec2 client which queries the _new_ EC2monitor. [#412]
+
 ## [6.18.0] 2018-02-06
 
 ### Added
@@ -387,6 +393,7 @@ Example:
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
+[#412]: https://github.com/trainline/environment-manager/pull/412
 [#408]: https://github.com/trainline/environment-manager/pull/408
 [#407]: https://github.com/trainline/environment-manager/pull/407
 [#403]: https://github.com/trainline/environment-manager/pull/403
