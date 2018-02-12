@@ -76,7 +76,7 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
       },
 
       updateAutoScalingGroup: function (data) {
-        return $http.put('/api/v1/asgs-ec2/' + this.AsgName + '?environment=' + this.getTag('Environment'), data);
+        return $http.put('/api/v1/asgs/' + this.AsgName + '?environment=' + this.getTag('Environment'), data);
       },
 
       getDeploymentMapTargetName: function () {
