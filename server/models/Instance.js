@@ -23,16 +23,16 @@ class Instance {
 
   persistTag(tag) {
     return amazonClientFactory.createEC2Client(this.AccountName)
-    .then(client => new InstanceResourceBase(client))
-    .then((instanceResource) => {
-      let parameters = {
-        instanceIds: [this.InstanceId],
-        tagKey: tag.key,
-        tagValue: tag.value
-      };
+      .then(client => new InstanceResourceBase(client))
+      .then((instanceResource) => {
+        let parameters = {
+          instanceIds: [this.InstanceId],
+          tagKey: tag.key,
+          tagValue: tag.value
+        };
 
-      return instanceResource.setTag(parameters);
-    });
+        return instanceResource.setTag(parameters);
+      });
   }
 
   getCreationTime() {
@@ -40,26 +40,23 @@ class Instance {
   }
 
   static getById(instanceId) {
-    function findInstanceInAccount() {
-      return new Promise((resolve, reject) => {
-        ec2Client.getHostByInstanceId((err, res) => {
-          if (err) reject(err);
-          resolve(res.map(i => new TaggableInstance(i)));
-        }, instanceId);
-      });
-    }
+    const findInstanceInAccount = () =>
+      ec2Client.getHostByInstanceId(instanceId)
+        .then(response => response.map(i => new TaggableInstance(i)));
+
     return scanCrossAccountFn(findInstanceInAccount).then(([head]) => head);
   }
 
   static getAllByEnvironment(environmentName) {
     return co(function* () {
       let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
-      return new Promise((resolve, reject) => {
-        ec2Client.getHosts((err, res) => {
-          if (err) reject(err);
-          resolve(res.map(i => new TaggableInstance(i)));
-        }, accountName, environmentName);
-      });
+
+      return ec2Client.getHosts(accountName, environmentName)
+        .then(handleResponse);
+
+      function handleResponse(response) {
+        return response.map(i => new TaggableInstance(i));
+      }
     });
   }
 }

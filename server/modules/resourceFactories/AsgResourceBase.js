@@ -15,18 +15,14 @@ let logger = require('../logger');
 
 function getAllAsgsInAccount(accountId, names) {
   logger.debug(`Describing all ASGs in account "${accountId}"...`);
-  let asgs = new Promise((resolve, reject) => {
-    ec2Client.getHostGroups((err, res) => {
-      if (err) reject(err);
-      resolve(res);
+  let asgs = ec2Client.getHostGroups()
+    .then((_asgs) => {
+      if (names && names.length) {
+        return _asgs.filter(_asg => names.some(n => _asg.AutoScalingGroupName === n));
+      } else {
+        return _asgs;
+      }
     });
-  }).then((_asgs) => {
-    if (names && names.length) {
-      return _asgs.filter(_asg => names.some(n => _asg.AutoScalingGroupName === n));
-    } else {
-      return _asgs;
-    }
-  });
   return asgs;
 }
 
@@ -136,7 +132,7 @@ function AsgResourceBase(accountId) {
     if (_.isNil(parameters.scaling)) return Promise.resolve();
 
     if (!parameters.scaling.terminationDelay) {
-      return client.deleteLifecycleHook(request).promise().catch(() => {});
+      return client.deleteLifecycleHook(request).promise().catch(() => { });
     }
 
     Object.assign(request, {

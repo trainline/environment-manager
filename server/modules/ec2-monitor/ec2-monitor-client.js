@@ -1,9 +1,6 @@
 'use strict';
 
-// For TLS rejection(not the greatest):
-// cmd> set NODE_TLS_REJECT_UNAUTHORIZED=0
-
-let request = require('request');
+let request = require('request-promise');
 let config = require('../../config');
 
 let monitorUri = `${config.getUserValue('local').emEc2Url}/api`;
@@ -22,37 +19,32 @@ function buildUri(accountName, environmentName) {
   return uri;
 }
 
-function getHosts(onComplete, accountName, environmentName) {
+function getHosts(accountName, environmentName) {
   let uri = `${buildUri(accountName, environmentName)}/host`;
-  request(uri, (err, res, body) => {
-    onComplete(err, JSON.parse(body));
-  });
+  return request(uri)
+    .then(data => JSON.parse(data));
 }
 
-function getHostByInstanceId(onComplete, instanceId) {
-  request(`${monitorUri}/host/${instanceId}`, (err, res, body) => {
-    onComplete(err, JSON.parse(body));
-  });
+function getHostByInstanceId(instanceId) {
+  return request(`${monitorUri}/host/${instanceId}`)
+    .then(data => JSON.parse(data));
 }
 
-function getHostGroups(onComplete, accountName, environmentName) {
+function getHostGroups(accountName, environmentName) {
   let uri = `${buildUri(accountName, environmentName)}/host-group`;
-  request(uri, (err, res, body) => {
-    onComplete(err, JSON.parse(body));
-  });
+  return request(uri)
+    .then(data => JSON.parse(data));
 }
 
-function getHostGroupByName(hostGroupName, onComplete) {
-  request(`${monitorUri}/host-group/${hostGroupName}`, (err, res, body) => {
-    onComplete(err, JSON.parse(body));
-  });
+function getHostGroupByName(hostGroupName) {
+  return request(`${monitorUri}/host-group/${hostGroupName}`)
+    .then(data => JSON.parse(data));
 }
 
-function getImages(onComplete, accountName) {
+function getImages(accountName) {
   let uri = accountName ? `${monitorUri}/account/${accountName}/image` : `${monitorUri}/image`;
-  request(uri, (err, res, body) => {
-    onComplete(err, JSON.parse(body));
-  });
+  return request(uri)
+    .then(data => JSON.parse(data));
 }
 
 module.exports = {
@@ -62,13 +54,3 @@ module.exports = {
   getHostGroupByName,
   getImages
 };
-
-// Manual testing
-
-// getHostsByEnvironment('c50', (e, r) => { console.log(r); });
-// getHosts((e, r) => { console.log(r); });
-// getHostByInstanceId('i-0c80447ec4c7d3d49', (e, r) => console.log(r));
-// getHostGroupsByEnvironment('c50', (e, r) => { console.log(r); });
-// getHostGroups((e, r) => console.log(r));
-// getHostGroupByName('st1-bo-MobileApi01', (e, r) => console.log(r));
-// getImages((e, r) => { console.log(r); });

@@ -143,7 +143,8 @@ function getInstances(req, res, next) {
 function getInstancesEc2Monitor(req, res) {
   const accountName = req.swagger.params.account.value;
   const environmentName = req.swagger.params.environment.value;
-  ec2Client.getHosts((e, r) => res.json(r), accountName, environmentName);
+  ec2Client.getHosts(accountName, environmentName)
+    .then(data => res.json(data));
 }
 
 /**

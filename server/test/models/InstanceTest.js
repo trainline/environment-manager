@@ -12,7 +12,7 @@ function createFixture({
   loggerFake = fakeLogger,
   scanCrossAccountFnFake = fun => fun({ AccountNumber: 'myaccount' }),
   TaggableMixinFake = TaggableMixin,
-  fakeEc2Client = { getHostByInstanceId(callback) { callback(null, [{}]); }, getHosts(callback) { callback(null, [{}]); } }
+  fakeEc2Client = { getHostByInstanceId() { return Promise.resolve([{}]); }, getHosts() { return Promise.resolve([{}]); } }
 }) {
   const Instance = proxyquire('../../models/Instance', {
     '../modules/amazon-client/childAccountClient': childAccountClientFake,

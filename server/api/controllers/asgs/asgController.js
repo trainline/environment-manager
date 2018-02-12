@@ -95,7 +95,8 @@ function getAsgs(req, res, next) {
 function getAsgsEc2Monitor(req, res) {
   const accountName = req.swagger.params.account.value;
   const environmentName = req.swagger.params.environment.value;
-  ec2Client.getHostGroups((e, r) => res.json(r), accountName, environmentName);
+  ec2Client.getHostGroups(accountName, environmentName)
+    .then(data => res.json(data));
 }
 
 /**
@@ -119,9 +120,8 @@ function getAsgByName(req, res, next) {
  */
 function getAsgByNameEc2Monitor(req, res) {
   const autoScalingGroupName = req.swagger.params.name.value;
-  ec2Client.getHostGroupByName(autoScalingGroupName, (e, r) => {
-    res.json(r);
-  });
+  ec2Client.getHostGroupByName(autoScalingGroupName)
+    .then(data => res.json(data));
 }
 
 /**
@@ -134,8 +134,7 @@ function getAsgReadyByName(req, res, next) {
   return getASGReady({
     autoScalingGroupName,
     environmentName
-  })
-    .then(data => res.json(data)).catch(next);
+  }).then(data => res.json(data)).catch(next);
 }
 
 
