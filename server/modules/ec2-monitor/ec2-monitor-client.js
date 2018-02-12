@@ -1,6 +1,6 @@
 'use strict';
 
-let request = require('request-promise');
+let request = require('request-promise').defaults({ strictSSL: false });
 let config = require('../../config');
 
 let monitorUri = `${config.getUserValue('local').emEc2Url}/api`;
