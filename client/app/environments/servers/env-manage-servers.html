@@ -69,7 +69,7 @@
               <th class="text-nowrap">AMI</th>
               <th class="text-nowrap">Out of Date</th>
               <th class="text-nowrap">Schedule</th>
-              <th class="text-nowrap">Deployments</th>
+              <!-- <th class="text-nowrap">Deployments</th> -->
               <th class="text-nowrap">Delete</th>
             </tr>
           </thead>
@@ -109,13 +109,13 @@
                   <schedule-viewer schedule="role.schedule" simple-view="true"></schedule-viewer>
                 </a>
               </td>
-              <td>
+              <!-- <td>
                 <span ng-if="!vm.roleInformation" class="glyphicon glyphicon-hourglass"></span>
                 <span ng-if="vm.roleInformation">
                   <span ng-if="!role.info.deployments" class="glyphicon glyphicon-thumbs-up"> None in Progress</span>
                 <span ng-if="role.info.deployments" class="glyphicon glyphicon-warning-sign"> Deployments in Progress</span>
                 </span>
-              </td>
+              </td> -->
               <td ng-if="vm.canDeleteAsg(role.asgName)" class="command command-delete ng-scope"><span class="glyphicon glyphicon-remove" ng-click="vm.deleteAsg(role.asgName)" title="Delete"></span></td>
             </tr>
           </tbody>
@@ -135,7 +135,7 @@
               <th class="text-nowrap">AMI</th>
               <th class="text-nowrap">Out of Date</th>
               <th class="text-nowrap">Schedule</th>
-              <th class="text-nowrap">Deployments</th>
+              <!-- <th class="text-nowrap">Deployments</th> -->
               <th class="text-nowrap">Delete</th>
             </tr>
           </thead>
@@ -175,14 +175,14 @@
                   <schedule-viewer schedule="role.schedule" simple-view="true"></schedule-viewer>
                 </a>
               </td>
-              <td>
+              <!-- <td>
                 <span ng-if="!vm.roleInformation" class="glyphicon glyphicon-hourglass"></span>
                 <span ng-if="vm.roleInformation">
                   <span ng-if="!role.info.deployments">None</span>
                 <span ng-if="role.info.deployments"><span class="glyphicon glyphicon-warning-sign warning"></span> Deployments
                 in Progress</span>
                 </span>
-              </td>
+              </td> -->
               <td ng-if="vm.canDeleteAsg(role.asgName)" class="command command-delete ng-scope"><span class="glyphicon glyphicon-remove" ng-click="vm.deleteAsg(role.asgName)" title="Delete"></span></td>
             </tr>
           </tbody>

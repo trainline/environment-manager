@@ -58,7 +58,6 @@ angular.module('EnvironmentManager.environments')
       $rootScope.WorkingEnvironment.EnvironmentName = environmentName;
 
       $q.all([
-
         cachedResources.config.clusters.all().then(function (clusters) {
           vm.options.clusters = vm.options.clusters.concat(_.map(clusters, 'ClusterName')).sort();
           vm.selected.cluster = vm.options.clusters[0];
@@ -100,9 +99,6 @@ angular.module('EnvironmentManager.environments')
 
         if (vm.dataFound) {
           vm.update()
-            .then(getInstanceStatusesFromLastHour)
-            .then(addDeploymentStatus)
-            .then(roleInformationFound)
             .then(function () {
               Tipped.create('.tooltip-healthy', $('<p/>').html(healthTemplate), { position: 'topleft' });
             });
@@ -115,46 +111,6 @@ angular.module('EnvironmentManager.environments')
 
       return promise;
     };
-
-    function getInstanceStatusesFromLastHour() {
-      var dateRange = { name: 'Last hour', value: 1 * enums.MILLISECONDS.PerHour };
-      var oneHourAgo = new Date((new Date().getTime() - dateRange.value)).toISOString();
-      var params = {
-        include_deployments_status: true,
-        since: oneHourAgo
-      };
-      return $http.get('/api/v1/instances-ec2', { params: params });
-    }
-
-    function addDeploymentStatus(statuses) {
-      var data = removeUnwantedStatuses(statuses);
-      var roles = collectServerRoles(vm.view);
-
-      return $q.all(roles.map(function (role) {
-        var result = data.find(function (elem) {
-          return elem['aws:autoscaling:groupName'] === role.asgName;
-        });
-        role.info = role.info || {};
-        if (result) {
-          role.info.deployments = true
-          return result;
-        } else {
-          role.info.deployments = false
-          return null;
-        }
-      }));
-    }
-
-    function removeUnwantedStatuses(statuses) {
-      return statuses.data.filter(function (status) {
-        var s = (status.DeploymentStatus||'').toLowerCase();
-        if (s !== 'failed' && s !== 'success') {
-          return true;
-        } else {
-          return false;
-        }
-      });
-    }
 
     vm.canDeleteAsg = function (asgName) {
       return user.hasPermission({ access: 'DELETE', resource: '/asgs/' + asgName });
@@ -180,14 +136,6 @@ angular.module('EnvironmentManager.environments')
         severity: 'Danger',
         acknowledge: 'I am sure I want to delete this ASG: ' + asgName + '.'
       });
-    }
-
-    function collectServerRoles(view) {
-      return view.healthyRoles.concat(view.unhealthyRoles);
-    }
-
-    function roleInformationFound() {
-      vm.roleInformation = true;
     }
 
     vm.update = function () {
