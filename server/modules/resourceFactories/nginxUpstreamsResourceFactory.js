@@ -60,11 +60,11 @@ function NginxUpstreamsResource() {
         if (response.statusCode !== 200) {
           logger.error(`Unexpected Nginx Upstream response: ${response.body}`,
             { body: response.body, statusCode: response.statusCode });
-          return Promise.reject({ type: "httpResponseToError", value: response });
+          return Promise.reject({ type: 'httpResponseToError', value: response });
         }
 
         let nginxUpstreams = utils.safeParseJSON(response.body);
-        if (!nginxUpstreams) return Promise.reject({ type: "invalidJsonToError", value: response.body });
+        if (!nginxUpstreams) return Promise.reject({ type: 'invalidJsonToError', value: response.body });
 
         let upstreams = Object.entries(nginxUpstreams).map(([upstreamName, nginxUpstream]) => {
           if (!_.has(nginxUpstream, 'peers')) return null;
@@ -78,7 +78,8 @@ function NginxUpstreamsResource() {
         });
 
         return _.compact(upstreams);
-      }).catch((e) => {
+      })
+      .catch((e) => {
         switch (e.type) {
           case 'httpResponseToError':
             return Promise.reject(httpResponseToError(e.value));
