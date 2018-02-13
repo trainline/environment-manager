@@ -34,6 +34,29 @@ paths:
             type: array
             items:
               $ref: '#/definitions/AWSAutoScalingGroup'
+  /asgs-ec2:
+    x-swagger-router-controller: asgController
+    get:
+      operationId: getAsgsEc2Monitor
+      summary: List ASGS matching the given criteria. By default returns all ASGs across all accounts.
+      tags:
+        - ASG
+      parameters:
+        - name: account
+          in: query
+          type: string
+          required: false
+        - name: environment
+          in: query
+          type: string
+          required: false
+      responses:
+        200:
+          description: A list of matching ASGs.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/AWSAutoScalingGroup'
   /asgs/{name}:
     x-swagger-router-controller: asgController
     get:
@@ -96,6 +119,27 @@ paths:
       responses:
         200:
           description: Ok
+  /asgs-ec2/{name}:
+    x-swagger-router-controller: asgController
+    get:
+      operationId: getAsgByNameEc2Monitor
+      summary: Get a single ASG for the given environment.
+      tags:
+        - ASG
+      parameters:
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: name
+          in: path
+          type: string
+          required: true
+      responses:
+        200:
+          description: The matching ASG
+          schema:
+            $ref: '#/definitions/AWSAutoScalingGroup'
   /asgs/{name}/ready:
     x-swagger-router-controller: asgController
     get:
@@ -740,6 +784,29 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Image'
+  /images-ec2:
+    x-swagger-router-controller: imagesController
+    get:
+      operationId: getImagesEc2Monitor
+      summary: Get the list of available AMI images. Only those that are privately published under associated accounts are included.
+      tags:
+        - AMI
+      parameters:
+        - name: account
+          type: string
+          in: query
+          required: false
+        - name: stable
+          type: boolean
+          in: query
+          required: false
+      responses:
+        200:
+          description: The list of AMI images
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Image'
   /instances:
     x-swagger-router-controller: instancesController
     get:
@@ -780,6 +847,29 @@ paths:
         - name: include_deployments_status
           in: query
           type: boolean
+          required: false
+      responses:
+        200:
+          description: The list of instances
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Instance'
+  /instances-ec2:
+    x-swagger-router-controller: instancesController
+    get:
+      operationId: getInstancesEc2Monitor
+      summary: Get all instances matching the given criteria.
+      tags:
+        - Instance
+      parameters:
+        - name: account
+          in: query
+          type: string
+          required: false
+        - name: environment
+          in: query
+          type: string
           required: false
       responses:
         200:

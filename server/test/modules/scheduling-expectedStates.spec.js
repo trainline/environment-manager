@@ -3,7 +3,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const scheduling = require('../../../modules/scheduling');
+const scheduling = require('../../modules/scheduling');
 
 describe('scheduling (expected states)', () => {
   describe('tag schedules', () => {
@@ -25,6 +25,14 @@ describe('scheduling (expected states)', () => {
 
     it('should throw an error if schedule is invalid', () => {
       let schedule = 'blah blah';
+      let dateTime = '2015-12-31T23:59:59';
+
+      let determinedState = scheduling.expectedStateFromSchedule(schedule, dateTime);
+      expect(determinedState).to.equal('INVALID SCHEDULE');
+    });
+
+    it('should throw an error if cron is invalid', () => {
+      let schedule = 'blah: 0 0 1 1 * 2016';
       let dateTime = '2015-12-31T23:59:59';
 
       let determinedState = scheduling.expectedStateFromSchedule(schedule, dateTime);

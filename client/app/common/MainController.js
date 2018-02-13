@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.common').controller('MainController',
-  function ($rootScope, $scope, $route, $routeParams, $http, $location, $window, modal, Environment, environmentDeploy, releasenotesservice) {
+  function ($rootScope, $scope, $route, $routeParams, $http, $location, $window, $uibModal, modal, Environment, environmentDeploy, releasenotesservice) {
     var vm = this;
 
     vm.appVersion = $window.version;
@@ -39,6 +39,14 @@ angular.module('EnvironmentManager.common').controller('MainController',
         return 'Unknown section';
       }
     };
+
+    vm.showUserSettings = function () {
+      $uibModal.open({
+        bindToController: true,
+        controller: 'UserSettingsController as vm',
+        templateUrl: '/app/settings/user-settings-modal.html'
+      });
+    }
 
     vm.logout = function () {
       $http.post('/api/v1/logout', {}).then(function () {
@@ -134,8 +142,9 @@ angular.module('EnvironmentManager.common').controller('MainController',
     };
 
     $rootScope.$on('error', function (event, response) {
-      var errorMessage;
-      var title = 'Error';
+      var errorMessage = '';
+      var sadFace = '\u2639';
+      var title = sadFace + ' Error';
       var errors = _.get(response, ['data', 'errors']);
       if (_.isString(response.data)) {
         errorMessage = response.data;
@@ -152,11 +161,26 @@ angular.module('EnvironmentManager.common').controller('MainController',
         errorMessage = response.data.error;
       }
 
-      if (response.data.details) {
+      if (_.get(response, 'data.details')) {
         errorMessage += '<hr>' + angular.toJson(response.data.details);
       }
 
+      if (isNothingToDisplay())
+        setErrorMessageDefaultDetails();
+
       modal.error(title, errorMessage);
+
+      function isNothingToDisplay() {
+        return !errorMessage && !_.get(response, 'data.details');
+      }
+
+      function setErrorMessageDefaultDetails() {
+        var defaultValue = '<UNKNOWN>';
+        var link = _.get(response, 'config.url', defaultValue);
+        var status = _.get(response, 'status', defaultValue);
+
+        errorMessage = 'Request to <a href="' + link + '">' + link + '</a> returned HTTP Status Code:' + status;
+      }
     });
 
     $rootScope.$on('cookie-expired', function () {

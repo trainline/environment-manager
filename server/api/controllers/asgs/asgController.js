@@ -4,6 +4,7 @@
 
 let Promise = require('bluebird');
 let co = require('co');
+let ec2Client = require('../../../modules/ec2-monitor/ec2-monitor-client');
 let getAllASGs = require('../../../queryHandlers/ScanCrossAccountAutoScalingGroups');
 let getAccountASGs = require('../../../queryHandlers/ScanAutoScalingGroups');
 let getASG = require('../../../queryHandlers/GetAutoScalingGroup');
@@ -87,6 +88,17 @@ function getAsgs(req, res, next) {
   }).catch(next);
 }
 
+
+/**
+ * GET /asgs
+ */
+function getAsgsEc2Monitor(req, res) {
+  const accountName = req.swagger.params.account.value;
+  const environmentName = req.swagger.params.environment.value;
+  ec2Client.getHostGroups(accountName, environmentName)
+    .then(data => res.json(data));
+}
+
 /**
  * GET /asgs/{name}
  */
@@ -98,16 +110,19 @@ function getAsgByName(req, res, next) {
     let accountName = yield Environment.getAccountNameForEnvironment(environmentName);
     let lifecycleHooks = yield GetAutoScalingGroupLifeCycleHooks({ accountName, autoScalingGroupName });
     return getASG({ accountName, autoScalingGroupName }).then((data) => {
-      data.Instances.forEach((i) => {
-        /* eslint no-underscore-dangle: ["error", { "allow": ["_instance"] }] */
-        delete i._instance;
-      });
-
       res.json(Object.assign({}, data, { LifecycleHooks: lifecycleHooks }));
     });
   }).catch(next);
 }
 
+/**
+ * GET /asgs/{name}
+ */
+function getAsgByNameEc2Monitor(req, res) {
+  const autoScalingGroupName = req.swagger.params.name.value;
+  ec2Client.getHostGroupByName(autoScalingGroupName)
+    .then(data => res.json(data));
+}
 
 /**
  * GET /asgs/{name}/ready
@@ -119,8 +134,7 @@ function getAsgReadyByName(req, res, next) {
   return getASGReady({
     autoScalingGroupName,
     environmentName
-  })
-    .then(data => res.json(data)).catch(next);
+  }).then(data => res.json(data)).catch(next);
 }
 
 
@@ -345,7 +359,9 @@ function putAsgLaunchConfig(req, res, next) {
 
 module.exports = {
   getAsgs,
+  getAsgsEc2Monitor,
   getAsgByName,
+  getAsgByNameEc2Monitor,
   getAsgReadyByName,
   getAsgIps,
   getAsgLaunchConfig,

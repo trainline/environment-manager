@@ -4,6 +4,7 @@
 
 let _ = require('lodash');
 let co = require('co');
+let ec2Client = require('../ec2-monitor/ec2-monitor-client');
 let amazonClientFactory = require('../amazon-client/childAccountClient');
 let AwsError = require('../errors/AwsError.class');
 let AutoScalingGroupNotFoundError = require('../errors/AutoScalingGroupNotFoundError.class');
@@ -11,14 +12,18 @@ let AutoScalingGroupAlreadyExistsError = require('../errors/AutoScalingGroupAlre
 let cacheManager = require('../cacheManager');
 let fp = require('lodash/fp');
 let logger = require('../logger');
-let pages = require('../amazon-client/pages');
 
 function getAllAsgsInAccount(accountId, names) {
   logger.debug(`Describing all ASGs in account "${accountId}"...`);
-  let request = (names && names.length) ? { AutoScalingGroupNames: names } : {};
-  let asgDescriptions = amazonClientFactory.createASGClient(accountId)
-    .then(client => pages.flatten(page => page.AutoScalingGroups, client.describeAutoScalingGroups(request)));
-  return asgDescriptions;
+  let asgs = ec2Client.getHostGroups()
+    .then((_asgs) => {
+      if (names && names.length) {
+        return _asgs.filter(_asg => names.some(n => _asg.AutoScalingGroupName === n));
+      } else {
+        return _asgs;
+      }
+    });
+  return asgs;
 }
 
 let asgCache = cacheManager.create('Auto Scaling Groups', getAllAsgsInAccount, { stdTTL: 60 });
@@ -127,7 +132,7 @@ function AsgResourceBase(accountId) {
     if (_.isNil(parameters.scaling)) return Promise.resolve();
 
     if (!parameters.scaling.terminationDelay) {
-      return client.deleteLifecycleHook(request).promise().catch(() => {});
+      return client.deleteLifecycleHook(request).promise().catch(() => { });
     }
 
     Object.assign(request, {

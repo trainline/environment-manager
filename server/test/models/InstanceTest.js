@@ -11,7 +11,8 @@ function createFixture({
   InstanceResourceBaseFake = {},
   loggerFake = fakeLogger,
   scanCrossAccountFnFake = fun => fun({ AccountNumber: 'myaccount' }),
-  TaggableMixinFake = TaggableMixin
+  TaggableMixinFake = TaggableMixin,
+  fakeEc2Client = { getHostByInstanceId() { return Promise.resolve([{}]); }, getHosts() { return Promise.resolve([{}]); } }
 }) {
   const Instance = proxyquire('../../models/Instance', {
     '../modules/amazon-client/childAccountClient': childAccountClientFake,
@@ -19,7 +20,8 @@ function createFixture({
     '../modules/resourceFactories/InstanceResourceBase': InstanceResourceBaseFake,
     './Environment': EnvironmentFake,
     '../modules/queryHandlersUtil/scanCrossAccountFn': scanCrossAccountFnFake,
-    './TaggableMixin': TaggableMixinFake
+    './TaggableMixin': TaggableMixinFake,
+    '../modules/ec2-monitor/ec2-monitor-client': fakeEc2Client
   });
   return Instance;
 }
