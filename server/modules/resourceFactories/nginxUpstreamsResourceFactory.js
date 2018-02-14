@@ -2,13 +2,14 @@
 
 'use strict';
 
-let url = require('url');
-let request = require('request');
-let utils = require('../utilities');
-let logger = require('../logger');
+const url = require('url');
+const request = require('request-promise').defaults({ strictSSL: false });
+const utils = require('../utilities');
+const logger = require('../logger');
+const _ = require('lodash');
 
-let HttpRequestError = require('../errors/HttpRequestError.class');
-let ResourceNotFoundError = require('../errors/ResourceNotFoundError.class');
+const HttpRequestError = require('../errors/HttpRequestError.class');
+const ResourceNotFoundError = require('../errors/ResourceNotFoundError.class');
 
 function NginxUpstreamsResource() {
   function httpErrorToError(error) {
@@ -42,48 +43,54 @@ function NginxUpstreamsResource() {
     return upstreamItem;
   }
 
-  this.all = function (parameters) {
-    let uri = url.format({
-      protocol: 'http',
+  this.all = function all(parameters) {
+    const uri = url.format({
+      protocol: 'https',
       hostname: parameters.instanceDomainName,
-      pathname: '/status/upstreams'
+      pathname: '/api/2/http/upstreams'
     });
+    const requestOptions = {
+      method: 'GET',
+      uri,
+      resolveWithFullResponse: true
+    };
 
-    return new Promise((resolve, reject) => {
-      request(uri, (error, response, body) => {
-        // Error connecting to the host
-        if (error) return reject(httpErrorToError(error));
-
-        // Error response from the host
+    return request(requestOptions)
+      .then((response) => {
         if (response.statusCode !== 200) {
           logger.error(`Unexpected Nginx Upstream response: ${response.body}`,
             { body: response.body, statusCode: response.statusCode });
-          return reject(httpResponseToError(response));
+          return Promise.reject({ type: 'httpResponseToError', value: response });
         }
 
-        // Unexpected non JSON body
-        let nginxUpstreams = utils.safeParseJSON(body);
-        if (!nginxUpstreams) return reject(invalidJsonToError(body));
+        let nginxUpstreams = utils.safeParseJSON(response.body);
+        if (!nginxUpstreams) return Promise.reject({ type: 'invalidJsonToError', value: response.body });
 
-        let upstreams = [];
+        let upstreams = Object.entries(nginxUpstreams).map(([upstreamName, nginxUpstream]) => {
+          if (!_.has(nginxUpstream, 'peers')) return null;
 
-        for (let upstreamName in nginxUpstreams) {
-          if ({}.hasOwnProperty.call(nginxUpstreams, upstreamName)) {
-            let nginxUpstream = nginxUpstreams[upstreamName];
-            if (!nginxUpstream || !nginxUpstream.peers) return invalidJsonToError(body);
+          let upstream = {
+            Name: upstreamName,
+            Hosts: nginxUpstream.peers.filter(isNotNginxUpstreamPeerBackup).map(asUpstreamItem)
+          };
 
-            let upstream = {
-              Name: upstreamName,
-              Hosts: nginxUpstream.peers.filter(isNotNginxUpstreamPeerBackup).map(asUpstreamItem)
-            };
+          return upstream;
+        });
 
-            upstreams.push(upstream);
-          }
+        return _.compact(upstreams);
+      })
+      .catch((e) => {
+        switch (e.type) {
+          case 'httpResponseToError':
+            return Promise.reject(httpResponseToError(e.value));
+          case 'httpErrorToError':
+            return Promise.reject(httpErrorToError(e.value));
+          case 'invalidJsonToError':
+            return Promise.reject(invalidJsonToError(e.value));
+          default:
+            return Promise.reject(e);
         }
-
-        return resolve(upstreams);
       });
-    });
   };
 }
 
