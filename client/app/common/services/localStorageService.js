@@ -15,7 +15,8 @@
     return {
       get: get,
       set: set,
-      exists: exists
+      exists: exists,
+      getValueOrDefault: getValueOrDefault
     };
 
     function get(key) {
@@ -29,6 +30,10 @@
     function exists(key) {
       if (get(key) === null || get(key) === '') return false;
       return true;
+    }
+
+    function getValueOrDefault(key, defaultValue) {
+      return exists(key) ? get(key) : defaultValue;
     }
   }
 }());
