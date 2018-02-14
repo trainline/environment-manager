@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsUpstreamController',
-  function ($routeParams, $location, $uibModal, $q, $http, resources, QuerySync, cachedResources, accountMappingService, modal, UpstreamConfig, localstorageservice) {
+  function ($scope, $routeParams, $location, $uibModal, $q, $http, resources, QuerySync, cachedResources, accountMappingService, modal, UpstreamConfig, localstorageservice) {
     var vm = this;
     var querySync;
     var SHOW_ALL_OPTION = 'Any';
@@ -31,11 +31,11 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
           querySync = new QuerySync(vm, {
             environment: {
               property: 'selectedEnvironment',
-              default: vm.environmentsList[0]
+              default: localstorageservice.getValueOrDefault(localstorageservice.keys.selections.environment, vm.environmentsList[0])
             },
             cluster: {
               property: 'selectedOwningCluster',
-              default: localstorageservice.getValueOrDefault('em-selections-team', SHOW_ALL_OPTION)
+              default: localstorageservice.getValueOrDefault(localstorageservice.keys.selections.team, SHOW_ALL_OPTION)
             },
             state: {
               property: 'selectedState',
@@ -82,7 +82,8 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     vm.updateFilter = function () {
       querySync.updateQuery();
 
-      localstorageservice.set('em-selections-team', vm.selectedOwningCluster);
+      localstorageservice.set(localstorageservice.keys.selections.team, vm.selectedOwningCluster);
+      localstorageservice.set(localstorageservice.keys.selections.environment, vm.selectedEnvironment);
 
       vm.data = vm.fullUpstreamData.filter(function (upstream) {
         if (upstream.Value.EnvironmentName !== vm.selectedEnvironment) {

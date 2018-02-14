@@ -55,6 +55,7 @@ angular.module('EnvironmentManager.environments')
       querySync.init();
 
       var environmentName = vm.selected.environment.EnvironmentName;
+      localstorageservice.set(localstorageservice.keys.selections.environment, environmentName);
       $rootScope.WorkingEnvironment.EnvironmentName = environmentName;
 
       $q.all([

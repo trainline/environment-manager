@@ -16,7 +16,8 @@
       get: get,
       set: set,
       exists: exists,
-      getValueOrDefault: getValueOrDefault
+      getValueOrDefault: getValueOrDefault,
+      keys: getKeys()
     };
 
     function get(key) {
@@ -34,6 +35,15 @@
 
     function getValueOrDefault(key, defaultValue) {
       return exists(key) ? get(key) : defaultValue;
+    }
+
+    function getKeys() {
+      return {
+        selections: {
+          environment: 'em-selections-environment',
+          team: 'em-selections-team'
+        }
+      };
     }
   }
 }());
