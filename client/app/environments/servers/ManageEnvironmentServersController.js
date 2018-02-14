@@ -6,7 +6,7 @@
 
 angular.module('EnvironmentManager.environments')
   .controller('ManageEnvironmentServersController',
-  function ($rootScope, $routeParams, $http, $q, cachedResources, resources, $uibModal, accountMappingService, serversView, QuerySync, environmentDeploy, $scope, serviceDiscovery, enums, modal, asgservice) {
+  function ($rootScope, $routeParams, $http, $q, cachedResources, resources, $uibModal, accountMappingService, serversView, QuerySync, environmentDeploy, $scope, serviceDiscovery, enums, modal, asgservice, localstorageservice) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -23,7 +23,7 @@ angular.module('EnvironmentManager.environments')
       },
       cluster: {
         property: 'selected.cluster',
-        default: SHOW_ALL_OPTION
+        default: localstorageservice.getValueOrDefault('em-selections-team', SHOW_ALL_OPTION)
       },
       server: {
         property: 'selected.serverRole',
@@ -55,12 +55,12 @@ angular.module('EnvironmentManager.environments')
       querySync.init();
 
       var environmentName = vm.selected.environment.EnvironmentName;
+      localstorageservice.set(localstorageservice.keys.selections.environment, environmentName);
       $rootScope.WorkingEnvironment.EnvironmentName = environmentName;
 
       $q.all([
         cachedResources.config.clusters.all().then(function (clusters) {
           vm.options.clusters = vm.options.clusters.concat(_.map(clusters, 'ClusterName')).sort();
-          vm.selected.cluster = vm.options.clusters[0];
         }),
 
         cachedResources.config.environments.all().then(function (envData) {
@@ -141,6 +141,7 @@ angular.module('EnvironmentManager.environments')
     vm.update = function () {
       querySync.updateQuery();
       vm.view = serversView(vm.data, vm.selected)
+      localstorageservice.set('em-selections-team', vm.selected.cluster);
       return $q.resolve();
     };
 

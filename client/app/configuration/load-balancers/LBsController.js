@@ -6,7 +6,7 @@
 
 // Manage Load Balancer settings
 angular.module('EnvironmentManager.configuration').controller('LBsController',
-  function ($scope, $routeParams, $location, $q, $uibModal, modal, resources, cachedResources, accountMappingService, lbBulkOperationService) {
+  function ($scope, $routeParams, $location, $q, $uibModal, modal, resources, cachedResources, accountMappingService, lbBulkOperationService, localstorageservice) {
     var SHOW_ALL_OPTION = 'All';
 
     $scope.FullData = [];
@@ -15,7 +15,7 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
 
     $scope.EnvironmentsList = [];
     $scope.SettingTypeList = [SHOW_ALL_OPTION, 'Front End', 'Back End'];
-    $scope.SelectedEnvironment = '';
+    $scope.SelectedEnvironment =  $routeParams.lb_environment || localstorageservice.get(localstorageservice.keys.selections.environment);
     $scope.SelectedSettingType = SHOW_ALL_OPTION;
     $scope.SelectedServer = '';
 
@@ -27,7 +27,7 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
       $location.search('returnPath', null);
       $location.search('key', null);
       $location.search('up_environment', null);
-      var env = $routeParams.lb_environment;
+
       var typeFilter = $routeParams.typeFilter;
       var serverFilter = $routeParams.serverFilter;
 
@@ -44,7 +44,6 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
           $scope.AccountsList = [SHOW_ALL_OPTION].concat(accounts).sort();
         })
       ]).then(function () {
-        $scope.SelectedEnvironment = env ? env : $scope.EnvironmentsList[0];
         $scope.Refresh();
       });
     }
@@ -84,6 +83,9 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
       $location.search('lb_environment', $scope.SelectedEnvironment);
       $location.search('typeFilter', $scope.SelectedSettingType);
       $location.search('serverFilter', $scope.SelectedServer);
+
+      localstorageservice.set(localstorageservice.keys.selections.environment, $scope.SelectedEnvironment);
+      
       $scope.Data = $scope.FullData.filter(function (lb) {
         var match = true;
         if ($scope.SelectedServer) {

@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsDeploymentsController',
-  function ($routeParams, $uibModal, $scope, $q, $timeout, resources, cachedResources, enums, QuerySync, Deployment) {
+  function ($routeParams, $uibModal, $scope, $q, $timeout, resources, cachedResources, enums, QuerySync, Deployment, localstorageservice) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -35,7 +35,7 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
       },
       environment: {
         property: 'selectedEnvironment',
-        default: SHOW_ALL_OPTION
+        default: localstorageservice.getValueOrDefault(localstorageservice.keys.selections.environment, SHOW_ALL_OPTION)
       },
       status: {
         property: 'selectedStatus',
@@ -43,7 +43,7 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
       },
       cluster: {
         property: 'selectedOwningCluster',
-        default: SHOW_ALL_OPTION
+        default: localstorageservice.getValueOrDefault(localstorageservice.keys.selections.team, SHOW_ALL_OPTION)
       },
       service: {
         property: 'serviceName',
@@ -86,7 +86,6 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
           vm.statusList = [SHOW_ALL_OPTION].concat(deploymentStatuses);
         })
       ]).then(function () {
-        // Show default results
         vm.refresh();
       });
     }
@@ -142,6 +141,9 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
         dateNow -= (vm.selectedDateRangeValue);
         query.since = new Date(dateNow).toISOString();
       }
+
+      localstorageservice.set(localstorageservice.keys.selections.team, vm.selectedOwningCluster);
+      localstorageservice.set(localstorageservice.keys.selections.environment, vm.selectedEnvironment);
 
       vm.query = query;
     };

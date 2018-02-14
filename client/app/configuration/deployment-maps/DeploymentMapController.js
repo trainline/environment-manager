@@ -5,14 +5,14 @@
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('DeploymentMapController',
-  function ($scope, $routeParams, $location, $q, $uibModal, QuerySync, resources, cachedResources, modal, deploymentMapConverter, DeploymentMap) {
+  function ($scope, $routeParams, $location, $q, $uibModal, QuerySync, resources, cachedResources, modal, deploymentMapConverter, DeploymentMap, localstorageservice) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
     var userHasPermission;
 
-    vm.deploymentMap = {}; // The full deployment map being viewed/edited
-    vm.deploymentTargets = []; // Active set of Deployment Targets
+    vm.deploymentMap = {}; 
+    vm.deploymentTargets = [];
 
     vm.owningClustersList = [];
     vm.allDeploymentMaps = [];
@@ -29,7 +29,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
     var querySync = new QuerySync(vm, {
       cluster: {
         property: 'selectedOwningCluster',
-        default: SHOW_ALL_OPTION
+        default: localstorageservice.getValueOrDefault('em-selections-team', SHOW_ALL_OPTION)
       },
       service: {
         property: 'serviceName',
@@ -70,18 +70,15 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
 
     vm.search = function () {
       querySync.updateQuery();
-
-      // Client side filter of Server Roles/targets based on user selections
+      localstorageservice.set('em-selections-team', vm.selectedOwningCluster);
       vm.deploymentTargets = vm.deploymentMap.Value.DeploymentTarget.filter(function (target) {
         var match = vm.selectedOwningCluster == SHOW_ALL_OPTION || target.OwningCluster == vm.selectedOwningCluster;
 
         if (match && vm.serverRole != '') {
-          // Check for server role name match
           match = match && angular.lowercase(target.ServerRoleName).indexOf(angular.lowercase(vm.serverRole)) != -1;
         }
 
         if (match && vm.serviceName != '') {
-          // Loop contained services and check for (partial) match
           var searchName = angular.lowercase(vm.serviceName);
           var matchingServiceFound = false;
           for (var i = 0; i < target.Services.length; i++) {
@@ -102,21 +99,21 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
     vm.add = function () {
       var instance = showTargetDialog(null, 'New');
       instance.result.then(function () {
-        readDeploymentMap(vm.deploymentMap.DeploymentMapName); // Refresh data to pick up changes
+        readDeploymentMap(vm.deploymentMap.DeploymentMapName);
       });
     };
 
     vm.showEditDialog = function (target) {
       var instance = showTargetDialog(target, 'Edit');
       instance.result.then(function () {
-        readDeploymentMap(vm.deploymentMap.DeploymentMapName); // Refresh data to pick up changes
+        readDeploymentMap(vm.deploymentMap.DeploymentMapName); 
       });
     };
 
     vm.clone = function (target) {
       var instance = showTargetDialog(target, 'Clone');
       instance.result.then(function () {
-        readDeploymentMap(vm.deploymentMap.DeploymentMapName); // Refresh data to pick up changes
+        readDeploymentMap(vm.deploymentMap.DeploymentMapName);
       });
     };
 
@@ -142,13 +139,10 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
         action: 'Delete',
         severity: 'Danger'
       }).then(function () {
-        // Filter targets array to remove selected target
         vm.deploymentMap.Value.DeploymentTarget = vm.deploymentMap.Value.DeploymentTarget.filter(function (t) {
-          // TODO: remove by server role and cluster, would like names to be unique across whole map but for now just per cluster
           return !(t.ServerRoleName == target.ServerRoleName && t.OwningCluster == target.OwningCluster);
         });
 
-        // Convert back to Dynamo format for writing to the DB
         var deploymentMapValue = vm.deploymentMap.Value.DeploymentTarget.map(deploymentMapConverter.toDynamoSchema);
 
         var params = {
@@ -159,13 +153,12 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
 
         resources.config.deploymentMaps.put(params).then(function () {
           cachedResources.config.deploymentMaps.flush();
-          readDeploymentMap(vm.deploymentMap.DeploymentMapName); // Refresh data to pick up changes
+          readDeploymentMap(vm.deploymentMap.DeploymentMapName);
         });
       });
     };
 
     vm.viewHistory = function (target) {
-      // TODO: Should be per target but only at deployment map level for now
       $scope.ViewAuditHistory('Deployment Map', vm.deploymentMap.DeploymentMapName);
     };
 
@@ -216,7 +209,6 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
         vm.deploymentMap = deploymentMap;
         vm.deploymentTargets = deploymentMap.Value.DeploymentTarget;
 
-        // Clean away legacy service property.
         vm.deploymentTargets.forEach(function (dm) {
           dm.Services.forEach(function (s) {
             delete s.DeploymentMethod;

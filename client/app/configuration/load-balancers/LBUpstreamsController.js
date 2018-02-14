@@ -6,11 +6,11 @@
 
 // Manage Load Balancer Upstreams
 angular.module('EnvironmentManager.configuration').controller('LBUpstreamsController',
-  function ($scope, $routeParams, $location, $q, modal, resources, UpstreamConfig, cachedResources, accountMappingService) {
+  function ($scope, $routeParams, $location, $q, modal, resources, UpstreamConfig, cachedResources, accountMappingService, localstorageservice) {
     var vm = this;
 
     vm.environmentsList = [];
-    vm.selectedEnvironment = '';
+    vm.selectedEnvironment = $routeParams.up_environment || localstorageservice.get(localstorageservice.keys.selections.environment);
     vm.selectedService = '';
 
     vm.fullData = [];
@@ -22,7 +22,6 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamsContro
 
       $location.search('key', null);
       $location.search('mode', null);
-      var env = $routeParams.up_environment;
       var serviceFilter = $routeParams.serviceFilter;
 
       if (serviceFilter) vm.selectedService = serviceFilter;
@@ -32,7 +31,6 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamsContro
           vm.environmentsList = _.map(environments, 'EnvironmentName').sort();
         })
       ]).then(function () {
-        vm.selectedEnvironment = env ? env : vm.environmentsList[0];
         vm.refresh();
       });
     }
@@ -49,6 +47,7 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamsContro
         vm.fullData = data;
       }).finally(function () {
         vm.updateFilter();
+        localstorageservice.set(localstorageservice.keys.selections.environment, vm.selectedEnvironment);
         vm.dataLoading = false;
       });
     };
