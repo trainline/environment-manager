@@ -23,7 +23,7 @@ angular.module('EnvironmentManager.environments')
       },
       cluster: {
         property: 'selected.cluster',
-        default: localstorageservice.getValueOrDefault('em-selections-team', SHOW_ALL_OPTION)
+        default: localstorageservice.getValueOrDefault(localstorageservice.keys.selections.team, SHOW_ALL_OPTION)
       },
       server: {
         property: 'selected.serverRole',
@@ -140,7 +140,7 @@ angular.module('EnvironmentManager.environments')
     vm.update = function () {
       querySync.updateQuery();
       vm.view = serversView(vm.data, vm.selected)
-      localstorageservice.set('em-selections-team', vm.selected.cluster);
+      localstorageservice.set(localstorageservice.keys.selections.team, vm.selected.cluster);
       return $q.resolve();
     };
 

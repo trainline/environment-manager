@@ -35,7 +35,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
             },
             cluster: {
               property: 'selectedOwningCluster',
-              default: localstorageservice.getValueOrDefault('em-selections-team', SHOW_ALL_OPTION)
+              default: localstorageservice.getValueOrDefault(localstorageservice.keys.selections.team, SHOW_ALL_OPTION)
             },
             state: {
               property: 'selectedState',
@@ -82,7 +82,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     vm.updateFilter = function () {
       querySync.updateQuery();
 
-      localstorageservice.set('em-selections-team', vm.selectedOwningCluster);
+      localstorageservice.set(localstorageservice.keys.selections.team, vm.selectedOwningCluster);
 
       vm.data = vm.fullUpstreamData.filter(function (upstream) {
         if (upstream.Value.EnvironmentName !== vm.selectedEnvironment) {

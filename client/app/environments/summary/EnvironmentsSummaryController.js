@@ -21,7 +21,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
     vm.hasUserSettings = localstorageservice.exists('em-settings-environments');
     vm.userSettings = localstorageservice.get('em-settings-environments');
     vm.toggleAllEnvironmentsLabel = vm.hasUserSettings ? "Show All Environments" : "Filter From User Settings";
-    vm.browsedOwningCluster = localstorageservice.getValueOrDefault('em-selections-team', SHOW_ALL_OPTION);
+    vm.browsedOwningCluster = localstorageservice.getValueOrDefault(localstorageservice.keys.selections.team, SHOW_ALL_OPTION);
 
     vm.dataLoading = false;
 
@@ -61,7 +61,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
         cluster: vm.selectedOwningCluster
       });
 
-      localstorageservice.set('em-selections-team', vm.selectedOwningCluster);
+      localstorageservice.set(localstorageservice.keys.selections.team, vm.selectedOwningCluster);
 
       var query = {};
       if (vm.selectedEnvironmentType != SHOW_ALL_OPTION) {

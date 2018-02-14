@@ -43,7 +43,7 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
       },
       cluster: {
         property: 'selectedOwningCluster',
-        default: localstorageservice.getValueOrDefault('em-selections-team', SHOW_ALL_OPTION)
+        default: localstorageservice.getValueOrDefault(localstorageservice.keys.selections.team, SHOW_ALL_OPTION)
       },
       service: {
         property: 'serviceName',
@@ -142,7 +142,7 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
         query.since = new Date(dateNow).toISOString();
       }
 
-      localstorageservice.set('em-selections-team', vm.selectedOwningCluster);
+      localstorageservice.set(localstorageservice.keys.selections.team, vm.selectedOwningCluster);
 
       vm.query = query;
     };

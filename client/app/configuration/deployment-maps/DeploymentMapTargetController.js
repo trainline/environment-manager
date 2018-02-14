@@ -66,7 +66,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
           var newTarget = {
             ServerRoleName: '',
             FleetPerSlice: false,
-            OwningCluster: localstorageservice.getValueOrDefault('em-selections-team', vm.owningClustersList[0].ClusterName),
+            OwningCluster: localstorageservice.getValueOrDefault(localstorageservice.keys.selections.team, vm.owningClustersList[0].ClusterName),
             SecurityZone: vm.securityZonesList[0],
             ASG: {
               MinCapacity: 0,

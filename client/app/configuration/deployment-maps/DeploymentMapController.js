@@ -29,7 +29,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
     var querySync = new QuerySync(vm, {
       cluster: {
         property: 'selectedOwningCluster',
-        default: localstorageservice.getValueOrDefault('em-selections-team', SHOW_ALL_OPTION)
+        default: localstorageservice.getValueOrDefault(localstorageservice.keys.selections.team, SHOW_ALL_OPTION)
       },
       service: {
         property: 'serviceName',
@@ -70,7 +70,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
 
     vm.search = function () {
       querySync.updateQuery();
-      localstorageservice.set('em-selections-team', vm.selectedOwningCluster);
+      localstorageservice.set(localstorageservice.keys.selections.team, vm.selectedOwningCluster);
       vm.deploymentTargets = vm.deploymentMap.Value.DeploymentTarget.filter(function (target) {
         var match = vm.selectedOwningCluster == SHOW_ALL_OPTION || target.OwningCluster == vm.selectedOwningCluster;
 

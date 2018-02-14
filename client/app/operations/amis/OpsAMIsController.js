@@ -38,7 +38,7 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
             },
             cluster: {
               property: 'selectedOwningCluster',
-              default: localstorageservice.getValueOrDefault('em-selections-team', SHOW_ALL_OPTION)
+              default: localstorageservice.getValueOrDefault(localstorageservice.keys.selections.team, SHOW_ALL_OPTION)
             },
             server: {
               property: 'selectedServerRole',
@@ -79,7 +79,7 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
 
       querySync.updateQuery();
 
-      localstorageservice.set('em-selections-team', vm.selectedOwningCluster);
+      localstorageservice.set(localstorageservice.keys.selections.team, vm.selectedOwningCluster);
 
       accountMappingService.getAccountForEnvironment(vm.selectedEnvironment).then(function (accountName) {
         vm.selectedAccount = accountName;
