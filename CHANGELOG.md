@@ -3,13 +3,13 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-[#unreleased]
+## [6.19.0] 2018-02-14
 
 ### Changed
 
 - Calls made from the server screen and asg modal are now running through the ec2 client which queries the _new_ EC2monitor. [#412]
 
-## [6.18.0] 2018-02-06
+- Servers screen no longer shows deployment status.
 
 ### Added
 
@@ -20,6 +20,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 - Removed environment schedule cache to prevent scheduling race conditions. [#408]
 
 - When a user performs an HTTP request that results in an error which contains no details, the resulting dialog shows "ERROR" and nothing to help the user identify the cause of the issue. Now, any response that doesn't contain any details, the error modal will be given some useful http request information to display that resulted in the error screen. [#403]
+
+- Improved error handling [#403]
 
 ## [6.17.0] 2018-01-25
 
@@ -356,8 +358,8 @@ Example:
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
 - A number of bugs related to the removal of a account as a special case of an account. [#305]
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/6.18.0...master
-[6.18.0]: https://github.com/trainline/environment-manager/compare/6.17.0...6.18.0
+[Unreleased]: https://github.com/trainline/environment-manager/compare/6.19.0...master
+[6.19.0]: https://github.com/trainline/environment-manager/compare/6.17.0...6.19.0
 [6.17.0]: https://github.com/trainline/environment-manager/compare/6.15.4...6.17.0
 [6.15.4]: https://github.com/trainline/environment-manager/compare/6.15.3...6.15.4
 [6.15.3]: https://github.com/trainline/environment-manager/compare/6.15.2...6.15.3
@@ -393,6 +395,7 @@ Example:
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
+[#403]: https://github.com/trainline/environment-manager/pull/403
 [#412]: https://github.com/trainline/environment-manager/pull/412
 [#408]: https://github.com/trainline/environment-manager/pull/408
 [#407]: https://github.com/trainline/environment-manager/pull/407
