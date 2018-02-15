@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.common').controller('MainController',
-  function ($rootScope, $scope, $route, $routeParams, $http, $location, $window, $uibModal, modal, Environment, environmentDeploy, releasenotesservice, localstorageservice, environmentstorageservice) {
+  function ($rootScope, $scope, $route, $routeParams, $http, $location, $window, $uibModal, modal, Environment, environmentDeploy, releasenotesservice, environmentstorageservice) {
     var vm = this;
 
     vm.appVersion = $window.version;

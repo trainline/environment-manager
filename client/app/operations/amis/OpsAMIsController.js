@@ -80,6 +80,7 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
       querySync.updateQuery();
 
       teamstorageservice.set(vm.selectedOwningCluster);
+      environmentstorageservice.set(vm.selectedEnvironment);
 
       accountMappingService.getAccountForEnvironment(vm.selectedEnvironment).then(function (accountName) {
         vm.selectedAccount = accountName;
