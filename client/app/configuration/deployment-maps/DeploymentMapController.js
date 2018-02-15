@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('DeploymentMapController',
-  function ($scope, $routeParams, $location, $q, $uibModal, QuerySync, resources, cachedResources, modal, deploymentMapConverter, DeploymentMap, localstorageservice) {
+  function ($scope, $routeParams, $location, $q, $uibModal, QuerySync, resources, cachedResources, modal, deploymentMapConverter, DeploymentMap, teamstorageservice) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -29,7 +29,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
     var querySync = new QuerySync(vm, {
       cluster: {
         property: 'selectedOwningCluster',
-        default: localstorageservice.getValueOrDefault(localstorageservice.keys.selections.team, SHOW_ALL_OPTION)
+        default: teamstorageservice.get(SHOW_ALL_OPTION)
       },
       service: {
         property: 'serviceName',
@@ -70,7 +70,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
 
     vm.search = function () {
       querySync.updateQuery();
-      localstorageservice.set(localstorageservice.keys.selections.team, vm.selectedOwningCluster);
+      teamstorageservice.set(vm.selectedOwningCluster);
       vm.deploymentTargets = vm.deploymentMap.Value.DeploymentTarget.filter(function (target) {
         var match = vm.selectedOwningCluster == SHOW_ALL_OPTION || target.OwningCluster == vm.selectedOwningCluster;
 

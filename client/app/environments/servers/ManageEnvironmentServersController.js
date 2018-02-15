@@ -6,7 +6,7 @@
 
 angular.module('EnvironmentManager.environments')
   .controller('ManageEnvironmentServersController',
-  function ($rootScope, $routeParams, $http, $q, cachedResources, resources, $uibModal, accountMappingService, serversView, QuerySync, environmentDeploy, $scope, serviceDiscovery, enums, modal, asgservice, localstorageservice) {
+  function ($rootScope, $routeParams, $http, $q, cachedResources, resources, $uibModal, accountMappingService, serversView, QuerySync, environmentDeploy, $scope, serviceDiscovery, enums, modal, asgservice, teamstorageservice) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -23,7 +23,7 @@ angular.module('EnvironmentManager.environments')
       },
       cluster: {
         property: 'selected.cluster',
-        default: localstorageservice.getValueOrDefault(localstorageservice.keys.selections.team, SHOW_ALL_OPTION)
+        default: teamstorageservice.get(SHOW_ALL_OPTION)
       },
       server: {
         property: 'selected.serverRole',
@@ -140,7 +140,7 @@ angular.module('EnvironmentManager.environments')
     vm.update = function () {
       querySync.updateQuery();
       vm.view = serversView(vm.data, vm.selected)
-      localstorageservice.set(localstorageservice.keys.selections.team, vm.selected.cluster);
+      teamstorageservice.set(vm.selected.cluster);
       return $q.resolve();
     };
 

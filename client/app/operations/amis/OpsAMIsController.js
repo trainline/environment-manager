@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
-  function ($scope, $routeParams, $location, $uibModal, $q, resources, cachedResources, accountMappingService, awsService, modal, QuerySync, localstorageservice) {
+  function ($scope, $routeParams, $location, $uibModal, $q, resources, cachedResources, accountMappingService, awsService, modal, QuerySync, teamstorageservice) {
     var vm = this;
     var SHOW_ALL_OPTION = 'Any';
 
@@ -38,7 +38,7 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
             },
             cluster: {
               property: 'selectedOwningCluster',
-              default: localstorageservice.getValueOrDefault(localstorageservice.keys.selections.team, SHOW_ALL_OPTION)
+              default: teamstorageservice.get(SHOW_ALL_OPTION)
             },
             server: {
               property: 'selectedServerRole',
@@ -79,7 +79,7 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
 
       querySync.updateQuery();
 
-      localstorageservice.set(localstorageservice.keys.selections.team, vm.selectedOwningCluster);
+      teamstorageservice.set(vm.selectedOwningCluster);
 
       accountMappingService.getAccountForEnvironment(vm.selectedEnvironment).then(function (accountName) {
         vm.selectedAccount = accountName;

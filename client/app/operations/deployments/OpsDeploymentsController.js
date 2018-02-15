@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsDeploymentsController',
-  function ($routeParams, $uibModal, $scope, $q, $timeout, resources, cachedResources, enums, QuerySync, Deployment, localstorageservice) {
+  function ($routeParams, $uibModal, $scope, $q, $timeout, resources, cachedResources, enums, QuerySync, Deployment, teamstorageservice) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -43,7 +43,7 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
       },
       cluster: {
         property: 'selectedOwningCluster',
-        default: localstorageservice.getValueOrDefault(localstorageservice.keys.selections.team, SHOW_ALL_OPTION)
+        default: teamstorageservice.get(SHOW_ALL_OPTION)
       },
       service: {
         property: 'serviceName',
@@ -142,7 +142,7 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
         query.since = new Date(dateNow).toISOString();
       }
 
-      localstorageservice.set(localstorageservice.keys.selections.team, vm.selectedOwningCluster);
+      teamstorageservice.set(vm.selectedOwningCluster);
 
       vm.query = query;
     };

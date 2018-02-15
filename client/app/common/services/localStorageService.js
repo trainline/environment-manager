@@ -15,9 +15,7 @@
     return {
       get: get,
       set: set,
-      exists: exists,
-      getValueOrDefault: getValueOrDefault,
-      keys: getKeys()
+      exists: exists
     };
 
     function get(key) {
@@ -31,18 +29,6 @@
     function exists(key) {
       if (get(key) === null || get(key) === '') return false;
       return true;
-    }
-
-    function getValueOrDefault(key, defaultValue) {
-      return exists(key) ? get(key) : defaultValue;
-    }
-
-    function getKeys() {
-      return {
-        selections: {
-          team: 'em-selections-team'
-        }
-      };
     }
   }
 }());
