@@ -22,7 +22,7 @@
  *   Owning Cluster   (TODO: Future change. Where we know it anyway – useful for filter)
  */
 angular.module('EnvironmentManager.configuration').controller('AuditController',
-  function ($scope, $routeParams, $location, $q, $http, $uibModal, resources, cachedResources, arrayItemHashDetector, modal, enums, linkHeader, QuerySync, localstorageservice) {
+  function ($scope, $routeParams, $location, $q, $http, $uibModal, resources, cachedResources, arrayItemHashDetector, modal, enums, linkHeader, QuerySync, environmentstorageservice) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -80,7 +80,7 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
 
     $scope.SelectedEntityType = SHOW_ALL_OPTION;
     $scope.SelectedChangeType = SHOW_ALL_OPTION;
-    $scope.SelectedEnvironment = localstorageservice.getValueOrDefault(localstorageservice.keys.selections.environment, SHOW_ALL_OPTION);
+    $scope.SelectedEnvironment = environmentstorageservice.get(SHOW_ALL_OPTION);
     $scope.SelectedEntityKey = '';
     $scope.SelectedEntityRange = '';
     $scope.SelectedDateRangeValue = $scope.DateRangeList[0].Value; // Today
@@ -171,7 +171,7 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
         query: query
       };
 
-      localstorageservice.set(localstorageservice.keys.selections.environment, $scope.SelectedEnvironment);
+      environmentstorageservice.set($scope.SelectedEnvironment);
 
       resources.audit.history.all(params).then(function (data) {
         displayResults(data);

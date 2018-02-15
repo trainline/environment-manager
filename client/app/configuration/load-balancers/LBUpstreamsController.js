@@ -6,11 +6,11 @@
 
 // Manage Load Balancer Upstreams
 angular.module('EnvironmentManager.configuration').controller('LBUpstreamsController',
-  function ($scope, $routeParams, $location, $q, modal, resources, UpstreamConfig, cachedResources, accountMappingService, localstorageservice) {
+  function ($scope, $routeParams, $location, $q, modal, resources, UpstreamConfig, cachedResources, accountMappingService, environmentstorageservice) {
     var vm = this;
 
     vm.environmentsList = [];
-    vm.selectedEnvironment = $routeParams.up_environment || localstorageservice.get(localstorageservice.keys.selections.environment);
+    vm.selectedEnvironment = $routeParams.up_environment || environmentstorageservice.get();
     vm.selectedService = '';
 
     vm.fullData = [];
@@ -47,7 +47,7 @@ angular.module('EnvironmentManager.configuration').controller('LBUpstreamsContro
         vm.fullData = data;
       }).finally(function () {
         vm.updateFilter();
-        localstorageservice.set(localstorageservice.keys.selections.environment, vm.selectedEnvironment);
+        environmentstorageservice.set(vm.selectedEnvironment);
         vm.dataLoading = false;
       });
     };

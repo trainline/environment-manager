@@ -6,7 +6,7 @@
 
 // Manage Load Balancer settings
 angular.module('EnvironmentManager.configuration').controller('LBsController',
-  function ($scope, $routeParams, $location, $q, $uibModal, modal, resources, cachedResources, accountMappingService, lbBulkOperationService, localstorageservice) {
+  function ($scope, $routeParams, $location, $q, $uibModal, modal, resources, cachedResources, accountMappingService, lbBulkOperationService, environmentstorageservice) {
     var SHOW_ALL_OPTION = 'All';
 
     $scope.FullData = [];
@@ -15,7 +15,7 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
 
     $scope.EnvironmentsList = [];
     $scope.SettingTypeList = [SHOW_ALL_OPTION, 'Front End', 'Back End'];
-    $scope.SelectedEnvironment =  $routeParams.lb_environment || localstorageservice.get(localstorageservice.keys.selections.environment);
+    $scope.SelectedEnvironment =  $routeParams.lb_environment || environmentstorageservice.get();
     $scope.SelectedSettingType = SHOW_ALL_OPTION;
     $scope.SelectedServer = '';
 
@@ -84,7 +84,7 @@ angular.module('EnvironmentManager.configuration').controller('LBsController',
       $location.search('typeFilter', $scope.SelectedSettingType);
       $location.search('serverFilter', $scope.SelectedServer);
 
-      localstorageservice.set(localstorageservice.keys.selections.environment, $scope.SelectedEnvironment);
+      environmentstorageservice.set($scope.SelectedEnvironment);
       
       $scope.Data = $scope.FullData.filter(function (lb) {
         var match = true;

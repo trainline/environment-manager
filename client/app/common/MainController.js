@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.common').controller('MainController',
-  function ($rootScope, $scope, $route, $routeParams, $http, $location, $window, $uibModal, modal, Environment, environmentDeploy, releasenotesservice, localstorageservice) {
+  function ($rootScope, $scope, $route, $routeParams, $http, $location, $window, $uibModal, modal, Environment, environmentDeploy, releasenotesservice, localstorageservice, environmentstorageservice) {
     var vm = this;
 
     vm.appVersion = $window.version;
@@ -55,7 +55,7 @@ angular.module('EnvironmentManager.common').controller('MainController',
     // Change active environment for Environments section
     $scope.ChangeEnvironment = function () {
       $location.search('environment', $rootScope.WorkingEnvironment.EnvironmentName);
-      localstorageservice.set(localstorageservice.keys.selections.environment, $rootScope.WorkingEnvironment.EnvironmentName);
+      environmentstorageservice.set($rootScope.WorkingEnvironment.EnvironmentName);
       $route.reload();
     };
 
