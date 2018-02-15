@@ -7,28 +7,9 @@
     .module('EnvironmentManager.common')
     .factory('teamstorageservice', teamstorageservice);
 
-  teamstorageservice.$inject = ['localstorageservice'];
+  teamstorageservice.$inject = ['storageservicefactory'];
 
-  function teamstorageservice(localstorageservice) {
-    var key = 'em-selections-team';
-
-    return {
-      get: get,
-      set: set
-    };
-
-    function get(defaultValue) {
-      var value = '';
-
-      if (defaultValue) value = defaultValue;
-
-      if (localstorageservice.exists(key)) value = localstorageservice.get(key);
-
-      return value;
-    }
-
-    function set(value) {
-      localstorageservice.set(key, value);
-    }
+  function teamstorageservice(storageservicefactory) {
+    return storageservicefactory.create('em-selections-team');
   }
 }());

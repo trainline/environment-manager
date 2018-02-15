@@ -6,11 +6,7 @@
 
 angular.module('EnvironmentManager.environments')
   .controller('ManageEnvironmentServersController',
-<<<<<<< HEAD
-  function ($rootScope, $routeParams, $http, $q, cachedResources, resources, $uibModal, accountMappingService, serversView, QuerySync, environmentDeploy, $scope, serviceDiscovery, enums, modal, asgservice, localstorageservice) {
-=======
   function ($rootScope, $routeParams, $http, $q, cachedResources, resources, $uibModal, accountMappingService, serversView, QuerySync, environmentDeploy, $scope, serviceDiscovery, enums, modal, asgservice, teamstorageservice) {
->>>>>>> feature/keep-team-across-screens
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -27,11 +23,7 @@ angular.module('EnvironmentManager.environments')
       },
       cluster: {
         property: 'selected.cluster',
-<<<<<<< HEAD
-        default: localstorageservice.getValueOrDefault('em-selections-team', SHOW_ALL_OPTION)
-=======
         default: teamstorageservice.get(SHOW_ALL_OPTION)
->>>>>>> feature/keep-team-across-screens
       },
       server: {
         property: 'selected.serverRole',
@@ -149,11 +141,7 @@ angular.module('EnvironmentManager.environments')
     vm.update = function () {
       querySync.updateQuery();
       vm.view = serversView(vm.data, vm.selected)
-<<<<<<< HEAD
-      localstorageservice.set('em-selections-team', vm.selected.cluster);
-=======
       teamstorageservice.set(vm.selected.cluster);
->>>>>>> feature/keep-team-across-screens
       return $q.resolve();
     };
 

@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('DeploymentMapTargetController',
-  function ($scope, $location, $uibModalInstance, $uibModal, $q, Image, resources, cachedResources, modal, deploymentMap, deploymentTarget, deploymentMapConverter, displayMode, awsService, localstorageservice) {
+  function ($scope, $location, $uibModalInstance, $uibModal, $q, Image, resources, cachedResources, modal, deploymentMap, deploymentTarget, deploymentMapConverter, displayMode, awsService, teamstorageservice) {
     var vm = this;
 
     var userHasPermission;
@@ -66,11 +66,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
           var newTarget = {
             ServerRoleName: '',
             FleetPerSlice: false,
-<<<<<<< HEAD
-            OwningCluster: localstorageservice.getValueOrDefault('em-selections-team', vm.owningClustersList[0].ClusterName),
-=======
-            OwningCluster: localstorageservice.getValueOrDefault(localstorageservice.keys.selections.team, vm.owningClustersList[0].ClusterName),
->>>>>>> feature/keep-team-across-screens
+            OwningCluster: teamstorageservice.get(vm.owningClustersList[0].ClusterName),
             SecurityZone: vm.securityZonesList[0],
             ASG: {
               MinCapacity: 0,
