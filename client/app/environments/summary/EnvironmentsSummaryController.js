@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('EnvironmentsSummaryController',
-  function ($scope, $routeParams, $location, $uibModal, $http, $q, modal, resources, cachedResources, Environment, localstorageservice) {
+  function ($scope, $routeParams, $location, $uibModal, $http, $q, modal, resources, cachedResources, Environment, localstorageservice, teamstorageservice) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -21,7 +21,11 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
     vm.hasUserSettings = localstorageservice.exists('em-settings-environments');
     vm.userSettings = localstorageservice.get('em-settings-environments');
     vm.toggleAllEnvironmentsLabel = vm.hasUserSettings ? "Show All Environments" : "Filter From User Settings";
+<<<<<<< HEAD
     vm.browsedOwningCluster = localstorageservice.getValueOrDefault('em-selections-team', SHOW_ALL_OPTION);
+=======
+    vm.browsedOwningCluster = teamstorageservice.get(SHOW_ALL_OPTION);
+>>>>>>> feature/keep-team-across-screens
 
     vm.dataLoading = false;
 
@@ -61,7 +65,11 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
         cluster: vm.selectedOwningCluster
       });
 
+<<<<<<< HEAD
       localstorageservice.set('em-selections-team', vm.selectedOwningCluster);
+=======
+      teamstorageservice.set(vm.selectedOwningCluster);
+>>>>>>> feature/keep-team-across-screens
 
       var query = {};
       if (vm.selectedEnvironmentType != SHOW_ALL_OPTION) {

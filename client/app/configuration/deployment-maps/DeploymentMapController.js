@@ -5,7 +5,11 @@
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('DeploymentMapController',
+<<<<<<< HEAD
   function ($scope, $routeParams, $location, $q, $uibModal, QuerySync, resources, cachedResources, modal, deploymentMapConverter, DeploymentMap, localstorageservice) {
+=======
+  function ($scope, $routeParams, $location, $q, $uibModal, QuerySync, resources, cachedResources, modal, deploymentMapConverter, DeploymentMap, teamstorageservice) {
+>>>>>>> feature/keep-team-across-screens
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -29,7 +33,11 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
     var querySync = new QuerySync(vm, {
       cluster: {
         property: 'selectedOwningCluster',
+<<<<<<< HEAD
         default: localstorageservice.getValueOrDefault('em-selections-team', SHOW_ALL_OPTION)
+=======
+        default: teamstorageservice.get(SHOW_ALL_OPTION)
+>>>>>>> feature/keep-team-across-screens
       },
       service: {
         property: 'serviceName',
@@ -70,7 +78,11 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapCont
 
     vm.search = function () {
       querySync.updateQuery();
+<<<<<<< HEAD
       localstorageservice.set('em-selections-team', vm.selectedOwningCluster);
+=======
+      teamstorageservice.set(vm.selectedOwningCluster);
+>>>>>>> feature/keep-team-across-screens
       vm.deploymentTargets = vm.deploymentMap.Value.DeploymentTarget.filter(function (target) {
         var match = vm.selectedOwningCluster == SHOW_ALL_OPTION || target.OwningCluster == vm.selectedOwningCluster;
 

@@ -6,7 +6,11 @@
 
 // Manage all services
 angular.module('EnvironmentManager.configuration').controller('ServicesController',
+<<<<<<< HEAD
   function ($scope, $routeParams, $location, $http, resources, cachedResources, modal, localstorageservice) {
+=======
+  function ($scope, $routeParams, $location, $http, resources, cachedResources, modal, teamstorageservice) {
+>>>>>>> feature/keep-team-across-screens
     var vm = this;
     var SHOW_ALL_OPTION = 'Any';
 
@@ -25,7 +29,11 @@ angular.module('EnvironmentManager.configuration').controller('ServicesControlle
       var cluster = $routeParams.cluster;
       var service = $routeParams.service;
 
+<<<<<<< HEAD
       vm.selectedOwningCluster = cluster || localstorageservice.getValueOrDefault('em-selections-team', SHOW_ALL_OPTION);
+=======
+      vm.selectedOwningCluster = cluster || teamstorageservice.get(SHOW_ALL_OPTION);
+>>>>>>> feature/keep-team-across-screens
       vm.selectedService = service || '';
 
       cachedResources.config.clusters.all().then(function (clusters) {
@@ -42,7 +50,11 @@ angular.module('EnvironmentManager.configuration').controller('ServicesControlle
     vm.refresh = function () {
       var query = {};
 
+<<<<<<< HEAD
       localstorageservice.set('em-selections-team', vm.selectedOwningCluster);
+=======
+      teamstorageservice.set(vm.selectedOwningCluster);
+>>>>>>> feature/keep-team-across-screens
       
       if (vm.selectedOwningCluster != SHOW_ALL_OPTION) {
         query.cluster = vm.selectedOwningCluster;

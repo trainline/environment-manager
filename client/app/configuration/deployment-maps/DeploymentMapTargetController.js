@@ -66,7 +66,11 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
           var newTarget = {
             ServerRoleName: '',
             FleetPerSlice: false,
+<<<<<<< HEAD
             OwningCluster: localstorageservice.getValueOrDefault('em-selections-team', vm.owningClustersList[0].ClusterName),
+=======
+            OwningCluster: localstorageservice.getValueOrDefault(localstorageservice.keys.selections.team, vm.owningClustersList[0].ClusterName),
+>>>>>>> feature/keep-team-across-screens
             SecurityZone: vm.securityZonesList[0],
             ASG: {
               MinCapacity: 0,

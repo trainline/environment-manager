@@ -5,7 +5,11 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
+<<<<<<< HEAD
   function ($scope, $routeParams, $location, $uibModal, $q, resources, cachedResources, accountMappingService, awsService, modal, QuerySync, localstorageservice) {
+=======
+  function ($scope, $routeParams, $location, $uibModal, $q, resources, cachedResources, accountMappingService, awsService, modal, QuerySync, teamstorageservice) {
+>>>>>>> feature/keep-team-across-screens
     var vm = this;
     var SHOW_ALL_OPTION = 'Any';
 
@@ -38,7 +42,11 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
             },
             cluster: {
               property: 'selectedOwningCluster',
+<<<<<<< HEAD
               default: localstorageservice.getValueOrDefault(localstorageservice.keys.selections.team, SHOW_ALL_OPTION)
+=======
+              default: teamstorageservice.get(SHOW_ALL_OPTION)
+>>>>>>> feature/keep-team-across-screens
             },
             server: {
               property: 'selectedServerRole',
@@ -79,8 +87,12 @@ angular.module('EnvironmentManager.operations').controller('OpsAMIsController',
 
       querySync.updateQuery();
 
+<<<<<<< HEAD
       localstorageservice.set(localstorageservice.keys.selections.team, vm.selectedOwningCluster);
       localstorageservice.set(localstorageservice.keys.selections.environment, vm.selectedEnvironment);
+=======
+      teamstorageservice.set(vm.selectedOwningCluster);
+>>>>>>> feature/keep-team-across-screens
 
       accountMappingService.getAccountForEnvironment(vm.selectedEnvironment).then(function (accountName) {
         vm.selectedAccount = accountName;
