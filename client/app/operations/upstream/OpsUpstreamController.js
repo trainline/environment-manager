@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsUpstreamController',
-  function ($routeParams, $location, $uibModal, $q, $http, resources, QuerySync, cachedResources, accountMappingService, modal, UpstreamConfig) {
+  function ($routeParams, $location, $uibModal, $q, $http, resources, QuerySync, cachedResources, accountMappingService, modal, UpstreamConfig, teamstorageservice) {
     var vm = this;
     var querySync;
     var SHOW_ALL_OPTION = 'Any';
@@ -35,7 +35,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
             },
             cluster: {
               property: 'selectedOwningCluster',
-              default: SHOW_ALL_OPTION
+              default: teamstorageservice.get(SHOW_ALL_OPTION)
             },
             state: {
               property: 'selectedState',
@@ -82,6 +82,8 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     vm.updateFilter = function () {
       querySync.updateQuery();
 
+      teamstorageservice.set(vm.selectedOwningCluster);
+
       vm.data = vm.fullUpstreamData.filter(function (upstream) {
         if (upstream.Value.EnvironmentName !== vm.selectedEnvironment) {
           return false;
@@ -119,9 +121,9 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     };
 
     vm.showInstanceDetails = function (upstreamData) {
-      return getASGsForHost(upstreamData).then(function(asgs){
+      return getASGsForHost(upstreamData).then(function (asgs) {
         if (asgs && asgs.length) {
-          return selectASG(asgs).then(function(asg){
+          return selectASG(asgs).then(function (asg) {
             return showAsgDetails(asg);
           });
         } else {
@@ -143,7 +145,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     function selectASG(asgs) {
       if (asgs.length === 1)
         return Promise.resolve(_.first(asgs));
-      
+
       var instance = $uibModal.open({
         templateUrl: '/app/operations/upstream/select-asg-modal.html',
         controller: 'ASGSelectionModalController as vm',
@@ -161,8 +163,8 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     function showAsgDetails(asgName) {
       cachedResources.config.environments.all().then(function (envData) {
         return cachedResources.config.environments.getByName(vm.selectedEnvironment, 'EnvironmentName', envData);
-      }).then(function(env){
-        var account = accountMappingService.getAccountForEnvironment(vm.selectedEnvironment).then(function(account){
+      }).then(function (env) {
+        var account = accountMappingService.getAccountForEnvironment(vm.selectedEnvironment).then(function (account) {
           $uibModal.open({
             templateUrl: '/app/environments/dialogs/env-asg-details-modal.html',
             controller: 'ASGDetailsModalController as vm',
@@ -266,7 +268,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
 
       var url = ['api', 'v1', 'services', service, "asgs"].join('/') + '?environment=' + environment + '&slice=' + slice;
       return $http.get(url).then(function (response) {
-        return response.data.map(function(asg){return asg.AutoScalingGroupName;});
+        return response.data.map(function (asg) { return asg.AutoScalingGroupName; });
       });
     }
 

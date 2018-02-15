@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+[#unreleased]
+
+## Added 
+
+- A selection of a team is now persisted through the use of Environment Manager. This is kept between screens and also between new browser windows on the same machine. From now on, if you tell Environment Manager you want to be looking at 'my team', you will be looking at that team constantly until you change that selection. [#416]
+
 ## [6.19.0] 2018-02-14
 
 ### Changed
@@ -395,6 +401,7 @@ Example:
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
 
+[#416]: https://github.com/trainline/environment-manager/pull/416
 [#403]: https://github.com/trainline/environment-manager/pull/403
 [#412]: https://github.com/trainline/environment-manager/pull/412
 [#408]: https://github.com/trainline/environment-manager/pull/408

@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.environments').controller('EnvironmentsSummaryController',
-  function ($scope, $routeParams, $location, $uibModal, $http, $q, modal, resources, cachedResources, Environment, localstorageservice) {
+  function ($scope, $routeParams, $location, $uibModal, $http, $q, modal, resources, cachedResources, Environment, localstorageservice, teamstorageservice) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -21,6 +21,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
     vm.hasUserSettings = localstorageservice.exists('em-settings-environments');
     vm.userSettings = localstorageservice.get('em-settings-environments');
     vm.toggleAllEnvironmentsLabel = vm.hasUserSettings ? "Show All Environments" : "Filter From User Settings";
+    vm.browsedOwningCluster = teamstorageservice.get(SHOW_ALL_OPTION);
 
     vm.dataLoading = false;
 
@@ -38,8 +39,7 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
         })
       ]).then(function () {
         vm.selectedEnvironmentType = $routeParams.environmentType || SHOW_ALL_OPTION;
-        vm.selectedOwningCluster = $routeParams.cluster || SHOW_ALL_OPTION;
-
+        vm.selectedOwningCluster = $routeParams.cluster || vm.browsedOwningCluster;
         vm.refresh();
       });
     }
@@ -60,6 +60,8 @@ angular.module('EnvironmentManager.environments').controller('EnvironmentsSummar
         environmentType: vm.selectedEnvironmentType,
         cluster: vm.selectedOwningCluster
       });
+
+      teamstorageservice.set(vm.selectedOwningCluster);
 
       var query = {};
       if (vm.selectedEnvironmentType != SHOW_ALL_OPTION) {
