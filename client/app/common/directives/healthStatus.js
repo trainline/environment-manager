@@ -24,7 +24,7 @@ angular.module('EnvironmentManager.common')
           warning: 'glyphicon-alert warning',
           healthy: 'glyphicon-ok-sign healthy',
           error: 'glyphicon-alert error',
-          noData: 'glyphicon-ok-sign no-data'
+          noData: 'glyphicon-question-sign no-data'
         };
 
         var status = $parse(attrs.status)(scope);

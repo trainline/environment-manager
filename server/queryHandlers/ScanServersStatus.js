@@ -36,7 +36,7 @@ function* ScanServersStatusQueryHandler(query) {
       let instances = asg.Instances.map((asgInstance) => {
         let instance = _.find(allInstances, { InstanceId: asgInstance.InstanceId });
 
-        if (instance && instance.State.Name !== 'terminated') {
+        if (instance && instance.State.Name === 'running') {
           let image = getImage(allImages, instance.ImageId);
           return {
             instanceId: instance.InstanceId,
@@ -145,6 +145,12 @@ function getAmi(instances) {
 
 
 function getStatus(instances, desiredCapacity) {
+  if (instances.length === 0) {
+    return {
+      Status: 'NoData',
+      Reason: 'No instances are running'
+    };
+  }
   if (_.some(instances, instance => instance.status !== 'Healthy')) {
     return {
       Status: 'Error',
