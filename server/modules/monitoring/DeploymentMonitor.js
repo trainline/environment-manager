@@ -13,6 +13,8 @@ let DEFAULT_INFRASTRUCTURE_PROVISIONING_TIMEOUT = '60m';
 let Enums = require('../../Enums');
 let NodeDeploymentStatus = require('../../Enums').NodeDeploymentStatus;
 let deploymentLogger = require('../DeploymentLogger');
+const sns = require('../sns/EnvironmentManagerEvents');
+
 
 module.exports = {
   monitorActiveDeployments() {
@@ -36,8 +38,26 @@ module.exports = {
 
       yield activeDeploymentsStatus.map(
         activeDeploymentStatus => monitorActiveDeploymentStatus(activeDeploymentStatus)
+          .then((status) => {
+            if (status !== null || status !== undefined) {
+              sns.publish({
+                message: 'Deployment Monitor Status Update',
+                topic: sns.TOPICS.OPERATIONS_CHANGE,
+                attributes: {
+                  event: 'DEPLOYMENT_COMPLETE',
+                  environment: activeDeploymentStatus.environmentName,
+                  deploymentState: status,
+                  deploymentId: activeDeploymentStatus.deploymentId,
+                  serviceName: activeDeploymentStatus.serviceName,
+                  serviceVersion: activeDeploymentStatus.serviceVersion,
+                  team: activeDeploymentStatus.owningCluster,
+                  startTime: activeDeploymentStatus.startTime.toString(),
+                  endTime: Date.now().toString()
+                }
+              });
+            }
+          })
       );
-
       return activeDeploymentsStatus.length;
     });
   }
@@ -48,7 +68,7 @@ function monitorActiveDeploymentStatus(deploymentStatus) {
     if (deploymentStatus.error) {
       if (deploymentStatus.error.indexOf('Missing credentials in config') !== -1) {
         // That is to not modify deployment if we catch mysterious 'Missing credentials' from AWS
-        return;
+        return undefined;
       }
 
       let newStatus = {
@@ -56,7 +76,7 @@ function monitorActiveDeploymentStatus(deploymentStatus) {
         reason: sanitiseError(deploymentStatus.error)
       };
       deploymentLogger.updateStatus(deploymentStatus, newStatus);
-      return;
+      return undefined;
     }
 
     // Checking the overall deployment execution time does not exceeded the timeout.
@@ -68,7 +88,7 @@ function monitorActiveDeploymentStatus(deploymentStatus) {
         reason: `Deployment failed because exceeded overall timeout of ${DEFAULT_INFRASTRUCTURE_PROVISIONING_TIMEOUT}`
       };
       deploymentLogger.updateStatus(deploymentStatus, newStatus);
-      return;
+      return undefined;
     }
 
     timeOutNodes(deploymentStatus.nodesDeployment, deploymentStatus.installationTimeout);
@@ -77,12 +97,14 @@ function monitorActiveDeploymentStatus(deploymentStatus) {
     logger.debug(`DeploymentMonitor: Deployment '${deploymentStatus.deploymentId}' nodes status is ${JSON.stringify(newStatus)}`);
 
     if (newStatus.name === Enums.DEPLOYMENT_STATUS.InProgress) {
-      return;
+      return undefined;
     }
 
     if (newStatus.name === Enums.DEPLOYMENT_STATUS.Success || newStatus.name === Enums.DEPLOYMENT_STATUS.Failed) {
       deploymentLogger.updateStatus(deploymentStatus, newStatus);
     }
+
+    return newStatus.name;
   });
 }
 
@@ -111,6 +133,7 @@ function detectNodesDeploymentStatus(nodes) {
 
   if (nodes.every(succeeded)) {
     // Deployment succeeded on every node.
+    // TODO: SNS SUCCESS!
     return {
       name: Enums.DEPLOYMENT_STATUS.Success,
       reason: 'Deployed all nodes successfully'
