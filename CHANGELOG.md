@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [#unreleased]
+
+### Changed
+
+- Server view now shows an ordered list of ASGs beginning with ASGs in Error state, then Warning, Not Running and finally Healthy. 
+
 ## [6.19.0] 2018-02-14
 
 ### Changed
