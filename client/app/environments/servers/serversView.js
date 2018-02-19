@@ -8,27 +8,20 @@ angular.module('EnvironmentManager.environments').factory('serversView', ['$q', 
   var statusClasses = {
     healthy: 'glyphicon-ok-sign success',
     warning: 'glyphicon-alert warning',
-    error: 'glyphicon-alert error'
+    error: 'glyphicon-alert error',
+    nodata: 'health-status glyphicon-question-sign no-data'
   };
-
+  var statusOrder = ['Error', 'Warning', 'NoData', 'Healthy'];
+  function byStatus(role, otherRole) {
+    return statusOrder.indexOf(role.serverRole.status.status) - statusOrder.indexOf(otherRole.serverRole.status.status);
+  }
   function serversView(data, selections) {
     var roles = data.Value;
 
     var roleViews = data.Value
       .map(toRoleView)
-      .filter(rolesMatchingSelections(selections));
-
-    var roleViewsHealthy = [];
-    var roleViewsUnhealthy = [];
-
-    roleViews.forEach(function (item) {
-      if (item.sizeCurrent === item.sizeDesired) {
-        roleViewsHealthy.push(item);
-      } else {
-        roleViewsUnhealthy.push(item);
-      }
-    });
-
+      .filter(rolesMatchingSelections(selections))
+      .sort(byStatus);
     var aggregateViews = toAggregationsView(roleViews);
     var allServerRoles = _.uniq(roles.map(function (role) {
       return role.Role;
@@ -46,8 +39,7 @@ angular.module('EnvironmentManager.environments').factory('serversView', ['$q', 
     return {
       allServersCount: allServersCount,
       hasRoles: roles.length > 0,
-      healthyRoles: roleViewsHealthy,
-      unhealthyRoles: roleViewsUnhealthy,
+      roles: roleViews,
       aggregations: aggregateViews,
       allServerRoles: allServerRoles,
       allServiceNames: allServiceNames
@@ -103,6 +95,7 @@ angular.module('EnvironmentManager.environments').factory('serversView', ['$q', 
   function toAggregationsView(roles) {
     var result = {
       servers: {
+        nodata: { count: 0 },
         healthy: { count: 0 },
         warning: { count: 0 },
         error: { count: 0 }

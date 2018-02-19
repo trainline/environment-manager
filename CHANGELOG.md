@@ -5,6 +5,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 [#unreleased]
 
+### Changed
+
+- Server view now shows an ordered list of ASGs beginning with ASGs in Error state, then Warning, Not Running and finally Healthy. 
+
 ## Added 
 
 - A selection of a team is now persisted through the use of Environment Manager. This is kept between screens and also between new browser windows on the same machine. From now on, if you tell Environment Manager you want to be looking at 'my team', you will be looking at that team constantly until you change that selection. [#416]
