@@ -6,7 +6,7 @@
 
 angular.module('EnvironmentManager.environments')
   .controller('ManageEnvironmentServersController',
-  function ($rootScope, $routeParams, $http, $q, cachedResources, resources, $uibModal, accountMappingService, serversView, QuerySync, environmentDeploy, $scope, serviceDiscovery, enums, modal, asgservice, teamstorageservice) {
+  function ($rootScope, $routeParams, $http, $q, cachedResources, resources, $uibModal, accountMappingService, serversView, QuerySync, environmentDeploy, $scope, serviceDiscovery, enums, modal, asgservice, teamstorageservice, environmentstorageservice) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -55,6 +55,7 @@ angular.module('EnvironmentManager.environments')
       querySync.init();
 
       var environmentName = vm.selected.environment.EnvironmentName;
+      environmentstorageservice.set(environmentName);
       $rootScope.WorkingEnvironment.EnvironmentName = environmentName;
 
       $q.all([

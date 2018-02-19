@@ -9,6 +9,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 - A selection of a team is now persisted through the use of Environment Manager. This is kept between screens and also between new browser windows on the same machine. From now on, if you tell Environment Manager you want to be looking at 'my team', you will be looking at that team constantly until you change that selection. [#416]
 
+- A selection of an environment is now persisted through the use of Environment Manager. This is kept between screens and also between new browser windows on the same machine. From now on, if you tell Environment Manager you want to be looking at 'my environment', you will be looking at that environment constantly until you change that selection. [#416]
+
 ## [6.19.0] 2018-02-14
 
 ### Changed

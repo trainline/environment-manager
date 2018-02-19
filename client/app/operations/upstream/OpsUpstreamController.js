@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.operations').controller('OpsUpstreamController',
-  function ($routeParams, $location, $uibModal, $q, $http, resources, QuerySync, cachedResources, accountMappingService, modal, UpstreamConfig, teamstorageservice) {
+  function ($scope, $routeParams, $location, $uibModal, $q, $http, resources, QuerySync, cachedResources, accountMappingService, modal, UpstreamConfig, environmentstorageservice, teamstorageservice) {
     var vm = this;
     var querySync;
     var SHOW_ALL_OPTION = 'Any';
@@ -31,7 +31,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
           querySync = new QuerySync(vm, {
             environment: {
               property: 'selectedEnvironment',
-              default: vm.environmentsList[0]
+              default: environmentstorageservice.get(vm.environmentsList[0])
             },
             cluster: {
               property: 'selectedOwningCluster',
@@ -82,6 +82,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
     vm.updateFilter = function () {
       querySync.updateQuery();
 
+      environmentstorageservice.set(vm.selectedEnvironment);
       teamstorageservice.set(vm.selectedOwningCluster);
 
       vm.data = vm.fullUpstreamData.filter(function (upstream) {
