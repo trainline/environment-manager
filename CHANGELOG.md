@@ -9,6 +9,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 - Server view now shows an ordered list of ASGs beginning with ASGs in Error state, then Warning, Not Running and finally Healthy. 
 
+- The deployment details modal now shows the log in time order ascending (like a normal log!). A link has been added to this screen to the `deployment-support` Slack channel. When the deployment is now in the hands of the Consul Deployment Agent (CDA), the UI will show information on what that _means_. There are lots of things that could happen that are now outside the control of Environment Manager which could result in a failed or hanging deployment - until we automate those checks, we can at least show a list of what the common causes are. Some of the entries within the log have been changed to be more reflective of the operation being performed. 
+
 ## Added 
 
 - A selection of a team is now persisted through the use of Environment Manager. This is kept between screens and also between new browser windows on the same machine. From now on, if you tell Environment Manager you want to be looking at 'my team', you will be looking at that team constantly until you change that selection. [#416]

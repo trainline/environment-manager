@@ -39,7 +39,7 @@ module.exports = function PushDeploymentCommandHandler(command) {
       updateTargetState(command, serviceDeploymentDefinition)
     ];
 
-    logger.info('Consul metadata has been updated');
+    logger.info('Environment Manager has now updated Consul with the details of your deployment.');
   }).catch((error) => {
     logger.error('An error has occurred updating consul metadata', error);
     return Promise.reject(error);
