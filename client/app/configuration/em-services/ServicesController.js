@@ -6,7 +6,7 @@
 
 // Manage all services
 angular.module('EnvironmentManager.configuration').controller('ServicesController',
-  function ($scope, $routeParams, $location, $http, resources, cachedResources, modal) {
+  function ($scope, $routeParams, $location, $http, resources, cachedResources, modal, teamstorageservice) {
     var vm = this;
     var SHOW_ALL_OPTION = 'Any';
 
@@ -25,7 +25,7 @@ angular.module('EnvironmentManager.configuration').controller('ServicesControlle
       var cluster = $routeParams.cluster;
       var service = $routeParams.service;
 
-      vm.selectedOwningCluster = cluster || SHOW_ALL_OPTION;
+      vm.selectedOwningCluster = cluster || teamstorageservice.get(SHOW_ALL_OPTION);
       vm.selectedService = service || '';
 
       cachedResources.config.clusters.all().then(function (clusters) {
@@ -41,6 +41,9 @@ angular.module('EnvironmentManager.configuration').controller('ServicesControlle
 
     vm.refresh = function () {
       var query = {};
+
+      teamstorageservice.set(vm.selectedOwningCluster);
+      
       if (vm.selectedOwningCluster != SHOW_ALL_OPTION) {
         query.cluster = vm.selectedOwningCluster;
       }

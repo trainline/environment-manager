@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.configuration').controller('DeploymentMapTargetController',
-  function ($scope, $location, $uibModalInstance, $uibModal, $q, Image, resources, cachedResources, modal, deploymentMap, deploymentTarget, deploymentMapConverter, displayMode, awsService) {
+  function ($scope, $location, $uibModalInstance, $uibModal, $q, Image, resources, cachedResources, modal, deploymentMap, deploymentTarget, deploymentMapConverter, displayMode, awsService, teamstorageservice) {
     var vm = this;
 
     var userHasPermission;
@@ -66,7 +66,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
           var newTarget = {
             ServerRoleName: '',
             FleetPerSlice: false,
-            OwningCluster: vm.owningClustersList[0].ClusterName,
+            OwningCluster: teamstorageservice.get(vm.owningClustersList[0].ClusterName),
             SecurityZone: vm.securityZonesList[0],
             ASG: {
               MinCapacity: 0,

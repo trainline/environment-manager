@@ -5,7 +5,7 @@
 'use strict';
 
 angular.module('EnvironmentManager.common').controller('MainController',
-  function ($rootScope, $scope, $route, $routeParams, $http, $location, $window, $uibModal, modal, Environment, environmentDeploy, releasenotesservice) {
+  function ($rootScope, $scope, $route, $routeParams, $http, $location, $window, $uibModal, modal, Environment, environmentDeploy, releasenotesservice, environmentstorageservice) {
     var vm = this;
 
     vm.appVersion = $window.version;
@@ -15,8 +15,6 @@ angular.module('EnvironmentManager.common').controller('MainController',
     $rootScope.WorkingEnvironment = { EnvironmentName: '' }; // For Environments section only, selected Environment from Sidebar drop-down
 
     function init() {
-
-
       Environment.all().then(function (environments) {
         $scope.ParentEnvironmentsList = _.map(environments, 'EnvironmentName').sort();
       }).then(function () {
@@ -57,6 +55,7 @@ angular.module('EnvironmentManager.common').controller('MainController',
     // Change active environment for Environments section
     $scope.ChangeEnvironment = function () {
       $location.search('environment', $rootScope.WorkingEnvironment.EnvironmentName);
+      environmentstorageservice.set($rootScope.WorkingEnvironment.EnvironmentName);
       $route.reload();
     };
 

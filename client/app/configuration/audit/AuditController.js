@@ -22,7 +22,7 @@
  *   Owning Cluster   (TODO: Future change. Where we know it anyway – useful for filter)
  */
 angular.module('EnvironmentManager.configuration').controller('AuditController',
-  function ($scope, $routeParams, $location, $q, $http, $uibModal, resources, cachedResources, arrayItemHashDetector, modal, enums, linkHeader, QuerySync) {
+  function ($scope, $routeParams, $location, $q, $http, $uibModal, resources, cachedResources, arrayItemHashDetector, modal, enums, linkHeader, QuerySync, environmentstorageservice) {
     var vm = this;
 
     var SHOW_ALL_OPTION = 'Any';
@@ -80,7 +80,7 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
 
     $scope.SelectedEntityType = SHOW_ALL_OPTION;
     $scope.SelectedChangeType = SHOW_ALL_OPTION;
-    $scope.SelectedEnvironment = SHOW_ALL_OPTION;
+    $scope.SelectedEnvironment = environmentstorageservice.get(SHOW_ALL_OPTION);
     $scope.SelectedEntityKey = '';
     $scope.SelectedEntityRange = '';
     $scope.SelectedDateRangeValue = $scope.DateRangeList[0].Value; // Today
@@ -170,6 +170,9 @@ angular.module('EnvironmentManager.configuration').controller('AuditController',
         account: 'all', // Always retrieve audit for all accounts
         query: query
       };
+
+      environmentstorageservice.set($scope.SelectedEnvironment);
+
       resources.audit.history.all(params).then(function (data) {
         displayResults(data);
         vm.updateFilter();
