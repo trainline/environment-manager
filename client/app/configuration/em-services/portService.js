@@ -11,10 +11,34 @@
 
   function portservice($http) {
     return {
-      getPorts: getPorts,
       getNextSequentialPair: getNextSequentialPair,
       isPortInUse: isPortInUse
     };
+
+    function getNextSequentialPair() {
+      return getPorts()
+        .then(function findPairFromPorts(takenPorts) {
+          for (var i = 40000; i < 41000; i += 1) {
+            if (!_.includes(takenPorts, i) && !_.includes(takenPorts, i + 1)) {
+              return createPortPair(i);
+            }
+          }
+          return { Blue: 0, Green: 0 };
+        });
+
+      function createPortPair(i) {
+        if ((i % 2) === 0) return { Blue: i, Green: i + 1 };
+        return { Blue: i + 1, Green: i };
+      }
+    }
+
+    function isPortInUse(portNumber) {
+      return getPorts().then(function (ports) {
+        return ports.find(function (p) {
+          return p === portNumber;
+        });
+      });
+    }
 
     function getPorts() {
       return $http({
@@ -22,57 +46,13 @@
         url: '/api/v1/config/services',
         headers: { 'expected-version': 0 }
       }).then(function createPortsList(result) {
-        return result.data.map(function createPortObject(service) {
-          return {
-            Green: service.Value.GreenPort * 1,
-            Blue: service.Value.BluePort * 1
-          };
+        var results = [];
+        result.data.forEach(function (service) {
+          results.push(service.Value.GreenPort * 1);
+          results.push(service.Value.BluePort * 1);
         });
+        return results;
       });
     }
-
-    function getNextSequentialPair() {
-      return markPortAvailability(generatePortPairs(), getPorts())
-        .then(function (portPairs) {
-          var nextAvailable = portPairs.find(function (pair) {
-            return pair.Available === true;
-          });
-
-          return nextAvailable || { Green: 0, Blue: 0 };
-        });
-    }
-
-    function isPortInUse(portNumber) {
-      return getPorts().then(function (ports) {
-        return ports.find(function (p) {
-          return p.Blue === portNumber || p.Green === portNumber;
-        });
-      });
-    }
-  }
-
-  function generatePortPairs() {
-    var range = { bottom: 40000, top: 41000 };
-
-    return [...Array((range.top - range.bottom) / 2).keys()]
-      .map(function (index) {
-        return {
-          Available: true,
-          Blue: range.bottom + (index - 1),
-          Green: range.bottom + index
-        };
-      });
-  }
-
-  function markPortAvailability(portPairs, takenPorts) {
-    return takenPorts.then(function (ports) {
-      portPairs.forEach(function (pair) {
-        var blue = ports.find(function (tp) { return (tp.Blue) === (pair.Blue); });
-        var green = ports.find(function (tp) { return (tp.Green) === (pair.Green); });
-
-        if (blue || green) pair.Available = false;
-      });
-      return portPairs;
-    });
   }
 }());

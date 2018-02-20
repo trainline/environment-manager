@@ -68,8 +68,8 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
         portservice.isPortInUse(vm.service.Value.GreenPort),
         portservice.isPortInUse(vm.service.Value.BluePort)])
         .then(function (results) {
-          var greenResult = results[0] && vm.service.Value.GreenPort * 1 !== vm.startingGreenPort * 1;
-          var blueResult = results[1] && vm.service.Value.BluePort * 1 !== vm.startingBluePort * 1;
+          var greenResult = results[0] && vm.service.Value.GreenPort != vm.startingGreenPort;
+          var blueResult = results[1] && vm.service.Value.BluePort != vm.startingBluePort;
           
           if (greenResult) {
             vm.greenPortInUse = true;
