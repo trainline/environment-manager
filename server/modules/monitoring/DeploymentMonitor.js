@@ -7,6 +7,7 @@ let fs = require('fs');
 let co = require('co');
 let ms = require('ms');
 let logger = require('../logger');
+let moment = require('moment');
 let activeDeploymentsStatusProvider = require('./activeDeploymentsStatusProvider');
 
 let DEFAULT_INFRASTRUCTURE_PROVISIONING_TIMEOUT = '60m';
@@ -14,7 +15,6 @@ let Enums = require('../../Enums');
 let NodeDeploymentStatus = require('../../Enums').NodeDeploymentStatus;
 let deploymentLogger = require('../DeploymentLogger');
 const sns = require('../sns/EnvironmentManagerEvents');
-
 
 module.exports = {
   monitorActiveDeployments() {
@@ -39,20 +39,23 @@ module.exports = {
       yield activeDeploymentsStatus.map(
         activeDeploymentStatus => monitorActiveDeploymentStatus(activeDeploymentStatus)
           .then((status) => {
-            if (status !== null || status !== undefined) {
+            if (status && status !== Enums.DEPLOYMENT_STATUS.InProgress) {
+              let startTime = moment(activeDeploymentsStatus.startTime).toISOString();
+              let endTime = moment.utc().toISOString();
+
               sns.publish({
-                message: 'Deployment Monitor Status Update',
+                message: 'Deployment Complete',
                 topic: sns.TOPICS.OPERATIONS_CHANGE,
                 attributes: {
-                  event: 'DEPLOYMENT_COMPLETE',
+                  eventType: 'DeploymentComplete',
                   environment: activeDeploymentStatus.environmentName,
                   deploymentState: status,
                   deploymentId: activeDeploymentStatus.deploymentId,
                   serviceName: activeDeploymentStatus.serviceName,
                   serviceVersion: activeDeploymentStatus.serviceVersion,
                   team: activeDeploymentStatus.owningCluster,
-                  startTime: activeDeploymentStatus.startTime.toString(),
-                  endTime: Date.now().toString()
+                  startTime,
+                  endTime
                 }
               });
             }
