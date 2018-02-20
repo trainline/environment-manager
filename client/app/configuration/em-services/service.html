@@ -12,7 +12,9 @@
         <legend>Details</legend>
 
         <div class="form-group" ng-if="!vm.editMode" ng-class="{'has-error': form.ServiceName.$invalid && form.ServiceName.$dirty} ">
-            <label class="col-sm-12 control-label text-left nowrap em-form-label">Service Name: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+            <label class="col-sm-12 control-label text-left nowrap em-form-label">Service Name:
+                <span class="glyphicon glyphicon-asterisk mandatory"></span>
+            </label>
             <div class="col-sm-8">
                 <input type="text" name="ServiceName" required="" class="form-control" autofocus maxlength="50" ng-model="vm.service.ServiceName"
                     unique-among="vm.serviceNames" pattern="[a-zA-Z]+[a-zA-Z0-9]*" ng-readonly="!!vm.editMode || !vm.canUser('edit')"
@@ -23,11 +25,13 @@
             <span class="help-block" ng-if="form.ServiceName.$dirty && form.ServiceName.$error.pattern">Service name must contain only alphanumeric characters.</span>
         </div>
         <div class="form-group" ng-class="{'has-error': form.OwningClusters.$invalid} && form.OwningClusters.$dirty">
-            <label class="col-sm-12 control-label text-left nowrap em-form-label">Owning Team: <span class="glyphicon glyphicon-asterisk mandatory"></span></label>
+            <label class="col-sm-12 control-label text-left nowrap em-form-label">Owning Team:
+                <span class="glyphicon glyphicon-asterisk mandatory"></span>
+            </label>
             <div class="col-sm-8">
                 <select class="form-control" name="OwningClusters" required="" ng-model="vm.service.OwningCluster" ng-disabled="!vm.canUser('edit')">
-                <option ng-repeat="cluster in vm.owningClustersList" ng-selected="{{cluster == vm.service.OwningCluster}}" value="{{cluster}}">{{cluster}}</option>
-            </select>
+                    <option ng-repeat="cluster in vm.owningClustersList" ng-selected="{{cluster == vm.service.OwningCluster}}" value="{{cluster}}">{{cluster}}</option>
+                </select>
             </div>
             <span class="help-block" ng-if="form.OwningClusters.$error.required">Owning team is mandatory.</span>
         </div>
@@ -39,7 +43,8 @@
         </div>
 
         <div class="form-group">
-            <label class="col-sm-12 em-form-label control-label text-left nowrap">Primary Contact:</span></label>
+            <label class="col-sm-12 em-form-label control-label text-left nowrap">Primary Contact:</span>
+            </label>
             <div class="col-sm-6">
                 <input type="text" name="PrimaryContact" class="form-control" autofocus maxlength="50" ng-model="vm.service.Value.PrimaryContact"
                     ng-readonly="!vm.canUser('edit')" />
@@ -69,13 +74,15 @@
                         ng-model-options="{debounce: 200}" ng-readonly="!vm.canUser('edit')" />
                 </div>
                 <div class="col-sm-2">
-                    <button type="button" class="btn btn-danger" ng-click="vm.removeDependency($index)"><span class="glyphicon glyphicon-minus"></span> Remove</button>
+                    <button type="button" class="btn btn-danger" ng-click="vm.removeDependency($index)">
+                        <span class="glyphicon glyphicon-minus"></span> Remove</button>
                 </div>
             </div>
         </div>
         <div class="form-group">
             <div class="col-sm-8">
-                <button class="btn btn-success" ng-click="vm.addDependency()"><span class="glyphicon glyphicon-plus"></span> Add</button>
+                <button class="btn btn-success" ng-click="vm.addDependency()">
+                    <span class="glyphicon glyphicon-plus"></span> Add</button>
             </div>
         </div>
     </fieldset>
@@ -96,44 +103,33 @@
             <label class="col-sm-12 em-form-label control-label text-left nowrap">Blue Port:</label>
             <div class="col-sm-6">
                 <input type="number" name="BluePort" class="form-control" maxlength="5" ng-model="vm.service.Value.BluePort" min="40000"
-                    max="41000" ng-readonly="!vm.canUser('edit')" ng-change="vm.checkPorts(); vm.resetBluePortButton()" />
-            </div>
-            <div class="col-sm-2">
-                <span class="input-group-btn">
-
-                    <button class="btn btn-default" 
-                        title="Get the next, lowest available port number."
-                        ng-disabled="!vm.ports.blue.button.enabled" 
-                        type="button" 
-                        ng-click="vm.getNextFreeBluePort()">
-                            Get Available Port <span class="glyphicon glyphicon-step-forward"></span>
-                </button>
-                </span>
+                    max="41000" ng-readonly="!vm.canUser('edit')" ng-change="vm.checkPorts()" />
             </div>
             <div class="col-sm-6">
                 <span class="help-block" ng-if="form.BluePort.$dirty && form.BluePort.$invalid">Blue Port must be between {{vm.ports.range.lower}} and {{vm.ports.range.upper}}.</span>
-                <span class="help-block" ng-if="vm.ports.blue.taken"><i>This port number is currently in use.</i></span>
+                <span class="help-block" ng-if="vm.bluePortInUse">
+                    <i>This port number is currently in use.</i>
+                </span>
             </div>
         </div>
         <div class="form-group" ng-class="{'has-error': form.GreenPort.$invalid}">
             <label class="col-sm-12 em-form-label control-label text-left nowrap">Green Port:</label>
             <div class="col-sm-6">
                 <input type="number" name="GreenPort" class="form-control" maxlength="5" ng-model="vm.service.Value.GreenPort" min="40000"
-                    max="41000" ng-readonly="!vm.canUser('edit')" ng-change="vm.checkPorts(); vm.resetGreenPortButton()" />
-
+                    max="41000" ng-readonly="!vm.canUser('edit')" ng-change="vm.checkPorts()" />
             </div>
-            <div class="col-sm-2">
-                <span class="input-group-btn">
-
-                    <button class="btn btn-default"
-                        title="Get the next, lowest available port number." 
-                        ng-disabled="!vm.ports.green.button.enabled" 
-                        type="button" 
-                        ng-click="vm.getNextFreeGreenPort()">
-                            Get Available Port <span class="glyphicon glyphicon-step-forward"></span>
-                </button>
+            <div class="col-sm-6">
+                <span class="help-block" ng-if="form.GreenPort.$dirty && form.GreenPort.$invalid">Green Port must be between {{vm.ports.range.lower}} and {{vm.ports.range.upper}}.</span>
+                <span class="help-block" ng-if="vm.greenPortInUse">
+                    <i>This port number is currently in use.</i>
                 </span>
             </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-12">
+                <button class="btn btn-default" ng-click="vm.getNextPortPair()">Get next available port pair</button>
+            </div>
+        </div>
     </fieldset>
 
     <fieldset>
@@ -196,10 +192,14 @@
         <legend>Tags</legend>
         <div class="row" ng-if="vm.service.Value.Tags.length > 0">
             <div class="col-sm-4">
-                <span><strong>Key</strong></span>
+                <span>
+                    <strong>Key</strong>
+                </span>
             </div>
             <div class="col-sm-8">
-                <span><strong>Value</strong></span>
+                <span>
+                    <strong>Value</strong>
+                </span>
             </div>
         </div>
         <div ng-repeat="tag in vm.service.Value.Tags">
@@ -212,13 +212,15 @@
                     />
                 </div>
                 <div class="col-sm-2">
-                    <button type="button" class="btn btn-danger" ng-click="vm.removeTag($index)"><span class="glyphicon glyphicon-minus"></span> Remove</button>
+                    <button type="button" class="btn btn-danger" ng-click="vm.removeTag($index)">
+                        <span class="glyphicon glyphicon-minus"></span> Remove</button>
                 </div>
             </div>
         </div>
         <div class="form-group">
             <div class="col-sm-8">
-                <button class="btn btn-success" ng-click="vm.addTag()"><span class="glyphicon glyphicon-plus"></span> Add</button>
+                <button class="btn btn-success" ng-click="vm.addTag()">
+                    <span class="glyphicon glyphicon-plus"></span> Add</button>
             </div>
         </div>
     </fieldset>
