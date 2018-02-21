@@ -15,7 +15,7 @@ module.exports = (event) => {
     throw new Error('Missing expected message attribute.');
   }
   if (event.attributes) {
-    checkAttributes(event);
+    makeSnsAttributes(event);
   }
   return (target) => {
     return {
@@ -26,7 +26,7 @@ module.exports = (event) => {
   };
 };
 
-function checkAttributes(event) {
+function makeSnsAttributes(event) {
   Object.keys(event.attributes).forEach((k) => {
     event.attributes[k] = turnProvidedValueIntoSnsAttribute(event.attributes[k]);
   });
