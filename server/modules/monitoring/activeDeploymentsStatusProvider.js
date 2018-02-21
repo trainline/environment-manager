@@ -75,6 +75,7 @@ function getActiveDeploymentFullStatus(activeDeployment) {
 
     let nodesDeployment = getNodesDeployment(data.nodesId, data.nodesDeployment);
     let installationTimeout = data.serviceInstallation.length ? data.serviceInstallation[0].value.InstallationTimeout : DEFAULT_SERVICE_INSTALLATION_TIMEOUT;
+    let owningCluster = activeDeployment.Value.OwningCluster;
 
     let activeDeploymentFullStatus = {
       deploymentId,
@@ -82,7 +83,10 @@ function getActiveDeploymentFullStatus(activeDeployment) {
       accountName,
       installationTimeout: ms(`${installationTimeout}m`),
       startTime: new Date(activeDeployment.Value.StartTimestamp),
-      nodesDeployment
+      nodesDeployment,
+      serviceName,
+      serviceVersion,
+      owningCluster
     };
 
     logger.debug(`DeploymentMonitor: Deployment '${deploymentId}' is going to affect following nodes ${JSON.stringify(nodesDeployment)}`);

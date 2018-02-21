@@ -46,17 +46,6 @@ describe('Create Event', () => {
     assert.ok(event.attributes.Timestamp);
   });
 
-  it('should fail if any of the message attributes are invalid', () => {
-    let event = createLambdaEvent();
-    event.attributes.ThisShouldNotBeHere = 'This should not be here at all';
-    event.attributes.NeitherShouldThis = 'This is a not the value you are looking for';
-
-    assert.throws(() => {
-      sut(event);
-    },
-      /^Error: Non valid attributes provided: ThisShouldNotBeHere,NeitherShouldThis$/);
-  });
-
   it('should return a function with closed over event attributes', () => {
     let event = createLambdaEvent();
 

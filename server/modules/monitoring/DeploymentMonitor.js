@@ -2,17 +2,19 @@
 
 'use strict';
 
-let _ = require('lodash');
-let fs = require('fs');
-let co = require('co');
-let ms = require('ms');
-let logger = require('../logger');
-let activeDeploymentsStatusProvider = require('./activeDeploymentsStatusProvider');
+const _ = require('lodash');
+const fs = require('fs');
+const co = require('co');
+const ms = require('ms');
+const logger = require('../logger');
+const moment = require('moment');
+const activeDeploymentsStatusProvider = require('./activeDeploymentsStatusProvider');
 
-let DEFAULT_INFRASTRUCTURE_PROVISIONING_TIMEOUT = '60m';
-let Enums = require('../../Enums');
-let NodeDeploymentStatus = require('../../Enums').NodeDeploymentStatus;
-let deploymentLogger = require('../DeploymentLogger');
+const DEFAULT_INFRASTRUCTURE_PROVISIONING_TIMEOUT = '60m';
+const Enums = require('../../Enums');
+const NodeDeploymentStatus = require('../../Enums').NodeDeploymentStatus;
+const deploymentLogger = require('../DeploymentLogger');
+const sns = require('../sns/EnvironmentManagerEvents');
 
 module.exports = {
   monitorActiveDeployments() {
@@ -36,8 +38,29 @@ module.exports = {
 
       yield activeDeploymentsStatus.map(
         activeDeploymentStatus => monitorActiveDeploymentStatus(activeDeploymentStatus)
-      );
+          .then((status) => {
+            if (status && status !== Enums.DEPLOYMENT_STATUS.InProgress) {
+              let startTime = moment(activeDeploymentsStatus.startTime).toISOString();
+              let endTime = moment.utc().toISOString();
 
+              sns.publish({
+                message: 'Deployment Complete',
+                topic: sns.TOPICS.OPERATIONS_CHANGE,
+                attributes: {
+                  eventType: 'DeploymentComplete',
+                  environment: activeDeploymentStatus.environmentName,
+                  deploymentState: status,
+                  deploymentId: activeDeploymentStatus.deploymentId,
+                  serviceName: activeDeploymentStatus.serviceName,
+                  serviceVersion: activeDeploymentStatus.serviceVersion,
+                  team: activeDeploymentStatus.owningCluster,
+                  startTime,
+                  endTime
+                }
+              });
+            }
+          })
+      );
       return activeDeploymentsStatus.length;
     });
   }
@@ -48,7 +71,7 @@ function monitorActiveDeploymentStatus(deploymentStatus) {
     if (deploymentStatus.error) {
       if (deploymentStatus.error.indexOf('Missing credentials in config') !== -1) {
         // That is to not modify deployment if we catch mysterious 'Missing credentials' from AWS
-        return;
+        return undefined;
       }
 
       let newStatus = {
@@ -56,7 +79,7 @@ function monitorActiveDeploymentStatus(deploymentStatus) {
         reason: sanitiseError(deploymentStatus.error)
       };
       deploymentLogger.updateStatus(deploymentStatus, newStatus);
-      return;
+      return undefined;
     }
 
     // Checking the overall deployment execution time does not exceeded the timeout.
@@ -68,7 +91,7 @@ function monitorActiveDeploymentStatus(deploymentStatus) {
         reason: `Deployment failed because exceeded overall timeout of ${DEFAULT_INFRASTRUCTURE_PROVISIONING_TIMEOUT}`
       };
       deploymentLogger.updateStatus(deploymentStatus, newStatus);
-      return;
+      return undefined;
     }
 
     timeOutNodes(deploymentStatus.nodesDeployment, deploymentStatus.installationTimeout);
@@ -77,12 +100,14 @@ function monitorActiveDeploymentStatus(deploymentStatus) {
     logger.debug(`DeploymentMonitor: Deployment '${deploymentStatus.deploymentId}' nodes status is ${JSON.stringify(newStatus)}`);
 
     if (newStatus.name === Enums.DEPLOYMENT_STATUS.InProgress) {
-      return;
+      return undefined;
     }
 
     if (newStatus.name === Enums.DEPLOYMENT_STATUS.Success || newStatus.name === Enums.DEPLOYMENT_STATUS.Failed) {
       deploymentLogger.updateStatus(deploymentStatus, newStatus);
     }
+
+    return newStatus.name;
   });
 }
 

@@ -15,7 +15,7 @@ module.exports = (event) => {
     throw new Error('Missing expected message attribute.');
   }
   if (event.attributes) {
-    checkAttributes(event);
+    makeSnsAttributes(event);
   }
   return (target) => {
     return {
@@ -26,35 +26,13 @@ module.exports = (event) => {
   };
 };
 
-function checkAttributes(event) {
-  const validAttrs = [
-    'EnvironmentType',
-    'Environment',
-    'OwningCluster',
-    'User',
-    'Result',
-    'Timestamp',
-    'Action',
-    'ID',
-    'EntityURL'
-  ];
-
-  let foundNonValidAttributes = [];
-
+function makeSnsAttributes(event) {
   Object.keys(event.attributes).forEach((k) => {
-    if (!validAttrs.includes(k)) {
-      foundNonValidAttributes.push(k);
-    } else {
-      event.attributes[k] = turnProvidedValueIntoSnsAttribute(event.attributes[k]);
-    }
+    event.attributes[k] = turnProvidedValueIntoSnsAttribute(event.attributes[k]);
   });
 
   if (!event.attributes.Timestamp) {
     event.attributes.Timestamp = turnProvidedValueIntoSnsAttribute(Date.now().toString());
-  }
-
-  if (foundNonValidAttributes.length > 0) {
-    throw new Error(`Non valid attributes provided: ${foundNonValidAttributes.join(',')}`);
   }
 }
 

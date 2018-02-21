@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-[#unreleased]
+[#Unreleased]
 
 ### Changed
 
@@ -11,29 +11,31 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ## Added 
 
-- A selection of a team is now persisted through the use of Environment Manager. This is kept between screens and also between new browser windows on the same machine. From now on, if you tell Environment Manager you want to be looking at 'my team', you will be looking at that team constantly until you change that selection. [#416]
+- A selection of a team is now persisted through the use of Environment Manager. This is kept between screens and also between new browser windows on the same machine. From now on, if you tell Environment Manager you want to be looking at 'my team', you will be looking at that team constantly until you change that selection. 
 
-- A selection of an environment is now persisted through the use of Environment Manager. This is kept between screens and also between new browser windows on the same machine. From now on, if you tell Environment Manager you want to be looking at 'my environment', you will be looking at that environment constantly until you change that selection. [#416]
+- A selection of an environment is now persisted through the use of Environment Manager. This is kept between screens and also between new browser windows on the same machine. From now on, if you tell Environment Manager you want to be looking at 'my environment', you will be looking at that environment constantly until you change that selection. 
+
+- Raises SNS events when deployments complete.
 
 ## [6.19.0] 2018-02-14
 
 ### Changed
 
-- Calls made from the server screen and asg modal are now running through the ec2 client which queries the _new_ EC2monitor. [#412]
+- Calls made from the server screen and asg modal are now running through the ec2 client which queries the _new_ EC2monitor. 
 
 - Servers screen no longer shows deployment status.
 
 ### Added
 
-- A new "user settings" modal has been added to the UI. At the moment, it is only used to filter by default, your environment list on the main screen. Now you can add a comma separated list of the environments you want to see. A toggle has also been added to give you the full list if you want that back, or you can remove/not use the environments filter list. [#407]
+- A new "user settings" modal has been added to the UI. At the moment, it is only used to filter by default, your environment list on the main screen. Now you can add a comma separated list of the environments you want to see. A toggle has also been added to give you the full list if you want that back, or you can remove/not use the environments filter list. 
 
 ### Fixed
 
-- Removed environment schedule cache to prevent scheduling race conditions. [#408]
+- Removed environment schedule cache to prevent scheduling race conditions. 
 
-- When a user performs an HTTP request that results in an error which contains no details, the resulting dialog shows "ERROR" and nothing to help the user identify the cause of the issue. Now, any response that doesn't contain any details, the error modal will be given some useful http request information to display that resulted in the error screen. [#403]
+- When a user performs an HTTP request that results in an error which contains no details, the resulting dialog shows "ERROR" and nothing to help the user identify the cause of the issue. Now, any response that doesn't contain any details, the error modal will be given some useful http request information to display that resulted in the error screen. 
 
-- Improved error handling [#403]
+- Improved error handling 
 
 ## [6.17.0] 2018-01-25
 
@@ -43,19 +45,19 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Fixed
 
-- Fix Operations > New Instaces, where results were not being returned to the caller. [#399]
+- Fix Operations > New Instaces, where results were not being returned to the caller. 
 
 ## [6.15.3] 2017-12-16
 
 ### Fixed
 
-- Fix error preventing ASGs from being deleted. [#395]
+- Fix error preventing ASGs from being deleted. 
 
 ## [6.15.2] 2017-12-14
 
 ### Fixed
 
-- When instances are in standby and do not receive the latest version, the API endpoint <api>/services/<serviceName> was returning old version numbers of instances that are no longer in AWS, but remain in that Consul cluster. This is not what people want to see. The end point will now find the latest version of that service deployed in that environment to show the latest version in the results. [#391]
+- When instances are in standby and do not receive the latest version, the API endpoint <api>/services/<serviceName> was returning old version numbers of instances that are no longer in AWS, but remain in that Consul cluster. This is not what people want to see. The end point will now find the latest version of that service deployed in that environment to show the latest version in the results. 
 
 ## [6.14.2] - 2017-12-07
 
@@ -83,12 +85,12 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Fixed
 
-- Days out of date for an AMI is now the number of days between the release of the following stable AMI and today. [#376]
-- An upstream in the _common_ environment type is valid in the settings for any load balancer. [#375]
+- Days out of date for an AMI is now the number of days between the release of the following stable AMI and today. 
+- An upstream in the _common_ environment type is valid in the settings for any load balancer. 
 
 ### Changed
 
-- Min and max auto scaling group size are no longer required by the */asgs/{name}/scaling-schedule*. They now default to the desired size. [#373]
+- Min and max auto scaling group size are no longer required by the */asgs/{name}/scaling-schedule*. They now default to the desired size. 
 
 ## [6.12.1] - 2017-11-16
 
@@ -98,13 +100,13 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Changed
 
-- If an upstream exists, that is not enough for it to be valid. The upstream needs to exist against an environment type that matches the environment type of the load balancer setting. [#370]
+- If an upstream exists, that is not enough for it to be valid. The upstream needs to exist against an environment type that matches the environment type of the load balancer setting. 
 
 ## [6.12.0] - 2017-11-09
 
 ### Added
 
-- C5 instance type options for EC2 instances [#372]
+- C5 instance type options for EC2 instances 
 
 ### Fixed
 
@@ -114,7 +116,7 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Fixed
 
-- Create new Service screen was showing broken service name field [#368]
+- Create new Service screen was showing broken service name field 
 
 ## [6.11.4] - 2017-10-31
 
@@ -140,90 +142,90 @@ Example:
         "ProxyPass": "https://$anything-you-want"
     }
 
-[#366]
+
 
 ## [6.11.1] - 2017-10-24
 
 ### Fixed
 
-- Custom rules for load balancer settings editor. Prevents non existing upstreams being added. [#363]
-- Mark for delete removed pending TTL settings change in AWS. [#363]
+- Custom rules for load balancer settings editor. Prevents non existing upstreams being added. 
+- Mark for delete removed pending TTL settings change in AWS. 
 
 ## [6.11.0] - 2017-10-19
 
 ### Added
 
-- Scheduled scaling visualisation [#362]
+- Scheduled scaling visualisation 
 
 ### Changed
 
-- Made ASG scaling tab a little more intuitive [#362]
+- Made ASG scaling tab a little more intuitive 
 
 ### Fixed
 
-- Schedule visualisation bugs [#362]
+- Schedule visualisation bugs 
 
 ## [6.10.0] - 2017-10-17
 
 ### Added
 
-- Schedule visualisation in editor [#358]
+- Schedule visualisation in editor 
 
 ## [6.9.15] - 2017-10-16
 
 ### Fixed
 
-- Issue causing EM to crash periodically (Removed environment sync feature) [#360]
+- Issue causing EM to crash periodically (Removed environment sync feature) 
 
 ## [6.9.12] - 2017-10-13
 
 ### Changed
 
-- SHA256 has been removed from the authentication module. [#357]
+- SHA256 has been removed from the authentication module. 
 
 ## [6.9.11]
 
 ### Changed
 
-- Cache reset now sends a request to every node, rather than a single matching node for a service. [#356]
+- Cache reset now sends a request to every node, rather than a single matching node for a service. 
 
 ## [6.9.9]
 
 ### Added
 
-- Cache reset request now displays all results of the calls it made within the UI. [#354]
+- Cache reset request now displays all results of the calls it made within the UI. 
 
 ### Changed
 
-- Removed package path from deployment UI [#352]
-- Deprecated the package location property from deployment API [#353]
+- Removed package path from deployment UI 
+- Deprecated the package location property from deployment API 
 
 ## [6.9.6] 2017-10-06
 
 ### Added
-- APIs for synchronising service versions across environments [#351]
+- APIs for synchronising service versions across environments 
     - POST /environment/{environment}/sync-services/jobs
     - GET /environment/{environment}/sync-services/job/{JobId}
 
 ### Changed
-- Use of `MD5` hashing has been replaced with `SHA256`. [#349]
-- Use of `uuidv1` within user authentication has been replaced with `uuidv4`. [#349]
+- Use of `MD5` hashing has been replaced with `SHA256`. 
+- Use of `uuidv1` within user authentication has been replaced with `uuidv4`. 
 
 ### Fixed
 
-- HTML classes moved within the span element which were outside the span as plain text. [#350]
+- HTML classes moved within the span element which were outside the span as plain text. 
 
 ## [6.9.5] 2017-10-02
 
 ### Changed
 
-- There was a check in place for deployments that have been carried out already for the version you are requesting. This check has now been removed, allowing you to deploy the same version again. [#348]
+- There was a check in place for deployments that have been carried out already for the version you are requesting. This check has now been removed, allowing you to deploy the same version again. 
 
 ## [6.9.4] 2017-09-29
 
 ### Added
 
-- The ability to delete a service (can be restored when services are mistakenly deleted) [#346]
+- The ability to delete a service (can be restored when services are mistakenly deleted) 
 
 ### Changed
 
@@ -232,7 +234,7 @@ Example:
 ### Fixed
 
 - Environment Manager Sensu Alerts for Node
-- [Truncation of service version identifiers at 50 characters in the UI](https://gitlab.tools.trainline.eu/capitainetrain/mweb/issues/487). Service version identifiers now limited to 100 characters in UI and API. User notified if a longer version identifier is pasted into UI. [#347]
+- [Truncation of service version identifiers at 50 characters in the UI](https://gitlab.tools.trainline.eu/capitainetrain/mweb/issues/487). Service version identifiers now limited to 100 characters in UI and API. User notified if a longer version identifier is pasted into UI. 
 
 ### Fixed
 
@@ -242,18 +244,18 @@ Example:
 
 ### Fixed
 
-- The API was allowing a deployment with a configuration that had already been used to be deployed again. This was causing the deployment to never finish. The API now checks your provided configuration against service deployments that have been carried out already for that version. [#343]
-- Logging for cache reset was causing server errors due to not having access to a user object. This has been resolved. [#344]
+- The API was allowing a deployment with a configuration that had already been used to be deployed again. This was causing the deployment to never finish. The API now checks your provided configuration against service deployments that have been carried out already for that version. 
+- Logging for cache reset was causing server errors due to not having access to a user object. This has been resolved. 
 
 ### Added
-- Toggle APIs now support the ability to explicitly set the desired state of an upstream or service [#342]
+- Toggle APIs now support the ability to explicitly set the desired state of an upstream or service 
 
 ## [6.8.0] 2017-09-25
 
 ### Added
-- When a user logs in to Environment Manager and the they have not seen this release before, they will be presented with a notification and a link to the release notes. [#337]
-- The 'healthy' check mark was confusing to users. The check mark would show up while there were various other 'warnings' on that same instance. To show what that green check mark actually means, a tooltip has been added to explain. [#338]
-- Logging around cache resetting has been improved on the server side. [#340]
+- When a user logs in to Environment Manager and the they have not seen this release before, they will be presented with a notification and a link to the release notes. 
+- The 'healthy' check mark was confusing to users. The check mark would show up while there were various other 'warnings' on that same instance. To show what that green check mark actually means, a tooltip has been added to explain. 
+- Logging around cache resetting has been improved on the server side. 
 
 ### Fixed
 
@@ -261,38 +263,38 @@ Example:
 
 ### Changed
 
-- Instances can now terminate without the 10 minute wait period. [#336]
+- Instances can now terminate without the 10 minute wait period. 
 
 ## [6.7.0] 2017-09-21
 
 ### Added
-- A filter control has been added to the Environments page [#331]
-- A filter for Alert Notifcations. [#329]
-- A delete button has been added to the Servers page in the Web Client. [#333]
+- A filter control has been added to the Environments page 
+- A filter for Alert Notifcations. 
+- A delete button has been added to the Servers page in the Web Client. 
 
 ### Fixed
-- You can no longer delete an upstream that is in use by NGINX. The upstream will be tagged so that it 'can' be deleted at a later date. Enough time is given for Puppet to inform NGINX of upstream updates, after that time, upstreams marked for delete will be removed. Note: You are still prohibited from deleting an upstream that is in use by an Environment Manager Load Balancer configuration. [#330]
+- You can no longer delete an upstream that is in use by NGINX. The upstream will be tagged so that it 'can' be deleted at a later date. Enough time is given for Puppet to inform NGINX of upstream updates, after that time, upstreams marked for delete will be removed. Note: You are still prohibited from deleting an upstream that is in use by an Environment Manager Load Balancer configuration. 
 
 ### Changed
-- Dialogues which shows the services installed on instances were showing 'missing' when the instance was in an 'in progress' state for deployment. This was causing confusion. No, if the instance is in an 'in progress' state, you are told that, rather than a 'missing' message for your services. [#334]
-- ASG dialogue did not handle having 0 services in a graceful way. Now if there are no services to link to, there is no link. [#332]
-- Tables in the Web Client have all been changed to style with stripes. [#329]
+- Dialogues which shows the services installed on instances were showing 'missing' when the instance was in an 'in progress' state for deployment. This was causing confusion. No, if the instance is in an 'in progress' state, you are told that, rather than a 'missing' message for your services. 
+- ASG dialogue did not handle having 0 services in a graceful way. Now if there are no services to link to, there is no link. 
+- Tables in the Web Client have all been changed to style with stripes. 
 
 ## [6.6.0] 2017-09-13
 
 ### Added
-- Cache Reset button in the settings page of an environment. [#324]
-- New Relic Insights field added to Monitoring section of Service settings page. [#326] 
-- "Tags" available in Service settings page. Key value pairs can now be added to any service. [#322]
-- "1P" check box added to Service settings page. [#322]
+- Cache Reset button in the settings page of an environment. 
+- New Relic Insights field added to Monitoring section of Service settings page.  
+- "Tags" available in Service settings page. Key value pairs can now be added to any service. 
+- "1P" check box added to Service settings page. 
 ]
 ### Fixed
-- Extend ELK link max length to 2048. [#323]
+- Extend ELK link max length to 2048. 
 
 ### Changed
-- "New Relic" field in Service settings page changed to "New Relic APM link". [#326]
-- Allow users to disable services deployed prior to 01.2017. [#327]
-- Dependencies on the Service settings page not limited to a drop down of services. [#321]
+- "New Relic" field in Service settings page changed to "New Relic APM link". 
+- Allow users to disable services deployed prior to 01.2017. 
+- Dependencies on the Service settings page not limited to a drop down of services. 
 
 ## [6.5.1] 2017-09-11
 
@@ -302,16 +304,16 @@ Example:
 ## [6.5.0] - 2017-09-07
 
 ### Added
-- Notifications can be sent to the ContactEmail tag of the instance [#395]
+- Notifications can be sent to the ContactEmail tag of the instance 
 
 ### Fixed
 - Times New Roman Font on Servers screen
-- Throws a 404 instead of 500 when resources required for authorization are no found. [#385]
+- Throws a 404 instead of 500 when resources required for authorization are no found. 
 
 ## [6.4.1] - 2017-08-29
 
 ### Changed
-- Load balancer settings validation implemented using [JSON schema](http://json-schema.org/). [#319]
+- Load balancer settings validation implemented using [JSON schema](http://json-schema.org/). 
 
 ### Fixed
 - Fix bad function name introduced [in #318](https://github.com/trainline/environment-manager/pull/318/commits/6d4438e9a3b4bdf72acf585af168e22331526a96#diff-6752f398f8c4161aeb1830026b8b8b98R15).
@@ -319,7 +321,7 @@ Example:
 ## [6.4.0] - 2017-08-29 [YANKED]
 
 ### Added
-- A user can change the owner of a service. [#318]
+- A user can change the owner of a service. 
 
 ## [6.3.0] - 2017-08-25
 
@@ -348,27 +350,27 @@ Example:
 ## [6.1.0] - 2017-08-23
 
 ### Added
-- _Transitioning Server Roles_ section at the top of the servers page highlighting auto scaling groups that are changing size. [#311]
-- _Deployments_ column on the servers page highlighting auto scaling groups with deployments in progress. [#311]
+- _Transitioning Server Roles_ section at the top of the servers page highlighting auto scaling groups that are changing size. 
+- _Deployments_ column on the servers page highlighting auto scaling groups with deployments in progress. 
 
 ### Changed
-- Locking an environment prevents modifications to auto scaling groups. [#310]
+- Locking an environment prevents modifications to auto scaling groups. 
 
 ### Fixed
-- Missing dependencies in package produced on Travis CI. [#308]
-- Notifications sent before operations completed. [#309]
+- Missing dependencies in package produced on Travis CI. 
+- Notifications sent before operations completed. 
 
 ## [6.0.2] - 2017-08-18
 
 ### Added
-- POST data to notification event raised by POST /config/upstreams. [#307]
+- POST data to notification event raised by POST /config/upstreams. 
 
 ### Removed
 - Optional _slice_ parameter from endpoint POST /package-upload-url/{service}/{version}/{environment}.
 
 ### Fixed
-- The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. [#307]
-- A number of bugs related to the removal of a account as a special case of an account. [#305]
+- The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. 
+- A number of bugs related to the removal of a account as a special case of an account. 
 
 [Unreleased]: https://github.com/trainline/environment-manager/compare/6.19.0...master
 [6.19.0]: https://github.com/trainline/environment-manager/compare/6.17.0...6.19.0
@@ -406,66 +408,3 @@ Example:
 [6.2.0]: https://github.com/trainline/environment-manager/compare/v6.1.0...6.2.0
 [6.1.0]: https://github.com/trainline/environment-manager/compare/6.0.2...v6.1.0
 [6.0.2]: https://github.com/trainline/environment-manager/compare/6.0.1...6.0.2
-
-[#416]: https://github.com/trainline/environment-manager/pull/416
-[#403]: https://github.com/trainline/environment-manager/pull/403
-[#412]: https://github.com/trainline/environment-manager/pull/412
-[#408]: https://github.com/trainline/environment-manager/pull/408
-[#407]: https://github.com/trainline/environment-manager/pull/407
-[#403]: https://github.com/trainline/environment-manager/pull/403
-[#395]: https://github.com/trainline/environment-manager/pull/395
-[#376]: https://github.com/trainline/environment-manager/pull/389
-[#376]: https://github.com/trainline/environment-manager/pull/376
-[#375]: https://github.com/trainline/environment-manager/pull/375
-[#373]: https://github.com/trainline/environment-manager/pull/373
-[#372]: https://github.com/trainline/environment-manager/pull/372
-[#370]: https://github.com/trainline/environment-manager/pull/370
-[#368]: https://github.com/trainline/environment-manager/pull/368
-[#368]: https://github.com/trainline/environment-manager/pull/368
-[#362]: https://github.com/trainline/environment-manager/pull/362
-[#358]: https://github.com/trainline/environment-manager/pull/358
-[#353]: https://github.com/trainline/environment-manager/pull/360
-[#353]: https://github.com/trainline/environment-manager/pull/353
-[#352]: https://github.com/trainline/environment-manager/pull/352
-[#323]: https://github.com/trainline/environment-manager/pull/323
-[#319]: https://github.com/trainline/environment-manager/pull/319
-[#318]: https://github.com/trainline/environment-manager/pull/318
-[#311]: https://github.com/trainline/environment-manager/pull/311
-[#310]: https://github.com/trainline/environment-manager/pull/310
-[#309]: https://github.com/trainline/environment-manager/pull/309
-[#308]: https://github.com/trainline/environment-manager/pull/308
-[#307]: https://github.com/trainline/environment-manager/pull/307
-[#305]: https://github.com/trainline/environment-manager/pull/305
-[#324]: https://github.com/trainline/environment-manager/pull/324
-[#326]: https://github.com/trainline/environment-manager/pull/326
-[#322]: https://github.com/trainline/environment-manager/pull/322
-[#327]: https://github.com/trainline/environment-manager/pull/327
-[#321]: https://github.com/trainline/environment-manager/pull/321
-[#334]: https://github.com/trainline/environment-manager/pull/334
-[#331]: https://github.com/trainline/environment-manager/pull/331
-[#332]: https://github.com/trainline/environment-manager/pull/332
-[#330]: https://github.com/trainline/environment-manager/pull/330
-[#329]: https://github.com/trainline/environment-manager/pull/329
-[#333]: https://github.com/trainline/environment-manager/pull/333
-[#337]: https://github.com/trainline/environment-manager/pull/337
-[#338]: https://github.com/trainline/environment-manager/pull/338
-[#336]: https://github.com/trainline/environment-manager/pull/336
-[#340]: https://github.com/trainline/environment-manager/pull/340
-[#342]: https://github.com/trainline/environment-manager/pull/342
-[#343]: https://github.com/trainline/environment-manager/pull/343
-[#344]: https://github.com/trainline/environment-manager/pull/344
-[#346]: https://github.com/trainline/environment-manager/pull/346
-[#347]: https://github.com/trainline/environment-manager/pull/347
-[#348]: https://github.com/trainline/environment-manager/pull/348
-[#349]: https://github.com/trainline/environment-manager/pull/349
-[#350]: https://github.com/trainline/environment-manager/pull/350
-[#351]: https://github.com/trainline/environment-manager/pull/351
-[#354]: https://github.com/trainline/environment-manager/pull/354
-[#356]: https://github.com/trainline/environment-manager/pull/356
-[#357]: https://github.com/trainline/environment-manager/pull/357
-[#363]: https://github.com/trainline/environment-manager/pull/363
-[#366]: https://github.com/trainline/environment-manager/pull/366
-[#370]: https://github.com/trainline/environment-manager/pull/370
-[#385]: https://github.com/trainline/environment-manager/pull/385
-[#391]: https://github.com/trainline/environment-manager/pull/391
-[#399]: https://github.com/trainline/environment-manager/pull/399
