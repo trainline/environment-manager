@@ -2,18 +2,18 @@
 
 'use strict';
 
-let _ = require('lodash');
-let fs = require('fs');
-let co = require('co');
-let ms = require('ms');
-let logger = require('../logger');
-let moment = require('moment');
-let activeDeploymentsStatusProvider = require('./activeDeploymentsStatusProvider');
+const _ = require('lodash');
+const fs = require('fs');
+const co = require('co');
+const ms = require('ms');
+const logger = require('../logger');
+const moment = require('moment');
+const activeDeploymentsStatusProvider = require('./activeDeploymentsStatusProvider');
 
-let DEFAULT_INFRASTRUCTURE_PROVISIONING_TIMEOUT = '60m';
-let Enums = require('../../Enums');
-let NodeDeploymentStatus = require('../../Enums').NodeDeploymentStatus;
-let deploymentLogger = require('../DeploymentLogger');
+const DEFAULT_INFRASTRUCTURE_PROVISIONING_TIMEOUT = '60m';
+const Enums = require('../../Enums');
+const NodeDeploymentStatus = require('../../Enums').NodeDeploymentStatus;
+const deploymentLogger = require('../DeploymentLogger');
 const sns = require('../sns/EnvironmentManagerEvents');
 
 module.exports = {
