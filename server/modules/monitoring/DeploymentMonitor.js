@@ -136,7 +136,6 @@ function detectNodesDeploymentStatus(nodes) {
 
   if (nodes.every(succeeded)) {
     // Deployment succeeded on every node.
-    // TODO: SNS SUCCESS!
     return {
       name: Enums.DEPLOYMENT_STATUS.Success,
       reason: 'Deployed all nodes successfully'
