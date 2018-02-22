@@ -27,6 +27,7 @@ app.config(['cfpLoadingBarProvider', function (cfpLoadingBarProvider) {
 // Setup global routes
 app.config(function ($routeProvider, $compileProvider) {
   $compileProvider.preAssignBindingsEnabled(true);
+  $compileProvider.aHrefSanitizationWhitelist(/^(slack|https?|ftp|mailto|file|sms|tel):/);
   $routeProvider
     .when('/', {
       templateUrl: '/app/environments/summary/env-summary.html',

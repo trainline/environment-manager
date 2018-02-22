@@ -17,7 +17,7 @@ function deploymentView(deploymentRecord, clusters, expectedNodes) {
 
     var endTime = moment(deployment.EndTimestamp);
     var diff = createDiffString(startTime, endTime);
-    
+
     return {
       label: 'Duration',
       value: diff + ' (' + startTime.format('YYYY-MM-DD, HH:mm:ss') + ' - ' + endTime.format('YYYY-MM-DD, HH:mm:ss') + ')'
@@ -27,8 +27,8 @@ function deploymentView(deploymentRecord, clusters, expectedNodes) {
   function createDiffString(startTime, endTime) {
     var diff = moment.duration(endTime.diff(startTime));
     var duration = [
-      _.padStart(diff.get('hours'), 2, 0), 
-      _.padStart(diff.get('minutes'), 2, 0), 
+      _.padStart(diff.get('hours'), 2, 0),
+      _.padStart(diff.get('minutes'), 2, 0),
       _.padStart(diff.get('seconds'), 2, 0)].join(':');
     return duration;
   }
@@ -84,7 +84,7 @@ function deploymentView(deploymentRecord, clusters, expectedNodes) {
         duration: '-',
         numberOfAttempts: '-',
         status: {
-          status: '-', 
+          status: '-',
         }
       };
       if (failedToInitialize) {
@@ -101,20 +101,27 @@ function deploymentView(deploymentRecord, clusters, expectedNodes) {
   }
 
   function getDeploymentLog(log) {
+    var waiting = false;
+
     if (!log) return '';
 
-    var logLines = log.split(/\r\n|\r|\n/g).filter(function (line) { return !!line; }).reverse();
+    var logLines = log.split(/\r\n|\r|\n/g).filter(function (line) { return !!line; });
     var newLogLines = logLines.map(function (line) {
       var r = /^\[(.*?)\]\s(.*)$/g;
       var matches = r.exec(line);
       if (matches) {
         var date = moment(matches[1]).format('HH:mm:ss.SS');
         var message = matches[2];
+        if (message.toLowerCase().includes('environment manager has now updated consul'))
+          waiting = true;
         return '[' + date + '] ' + message;
       }
     });
 
-    return newLogLines.join('\n');
+    return {
+      lines: newLogLines.join('\n'),
+      waiting: waiting
+    };
   }
 
   var deployment = deploymentRecord.Value;
@@ -149,11 +156,13 @@ angular.module('EnvironmentManager.operations')
     var vm = this;
 
     vm.deployment = deployment;
+    vm.deploymentWaiting = false;
 
     var id = deployment.DeploymentID;
     var account = deployment.AccountName;
     var refreshTimer;
     var clusters;
+    vm.deploymentSupportSlack = "slack://channel?id=C1HCFJU67&team=T060F53FW";
 
     updateExpectedNodes();
 
@@ -182,6 +191,9 @@ angular.module('EnvironmentManager.operations')
 
     function updateView(data) {
       vm.view = deploymentView(data, clusters, vm.expectedNodes);
+
+      if (_.get(vm, 'view.log.waiting') === true)
+        vm.deploymentWaiting = true;
 
       if (refreshTimer) $timeout.cancel(refreshTimer);
 

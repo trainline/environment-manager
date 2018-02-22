@@ -11,6 +11,6 @@ module.exports = function UpdateTargetState(command) {
   let { deploymentId, key, options, value } = command;
   return schema('UpdateTargetStateCommand')
     .then(x => x.assert(command))
-    .then(() => deploymentLogsStreamer.log(deploymentId, `Updating key ${command.key}`))
+    .then(() => deploymentLogsStreamer.log(deploymentId, `Updating Consul key ${command.key}`))
     .then(() => serviceTargets.setTargetState(command.environment, { key, value, options }));
 };

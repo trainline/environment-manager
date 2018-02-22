@@ -126,7 +126,8 @@ function deploy(deployment, destination, sourcePackage, command) {
 
     deploymentLogger.inProgress(
       deployment.id,
-      'Waiting for nodes to perform service deployment...'
+      `Environment Manager will now wait 60 minutes for the Consul Deployment Agent
+ (CDA) that is installed on each node to perform the deployment....`
     );
   }).catch((error) => {
     let deploymentStatus = {

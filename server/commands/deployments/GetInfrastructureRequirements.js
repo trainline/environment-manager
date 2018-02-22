@@ -26,7 +26,7 @@ module.exports = function GetInfrastructureRequirements(command) {
     let slice = deployment.serviceSlice;
     let requiredInfra = { asgsToCreate: [], launchConfigsToCreate: [], expectedInstances: 0 };
 
-    logger.info('Reading infrastructure configuration...');
+    logger.info('Reading the current state of AWS...');
 
     let configuration = yield configProvider.get(environmentName, serviceName, deployment.serverRoleName);
     let asgsToCreate = yield getASGsToCreate(logger, configuration, accountName, slice);
