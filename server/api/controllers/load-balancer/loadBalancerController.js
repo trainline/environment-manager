@@ -16,7 +16,9 @@ function getLoadBalancer(req, res, next) {
     instanceDomainName: fqdn
   };
 
-  return sender.sendQuery(ScanNginxUpstreams, { query }).then(data => res.json(data)).catch(next);
+  return sender.sendQuery(ScanNginxUpstreams, { query })
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 module.exports = {

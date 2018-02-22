@@ -63,12 +63,14 @@ function packageDoesNotExist(req) {
 
 function serviceExists(req) {
   let service = param('service')(req);
-  return serviceExistsRule(service).then(e => Object.assign(e, { status: '422' }));
+  return serviceExistsRule(service)
+    .then(e => Object.assign(e, { status: '422' }));
 }
 
 function environmentExists(req) {
   let environment = param('environment')(req);
-  return environmentExistsRule(environment).then(e => Object.assign(e, { status: '422' }));
+  return environmentExistsRule(environment)
+    .then(e => Object.assign(e, { status: '422' }));
 }
 
 function respondWithErrors(errors) {
@@ -88,11 +90,15 @@ function validate(validationRules) {
 }
 
 function getPackageUploadUrlByServiceVersion(request, response, next) {
-  validate([packageDoesNotExist, serviceExists])(request).then(send => send(response)).catch(next);
+  validate([packageDoesNotExist, serviceExists])(request)
+    .then(send => send(response))
+    .catch(next);
 }
 
 function getPackageUploadUrlByServiceVersionEnvironment(request, response, next) {
-  validate([packageDoesNotExist, serviceExists, environmentExists])(request).then(send => send(response)).catch(next);
+  validate([packageDoesNotExist, serviceExists, environmentExists])(request)
+    .then(send => send(response))
+    .catch(next);
 }
 
 module.exports = {

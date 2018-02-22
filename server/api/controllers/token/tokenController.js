@@ -20,7 +20,8 @@ function postAuthorization(req, res, next) {
   let duration = tokenConfiguration.getTokenDuration();
 
   userService.authenticateUser(credentials, duration)
-    .then(value => res.send(value)).catch(next);
+    .then(value => res.send(value))
+    .catch(next);
 }
 
 /**
@@ -33,7 +34,8 @@ function signOut(req, res, next) {
     res.status(400).end();
   } else {
     userService.signOut(token)
-      .then(() => res.status(200).end()).catch(next);
+      .then(() => res.status(200).end())
+      .catch(next);
   }
 }
 

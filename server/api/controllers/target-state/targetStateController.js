@@ -13,7 +13,9 @@ const sns = require('../../../modules/sns/EnvironmentManagerEvents');
 function getTargetState(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
 
-  GetServerRoles({ environmentName }).then(data => res.json(data)).catch(next);
+  GetServerRoles({ environmentName })
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 /**

@@ -37,9 +37,10 @@ function getImages(req, res, next) {
   }).catch(next);
 }
 
-function getImagesEc2Monitor(req, res) {
+function getImagesEc2Monitor(req, res, next) {
   ec2Client.getImages()
-    .then(data => res.json(data));
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 module.exports = {

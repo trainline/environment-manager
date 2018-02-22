@@ -44,12 +44,13 @@ function getEnvironmentByName(req, res, next) {
 /**
  * GET /environments/{name}/protected
  */
-function isEnvironmentProtectedFromAction(req, res) {
+function isEnvironmentProtectedFromAction(req, res, next) {
   const environmentName = req.swagger.params.name.value;
   const action = req.swagger.params.action.value;
 
   environmentProtection.isActionProtected(environmentName, action)
-    .then(isProtected => res.json({ isProtected }));
+    .then(isProtected => res.json({ isProtected }))
+    .catch(next);
 }
 
 /**
@@ -67,7 +68,8 @@ function getDeploymentLock(req, res, next) {
       },
       Version: data.Audit.Version
     }))
-    .then(data => res.json(data)).catch(next);
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 /**
@@ -118,7 +120,8 @@ function getMaintenance(req, res, next) {
       },
       Version: data.Audit.Version
     }))
-    .then(data => res.json(data)).catch(next);
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 /**
@@ -160,7 +163,9 @@ function putMaintenance(req, res, next) {
 function getEnvironmentServers(req, res, next) {
   const environmentName = req.swagger.params.name.value;
 
-  ScanServersStatus({ environmentName, filter: {} }).then(data => res.json(data)).catch(next);
+  ScanServersStatus({ environmentName, filter: {} })
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 /**
@@ -170,7 +175,9 @@ function getEnvironmentServerByName(req, res, next) {
   const environmentName = req.swagger.params.name.value;
   const asgName = req.swagger.params.asgName.value;
 
-  GetASGState({ environmentName, asgName }).then(data => res.json(data)).catch(next);
+  GetASGState({ environmentName, asgName })
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 /**
@@ -202,7 +209,8 @@ function getEnvironmentSchedule(req, res, next) {
       },
       Version: data.Audit.Version
     }))
-    .then(data => res.json(data)).catch(next);
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 /**

@@ -15,7 +15,9 @@ function getUpstreamSlices(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
   const active = req.swagger.params.active.value;
 
-  return getSlices({ environmentName, upstreamName, active }).then(data => res.json(data)).catch(next);
+  return getSlices({ environmentName, upstreamName, active })
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 /**
