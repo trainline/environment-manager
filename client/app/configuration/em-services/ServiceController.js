@@ -6,7 +6,7 @@
 
 // Manage specific service
 angular.module('EnvironmentManager.configuration').controller('ServiceController',
-  function ($scope, $routeParams, $location, $q, resources, cachedResources, modal, $http) {
+  function ($scope, $routeParams, $location, $q, resources, cachedResources, modal, $http, portservice) {
     var vm = this;
     var RETURN_PATH = '/config/services';
     var userHasPermission;
@@ -21,26 +21,12 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       range: {
         lower: 40000,
         upper: 41000
-      },
-      blue: {
-        existing: null,
-        taken: false,
-        current: null,
-        button: {
-          enabled: true
-        }
-      },
-      green: {
-        existing: null,
-        taken: false,
-        current: null,
-        button: {
-          enabled: true
-        }
-      },
-      used: []
+      }
     };
-
+    vm.greenPortInUse = false;
+    vm.bluePortInUse = false;
+    vm.startingBluePort = null;
+    vm.startingGreenPort = null;
     vm.portsValid = true;
 
     vm.cancel = navigateToList;
@@ -62,9 +48,7 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
         resources.config.services.all().then(function (services) {
           vm.serviceNames = _.map(services, 'ServiceName');
           vm.servicesList = vm.serviceNames.sort();
-        }),
-
-        fetchPortNumbers()
+        })
       ]).then(function () {
         if (vm.editMode) {
           readItem(serviceName, owningCluster);
@@ -79,52 +63,38 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       });
     }
 
-    function fetchPortNumbers() {
-      $http({
-        method: 'GET',
-        url: '/api/v1/config/services',
-        headers: { 'expected-version': vm.version }
-      }).then(function (result) {
-        var ports = extractPortNumbers(result.data);
-        vm.ports.blue.existing = ports.blue;
-        vm.ports.green.existing = ports.green;
-      }).then(function () {
-        vm.getBluePort = findNewPort({ range: vm.ports.range, ports: vm.ports.blue.existing });
-        vm.getGreenPort = findNewPort({ range: vm.ports.range, ports: vm.ports.green.existing });
-      });
-    }
+    vm.checkPorts = function () {
+      Promise.all([
+        portservice.isPortInUse(vm.service.Value.GreenPort),
+        portservice.isPortInUse(vm.service.Value.BluePort)])
+        .then(function (results) {
+          var greenResult = results[0] && vm.service.Value.GreenPort != vm.startingGreenPort;
+          var blueResult = results[1] && vm.service.Value.BluePort != vm.startingBluePort;
+          
+          if (greenResult) {
+            vm.greenPortInUse = true;
+            vm.portsValid = false;
+          } else {
+            vm.greenPortInUse = false;
+          }
 
-    function extractPortNumbers(data) {
-      var ports = {
-        blue: [],
-        green: []
-      };
-      _.map(data, function (item) {
-        if (item.Value) {
-          // Some values came back as strings from the end point, so changing them to numbers here
-          ports.green.push(item.Value.GreenPort * 1);
-          ports.blue.push(item.Value.BluePort * 1);
-        }
-      });
+          if (blueResult) {
+            vm.bluePortInUse = true;
+            vm.portsValid = false;
+          } else {
+            vm.bluePortInUse = false;
+          }
 
-      //Add all the ports to a single array. 
-      //It doesn't matter whether they come from green or blue. 
-      data.forEach(function (item) {
-        if (item.Value) {
-          vm.ports.used.push(item.Value.GreenPort * 1);
-          vm.ports.used.push(item.Value.BluePort * 1);
-        }
-      });
+          if (!blueResult && !greenResult) vm.portsValid = true;
+        });
+    };
 
-      return ports;
-    }
-
-    function setGreenPortNumber(value) {
-      vm.service.Value.GreenPort = value;
-    }
-
-    function setBluePortNumber(value) {
-      vm.service.Value.BluePort = value;
+    vm.getNextPortPair = function () {
+      portservice.getNextSequentialPair()
+        .then(function (pair) {
+          vm.service.Value.GreenPort = pair.Green;
+          vm.service.Value.BluePort = pair.Blue;
+        });
     }
 
     var dependency = {
@@ -168,8 +138,8 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       resources.config.services.get({ key: name, range: range }).then(function (data) {
         vm.dataFound = true;
         vm.service = readableService(data);
-        vm.ports.green.current = vm.service.Value.GreenPort;
-        vm.ports.blue.current = vm.service.Value.BluePort;
+        vm.startingBluePort = vm.service.Value.BluePort;
+        vm.startingGreenPort = vm.service.Value.GreenPort;
         vm.version = data.Version;
       }, function (err) {
         vm.dataFound = false;
@@ -194,106 +164,6 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
         delete service.Value.BluePort;
       }
       return service;
-    }
-
-    function findNewPort(config) {
-      return function () {
-        var newPort = 0;
-        for (var i = config.range.lower; i <= config.range.upper; i += 1) {
-          if (config.ports.indexOf(i) === -1) {
-            newPort = i;
-            break;
-          }
-
-        }
-        return newPort;
-      }
-    }
-
-    function portIsNotUsedAlready(p) {
-      return vm.ports.used.indexOf(p) === -1;
-    }
-
-    function greenPortIsNotSetToThisNumber(p) {
-      return vm.service.Value.GreenPort !== p;
-    }
-
-    function bluePortIsNotSetToThisNumber(p) {
-      return vm.service.Value.BluePort !== p;
-    }
-
-    function portIsAvailable(portNumber) {
-      return portIsNotUsedAlready(portNumber) && greenPortIsNotSetToThisNumber(portNumber) && bluePortIsNotSetToThisNumber(portNumber);
-    }
-
-    vm.getUnusedPort = function () {
-      var port = null;
-      for (var i = vm.ports.range.lower; i < vm.ports.range.upper; i += 1) {
-        if (portIsAvailable(i)) {
-          port = i;
-          break;
-        }
-      }
-      if (!port) {
-        return 'No Free Ports Available.';
-      }
-      return port;
-    }
-
-    vm.getNextFreeGreenPort = function () {
-      vm.ports.green.button.enabled = false;
-      setGreenPortNumber(vm.getUnusedPort());
-      vm.checkPorts();
-    };
-
-    vm.getNextFreeBluePort = function () {
-      vm.ports.blue.button.enabled = false;
-      setBluePortNumber(vm.getUnusedPort());
-      vm.checkPorts();
-    };
-
-    vm.checkPorts = function () {
-      checkGreenPort();
-      checkBluePort();
-      if (vm.service.Value.GreenPort === null) {
-        vm.portsValid = true;
-        return;
-      }
-      if (vm.service.Value.BluePort === null) {
-        vm.portsValid = true;
-        return;
-      }
-      if (vm.service.Value.GreenPort === vm.service.Value.BluePort) {
-        vm.portsValid = false;
-      } else {
-        vm.portsValid = true;
-      }
-    }
-
-    vm.resetGreenPortButton = function () {
-      vm.ports.green.button.enabled = true;
-    };
-
-    vm.resetBluePortButton = function () {
-      vm.ports.blue.button.enabled = true;
-    }
-
-    function checkBluePort() {
-      if (vm.ports.used.indexOf(vm.service.Value.BluePort) !== -1
-        && vm.service.Value.BluePort !== vm.ports.blue.current) {
-        vm.ports.blue.taken = true;
-      } else {
-        vm.ports.blue.taken = false;
-      }
-    }
-
-    function checkGreenPort() {
-      if (vm.ports.used.indexOf(vm.service.Value.GreenPort) !== -1
-        && vm.service.Value.GreenPort !== vm.ports.green.current) {
-        vm.ports.green.taken = true;
-      } else {
-        vm.ports.green.taken = false;
-      }
     }
 
     vm.canUser = function () {
