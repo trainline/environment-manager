@@ -168,7 +168,6 @@ function putInstanceMaintenance(req, res, next) {
   let name = null;
 
   co(function* () {
-
     try {
       let instance = yield Instance.getById(id);
       const instanceIds = [id];
@@ -216,8 +215,6 @@ ${enable}`);
     } catch (err) {
       next(err);
     }
-
-    
   })
     .then(() => sns.publish({
       message: JSON.stringify({
