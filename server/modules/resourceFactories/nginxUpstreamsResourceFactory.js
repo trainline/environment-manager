@@ -66,7 +66,7 @@ function NginxUpstreamsResource() {
         let nginxUpstreams = utils.safeParseJSON(response.body);
         if (!nginxUpstreams) return Promise.reject({ type: 'invalidJsonToError', value: response.body });
 
-        let upstreams = Object.entries(nginxUpstreams).map(([upstreamName, nginxUpstream]) => {
+        let upstreams = _.entries(nginxUpstreams).map(([upstreamName, nginxUpstream]) => {
           if (!_.has(nginxUpstream, 'peers')) return null;
 
           let upstream = {
