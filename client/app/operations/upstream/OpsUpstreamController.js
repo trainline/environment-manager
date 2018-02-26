@@ -31,7 +31,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
           querySync = new QuerySync(vm, {
             environment: {
               property: 'selectedEnvironment',
-              default: environmentstorageservice.get(vm.environmentsList[0])
+              default: getDefaultUpstreamEnvironment(environmentstorageservice.get(vm.environmentsList[0]))
             },
             cluster: {
               property: 'selectedOwningCluster',
@@ -62,6 +62,12 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
       });
     }
 
+    function getDefaultUpstreamEnvironment(value) {
+      return value.toLowerCase() === 'any' ?
+        'c01' :
+        value;
+    }
+
     vm.refresh = function () {
       vm.dataLoading = true;
       UpstreamConfig.getForEnvironment(vm.selectedEnvironment).then(function (data) {
@@ -81,6 +87,7 @@ angular.module('EnvironmentManager.operations').controller('OpsUpstreamControlle
 
     vm.updateFilter = function () {
       querySync.updateQuery();
+
 
       environmentstorageservice.set(vm.selectedEnvironment);
       teamstorageservice.set(vm.selectedOwningCluster);
