@@ -92,11 +92,12 @@ function getAsgs(req, res, next) {
 /**
  * GET /asgs
  */
-function getAsgsEc2Monitor(req, res) {
+function getAsgsEc2Monitor(req, res, next) {
   const accountName = req.swagger.params.account.value;
   const environmentName = req.swagger.params.environment.value;
   ec2Client.getHostGroups(accountName, environmentName)
-    .then(data => res.json(data));
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 /**

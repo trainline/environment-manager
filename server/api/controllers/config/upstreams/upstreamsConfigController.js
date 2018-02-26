@@ -168,14 +168,15 @@ function putUpstreamConfigByName(req, res, next) {
 /**
  * DELETE /config/upstreams/{name}
  */
-function deleteUpstreamConfigByName(req, res) {
+function deleteUpstreamConfigByName(req, res, next) {
   let Key = param('name', req);
   let key = { Key };
   const expectedVersion = param('expected-version', req);
   let metadata = getMetadataForDynamoAudit(req);
 
   return loadBalancerUpstreams.delete({ key, metadata }, expectedVersion)
-    .then(() => res.status(200).end());
+    .then(() => res.status(200).end())
+    .catch(next);
 }
 
 module.exports = {

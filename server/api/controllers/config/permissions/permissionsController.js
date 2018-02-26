@@ -31,7 +31,8 @@ function convertToApiModel(persistedModel) {
 function getPermissionsConfig(req, res, next) {
   return permissions.scan()
     .then(data => data.map(convertToApiModel))
-    .then(data => res.json(data)).catch(next);
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 /**

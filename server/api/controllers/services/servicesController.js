@@ -25,7 +25,9 @@ let _ = require('lodash');
 function getServices(req, res, next) {
   const environment = req.swagger.params.environment.value;
 
-  return serviceDiscovery.getAllServices(environment).then(data => res.json(data)).catch(next);
+  return serviceDiscovery.getAllServices(environment)
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 /**
@@ -54,7 +56,9 @@ function getASGsByService(req, res, next) {
     return _.chain(asgs).compact().uniq().map((asg) => {
       return { AutoScalingGroupName: asg };
     }).value();
-  }).then(data => res.json(data)).catch(next);
+  })
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 /**
@@ -65,7 +69,11 @@ function getServiceById(req, res, next) {
   const serviceName = req.swagger.params.service.value;
 
   return serviceDiscovery.getService(environment, serviceName)
-    .then(data => (isEmptyResponse(data) ? res.status(404).send(JSON.stringify({ error: 'Service not found.' })) : res.json(data)))
+    .then((data) => {
+      return isEmptyResponse(data) ?
+        res.status(404).send(JSON.stringify({ error: 'Service not found.' })) :
+        res.json(data);
+    })
     .catch(next);
 }
 
@@ -76,7 +84,9 @@ function getOverallServiceHealth(req, res, next) {
   const environmentName = req.swagger.params.environment.value;
   const serviceName = req.swagger.params.service.value;
 
-  return overallServiceHealth({ environmentName, serviceName }).then(data => res.json(data)).catch(next);
+  return overallServiceHealth({ environmentName, serviceName })
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 /**
@@ -87,7 +97,9 @@ function getServiceHealth(req, res, next) {
   const serviceName = req.swagger.params.service.value;
   const slice = req.swagger.params.slice.value;
 
-  return serviceHealth({ environmentName, serviceName, slice }).then(data => res.json(data)).catch(next);
+  return serviceHealth({ environmentName, serviceName, slice })
+    .then(data => res.json(data))
+    .catch(next);
 }
 
 /**
@@ -98,7 +110,9 @@ function getServiceSlices(req, res, next) {
   const serviceName = req.swagger.params.service.value;
   const active = req.swagger.params.active.value;
 
-  return getSlices({ environmentName, serviceName, active }).then(data => res.json(data)).catch(next);
+  return getSlices({ environmentName, serviceName, active })
+    .then(data => res.json(data))
+    .catch(next);
 }
 /**
  * PUT /services/{service}/toggle
