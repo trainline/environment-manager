@@ -1,6 +1,6 @@
 {
   "name": "environment-manager",
-  "version": "6.20.0",
+  "version": "6.20.1",
   "description": "Build wrapper for Environment Manager server and client components",
   "config": {
     "git-tag-version": true
