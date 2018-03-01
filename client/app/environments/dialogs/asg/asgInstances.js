@@ -9,7 +9,7 @@ angular.module('EnvironmentManager.environments').component('asgInstances', {
     asgState: '<'
   },
   controllerAs: 'vm',
-  controller: function ($uibModal) {
+  controller: function ($uibModal, $http) {
     var vm = this;
     vm.dataLoading = false;
 
@@ -23,6 +23,14 @@ angular.module('EnvironmentManager.environments').component('asgInstances', {
           }
         }
       });
+    };
+
+    vm.terminateInstance = function (instanceId, accountName) {
+      //TODO: What to we want to do in the UI with this operation?
+      $http.delete('/api/v1/instances/' + instanceId + '?account=' + accountName)
+        .then(function (response) {
+          alert(JSON.stringify(response));
+        });
     };
   }
 });

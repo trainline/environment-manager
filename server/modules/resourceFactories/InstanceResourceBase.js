@@ -42,6 +42,11 @@ function InstanceResource(client) {
     return query(client);
   };
 
+  this.terminate = function (instanceIds) {
+    return client.terminateInstances({ InstanceIds: instanceIds })
+      .promise();
+  };
+
   this.setTag = function (parameters) {
     let request = {
       Resources: parameters.instanceIds,

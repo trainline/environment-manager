@@ -895,6 +895,23 @@ paths:
           description: The instance
           schema:
             $ref: '#/definitions/Instance'
+    delete:
+      operationId: deleteInstance
+      summary: Delete a specific instance
+      tags:
+        - Instance
+      parameters:
+        - name: id
+          in: path
+          type: string
+          required: true
+        - name: account
+          in: query
+          type: string
+          required: true
+      responses:
+        200:
+          description: success
   /instances/{id}/connect:
     x-swagger-router-controller: instancesController
     get:

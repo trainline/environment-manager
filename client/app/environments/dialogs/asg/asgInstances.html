@@ -16,6 +16,7 @@
           <th class="text-nowrap">AMI</th>
           <th class="text-nowrap">Out of Date</th>
           <th class="text-nowrap">Connect</th>
+          <th class="text-nowrap">Terminate</th>
         </tr>
       </thead>
       <tbody>
@@ -69,6 +70,9 @@
                 </button>
               </span>
             </div>
+          </td>
+          <td>
+            <button class="btn btn-danger" ng-click="vm.terminateInstance(instance.InstanceId, vm.asg.Account)">Terminate</button>
           </td>
         </tr>
       </tbody>
