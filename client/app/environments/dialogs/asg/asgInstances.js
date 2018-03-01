@@ -36,7 +36,7 @@ angular.module('EnvironmentManager.environments').component('asgInstances', {
 
       return modal.confirmation(modalParameters).then(function () {
         return $http.delete('/api/v1/instances/' + instanceId + '?account=' + accountName)
-          .then(() => {
+          .then(function () {
             $scope.$emit('InstanceTerminating');
           });
       });
