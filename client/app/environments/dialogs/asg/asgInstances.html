@@ -72,7 +72,7 @@
             </div>
           </td>
           <td>
-            <button class="btn btn-danger" ng-click="vm.terminateInstance(instance.InstanceId, vm.asg.Account)" title="">Terminate</button>
+            <button class="btn btn-danger" ng-disabled="vm.notReadyForTerminate(instance)" ng-click="vm.terminateInstance(instance.InstanceId, vm.asg.Account)" title="">Terminate</button>
           </td>
         </tr>
       </tbody>
