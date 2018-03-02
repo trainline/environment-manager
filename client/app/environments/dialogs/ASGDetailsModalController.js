@@ -131,6 +131,10 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       }
     };
 
+    $scope.$on('InstanceTerminating', function () {
+      vm.refresh();
+    })
+
     vm.refresh = function (onInitialization) {
       vm.dataLoading = true;
       vm.loadingUpstreamStatus = true;

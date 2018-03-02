@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+[#unreleased]
+
+### Added
+
+- You can not terminate an instance directly and not have to scale up then down. If you want a new instance to remove one with missing services, or any other reason, you can. The ASG screen contains a `terminate` button that is available to all instances that are `In Service` and `Running`. When you terminate an instance, your ASG will delete that instance and replace it with another to meet the desired count of that ASG. Please note that to change the count of machines in your ASG, you will need to change the desired count. You cannot reduce the number of machines in your ASG by terminating instances one by one. 
+
 ## [6.20.1] 2018-02-27
 
 ### Changed

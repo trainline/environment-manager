@@ -19,5 +19,8 @@ module.exports = {
   canCreate: resourceDescriptor =>
     resourceDescriptor.type.toLowerCase() === 'ec2/instance',
 
-  create: (_, { accountName } = {}) => amazonClientFactory.createEC2Client(accountName).then(instanceResource)
+  create(_, { accountName } = {}) {
+    return amazonClientFactory.createEC2Client(accountName)
+      .then(instanceResource);
+  }
 };
