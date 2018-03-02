@@ -9,7 +9,7 @@ angular.module('EnvironmentManager.environments').component('asgInstances', {
     asgState: '<'
   },
   controllerAs: 'vm',
-  controller: function ($uibModal) {
+  controller: function ($uibModal, $http, $scope, modal) {
     var vm = this;
     vm.dataLoading = false;
 
@@ -23,6 +23,32 @@ angular.module('EnvironmentManager.environments').component('asgInstances', {
           }
         }
       });
+    };
+
+    vm.terminateInstance = function (instanceId, accountName) {
+      var modalParameters = {
+        title: 'Terminate instance?',
+        message: 'Are you sure you want to terminate <strong>' + instanceId + '</strong>?',
+        action: 'Terminate',
+        severity: 'Danger',
+        acknowledge: 'I am sure I want to terminate this instance: ' + instanceId + '.'
+      };
+
+      return modal.confirmation(modalParameters).then(function () {
+        return $http.delete('/api/v1/instances/' + instanceId + '?account=' + accountName)
+          .then(function () {
+            $scope.$emit('InstanceTerminating');
+          });
+      });
+    };
+
+    vm.notReadyForTerminate = function (instance) {
+      if (instance.LifecycleState.toLowerCase() !== 'inservice'
+        || instance.State.toLowerCase() !== 'running') {
+        return true;
+      }
+
+      return false;
     };
   }
 });

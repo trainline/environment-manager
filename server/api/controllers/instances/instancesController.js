@@ -20,6 +20,7 @@ let ScanInstancesScheduleStatus = require('../../../queryHandlers/ScanInstancesS
 let fp = require('lodash/fp');
 let merge = require('../../../modules/merge');
 const sns = require('../../../modules/sns/EnvironmentManagerEvents');
+const ec2InstanceClientFactory = require('../../../modules/resourceFactories/ec2InstanceResourceFactory');
 
 /* The tags that should be added to each instance as properties.
  * If the instance already has a property with one of these names
@@ -266,11 +267,34 @@ function getScheduleActions(req, res, next) {
     .catch(next);
 }
 
+function deleteInstance(req, res, next) {
+  const accountName = req.swagger.params.account.value;
+  const instanceId = req.swagger.params.id.value;
+
+  ec2InstanceClientFactory.create(null, { accountName })
+    .then(client => client.terminate([instanceId]))
+    .then(handleResponse)
+    .catch(next);
+
+  function handleResponse(response) {
+    return res.json({
+      type: 'instances',
+      id: instanceId,
+      attributes: {
+        action: 'TerminatingInstances',
+        currentState: response.TerminatingInstances[0].CurrentState,
+        previousState: response.TerminatingInstances[0].PreviousState
+      }
+    });
+  }
+}
+
 module.exports = {
   getInstances,
   getInstancesEc2Monitor,
   getInstanceById,
   putInstanceMaintenance,
   connectToInstance,
-  getScheduleActions
+  getScheduleActions,
+  deleteInstance
 };
