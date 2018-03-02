@@ -23,7 +23,7 @@
             <li>
                 <strong>Deployment ID:</strong> {{vm.view.DeploymentID}}</li>
             <li data-ng-if="vm.expectedNodesKnown">
-                <strong>Nodes Deployed:</strong> {{vm.view.nodesCompleted}} / {{vm.view.expectedNodes}}</li>
+                <strong>Nodes Deployed:</strong> {{vm.view.nodesCompleted}} / {{vm.view.nodes.length}}</li>
         </ul>
         <br>
         <p>Please ask in the

@@ -3,7 +3,11 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-[#unreleased]
+[Unreleased]
+
+### Fixed
+
+- The "Nodes Deployed" value on the details of a deployment now show you the `total deployed / total nodes`. Total nodes was previously incorrect, it would show you a value that ended up with odd results like `10/1` for Nodes Deployed. This was confusing because it was nonsense. If 10 instances have completed, you will now see `10/10` for all the nodes.
 
 ### Added
 
