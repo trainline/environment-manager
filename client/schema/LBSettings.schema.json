@@ -76,7 +76,11 @@
             "type": "array",
             "items": { "type": "string", "pattern": "^(\\d{3}|all)$" }
           },
-          "CacheTime": { "$ref": "#/definitions/nonEmptyString" }
+          "CacheTime": { "$ref": "#/definitions/nonEmptyString" },
+          "RestrictTo": {
+              "type": "array",
+              "items": { "$ref": "#/definitions/ipSubnet" }
+          }
         }
       }
     },
@@ -96,6 +100,10 @@
     "CustomErrorCodes": {
       "type": "array",
       "items": { "type": "string", "pattern": "^(\\d{3}|all)$" }
+    },
+    "RestrictTo": {
+        "type": "array",
+        "items": { "$ref": "#/definitions/ipSubnet" }
     }
   },
   "definitions": {
@@ -105,6 +113,7 @@
         { "type": "number" }
       ]
     },
-    "nonEmptyString": { "type": "string", "minLength": 1 }
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "ipSubnet": { "type": "string", "pattern": "^([0-9]{1,3}\\.){3}[0-9]{1,3}(\\/[0-9]{1,2})?$" }
   }
 }
