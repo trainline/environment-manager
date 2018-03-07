@@ -2,8 +2,10 @@
 
 'use strict';
 
-let logger = require('../logger');
-let deploymentMonitor = require('./DeploymentMonitor');
+const logger = require('../logger');
+const deploymentMonitor = require('./DeploymentMonitor');
+const clusterNode = require('../clusterNode');
+
 const MAX_MONITOR_INTERVAL = 60;
 const MIN_MONITOR_INTERVAL = 45;
 
@@ -15,7 +17,7 @@ function scheduleDeploymentMonitor(isPeakTime) {
   logger.debug(`DeploymentMonitor: Next execution will start in ${interval} seconds`);
 
   setTimeout(() => {
-    deploymentMonitor.monitorActiveDeployments().then(
+    monitorActiveDeployments().then(
 
       (activeDeploymentsMonitored) => {
         scheduleDeploymentMonitor(activeDeploymentsMonitored > 0);
@@ -28,6 +30,11 @@ function scheduleDeploymentMonitor(isPeakTime) {
 
     );
   }, interval * 1000);
+}
+
+function monitorActiveDeployments() {
+  if (!clusterNode.isLeader()) return Promise.resolve(0);
+  return deploymentMonitor.monitorActiveDeployments();
 }
 
 function getDeploymentMonitorInterval(isPeakTime) {
