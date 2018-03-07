@@ -36,8 +36,8 @@ function getVersionFromGit(version) {
     .replace(/-(g\w+)$/i, '+$1');
 }
 
-function yarnInstall(cwd) {
-  return run('yarn install --production --frozen-lockfile', { cwd }).exec();
+function npmInstall(cwd) {
+  return run('npm install --production', { cwd }).exec();
 }
 
 function copyServerFiles() {
@@ -70,7 +70,7 @@ function clean(done) {
 
 gulp.task('clean', clean);
 gulp.task('copy-server-files', ['clean'], copyServerFiles);
-gulp.task('server', ['copy-server-files'], () => yarnInstall(BUILD_DIR));
+gulp.task('server', ['copy-server-files'], () => npmInstall(BUILD_DIR));
 gulp.task('client', ['clean'], client);
 gulp.task('pack', ['client', 'server'], pack);
 gulp.task('default', ['pack']);
