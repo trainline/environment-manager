@@ -14,7 +14,9 @@ let monitorInterval = 0;
 function scheduleDeploymentMonitor(isPeakTime) {
   let interval = getDeploymentMonitorInterval(isPeakTime);
 
-  logger.debug(`DeploymentMonitor: Next execution will start in ${interval} seconds`);
+  if (clusterNode.isLeader()) {
+    logger.debug(`DeploymentMonitor: Next execution will start in ${interval} seconds`);
+  }
 
   setTimeout(() => {
     monitorActiveDeployments().then(
