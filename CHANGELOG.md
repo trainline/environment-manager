@@ -9,6 +9,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 - The "Nodes Deployed" value on the details of a deployment now show you the `total deployed / total nodes`. Total nodes was previously incorrect, it would show you a value that ended up with odd results like `10/1` for Nodes Deployed. This was confusing because it was nonsense. If 10 instances have completed, you will now see `10/10` for all the nodes.
 
+- Switched to at-most-once delivery of Deployment Completed notifications by ensuring only one deployment monitor is running at any given time. This also reduces the load on the AWS APIs.
+
 ### Added
 
 - You can not terminate an instance directly and not have to scale up then down. If you want a new instance to remove one with missing services, or any other reason, you can. The ASG screen contains a `terminate` button that is available to all instances that are `In Service` and `Running`. When you terminate an instance, your ASG will delete that instance and replace it with another to meet the desired count of that ASG. Please note that to change the count of machines in your ASG, you will need to change the desired count. You cannot reduce the number of machines in your ASG by terminating instances one by one. 
