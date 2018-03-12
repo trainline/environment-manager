@@ -3,9 +3,14 @@
 'use strict';
 
 let config = require('../../../config');
+const clusterNode = require('../../../modules/clusterNode');
 
 function getHealthcheck(req, res) {
-  res.json({ OK: true, Version: config.get('APP_VERSION') });
+  res.json({
+    OK: true,
+    Version: config.get('APP_VERSION'),
+    Leader: clusterNode.isLeader()
+  });
 }
 
 module.exports = {
