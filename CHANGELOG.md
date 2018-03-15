@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [#unreleased]
+
+### Fixed
+
+- Previously, when your session would expire, if you tried to perform an action, you would receive an error dialogue and be left in a state where you could do nothing without navigating back to the login page. Now, when this happens, you will be alerted to the session expiraton and taken directly to the login page. 
+
 ## [6.21.1] 2018-03-12
 
 ### Fixed
