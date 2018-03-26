@@ -3,9 +3,9 @@
 
 'use strict';
 
-let sinon = require('sinon');
+let sinon = require('sinon'); // eslint-disable-line import/no-extraneous-dependencies
 let assert = require('assert');
-let rewire = require('rewire');
+let rewire = require('rewire'); // eslint-disable-line import/no-extraneous-dependencies
 
 let instances = rewire('../../../modules/authorizers/instances');
 
