@@ -3,22 +3,27 @@
 const sut = require('../../modules/logger').createLogEntryDetails;
 const assert = require('assert');
 
-describe('logger module', () => {
+describe.only('logger module', () => {
+
   it('entry should contain the correct severity', () => {
     let entry = sut('warn');
     assert.equal(entry.severity, 'warn');
+    entry = sut('info');
+    assert.equal(entry.severity, 'info');
   });
 
   it('should handle errors being passed in', () => {
-    let entry = sut('info', new Error('Bang!'));
-    assert.equal(entry.message, 'Bang!');
+    let err = new Error('Bang!');
+    let entry = sut('info', err);
+    assert.equal(entry.message, err.message);
+    assert(entry.details.includes(err.message));
   });
 
   it('should handle objects being passed in', () => {
     let entry = sut('info', { message: 'message info', somethingElse: 'more data' });
     assert.equal(entry.message, 'message info');
-    assert(entry.details.includes('somethingElse'));
-    assert(entry.details.includes('more data'));
+    assert.ok(entry.details.includes('somethingElse'));
+    assert.ok(entry.details.includes('more data'));
   });
 
   it('should handle arbitrary numbers of arguments', () => {
@@ -39,6 +44,8 @@ describe('logger module', () => {
     assert(entry.message);
     assert(entry['trace-id']);
     assert(entry.eventtype);
+
+    // Others are NOT top level entries
     assert(!entry.notTop);
   });
 });
