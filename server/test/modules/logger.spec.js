@@ -4,7 +4,6 @@ const sut = require('../../modules/logger').createLogEntryDetails;
 const assert = require('assert');
 
 describe.only('logger module', () => {
-
   it('entry should contain the correct severity', () => {
     let entry = sut('warn');
     assert.equal(entry.severity, 'warn');
