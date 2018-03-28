@@ -35,7 +35,6 @@ let mini = miniStack.build();
 let loggerMiddleware = logger => (req, res, next) => {
   let log = () => {
     let deprecated = fp.compose(fp.defaultTo(false), fp.get(['locals', 'deprecated']))(res);
-    let message = deprecated ? 'HTTP request deprecated' : 'HTTP request';
     let statusCode = fp.get(['statusCode'])(res);
     let level;
     if (statusCode >= 500) {
