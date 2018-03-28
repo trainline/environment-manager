@@ -6,23 +6,27 @@ const pino = require('pino')();
 const _ = require('lodash');
 const config = require('../config');
 
+const createLogEntryDetails = (type, ...args) => {
+  let logParts = extractMessageAndDetails(...args);
+
+  let entry = {
+    name: 'environmentmanager',
+    environment: config.get('EM_AWS_RESOURCE_PREFIX').replace('-', '') || 'mn1',
+    message: logParts.message,
+    details: logParts.details,
+    eventtype: 'app',
+    releaseversion: process.env.RELEASE_VERSION || config.get('APP_VERSION'),
+    severity: type
+  };
+
+  _.assign(entry, logParts.indexables);
+
+  return entry;
+};
+
 const createLoggerType = (type) => {
   return (...args) => {
-    let logParts = extractMessageAndDetails(...args);
-
-    let entry = {
-      name: 'environmentmanager',
-      environment: config.get('EM_AWS_RESOURCE_PREFIX').replace('-', '') || 'mn1',
-      message: logParts.message,
-      details: logParts.details,
-      eventtype: 'app',
-      releaseversion: process.env.RELEASE_VERSION || config.get('APP_VERSION'),
-      severity: type
-    };
-
-    _.assign(entry, logParts.indexables);
-
-    pino.info(entry);
+    pino.info(createLogEntryDetails(type, ...args));
   };
 };
 
@@ -31,7 +35,8 @@ let logger = {
   info: createLoggerType('info'),
   warn: createLoggerType('warn'),
   error: createLoggerType('error'),
-  debug: createLoggerType('debug')
+  debug: createLoggerType('debug'),
+  createLogEntryDetails
 };
 
 let extractMessageAndDetails = (...args) => {
