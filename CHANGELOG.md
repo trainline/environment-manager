@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.21.2] 2018-03-28
+
+### Fixed
+
+- Internal fixes only
+
 ## [6.21.1] 2018-03-12
 
 ### Fixed
@@ -388,7 +394,8 @@ Example:
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. 
 - A number of bugs related to the removal of a account as a special case of an account. 
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/6.21.1...master
+[Unreleased]: https://github.com/trainline/environment-manager/compare/6.21.2...master
+[6.21.2]: https://github.com/trainline/environment-manager/compare/6.21.1...6.21.2
 [6.21.1]: https://github.com/trainline/environment-manager/compare/6.20.1...6.21.1
 [6.20.1]: https://github.com/trainline/environment-manager/compare/6.19.0...6.20.1
 [6.19.0]: https://github.com/trainline/environment-manager/compare/6.17.0...6.19.0
