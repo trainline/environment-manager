@@ -14,11 +14,21 @@ let { ifNotFound, notFoundMessage } = require('../../api-utils/ifNotFound');
 const { toggleServiceStatus } = require('../../../modules/toggleServiceStatus');
 let DeployService = require('../../../commands/deployments/DeployService');
 
+let moment = require('moment');
+
+const theBeginningOfTheDayBeforeYesterday = () =>
+  moment.utc().subtract(2, 'days').startOf('day');
+
 /**
  * GET /deployments
  */
 function getDeployments(req, res, next) {
   const since = req.swagger.params.since.value;
+
+  if (moment(since).isBefore(theBeginningOfTheDayBeforeYesterday())) {
+    throw new Error('Deployment queries beginning more than 2 days ago are not currently permitted.');
+  }
+
   const environment = req.swagger.params.environment.value;
   const status = req.swagger.params.status.value;
   const cluster = req.swagger.params.cluster.value;
