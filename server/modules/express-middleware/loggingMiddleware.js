@@ -81,7 +81,7 @@ let loggerMiddleware = logger => (req, res, next) => {
 
 let errorLoggerMiddleware = logger => (err, req, res, next) => {
   let log = () => {
-    let message = 'HTTP error';
+    let message = `HTTP ERROR: ${err.message}`;
     let entry = {
       error: {
         message: fp.get(['message'])(err),
@@ -99,8 +99,9 @@ let errorLoggerMiddleware = logger => (err, req, res, next) => {
     };
     logger.error(message, entry);
   };
-  res.once('close', log);
-  res.once('finish', log);
+
+  log(err);
+
   next(err);
 };
 
