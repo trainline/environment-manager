@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.21.4] 2018-04-05
+
+### Changed
+
+- Increased loading speed of ASG dialog
+
+### Fixed
+
+- Deprecated M3 and C3 instance types re-appearing in the UI
+- Increased the number of retries for AWS calls to reduce the number of transient errors (e.g. rate limiting)
+
 ## [6.21.3] 2018-03-28
 
 ### Fixed
@@ -400,7 +411,8 @@ Example:
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. 
 - A number of bugs related to the removal of a account as a special case of an account. 
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/6.21.3...master
+[Unreleased]: https://github.com/trainline/environment-manager/compare/6.21.4...master
+[6.21.4]: https://github.com/trainline/environment-manager/compare/6.21.3...6.21.4
 [6.21.3]: https://github.com/trainline/environment-manager/compare/6.21.2...6.21.3
 [6.21.2]: https://github.com/trainline/environment-manager/compare/6.21.1...6.21.2
 [6.21.1]: https://github.com/trainline/environment-manager/compare/6.20.1...6.21.1
