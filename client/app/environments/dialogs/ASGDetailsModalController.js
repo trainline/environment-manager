@@ -48,7 +48,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     function init() {
       resources.aws.instanceTypes.all().then(function (instanceTypes) {
         vm.awsInstanceTypesList = instanceTypes.filter(function (instanceType) {
-          return !(_.startsWith(instanceType, 'c3') || _.startsWith(instanceType, 'm3'));
+          return !(_.startsWith(instanceType.trim(), 'c3') || _.startsWith(instanceType.trim(), 'm3'));
         });
       }).then(function () {
         vm.refresh(true);
