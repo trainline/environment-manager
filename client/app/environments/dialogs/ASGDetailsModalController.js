@@ -139,9 +139,12 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       vm.dataLoading = true;
       vm.loadingUpstreamStatus = true;
 
+      var environmentName = parameters.environment.EnvironmentName;
+      var asgName = parameters.groupName;
+
       $q.all([
-        serviceDiscovery.getASGState(parameters.environment.EnvironmentName, parameters.groupName),
-        AutoScalingGroup.getFullByName(parameters.environment.EnvironmentName, parameters.groupName)
+        serviceDiscovery.getASGState(environmentName, asgName),
+        AutoScalingGroup.getFullByName(environmentName, asgName)
       ]).then(function (arr) {
         vm.asgState = arr[0];
         vm.asg = arr[1];
