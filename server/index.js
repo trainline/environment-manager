@@ -46,6 +46,7 @@ function start() {
   co(function* () { // eslint-disable-line func-names
     AWS.config.setPromisesDependency(Promise);
     AWS.config.update({ region: config.get('EM_AWS_REGION') });
+    AWS.config.maxRetries = 10;
     let configurationProvider = new ConfigurationProvider();
     yield configurationProvider.init();
     yield cacheManager.flush();
