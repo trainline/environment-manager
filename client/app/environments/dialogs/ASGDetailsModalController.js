@@ -284,9 +284,12 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     };
 
     vm.updateAutoScalingGroup = function () {
-      confirmAZChange().then(function () {
-        loading.lockPage(true);
-        var updated = {
+      confirmAZChange()
+        .then(createUpdatedAsgModel)
+        .then(sendAsgUpdate);
+
+      function createUpdatedAsgModel() {
+        return {
           size: {
             min: vm.asgUpdate.MinSize,
             desired: vm.asgUpdate.DesiredCapacity,
@@ -299,19 +302,20 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
             availabilityZoneName: vm.asgUpdate.AvailabilityZone
           }
         };
+      }
 
-        vm.asg.updateAutoScalingGroup(updated)
+      function sendAsgUpdate(updated) {
+        return vm.asg.updateAutoScalingGroup(updated)
           .then(function () {
             modal.information({
-              title: 'ASG Updated',
-              message: 'ASG update successful. You can monitor instance changes by using the Refresh Icon in the top right of the window.<br/><br/><b>Note:</b> During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection draining before termination.'
+              title: 'ASG Update Sent',
+              message: 'ASG update sent. Environment Manager will synchronise with AWS shortly. You can monitor instance changes by using the Refresh Icon in the top right of the window.<br/><br/><b>Note:</b> During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection draining before termination.'
             });
           })
           .finally(function () {
-            loading.lockPage(false);
             vm.refresh();
           });
-      });
+      }
     };
 
     function confirmAZChange() {
