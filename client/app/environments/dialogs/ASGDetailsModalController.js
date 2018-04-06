@@ -59,6 +59,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
       vm.asgUpdate = vm.asg;
       vm.asgUpdate.SelectedAction = parameters.defaultAction || 'instances';
       vm.asgUpdate.AvailabilityZone = deriveAvailabilityZoneFriendlyName(vm.asgUpdate.AvailabilityZones);
+      vm.asgUpdate.NewSchedule = vm.asg.Schedule;
       vm.selectedScheduleMode = vm.asgUpdate.ScalingSchedule && vm.asgUpdate.ScalingSchedule.length ? 'scaling' : 'schedule';
     }
 
@@ -309,7 +310,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
           .then(function () {
             modal.information({
               title: 'ASG Update Sent',
-              message: 'ASG update sent. Environment Manager will synchronise with AWS shortly. You can monitor instance changes by using the Refresh Icon in the top right of the window.<br/><br/><b>Note:</b> During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection draining before termination.'
+              message: '<div class="alert alert-info">ASG update sent. Environment Manager will synchronise with AWS shortly.</div><br> You can monitor instance changes by using the Refresh Icon in the top right of the window.<br/><br/><b>Note:</b> During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection draining before termination.'
             });
           })
           .finally(function () {
@@ -326,7 +327,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
       return modal.confirmation({
         title: 'Change Availability Zones',
-        message: 'Are you sure you want to change the AZ settings? AWS will instantly rebalance your instances according to these settings.',
+        message: '<div class="alert alert-info">It will take a moment for Environment Manager to synchronise with AWS. You can monitor instance changes by using the Refresh Icon in the top right of the window.</div><br>Are you sure you want to change the AZ settings?',
         severity: 'Danger'
       });
     }
@@ -384,8 +385,8 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
       return AutoScalingGroup.updateSchedule(vm.environmentName, vm.asg.AsgName, newSchedule).then(function () {
         modal.information({
-          title: 'ASG Schedule Updated',
-          message: 'ASG schedule updated successfully.'
+          title: 'ASG Schedule Update Sent',
+          message: '<div class="alert alert-info">It will take a moment for Environment Manager to synchronise with AWS. You can monitor instance changes by using the Refresh Icon in the top right of the window.</div>'
         });
       }).catch(function (err) {
         if (err.status === 404) {
