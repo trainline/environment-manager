@@ -56,15 +56,10 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     }
 
     function initializeScope() {
+      vm.asgUpdate = vm.asg;
       vm.asgUpdate.SelectedAction = parameters.defaultAction || 'instances';
-      vm.asgUpdate.MinSize = vm.asg.MinSize;
-      vm.asgUpdate.DesiredCapacity = vm.asg.DesiredCapacity;
-      vm.asgUpdate.MaxSize = vm.asg.MaxSize;
-      vm.asgUpdate.NewSchedule = vm.asg.Schedule;
-      vm.asgUpdate.ScalingSchedule = vm.asg.ScalingSchedule;
-      vm.asgUpdate.AvailabilityZone = deriveAvailabilityZoneFriendlyName(vm.asg.AvailabilityZones);
-      vm.asgUpdate.TerminationDelay = vm.asg.TerminationDelay
-      vm.selectedScheduleMode = vm.asg.ScalingSchedule && vm.asg.ScalingSchedule.length ? 'scaling' : 'schedule';
+      vm.asgUpdate.AvailabilityZone = deriveAvailabilityZoneFriendlyName(vm.asgUpdate.AvailabilityZones);
+      vm.selectedScheduleMode = vm.asgUpdate.ScalingSchedule && vm.asgUpdate.ScalingSchedule.length ? 'scaling' : 'schedule';
     }
 
     vm.isAZChecked = function (az) {
@@ -80,7 +75,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     };
 
     function deriveAvailabilityZoneFriendlyName(azs) {
-      return azs.map(function (az) { return az.substring(azs[0].length - 1).toUpperCase(); });
+      return azs.map(function (az) { return az.slice(-1).toUpperCase(); });
     }
 
     vm.setLaunchConfigForm = function (form) {
@@ -141,7 +136,6 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
       var environmentName = parameters.environment.EnvironmentName;
       var asgName = parameters.groupName;
-
       $q.all([
         serviceDiscovery.getASGState(environmentName, asgName),
         AutoScalingGroup.getFullByName(environmentName, asgName)
@@ -156,27 +150,29 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         };
         amiData = vm.asg.$amiData;
         awsService.images.MergeExtraImageDataToInstances(vm.asgState.Instances, amiData);
-      }).then(function () {
+
         Image.getByName(vm.target.ASG.LaunchConfig.AMI).then(function (ami) {
           var currentSize = vm.target.ASG.LaunchConfig.Volumes[0].Size;
           vm.requiredImageSize = !_.isObject(ami) ? currentSize : ami.RootVolumeSize;
         });
 
-        // Refresh deployment map data to pick up any config changes
-        resources.config.deploymentMaps.get({ key: environment.Value.DeploymentMap }).then(function (deploymentMap) {
-          if (deploymentMap) {
-            vm.deploymentMap = angular.copy(deploymentMap);
+        function setupDeploymentMapLink() {
+          resources.config.deploymentMaps.get({ key: environment.Value.DeploymentMap }).then(function (deploymentMap) {
+            if (deploymentMap) {
+              vm.deploymentMap = angular.copy(deploymentMap);
 
-            // Restructure for use with Target dialog
-            vm.deploymentMap.Value.DeploymentTarget = vm.deploymentMap.Value.DeploymentTarget.map(deploymentMapConverter.toDeploymentTarget);
+              // Restructure for use with Target dialog
+              vm.deploymentMap.Value.DeploymentTarget = vm.deploymentMap.Value.DeploymentTarget.map(deploymentMapConverter.toDeploymentTarget);
 
-            // Find the corresponding Target for this ASG
-            vm.deploymentMapTarget = findDeploymentMapTargetForAsg(vm.asg);
-          } else {
-            vm.deploymentMapTarget = null;
-          }
-        }).then(function () {
-          // Read selected image versions, sort and add stable indicator
+              // Find the corresponding Target for this ASG
+              vm.deploymentMapTarget = findDeploymentMapTargetForAsg(vm.asg);
+            } else {
+              vm.deploymentMapTarget = null;
+            }
+          })
+        }
+
+        function getSortedStableImageVersions() {
           selectedImageVersions = awsService.images.GetAmiVersionsByType(vm.asgUpdate.ConfiguredAmiType, amiData, false);
           if (selectedImageVersions) {
             selectedImageVersions = awsService.images.SortByVersion(selectedImageVersions);
@@ -194,17 +190,29 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
           });
 
           vm.dataLoading = false;
-        }).then(function () {
-          // On initialization scope properties are initialized with ASG details
-          // to allow the user to change them through the UI.
-          if (onInitialization) {
-            initializeScope();
-          }
+        }
+
+        $q.all([
+          setupDeploymentMapLink(),
+          getSortedStableImageVersions()
+        ]).then(function () {
+          initializeScope();
         });
       }, function (error) {
         vm.closeModal();
       });
     };
+
+    vm.displayNotification = function (whatHappened) {
+      var notificationWindow = modal.notification({
+        title: "The following action is being performed...",
+        message: whatHappened
+      });
+
+      setTimeout(function () {
+        notificationWindow.close()
+      }, 2000);
+    }
 
     vm.getLBStatus = function () {
       var env = parameters.environment.EnvironmentName;
