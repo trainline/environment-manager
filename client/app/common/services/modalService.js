@@ -15,17 +15,19 @@ angular.module('EnvironmentManager.common').factory('modal',
     //    infomode: false // true to hide cancel button for info only messages
     // }
 
+    function getParameters(configuration) {
+      return {
+        templateUrl: '/app/common/common-modal/common-modal.html',
+        controller: 'CommonModalController as vm',
+        resolve: {
+          configuration: configuration
+        }
+      };
+    }
+
     return {
       confirmation: function (configuration) {
-        var parameters = {
-          templateUrl: '/app/common/common-modal/common-modal.html',
-          controller: 'CommonModalController as vm',
-          resolve: {
-            configuration: configuration
-          }
-        };
-
-        return $uibModal.open(parameters).result;
+        return $uibModal.open(getParameters(configuration)).result;
       },
 
       error: function (title, errorMessage) {

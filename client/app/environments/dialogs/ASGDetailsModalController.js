@@ -56,15 +56,11 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     }
 
     function initializeScope() {
+      vm.asgUpdate = vm.asg;
       vm.asgUpdate.SelectedAction = parameters.defaultAction || 'instances';
-      vm.asgUpdate.MinSize = vm.asg.MinSize;
-      vm.asgUpdate.DesiredCapacity = vm.asg.DesiredCapacity;
-      vm.asgUpdate.MaxSize = vm.asg.MaxSize;
+      vm.asgUpdate.AvailabilityZone = deriveAvailabilityZoneFriendlyName(vm.asgUpdate.AvailabilityZones);
       vm.asgUpdate.NewSchedule = vm.asg.Schedule;
-      vm.asgUpdate.ScalingSchedule = vm.asg.ScalingSchedule;
-      vm.asgUpdate.AvailabilityZone = deriveAvailabilityZoneFriendlyName(vm.asg.AvailabilityZones);
-      vm.asgUpdate.TerminationDelay = vm.asg.TerminationDelay
-      vm.selectedScheduleMode = vm.asg.ScalingSchedule && vm.asg.ScalingSchedule.length ? 'scaling' : 'schedule';
+      vm.selectedScheduleMode = vm.asgUpdate.ScalingSchedule && vm.asgUpdate.ScalingSchedule.length ? 'scaling' : 'schedule';
     }
 
     vm.isAZChecked = function (az) {
@@ -80,7 +76,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     };
 
     function deriveAvailabilityZoneFriendlyName(azs) {
-      return azs.map(function (az) { return az.substring(azs[0].length - 1).toUpperCase(); });
+      return azs.map(function (az) { return az.slice(-1).toUpperCase(); });
     }
 
     vm.setLaunchConfigForm = function (form) {
@@ -123,9 +119,8 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     };
 
     vm.formIsValid = function (form) {
-      // TODO: Workaround for bug in uniqueAmong directive, returns false positive for disabled control. Can remove this once fixed.
       if (vm.pageMode == 'Edit') {
-        return Object.keys(form.$error).length <= 1; // expect 1 error
+        return Object.keys(form.$error).length <= 1;
       } else {
         return form.$valid;
       }
@@ -141,7 +136,6 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
       var environmentName = parameters.environment.EnvironmentName;
       var asgName = parameters.groupName;
-
       $q.all([
         serviceDiscovery.getASGState(environmentName, asgName),
         AutoScalingGroup.getFullByName(environmentName, asgName)
@@ -156,27 +150,25 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         };
         amiData = vm.asg.$amiData;
         awsService.images.MergeExtraImageDataToInstances(vm.asgState.Instances, amiData);
-      }).then(function () {
+
         Image.getByName(vm.target.ASG.LaunchConfig.AMI).then(function (ami) {
           var currentSize = vm.target.ASG.LaunchConfig.Volumes[0].Size;
           vm.requiredImageSize = !_.isObject(ami) ? currentSize : ami.RootVolumeSize;
         });
 
-        // Refresh deployment map data to pick up any config changes
-        resources.config.deploymentMaps.get({ key: environment.Value.DeploymentMap }).then(function (deploymentMap) {
-          if (deploymentMap) {
-            vm.deploymentMap = angular.copy(deploymentMap);
+        function setupDeploymentMapLink() {
+          resources.config.deploymentMaps.get({ key: environment.Value.DeploymentMap }).then(function (deploymentMap) {
+            if (deploymentMap) {
+              vm.deploymentMap = angular.copy(deploymentMap);
+              vm.deploymentMap.Value.DeploymentTarget = vm.deploymentMap.Value.DeploymentTarget.map(deploymentMapConverter.toDeploymentTarget);
+              vm.deploymentMapTarget = findDeploymentMapTargetForAsg(vm.asg);
+            } else {
+              vm.deploymentMapTarget = null;
+            }
+          })
+        }
 
-            // Restructure for use with Target dialog
-            vm.deploymentMap.Value.DeploymentTarget = vm.deploymentMap.Value.DeploymentTarget.map(deploymentMapConverter.toDeploymentTarget);
-
-            // Find the corresponding Target for this ASG
-            vm.deploymentMapTarget = findDeploymentMapTargetForAsg(vm.asg);
-          } else {
-            vm.deploymentMapTarget = null;
-          }
-        }).then(function () {
-          // Read selected image versions, sort and add stable indicator
+        function getSortedStableImageVersions() {
           selectedImageVersions = awsService.images.GetAmiVersionsByType(vm.asgUpdate.ConfiguredAmiType, amiData, false);
           if (selectedImageVersions) {
             selectedImageVersions = awsService.images.SortByVersion(selectedImageVersions);
@@ -194,12 +186,13 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
           });
 
           vm.dataLoading = false;
-        }).then(function () {
-          // On initialization scope properties are initialized with ASG details
-          // to allow the user to change them through the UI.
-          if (onInitialization) {
-            initializeScope();
-          }
+        }
+
+        $q.all([
+          setupDeploymentMapLink(),
+          getSortedStableImageVersions()
+        ]).then(function () {
+          initializeScope();
         });
       }, function (error) {
         vm.closeModal();
@@ -276,9 +269,12 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     };
 
     vm.updateAutoScalingGroup = function () {
-      confirmAZChange().then(function () {
-        loading.lockPage(true);
-        var updated = {
+      confirmAZChange()
+        .then(createUpdatedAsgModel)
+        .then(sendAsgUpdate);
+
+      function createUpdatedAsgModel() {
+        return {
           size: {
             min: vm.asgUpdate.MinSize,
             desired: vm.asgUpdate.DesiredCapacity,
@@ -291,19 +287,20 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
             availabilityZoneName: vm.asgUpdate.AvailabilityZone
           }
         };
+      }
 
-        vm.asg.updateAutoScalingGroup(updated)
+      function sendAsgUpdate(updated) {
+        return vm.asg.updateAutoScalingGroup(updated)
           .then(function () {
             modal.information({
-              title: 'ASG Updated',
-              message: 'ASG update successful. You can monitor instance changes by using the Refresh Icon in the top right of the window.<br/><br/><b>Note:</b> During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection draining before termination.'
+              title: 'ASG Update Sent',
+              message: '<div class="alert alert-info">ASG update sent. Environment Manager will synchronise with AWS shortly.</div><br> You can monitor instance changes by using the Refresh Icon in the top right of the window.<br/><br/><b>Note:</b> During scale-down instances will wait in a Terminating state for 10 minutes to allow for connection draining before termination.'
             });
           })
           .finally(function () {
-            loading.lockPage(false);
             vm.refresh();
           });
-      });
+      }
     };
 
     function confirmAZChange() {
@@ -314,7 +311,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
       return modal.confirmation({
         title: 'Change Availability Zones',
-        message: 'Are you sure you want to change the AZ settings? AWS will instantly rebalance your instances according to these settings.',
+        message: '<div class="alert alert-info">It will take a moment for Environment Manager to synchronise with AWS. You can monitor instance changes by using the Refresh Icon in the top right of the window.</div><br>Are you sure you want to change the AZ settings?',
         severity: 'Danger'
       });
     }
@@ -372,8 +369,8 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
       return AutoScalingGroup.updateSchedule(vm.environmentName, vm.asg.AsgName, newSchedule).then(function () {
         modal.information({
-          title: 'ASG Schedule Updated',
-          message: 'ASG schedule updated successfully.'
+          title: 'ASG Schedule Update Sent',
+          message: '<div class="alert alert-info">It will take a moment for Environment Manager to synchronise with AWS. You can monitor instance changes by using the Refresh Icon in the top right of the window.</div>'
         });
       }).catch(function (err) {
         if (err.status === 404) {
@@ -389,7 +386,6 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
 
     function findDeploymentMapTargetForAsg(asg) {
-      // Find by name and owning cluster
       var targetName = asg.getDeploymentMapTargetName();
       return _.find(vm.deploymentMap.Value.DeploymentTarget, { OwningCluster: asg.OwningCluster, ServerRoleName: targetName });
     }

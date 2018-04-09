@@ -11,7 +11,7 @@ angular.module('EnvironmentManager.common').controller('CommonModalController',
     vm.action = configuration.action || 'Ok';
     vm.severity = (configuration.severity || 'Default').toLowerCase();
     vm.details = (configuration.details || []).map($sce.trustAsHtml);
-    vm.infoMode = configuration.infomode || false;
+    vm.infoMode = configuration.infomode;
     vm.cancelLabel = configuration.cancelLabel || 'Cancel';
     vm.acknowledge = configuration.acknowledge;
     vm.isAcknowledged = !vm.acknowledge;
