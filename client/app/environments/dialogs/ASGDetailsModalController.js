@@ -119,9 +119,8 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
     };
 
     vm.formIsValid = function (form) {
-      // TODO: Workaround for bug in uniqueAmong directive, returns false positive for disabled control. Can remove this once fixed.
       if (vm.pageMode == 'Edit') {
-        return Object.keys(form.$error).length <= 1; // expect 1 error
+        return Object.keys(form.$error).length <= 1;
       } else {
         return form.$valid;
       }
@@ -161,11 +160,7 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
           resources.config.deploymentMaps.get({ key: environment.Value.DeploymentMap }).then(function (deploymentMap) {
             if (deploymentMap) {
               vm.deploymentMap = angular.copy(deploymentMap);
-
-              // Restructure for use with Target dialog
               vm.deploymentMap.Value.DeploymentTarget = vm.deploymentMap.Value.DeploymentTarget.map(deploymentMapConverter.toDeploymentTarget);
-
-              // Find the corresponding Target for this ASG
               vm.deploymentMapTarget = findDeploymentMapTargetForAsg(vm.asg);
             } else {
               vm.deploymentMapTarget = null;
@@ -203,17 +198,6 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
         vm.closeModal();
       });
     };
-
-    vm.displayNotification = function (whatHappened) {
-      var notificationWindow = modal.notification({
-        title: "The following action is being performed...",
-        message: whatHappened
-      });
-
-      setTimeout(function () {
-        notificationWindow.close()
-      }, 2000);
-    }
 
     vm.getLBStatus = function () {
       var env = parameters.environment.EnvironmentName;
@@ -402,7 +386,6 @@ angular.module('EnvironmentManager.environments').controller('ASGDetailsModalCon
 
 
     function findDeploymentMapTargetForAsg(asg) {
-      // Find by name and owning cluster
       var targetName = asg.getDeploymentMapTargetName();
       return _.find(vm.deploymentMap.Value.DeploymentTarget, { OwningCluster: asg.OwningCluster, ServerRoleName: targetName });
     }

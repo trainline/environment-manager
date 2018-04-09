@@ -16,7 +16,7 @@
     </div>
 </div>
 
-<div class="modal-footer" ng-if="!vm.notificationMode">
+<div class="modal-footer">
     <button ng-if="!vm.infoMode" class="btn btn-default" type="button" ng-click="vm.cancel()">{{vm.cancelLabel}}</button>
     <button ng-disabled="!vm.isAcknowledged" class="btn btn-{{vm.severity}}" type="button" ng-click="vm.ok()">{{vm.action}}</button>
 </div>

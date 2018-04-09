@@ -30,12 +30,6 @@ angular.module('EnvironmentManager.common').factory('modal',
         return $uibModal.open(getParameters(configuration)).result;
       },
 
-      notification: function (configuration) {
-        configuration.notificationMode = true;
-
-        return $uibModal.open(getParameters(configuration));
-      },
-
       error: function (title, errorMessage) {
         return this.information({
           title: title,
