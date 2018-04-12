@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.22.0] 2018-04-12
+
+### Changed 
+
+- Previously, the ASG modal screen would display what it had sent to AWS, which would not be what Environment Manager actually understood the state of AWS to be. This has caused confusion before and so we're no longer showing anything _other_ than what we know the state of the system to be. Notifications in the UI have been changed to reflect what is now happening on this screen. 
+
 ## [6.21.4] 2018-04-05
 
 ### Changed
