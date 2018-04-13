@@ -9,7 +9,6 @@ let amazonClientFactory = require('../modules/amazon-client/childAccountClient')
 let Environment = require('./Environment');
 let TaggableMixin = require('./TaggableMixin');
 const InstanceResourceBase = require('../modules/resourceFactories/InstanceResourceBase');
-let scanCrossAccountFn = require('../modules/queryHandlersUtil/scanCrossAccountFn');
 
 class Instance {
   constructor(data) {
@@ -19,6 +18,10 @@ class Instance {
 
   getAutoScalingGroupName() {
     return this.getTag('aws:autoscaling:groupName');
+  }
+
+  get AccountName() {
+    return this.getTag('Account');
   }
 
   persistTag(tag) {
@@ -40,11 +43,8 @@ class Instance {
   }
 
   static getById(instanceId) {
-    const findInstanceInAccount = () =>
-      ec2Client.getHostByInstanceId(instanceId)
-        .then(response => response.map(i => new TaggableInstance(i)));
-
-    return scanCrossAccountFn(findInstanceInAccount).then(([head]) => head);
+    return ec2Client.getHostByInstanceId(instanceId)
+      .then(([head]) => new TaggableInstance(head));
   }
 
   static getAllByEnvironment(environmentName) {
