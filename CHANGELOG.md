@@ -3,15 +3,17 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.22.1] 2018-04-17
+
+### Fixed
+
+- Maintenance Mode feature
+
 ## [6.22.0] 2018-04-16
 
 ### Changed 
 
 - Previously, the ASG modal screen would display what it had sent to AWS, which would not be what Environment Manager actually understood the state of AWS to be. This has caused confusion before and so we're no longer showing anything _other_ than what we know the state of the system to be. Notifications in the UI have been changed to reflect what is now happening on this screen. 
-
-### Fixed
-
-- Maintenance Mode feature
 
 ## [6.21.4] 2018-04-05
 
@@ -421,7 +423,8 @@ Example:
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. 
 - A number of bugs related to the removal of a account as a special case of an account. 
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/6.22.0...master
+[Unreleased]: https://github.com/trainline/environment-manager/compare/6.22.1...master
+[6.22.1]: https://github.com/trainline/environment-manager/compare/6.22.0...6.22.1
 [6.22.0]: https://github.com/trainline/environment-manager/compare/6.21.4...6.22.0
 [6.21.4]: https://github.com/trainline/environment-manager/compare/6.21.3...6.21.4
 [6.21.3]: https://github.com/trainline/environment-manager/compare/6.21.2...6.21.3
