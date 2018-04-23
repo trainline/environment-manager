@@ -7,10 +7,6 @@ function isUserAuthenticated(user) {
 }
 
 module.exports = {
-  allowUnknown(request, response, next) {
-    return next();
-  },
-
   denyUnauthorized(request, response, next) {
     // User not authenticated
     if (!isUserAuthenticated(request.user)) {

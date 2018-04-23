@@ -4,6 +4,8 @@
 
 let assert = require('assert');
 let config = require('../../config');
+let ms = require('ms');
+let utils = require('../../modules/utilities');
 
 let cookieConfig;
 
@@ -16,6 +18,13 @@ module.exports = {
   getCookieDuration: () => {
     loadConfiguration();
     return cookieConfig.cookieDuration;
+  },
+  buildCookieOptions: () => {
+    loadConfiguration();
+    return {
+      expires: utils.offsetMilliseconds(new Date(), ms(cookieConfig.cookieDuration)),
+      domain: cookieConfig.cookieDomain
+    };
   }
 };
 
@@ -25,10 +34,12 @@ function loadConfiguration() {
   assert(localConfig.authentication, 'missing \'authentication\' field in configuration');
   assert(localConfig.authentication.cookieName, 'missing \'authentication.cookieName\' field in configuration');
   assert(localConfig.authentication.cookieDuration, 'missing \'authentication.cookieDuration\' field in configuration');
+  assert(localConfig.authentication.cookieDomain, 'missing \'authentication.cookieDomain\' field in configuration');
 
   cookieConfig = {
     loginUrl: localConfig.authentication.loginUrl,
     cookieName: localConfig.authentication.cookieName,
-    cookieDuration: localConfig.authentication.cookieDuration
+    cookieDuration: localConfig.authentication.cookieDuration,
+    cookieDomain: localConfig.authentication.cookieDomain
   };
 }

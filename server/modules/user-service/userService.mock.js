@@ -7,6 +7,13 @@ let User = require('../user');
 let utils = require('../utilities');
 let ActiveDirectoryError = require('../errors/ActiveDirectoryError.class');
 
+function createTokenForUser(user, duration) {
+  let permissions = [{ Access: 'ADMIN', Resource: '**' }];
+  let expiration = getExpiration(duration);
+  let userJson = JSON.stringify(User.new(user.name, expiration, user.groups, permissions).toJson());
+  return Promise.resolve(new Buffer(userJson).toString('base64'));
+}
+
 function authenticateUser(credentials, duration) {
   if (!credentials.username) {
     return Promise.reject(new Error('User must belong to "corp" domain.'));
@@ -39,6 +46,7 @@ function getExpiration(duration) {
 }
 
 module.exports = {
+  createTokenForUser,
   authenticateUser,
   getUserByToken,
   signOut

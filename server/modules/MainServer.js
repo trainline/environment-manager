@@ -21,6 +21,7 @@ let httpServerFactory = require('./http-server-factory');
 let loggingMiddleware = require('./express-middleware/loggingMiddleware');
 let deprecateMiddleware = require('./express-middleware/deprecateMiddleware');
 let cacheRouter = require('./cacheRouter');
+let passport = require('./express-middleware/passportMiddleware');
 
 const APP_VERSION = require('../config').get('APP_VERSION');
 
@@ -76,18 +77,25 @@ function createExpressApp() {
     let staticPaths = ['*.js', '*.css', '*.html', '*.ico', '*.gif',
       '*.woff2', '*.ttf', '*.woff', '*.svg', '*.eot', '*.jpg', '*.png', '*.map'];
 
-    app.get(staticPaths, authentication.allowUnknown, express.static(PUBLIC_DIR));
+    app.get(staticPaths, express.static(PUBLIC_DIR));
     app.get('/', express.static(PUBLIC_DIR));
 
-    app.get('*.js', authentication.allowUnknown, express.static('modules'));
+    app.get('*.js', express.static('modules'));
 
-    app.use('/schema', authentication.allowUnknown, express.static(`${PUBLIC_DIR}/schema`));
+    app.use('/schema', express.static(`${PUBLIC_DIR}/schema`));
 
     app.use('/diagnostics/healthchecks', httpHealthChecks.router);
     app.use('/flushcache', cacheRouter.router);
 
-    app.use(cookieAuthentication.middleware);
+    app.use(passport.initialize());
+    app.use(cookieAuthentication.authenticator);
     app.use(tokenAuthentication.middleware);
+
+    app.get('/login', passport.authenticate('wsfed-saml2'));
+    app.post('/adfs/postResponse',
+      passport.authenticate('wsfed-saml2'),
+      cookieAuthentication.persister
+    );
 
     app.get('/deployments/nodes/logs', authentication.denyUnauthorized, routes.deploymentNodeLogs);
 

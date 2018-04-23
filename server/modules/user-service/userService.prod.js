@@ -22,8 +22,24 @@ module.exports = function UserService() {
   let sslComponentsRepository = new SslComponentsRepository();
 
   this.authenticateUser = authenticateUser;
+  this.createTokenForUser = createTokenForUser;
   this.getUserByToken = getUserByToken;
   this.signOut = signOut;
+
+  function createTokenForUser(user, duration) {
+    return co(function* () {
+      let permissions = yield userRolesProvider.getPermissionsFor(_.union([user.name], user.groups));
+      let session = {
+        sessionId: guid(),
+        user: User.new(user.name, getExpiration(ms(duration)), user.groups, permissions).toJson()
+      };
+      yield storeSession(session, 'direct', ms(duration));
+      return yield createSessionToken(session, duration);
+    }).catch((err) => {
+      logger.error(err);
+      throw err;
+    });
+  }
 
   function authenticateUser(credentials, duration) {
     return co(function* () {

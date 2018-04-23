@@ -14,18 +14,7 @@ angular.module('EnvironmentManager.common')
       vm.version = $window.version;
 
       vm.signIn = function () {
-        if (vm.username === undefined || vm.password === undefined) {
-          return;
-        }
-
-        $http.post('/api/v1/login', {
-          username: vm.username,
-          password: vm.password
-        }).then(function () {
-          $window.location.reload();
-        }).catch(function (err) {
-          vm.error = { message: err.data.error || err.data.originalException || 'Unknown error' };
-        });
+        $window.location = '/login';
       };
     }
   });

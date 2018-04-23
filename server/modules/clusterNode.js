@@ -11,18 +11,20 @@ const consulConfig = {
 
 let leader = false;
 
-cluster(consulConfig)
-  .on('gainedLeadership', (...args) => {
-    leader = true;
-    logger.debug('Gained leadership', ...args);
-  })
-  .on('error', (err) => {
-    if (leader) {
-      logger.debug('Lost leadership');
-    }
-    leader = false;
-    logger.error('Error during leader election / renewal', err);
-  });
+if (config.IS_PRODUCTION) {
+  cluster(consulConfig)
+    .on('gainedLeadership', (...args) => {
+      leader = true;
+      logger.debug('Gained leadership', ...args);
+    })
+    .on('error', (err) => {
+      if (leader) {
+        logger.debug('Lost leadership');
+      }
+      leader = false;
+      logger.error('Error during leader election / renewal', err);
+    });
+}
 
 module.exports = {
   isLeader: () => {

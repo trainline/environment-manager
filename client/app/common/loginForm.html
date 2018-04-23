@@ -1,28 +1,10 @@
 <div class="container">
-  <form name="loginForm" class="form-signin">
+    <form name="loginForm" class="form-signin">
 
-    <h1 title="Environment Manager {{ vm.version }}">Environment Manager</h1>
+        <h1 title="Environment Manager {{ vm.version }}">Environment Manager</h1>
 
-    <p>Please sign in with your corporate credentials:</p>
+        <h3>Papers please</h3>
 
-    <div class="form-group">
-        <div class="input-group">
-            <div class="input-group-addon"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></div>
-            <input autofocus type="text" class="form-control" name="Username" id="username" ng-model="vm.username" placeholder="corp\username" required="">
-        </div>
-    </div>
-
-    <div class="form-group">
-        <div class="input-group">
-            <div class="input-group-addon"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></div>
-            <input type="password" class="form-control" name="Password" id="password" ng-model="vm.password" placeholder="Password" required="">
-        </div>
-    </div>
-
-    <p class="bg-danger" ng-if="loginForm.Username.$dirty && loginForm.Username.$error.required">Please enter the username.</span>
-    <p class="bg-danger" ng-if="loginForm.Password.$dirty && loginForm.Password.$error.required">Please enter the password.</span>
-    <p class="bg-danger" ng-if="vm.error">An error has occurred: {{ vm.error.message }}</p>
-
-    <button class="btn btn-lg btn-primary btn-block" type="submit" ng-click="vm.signIn()">Sign in</button>
-  </form>
+        <button class="btn btn-lg btn-primary" type="submit" ng-click="vm.signIn()">Sign in via ADFS</button>
+    </form>
 </div>

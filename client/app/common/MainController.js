@@ -188,8 +188,7 @@ angular.module('EnvironmentManager.common').controller('MainController',
       }
     });
 
-    function navigateToLogin() { location.reload(); }
-
+    function navigateToLogin() { location.path("/login"); }
     $rootScope.$on('cookie-expired', function () {
       modal.information({
         title: 'Your session has expired',

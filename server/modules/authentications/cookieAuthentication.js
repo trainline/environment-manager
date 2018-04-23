@@ -6,7 +6,7 @@ let userService = require('../user-service');
 let cookieAuthenticationConfiguration = require('./cookieAuthenticationConfiguration');
 
 module.exports = {
-  middleware(req, res, next) {
+  authenticator(req, res, next) {
     if (req.user) return next();
 
     let cookie = req.cookies[cookieAuthenticationConfiguration.getCookieName()];
@@ -18,5 +18,14 @@ module.exports = {
         req.authenticatedBy = 'cookie';
         next();
       }, () => next());
+  },
+  persister(req, res) {
+    userService.createTokenForUser(req.user, cookieAuthenticationConfiguration.getCookieDuration()).then((token) => {
+      let cookieName = cookieAuthenticationConfiguration.getCookieName();
+      let cookieValue = token;
+      let cookieOptions = cookieAuthenticationConfiguration.buildCookieOptions();
+      res.cookie(cookieName, cookieValue, cookieOptions);
+      res.redirect('/');
+    });
   }
 };

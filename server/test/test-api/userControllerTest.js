@@ -6,9 +6,9 @@ let sinon = require('sinon');
 let rewire = require('rewire');
 let assert = require('assert');
 
-describe('userController', function() {
+describe('userController', function () {
   let sut;
-  
+
   beforeEach(() => {
     let userService = {
       authenticateUser: (creds, duration) => {
@@ -23,7 +23,8 @@ describe('userController', function() {
 
     let cookieConfiguration = {
       getCookieName: sinon.stub().returns('my-cookie-name'),
-      getCookieDuration: sinon.stub().returns(10)
+      getCookieDuration: sinon.stub().returns(10),
+      buildCookieOptions: sinon.stub().returns({ expires: 10000, domain: '.my.domain' })
     };
 
     sut = rewire('../../api/controllers/user/userController');
@@ -42,7 +43,7 @@ describe('userController', function() {
       send: sinon.stub(),
       json: sinon.stub()
     };
-  }); 
+  });
 
   describe('.login()', () => {
 
@@ -93,7 +94,7 @@ describe('userController', function() {
       sut.logout(req, res)
         .then(() => {
           res.clearCookie.calledWith('my-cookie-name').should.be.true();
-          res.json.calledWith({ ok: true}).should.be.true();
+          res.json.calledWith({ ok: true }).should.be.true();
           done();
         });
     })

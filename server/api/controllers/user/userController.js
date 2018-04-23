@@ -3,9 +3,7 @@
 'use strict';
 
 let co = require('co');
-let ms = require('ms');
 let userService = require('../../../modules/user-service');
-let utils = require('../../../modules/utilities');
 let cookieConfiguration = require('../../../modules/authentications/cookieAuthenticationConfiguration');
 
 /**
@@ -25,7 +23,7 @@ function login(req, res, next) {
     let token = yield userService.authenticateUser(credentials, duration);
     let cookieName = cookieConfiguration.getCookieName();
     let cookieValue = token;
-    let cookieOptions = { expires: utils.offsetMilliseconds(new Date(), ms(duration)) };
+    let cookieOptions = cookieConfiguration.buildCookieOptions();
 
     res.cookie(cookieName, cookieValue, cookieOptions);
     res.send(token);
@@ -40,7 +38,7 @@ function logout(req, res, next) {
   let token = req.cookies[cookieName];
 
   return userService.signOut(token).then(() => {
-    res.clearCookie(cookieName);
+    res.clearCookie(cookieName, cookieConfiguration.buildCookieOptions());
     res.json({ ok: true });
   }).catch(next);
 }
