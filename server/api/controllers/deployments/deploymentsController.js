@@ -13,6 +13,7 @@ const sns = require('../../../modules/sns/EnvironmentManagerEvents');
 let { ifNotFound, notFoundMessage } = require('../../api-utils/ifNotFound');
 const { toggleServiceStatus } = require('../../../modules/toggleServiceStatus');
 let DeployService = require('../../../commands/deployments/DeployService');
+const logger = require('../../../modules/logger');
 
 let moment = require('moment');
 
@@ -26,7 +27,9 @@ function getDeployments(req, res, next) {
   const since = req.swagger.params.since.value;
 
   if (moment(since).isBefore(theBeginningOfTheDayBeforeYesterday())) {
-    throw new Error('Deployment queries beginning more than 2 days ago are not currently permitted.');
+    const detail = 'Deployment queries beginning more than 2 days ago are not currently permitted.';
+    logger.warn(detail);
+    return res.json({ errors: [{ status: 199, title: 'DeploymentWarning', detail }] });
   }
 
   const environment = req.swagger.params.environment.value;
