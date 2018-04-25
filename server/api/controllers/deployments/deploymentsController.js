@@ -30,15 +30,15 @@ function getDeployments(req, res, next) {
     const detail = 'Deployment queries beginning more than 2 days ago are not currently permitted.';
     logger.warn(detail);
     return res.json({ errors: [{ status: 199, title: 'DeploymentWarning', detail }] });
+  } else {
+    const environment = req.swagger.params.environment.value;
+    const status = req.swagger.params.status.value;
+    const cluster = req.swagger.params.cluster.value;
+
+    return deploymentsHelper.scan({
+      since, environment, status, cluster
+    }).then(data => res.json(data)).catch(next);
   }
-
-  const environment = req.swagger.params.environment.value;
-  const status = req.swagger.params.status.value;
-  const cluster = req.swagger.params.cluster.value;
-
-  deploymentsHelper.scan({
-    since, environment, status, cluster
-  }).then(data => res.json(data)).catch(next);
 }
 
 /**
