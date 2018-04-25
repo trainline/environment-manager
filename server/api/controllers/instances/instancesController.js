@@ -16,7 +16,7 @@ let Enums = require('../../../Enums');
 let ScanInstancesScheduleStatus = require('../../../queryHandlers/ScanInstancesScheduleStatus');
 let fp = require('lodash/fp');
 let merge = require('../../../modules/merge');
-const sns = require('../../../modules/sns/EnvironmentManagerEvents');
+let sns = require('../../../modules/sns/EnvironmentManagerEvents');
 const ec2InstanceClientFactory = require('../../../modules/resourceFactories/ec2InstanceResourceFactory');
 
 /* The tags that should be added to each instance as properties.
@@ -160,13 +160,12 @@ function getInstanceById(req, res, next) {
  * PUT /instances/{id}/maintenance
  */
 function putInstanceMaintenance(req, res, next) {
-
   const id = req.swagger.params.id.value;
   const body = req.swagger.params.body.value;
   const isInMaintenance = body.enable;
   let environmentName;
 
-  co(function* coFunc() {
+  return co(function* coFunc() {
     try {
       let instance = yield Instance.getById(id);
       yield instance.persistTag({ key: 'Maintenance', value: isInMaintenance.toString() });
