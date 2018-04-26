@@ -9,6 +9,8 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 - Maintenance mode previously used a combination of dynamo and standby settings on the instance. This is not required anymore. Instances will be put in maintenance mode through the use of a direct change to the `block-check` which Environment Manager uses to put a machine out of service, along with a reason why. 
 
+- Deployments were throwing errors when requesting a date greater than 2 days old. This has been changed to log a warning and return a result back to the user. 
+
 ## [6.22.1] 2018-04-17
 
 ### Fixed
