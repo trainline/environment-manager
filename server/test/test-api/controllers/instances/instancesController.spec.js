@@ -23,7 +23,7 @@ describe('Instances Controller', () => {
   });
 
   describe('Maintenance Mode', () => {
-    it('should do something', (done) => {
+    it('Should make calls to consul and set correct values on the instance tags', (done) => {
       instancesController.putInstanceMaintenance(createReq(), res, createNext())
         .then(() => {
           assert(instance.isPersistCalledWithCorrectArguments());
