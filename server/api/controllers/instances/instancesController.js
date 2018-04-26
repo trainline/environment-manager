@@ -7,6 +7,9 @@ let co = require('co');
 let ec2Client = require('../../../modules/ec2-monitor/ec2-monitor-client');
 let ScanInstances = require('../../../queryHandlers/ScanInstances');
 let ScanCrossAccountInstances = require('../../../queryHandlers/ScanCrossAccountInstances');
+let EnterAutoScalingGroupInstancesToStandby = require('../../../commands/asg/EnterAutoScalingGroupInstancesToStandby');
+let ExitAutoScalingGroupInstancesFromStandby = require('../../../commands/asg/ExitAutoScalingGroupInstancesFromStandby');
+let asgips = require('../../../modules/data-access/asgips');
 let Instance = require('../../../models/Instance');
 let serviceTargets = require('../../../modules/service-targets');
 let logger = require('../../../modules/logger');
@@ -162,36 +165,74 @@ function getInstanceById(req, res, next) {
 function putInstanceMaintenance(req, res, next) {
   const id = req.swagger.params.id.value;
   const body = req.swagger.params.body.value;
-  const isInMaintenance = body.enable;
-  let environmentName;
+  const enable = body.enable;
+  let name = null;
+
 
   return co(function* coFunc() {
     try {
       let instance = yield Instance.getById(id);
-      yield instance.persistTag({ key: 'Maintenance', value: isInMaintenance.toString() });
-      environmentName = instance.getTag('Environment');
-      const value = isInMaintenance ? 'In Maintenance' : '';
-      yield serviceTargets.setTargetState(environmentName, {
-        key: `nodes/${id}/cold-standby`, value
-      });
-      res.send({ ok: true });
-    } catch (e) {
-      next(e);
-    }
-  }).then(() => sns.publish({
-    message: JSON.stringify({
-      Endpoint: {
-        Url: `/instances/${id}/maintenance`,
-        Method: 'PUT'
+      const instanceIds = [id];
+      const accountName = instance.AccountName;
+      const autoScalingGroupName = instance.getAutoScalingGroupName();
+      const environmentName = instance.getTag('Environment');
+      name = environmentName;
+
+      /**
+       * Update ASG IPS table
+       */
+      let entry = yield asgips.get(accountName, { AsgName: 'MAINTENANCE_MODE' });
+      let ips = JSON.parse(entry.IPs);
+      if (enable === true) {
+        ips.push(instance.PrivateIpAddress);
+        ips = _.uniq(ips);
+      } else {
+        _.pull(ips, instance.PrivateIpAddress);
       }
-    }),
-    topic: sns.TOPICS.OPERATIONS_CHANGE,
-    attributes: {
-      Action: sns.ACTIONS.PUT,
-      ID: 'id',
-      Environment: environmentName
+      yield asgips.put(accountName, { AsgName: 'MAINTENANCE_MODE', IPs: JSON.stringify(ips) });
+
+      /**
+       * Put instance to standby on AWS
+       */
+      let handler = enable ? EnterAutoScalingGroupInstancesToStandby : ExitAutoScalingGroupInstancesFromStandby;
+      try {
+        yield handler({ accountName, autoScalingGroupName, instanceIds });
+      } catch (err) {
+        if (err.message.indexOf('is not in Standby') !== -1
+          || err.message.indexOf('cannot be exited from standby as its LifecycleState is InService') !== -1) {
+          logger.warn(`ASG ${autoScalingGroupName} instance ${id} is already in desired state for ASG Standby: 
+${enable}`);
+        } else {
+          throw err;
+        }
+      }
+
+      yield instance.persistTag({ key: 'Maintenance', value: enable.toString() });
+
+      /**
+       * Now switch Maintenance mode (previously done in separate end point)
+       */
+      serviceTargets.setInstanceMaintenanceMode(accountName, instance.PrivateIpAddress, environmentName, enable);
+      res.send({ ok: true });
+    } catch (err) {
+      next(err);
     }
-  })).catch(next);
+  })
+    .then(() => sns.publish({
+      message: JSON.stringify({
+        Endpoint: {
+          Url: `/instances/${id}/maintenance`,
+          Method: 'PUT'
+        }
+      }),
+      topic: sns.TOPICS.OPERATIONS_CHANGE,
+      attributes: {
+        Action: sns.ACTIONS.PUT,
+        ID: 'id',
+        Environment: name
+      }
+    }))
+    .catch(next);
 }
 
 /**
