@@ -160,7 +160,6 @@ function getInstanceById(req, res, next) {
  * PUT /instances/{id}/maintenance
  */
 function putInstanceMaintenance(req, res, next) {
-
   const id = req.swagger.params.id.value;
   const body = req.swagger.params.body.value;
   const isInMaintenance = body.enable;
