@@ -6,7 +6,7 @@ const assert = require('assert');
 const rewire = require('rewire');
 const instancesController = rewire('../../../../api/controllers/instances/instancesController.js');
 
-describe('Instances Controller', () => {
+describe.only('Instances Controller', () => {
   let instance;
   let serviceTargets;
   let res;
