@@ -3,9 +3,11 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-[#unreleased]
+[#Unreleased]
 
 ### Changed
+
+- Maintenance mode previously used a combination of dynamo and standby settings on the instance. This is not required anymore. Instances will be put in maintenance mode through the use of a direct change to the `block-check` which Environment Manager uses to put a machine out of service, along with a reason why. 
 
 - Deployments were throwing errors when requesting a date greater than 2 days old. This has been changed to log a warning and return a result back to the user. 
 
