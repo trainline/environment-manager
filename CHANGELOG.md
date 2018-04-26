@@ -3,11 +3,15 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-[#unreleased]
+[#Unreleased]
 
 ### Fixed
 
 - Environment Manager showed a link to a log that did not exist yet for deployments that were in progress. This lead to people receiving errors when they clicked the link that was provided. We no longer show this link while the deployment is in progress or the node is initializing. 
+
+### Changed
+
+- Deployments were throwing errors when requesting a date greater than 2 days old. This has been changed to log a warning and return a result back to the user. 
 
 ## [6.22.1] 2018-04-17
 
