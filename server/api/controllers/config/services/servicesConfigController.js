@@ -160,14 +160,14 @@ function putServiceConfigByName(req, res, next) {
  * DELETE /config/services/{name}
  */
 function deleteServiceConfigByName(req, res) {
-  return res.status(409).end();
+  return res.status(405).end();
 }
 
 /**
  * DELETE /config/services/{name}/{cluster} [DEPRECATED]
  */
 function deleteServiceConfigByNameAndCluster(req, res) {
-  return res.status(409).end();
+  return res.status(405).end();
 }
 
 module.exports = {

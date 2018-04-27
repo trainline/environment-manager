@@ -65,12 +65,12 @@ describe('services controller', () => {
 
   describe('deleting a service config entry', () => {
     it('should return an error when trying to delete', () => {
-      res = createResWithStatusExpectation(409);
+      res = createResWithStatusExpectation(405);
       servicesConfigController.deleteServiceConfigByName({}, res, () => {});
       assert(res.statusCalledWithCorrectArguments());
       assert(res.getEndCount() === 1);
 
-      res = createResWithStatusExpectation(409);
+      res = createResWithStatusExpectation(405);
       servicesConfigController.deleteServiceConfigByNameAndCluster({}, res, () => {});
       assert(res.statusCalledWithCorrectArguments());
       assert(res.getEndCount() === 1);
