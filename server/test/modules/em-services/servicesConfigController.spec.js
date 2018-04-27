@@ -13,7 +13,6 @@ describe('services controller', () => {
   beforeEach(() => {
     req = createReq();
     servicesConfigController.__set__('getMetadataForDynamoAudit', () => { });
-    servicesConfigController.__set__('services', { create() { return Promise.resolve(); } });
     servicesConfigController.__set__('sns', { publish() { } });
   });
 
@@ -41,18 +40,20 @@ describe('services controller', () => {
 });
 
 function setupControllerToReturnDuplicatePorts() {
-  servicesConfigController.__set__('getServicesConfig', () => {
-    return Promise.resolve([
+  servicesConfigController.__set__('services', {
+    scan: () => Promise.resolve([
       { Value: { BluePort: 10000, GreenPort: 10001 } }
-    ]);
+    ])
   });
 }
 
 function setupControllerToReturnAvailablePorts() {
-  servicesConfigController.__set__('getServicesConfig', () => {
-    return Promise.resolve([
+  servicesConfigController.__set__('services', {
+    scan: () => Promise.resolve([
       { Value: { BluePort: 99990, GreenPort: 99991 } }
-    ]);
+    ]),
+
+    create() { return Promise.resolve(); }
   });
 }
 

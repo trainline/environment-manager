@@ -18,6 +18,11 @@ function convertToApiModel(persistedModel) {
   return Object.assign(apiModel, { Version });
 }
 
+function getAllServicesConfig() {
+  return services.scan(false)
+    .then(data => data.map(convertToApiModel));
+}
+
 /**
  * GET /config/services
  */
@@ -67,7 +72,7 @@ function postServicesConfig(req, res, next) {
   const bluePort = (body.BluePort || 0) * 1;
   const greenPort = (body.GreenPort || 0) * 1;
 
-  return getServicesConfig()
+  return getAllServicesConfig()
     .then(checkServiceConfigListForDeplicatePorts({ blue: bluePort, green: greenPort }))
     .then(createServiceConfiguration)
     .catch((e) => { return res.status(400).send({ errors: [e.message] }); });
