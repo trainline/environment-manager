@@ -3,13 +3,17 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-[#Unreleased]
+## [6.22.2] 2018-04-27
 
 ### Changed
 
 - Maintenance mode previously used a combination of dynamo and standby settings on the instance. This is not required anymore. Instances will be put in maintenance mode through the use of a direct change to the `block-check` which Environment Manager uses to put a machine out of service, along with a reason why. 
 
-- Deployments were throwing errors when requesting a date greater than 2 days old. This has been changed to log a warning and return a result back to the user. 
+- Deployments were throwing errors when requesting a date greater than 2 days old. This has been changed to log a warning and return a result back to the user.
+
+### Fixed
+
+- Updated indirect dependency on hoek module to remove Prototype Pollution security vulnerability.
 
 ## [6.22.1] 2018-04-17
 
@@ -431,7 +435,8 @@ Example:
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. 
 - A number of bugs related to the removal of a account as a special case of an account. 
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/6.22.1...master
+[Unreleased]: https://github.com/trainline/environment-manager/compare/6.22.2...master
+[6.22.2]: https://github.com/trainline/environment-manager/compare/6.22.1...6.22.2
 [6.22.1]: https://github.com/trainline/environment-manager/compare/6.22.0...6.22.1
 [6.22.0]: https://github.com/trainline/environment-manager/compare/6.21.4...6.22.0
 [6.21.4]: https://github.com/trainline/environment-manager/compare/6.21.3...6.21.4
