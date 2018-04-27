@@ -123,83 +123,51 @@ function putServiceConfigByName(req, res, next) {
   let record = Object.assign(key, { OwningCluster: owningCluster }, { Value: body });
   delete record.Version;
 
-  return services.replace({ record, metadata }, expectedVersion)
-    .then(() => res.status(200).end())
-    .then(() => sns.publish({
-      message: JSON.stringify({
-        Endpoint: {
-          Url: `/config/services/${serviceName}/${owningCluster}`,
-          Method: 'PUT'
-        }
-      }),
-      topic: sns.TOPICS.CONFIGURATION_CHANGE,
-      attributes: {
-        Action: sns.ACTIONS.PUT,
-        ID: `${serviceName}/${owningCluster}`
-      }
-    }))
+  return services.get(key)
+    .then(preventChangesToPorts)
+    .then(replaceServiceWithNewValue)
     .catch(next);
+
+  function preventChangesToPorts(service) {
+    if (service.Value && service.Value.BluePort && service.Value.BluePort !== body.BluePort) {
+      throw new Error('Cannot change the port values of a service.');
+    }
+    if (service.Value && service.Value.GreenPort && service.Value.GreenPort !== body.GreenPort) {
+      throw new Error('Cannot change the port values of a service.');
+    }
+  }
+
+  function replaceServiceWithNewValue() {
+    return services.replace({ record, metadata }, expectedVersion)
+      .then(() => res.status(200).end())
+      .then(() => sns.publish({
+        message: JSON.stringify({
+          Endpoint: {
+            Url: `/config/services/${serviceName}/${owningCluster}`,
+            Method: 'PUT'
+          }
+        }),
+        topic: sns.TOPICS.CONFIGURATION_CHANGE,
+        attributes: {
+          Action: sns.ACTIONS.PUT,
+          ID: `${serviceName}/${owningCluster}`
+        }
+      }));
+  }
 }
 
 /**
  * DELETE /config/services/{name}
  */
-function deleteServiceConfigByName(req, res, next) {
-  let serviceName = param('name', req);
-  let key = { ServiceName: serviceName };
-  const expectedVersion = param('expected-version', req);
-  let metadata = getMetadataForDynamoAudit(req);
-
-  let updateExpression = ['update',
-    ['set', ['at', 'Deleted'], ['val', 'true']]
-  ];
-  return services.update({ key, metadata, updateExpression }, expectedVersion)
-    .then(() => res.status(200).end())
-    .then(() => sns.publish({
-      message: JSON.stringify({
-        Endpoint: {
-          Url: `/config/services/${serviceName}`,
-          Method: 'DELETE'
-        }
-      }),
-      topic: sns.TOPICS.CONFIGURATION_CHANGE,
-      attributes: {
-        Action: sns.ACTIONS.DELETE,
-        ID: serviceName
-      }
-    }))
-    .catch(next);
+function deleteServiceConfigByName(req, res) {
+  return res.status(409).end();
 }
 
 /**
  * DELETE /config/services/{name}/{cluster} [DEPRECATED]
  */
-function deleteServiceConfigByNameAndCluster(req, res, next) {
-  let serviceName = param('name', req);
-  let owningCluster = param('cluster', req);
-  let key = { ServiceName: serviceName };
-  const expectedVersion = param('expected-version', req);
-  let metadata = getMetadataForDynamoAudit(req);
-
-  let updateExpression = ['update',
-    ['set', ['at', 'Deleted'], ['val', 'true']]
-  ];
-  return services.update({ key, metadata, updateExpression }, expectedVersion, { ConditionExpression: ['=', ['at', 'OwningCluster'], ['val', owningCluster]] })
-    .then(() => res.status(200).end())
-    .then(() => sns.publish({
-      message: JSON.stringify({
-        Endpoint: {
-          Url: `/config/services/${serviceName}/${owningCluster}`,
-          Method: 'DELETE'
-        }
-      }),
-      topic: sns.TOPICS.CONFIGURATION_CHANGE,
-      attributes: {
-        Action: sns.ACTIONS.DELETE,
-        ID: `${serviceName}/${owningCluster}`
-      }
-    }))
-    .catch(next);
+function deleteServiceConfigByNameAndCluster(req, res) {
+  return res.status(409).end();
 }
 
 module.exports = {
