@@ -7,7 +7,7 @@ let getMetadataForDynamoAudit = require('../../../api-utils/requestMetadata').ge
 let param = require('../../../api-utils/requestParam');
 let versionOf = require('../../../../modules/data-access/dynamoVersion').versionOf;
 let removeAuditMetadata = require('../../../../modules/data-access/dynamoAudit').removeAuditMetadata;
-const sns = require('../../../../modules/sns/EnvironmentManagerEvents');
+let sns = require('../../../../modules/sns/EnvironmentManagerEvents');
 
 let { hasValue, when } = require('../../../../modules/functional');
 let { ifNotFound, notFoundMessage } = require('../../../api-utils/ifNotFound');
@@ -64,25 +64,45 @@ function getServiceConfigByNameAndCluster(req, res, next) {
  */
 function postServicesConfig(req, res, next) {
   const body = param('body', req);
-  let metadata = getMetadataForDynamoAudit(req);
-  let record = Object.assign({}, body);
-  delete record.Version;
-  return services.create({ record, metadata })
-    .then(() => res.status(201).end())
-    .then(() => sns.publish({
-      message: JSON.stringify({
-        Endpoint: {
-          Url: '/config/services',
-          Method: 'POST'
+  const bluePort = (body.BluePort || 0) * 1;
+  const greenPort = (body.GreenPort || 0) * 1;
+
+  return getServicesConfig()
+    .then(checkServiceConfigListForDeplicatePorts({ blue: bluePort, green: greenPort }))
+    .then(createServiceConfiguration)
+    .catch((e) => { return res.status(400).send({ errors: [e.message] }); });
+
+  function createServiceConfiguration() {
+    let metadata = getMetadataForDynamoAudit(req);
+    let record = Object.assign({}, body);
+    delete record.Version;
+    return services.create({ record, metadata })
+      .then(() => res.status(201).end())
+      .then(() => sns.publish({
+        message: JSON.stringify({
+          Endpoint: {
+            Url: '/config/services',
+            Method: 'POST'
+          }
+        }),
+        topic: sns.TOPICS.CONFIGURATION_CHANGE,
+        attributes: {
+          Action: sns.ACTIONS.POST,
+          ID: `${body.ServiceName}`
         }
-      }),
-      topic: sns.TOPICS.CONFIGURATION_CHANGE,
-      attributes: {
-        Action: sns.ACTIONS.POST,
-        ID: `${body.ServiceName}`
-      }
-    }))
-    .catch(next);
+      }))
+      .catch(next);
+  }
+
+  function checkServiceConfigListForDeplicatePorts({ blue, green }) {
+    return function iterateServiceList(sList) {
+      sList.forEach((s) => {
+        if ([s.Value.BluePort, s.Value.GreenPort].some(p => [blue, green].includes(p))) {
+          throw new Error('Ports specified already in use.');
+        }
+      });
+    };
+  }
 }
 
 /**
