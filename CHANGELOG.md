@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 ### Changed
 
+- The configuration page for services no longer allows users to delete a service. 
+
+- The API no longer supports deleting a service. The delete end points for services will return a 405 http status code. 
+
 - Maintenance mode previously used a combination of dynamo and standby settings on the instance. This is not required anymore. Instances will be put in maintenance mode through the use of a direct change to the `block-check` which Environment Manager uses to put a machine out of service, along with a reason why. 
 
 - Deployments were throwing errors when requesting a date greater than 2 days old. This has been changed to log a warning and return a result back to the user. 

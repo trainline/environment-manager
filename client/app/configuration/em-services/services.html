@@ -47,7 +47,6 @@
           <th class="text-nowrap">Green Port</th>
           <th class="text-nowrap command-header">View Deployments</th>
           <th class="text-nowrap command-header">View History</th>
-          <th ng-if="canUser('delete')" class="text-nowrap command-header">Delete</th>
         </tr>
       </thead>
       <tbody>
@@ -59,7 +58,6 @@
           <td>{{::service.Value.GreenPort}}</td>
           <td class="command command-viewDeployments"><span class="glyphicon glyphicon-log-in" ng-click="vm.viewDeployments(service)" title="View Deployments"></span></td>
           <td class="command command-viewHistory"><span class="glyphicon glyphicon-time" ng-click="vm.viewHistory(service)" title="View History"></span></td>
-          <td ng-if="canUser('delete')" class="command command-delete"><span class="glyphicon glyphicon-remove" ng-click="vm.delete(service)" title="Delete"></span></td>
         </tr>
       </tbody>
     </table>
