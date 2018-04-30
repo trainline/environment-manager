@@ -95,7 +95,8 @@
                         <td>{{node.duration}}</td>
                         <td>{{node.numberOfAttempts}}</td>
                         <td>
-                            <a target="_blank" ng-show="node.logLink" href="{{node.logLink}}">Show</a>
+                            <a target="_blank" ng-show="node.logLink && node.status.status.toLowerCase() !== 'in progress'" href="{{node.logLink}}">Show</a>
+                            <span ng-show="node.status.status.toLowerCase() === 'in progress' || node.initializing"><i>Preparing...</i></span>
                         </td>
                     </tr>
                 </tbody>
