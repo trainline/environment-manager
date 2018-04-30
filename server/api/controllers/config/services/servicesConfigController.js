@@ -117,13 +117,14 @@ function putServiceConfigByName(req, res, next) {
   let serviceName = param('name', req);
   let owningCluster = param('cluster', req);
   let key = { ServiceName: serviceName };
+  let search = { ServiceName: param('name', req) };
   const expectedVersion = param('expected-version', req);
   const body = param('body', req);
   let metadata = getMetadataForDynamoAudit(req);
   let record = Object.assign(key, { OwningCluster: owningCluster }, { Value: body });
   delete record.Version;
 
-  return services.get(key)
+  return services.get(search)
     .then(preventChangesToPorts)
     .then(replaceServiceWithNewValue)
     .catch(next);
