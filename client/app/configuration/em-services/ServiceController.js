@@ -209,6 +209,8 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
       }).then(function () {
         cachedResources.config.services.flush();
         navigateToList();
+      }).catch(function (e) {
+        // handled by global http error handler in the client
       });
     };
 
