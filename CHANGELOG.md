@@ -3,14 +3,13 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-[#Unreleased]
+## [#unreleased]
 
 ### Fixed
 
-- Environment Manager showed a link to a log that did not exist yet for deployments that were in progress. This lead to people receiving errors when they clicked the link that was provided. We no longer show this link while the deployment is in progress or the node is initializing. 
+- Previously, when your session would expire, if you tried to perform an action, you would receive an error dialogue and be left in a state where you could do nothing without navigating back to the login page. Now, when this happens, you will be alerted to the session expiraton and taken directly to the login page. 
 
 ## [6.22.2] 2018-04-27
-
 
 ### Changed
 
