@@ -2246,6 +2246,8 @@ paths:
       responses:
         200:
           description: OK
+        405:
+          description: Method not allowed
     put:
       operationId: putServiceConfigByName
       summary: Update a service configuration.
@@ -2270,6 +2272,8 @@ paths:
       responses:
         200:
           description: OK
+        400:
+          description: Cannot update record with new port numbers
   /config/upstreams:
     x-swagger-router-controller: upstreamsConfigController
     get:
