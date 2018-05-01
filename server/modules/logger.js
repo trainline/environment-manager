@@ -2,55 +2,80 @@
 
 'use strict';
 
-let winston = require('winston');
-let AWS = require('aws-sdk');
-let config = require('../config');
-let fp = require('lodash/fp');
+const pino = require('pino')();
+const _ = require('lodash');
+const config = require('../config');
 
-const EM_LOG_LEVEL = config.get('EM_LOG_LEVEL').toLowerCase();
-const IS_PROD = config.get('IS_PRODUCTION');
-const IS_REMOTE_DEBUG = config.get('IS_REMOTE_DEBUG');
+const createLogEntryDetails = (type, ...args) => {
+  let logParts = extractMessageAndDetails(...args);
 
-let transportOpts = { level: EM_LOG_LEVEL, showLevel: false };
-if (IS_PROD) transportOpts.formatter = formatter;
-
-function formatter(options) {
   let entry = {
-    message: options.message,
-    level: options.level,
-    name: 'environment-manager',
-    eventtype: fp.compose(fp.defaultTo('default'), fp.get(['meta', 'eventtype']))(options),
+    name: 'environmentmanager',
+    environment: config.get('EM_AWS_RESOURCE_PREFIX').replace('-', '') || 'mn1',
+    message: logParts.message,
+    details: logParts.details,
+    eventtype: 'app',
     releaseversion: process.env.RELEASE_VERSION || config.get('APP_VERSION'),
-    meta: fp.compose(fp.omit('eventtype'), fp.get('meta'))(options)
+    severity: type
   };
-  return JSON.stringify(entry);
-}
 
-const logger = new (winston.Logger)({
-  transports: [
-    new (winston.transports.Console)(transportOpts)
-  ]
-});
+  _.assign(entry, logParts.indexables);
+
+  return entry;
+};
+
+const createLoggerType = (type) => {
+  return (...args) => {
+    pino.info(createLogEntryDetails(type, ...args));
+  };
+};
+
+let logger = {
+  log: createLoggerType('info'),
+  info: createLoggerType('info'),
+  warn: createLoggerType('warn'),
+  error: createLoggerType('error'),
+  debug: createLoggerType('debug'),
+  createLogEntryDetails
+};
+
+let extractMessageAndDetails = (...args) => {
+  let first = args[0];
+  let otherArgs = _.slice(args, 1);
+
+  let message;
+  let indexables;
+  let details;
+
+  if (first instanceof Error) {
+    message = first.message;
+    details = JSON.stringify(first.stack);
+  } else if (_.isObjectLike(first)) {
+    message = first.message || _.truncate(JSON.stringify(first), 80);
+    indexables = extractIndexableFields(first);
+    details = JSON.stringify(args);
+  } else {
+    message = first;
+    details = JSON.stringify(otherArgs);
+  }
+
+  return { message, indexables, details };
+};
+
+let extractIndexableFields = (o) => {
+  let indexableKeys = ['message', 'trace-id', 'eventtype'];
+  return _.fromPairs(_.entries(o).filter(prop => _.includes(indexableKeys, prop[0].toLowerCase())));
+};
+
+const AWS = require('aws-sdk');
+const IS_PROD = config.get('IS_PRODUCTION');
 
 if (IS_PROD) {
-  // Globally configure aws-sdk to log all activity.
   AWS.config.update({
     logger: {
-      log: (level, message, meta) => logger.log(level, message, fp.assign({ eventtype: 'aws' })(meta))
+      log: message => logger.log({ message, eventtype: 'aws' })
     }
   });
 }
 
-logger.info(`Starting logger with log level ${EM_LOG_LEVEL}`);
-
-if (IS_REMOTE_DEBUG) {
-  /**
-   * The remote debugger will *only* pick-up messages sent via console.{log|info|warn|error}
-   * The Winston console transport currently uses process.stdout.write which will not work.
-   * @see https://github.com/winstonjs/winston/issues/981
-   */
-  module.exports = console;
-} else {
-  module.exports = logger;
-}
-
+module.exports = logger;

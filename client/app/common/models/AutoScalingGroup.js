@@ -9,7 +9,7 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
     function getSummaryFromAsg(asg) {
 
       var terminationDelay = 0;
-      var emLifecycleHook = _.find(asg.LifecycleHooks, function(lch) {
+      var emLifecycleHook = _.find(asg.LifecycleHooks, function (lch) {
         return lch.LifecycleHookName === '10min-draining';
       });
 
@@ -108,24 +108,37 @@ angular.module('EnvironmentManager.common').factory('AutoScalingGroup',
           throw new Error('ASG data not found');
         }
       }).then(function (asg) {
-        // Read image data, full Launch Config and Scaling Schedule for ASG
-        return awsService.images.GetImageDetails().then(function (amiData) {
-          asg.$amiData = amiData;
+        var imageDetails = null;
+        var launchConfiguration = null;
+        var scalingSchedule = null;
+
+        return $q.all([getImageDetails(), getLaunchConfiguration(asg), getScalingSchedule(asg)
+        ]).then(function (results) {
+          imageDetails = results[0];
+          launchConfiguration = results[1];
+          scalingSchedule = results[2];
+
+          asg.$amiData = imageDetails;
           asg.$environmentName = environmentName;
           asg.$accountName = account;
+          asg.LaunchConfig = launchConfiguration;
+          asg.ScalingSchedule = scalingSchedule.ScheduledActions;
 
-          return asg.getLaunchConfig().then(function (lc) {
-            asg.LaunchConfig = lc;
-
-            // Convert Launch Config AMI ID to full AMI with name/version for display
-            asg.Ami = awsService.images.GetAmiByID(lc.ImageId, amiData) || {};
-
-            return asg.getScalingSchedule().then(function (ss) {
-              asg.ScalingSchedule = ss.ScheduledActions;
-              return asg;
-            });
-          });
+          asg.Ami = awsService.images.GetAmiByID(asg.LaunchConfig.ImageId, imageDetails) || {};
+          return asg;
         });
+
+        function getImageDetails() {
+          return awsService.images.GetImageDetails();
+        }
+
+        function getLaunchConfiguration(asg) {
+          return asg.getLaunchConfig();
+        }
+
+        function getScalingSchedule(asg) {
+          return asg.getScalingSchedule();
+        }
       });
     };
 

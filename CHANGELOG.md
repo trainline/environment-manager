@@ -9,6 +9,57 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 - Previously, when your session would expire, if you tried to perform an action, you would receive an error dialogue and be left in a state where you could do nothing without navigating back to the login page. Now, when this happens, you will be alerted to the session expiraton and taken directly to the login page. 
 
+## [6.22.2] 2018-04-27
+
+### Changed
+
+- The configuration page for services no longer allows users to delete a service. 
+
+- The API no longer supports deleting a service. The delete end points for services will return a 405 http status code. 
+
+- Maintenance mode previously used a combination of dynamo and standby settings on the instance. This is not required anymore. Instances will be put in maintenance mode through the use of a direct change to the `block-check` which Environment Manager uses to put a machine out of service, along with a reason why. 
+
+- Deployments were throwing errors when requesting a date greater than 2 days old. This has been changed to log a warning and return a result back to the user.
+
+### Fixed
+
+- Updated indirect dependency on hoek module to remove Prototype Pollution security vulnerability.
+
+## [6.22.1] 2018-04-17
+
+### Fixed
+
+- Maintenance Mode feature
+
+## [6.22.0] 2018-04-16
+
+### Changed 
+
+- Previously, the ASG modal screen would display what it had sent to AWS, which would not be what Environment Manager actually understood the state of AWS to be. This has caused confusion before and so we're no longer showing anything _other_ than what we know the state of the system to be. Notifications in the UI have been changed to reflect what is now happening on this screen. 
+
+## [6.21.4] 2018-04-05
+
+### Changed
+
+- Increased loading speed of ASG dialog
+
+### Fixed
+
+- Deprecated M3 and C3 instance types re-appearing in the UI
+- Increased the number of retries for AWS calls to reduce the number of transient errors (e.g. rate limiting)
+
+## [6.21.3] 2018-03-28
+
+### Fixed
+
+- Internal fixes only
+
+## [6.21.2] 2018-03-28
+
+### Fixed
+
+- Internal fixes only
+
 ## [6.21.1] 2018-03-12
 
 ### Fixed
@@ -394,7 +445,13 @@ Example:
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. 
 - A number of bugs related to the removal of a account as a special case of an account. 
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/6.21.1...master
+[Unreleased]: https://github.com/trainline/environment-manager/compare/6.22.2...master
+[6.22.2]: https://github.com/trainline/environment-manager/compare/6.22.1...6.22.2
+[6.22.1]: https://github.com/trainline/environment-manager/compare/6.22.0...6.22.1
+[6.22.0]: https://github.com/trainline/environment-manager/compare/6.21.4...6.22.0
+[6.21.4]: https://github.com/trainline/environment-manager/compare/6.21.3...6.21.4
+[6.21.3]: https://github.com/trainline/environment-manager/compare/6.21.2...6.21.3
+[6.21.2]: https://github.com/trainline/environment-manager/compare/6.21.1...6.21.2
 [6.21.1]: https://github.com/trainline/environment-manager/compare/6.20.1...6.21.1
 [6.20.1]: https://github.com/trainline/environment-manager/compare/6.19.0...6.20.1
 [6.19.0]: https://github.com/trainline/environment-manager/compare/6.17.0...6.19.0

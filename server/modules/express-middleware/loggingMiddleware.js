@@ -35,24 +35,21 @@ let mini = miniStack.build();
 let loggerMiddleware = logger => (req, res, next) => {
   let log = () => {
     let deprecated = fp.compose(fp.defaultTo(false), fp.get(['locals', 'deprecated']))(res);
-    let message = deprecated ? 'HTTP request deprecated' : 'HTTP request';
     let statusCode = fp.get(['statusCode'])(res);
-    let level = (() => {
-      if (statusCode >= 500) {
-        return 'error';
-      } else if (statusCode >= 400 || deprecated) {
-        return 'warn';
-      } else {
-        return 'debug';
-      }
-    })();
-    let responseFields = (() => {
-      if (statusCode < 400) {
-        return ['statusCode'];
-      } else {
-        return ['statusCode', 'body'];
-      }
-    })();
+    let level;
+    if (statusCode >= 500) {
+      level = 'error';
+    } else if (statusCode >= 400 || deprecated) {
+      level = 'warn';
+    } else {
+      level = 'debug';
+    }
+    let responseFields;
+    if (statusCode < 400) {
+      responseFields = ['statusCode'];
+    } else {
+      responseFields = ['statusCode', 'body'];
+    }
     let entry = {
       eventtype: 'http',
       req: {
@@ -68,7 +65,7 @@ let loggerMiddleware = logger => (req, res, next) => {
       res: fp.pick(responseFields)(res),
       user: req.originalUrl === '/api/token' ? fp.get(['body', 'username'])(req) : getUser(req)
     };
-    logger.log(level, message, entry);
+    logger[level]({ message: `Request: ${entry.req.method} ${entry.req.originalUrl} ResponseCode: ${entry.res.statusCode}`, entry });
   };
   let send = res.send;
   res.send = (content) => {
@@ -84,7 +81,7 @@ let loggerMiddleware = logger => (req, res, next) => {
 
 let errorLoggerMiddleware = logger => (err, req, res, next) => {
   let log = () => {
-    let message = 'HTTP error';
+    let message = `HTTP ERROR: ${err.message}`;
     let entry = {
       error: {
         message: fp.get(['message'])(err),
@@ -102,8 +99,9 @@ let errorLoggerMiddleware = logger => (err, req, res, next) => {
     };
     logger.error(message, entry);
   };
-  res.once('close', log);
-  res.once('finish', log);
+
+  log(err);
+
   next(err);
 };
 

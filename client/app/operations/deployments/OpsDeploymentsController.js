@@ -20,11 +20,7 @@ angular.module('EnvironmentManager.operations').controller('OpsDeploymentsContro
     var dateRangeList = vm.dateRangeList = [
       { name: 'Last hour', value: 1 * enums.MILLISECONDS.PerHour },
       { name: 'Today', value: 1 * enums.MILLISECONDS.PerDay },
-      { name: 'Last 2 days', value: 2 * enums.MILLISECONDS.PerDay },
-      { name: 'Last 3 days', value: 3 * enums.MILLISECONDS.PerDay },
-      { name: 'Last 7 days', value: 7 * enums.MILLISECONDS.PerDay },
-      { name: 'Last 30 days', value: 30 * enums.MILLISECONDS.PerDay },
-      { name: 'Last 60 days', value: 60 * enums.MILLISECONDS.PerDay }
+      { name: 'Last 2 days', value: 2 * enums.MILLISECONDS.PerDay }
     ];
 
     var querySync = vm.querySync = new QuerySync(vm, {

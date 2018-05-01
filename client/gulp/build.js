@@ -84,8 +84,7 @@ gulp.task('other', function () {
     './docs/**/*',
     './schema/**/*',
     './styles/**/*.css',
-    './app/**/*.html',
-    'login.html'
+    './app/**/*.html'
   ], { base: '.' })
   .pipe(fileFilter)
   .pipe(gulp.dest(output));
