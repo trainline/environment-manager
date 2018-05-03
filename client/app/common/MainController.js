@@ -167,7 +167,13 @@ angular.module('EnvironmentManager.common').controller('MainController',
       if (isNothingToDisplay())
         setErrorMessageDefaultDetails();
 
-      modal.error(title, errorMessage);
+      modal.error(title, errorMessage)
+        .then(function () {
+          if (response.data == "Environment Manager: Access Denied. Please sign in and try again."
+            && response.status === 401) {
+            navigateToLogin();
+          }
+        });
 
       function isNothingToDisplay() {
         return !errorMessage && !_.get(response, 'data.details');
@@ -182,9 +188,9 @@ angular.module('EnvironmentManager.common').controller('MainController',
       }
     });
 
-    $rootScope.$on('cookie-expired', function () {
-      function navigateToLogin() { location.reload(); }
+    function navigateToLogin() { location.reload(); }
 
+    $rootScope.$on('cookie-expired', function () {
       modal.information({
         title: 'Your session has expired',
         message: 'You were signed out of your account. Please press [OK] to sign in to Environment Manager again.',

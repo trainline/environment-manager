@@ -13,7 +13,7 @@ let errorResponseCodes = {
 function authorizeRequest(authorizer, request, response, next) {
   if (!request.user) {
     response.status(401);
-    return response.send('Access Denied. Please sign in and try again.');
+    return response.send('Environment Manager: Access Denied. Please sign in and try again.');
   } else {
     if (request.method === 'GET') return next();
     return handleSecureRequest(authorizer, request, response, next);
