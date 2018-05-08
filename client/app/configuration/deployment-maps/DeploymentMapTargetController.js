@@ -18,8 +18,8 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
     vm.securityZonesList = [];
     vm.awsInstanceTypesList = [];
     vm.AZOptions = [
-      { Name: 'Span all active AZs (recommended)', Value: 'all' },
-      { Name: 'Span specific AZs..', Value: 'some' }
+      { Name: 'Span all active AZs (recommended)', Value: 'all'},
+      { Name: 'Span specific AZs..', Value: 'some'}
     ];
     vm.deploymentAzsList = ['A', 'B', 'C'];
     vm.availableServices = []; // Filtered to services able to be added to this target
@@ -30,7 +30,10 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
     vm.usePredefinedSubnet = false;
 
     function init() {
-      userHasPermission = user.hasPermission({ access: 'PUT', resource: '/config/deploymentmaps/' + deploymentMap.DeploymentMapName });
+      userHasPermission = user.hasPermission({
+        access: 'PUT',
+        resource: '/config/deploymentmaps/' + deploymentMap.DeploymentMapName
+      });
 
       if (vm.pageMode == 'Clone') {
         vm.target.ServerRoleName = '';
@@ -63,10 +66,11 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
       ]).then(function () {
         if (vm.pageMode == 'New') {
           // Set defaults for new server roles
+          var defaultCluster = getDefaultCluster();
           var newTarget = {
             ServerRoleName: '',
             FleetPerSlice: false,
-            OwningCluster: teamstorageservice.get(vm.owningClustersList[0].ClusterName),
+            OwningCluster: defaultCluster,
             SecurityZone: vm.securityZonesList[0],
             ASG: {
               MinCapacity: 0,
@@ -80,20 +84,12 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
                 InstanceType: 'm3.medium',
                 UI_UseSpecificKey: false,
                 Volumes: [
-                  {
-                    Name: 'OS',
-                    Size: 50,
-                    Type: 'SSD'
-                  },
-                  {
-                    Name: 'Data',
-                    Size: 50,
-                    Type: 'Disk'
-                  }
+                  { Name: 'OS', Size: 50, Type: 'SSD'},
+                  { Name: 'Data', Size: 50, Type: 'Disk'}
                 ]
               },
               Tags: {
-                ContactEmail: vm.owningClustersList[0].Value.GroupEmailAddress
+                ContactEmail: getDefaultClusterEmail(defaultCluster)
               }
             },
             Services: []
@@ -131,7 +127,9 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
 
     vm.toggleAZSelection = function (az) {
       if (_.includes(vm.target.ASG.AvailabilityZone, az)) {
-        _.remove(vm.target.ASG.AvailabilityZone, function (item) { return item === az; });
+        _.remove(vm.target.ASG.AvailabilityZone, function (item) {
+          return item === az;
+        });
       } else {
         vm.target.ASG.AvailabilityZone.push(az);
       }
@@ -146,7 +144,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
     };
 
     vm.owningClusterUpdated = function () {
-      if (isClusterEmail(vm.target.ASG.Tags.ContactEmail)) {
+      if (isClusterEmail(vm.target.ASG.Tags.ContactEmail) || !vm.target.ASG.Tags.ContactEmail) {
         vm.target.ASG.Tags.ContactEmail = getClusterByName(vm.target.OwningCluster).Value.GroupEmailAddress;
       }
 
@@ -268,7 +266,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
     }
 
     function validateDataForSave() {
-      var valid = { result: true };
+      var valid = { result: true};
       var min = vm.target.ASG.MinCapacity;
       var desired = vm.target.ASG.DesiredCapacity;
       var max = vm.target.ASG.MaxCapacity;
@@ -281,6 +279,15 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
       }
 
       return valid;
+    }
+
+    function getDefaultCluster() {
+      var owningCluster = teamstorageservice.get('');
+      return owningCluster === 'Any' ? '' : owningCluster;
+    }
+
+    function getDefaultClusterEmail(defaultCluster) {
+      return defaultCluster === '' ? '' : getClusterByName(defaultCluster).Value.GroupEmailAddress;
     }
 
     function updateAvailableServices() {
@@ -297,7 +304,9 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
         deploymentMap.Value.DeploymentTarget.forEach(function (item) {
           if (item.ServerRoleName === vm.target.ServerRoleName) return;
 
-          if (_.some(item.Services, { ServiceName: service.ServiceName })) {
+          if (_.some(item.Services, {
+              ServiceName: service.ServiceName
+            })) {
             service.$otherServerRoles.push(item.ServerRoleName);
           }
         });
@@ -308,4 +317,3 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
 
     init();
   });
-
