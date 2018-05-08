@@ -62,13 +62,14 @@ function getServiceByName(serviceName) {
 function getClusterByName(clusterName) {
   return clusters.get({ ClusterName: clusterName })
     .then(
-    cluster => Promise.resolve({
-      Name: cluster.ClusterName,
-      ShortName: cluster.Value.ShortName,
-      KeyPair: cluster.Value.KeyPair
-    }),
-    error => Promise.reject(error instanceof DynamoItemNotFoundError ?
-      new ConfigurationError(`Cluster "${clusterName}" not found.`) :
-      new Error(`An error has occurred retrieving "${clusterName}" cluster: ${error.message}`)
-    ));
+      cluster => Promise.resolve({
+        Name: cluster.ClusterName,
+        ShortName: cluster.Value.ShortName,
+        KeyPair: cluster.Value.KeyPair
+      }),
+      error => Promise.reject(error instanceof DynamoItemNotFoundError ?
+        new ConfigurationError(`Cluster "${clusterName}" not found.`) :
+        new Error(`An error has occurred retrieving "${clusterName}" cluster: ${error.message}`)
+      )
+    );
 }
