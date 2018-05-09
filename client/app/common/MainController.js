@@ -164,6 +164,13 @@ angular.module('EnvironmentManager.common').controller('MainController',
         errorMessage += '<hr>' + angular.toJson(response.data.details);
       }
 
+      var defaultValue = '<UNKNOWN>';
+      var link = _.get(response, 'config.url', defaultValue);
+
+      if (response.status === 502) {
+        errorMessage = "Cannot communicate with " + link;
+      }
+
       if (isNothingToDisplay())
         setErrorMessageDefaultDetails();
 
@@ -180,10 +187,7 @@ angular.module('EnvironmentManager.common').controller('MainController',
       }
 
       function setErrorMessageDefaultDetails() {
-        var defaultValue = '<UNKNOWN>';
-        var link = _.get(response, 'config.url', defaultValue);
         var status = _.get(response, 'status', defaultValue);
-
         errorMessage = 'Request to <a href="' + link + '">' + link + '</a> returned HTTP Status Code:' + status;
       }
     });
