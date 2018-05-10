@@ -84,7 +84,7 @@ describe('services controller', () => {
       });
     });
 
-    it('should', (done) => {
+    it('should send positive result even when there are no Value properties', (done) => {
       setupControllerToReturnAvailablePorts();
       res = createResWithStatusExpectation(201);
       servicesConfigController.postServicesConfig(req, res, () => { })
