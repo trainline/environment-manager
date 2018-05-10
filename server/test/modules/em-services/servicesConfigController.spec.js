@@ -6,7 +6,7 @@ const assert = require('assert');
 const rewire = require('rewire');
 const servicesConfigController = rewire('../../../api/controllers/config/services/servicesConfigController');
 
-describe('services controller', () => {
+describe.only('services controller', () => {
   let req;
   let res;
 
@@ -100,10 +100,10 @@ describe('services controller', () => {
 function setupControllerToReturnDuplicatePorts() {
   servicesConfigController.__set__('services', {
     scan: () => Promise.resolve([
-      { Value: { BluePort: 10000, GreenPort: 10001 } }
+      { Value: { BluePort: 100, GreenPort: 100 } }
     ]),
     replace: () => { return Promise.resolve(); },
-    get() { return Promise.resolve({ Value: { BluePort: 10000, GreenPort: 10001 } }); }
+    get() { return Promise.resolve({ Value: { BluePort: 100, GreenPort: 100 } }); }
   });
 }
 
