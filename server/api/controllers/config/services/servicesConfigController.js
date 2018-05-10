@@ -8,6 +8,7 @@ let param = require('../../../api-utils/requestParam');
 let versionOf = require('../../../../modules/data-access/dynamoVersion').versionOf;
 let removeAuditMetadata = require('../../../../modules/data-access/dynamoAudit').removeAuditMetadata;
 let sns = require('../../../../modules/sns/EnvironmentManagerEvents');
+const _ = require('lodash');
 
 let { hasValue, when } = require('../../../../modules/functional');
 let { ifNotFound, notFoundMessage } = require('../../../api-utils/ifNotFound');
@@ -68,14 +69,23 @@ function getServiceConfigByNameAndCluster(req, res, next) {
  * POST /config/services
  */
 function postServicesConfig(req, res, next) {
-  const body = param('body', req);
-  const bluePort = (body.BluePort || 0) * 1;
-  const greenPort = (body.GreenPort || 0) * 1;
+  let body;
+  let bluePort;
+  let greenPort;
+
+  try {
+    body = param('body', req);
+    bluePort = (body.BluePort || 0) * 1;
+    greenPort = (body.GreenPort || 0) * 1;
+  } catch (err) {
+    res.status(400).send({ errors: [err.message] });
+    return next(err);
+  }
 
   return getAllServicesConfig()
     .then(checkServiceConfigListForDeplicatePorts({ blue: bluePort, green: greenPort }))
     .then(createServiceConfiguration)
-    .catch((e) => { return res.status(400).send({ errors: [e.message] }); });
+    .catch((e) => { res.status(400).send({ errors: [e.message] }); next(e); });
 
   function createServiceConfiguration() {
     let metadata = getMetadataForDynamoAudit(req);
@@ -101,11 +111,12 @@ function postServicesConfig(req, res, next) {
 
   function checkServiceConfigListForDeplicatePorts({ blue, green }) {
     return function iterateServiceList(sList) {
-      sList.forEach((s) => {
-        if ([s.Value.BluePort, s.Value.GreenPort].some(p => [blue, green].includes(p))) {
-          throw new Error('Ports specified already in use.');
-        }
-      });
+      sList.filter(s => s.Value)
+        .forEach((s) => {
+          if ([_.get(s, 'Value.BluePort', ''), _.get(s, 'Value.GreenPort', '')].some(p => [blue, green].includes(p))) {
+            throw new Error('Ports specified already in use.');
+          }
+        });
     };
   }
 }
