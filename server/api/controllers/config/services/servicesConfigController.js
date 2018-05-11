@@ -8,7 +8,6 @@ let param = require('../../../api-utils/requestParam');
 let versionOf = require('../../../../modules/data-access/dynamoVersion').versionOf;
 let removeAuditMetadata = require('../../../../modules/data-access/dynamoAudit').removeAuditMetadata;
 let sns = require('../../../../modules/sns/EnvironmentManagerEvents');
-const logger = require('../../../../modules/logger');
 const _ = require('lodash');
 
 let { hasValue, when } = require('../../../../modules/functional');
@@ -21,11 +20,9 @@ function convertToApiModel(persistedModel) {
 }
 
 function getAllServicesConfig() {
-  logger.info('CHECKTHISOUT ' + 'Getting all services');
   return services.scan(false)
     .then((data) => {
-      logger.info('CHECKTHISOUT' + JSON.stringify(data));
-      data.map(convertToApiModel);
+      return data.map(convertToApiModel);
     });
 }
 
@@ -74,22 +71,15 @@ function getServiceConfigByNameAndCluster(req, res, next) {
  * POST /config/services
  */
 function postServicesConfig(req, res, next) {
-  function CHECK(k, v) {
-    logger.info('CHECKTHISOUT' + k + ' :: ' + v);
-  }
   let body;
   let bluePort;
   let greenPort;
 
   try {
     body = param('body', req);
-    CHECK('body', body);
-    bluePort = (body.BluePort || 0) * 1;
-    CHECK('blueport', bluePort);
-    greenPort = (body.GreenPort || 0) * 1;
-    CHECK('greenport', greenPort);
+    bluePort = body ? _.get(body, 'Value.BluePort', 0) * 1 : 0;
+    greenPort = body ? _.get(body, 'Value.GreenPort', 0) * 1 : 0;
   } catch (err) {
-    CHECK('err in try', err);
     res.status(400).send({ errors: [err.message] });
     return next(err);
   }
@@ -123,13 +113,13 @@ function postServicesConfig(req, res, next) {
 
   function checkServiceConfigListForDeplicatePorts({ blue, green }) {
     return function iterateServiceList(sList) {
-      logger.info('CHECKTHISOUT' + ' iterating the results now');
       if (blue === 0 && green === 0) return Promise.resolve();
-      logger.info('CHECKTHISOUT' + ' got past the zero check');
+
       let allWithValue = sList.filter(s => s.Value);
-      logger.info('')
+
       let allPorts = allWithValue.reduce((accumulator, currentValue) => (accumulator.push(currentValue.Value.GreenPort * 1) && accumulator.push(currentValue.Value.BluePort * 1) && accumulator), [])
         .filter(x => x !== 0);
+
       let duplicateFound = allPorts.some(x => [green, blue].includes(x));
 
       if (duplicateFound) return Promise.reject({ message: 'Please specify port numbers that are not already in use.' });

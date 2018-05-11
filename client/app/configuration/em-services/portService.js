@@ -48,8 +48,10 @@
       }).then(function createPortsList(result) {
         var results = [];
         result.data.forEach(function (service) {
-          results.push(service.Value.GreenPort * 1);
-          results.push(service.Value.BluePort * 1);
+          if (service.Value) {
+            results.push(service.Value.GreenPort * 1);
+            results.push(service.Value.BluePort * 1);
+          }
         });
         return results;
       });
