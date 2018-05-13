@@ -12,7 +12,8 @@
   function portservice($http) {
     return {
       getNextSequentialPair: getNextSequentialPair,
-      isPortInUse: isPortInUse
+      isPortInUse: isPortInUse,
+      getPorts: getPorts
     };
 
     function getNextSequentialPair() {
@@ -32,11 +33,9 @@
       }
     }
 
-    function isPortInUse(portNumber) {
-      return getPorts().then(function (ports) {
-        return ports.find(function (p) {
-          return p === portNumber;
-        });
+    function isPortInUse(portNumbers, port) {
+      return portNumbers.find(function (p) {
+        return p === portNumber;
       });
     }
 
