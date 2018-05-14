@@ -51,9 +51,16 @@ function getDeploymentMapConfigByName(req, res, next) {
  */
 function postDeploymentMapsConfig(req, res, next) {
   const body = param('body', req);
-  let metadata = getMetadataForDynamoAudit(req);
   let record = body;
+  const validationErrors = validateDeploymentTargets(record.Value.DeploymentTarget);
+
+  if (validationErrors.length > 0) {
+    res.status(400).send({ errors: validationErrors });
+    return next();
+  }
+
   delete record.Version;
+  let metadata = getMetadataForDynamoAudit(req);
   return deploymentMaps.create({ record, metadata })
     .then(() => res.status(201).end())
     .then(() => sns.publish({
@@ -79,6 +86,13 @@ function putDeploymentMapConfigByName(req, res, next) {
   const key = param('name', req);
   const expectedVersion = param('expected-version', req);
   const body = param('body', req);
+
+  const validationErrors = validateDeploymentTargets(body.DeploymentTarget);
+
+  if (validationErrors.length > 0) {
+    res.status(400).send({ errors: validationErrors });
+    return next();
+  }
 
   let metadata = getMetadataForDynamoAudit(req);
   let record = Object.assign(keyOf(key), { Value: body });
@@ -125,6 +139,34 @@ function deleteDeploymentMapConfigByName(req, res, next) {
       }
     }))
     .catch(next);
+}
+
+function validateDeploymentTargets(deploymentTargets) {
+  let errors = [];
+  deploymentTargets.forEach((deploymentTarget) => {
+    if (!deploymentTarget.OwningCluster) {
+      errors.push({ detail: `${deploymentTarget.ServerRoleName} - OwningCluster is a required field.` });
+    } else if (deploymentTarget.OwningCluster === 'Any') {
+      errors.push({ detail: `${deploymentTarget.ServerRoleName} - Invalid OwningCluster: ${deploymentTarget.OwningCluster}.` });
+    }
+
+    if (!deploymentTarget.ContactEmailTag) {
+      errors.push({ detail: `${deploymentTarget.ServerRoleName} - ContactEmailTag is a required field.` });
+    } else if (!isEmailValid(deploymentTarget.ContactEmailTag)) {
+      errors.push({ detail: `${deploymentTarget.ServerRoleName} - Invalid ContactEmailTag: ${deploymentTarget.ContactEmailTag}.` });
+    }
+
+    if (!deploymentTarget.AMI) {
+      errors.push({ detail: `${deploymentTarget.ServerRoleName} - AMI is a required field.` });
+    }
+  });
+
+  return errors;
+}
+
+function isEmailValid(email) {
+  let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
 }
 
 module.exports = {
