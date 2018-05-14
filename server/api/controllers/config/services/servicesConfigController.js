@@ -8,6 +8,7 @@ let param = require('../../../api-utils/requestParam');
 let versionOf = require('../../../../modules/data-access/dynamoVersion').versionOf;
 let removeAuditMetadata = require('../../../../modules/data-access/dynamoAudit').removeAuditMetadata;
 let sns = require('../../../../modules/sns/EnvironmentManagerEvents');
+const _ = require('lodash');
 
 let { hasValue, when } = require('../../../../modules/functional');
 let { ifNotFound, notFoundMessage } = require('../../../api-utils/ifNotFound');
@@ -20,7 +21,9 @@ function convertToApiModel(persistedModel) {
 
 function getAllServicesConfig() {
   return services.scan(false)
-    .then(data => data.map(convertToApiModel));
+    .then((data) => {
+      return data.map(convertToApiModel);
+    });
 }
 
 /**
@@ -68,14 +71,23 @@ function getServiceConfigByNameAndCluster(req, res, next) {
  * POST /config/services
  */
 function postServicesConfig(req, res, next) {
-  const body = param('body', req);
-  const bluePort = (body.BluePort || 0) * 1;
-  const greenPort = (body.GreenPort || 0) * 1;
+  let body;
+  let bluePort;
+  let greenPort;
+
+  try {
+    body = param('body', req);
+    bluePort = body ? _.get(body, 'Value.BluePort', 0) * 1 : 0;
+    greenPort = body ? _.get(body, 'Value.GreenPort', 0) * 1 : 0;
+  } catch (err) {
+    res.status(400).send({ errors: [err.message] });
+    return next(err);
+  }
 
   return getAllServicesConfig()
     .then(checkServiceConfigListForDeplicatePorts({ blue: bluePort, green: greenPort }))
     .then(createServiceConfiguration)
-    .catch((e) => { return res.status(400).send({ errors: [e.message] }); });
+    .catch((e) => { res.status(400).send({ errors: [{ detail: e.message }] }); next(e); });
 
   function createServiceConfiguration() {
     let metadata = getMetadataForDynamoAudit(req);
@@ -101,11 +113,17 @@ function postServicesConfig(req, res, next) {
 
   function checkServiceConfigListForDeplicatePorts({ blue, green }) {
     return function iterateServiceList(sList) {
-      sList.forEach((s) => {
-        if ([s.Value.BluePort, s.Value.GreenPort].some(p => [blue, green].includes(p))) {
-          throw new Error('Ports specified already in use.');
-        }
-      });
+      if (blue === 0 && green === 0) return Promise.resolve();
+
+      let allWithValue = sList.filter(s => s.Value);
+
+      let allPorts = allWithValue.reduce((accumulator, currentValue) => (accumulator.push(currentValue.Value.GreenPort * 1) && accumulator.push(currentValue.Value.BluePort * 1) && accumulator), [])
+        .filter(x => x !== 0);
+
+      let duplicateFound = allPorts.some(x => [green, blue].includes(x));
+
+      if (duplicateFound) return Promise.reject({ message: 'Please specify port numbers that are not already in use.' });
+      else return Promise.resolve();
     };
   }
 }
