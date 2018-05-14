@@ -33,8 +33,8 @@
     }
 
     function isPortInUse(portNumber) {
-      if(!portNumber) return;
-      if(portNumber.toString().length < 5) return;
+      if (!portNumber) return undefined;
+      if (portNumber.toString().length < 5) return undefined;
 
       return getPorts().then(function (ports) {
         return ports.find(function (p) {
