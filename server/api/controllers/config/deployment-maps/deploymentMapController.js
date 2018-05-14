@@ -145,23 +145,27 @@ function validateDeploymentTargets(deploymentTargets) {
   let errors = [];
   deploymentTargets.forEach((deploymentTarget) => {
     if (!deploymentTarget.OwningCluster) {
-      errors.push({ detail: `${deploymentTarget.ServerRoleName} - OwningCluster is a required field.` });
+      errors.push(getError(deploymentTarget.ServerRoleName, 'OwningCluster is a required field.'));
     } else if (deploymentTarget.OwningCluster === 'Any') {
-      errors.push({ detail: `${deploymentTarget.ServerRoleName} - Invalid OwningCluster: ${deploymentTarget.OwningCluster}.` });
+      errors.push(getError(deploymentTarget.ServerRoleName, `Invalid OwningCluster: ${deploymentTarget.OwningCluster}.`));
     }
 
     if (!deploymentTarget.ContactEmailTag) {
-      errors.push({ detail: `${deploymentTarget.ServerRoleName} - ContactEmailTag is a required field.` });
+      errors.push(getError(deploymentTarget.ServerRoleName, 'ContactEmailTag is a required field.'));
     } else if (!isEmailValid(deploymentTarget.ContactEmailTag)) {
-      errors.push({ detail: `${deploymentTarget.ServerRoleName} - Invalid ContactEmailTag: ${deploymentTarget.ContactEmailTag}.` });
+      errors.push(getError(deploymentTarget.ServerRoleName, `Invalid ContactEmailTag: ${deploymentTarget.ContactEmailTag}.`));
     }
 
     if (!deploymentTarget.AMI) {
-      errors.push({ detail: `${deploymentTarget.ServerRoleName} - AMI is a required field.` });
+      errors.push(getError(deploymentTarget.ServerRoleName, 'AMI is a required field.'));
     }
   });
 
   return errors;
+}
+
+function getError(title, detail) {
+  return { title, detail };
 }
 
 function isEmailValid(email) {

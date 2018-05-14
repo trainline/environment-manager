@@ -43,7 +43,7 @@ describe('Deployment maps controller', () => {
     return instance;
   }
 
-  describe('Posting a new deployment map', () => {
+  describe('Posting a new server role', () => {
     let deploymentMap;
 
     it('Should return 400 when OwningCluster is null', () => {
@@ -51,7 +51,7 @@ describe('Deployment maps controller', () => {
 
       controller.postDeploymentMapsConfig(createReq(), createRes(), createNext());
 
-      assertError('TheServerRoleName - OwningCluster is a required field.');
+      assertError('TheServerRoleName', 'OwningCluster is a required field.');
     });
 
     it('Should return 400 when OwningCluster is Any', () => {
@@ -59,7 +59,7 @@ describe('Deployment maps controller', () => {
 
       controller.postDeploymentMapsConfig(createReq(), createRes(), createNext());
 
-      assertError('TheServerRoleName - Invalid OwningCluster: Any.');
+      assertError('TheServerRoleName', 'Invalid OwningCluster: Any.');
     });
 
     it('Should return 400 when ContactEmailTag is empty', () => {
@@ -67,7 +67,7 @@ describe('Deployment maps controller', () => {
 
       controller.postDeploymentMapsConfig(createReq(), createRes(), createNext());
 
-      assertError('TheServerRoleName - ContactEmailTag is a required field.');
+      assertError('TheServerRoleName', 'ContactEmailTag is a required field.');
     });
 
     it('Should return 400 when ContactEmailTag is not an email', () => {
@@ -75,7 +75,7 @@ describe('Deployment maps controller', () => {
 
       controller.postDeploymentMapsConfig(createReq(), createRes(), createNext());
 
-      assertError('TheServerRoleName - Invalid ContactEmailTag: something.');
+      assertError('TheServerRoleName', 'Invalid ContactEmailTag: something.');
     });
 
     it('Should return 400 when AMI is not provided', () => {
@@ -83,10 +83,10 @@ describe('Deployment maps controller', () => {
 
       controller.postDeploymentMapsConfig(createReq(), createRes(), createNext());
 
-      assertError('TheServerRoleName - AMI is a required field.');
+      assertError('TheServerRoleName', 'AMI is a required field.');
     });
 
-    it('Should return 201 when the deployment map is valid', () => {
+    it('Should return 201 when the server role is valid', () => {
       deploymentMap = getDeploymentMap('TheCluster', 'email@email.com', 'TheAmi');
 
       let result = controller.postDeploymentMapsConfig(createReq(), createRes(), createNext());
@@ -110,63 +110,63 @@ describe('Deployment maps controller', () => {
   });
 
   describe('Updating a deployment map', () => {
-    let deploymentTargets;
+    let serverRoles;
 
     it('Should return 400 when OwningCluster is null', () => {
-      deploymentTargets = getDeploymentTargetList();
+      serverRoles = getServerRoles();
 
       controller.putDeploymentMapConfigByName(createReq(), createRes(), createNext());
 
-      assertError('TheServerRoleName - OwningCluster is a required field.');
+      assertError('TheServerRoleName', 'OwningCluster is a required field.');
     });
 
     it('Should return 400 when OwningCluster is Any', () => {
-      deploymentTargets = getDeploymentTargetList('Any');
+      serverRoles = getServerRoles('Any');
 
       controller.putDeploymentMapConfigByName(createReq(), createRes(), createNext());
 
-      assertError('TheServerRoleName - Invalid OwningCluster: Any.');
+      assertError('TheServerRoleName', 'Invalid OwningCluster: Any.');
     });
 
     it('Should return 400 when ContactEmailTag is empty', () => {
-      deploymentTargets = getDeploymentTargetList('TheCluster', '');
+      serverRoles = getServerRoles('TheCluster', '');
 
       controller.putDeploymentMapConfigByName(createReq(), createRes(), createNext());
 
-      assertError('TheServerRoleName - ContactEmailTag is a required field.');
+      assertError('TheServerRoleName', 'ContactEmailTag is a required field.');
     });
 
     it('Should return 400 when ContactEmailTag is not an email', () => {
-      deploymentTargets = getDeploymentTargetList('TheCluster', 'something');
+      serverRoles = getServerRoles('TheCluster', 'something');
 
       controller.putDeploymentMapConfigByName(createReq(), createRes(), createNext());
 
-      assertError('TheServerRoleName - Invalid ContactEmailTag: something.');
+      assertError('TheServerRoleName', 'Invalid ContactEmailTag: something.');
     });
 
     it('Should return 400 when AMI is not provided', () => {
-      deploymentTargets = getDeploymentTargetList('TheCluster', 'email@email.com', null);
+      serverRoles = getServerRoles('TheCluster', 'email@email.com', null);
 
       controller.putDeploymentMapConfigByName(createReq(), createRes(), createNext());
 
-      assertError('TheServerRoleName - AMI is a required field.');
+      assertError('TheServerRoleName', 'AMI is a required field.');
     });
 
-    it('Should return 400 and errors for issues on more than one deploymentmaps', () => {
-      deploymentTargets = getDeploymentTargetList();
+    it('Should return 400 and errors for issues on more than one deploymentmap', () => {
+      serverRoles = getServerRoles();
 
       controller.putDeploymentMapConfigByName(createReq(), createRes(), createNext());
 
-      assertError('TheServerRoleName - OwningCluster is a required field.');
-      assertError('TheServerRoleName2 - OwningCluster is a required field.');
-      assertError('TheServerRoleName - ContactEmailTag is a required field.');
-      assertError('TheServerRoleName2 - ContactEmailTag is a required field.');
-      assertError('TheServerRoleName - AMI is a required field.');
-      assertError('TheServerRoleName2 - AMI is a required field.');
+      assertError('TheServerRoleName', 'OwningCluster is a required field.');
+      assertError('TheServerRoleName2', 'OwningCluster is a required field.');
+      assertError('TheServerRoleName', 'ContactEmailTag is a required field.');
+      assertError('TheServerRoleName2', 'ContactEmailTag is a required field.');
+      assertError('TheServerRoleName', 'AMI is a required field.');
+      assertError('TheServerRoleName2', 'AMI is a required field.');
     });
 
-    it('Should return 200 when the deployment maps are valid', () => {
-      deploymentTargets = getDeploymentTargetList('TheCluster', 'email@email.com', 'TheAmi');
+    it('Should return 200 when the server roles are valid', () => {
+      serverRoles = getServerRoles('TheCluster', 'email@email.com', 'TheAmi');
 
       let result = controller.putDeploymentMapConfigByName(createReq(), createRes(), createNext());
 
@@ -182,7 +182,7 @@ describe('Deployment maps controller', () => {
             name: 'TheDeploymentMap',
             expectedVersion: 10,
             body: {
-              value: deploymentTargets
+              value: serverRoles
             }
           }
         }
@@ -203,9 +203,9 @@ describe('Deployment maps controller', () => {
     };
   }
 
-  function assertError(expectedMessage) {
+  function assertError(serverRole, expectedMessage) {
     assert.equal(actualResponse.code, '400');
-    let error = actualResponse.body.errors.find((e) => { return e.detail === expectedMessage; });
+    let error = actualResponse.body.errors.find((e) => { return e.detail === expectedMessage && e.title === serverRole; });
     assert.equal(error.detail, expectedMessage);
   }
 
@@ -213,7 +213,7 @@ describe('Deployment maps controller', () => {
     return () => {};
   }
 
-  function getDeploymentTargetList(cluster, email, ami) {
+  function getServerRoles(cluster, email, ami) {
     return {
       DeploymentTarget: [{
         AMI: ami,
@@ -270,7 +270,7 @@ describe('Deployment maps controller', () => {
   function getDeploymentMap(cluster, email, ami) {
     return {
       DeploymentMapName: 'TheDeploymentMapName',
-      Value: getDeploymentTargetList(cluster, email, ami)
+      Value: getServerRoles(cluster, email, ami)
     };
   }
 });
