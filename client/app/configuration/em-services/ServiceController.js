@@ -64,14 +64,13 @@ angular.module('EnvironmentManager.configuration').controller('ServiceController
     }
 
     vm.checkPorts = function () {
-      var greenResult = false;
-      var blueResult = false;
-
-      portservice.getPorts()
-        .then(function (ports) {
-          greenResult = portservice.isPortInUse(vm.service.Value.GreenPort) && vm.service.Value.GreenPort != vm.startingGreenPort;
-          blueResult = portservice.isPortInUse(vm.service.Value.BluePort) && vm.service.Value.BluePort != vm.startingBluePort;
-
+      Promise.all([
+        portservice.isPortInUse(vm.service.Value.GreenPort),
+        portservice.isPortInUse(vm.service.Value.BluePort)])
+        .then(function (results) {
+          var greenResult = results[0] && vm.service.Value.GreenPort != vm.startingGreenPort;
+          var blueResult = results[1] && vm.service.Value.BluePort != vm.startingBluePort;
+          
           if (greenResult) {
             vm.greenPortInUse = true;
             vm.portsValid = false;

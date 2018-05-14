@@ -144,8 +144,6 @@ angular.module('EnvironmentManager.common').controller('MainController',
       var errorMessage = '';
       var sadFace = '\u2639';
       var title = sadFace + ' Error';
-      console.log('***********************')
-      console.log(response)
       var errors = _.get(response, ['data', 'errors']);
       if (_.isString(response.data)) {
         errorMessage = response.data;
@@ -182,8 +180,6 @@ angular.module('EnvironmentManager.common').controller('MainController',
       }
 
       function setErrorMessageDefaultDetails() {
-        errorMessage = JSON.stringify(_.get(response, 'data.errors'));
-        return;
         var defaultValue = '<UNKNOWN>';
         var link = _.get(response, 'config.url', defaultValue);
         var status = _.get(response, 'status', defaultValue);
