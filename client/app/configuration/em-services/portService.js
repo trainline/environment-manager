@@ -33,6 +33,9 @@
     }
 
     function isPortInUse(portNumber) {
+      if (!portNumber) return undefined;
+      if (portNumber.toString().length < 5) return undefined;
+
       return getPorts().then(function (ports) {
         return ports.find(function (p) {
           return p === portNumber;
@@ -48,8 +51,10 @@
       }).then(function createPortsList(result) {
         var results = [];
         result.data.forEach(function (service) {
-          results.push(service.Value.GreenPort * 1);
-          results.push(service.Value.BluePort * 1);
+          if (service.Value) {
+            results.push(service.Value.GreenPort * 1);
+            results.push(service.Value.BluePort * 1);
+          }
         });
         return results;
       });

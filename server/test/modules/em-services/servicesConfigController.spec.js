@@ -66,14 +66,33 @@ describe('services controller', () => {
   describe('deleting a service config entry', () => {
     it('should return an error when trying to delete', () => {
       res = createResWithStatusExpectation(405);
-      servicesConfigController.deleteServiceConfigByName({}, res, () => {});
+      servicesConfigController.deleteServiceConfigByName({}, res, () => { });
       assert(res.statusCalledWithCorrectArguments());
       assert(res.getEndCount() === 1);
 
       res = createResWithStatusExpectation(405);
-      servicesConfigController.deleteServiceConfigByNameAndCluster({}, res, () => {});
+      servicesConfigController.deleteServiceConfigByNameAndCluster({}, res, () => { });
       assert(res.statusCalledWithCorrectArguments());
       assert(res.getEndCount() === 1);
+    });
+  });
+
+  describe('dealing with results from aws that do not have expected Value property', () => {
+    beforeEach(() => {
+      servicesConfigController.__set__('getAllServicesConfig', () => {
+        return Promise.resolve([{ Value: { Working: true } }, { Working: false }]);
+      });
+    });
+
+    it('should send positive result even when there are no Value properties', (done) => {
+      setupControllerToReturnAvailablePorts();
+      res = createResWithStatusExpectation(201);
+      servicesConfigController.postServicesConfig(req, res, () => { })
+        .then(() => {
+          assert(res.statusCalledWithCorrectArguments());
+          assert(res.getEndCount() === 1);
+          done();
+        });
     });
   });
 });
