@@ -82,7 +82,7 @@
                   <td>
                     <select class="form-control" name="NewService" ng-model="vm.newService" ng-options="s.ServiceName for s in vm.availableServices"></select>
                   </td>
-                  <td class="command command-add"><span class="glyphicon glyphicon-plus" ng-click="vm.addService(vm.newService)" title="Add service"></span></td>
+                  <td class="command command-add"><span id="addService" class="glyphicon glyphicon-plus" ng-click="vm.addService(vm.newService)" title="Add service"></span></td>
                   <td></td>
                 </tr>
               </tbody>
@@ -94,6 +94,6 @@
   </form>
 </div>
 <div class="modal-footer">
-  <button class="btn btn-default" type="button" ng-click="vm.cancel()">Cancel</button>
-  <button class="btn btn-default" type="button" ng-click="vm.ok()" ng-if="vm.canUser('edit')" ng-disabled="!vm.formIsValid(form) || !vm.azSelectionIsValid()">Save</button>
+  <button id="cancelServerRole" class="btn btn-default" type="button" ng-click="vm.cancel()">Cancel</button>
+  <button id="saveServerRole" class="btn btn-default" type="button" ng-click="vm.ok()" ng-if="vm.canUser('edit')" ng-disabled="!vm.formIsValid(form) || !vm.azSelectionIsValid()">Save</button>
 </div>

@@ -18,18 +18,15 @@
   "scripts": {
     "build": "gulp build --gulpfile gulpfile.js -p -o build",
     "start": "node index.js",
-    "debug": "nodemon --debug-brk index.js",
     "dev": "nodemon index.js",
-    "start-debug": "REMOTE_DEBUG=true DEBUG_PORT=60101 node --inspect=60101 index.js",
     "lint": "eslint . --ext .js --quiet",
     "lint-rule": "eslint . --ext .js --quiet --parser-options {ecmaVersion:6} --rule ",
     "test": "npm run lint -s && npm run unit-test -s",
-    "test-find-duplicates": "mocha --recursive ./test --EM_PROFILE test/test-profile.json --reporter mocha-duplicate-reporter",
+    "test-ui": "./node_modules/.bin/wdio wdio.conf.js",
     "test-watch": "mocha --watch --recursive ./test --EM_PROFILE test/test-profile.json",
     "test-ci": "npm test -- --reporter mocha-teamcity-reporter --timeout 4000",
     "unit-test": "mocha --recursive ./test --EM_PROFILE test/test-profile.json",
-    "mocha": "mocha",
-    "acceptance-tests": "mocha --recursive ./acceptance-tests --EM_PROFILE acceptance-tests/test-profile.json"
+    "mocha": "mocha"
   },
   "author": {
     "name": "Platform Development",
@@ -81,6 +78,7 @@
   },
   "devDependencies": {
     "chai": "^3.5.0",
+    "chromedriver": "^2.38.3",
     "eslint": "^3.11.1",
     "eslint-config-airbnb-base": "^10.0.1",
     "eslint-plugin-dependencies": "^2.4.0",
@@ -94,7 +92,12 @@
     "proxyquire": "^1.7.10",
     "should": "^11.1.1",
     "sinon": "^1.17.6",
-    "supertest": "^2.0.1"
+    "supertest": "^2.0.1",
+    "wdio-chromedriver-service": "^0.1.3",
+    "wdio-dot-reporter": "0.0.9",
+    "wdio-mocha-framework": "^0.4.6",
+    "wdio-selenium-standalone-service": "0.0.10",
+    "webdriverio": "^4.10.1"
   },
   "engines": {
     "node": ">=6.7.0",
