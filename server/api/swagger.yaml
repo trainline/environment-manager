@@ -2655,6 +2655,14 @@ definitions:
         type: integer
   DeploymentTarget:
     type: object
+    required:
+      - ServerRoleName
+      - AMI
+      - ContactEmailTag
+      - OwningCluster
+      - InstanceType
+      - AutoScalingSettings
+      - Volumes
     properties:
       AMI:
         type: string
@@ -2663,10 +2671,16 @@ definitions:
         properties:
           DesiredCapacity:
             type: integer
+            minimum: 0
+            maximum: 100
           MaxCapacity:
             type: integer
+            minimum: 0
+            maximum: 100
           MinCapacity:
             type: integer
+            minimum: 0
+            maximum: 100
       ContactEmailTag:
         type: string
       FleetPerSlice:
@@ -2694,11 +2708,17 @@ definitions:
         type: array
         items:
           type: object
+          required:
+          - Name
+          - Size
+          - Type
           properties:
             Name:
               type: string
             Size:
               type: integer
+              minimum: 0
+              maximum: 10000
             Type:
               type: string
   OpsEnvironment:
