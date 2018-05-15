@@ -20,6 +20,6 @@
       "LINUX_PUPPET_REPO": "http://link-to-linux-puppet-doc"
     }
   },
-  "emEc2Url":"http://c50-emec2monitor.service.ttlnonprod.local",
+  "emEc2Url":"http://ec2-monitor-url",
   "consulLeaderKey": "locks/envmgr/leader"
 }
