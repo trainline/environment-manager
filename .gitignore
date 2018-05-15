@@ -53,4 +53,4 @@ environment-manager-*.zip
 **/terraform.tfstate
 **/terraform.tfstate.backup
 **/*.tfvars
-server/test/test-ui/screenshots/**
+test/screenshots/**

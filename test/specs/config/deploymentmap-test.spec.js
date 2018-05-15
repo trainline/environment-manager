@@ -1,9 +1,9 @@
 /* eslint-disable */
 
-var homePage = require('../pages/home-page')
-var loginPage = require('../pages/login-page')
-var configPage = require('../pages/config-page')
-var deploymentMapPage = require('../pages/config/deploymentmap-page')
+var homePage = require('../../pages/home-page')
+var loginPage = require('../../pages/login-page')
+var configPage = require('../../pages/config-page')
+var deploymentMapPage = require('../../pages/config/deploymentmap-page')
 
 var assert = require('assert');
 
