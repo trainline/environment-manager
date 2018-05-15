@@ -213,56 +213,29 @@ describe('Deployment maps controller', () => {
     return () => {};
   }
 
+  function getServerRole(name, cluster, email, ami) {
+    return {
+      AMI: ami,
+      AutoScalingSettings: { DesiredCapacity: 0, MaxCapacity: 0, MinCapacity: 0 },
+      ContactEmailTag: email,
+      FleetPerSlice: true,
+      InstanceType: 'TheInstanceType',
+      OwningCluster: cluster,
+      RoleTag: 'TheRoleTag',
+      SecurityZone: 'TheSecurityZone',
+      ServerRoleName: name,
+      Services: [{ ServiceName: 'TheServiceName' }],
+      SubnetTypeName: 'TheSubnetTypeName',
+      Volumes: [{ Name: 'TheName', Size: 0, Type: 'TheType' }]
+    };
+  }
+
   function getServerRoles(cluster, email, ami) {
     return {
-      DeploymentTarget: [{
-        AMI: ami,
-        AutoScalingSettings: {
-          DesiredCapacity: 0,
-          MaxCapacity: 0,
-          MinCapacity: 0
-        },
-        ContactEmailTag: email,
-        FleetPerSlice: true,
-        InstanceType: 'TheInstanceType',
-        OwningCluster: cluster,
-        RoleTag: 'TheRoleTag',
-        SecurityZone: 'TheSecurityZone',
-        ServerRoleName: 'TheServerRoleName',
-        Services: [{
-          ServiceName: 'TheServiceName'
-        }],
-        SubnetTypeName: 'TheSubnetTypeName',
-        Volumes: [{
-          Name: 'TheName',
-          Size: 0,
-          Type: 'TheType'
-        }]
-      },
-      {
-        AMI: ami,
-        AutoScalingSettings: {
-          DesiredCapacity: 0,
-          MaxCapacity: 0,
-          MinCapacity: 0
-        },
-        ContactEmailTag: email,
-        FleetPerSlice: true,
-        InstanceType: 'TheInstanceType',
-        OwningCluster: cluster,
-        RoleTag: 'TheRoleTag',
-        SecurityZone: 'TheSecurityZone',
-        ServerRoleName: 'TheServerRoleName2',
-        Services: [{
-          ServiceName: 'TheServiceName'
-        }],
-        SubnetTypeName: 'TheSubnetTypeName',
-        Volumes: [{
-          Name: 'TheName',
-          Size: 0,
-          Type: 'TheType'
-        }]
-      }],
+      DeploymentTarget: [
+        getServerRole('TheServerRoleName', cluster, email, ami),
+        getServerRole('TheServerRoleName2', cluster, email, ami)
+      ],
       SchemaVersion: 0
     };
   }
