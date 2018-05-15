@@ -25,6 +25,11 @@ This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html
 
 - Deployment logs that aren't available, aren't given to the users as a link. This prevents the 500/404 errors that were being received when users clicked the log link when it wasn't there. 
 
+- Issue whereby if a deployment map is created and a puppet role is not specified, then IPTables
+firewall rules are not updated between the NGINX load balancer and the AWS EC2 instance. The result
+is all health checks passing but not traffic get's routed to the upstream. This can be a little
+confusing for people creating deployment maps for the first time using Linux instances.  
+
 - Previously, when your session would expire, if you tried to perform an action, you would receive an error dialogue and be left in a state where you could do nothing without navigating back to the login page. Now, when this happens, you will be alerted to the session expiraton and taken directly to the login page. 
 
 ## [6.22.2] 2018-04-27

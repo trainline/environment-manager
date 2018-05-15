@@ -23,6 +23,6 @@
     <p class="bg-danger" ng-if="loginForm.Password.$dirty && loginForm.Password.$error.required">Please enter the password.</span>
     <p class="bg-danger" ng-if="vm.error">An error has occurred: {{ vm.error.message }}</p>
 
-    <button class="btn btn-lg btn-primary btn-block" type="submit" ng-click="vm.signIn()">Sign in</button>
+    <button id="sign-in" class="btn btn-lg btn-primary btn-block" type="submit" ng-click="vm.signIn()">Sign in</button>
   </form>
 </div>

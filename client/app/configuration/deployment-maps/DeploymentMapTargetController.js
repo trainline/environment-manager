@@ -7,9 +7,7 @@
 angular.module('EnvironmentManager.configuration').controller('DeploymentMapTargetController',
   function ($scope, $location, $uibModalInstance, $uibModal, $q, Image, resources, cachedResources, modal, deploymentMap, deploymentTarget, deploymentMapConverter, displayMode, awsService, teamstorageservice) {
     var vm = this;
-
     var userHasPermission;
-
     var servicesList = []; // Full list of service names across system
 
     vm.pageMode = displayMode; // Edit, New, Clone
@@ -110,6 +108,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
           Image.getByName(vm.target.ASG.LaunchConfig.AMI).then(function (ami) {
             var currentSize = vm.target.ASG.LaunchConfig.Volumes[0].Size;
             vm.requiredImageSize = ami === undefined ? currentSize : ami.RootVolumeSize;
+            vm.target.ASG.LaunchConfig.AMIPlatform = ami.Platform;
           });
         }
 
@@ -165,32 +164,13 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
       vm.target.ASG.Tags.Schedule = '';
       vm.target.ASG.Tags.Role = vm.target.ServerRoleName;
 
-      var valid = validateDataForSave();
-      if (valid.result == false) {
-        modal.information({
-          title: valid.errTitle,
-          message: valid.errMessage
-        });
-        return;
-      }
+      Promise.all([validateDataForPuppetRole(), validateDataForDesiredCapacity()])
+        .then(function() { return updateDeploymentMapValueWithViewModel()})
+        .then(function() { return deploymentMap.update()})
+        .then(function() { return cachedResources.config.deploymentMaps.flush()})
+        .then(function() { return $uibModalInstance.close()})
+        .catch(function() {});
 
-      if (vm.pageMode == 'Edit') {
-        // Identify Target within parent DeploymentMap and update
-        deploymentMap.Value.DeploymentTarget.forEach(function (target) {
-          if (target.ServerRoleName == vm.target.ServerRoleName && target.OwningCluster == vm.target.OwningCluster) {
-            // NOTE: Assumes names are unique per cluster. Otherwise will update all to match
-            angular.copy(vm.target, target);
-          }
-        });
-      } else {
-        // Add new record
-        deploymentMap.Value.DeploymentTarget.push(vm.target);
-      }
-
-      deploymentMap.update().then(function () {
-        cachedResources.config.deploymentMaps.flush();
-        $uibModalInstance.close();
-      });
     };
 
     vm.cancel = function () {
@@ -220,7 +200,6 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
 
     vm.addService = function (newService) {
       if (newService === null || newService === undefined) return;
-
       vm.target.Services.push(newService);
       updateAvailableServices();
     };
@@ -229,7 +208,6 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
       vm.target.Services = vm.target.Services.filter(function (service) {
         return (service.ServiceName != serviceName);
       });
-
       updateAvailableServices();
     };
 
@@ -246,8 +224,10 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
           }
         }
       });
+
       instance.result.then(function (selectedAmi) {
         vm.target.ASG.LaunchConfig.AMI = selectedAmi.displayName;
+        vm.target.ASG.LaunchConfig.AMIPlatform = selectedAmi.platform;
         vm.requiredImageSize = selectedAmi.rootVolumeSize;
         vm.target.ASG.LaunchConfig.Volumes[0].Size = _.max([vm.requiredImageSize, vm.target.ASG.LaunchConfig.Volumes[0].Size]);
       });
@@ -267,20 +247,39 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
       return _.map(deploymentMap.Value.DeploymentTarget, 'ServerRoleName');
     }
 
-    function validateDataForSave() {
-      var valid = { result: true };
+    function validateDataForPuppetRole() {
+      if (vm.target.ASG.LaunchConfig.AMIPlatform == 'Linux' && (typeof(vm.target.ASG.LaunchConfig.PuppetRole) == 'undefined' || vm.target.ASG.LaunchConfig.PuppetRole.trim() == '')) {
+        return modal.confirmation({
+          title: 'Linux AMI/Puppet Role Warning',
+          message: 'It looks like you have chosen a linux AMI and not specified a puppet role. This can lead to problems later on when you deploy to an environment. Please ask on the <a target="__new" href="https://trainline.slack.com/messages/C1F3NS20G/">#linux-infra</a> channel in slack if you need help defining one. Do you want to continue?'
+        });
+      }
+      return Promise.resolve();
+    }
+
+    function validateDataForDesiredCapacity() {
       var min = vm.target.ASG.MinCapacity;
       var desired = vm.target.ASG.DesiredCapacity;
       var max = vm.target.ASG.MaxCapacity;
       if (desired < min || desired > max) {
-        valid = {
-          result: false,
-          errTitle: 'ASG Sizing Error',
-          errMessage: 'Desired capacity must be between min and max sizes'
-        };
+        modal.information({
+          title: 'ASG Sizing Error',
+          message: 'Desired capacity must be between min and max sizes'
+        });
       }
+      return Promise.resolve();
+    }
 
-      return valid;
+    function updateDeploymentMapValueWithViewModel() {
+      if (vm.pageMode == 'Edit') {
+        deploymentMap.Value.DeploymentTarget.forEach(function (target) {
+          if (target.ServerRoleName == vm.target.ServerRoleName && target.OwningCluster == vm.target.OwningCluster) {
+            angular.copy(vm.target, target);
+          }
+        });
+      } else {
+        deploymentMap.Value.DeploymentTarget.push(vm.target);
+      }
     }
 
     function updateAvailableServices() {

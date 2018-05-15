@@ -38,7 +38,7 @@
         <input type="search" name="ServiceName" class="form-control" ng-model="vm.serviceName" ng-change="vm.search()" />
     </div>
     <div class="form-group">
-        <button type="button" class="btn btn-default right" ng-if="vm.canUser('edit')" ng-click="vm.add()">Create New Server Role...</button>
+        <button id="createNewServerRole" type="button" class="btn btn-default right" ng-if="vm.canUser('edit')" ng-click="vm.add()">Create New Server Role...</button>
     </div>
 </form>
 
