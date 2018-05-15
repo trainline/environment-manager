@@ -165,11 +165,11 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
       vm.target.ASG.Tags.Role = vm.target.ServerRoleName;
 
       Promise.all([validateDataForPuppetRole(), validateDataForDesiredCapacity()])
-        .then(() => updateDeploymentMapValueWithViewModel())
-        .then(() => deploymentMap.update())
-        .then(() => cachedResources.config.deploymentMaps.flush())
-        .then(() => $uibModalInstance.close())
-        .catch(() => {})
+        .then(function() { return updateDeploymentMapValueWithViewModel()})
+        .then(function() { return deploymentMap.update()})
+        .then(function() { return cachedResources.config.deploymentMaps.flush()})
+        .then(function() { return $uibModalInstance.close()})
+        .catch(function() {});
 
     };
 
