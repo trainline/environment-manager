@@ -2683,6 +2683,7 @@ definitions:
             maximum: 100
       ContactEmailTag:
         type: string
+        format: email
       FleetPerSlice:
         type: boolean
       InstanceType:

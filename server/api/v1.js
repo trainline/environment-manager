@@ -74,7 +74,7 @@ function setup() {
           swaggerMetadata: swaggerMetadata(),
           swaggerRouter: swaggerRouter(swaggerOptions),
           swaggerUi: swaggerUi(),
-          swaggerValidator: swaggerValidator({ validateResponse: NODE_ENV === 'development' }),
+          swaggerValidator: swaggerValidator(),
           swaggerNewRelic
         };
         resolve(Object.freeze(result));
