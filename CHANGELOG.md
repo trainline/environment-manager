@@ -3,9 +3,38 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [#unreleased]
+## [6.23.2] 20188-05-16
 
 ### Fixed
+
+- Bug validation on deployment map screen (owning team/email/instance type)
+
+## [6.23.1] 20188-05-15
+
+### Fixed
+
+- Bug preventing users creating new services
+
+## [6.23.0] 2018-05-09
+
+### Changed
+
+- Updates to services where the port number has changed from the existing port value, is no longer permitted. 
+
+- 502 bad gateway errors are made more friendly by informing the user what Environment Manager was unable to communicate with. This has (up until now) always been a response from an NGINX server.
+
+### Fixed
+
+- Getter (read only) on the instance resource type removed. EMEC2Monitor now provides account name on the instance, as well as the tags. 
+
+- Uncaught exception appearing in the console is now correctly handled. 
+
+- Deployment logs that aren't available, aren't given to the users as a link. This prevents the 500/404 errors that were being received when users clicked the log link when it wasn't there. 
+
+- Issue whereby if a deployment map is created and a puppet role is not specified, then IPTables
+firewall rules are not updated between the NGINX load balancer and the AWS EC2 instance. The result
+is all health checks passing but not traffic get's routed to the upstream. This can be a little
+confusing for people creating deployment maps for the first time using Linux instances.  
 
 - Previously, when your session would expire, if you tried to perform an action, you would receive an error dialogue and be left in a state where you could do nothing without navigating back to the login page. Now, when this happens, you will be alerted to the session expiraton and taken directly to the login page. 
 
@@ -445,7 +474,9 @@ Example:
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. 
 - A number of bugs related to the removal of a account as a special case of an account. 
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/6.22.2...master
+[Unreleased]: https://github.com/trainline/environment-manager/compare/6.23.1...master
+[6.23.1]: https://github.com/trainline/environment-manager/compare/6.23.0..6.23.0
+[6.23.0]: https://github.com/trainline/environment-manager/compare/6.22.2..6.23.0
 [6.22.2]: https://github.com/trainline/environment-manager/compare/6.22.1...6.22.2
 [6.22.1]: https://github.com/trainline/environment-manager/compare/6.22.0...6.22.1
 [6.22.0]: https://github.com/trainline/environment-manager/compare/6.21.4...6.22.0

@@ -20,10 +20,6 @@ class Instance {
     return this.getTag('aws:autoscaling:groupName');
   }
 
-  get AccountName() {
-    return this.getTag('Account');
-  }
-
   persistTag(tag) {
     return amazonClientFactory.createEC2Client(this.AccountName)
       .then(client => new InstanceResourceBase(client))

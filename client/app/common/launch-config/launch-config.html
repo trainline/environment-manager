@@ -31,7 +31,7 @@
     <div class="col-md-4" style="padding-right:0px">
       <input type="text" name="AMI" class="form-control" required="" readonly="" maxlength="50" ng-model="vm.target.ASG.LaunchConfig.AMI" pattern="[a-zA-Z-]+[\w\-\.]+" />
     </div>
-    <button class="btn btn-default left" type="button" ng-disabled="!vm.canUser('edit')" ng-click="vm.pickAmi()">...</button>
+    <button id="selectAMI" class="btn btn-default left" type="button" ng-disabled="!vm.canUser('edit')" ng-click="vm.pickAmi()">...</button>
     <span class="help-block" ng-if="form.AMI.$dirty && form.AMI.$error.required">AMI is mandatory.</span>
     <span class="help-block" ng-if="form.AMI.$dirty && form.AMI.$error.pattern">AMI cannot contain spaces or special characters.</span>
   </div>

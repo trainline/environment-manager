@@ -63,7 +63,8 @@ angular.module('EnvironmentManager.configuration').controller('PickAmiController
 
       var selectedImageInfo = {
         displayName: selectedAmiName + versionSuffix,
-        rootVolumeSize: selectedImage.RootVolumeSize
+        rootVolumeSize: selectedImage.RootVolumeSize,
+        platform: $scope.SelectedImageType.LatestVersion.Platform
       };
 
       $uibModalInstance.close(selectedImageInfo);

@@ -209,11 +209,11 @@
         <h1 title="Environment Manager {{main.appVersion}}"><a href="#/">Environment Manager</a></h1>
         <nav>
           <ul>
-            <li><a href="#/environments" ng-class="{active: main.getSection()=='environments'}">Environments</a></li>
-            <li><a href="#/operations/deployments" ng-class="{active: main.getSection()=='operations'}">Operations</a></li>
-            <li><a href="#/compare" ng-class="{active: main.getSection()=='compare'}">Compare</a></li>
-            <li><a href="#/config/services" ng-class="{active: main.getSection()=='config'}">Configuration</a></li>
-            <li><a href="/docs" target="_blank">API</a></li>
+            <li><a id="environmentsLink" href="#/environments" ng-class="{active: main.getSection()=='environments'}">Environments</a></li>
+            <li><a id="operationsLink" href="#/operations/deployments" ng-class="{active: main.getSection()=='operations'}">Operations</a></li>
+            <li><a id="compareLink" href="#/compare" ng-class="{active: main.getSection()=='compare'}">Compare</a></li>
+            <li><a id="configurationLink" href="#/config/services" ng-class="{active: main.getSection()=='config'}">Configuration</a></li>
+            <li><a id="docsLink" href="/docs" target="_blank">API</a></li>
           </ul>
         </nav>
         <div id="userinfo">
@@ -228,14 +228,14 @@
           <h3>Configuration:</h3>
           <nav>
             <ul>
-              <li><a href="#/config/services" ng-class="{active: $route.current.menusection == 'Services'}">Services</a></li>
-              <li><a href="#/config/deploymentmaps" ng-class="{active: $route.current.menusection == 'DeploymentMaps'}">Deployment Maps</a></li>
-              <li><a href="#/config/loadbalancers" ng-class="{active: $route.current.menusection == 'LBs'}">Load Balancer</a></li>
-              <li><a href="#/config/upstreams" ng-class="{active: $route.current.menusection == 'LBUpstream'}">Upstreams</a></li>
-              <li><a href="#/config/notification-settings" ng-class="{active: $route.current.menusection == 'NotificationSettings'}">Notification Settings</a></li>
-              <li><a href="#/config/clusters" ng-class="{active: $route.current.menusection == 'Clusters'}">Teams</a></li>
-              <li><a href="#/config/environmenttypes" ng-class="{active: $route.current.menusection == 'EnvironmentTypes'}">Environment Types</a></li>
-              <li><a href="#/config/accounts" ng-class="{active: $route.current.menusection == 'Accounts'}">Accounts</a></li>
+              <li><a id="configServicesLink" href="#/config/services" ng-class="{active: $route.current.menusection == 'Services'}">Services</a></li>
+              <li><a id="configDeploymentMapsLink" href="#/config/deploymentmaps" ng-class="{active: $route.current.menusection == 'DeploymentMaps'}">Deployment Maps</a></li>
+              <li><a id="configLoadBalancersLink" href="#/config/loadbalancers" ng-class="{active: $route.current.menusection == 'LBs'}">Load Balancer</a></li>
+              <li><a id="configUpstreamsLink" href="#/config/upstreams" ng-class="{active: $route.current.menusection == 'LBUpstream'}">Upstreams</a></li>
+              <li><a id="configNotificationsLink" href="#/config/notification-settings" ng-class="{active: $route.current.menusection == 'NotificationSettings'}">Notification Settings</a></li>
+              <li><a id="configClustersLink" href="#/config/clusters" ng-class="{active: $route.current.menusection == 'Clusters'}">Teams</a></li>
+              <li><a id="configEnvironmentTypesLink" href="#/config/environmenttypes" ng-class="{active: $route.current.menusection == 'EnvironmentTypes'}">Environment Types</a></li>
+              <li><a id="configAccountsLink" href="#/config/accounts" ng-class="{active: $route.current.menusection == 'Accounts'}">Accounts</a></li>
             </ul>
             <hr/>
             <ul>
