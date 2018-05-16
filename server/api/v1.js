@@ -12,7 +12,6 @@ const swaggerAuthorizer = require('../modules/express-middleware/swaggerAuthoriz
 const swaggerNewRelic = require('../modules/express-middleware/swaggerNewRelicMiddleware');
 const defaultErrorHandler = require('./error-handler/defaultErrorHandler');
 
-const NODE_ENV = process.env.NODE_ENV;
 const API_BASE_PATH = apiSpec.basePath;
 
 if (config.get('IS_PRODUCTION') === false) {
