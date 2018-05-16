@@ -81,7 +81,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
               AvailabilityZoneSelection: 'all',
               AvailabilityZone: '',
               LaunchConfig: {
-                InstanceType: 'm3.medium',
+                InstanceType: 't2.medium',
                 UI_UseSpecificKey: false,
                 Volumes: [
                   { Name: 'OS', Size: 50, Type: 'SSD'},
