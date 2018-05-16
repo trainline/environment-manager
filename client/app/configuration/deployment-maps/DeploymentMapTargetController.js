@@ -246,14 +246,7 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
     }
 
     function validateDataForPuppetRole() {
-      console.log('validateDataForPuppetRole');
-      console.log('validateDataForPuppetRole');
-      console.log('validateDataForPuppetRole');
       if (vm.target.ASG.LaunchConfig.AMIPlatform == 'Linux' && (typeof(vm.target.ASG.LaunchConfig.PuppetRole) == 'undefined' || vm.target.ASG.LaunchConfig.PuppetRole.trim() == '')) {
-        console.log('LINUXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
-        console.log('LINUXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
-        console.log('LINUXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
-        console.log('LINUXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX');
         return modal.confirmation({
           title: 'Linux AMI/Puppet Role Warning',
           message: 'It looks like you have chosen a linux AMI and not specified a puppet role. This can lead to problems later on when you deploy to an environment. Please ask on the <a target="__new" href="https://trainline.slack.com/messages/C1F3NS20G/">#linux-infra</a> channel in slack if you need help defining one. Do you want to continue?'
@@ -293,7 +286,12 @@ angular.module('EnvironmentManager.configuration').controller('DeploymentMapTarg
     }
 
     function getDefaultClusterEmail(defaultCluster) {
-      return defaultCluster === '' ? '' : getClusterByName(defaultCluster).Value.GroupEmailAddress;
+      return defaultCluster === '' ? '' : getClusterEmailByName(defaultCluster);
+    }
+
+    function getClusterEmailByName(clusterName){
+      var cluster = getClusterByName(clusterName);
+      return _.get(cluster, 'Value.GroupEmailAddress', '');
     }
 
     function updateAvailableServices() {
