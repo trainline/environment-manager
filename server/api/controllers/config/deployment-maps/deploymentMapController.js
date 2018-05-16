@@ -56,7 +56,7 @@ function postDeploymentMapsConfig(req, res, next) {
 
   if (validationErrors.length > 0) {
     res.status(400).send({ errors: validationErrors });
-    return next();
+    return next({ errors: validationErrors });
   }
 
   delete record.Version;
@@ -91,7 +91,7 @@ function putDeploymentMapConfigByName(req, res, next) {
 
   if (validationErrors.length > 0) {
     res.status(400).send({ errors: validationErrors });
-    return next();
+    return next({ errors: validationErrors });
   }
 
   let metadata = getMetadataForDynamoAudit(req);
