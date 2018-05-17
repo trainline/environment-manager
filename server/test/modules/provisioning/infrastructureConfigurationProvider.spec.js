@@ -9,13 +9,11 @@ let proxyquire = require('proxyquire');
 let DynamoItemNotFoundError = require('../../../modules/errors/DynamoItemNotFoundError.class');
 
 describe("infrastructureConfigurationProvider:", () => {
-
   const input = {
     environmentName: "st1",
     serviceName: "AService",
     serverRoleName: "ServerRoleName"
   };
-
   let serverRole, depsResults, deps;
 
   describe("Getting the configuration for a service on an environment", () => {
@@ -34,7 +32,6 @@ describe("infrastructureConfigurationProvider:", () => {
         configurationError.should.have.property('message', expectedError);
       });
     });
-
 
     it("Should throw error when server role doesn't have owning cluster", () => {
       var expectedError = `An error has occurred retrieving the serverRole, no owning cluster found "${JSON.stringify(serverRole)}".`;
@@ -102,38 +99,35 @@ describe("infrastructureConfigurationProvider:", () => {
         config.should.have.property('image', depsResults.image);
       });
     });
-
   });
-});
 
-function setupDependencyResults() {
-  serverRole = {
-    ServerRoleName: input.serverRoleName,
-    OwningCluster: "Ransom",
-    AMI: "TheAmi"
-  };
-
-  depsResults = {
-    environment: {
-      getDeploymentMap() {
-        return {
-          DeploymentTarget: [serverRole]
-        };
+  function setupDependencyResults() {
+    serverRole = {
+      ServerRoleName: input.serverRoleName,
+      OwningCluster: "Ransom",
+      AMI: "TheAmi"
+    };
+    depsResults = {
+      environment: {
+        getDeploymentMap() {
+          return {
+            DeploymentTarget: [serverRole]
+          };
+        },
+        EnvironmentType: "EnvironmentType"
       },
-      EnvironmentType: "EnvironmentType"
-    },
-    service: {},
-    environmentType: {},
-    cluster: {
-      ClusterName: "Ransom",
-      Value: {
-        ShortName: "rm",
-        KeyPair: "something"
-      }
-    },
-    image: {}
-  };
-
+      service: {},
+      environmentType: {},
+      cluster: {
+        ClusterName: "Ransom",
+        Value: {
+          ShortName: "rm",
+          KeyPair: "something"
+        }
+      },
+      image: {}
+    };
+  }
 
   function setupDependencies() {
     setupDependencyResults();
@@ -164,9 +158,8 @@ function setupDependencyResults() {
     mapStubs['../data-access/clusters'] = deps.clustersMock;
     mapStubs['../data-access/services'] = deps.servicesDbMock;
     var infrastructureConfigurationProvider = proxyquire('../../../modules/provisioning/infrastructureConfigurationProvider', mapStubs);
-
     var target = infrastructureConfigurationProvider;
-
     return target.get(input.environmentName, input.serviceName, input.serverRoleName);
   }
-}
+
+});
