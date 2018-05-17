@@ -1,89 +1,89 @@
-/* TODO: enable linting and fix resulting errors */
-/* eslint-disable */
 /* Copyright (c) Trainline Limited, 2016-2017. All rights reserved. See LICENSE.txt in the project root for license information. */
+
 'use strict';
 
-let should = require("should");
-let sinon = require("sinon");
+let sinon = require('sinon');
 let proxyquire = require('proxyquire');
 let DynamoItemNotFoundError = require('../../../modules/errors/DynamoItemNotFoundError.class');
 
-describe("infrastructureConfigurationProvider:", () => {
+describe('infrastructureConfigurationProvider:', () => {
   const input = {
-    environmentName: "st1",
-    serviceName: "AService",
-    serverRoleName: "ServerRoleName"
+    environmentName: 'st1',
+    serviceName: 'AService',
+    serverRoleName: 'ServerRoleName'
   };
-  let serverRole, depsResults, deps;
+  let serverRole;
+  let depsResults;
+  let deps;
 
-  describe("Getting the configuration for a service on an environment", () => {
+  describe('Getting the configuration for a service on an environment', () => {
     beforeEach(() => {
       setupDependencies();
     });
 
-    it("Should return configuration error when no service is found", () => {
-      const expectedError = `An error has occurred retrieving "AService" service: Service "AService" not found.`;
+    it('Should return configuration error when no service is found', () => {
+      const expectedError = 'An error has occurred retrieving "AService" service: Service "AService" not found.';
       const nullService = null;
       deps.servicesDbMock.get = sinon.stub().returns(Promise.resolve(nullService));
 
-      var promise = getInstance();
+      const promise = getInstance();
 
-      return promise.catch(configurationError => {
+      return promise.catch((configurationError) => {
         configurationError.should.have.property('message', expectedError);
       });
     });
 
-    it("Should throw error when server role doesn't have owning cluster", () => {
-      var expectedError = `An error has occurred retrieving the serverRole, no owning cluster found "${JSON.stringify(serverRole)}".`;
+    it('Should throw error when server role doesn\'t have owning cluster', () => {
+      const expectedError = `An error has occurred retrieving the serverRole, no owning cluster found "${JSON.stringify(serverRole)}".`;
       delete serverRole.OwningCluster;
-      var promise = getInstance();
+      const promise = getInstance();
 
-      return promise.catch(error => {
+      return promise.catch((error) => {
         error.should.have.property('message', expectedError);
       });
     });
 
-    it("Should throw error when no environment type is found", () => {
-      const exception = "Bang!!!";
+    it('Should throw error when no environment type is found', () => {
+      const exception = 'Bang!!!';
       deps.environmentTypeMock.getByName = sinon.stub().returns(Promise.reject(exception));
-      var expectedError = `An error has occurred retrieving environment "${input.environmentName}" environment type.`;
+      const expectedError = `An error has occurred retrieving environment "${input.environmentName}" environment type.`;
 
-      var promise = getInstance();
+      const promise = getInstance();
 
-      return promise.catch(error => {
+      return promise.catch((error) => {
         error.should.have.property('message', expectedError);
         error.should.have.property('innerError', exception);
       });
     });
 
-    it("Should throw error when cluster can't be found on dynamo", () => {
-      deps.clustersMock.get = sinon.stub().returns(Promise.reject(new DynamoItemNotFoundError("", "")));
-      var expectedError = `Cluster "Ransom" not found.`;
+    it('Should throw error when cluster can\'t be found on dynamo', () => {
+      deps.clustersMock.get = sinon.stub().returns(Promise.reject(new DynamoItemNotFoundError('', '')));
+      const expectedError = 'Cluster "Ransom" not found.';
 
-      var promise = getInstance();
+      const promise = getInstance();
 
-      return promise.catch(error => {
+      return promise.catch((error) => {
         error.should.have.property('message', expectedError);
       });
     });
 
-    it("Should throw error when can't get cluster from dynamo", () => {
+    it('Should throw error when can\'t get cluster from dynamo', () => {
       deps.clustersMock.get = sinon.stub().returns(Promise.reject({
-        message: "Bang!"
+        message: 'Bang!'
       }));
-      var expectedError = `An error has occurred retrieving "Ransom" cluster: ${"Bang!"}`;
+      const expectedError = `An error has occurred retrieving "Ransom" cluster: ${'Bang!'}`;
 
-      var promise = getInstance();
+      const promise = getInstance();
 
-      return promise.catch(error => {
+      return promise.catch((error) => {
         error.should.have.property('message', expectedError);
       });
     });
 
-    it("Should return a configuration object", () => {
-      var promise = getInstance();
+    it('Should return a configuration object', () => {
+      const promise = getInstance();
 
-      return promise.then(config => {
+      return promise.then((config) => {
         config.should.have.property('environmentTypeName', depsResults.environment.EnvironmentType);
         config.should.have.property('environmentName', input.environmentName);
         config.should.have.property('serviceName', input.serviceName);
@@ -104,8 +104,8 @@ describe("infrastructureConfigurationProvider:", () => {
   function setupDependencyResults() {
     serverRole = {
       ServerRoleName: input.serverRoleName,
-      OwningCluster: "Ransom",
-      AMI: "TheAmi"
+      OwningCluster: 'Ransom',
+      AMI: 'TheAmi'
     };
     depsResults = {
       environment: {
@@ -114,15 +114,15 @@ describe("infrastructureConfigurationProvider:", () => {
             DeploymentTarget: [serverRole]
           };
         },
-        EnvironmentType: "EnvironmentType"
+        EnvironmentType: 'EnvironmentType'
       },
       service: {},
       environmentType: {},
       cluster: {
-        ClusterName: "Ransom",
+        ClusterName: 'Ransom',
         Value: {
-          ShortName: "rm",
-          KeyPair: "something"
+          ShortName: 'rm',
+          KeyPair: 'something'
         }
       },
       image: {}
@@ -133,7 +133,7 @@ describe("infrastructureConfigurationProvider:", () => {
     setupDependencyResults();
     deps = {
       environmentMock: {
-        getByName: sinon.stub().returns(Promise.resolve(depsResults.environment)),
+        getByName: sinon.stub().returns(Promise.resolve(depsResults.environment))
       },
       servicesDbMock: {
         get: sinon.stub().returns(Promise.resolve(depsResults.service))
@@ -151,15 +151,15 @@ describe("infrastructureConfigurationProvider:", () => {
   }
 
   function getInstance() {
-    var mapStubs = {};
+    let mapStubs = {};
     mapStubs['./launchConfiguration/imageProvider'] = deps.imageProviderMock;
     mapStubs['../../models/Environment'] = deps.environmentMock;
     mapStubs['../../models/EnvironmentType'] = deps.environmentTypeMock;
     mapStubs['../data-access/clusters'] = deps.clustersMock;
     mapStubs['../data-access/services'] = deps.servicesDbMock;
-    var infrastructureConfigurationProvider = proxyquire('../../../modules/provisioning/infrastructureConfigurationProvider', mapStubs);
-    var target = infrastructureConfigurationProvider;
+    let infrastructureConfigurationProvider =
+      proxyquire('../../../modules/provisioning/infrastructureConfigurationProvider', mapStubs);
+    let target = infrastructureConfigurationProvider;
     return target.get(input.environmentName, input.serviceName, input.serverRoleName);
   }
-
 });
