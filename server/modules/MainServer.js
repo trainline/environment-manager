@@ -58,13 +58,19 @@ function createExpressApp() {
     app.use(expressRequestId());
     app.use(compression());
     app.use(cookieParser());
-    app.use(bodyParser.urlencoded({ extended: false, limit: '50mb' }));
-    app.use(bodyParser.json({ extended: false, limit: '50mb' }));
+    app.use(bodyParser.urlencoded({
+      extended: false,
+      limit: '50mb'
+    }));
+    app.use(bodyParser.json({
+      extended: false,
+      limit: '50mb'
+    }));
 
     // Deprecate routes that are part of the pre-v1 API.
-    app.use('/api', deprecateMiddleware(req => (req.originalUrl.startsWith(swaggerBasePath)
-      ? undefined
-      : `this operation will be removed after ${new Date(2017, 2, 17).toUTCString()}`)));
+    app.use('/api', deprecateMiddleware(req => (req.originalUrl.startsWith(swaggerBasePath) ?
+      undefined :
+      `this operation will be removed after ${new Date(2017, 2, 17).toUTCString()}`)));
 
     /* notice how the router goes after the logger.
      * https://www.npmjs.com/package/express-winston#request-logging */
@@ -74,7 +80,8 @@ function createExpressApp() {
     logger.info(`Serving static files from "${PUBLIC_DIR}"`);
 
     let staticPaths = ['*.js', '*.css', '*.html', '*.ico', '*.gif',
-      '*.woff2', '*.ttf', '*.woff', '*.svg', '*.eot', '*.jpg', '*.png', '*.map'];
+      '*.woff2', '*.ttf', '*.woff', '*.svg', '*.eot', '*.jpg', '*.png', '*.map'
+    ];
 
     app.get(staticPaths, authentication.allowUnknown, express.static(PUBLIC_DIR));
     app.get('/', express.static(PUBLIC_DIR));
@@ -94,7 +101,10 @@ function createExpressApp() {
     app.get('/em/initial-data', initialData);
 
     app.use(swaggerMetadata);
-    app.use(swaggerValidator);
+    app.use(swaggerValidator, (err, req, res, next) => {
+      logger.warn('SwaggerValidationError', err);
+      next();
+    });
     app.use(swaggerBasePath, [swaggerNewRelic, swaggerAuthorizer]);
     app.use(swaggerRouter);
     app.use(swaggerUi);
