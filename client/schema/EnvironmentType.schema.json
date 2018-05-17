@@ -71,7 +71,7 @@
         "minLength": 1,
         "maxLength": 127
       },
-      "minItems": 1,
+      "minItems": 0,
       "uniqueItems": true
     },
     "PuppetBranch": {
