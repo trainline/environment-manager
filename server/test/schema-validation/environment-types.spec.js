@@ -6,9 +6,10 @@ let _ = require('lodash');
 let assert = require('assert');
 let sample = require('./environment-type.sample.json');
 
-describe.only('environment-type schema validation', () => {
-
-  let data, ajv, validate;
+describe('environment-type schema validation', () => {
+  let data;
+  let ajv;
+  let validate;
 
   beforeEach(() => {
     data = _.cloneDeep(sample);
@@ -22,7 +23,7 @@ describe.only('environment-type schema validation', () => {
   });
 
   it('should not allow more than 127 load balancers', () => {
-    data.LoadBalancers = [_.range(0, 128).map(() => "x").join('')];
+    data.LoadBalancers = [_.range(0, 128).map(() => 'x').join('')];
     fails();
   });
 
@@ -32,22 +33,22 @@ describe.only('environment-type schema validation', () => {
   });
 
   it('should not allow duplicate load balancers', () => {
-    data.LoadBalancers = ["1", "1"];
+    data.LoadBalancers = ['1', '1'];
     fails();
   });
 
   it('should not allow duplicate consul servers', () => {
-    data.Consul.Servers = ["10.249.17.254", "10.249.17.254"];
+    data.Consul.Servers = ['10.249.17.254', '10.249.17.254'];
     fails();
   });
 
   it('should allow ips for consul servers', () => {
-    data.Consul.Servers = ["10.249.17.254"];
+    data.Consul.Servers = ['10.249.17.254'];
     succeeds();
   });
 
   it('should allow dns for consul servers', () => {
-    data.Consul.Servers = ["some.dns"];
+    data.Consul.Servers = ['some.dns'];
     succeeds();
   });
 
@@ -57,17 +58,16 @@ describe.only('environment-type schema validation', () => {
   });
 
   it('should not allow empty consul servers', () => {
-    data.Consul.Servers = [""];
+    data.Consul.Servers = [''];
     fails();
   });
 
   function test(expected) {
-    let valid = validate(data)
+    let valid = validate(data);
     if (valid !== expected) console.log(validate.errors);
-    assert.ok(valid === expected)
+    assert.ok(valid === expected);
   }
 
   let succeeds = () => test(true);
   let fails = () => test(false);
-
 });
