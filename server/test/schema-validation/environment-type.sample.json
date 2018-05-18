@@ -1,0 +1,30 @@
+{
+  "Subnets": {
+      "PrivateApp": {
+          "AvailabilityZoneA": "xxx",
+          "AvailabilityZoneB": "xxx",
+          "AvailabilityZoneC": "xxx"
+      }
+  },
+  "SchemaVersion": 5,
+  "VpcId": "xxx",
+  "AWSAccountNumber": "123456789123",
+  "NamingPattern": "c[0-9]{1,2}",
+  "DeploymentBucket": "xxx",
+  "LoadBalancers": [
+      "xxx"
+  ],
+  "AWSAccountName": "xxx",
+  "Consul": {
+      "DataCenter": "xxx",
+      "SecurityTokenPath": {
+          "Bucket": "xxx",
+          "Key": "xxx"
+      },
+      "Servers": [
+          "10.249.17.254"
+      ],
+      "Port": 8500
+  },
+  "PuppetBranch": "xxx"
+}

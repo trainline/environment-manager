@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 This project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [6.23.4] 2018-05-18
+
+### Fixed
+
+- Cannot configure consul servers of Environment Type to use DNS instead of IPs
+
 ## [6.23.3] 2018-05-17
 
 ### Fixed
@@ -480,7 +486,8 @@ Example:
 - The body of the notification event raised by PUT /config/upstreams/{name} was not stringified. 
 - A number of bugs related to the removal of a account as a special case of an account. 
 
-[Unreleased]: https://github.com/trainline/environment-manager/compare/6.23.3...master
+[Unreleased]: https://github.com/trainline/environment-manager/compare/6.23.4...master
+[6.23.4]: https://github.com/trainline/environment-manager/compare/6.23.3..6.23.4
 [6.23.3]: https://github.com/trainline/environment-manager/compare/6.23.2..6.23.3
 [6.23.2]: https://github.com/trainline/environment-manager/compare/6.23.1..6.23.2
 [6.23.1]: https://github.com/trainline/environment-manager/compare/6.23.0..6.23.1
