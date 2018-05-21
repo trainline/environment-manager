@@ -22,7 +22,6 @@
     "lint": "eslint . --ext .js --quiet",
     "lint-rule": "eslint . --ext .js --quiet --parser-options {ecmaVersion:6} --rule ",
     "test": "npm run lint -s && npm run unit-test -s",
-    "test-ui": "./node_modules/.bin/wdio wdio.conf.js",
     "test-watch": "mocha --watch --recursive ./test --EM_PROFILE test/test-profile.json",
     "test-ci": "npm test -- --reporter mocha-teamcity-reporter --timeout 4000",
     "unit-test": "mocha --recursive ./test --EM_PROFILE test/test-profile.json",
