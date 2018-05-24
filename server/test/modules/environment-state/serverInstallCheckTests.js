@@ -4,7 +4,7 @@
 const assert = require('assert');
 const rewire = require('rewire');
 
-describe.only('getServiceInstallationCheck', function () {
+describe('getServiceInstallationCheck', function () {
   it('returns the result of a successful ping', function (done) {
     const serviceInstallationCheck = rewire('../../../modules/environment-state/getServiceInstallationCheck');
     const mockRequester = () => {
