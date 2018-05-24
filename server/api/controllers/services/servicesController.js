@@ -111,7 +111,7 @@ function getServiceInstallationCheck(req, res, next) {
   const serviceName = req.swagger.params.service.value;
   const slice = req.swagger.params.slice.value;
   return serviceInstallationCheck({ environmentName, serviceName, slice })
-    .then(data => { res.json(data) });
+    .then((data) => { res.json(data); }).catch(next);
 }
 
 /**

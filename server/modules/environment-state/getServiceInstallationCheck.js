@@ -22,17 +22,17 @@ function pingNode(node) {
     port: node.ServicePort,
     tags: unravelTags(node.ServiceTags),
     installationcheckurl: installCheckUrl
-  }
-  return request(installCheckUrl, {timeout: 30000}).then(response => {
-      return Object.assign(pingResult, { status: response.statusCode });
-  }, reason => {
-    return Object.assign(pingResult, {status: 0, reason: reason.code });
+  };
+  return request(installCheckUrl, { timeout: 30000 }).then((response) => {
+    return Object.assign(pingResult, { status: response.statusCode });
+  }, (reason) => {
+    return Object.assign(pingResult, { status: 0, reason: reason.code });
   });
 }
 
 function getServiceInstallationCheck({ environmentName, serviceName, slice }) {
-  return  serviceDiscovery.getNodesForService(environmentName, format(environmentName, serviceName, slice))
-        .then(nodes => Promise.all(nodes.map(pingNode)))
+  return serviceDiscovery.getNodesForService(environmentName, format(environmentName, serviceName, slice))
+        .then(nodes => Promise.all(nodes.map(pingNode)));
 }
 
 module.exports = getServiceInstallationCheck;

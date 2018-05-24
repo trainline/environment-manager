@@ -1,3 +1,4 @@
+/* eslint-disable */
 'use strict';
 
 const assert = require('assert');
@@ -6,7 +7,7 @@ const rewire = require('rewire');
 describe.only('getServiceInstallationCheck', function () {
   it('returns the result of a successful ping', function (done) {
     const serviceInstallationCheck = rewire('../../../modules/environment-state/getServiceInstallationCheck');
-    const mockRequester = (request) => {
+    const mockRequester = () => {
       return Promise.resolve({
         statusCode: 200
       });
@@ -57,7 +58,7 @@ describe.only('getServiceInstallationCheck', function () {
   });
   it('returns the error code of a failed ping', function (done) {
     const serviceInstallationCheck = rewire('../../../modules/environment-state/getServiceInstallationCheck');
-    const mockRequester = (request) => {
+    const mockRequester = () => {
       return Promise.reject({
         code: 'ENOENT'
       });
