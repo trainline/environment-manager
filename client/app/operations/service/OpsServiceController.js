@@ -74,7 +74,7 @@ angular.module('EnvironmentManager.operations').controller('OpsServiceController
         method: 'get',
         url: '/api/v1/services?environment=' + vm.selectedEnvironment
       }).then(function (response) {
-          vm.fullServiceData = Object.keys(response.data).map(function service() { return Object.assign({consulName: service}, response.data[service])});
+        vm.fullServiceData = Object.keys(response.data).map(function (service) { return Object.assign({consulName: service}, response.data[service])});
         vm.updateFilter();
       }).finally(function () {
         vm.dataLoading = false;
