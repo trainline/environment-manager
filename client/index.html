@@ -124,6 +124,8 @@
   <script src="app/operations/upstream/UpstreamDetailsModalController.js"></script>
   <script src="app/operations/upstream/OpsUpstreamController.js"></script>
   <script src="app/operations/upstream/ASGSelectionModalController.js"></script>
+  <script src="app/operations/service/OpsServiceController.js"></script>
+  <script src="app/operations/service/OpsServiceInstallCheckModalController.js"></script>
   <script src="app/operations/deployments/opsDeploymentsList.js"></script>
   <script src="app/operations/deployments/opsDeploymentsInstances.js"></script>
   <script src="app/operations/deployments/OpsDeploymentsController.js"></script>
@@ -258,6 +260,7 @@
             <ul>
               <li><a href="#/operations/deployments" ng-class="{active: $route.current.menusection == 'Deployments'}">Deployments</a></li>
               <li><a href="#/operations/upstreams" ng-class="{active: $route.current.menusection == 'Upstreams'}">Upstream Status</a></li>
+              <li><a href="#/operations/service" ng-class="{active: $route.current.menusection == 'Service'}">Service Status</a></li>
               <li><a href="#/operations/amis" ng-class="{active: $route.current.menusection == 'AMIs'}">AMI Versions</a></li>
               <li><a href="#/operations/maintenance" ng-class="{active: $route.current.menusection == 'Maintenance'}">Server Maintenance</a></li>
             </ul>

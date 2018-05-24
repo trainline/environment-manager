@@ -1,0 +1,35 @@
+<div class="modal-header">
+    <h3>Service Instances: </h3>
+</div>
+
+<div class="modal-body">	
+    <div id="spinner" ng-show="DataLoading">
+        <p>Loading instance data... (May take up to 45 seconds)</p>
+    </div>
+	<div ng-show="Nodes.length == 0 && !DataLoading">
+        <p>No matching servers found.</p>
+    </div>
+    <div ng-show="Nodes.length > 0 && !DataLoading">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="text-nowrap">ServerRole</th>
+                    <th class="text-nowrap">Node</th>
+                    <th class="text-nowrap">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="node in Nodes | orderBy : ['ip']">
+					<td>{{node.tags.server_role}}</td>
+					<td>{{node.ip}}:{{node.port}} ({{node.id}})</td>
+					<td>{{node.status}} <span ng-show="node.reason">({{node.reason}})</span></td>
+                </tr>
+			</tbody>
+		</table>
+	</div>
+    <p>&nbsp;</p>
+</div>
+
+<div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="Ok()">OK</button>
+</div>

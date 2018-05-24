@@ -16,6 +16,12 @@ angular.module('EnvironmentManager.operations').config(function ($routeProvider)
       reloadOnSearch: false,
       menusection: 'Upstreams'
     })
+    .when('/operations/service', {
+      templateUrl: '/app/operations/service/ops-service.html',
+      controller: 'OpsServiceController as vm',
+      reloadOnSearch: false,
+      menusection: 'Service'
+    })
     .when('/operations/maintenance/', {
       templateUrl: '/app/operations/maintenance/ops-maintenance.html',
       controller: 'OpsMaintenanceController as vm',

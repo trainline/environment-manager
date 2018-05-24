@@ -10,6 +10,7 @@ let _ = require('lodash');
 let assert = require('assert');
 const { ConsulNode } = require('../../consul-node/consul-node');
 const { ConsulNodeSortingService } = require('../../consul-node/consul-node-sorting-service');
+const { getSimpleServiceName } = require('../../../modules/environment-state/serviceStateUtils');
 
 function getAllServices(environment) {
   let getServiceList = clientInstance => clientInstance.catalog.service.list();
@@ -49,6 +50,10 @@ function getAllNodes(environment) {
   return executeConsul(environment, clientInstance => clientInstance.catalog.node.list());
 }
 
+function getNodesForService(environment, service) {
+  return executeConsul(environment, clientInstance => clientInstance.catalog.service.nodes(service));
+}
+
 function getNode(environment, nodeName) {
   assert(nodeName, 'nodeName is required');
   return executeConsul(environment, clientInstance => clientInstance.catalog.node.services(nodeName))
@@ -75,8 +80,12 @@ function executeConsul(environment, fn) {
   return executeAction(promiseFactoryMethod);
 }
 
+function insertSimpleName(service, complicatedName) {
+  service.simpleName = getSimpleServiceName(complicatedName);
+}
+
 function formatServices(services) {
-  return _.mapValues(services, unravelTags);
+  return _.chain(services).mapValues(unravelTags).each(insertSimpleName);
 }
 
 function unravelTags(service) {
@@ -120,6 +129,7 @@ module.exports = {
   getService,
   getServiceHealth,
   getAllNodes,
+  getNodesForService,
   getNodeHealth,
   getNode
 };
