@@ -1107,6 +1107,35 @@ paths:
             type: array
             items:
               $ref: '#/definitions/ServiceStatusSummary'
+  /services/{service}/installationcheck/{slice}:
+    x-swagger-router-controller: servicesController
+    get:
+      operationId: getServiceInstallationCheck
+      summary: Get a currently deployed service.
+      tags:
+        - Service
+      parameters:
+        - name: service
+          in: path
+          type: string
+          required: true
+        - name: environment
+          in: query
+          type: string
+          required: true
+        - name: slice
+          in: path
+          type: string
+          required: true
+          enum:
+            - blue
+            - green
+            - none
+      responses:
+        200:
+          description: the service status summaries
+          schema:
+            type: object
   /services/{service}/slices:
     x-swagger-router-controller: servicesController
     get:

@@ -1,0 +1,73 @@
+<div class="row">
+    <div class="col-md-12">
+        <h2>Service Status</h2>
+    </div>
+    <div id="RefreshData">
+        <span class="glyphicon glyphicon-refresh" ng-click="vm.refresh()" title="Refresh data"></span>
+    </div>
+</div>
+<form id="SearchFilter" class="form-inline">
+    <div class="form-group">
+        <label class="control-label text-left">Environment:</label>
+    </div>
+    <div class="form-group">
+        <select class="form-control" ng-model="vm.selectedEnvironment" ng-change="vm.refresh()">
+            <option ng-repeat="env in vm.environmentsList" ng-selected="{{env == vm.selectedEnvironment}}" value="{{env}}">{{env}}</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label class="control-label text-left">Service Owner:</label>
+    </div>
+    <div class="form-group">
+        <select class="form-control" ng-model="vm.selectedOwningCluster" ng-change="vm.updateFilter()">
+            <option ng-repeat="c in vm.owningClustersList" ng-selected="{{c == vm.selectedOwningCluster}}" value="{{c}}">{{c}}</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label class="control-label text-left">Service:</label>
+    </div>
+    <div class="form-group">
+        <input type="search" name="ServiceName" class="form-control" ng-model="vm.selectedService" ng-change="vm.updateFilter()"
+        />
+    </div>
+</form>
+<hr />
+<spinner ng-show="vm.dataLoading"></spinner>
+<div ng-if="!vm.dataLoading">
+    <div ng-if="vm.data.length == 0">
+        <p>No services discovered for selected environment.</p>
+    </div>
+    <div ng-if="vm.data.length > 0">
+        <table id="service-status" class="table">
+            <thead>
+                <tr>
+                    <th>Service Name</th>
+                    <th ng-show="vm.selectedOwningCluster === 'Any'">Service Owner</th>
+                    <th>Slice</th>
+                    <th class="text-nowrap">Installation Check</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="service in vm.data | orderBy : ['serviceName']" class="service-row">
+                    <td>
+                       {{service.simpleName }}
+                    </td>
+                    <td ng-show="vm.selectedOwningCluster === 'Any'">
+                        {{service.owning_cluster}}
+                    </td>
+                    <td>
+                        <span class="slice-symbol" ng-class="service.slice" style="display: inline-block;"></span>
+                        {{service.slice}}
+                    </td>
+                    <td class="">
+                        <button class="btn btn-default" type="button" ng-click="vm.showCheckInstallModal(service)">Check</button>
+                    </td>
+                    <td class="command-toggleUpstream">
+                        <span class="glyphicon glyphicon-random" title="Toggle Service" ng-if="canUser('toggle')" ng-click="vm.toggleService(service)"></span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

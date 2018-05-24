@@ -6,6 +6,7 @@ let serviceDiscovery = require('../../../modules/service-discovery');
 let getSlices = require('../../../queryHandlers/slices/GetSlicesByService');
 let ScanInstances = require('../../../queryHandlers/ScanInstances');
 let toggleSlices = require('../../../commands/slices/ToggleSlicesByService');
+let serviceInstallationCheck = require('../../../modules/environment-state/getServiceInstallationCheck');
 let serviceHealth = require('../../../modules/environment-state/getServiceHealth');
 let overallServiceHealth = require('../../../modules/environment-state/getOverallServiceHealth');
 let metadata = require('../../../commands/utils/metadata');
@@ -103,6 +104,17 @@ function getServiceHealth(req, res, next) {
 }
 
 /**
+ * GET /services/{service}/installationcheck
+ */
+function getServiceInstallationCheck(req, res, next) {
+  const environmentName = req.swagger.params.environment.value;
+  const serviceName = req.swagger.params.service.value;
+  const slice = req.swagger.params.slice.value;
+  return serviceInstallationCheck({ environmentName, serviceName, slice })
+    .then(data => { res.json(data) });
+}
+
+/**
  * GET /services/{service}/slices
  */
 function getServiceSlices(req, res, next) {
@@ -166,6 +178,7 @@ module.exports = {
   getServiceById,
   getServiceHealth,
   getOverallServiceHealth,
+  getServiceInstallationCheck,
   getServiceSlices,
   getASGsByService,
   putServiceSlicesToggle

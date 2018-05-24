@@ -134,6 +134,7 @@ function initializeServer(server) {
 }
 
 module.exports = {
+  createExpressApp,
   start: () => {
     return createExpressApp()
       .then(createServer)
