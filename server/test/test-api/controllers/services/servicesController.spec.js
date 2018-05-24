@@ -3,25 +3,18 @@
 /* eslint no-underscore-dangle: 0 */
 
 const assert = require('assert');
-let proxyquire = require('proxyquire');
+let rewire = require('rewire');
 
-describe('Services controller', () => {
+describe.only('Services controller', () => {
   let controller;
-  let mockDependencies;
+  let mockedServiceInstallationCheck = ({ environmentName, serviceName, slice }) => {
+    return Promise.resolve({ environmentName, serviceName, slice });
+  };
 
   beforeEach(() => {
-    mockDependencies = {
-      serviceInstallationCheck: ({ environmentName, serviceName, slice }) => Promise.resolve({ environmentName, serviceName, slice })
-    };
-    controller = getController();
+    controller = rewire('../../../../api/controllers/services/servicesController');
+    controller.__set__('serviceInstallationCheck', mockedServiceInstallationCheck);
   });
-
-  function getController() {
-    let mapStubs = {};
-    mapStubs['../../../modules/environment-state/getServiceInstallationCheck'] = mockDependencies.serviceInstallationCheck;
-    let instance = proxyquire('../../../../api/controllers/services/servicesController', mapStubs);
-    return instance;
-  }
 
   it('Assert that swagger parameters are set and setInstallationCheck is called', (done) => {
     let result;
