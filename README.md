@@ -1,5 +1,7 @@
 # DEPRECATED
 
+## This project is no longer maintained
+
 [![Build Status](https://travis-ci.org/trainline/environment-manager.svg?branch=master)](https://travis-ci.org/trainline/environment-manager)
 
 ### Welcome
